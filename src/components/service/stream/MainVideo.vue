@@ -236,9 +236,23 @@ export default {
       },
     },
     viewForce(flag, oldFlag) {
-      if (flag === false && oldFlag === true) {
-        // TODO: MESSAGE
-        this.toastDefault('리더가 화면 고정을 해지했습니다.')
+      if (!this.isLeader) {
+        if (flag === false && oldFlag === true) {
+          this.addChat({
+            name: this.mainView.nickname,
+            status: 'sharing-stop',
+            type: 'system',
+          })
+        }
+        if (flag === true && oldFlag === false) {
+          this.$nextTick(() => {
+            this.addChat({
+              name: this.mainView.nickname,
+              status: 'sharing-start',
+              type: 'system',
+            })
+          })
+        }
       }
     },
     cameraStatus(status, oldStatus) {
@@ -269,6 +283,11 @@ export default {
   methods: {
     ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
     cancelSharing() {
+      this.addChat({
+        name: this.mainView.nickname,
+        status: 'sharing-stop',
+        type: 'system',
+      })
       this.setMainView({ force: false })
       this.$call.mainview(this.mainView.id, false)
     },

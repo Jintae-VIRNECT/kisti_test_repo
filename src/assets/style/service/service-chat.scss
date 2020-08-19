@@ -271,6 +271,9 @@
   &.alarm::before {
     background-image: url(~assets/image/call/ic_chat_alarm.svg);
   }
+  &.sharing::before {
+    background-image: url(~assets/image/call/ic_chat_sharing.svg);
+  }
   &.people::before {
     background-image: url(~assets/image/call/ic_chat_ppl.svg);
   }

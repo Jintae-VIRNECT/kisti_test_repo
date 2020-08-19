@@ -131,6 +131,9 @@ export default {
           case 'invite':
           case 'leave':
             return 'people'
+          case 'sharing-start':
+          case 'sharing-stop':
+            return 'sharing'
           case 'stream-stop':
             return 'cancel'
           case 'stream-start':
@@ -160,6 +163,16 @@ export default {
             return this.$t('service.chat_leave', {
               name: this.chat.name,
             })
+          case 'sharing-start':
+            // return this.$t('service.chat_stream_stop', {
+            //   name: this.chat.name,
+            // })
+            return `<span class="emphasize">${this.chat.name}</span> 님의 영상을 전체 공유합니다.`
+          case 'sharing-stop':
+            // return this.$t('service.chat_stream_stop', {
+            //   name: this.chat.name,
+            // })
+            return `<span class="emphasize">${this.chat.name}</span> 님의 영상을 공유 취소합니다.`
           case 'stream-stop':
             return this.$t('service.chat_stream_stop', {
               name: this.chat.name,

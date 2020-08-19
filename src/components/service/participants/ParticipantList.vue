@@ -7,7 +7,7 @@
           v-for="participant of participants"
           :key="participant.id"
           :participant="participant"
-          @selectMain="selectMain(participant.id)"
+          @selectMain="selectMain(participant)"
         ></participant-video>
         <article v-if="showInvite" key="append">
           <div class="participant-video more" @click="more">
@@ -93,9 +93,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setMainView']),
-    selectMain(id) {
-      this.selectview = id
+    ...mapActions(['setMainView', 'addChat']),
+    selectMain(participant) {
+      this.selectview = {
+        id: participant.id,
+        nickname: participant.nickname,
+      }
     },
     normal() {
       this.changeMainView(this.selectview, false)
@@ -103,10 +106,25 @@ export default {
     share() {
       this.changeMainView(this.selectview, true)
     },
-    changeMainView(id, force) {
+    changeMainView(select, force) {
       this.selectview = false
-      this.$call.mainview(id, force)
-      this.setMainView({ id, force })
+      if (this.account.roleType === ROLE.LEADER) {
+        if (force) {
+          this.addChat({
+            name: select.nickname,
+            status: 'sharing-start',
+            type: 'system',
+          })
+        } else {
+          this.addChat({
+            name: this.mainView.nickname,
+            status: 'sharing-stop',
+            type: 'system',
+          })
+        }
+      }
+      this.$call.mainview(select.id, force)
+      this.setMainView({ id: select.id, force })
     },
     more() {
       this.invite = !this.invite
