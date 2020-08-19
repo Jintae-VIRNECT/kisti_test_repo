@@ -9,6 +9,7 @@ import {
   ROLE,
   VIDEO,
 } from 'configs/remote.config'
+import { FLASH as FLASH_STATUE } from 'configs/device.config'
 
 import { getUserInfo } from 'api/common'
 import vue from 'apps/remote/app'
@@ -32,17 +33,23 @@ export const addSessionEventListener = session => {
           : event.stream.hasVideo,
       })
       addSubscriber(subscriber)
-      _.sendResolution()
-      _.video(Store.getters['video'].isOn)
-      _.mic(Store.getters['mic'].isOn)
-      _.speaker(Store.getters['speaker'].isOn)
-      _.flashStatus()
+      _.sendResolution(null, [event.stream.connection])
+      _.video(Store.getters['video'].isOn, [event.stream.connection])
+      _.mic(Store.getters['mic'].isOn, [event.stream.connection])
+      _.speaker(Store.getters['speaker'].isOn, [event.stream.connection])
+      _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.stream.connection])
       if (_.account.roleType === ROLE.LEADER) {
         if (Store.getters['viewForce'] === true) {
-          _.mainview(Store.getters['mainView'].uuid, true)
+          _.mainview(Store.getters['mainView'].uuid, true, [
+            event.stream.connection,
+          ])
         }
-        _.control(CONTROL.POINTING, Store.getters['allowPointing'])
-        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
+        _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
+          event.stream.connection,
+        ])
+        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
+          event.stream.connection,
+        ])
       }
     })
   })

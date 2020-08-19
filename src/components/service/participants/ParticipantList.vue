@@ -123,9 +123,7 @@ export default {
           }
         }
       }
-      if (this.viewForce === true) {
-        this.$call.mainview(select.id, force)
-      }
+      this.$call.mainview(select.id, force)
       this.setMainView({ id: select.id, force })
     },
     more() {

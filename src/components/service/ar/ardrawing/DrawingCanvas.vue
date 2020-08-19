@@ -45,7 +45,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'view', 'viewAction']),
+    ...mapGetters(['tools', 'view', 'viewAction', 'mainView']),
     uuid() {
       return this.account.uuid
     },
@@ -162,7 +162,11 @@ export default {
 
           this.isInit = true
           this.$emit('loading')
-          this.$call.arDrawing(AR_DRAWING.START_DRAWING)
+          this.$call.arDrawing(
+            AR_DRAWING.START_DRAWING,
+            {},
+            this.mainView.connectionId,
+          )
         })
       }
       bgImage.onerror = error => {
@@ -205,9 +209,17 @@ export default {
         if (
           [AR_DRAWING.UNDO, AR_DRAWING.REDO, AR_DRAWING.CLEAR].includes(type)
         ) {
-          this.$call.arDrawing(type, { ...param, ...custom })
+          this.$call.arDrawing(
+            type,
+            { ...param, ...custom },
+            this.mainView.connectionId,
+          )
         } else {
-          this.$call.arDrawing('arDrawing', { ...param, ...custom })
+          this.$call.arDrawing(
+            'arDrawing',
+            { ...param, ...custom },
+            this.mainView.connectionId,
+          )
         }
       }
 

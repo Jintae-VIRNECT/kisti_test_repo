@@ -190,7 +190,7 @@ const _ = {
    * resolution
    * @param {Object} resolution = {width, height, orientation}
    */
-  sendResolution: resolution => {
+  sendResolution: (resolution, target = null) => {
     if (!_.session) return
     if (resolution) {
       _.resolution = resolution
@@ -206,7 +206,7 @@ const _ = {
     if (!resolution || !resolution.width) return
     _.session.signal({
       data: JSON.stringify(resolution),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.RESOLUTION,
     })
   },
@@ -216,7 +216,7 @@ const _ = {
    * @param {String} uuid
    * @param {Boolean} force true / false
    */
-  mainview: (uuid, force = false) => {
+  mainview: (uuid, force = false, target = null) => {
     if (_.account.roleType !== ROLE.LEADER) return
     if (!uuid) uuid = _.account.uuid
     const params = {
@@ -225,7 +225,7 @@ const _ = {
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.VIDEO,
     })
   },
@@ -260,18 +260,19 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
    * @TARGET
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
-  control: (type, enable) => {
+  control: (type, enable, target = null) => {
     const params = {
       type,
       enable,
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.CONTROL,
     })
   },
@@ -306,17 +307,30 @@ const _ = {
       type: SIGNAL.AR_FEATURE,
     })
   },
+  getTarget: connectionId => {
+    const connections = []
+    for (let subscriber of _.subscribers) {
+      if (subscriber.stream.connection.connectionId === connectionId) {
+        connections.push(subscriber.stream.connection)
+      }
+    }
+    if (connections.length > 0) return connections
+    return null
+  },
   /**
    * @TARGET
    * AR pointing
    * @param {String} type = remote.config.AR_POINTING
    * @param {Object} params (문서참조)
    */
-  arPointing: (type, params = {}) => {
+  arPointing: (type, params = {}, target = null) => {
+    if (typeof target === 'string') {
+      target = _.getTarget(target)
+    }
     params.type = type
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.AR_POINTING,
     })
   },
@@ -325,12 +339,15 @@ const _ = {
    * request screen capture permission
    * @param {Object} params
    */
-  permission: (params = {}) => {
+  permission: (params = {}, target = null) => {
+    if (typeof target === 'string') {
+      target = _.getTarget(target)
+    }
     params['from'] = _.account.uuid
     if (params.type !== 'response') params['type'] = 'request'
     _.session.signal({
       type: SIGNAL.CAPTURE_PERMISSION,
-      to: _.session.connection,
+      to: target,
       data: JSON.stringify(params),
     })
   },
@@ -340,13 +357,16 @@ const _ = {
    * @param {String} type = remote.config.AR_DRAWING
    * @param {Object} params (문서참조)
    */
-  arDrawing: (type, params = {}) => {
+  arDrawing: (type, params = {}, target = null) => {
     if (!_.session) return
+    if (typeof target === 'string') {
+      target = _.getTarget(target)
+    }
     params.type = type
     params['from'] = _.account.uuid
     _.session.signal({
       type: SIGNAL.AR_DRAWING,
-      to: _.session.connection,
+      to: target,
       data: JSON.stringify(params),
     })
   },
@@ -355,7 +375,7 @@ const _ = {
    * @TARGET
    * my video stream control
    */
-  video: active => {
+  video: (active, target = null) => {
     if (!_.publisher) return
     if (!_.publisher.stream.hasVideo) return
     _.publisher.publishVideo(active)
@@ -369,7 +389,7 @@ const _ = {
     try {
       _.session.signal({
         data: JSON.stringify(params),
-        to: _.session.connection,
+        to: target,
         type: SIGNAL.CAMERA,
       })
     } catch (err) {
@@ -382,7 +402,7 @@ const _ = {
    * my mic control
    * @param {Boolean} active
    */
-  mic: active => {
+  mic: (active, target = null) => {
     if (!_.publisher) return
     _.publisher.publishAudio(active)
 
@@ -392,7 +412,7 @@ const _ = {
     try {
       _.session.signal({
         data: JSON.stringify(params),
-        to: _.session.connection,
+        to: target,
         type: SIGNAL.MIC,
       })
     } catch (err) {
@@ -405,7 +425,7 @@ const _ = {
    * my speaker control
    * @param {Boolean} active
    */
-  speaker: active => {
+  speaker: (active, target = null) => {
     for (let subscriber of _.subscribers) {
       subscriber.subscribeToAudio(active)
     }
@@ -415,7 +435,7 @@ const _ = {
     try {
       _.session.signal({
         data: JSON.stringify(params),
-        to: _.session.connection,
+        to: target,
         type: SIGNAL.SPEAKER,
       })
     } catch (err) {
@@ -428,7 +448,7 @@ const _ = {
    * other user's flash control
    * @param {Boolean} active
    */
-  flashStatus: (status = FLASH_STATUE.FLASH_NONE) => {
+  flashStatus: (status = FLASH_STATUE.FLASH_NONE, target = null) => {
     const params = {
       status: status,
       from: _.account.uuid,
@@ -436,7 +456,7 @@ const _ = {
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.FLASH,
     })
   },

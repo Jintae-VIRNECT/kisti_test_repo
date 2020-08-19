@@ -280,9 +280,12 @@ export default {
       } else {
         // 퍼미션 요청
         this.$eventBus.$on('startAr', this.getPermission)
-        this.$call.permission({
-          to: [this.participant.id],
-        })
+        this.$call.permission(
+          {
+            to: [this.participant.id],
+          },
+          this.participant.connectionId,
+        )
         // 리턴받는 퍼미션은 HeaderServiceLnb에서 처리
       }
     },

@@ -251,9 +251,12 @@ export default {
         this.toastDefault(this.$t('service.toast_refused_ar'))
         return
       }
-      this.$call.permission({
-        to: [this.mainView.id],
-      })
+      this.$call.permission(
+        {
+          to: [this.mainView.id],
+        },
+        this.mainView.connectionId,
+      )
       this.toastDefault(this.$t('service.toast_request_permission'))
     },
 

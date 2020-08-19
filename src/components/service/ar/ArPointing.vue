@@ -44,7 +44,11 @@ export default {
         posX,
         posY,
       }
-      this.$call.arPointing(AR_POINTING.AR_POINTING, params)
+      this.$call.arPointing(
+        AR_POINTING.AR_POINTING,
+        params,
+        this.mainView.connectionId,
+      )
     },
     receivePointing(receive) {
       const data = JSON.parse(receive.data)
@@ -61,13 +65,13 @@ export default {
       }
     },
     stackUndo() {
-      this.$call.arPointing(AR_POINTING.UNDO)
+      this.$call.arPointing(AR_POINTING.UNDO, {}, this.mainView.connectionId)
     },
     stackRedo() {
-      this.$call.arPointing(AR_POINTING.REDO)
+      this.$call.arPointing(AR_POINTING.REDO, {}, this.mainView.connectionId)
     },
     drawingClear() {
-      this.$call.arPointing(AR_POINTING.CLEAR)
+      this.$call.arPointing(AR_POINTING.CLEAR, {}, this.mainView.connectionId)
     },
   },
 
