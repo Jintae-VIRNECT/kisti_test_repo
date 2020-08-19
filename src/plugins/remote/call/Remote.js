@@ -156,6 +156,7 @@ const _ = {
     }
   },
   /**
+   * @BROADCATE
    * chatting
    * @param {String} text
    */
@@ -170,6 +171,7 @@ const _ = {
   },
 
   /**
+   * @BROADCATE
    * chatting-file
    */
   sendFile: params => {
@@ -184,6 +186,7 @@ const _ = {
   },
 
   /**
+   * @TARGET
    * resolution
    * @param {Object} resolution = {width, height, orientation}
    */
@@ -208,6 +211,7 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
    * main view change (only leader)
    * @param {String} uuid
    * @param {Boolean} force true / false
@@ -226,6 +230,7 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
    * pointing
    * @param {Object} params
    *  = {to, from, color, opacity, width, posX, posY}
@@ -239,6 +244,7 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
    * sharing drawing
    * @param {String} type = remote.config.DRAWING
    * @param {Object} params
@@ -254,6 +260,7 @@ const _ = {
     })
   },
   /**
+   * @TARGET
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
@@ -269,6 +276,7 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
@@ -284,6 +292,7 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
@@ -298,6 +307,7 @@ const _ = {
     })
   },
   /**
+   * @TARGET
    * AR pointing
    * @param {String} type = remote.config.AR_POINTING
    * @param {Object} params (문서참조)
@@ -311,6 +321,7 @@ const _ = {
     })
   },
   /**
+   * @TARGET
    * request screen capture permission
    * @param {Object} params
    */
@@ -324,6 +335,7 @@ const _ = {
     })
   },
   /**
+   * @TARGET
    * AR drawing
    * @param {String} type = remote.config.AR_DRAWING
    * @param {Object} params (문서참조)
@@ -339,7 +351,8 @@ const _ = {
     })
   },
   /**
-   * @WORNNING no used
+   * @BROADCATE
+   * @TARGET
    * my video stream control
    */
   video: active => {
@@ -364,6 +377,8 @@ const _ = {
     }
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * my mic control
    * @param {Boolean} active
    */
@@ -385,6 +400,8 @@ const _ = {
     }
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * my speaker control
    * @param {Boolean} active
    */
@@ -406,6 +423,8 @@ const _ = {
     }
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * other user's flash control
    * @param {Boolean} active
    */
@@ -422,6 +441,8 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * other user's flash control
    * @param {Boolean} active
    * @param {String} id : target id
@@ -440,6 +461,8 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * other user's camera control
    * @param {Boolean} active
    */
@@ -457,6 +480,8 @@ const _ = {
     })
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * user's speaker mute
    * @param {String} connectionId
    * @param {Boolean} mute
