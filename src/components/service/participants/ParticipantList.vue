@@ -47,7 +47,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['participants', 'roomMember', 'mainView']),
+    ...mapGetters(['participants', 'roomMember', 'mainView', 'viewForce']),
     showInvite() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
@@ -106,6 +106,7 @@ export default {
     changeMainView(select, force) {
       this.selectview = false
       if (this.account.roleType === ROLE.LEADER) {
+        if (select.id === this.mainView.id && this.viewForce === force) return
         if (force) {
           this.addChat({
             name: select.nickname,
@@ -113,14 +114,18 @@ export default {
             type: 'system',
           })
         } else {
-          this.addChat({
-            name: this.mainView.nickname,
-            status: 'sharing-stop',
-            type: 'system',
-          })
+          if (this.viewForce === true) {
+            this.addChat({
+              name: this.mainView.nickname,
+              status: 'sharing-stop',
+              type: 'system',
+            })
+          }
         }
       }
-      this.$call.mainview(select.id, force)
+      if (this.viewForce === true) {
+        this.$call.mainview(select.id, force)
+      }
       this.setMainView({ id: select.id, force })
     },
     more() {

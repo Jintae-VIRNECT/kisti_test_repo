@@ -48,7 +48,7 @@ export default {
   },
   props: {
     visible: {
-      type: [Boolean, String],
+      type: [Boolean, Object],
       default: false,
     },
   },

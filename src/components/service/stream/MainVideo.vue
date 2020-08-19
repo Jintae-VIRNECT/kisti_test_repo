@@ -77,11 +77,8 @@
           </p>
         </div>
         <div class="main-video__empty-inner" v-else>
-          <img src="~assets/image/img_novideo.svg" />
-          <p>{{ '참가자 리스트에서 영상을 선택해 주세요.' }}</p>
-          <p class="inner-discription">
-            {{ `  ` }}
-          </p>
+          <img src="~assets/image/call/img_select_video.svg" />
+          <p v-html="'참가자 리스트에서 영상을<br> 선택해 주세요.'"></p>
         </div>
       </transition>
       <!-- 영상 초기화 로딩 -->
