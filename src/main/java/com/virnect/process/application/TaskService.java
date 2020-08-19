@@ -1663,9 +1663,9 @@ public class TaskService {
             //Process updateSourceProcess = this.processRepository.getProcessInfo(editProcessRequest.getProcessId()).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
             Process updateSourceProcess = this.processRepository.findById(editProcessRequest.getTaskId())
                     .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-
+/*
             if (!updateSourceProcess.getContentManagerUUID().equals(editProcessRequest.getActorUUID()))
-                throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
+                throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);*/
 
             // 공정진행중여부확인 - 편집할 수 없는 상태라면 에러
             if (updateSourceProcess.getState() == State.CLOSED || updateSourceProcess.getState() == State.DELETED) {
