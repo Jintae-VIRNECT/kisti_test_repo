@@ -1,9 +1,9 @@
 <template>
   <section class="setting-section">
-    <div class="setting__title">
+    <div class="setting-section__title">
       {{ $t('workspace.setting_record_choice') }}
     </div>
-    <div class="setting-horizon-wrapper">
+    <div class="setting-section__body horizon first">
       <figure class="setting__figure">
         <p class="setting__label">
           {{ $t('workspace.setting_record_maxtime') }}

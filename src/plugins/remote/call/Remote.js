@@ -16,7 +16,7 @@ import {
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
-import { getPermission } from 'utils/deviceCheck'
+import { getPermission, getUserMedia } from 'utils/deviceCheck'
 
 let OV
 
@@ -59,8 +59,10 @@ const _ = {
         : undefined
       : false
 
-    const permission = await getPermission(hasVideo)
-    if (permission !== true) {
+    const permission = await getPermission()
+    if (permission === 'promt') {
+      await getUserMedia(true, hasVideo)
+    } else if (permission !== true) {
       throw permission
     }
 
