@@ -98,11 +98,9 @@ export default {
       this.selectview = id
     },
     normal() {
-      console.log('normal')
       this.changeMainView(this.selectview, false)
     },
     share() {
-      console.log('share')
       this.changeMainView(this.selectview, true)
     },
     changeMainView(id, force) {
