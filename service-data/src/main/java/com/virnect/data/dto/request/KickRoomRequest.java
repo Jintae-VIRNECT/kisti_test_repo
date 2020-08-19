@@ -17,16 +17,15 @@ public class KickRoomRequest {
     @NotNull
     private String participantId;
 
-    @ApiModelProperty(value = "참여자 유저 connectionId", position = 2, example = "connectionId")
+   /* @ApiModelProperty(value = "참여자 유저 connectionId", position = 2, example = "connectionId")
     @NotNull
-    private String connectionId;
+    private String connectionId;*/
 
     @Override
     public String toString() {
         return "KickRoomRequest{" +
                 "leaderId='" + leaderId + '\'' +
                 ", participantId='" + participantId + '\'' +
-                ", connectionId='" + connectionId + '\'' +
                 '}';
     }
 

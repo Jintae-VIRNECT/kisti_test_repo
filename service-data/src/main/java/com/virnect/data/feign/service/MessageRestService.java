@@ -1,9 +1,10 @@
-package com.virnect.data.feign;
+package com.virnect.data.feign.service;
 
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.request.PushSendRequest;
-import com.virnect.data.dto.rest.PushResponse;
+import com.virnect.data.dto.feign.PushResponse;
+import com.virnect.data.feign.MessageRestFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

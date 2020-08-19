@@ -2,8 +2,8 @@ package com.virnect.data.service;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.constraint.LicenseConstants;
-import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.data.feign.WorkspaceRestService;
+import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
+import com.virnect.data.feign.service.WorkspaceRestService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

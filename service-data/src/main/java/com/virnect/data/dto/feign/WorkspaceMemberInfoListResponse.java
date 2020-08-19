@@ -1,4 +1,4 @@
-package com.virnect.data.dto.rest;
+package com.virnect.data.dto.feign;
 
 import com.virnect.data.dto.PageMetadataResponse;
 import lombok.Getter;

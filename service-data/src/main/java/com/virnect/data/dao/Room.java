@@ -1,5 +1,7 @@
 package com.virnect.data.dao;
 
+import com.virnect.data.constraint.LicenseConstants;
+import com.virnect.data.constraint.LicenseItem;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
@@ -52,6 +54,9 @@ public class Room extends BaseTimeEntity {
     @Column(name = "room_status", nullable = false)
     private RoomStatus roomStatus;
 
+    @Column(name = "license_name", nullable = false)
+    private String licenseName;
+
     @Column(name = "active_at")
     private LocalDateTime activeDate;
 
@@ -71,6 +76,8 @@ public class Room extends BaseTimeEntity {
                 String profile,
                 String leaderId,
                 String workspaceId,
+                String licenseName,
+                int maxUserCount,
                 SessionProperty sessionProperty
                       ) {
         this.sessionId = sessionId;
@@ -79,10 +86,12 @@ public class Room extends BaseTimeEntity {
         this.profile = profile;
         this.leaderId = leaderId;
         this.workspaceId = workspaceId;
+        this.licenseName = licenseName;
+        this.maxUserCount = maxUserCount;
         this.sessionProperty = sessionProperty;
 
-        //
-        this.maxUserCount = 3;
+        //default setting
+        this.profile = "default";
         this.roomStatus = RoomStatus.UNACTIVE;
         this.activeDate = LocalDateTime.now();
     }

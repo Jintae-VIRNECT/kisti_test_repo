@@ -1,4 +1,4 @@
-package com.virnect.data.dto.rest;
+package com.virnect.data.dto.feign;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

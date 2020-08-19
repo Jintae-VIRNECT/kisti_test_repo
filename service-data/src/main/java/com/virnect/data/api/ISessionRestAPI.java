@@ -2,16 +2,15 @@ package com.virnect.data.api;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.request.*;
-import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.RoomDetailInfoResponse;
-import com.virnect.data.dto.response.RoomInfoListResponse;
-import com.virnect.data.dto.response.RoomResponse;
+import com.virnect.data.dto.response.*;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
@@ -29,13 +28,18 @@ public interface ISessionRestAPI {
      * 7. return session id and token
      */
     @ApiOperation(value = "Initialize a Remote Room ", notes = "원격협업 방을 생성 합니다.")
-    @ApiImplicitParams({
-    })
     @PostMapping(value = "room")
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestBody @Valid RoomRequest roomRequest,
-            @ModelAttribute RoomProfileUpdateRequest roomProfileUpdateRequest,
             BindingResult result);
+
+
+
+    /*@PostMapping(value = "room", consumes = )
+    ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
+            @RequestBody @Valid RoomRequest roomRequest,
+            @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
+            BindingResult result);*/
 
     @ApiOperation(value = "Load Room Information List", notes = "원격협헙 방 리스트 조회하는 API 입니다.")
     @ApiImplicitParams({
@@ -65,13 +69,24 @@ public interface ISessionRestAPI {
             @PathVariable("sessionId") String sessionId,
             @PathVariable("userId") String userId);
 
+
+    @ApiOperation(value = "Update a Remote Room profile", notes = "원격협업 방 프로필을 업데이트 합니다.")
+    @PostMapping(value = "room/{workspaceId}/{sessionId}/profile")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "변경할 프로필 이미지", name = "profile", paramType = "form", dataType = "__file")
+    })
+    ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> updateRoomProfile(
+            @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId,
+            BindingResult result);
+
     @ApiOperation(value = "Update Room Information", notes = "특정 원격협업 방 상세 정보를 수정하는 API 입니다.")
     @PostMapping(value = "room/{workspaceId}/{sessionId}/info")
     ResponseEntity<ApiResponse<RoomDetailInfoResponse>> updateRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid ModifyRoomInfoRequest modifyRoomInfoRequest,
-            @ModelAttribute RoomProfileUpdateRequest roomProfileUpdateRequest,
             BindingResult result
     );
 
@@ -96,23 +111,14 @@ public interface ISessionRestAPI {
             @RequestParam("userId") String userId
     );
 
-    /*@ApiOperation(value = "Invite a Member to Specific Room", notes = "특정 멤버를 원격협업 방에 초대하는 API 입니다.")
+    @ApiOperation(value = "Invite a Member to Specific Room", notes = "특정 멤버를 원격협업 방에 초대하는 API 입니다.")
     @PostMapping(value = "room/{workspaceId}/{sessionId}/member")
-    public ResponseEntity<ApiResponse<InviteRoomResponse>> inviteMember(
+    ResponseEntity<ApiResponse<InviteRoomResponse>> inviteMember(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid InviteRoomRequest inviteRoomRequest,
             BindingResult result
-    ) {
-        log.info(TAG, "inviteMember");
-
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<InviteRoomResponse> apiResponse = this.sessionService.inviteRoom(workspaceId, sessionId, inviteRoomRequest);
-        return ResponseEntity.ok(apiResponse);
-    }*/
+    );
 
     @ApiOperation(value = "Kick out a specific member from a specific room", notes = "특정 멤버를 원격협업 방에서 내보내는 API 입니다.")
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/member")
@@ -120,6 +126,14 @@ public interface ISessionRestAPI {
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid KickRoomRequest kickRoomRequest,
+            BindingResult result
+    );
+
+    @ApiOperation(value = "send signal to the specific room session", notes = "특정 원격협업 방에 신호를 보내는 API 입니다.")
+    @PostMapping(value = "room/{workspaceId}/{sessionId}/signal")
+    ResponseEntity<ApiResponse<ResultResponse>> sendSignal(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId,
             BindingResult result
     );
 }

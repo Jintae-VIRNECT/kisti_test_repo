@@ -1,6 +1,7 @@
 package com.virnect.data.service;
 
 import com.virnect.data.ApiResponse;
+import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.dao.*;
 import com.virnect.data.repository.MemberHistoryRepository;
 import com.virnect.data.repository.MemberRepository;
@@ -40,10 +41,77 @@ public class SessionService {
     private final RoomHistoryRepository roomHistoryRepository;
     private final MemberHistoryRepository memberHistoryRepository;
 
+
     //===========================================  Room Services     =================================================//
     @Transactional
     public Room createRoom(RoomRequest roomRequest,
-                           RoomProfileUpdateRequest roomProfileUpdateRequest,
+                           LicenseItem licenseItem,
+                           @Nullable SessionResponse sessionResponse) {
+        log.info("createRoom: " + roomRequest.toString());
+        // Remote Room Entity Create
+        Room room = Room.builder()
+                .sessionId(sessionResponse.getId())
+                .title(roomRequest.getTitle())
+                .description(roomRequest.getDescription())
+                .leaderId(roomRequest.getLeaderId())
+                .workspaceId(roomRequest.getWorkspaceId())
+                .maxUserCount(licenseItem.getUserCapacity())
+                .licenseName(licenseItem.getItemName())
+                .build();
+
+        // Remote Session Property Entity Create
+        SessionProperty sessionProperty = SessionProperty.builder()
+                .mediaMode("ROUTED")
+                .recordingMode("MANUAL")
+                .defaultOutputMode("COMPOSED")
+                .defaultRecordingLayout("BEST_FIT")
+                .recording(true)
+                .room(room)
+                .build();
+
+        room.setSessionProperty(sessionProperty);
+
+        // set room members
+        if(!roomRequest.getLeaderId().isEmpty() && !roomRequest.getLeaderEmail().isEmpty()) {
+            log.debug("leader Id is {}", roomRequest.getLeaderId());
+            Member member = Member.builder()
+                    .room(room)
+                    .memberType(MemberType.LEADER)
+                    .workspaceId(roomRequest.getWorkspaceId())
+                    .uuid(roomRequest.getLeaderId())
+                    .email(roomRequest.getLeaderEmail())
+                    .sessionId(room.getSessionId())
+                    .build();
+
+            room.getMembers().add(member);
+        } else {
+            log.debug("leader Id is null");
+        }
+
+        if(!roomRequest.getParticipants().isEmpty()) {
+            for (RoomRequest.Participant participant : roomRequest.getParticipants()) {
+                log.debug("getParticipants Id is {}", participant.toString());
+                Member member = Member.builder()
+                        .room(room)
+                        .memberType(MemberType.UNKNOWN)
+                        .workspaceId(roomRequest.getWorkspaceId())
+                        .uuid(participant.getId())
+                        .email(participant.getEmail())
+                        .sessionId(room.getSessionId())
+                        .build();
+
+                room.getMembers().add(member);
+            }
+        } else {
+            log.debug("participants Id List is null");
+        }
+        return roomRepository.save(room);
+    }
+
+
+
+    @Transactional
+    public Room createRoom(RoomRequest roomRequest,
                            @Nullable SessionResponse sessionResponse) {
         log.info("createRoom: " + roomRequest.toString());
         // Remote Room Entity Create
@@ -67,20 +135,6 @@ public class SessionService {
 
         room.setSessionProperty(sessionProperty);
 
-        // profile image request
-        // not ready to upload
-        //room.setProfile(Default.ROOM_PROFILE.getValue());
-        room.setProfile("default");
-        /*if(roomProfileUpdateRequest.getProfile() != null) {
-            try {
-                String profileUrl = this.fileUploadService.upload(roomProfileUpdateRequest.getProfile());
-                remoteRoom.setProfile(profileUrl);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        } else {
-            remoteRoom.setProfile(Default.ROOM_PROFILE.getValue());
-        }*/
         // set room members
         if(!roomRequest.getLeaderId().isEmpty() && !roomRequest.getLeaderEmail().isEmpty()) {
             log.debug("leader Id is {}", roomRequest.getLeaderId());
@@ -346,6 +400,20 @@ public class SessionService {
     }
 
     @Transactional
+    public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
+        for (Member member: room.getMembers()) {
+            if(member.getUuid().equals(joinRoomRequest.getUuid())) {
+                log.debug("Room has member Id is {}", member.getUuid());
+                member.setMemberType(joinRoomRequest.getMemberType());
+                member.setDeviceType(joinRoomRequest.getDeviceType());
+                member.setMemberStatus(MemberStatus.LOAD);
+                //save member
+                memberRepository.save(member);
+            }
+        }
+    }
+
+    /*@Transactional
     public ErrorCode joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
         for (Member member: room.getMembers()) {
             if(member.getUuid().equals(joinRoomRequest.getUuid())) {
@@ -365,7 +433,7 @@ public class SessionService {
             }
         }
         return ErrorCode.ERR_SUCCESS;
-    }
+    }*/
 
     @Transactional
     public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
@@ -438,27 +506,17 @@ public class SessionService {
     }
 
     @Transactional
-    public Room modifyRoomInfo(Room room, ModifyRoomInfoRequest modifyRoomInfoRequest, RoomProfileUpdateRequest roomProfileUpdateRequest) {
-        log.info("ROOM INFO UPDATE BY SESSION ID => [{}]");
-
+    public Room updateRoom(Room room, ModifyRoomInfoRequest modifyRoomInfoRequest) {
         room.setTitle(modifyRoomInfoRequest.getTitle());
         room.setDescription(modifyRoomInfoRequest.getDescription());
-
-        // new profile image
-        //room.setProfile(Default.ROOM_PROFILE.getValue());
-        room.setProfile("default");
-        /*if(roomProfileUpdateRequest.getProfile() != null) {
-            try {
-                String profileUrl = this.fileUploadService.upload(roomProfileUpdateRequest.getProfile());
-                this.fileUploadService.delete(room.getProfile());
-                room.setProfile(profileUrl);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-        } else {
-            room.setProfile(Default.ROOM_PROFILE.getValue());
-        }*/
         return this.roomRepository.save(room);
+    }
+
+    @Transactional
+    public void updateRoom(Room room, String profile) {
+        log.info("generate room profile string is {}", profile);
+        room.setProfile(profile);
+        roomRepository.save(room);
     }
 
     @Transactional

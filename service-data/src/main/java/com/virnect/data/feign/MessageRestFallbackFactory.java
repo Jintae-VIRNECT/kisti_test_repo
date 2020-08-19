@@ -3,7 +3,8 @@ package com.virnect.data.feign;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.request.PushSendRequest;
-import com.virnect.data.dto.rest.PushResponse;
+import com.virnect.data.dto.feign.PushResponse;
+import com.virnect.data.feign.service.MessageRestService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

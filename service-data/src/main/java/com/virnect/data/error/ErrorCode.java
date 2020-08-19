@@ -5,8 +5,11 @@ import io.swagger.annotations.ApiModelProperty;
 
 @ApiModel
 public enum  ErrorCode {
+    //
     ERR_SUCCESS(200, "anyway ok"),
 
+    //원격협업 서버 에러
+    ERR_SERVICE_PROCESS(3001, "Service Server Process error"),
 
     //원격협업 정보 관련 에러
     ERR_ROOM_INFO(4000, "Room Info Error"),
@@ -28,6 +31,8 @@ public enum  ErrorCode {
     ERR_ROOM_MEMBER_ALREADY_JOINED(4016, "This member is already joined"),
     ERR_ROOM_MEMBER_STATUS_LOADED(4017, "This member is already joined"),
     ERR_ROOM_MEMBER_KICK_FAIL(4018, "This member cannot enforce disconnect."),
+    ERR_ROOM_CREATE_FAIL(4019, "Room Create fail"),
+    ERR_ROOM_PROCESS_FAIL(4020, "Current Room request is failed"),
 
     //원격협업 유효성 정보 관련 에러
     ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),

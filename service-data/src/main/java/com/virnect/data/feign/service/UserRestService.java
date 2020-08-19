@@ -1,9 +1,10 @@
-package com.virnect.data.feign;
+package com.virnect.data.feign.service;
 
 
 import com.virnect.data.ApiResponse;
-import com.virnect.data.dto.rest.UserInfoListResponse;
-import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.dto.feign.UserInfoListResponse;
+import com.virnect.data.dto.feign.UserInfoResponse;
+import com.virnect.data.feign.UserRestFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

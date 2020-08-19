@@ -1,8 +1,9 @@
 package com.virnect.data.feign;
 
 import com.virnect.data.ApiResponse;
-import com.virnect.data.dto.rest.UserInfoListResponse;
-import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.dto.feign.UserInfoListResponse;
+import com.virnect.data.dto.feign.UserInfoResponse;
+import com.virnect.data.feign.service.UserRestService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

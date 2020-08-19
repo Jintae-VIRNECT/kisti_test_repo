@@ -22,6 +22,24 @@ public class ApiResponse<T> {
         this.data = data;
     }
 
+    public ApiResponse(T data, int code, String message) {
+        this.data = data;
+        this.code = code;
+        this.message = message;
+    }
+
+    public ApiResponse(ErrorCode errorCode) {
+        this.code = errorCode.getCode();
+        this.message = errorCode.getMessage();
+        this.data = null;
+    }
+
+    public ApiResponse(int code,  String message) {
+        this.code = code;
+        this.message = message;
+        this.data = null;
+    }
+
     public void setErrorResponseData(T data, int code, String message) {
         this.data = data;
         this.code = code;

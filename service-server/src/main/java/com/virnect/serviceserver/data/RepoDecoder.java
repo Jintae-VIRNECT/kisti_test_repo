@@ -13,7 +13,7 @@ public abstract class RepoDecoder<EntityType, ResponseType> {
     public RepoDecoder(RepoDecoderType decoderType) {
         switch (decoderType) {
             case CREATE:
-                loadFromDatabase();
+                //loadFromDatabase();
                 processData();
                 /*if(entity != null) {
                     processData();
@@ -28,7 +28,7 @@ public abstract class RepoDecoder<EntityType, ResponseType> {
                 //invokeDataProcess();
                 break;
             case READ:
-                entity = loadFromDatabase();
+                //entity = loadFromDatabase();
                 processData();
                 break;
             case DELETE:
@@ -40,14 +40,17 @@ public abstract class RepoDecoder<EntityType, ResponseType> {
     }
 
     private void processData() {
-        ApiResponse<ResponseType> apiResponse = invokeDataProcess();
-        if (apiResponse.getCode() != 200) {
+        //ApiResponse<ResponseType> apiResponse = invokeDataProcess();
+        DataProcess<ResponseType> dataProcess = invokeDataProcess();
+        response = new DataProcess<>(dataProcess.getData(), dataProcess.getCode(), dataProcess.getMessage());
+        //response = new DataProcess<>(apiResponse.getData(), apiResponse.getCode(), apiResponse.getMessage());
+        /*if (apiResponse.getCode() != 200) {
             response = new DataProcess<ResponseType>().fail(apiResponse.getData(), apiResponse.getCode(), apiResponse.getMessage());
         } else {
             response = new DataProcess<ResponseType>().success(
                     apiResponse.getData(),
                     apiResponse.getCode());
-        }
+        }*/
     }
 
     protected ResponseType processResponse(ApiResponse<ResponseType> response) {
@@ -58,17 +61,19 @@ public abstract class RepoDecoder<EntityType, ResponseType> {
         return response.getCode();
     }
 
+    //abstract void invokeValidation();
 
     abstract EntityType loadFromDatabase();
 
-    abstract ApiResponse<ResponseType> invokeDataProcess();
+    //abstract ApiResponse<ResponseType> invokeDataProcess();
+    abstract DataProcess<ResponseType> invokeDataProcess();
 
     DataProcess<ResponseType> asResponseData() {
         return response;
     }
 
     ApiResponse<ResponseType> asApiResponse() {
-        return new ApiResponse<>(response.data);
+        return new ApiResponse<>(response.data, response.code, response.message);
     }
 
 

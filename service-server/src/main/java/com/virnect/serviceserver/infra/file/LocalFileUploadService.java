@@ -57,6 +57,7 @@ public class LocalFileUploadService implements FileUploadService {
 
         // 3. 파일 복사
         File convertFile = new File(path + fileName + fileExtension);
+        log.info("{}", convertFile.getAbsolutePath());
         if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());

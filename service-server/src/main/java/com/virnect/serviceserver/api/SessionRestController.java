@@ -8,11 +8,9 @@ import com.virnect.data.dto.request.*;
 import com.virnect.data.dto.response.*;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.session.ServiceSessionManager;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +35,6 @@ public class SessionRestController implements ISessionRestAPI {
     @Override
     public ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestBody @Valid RoomRequest roomRequest,
-            @ModelAttribute RoomProfileUpdateRequest roomProfileUpdateRequest,
             BindingResult result) {
         log.info("REST API: POST {}/{}", REST_PATH, roomRequest != null ? roomRequest.toString() : "{}");
 
@@ -86,7 +83,7 @@ public class SessionRestController implements ISessionRestAPI {
 
         // 5. create room
         return ResponseEntity.ok(
-                this.dataRepository.generateRoom(roomRequest, roomProfileUpdateRequest, sessionJson.toString(), tokenResult.toString())
+                this.dataRepository.generateRoom(roomRequest, sessionJson.toString(), tokenResult.toString())
         );
     }
 
@@ -154,15 +151,14 @@ public class SessionRestController implements ISessionRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> updateRoomById(
+    public ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> updateRoomProfile(
+            @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
-            @RequestBody @Valid ModifyRoomInfoRequest modifyRoomInfoRequest,
-            @ModelAttribute RoomProfileUpdateRequest roomProfileUpdateRequest,
-            BindingResult result
-    ) {
-        log.info("REST API: POST {}/{}/info", REST_PATH,
-                workspaceId != null ? workspaceId.toString() : "{}",
+            BindingResult result) {
+        log.info("REST API: POST {}/{}/{}/profile",
+                REST_PATH,
+                workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}");
         if(result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
@@ -170,7 +166,27 @@ public class SessionRestController implements ISessionRestAPI {
         }
 
         return ResponseEntity.ok(
-                this.dataRepository.updateRoom(workspaceId, sessionId, modifyRoomInfoRequest, roomProfileUpdateRequest)
+                this.dataRepository.updateRoom(workspaceId, sessionId, roomProfileUpdateRequest)
+        );
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> updateRoomById(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId,
+            @RequestBody @Valid ModifyRoomInfoRequest modifyRoomInfoRequest,
+            BindingResult result
+    ) {
+        log.info("REST API: POST {}/{}/{}/info", REST_PATH,
+                workspaceId != null ? workspaceId : "{}",
+                sessionId != null ? sessionId : "{}");
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        return ResponseEntity.ok(
+                this.dataRepository.updateRoom(workspaceId, sessionId, modifyRoomInfoRequest)
         );
     }
 
@@ -194,15 +210,21 @@ public class SessionRestController implements ISessionRestAPI {
             log.info("has no errors");
         }
 
-        // 3. generate session id and token
-        //String customSessionId = sessionData.getCustomSessionId();
-        String customSessionId = sessionId;
-        JsonObject sessionJson = serviceSessionManager.generateSession();
-        JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-        return ResponseEntity.ok(
-                this.dataRepository.joinRoom(workspaceId, customSessionId, tokenResult.toString(), joinRoomRequest)
-        );
+        DataProcess<Boolean> dataProcess = this.dataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
+        if(dataProcess.getData()) {
+            // 3. generate session id and token
+            //String customSessionId = sessionData.getCustomSessionId();
+            String customSessionId = sessionId;
+            JsonObject sessionJson = serviceSessionManager.generateSession();
+            JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+            return ResponseEntity.ok(
+                    this.dataRepository.joinRoom(workspaceId, customSessionId, tokenResult.toString(), joinRoomRequest)
+            );
+        } else {
+            return ResponseEntity.ok(
+                    new ApiResponse<>(dataProcess.getCode(), dataProcess.getMessage())
+            );
+        }
     }
 
     @Override
@@ -222,6 +244,15 @@ public class SessionRestController implements ISessionRestAPI {
         return ResponseEntity.ok(
                 this.dataRepository.exitRoom(workspaceId, sessionId, userId)
         );
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<InviteRoomResponse>> inviteMember(
+            String workspaceId,
+            String sessionId,
+            @Valid InviteRoomRequest inviteRoomRequest,
+            BindingResult result) {
+        return null;
     }
 
     /*@ApiOperation(value = "Invite a Member to Specific Room", notes = "특정 멤버를 원격협업 방에 초대하는 API 입니다.")
@@ -259,9 +290,24 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        MemberInfoResponse memberInfo = this.dataRepository.loadMember(workspaceId, sessionId, kickRoomRequest.getParticipantId()).getData();
+        DataProcess<String> dataProcess = this.dataRepository.evictParticipant(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+        if(dataProcess == null) {
+            throw new RestServiceException(ErrorCode.ERR_SERVICE_PROCESS);
+        } else {
+            String connectionId = dataProcess.getData();
+            if(serviceSessionManager.evictParticipant(sessionId, connectionId)) {
+                return ResponseEntity.ok(
+                        this.dataRepository.kickFromRoom(workspaceId, sessionId, kickRoomRequest)
+                );
+            } else {
+                throw new RestServiceException(ErrorCode.ERR_SERVICE_PROCESS);
+                /*apiResponse.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_KICK_FAIL);
+                return ResponseEntity.ok(new ApiResponse<>(resultResponse));*/
+            }
+        }
+        //MemberInfoResponse memberInfo = this.dataRepository.loadMember(workspaceId, sessionId, kickRoomRequest.getParticipantId()).getData();
 
-        ResultResponse resultResponse = new ResultResponse();
+        /*ResultResponse resultResponse = new ResultResponse();
         resultResponse.setResult(false);
         ApiResponse<ResultResponse> apiResponse = new ApiResponse<>(resultResponse);
         if (memberInfo != null) {
@@ -277,6 +323,14 @@ public class SessionRestController implements ISessionRestAPI {
         } else {
             apiResponse.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
             return ResponseEntity.ok(apiResponse);
-        }
+        }*/
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<ResultResponse>> sendSignal(
+            String workspaceId,
+            String sessionId,
+            BindingResult result) {
+        return null;
     }
 }

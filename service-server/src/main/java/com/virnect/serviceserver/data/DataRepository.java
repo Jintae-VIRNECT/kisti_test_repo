@@ -6,23 +6,29 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.virnect.data.ApiResponse;
+import com.virnect.data.constraint.LicenseConstants;
+import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.dao.*;
 import com.virnect.data.dto.CoturnResponse;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.SessionResponse;
 import com.virnect.data.dto.SessionTokenResponse;
+import com.virnect.data.dto.feign.LicenseInfoListResponse;
+import com.virnect.data.dto.feign.LicenseInfoResponse;
 import com.virnect.data.dto.request.*;
 import com.virnect.data.dto.response.*;
-import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.dto.feign.UserInfoResponse;
 import com.virnect.data.dto.rpc.ClientMetaData;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.feign.UserRestService;
+import com.virnect.data.feign.service.LicenseRestService;
+import com.virnect.data.feign.service.UserRestService;
 import com.virnect.data.service.HistoryService;
 import com.virnect.data.service.SessionService;
 import com.virnect.serviceserver.ServiceServerApplication;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.core.Participant;
+import com.virnect.serviceserver.infra.file.Default;
+import com.virnect.serviceserver.infra.file.LocalFileUploadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -31,10 +37,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -51,7 +55,10 @@ public class DataRepository {
     private SessionService sessionService;
     private final HistoryService historyService;
     private final UserRestService userRestService;
+    private final LicenseRestService licenseRestService;
     private final ModelMapper modelMapper;
+    //
+    private final LocalFileUploadService localFileUploadService;
 
     //private final ImplementationTest implementationTest;
     @Autowired(required = true)
@@ -63,7 +70,6 @@ public class DataRepository {
 
     public ApiResponse<RoomResponse> generateRoom(
             RoomRequest roomRequest,
-            RoomProfileUpdateRequest roomProfileUpdateRequest,
             String session,
             String sessionToken
     ) {
@@ -89,29 +95,66 @@ public class DataRepository {
         return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.CREATE) {
             @Override
             Room loadFromDatabase() {
-                //ImplementationTest implementationTest = new ImplementationTest<com.virnect.data.dto.response.RoomInfoResponse>();
-                //implementationTest.setData(new com.virnect.data.dto.response.RoomInfoListResponse());
-                com.virnect.data.dto.response.RoomInfoResponse empty = new com.virnect.data.dto.response.RoomInfoResponse();
-                return sessionService.createRoom(roomRequest, roomProfileUpdateRequest, finalSessionResponse);
+                return null;
             }
 
             @Override
-            ApiResponse<RoomResponse> invokeDataProcess() {
-                log.debug("createRoom: " + roomRequest.toString());
-                RoomResponse roomResponse = new RoomResponse();
-                //not set session create at property
-                roomResponse.setSessionId(finalSessionResponse.getId());
-                roomResponse.setToken(finalSessionTokenResponse.getToken());
-                roomResponse.setWss(ServiceServerApplication.wssUrl);
-                for (String coturnUrl: config.remoteServiceProperties.getCoturnUrisList()) {
-                    CoturnResponse coturnResponse = new CoturnResponse();
-                    coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                    coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                    coturnResponse.setUrl(coturnUrl);
-                    roomResponse.getCoturn().add(coturnResponse);
+            DataProcess<RoomResponse> invokeDataProcess() {
+                log.info("createRoom: " + roomRequest.toString());
+                ApiResponse<LicenseInfoListResponse> licenseValidation = licenseRestService.getUserLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
+                if(licenseValidation.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+                    log.info("licenseValidation code is not ok");
+                    return new DataProcess<>(licenseValidation.getCode(), licenseValidation.getMessage());
                 }
 
-                return new ApiResponse<>(roomResponse);
+                LicenseInfoResponse currentLicense = null;
+                for (LicenseInfoResponse licenseInfoResponse: licenseValidation.getData().getLicenseInfoList()) {
+                    if (licenseInfoResponse.getProductName().contains(LicenseConstants.PRODUCT_NAME)) {
+                        currentLicense = licenseInfoResponse;
+                    }
+                }
+
+                LicenseItem licenseItem = null;
+                if(currentLicense != null) {
+                    if (currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
+                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BASIC)) {
+                            licenseItem = LicenseItem.ITEM_BASIC;
+                        }
+                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BUSINESS)) {
+                            licenseItem = LicenseItem.ITEM_BUSINESS;
+                        }
+                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_PERMANENT)) {
+                            licenseItem = LicenseItem.ITEM_PERMANENT;
+                        }
+                    } else {
+                        return new DataProcess<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY);
+                    }
+                } else {
+                    return new DataProcess<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY);
+                }
+
+                if(licenseItem == null) {
+                    return new DataProcess<>(ErrorCode.ERR_LICENSE_TYPE_VALIDITY);
+                }
+
+                Room room = sessionService.createRoom(roomRequest, licenseItem, finalSessionResponse);
+                if(room != null) {
+                    RoomResponse roomResponse = new RoomResponse();
+                    //not set session create at property
+                    roomResponse.setSessionId(finalSessionResponse.getId());
+                    roomResponse.setToken(finalSessionTokenResponse.getToken());
+                    roomResponse.setWss(ServiceServerApplication.wssUrl);
+                    for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisList()) {
+                        CoturnResponse coturnResponse = new CoturnResponse();
+                        coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                        coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                        coturnResponse.setUrl(coturnUrl);
+                        roomResponse.getCoturn().add(coturnResponse);
+                    }
+                    return new DataProcess<>(roomResponse);
+                } else {
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
+                }
             }
         }.asApiResponse();
     }
@@ -124,7 +167,7 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<Void> invokeDataProcess() {
+            DataProcess<Void> invokeDataProcess() {
                 sessionService.createSession(sessionId);
                 return null;
             }
@@ -144,7 +187,7 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<RoomInfoListResponse> invokeDataProcess() {
+            DataProcess<RoomInfoListResponse> invokeDataProcess() {
                 if(!paging) {
                     //roomList = this.roomRepository.findByWorkspaceId(workspaceId);
                     List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(workspaceId, userId)
@@ -185,7 +228,7 @@ public class DataRepository {
                         response.setMemberList(memberInfoList);
                         //log.debug("getRoomInfoList: {}", response.toString());
                     }
-                    return new ApiResponse<>(new RoomInfoListResponse(roomInfoList, pageMeta));
+                    return new DataProcess<>(new RoomInfoListResponse(roomInfoList, pageMeta));
                 } else {
                     Page<Member> memberPage = sessionService.getMemberList(workspaceId, userId, pageable);
 
@@ -229,7 +272,7 @@ public class DataRepository {
                         // Set Member List to Room Information Response
                         response.setMemberList(memberInfoList);
                     }
-                    return new ApiResponse<>(new RoomInfoListResponse(roomInfoList, pageMeta));
+                    return new DataProcess<>(new RoomInfoListResponse(roomInfoList, pageMeta));
                 }
             }
         }.asApiResponse();
@@ -243,17 +286,19 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<RoomDetailInfoResponse> invokeDataProcess() {
+            DataProcess<RoomDetailInfoResponse> invokeDataProcess() {
                 log.info("ROOM INFO RETRIEVE BY SESSION ID => [{}]", sessionId);
-                ApiResponse<RoomDetailInfoResponse> response = new ApiResponse<>();
+                //ApiResponse<RoomDetailInfoResponse> response = new ApiResponse<>();
                 Room room = loadFromDatabase();
                 if(room == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    return response;
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    //response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    //return response;
                 } else {
                     if (room.getRoomStatus() != RoomStatus.ACTIVE) {
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
-                        return response;
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
+                        //return response;
                     } else {
                         RoomDetailInfoResponse resultResponse;
                         // mapping data
@@ -282,7 +327,7 @@ public class DataRepository {
                         }
                         // Set Member List to Room Detail Information Response
                         resultResponse.setMemberList(memberInfoList);
-                        return new ApiResponse<>(resultResponse);
+                        return new DataProcess<>(resultResponse);
                     }
                 }
             }
@@ -297,40 +342,84 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<ResultResponse> invokeDataProcess() {
+            DataProcess<ResultResponse> invokeDataProcess() {
                 log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
                 Room room = sessionService.getRoom(workspaceId, sessionId);
                 Member member = sessionService.getMember(workspaceId, sessionId, userId);
 
                 ResultResponse resultResponse = new ResultResponse();
                 resultResponse.setResult(false);
-                ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
+                //ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
 
                 if(room == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
                     response.setData(response.getData());
-                    return response;
+                    return response;*/
                 } else if(member == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                     response.setData(response.getData());
-                    return response;
+                    return response;*/
                 } else {
                     if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                        /*response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
                         response.setData(response.getData());
-                        return response;
+                        return response;*/
                     }
-
                     sessionService.removeRoom(room);
-
                     resultResponse.setResult(true);
-                    return new ApiResponse<>(resultResponse);
+                    return new DataProcess<>(resultResponse);
                 }
             }
         }.asApiResponse();
     }
 
-    public ApiResponse<RoomDetailInfoResponse> updateRoom(String workspaceId, String sessionId, ModifyRoomInfoRequest modifyRoomInfoRequest, RoomProfileUpdateRequest roomProfileUpdateRequest) {
+    public ApiResponse<RoomProfileUpdateResponse> updateRoom(
+            String workspaceId,
+            String sessionId,
+            RoomProfileUpdateRequest roomProfileUpdateRequest) {
+        return new RepoDecoder<Room, RoomProfileUpdateResponse>(RepoDecoderType.UPDATE) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
+            }
+
+            @Override
+            DataProcess<RoomProfileUpdateResponse> invokeDataProcess() {
+                log.info("ROOM INFO UPDATE PROFILE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
+                RoomProfileUpdateResponse profileUpdateResponse = new RoomProfileUpdateResponse();
+                String profile = Default.ROOM_PROFILE.getValue();
+
+                Room room = loadFromDatabase();
+                if(room != null) {
+                    if(room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
+                        if (roomProfileUpdateRequest.getProfile() != null) {
+                            try {
+                                profile = localFileUploadService.upload(roomProfileUpdateRequest.getProfile());
+                            } catch (IOException e) {
+                                log.error(e.getMessage());
+                            }
+                        }
+                        profileUpdateResponse.setSessionId(sessionId);
+                        profileUpdateResponse.setProfile(profile);
+                        sessionService.updateRoom(room, profile);
+                        return new DataProcess<>(profileUpdateResponse);
+                    } else {
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                    }
+                } else {
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<RoomDetailInfoResponse> updateRoom(
+            String workspaceId,
+            String sessionId,
+            ModifyRoomInfoRequest modifyRoomInfoRequest) {
         return new RepoDecoder<Room, RoomDetailInfoResponse>(RepoDecoderType.UPDATE) {
             @Override
             Room loadFromDatabase() {
@@ -338,42 +427,74 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<RoomDetailInfoResponse> invokeDataProcess() {
-                log.info("ROOM INFO UPDATE BY SESSION ID => [{}]", sessionId);
-                log.info("ROOM INFO UPDATE BY SESSION ID => [{}]", sessionId);
+            DataProcess<RoomDetailInfoResponse> invokeDataProcess() {
+                log.info("ROOM INFO UPDATE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
                 Room room = loadFromDatabase();
-                room = sessionService.modifyRoomInfo(room, modifyRoomInfoRequest, roomProfileUpdateRequest);
+                room = sessionService.updateRoom(room, modifyRoomInfoRequest);
+                if(room != null) {
+                    if(room.getLeaderId().equals(modifyRoomInfoRequest.getUuid())) {
+                        // mapping data
+                        RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        // Get Member List by Room Session ID
+                        // Mapping Member List Data to Member Information List
+                        List<MemberInfoResponse> memberInfoList = sessionService.getMemberList(resultResponse.getSessionId())
+                                .stream()
+                                .map(member -> modelMapper.map(member, MemberInfoResponse.class))
+                                .collect(Collectors.toList());
 
-                // mapping data
-                RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        // find and get extra information from use-server using uuid
+                        if (!memberInfoList.isEmpty()) {
+                            for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+                                ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
+                                log.debug("getUsers: " + userInfo.getData().toString());
 
-                // Get Member List by Room Session ID
-                // Mapping Member List Data to Member Information List
-                List<MemberInfoResponse> memberInfoList = sessionService.getMemberList(resultResponse.getSessionId())
-                        .stream()
-                        .map(member -> modelMapper.map(member, MemberInfoResponse.class))
-                        .collect(Collectors.toList());
-
-                // find and get extra information from use-server using uuid
-                if (!memberInfoList.isEmpty()) {
-                    for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                        ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                        log.debug("getUsers: " + userInfo.getData().toString());
-
-                        memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                        memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                        memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                        memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                        memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                                memberInfoResponse.setEmail(userInfo.getData().getEmail());
+                                memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
+                                memberInfoResponse.setLastName(userInfo.getData().getLastName());
+                                memberInfoResponse.setNickname(userInfo.getData().getNickname());
+                                memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                            }
+                        }
+                        // Set Member List to Room Detail Information Response
+                        resultResponse.setMemberList(memberInfoList);
+                        return new DataProcess<>(resultResponse);
+                    } else {
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     }
+                } else {
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
-                // Set Member List to Room Detail Information Response
-                resultResponse.setMemberList(memberInfoList);
-
-
-                return new ApiResponse<>(resultResponse);
             }
         }.asApiResponse();
+    }
+
+    public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.READ) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
+            }
+
+            @Override
+            DataProcess<Boolean> invokeDataProcess() {
+                Room room = loadFromDatabase();
+                if (room == null) {
+                    return new DataProcess<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+                for (Member member : room.getMembers()) {
+                    if(member.getUuid().equals(userId)) {
+                        log.info("Room has member Id is {}", member.getUuid());
+                        if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                            return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                        } else {
+                            return new DataProcess<>(true);
+                        }
+                    }
+                }
+                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
+                //return new DataProcess<>(true);
+            }
+        }.asResponseData();
     }
 
     public ApiResponse<RoomResponse> joinRoom(String workspaceId, String sessionId, String sessionToken, JoinRoomRequest joinRoomRequest) {
@@ -384,15 +505,43 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<RoomResponse> invokeDataProcess() {
-                ApiResponse<RoomResponse> response = new ApiResponse<>();
-                Room room = loadFromDatabase();
+            DataProcess<RoomResponse> invokeDataProcess() {
+                //ApiResponse<RoomResponse> response = new ApiResponse<>();
+                /*Room room = loadFromDatabase();
                 if (room == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    return response;
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    *//*response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return response;*//*
+                }*/
+                Room room = loadFromDatabase();
+                sessionService.joinRoom(room, joinRoomRequest);
+
+                SessionTokenResponse sessionTokenResponse = null;
+                ObjectMapper objectMapper = new ObjectMapper();
+                try {
+                    sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
                 }
 
-                ErrorCode errorCode = sessionService.joinRoom(room, joinRoomRequest);
+                assert sessionTokenResponse != null;
+
+                RoomResponse roomResponse = new RoomResponse();
+                //not set session create at property
+                roomResponse.setSessionId(sessionId);
+                roomResponse.setToken(sessionTokenResponse.getToken());
+
+                roomResponse.setWss(ServiceServerApplication.wssUrl);
+                for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisList()) {
+                    CoturnResponse coturnResponse = new CoturnResponse();
+                    coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                    coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                    coturnResponse.setUrl(coturnUrl);
+                    roomResponse.getCoturn().add(coturnResponse);
+                }
+                return new DataProcess<>(roomResponse);
+
+                /*ErrorCode errorCode = sessionService.joinRoom(room, joinRoomRequest);
                 switch (errorCode) {
                     case ERR_SUCCESS: {
                         SessionTokenResponse sessionTokenResponse = null;
@@ -418,17 +567,19 @@ public class DataRepository {
                             coturnResponse.setUrl(coturnUrl);
                             roomResponse.getCoturn().add(coturnResponse);
                         }
-                        return new ApiResponse<>(roomResponse);
+                        return new DataProcess<>(roomResponse);
                     }
                     case ERR_ROOM_MEMBER_ALREADY_JOINED: {
-                        response.setErrorResponseData(errorCode);
-                        return response;
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                        //response.setErrorResponseData(errorCode);
+                        //return response;
                     }
                     default: {
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
-                        return response;
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
+                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
+                        //return response;
                     }
-                }
+                }*/
             }
         }.asApiResponse();
     }
@@ -441,7 +592,7 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<Void> invokeDataProcess() {
+            DataProcess<Void> invokeDataProcess() {
                 JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -471,35 +622,39 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<ResultResponse> invokeDataProcess() {
+            DataProcess<ResultResponse> invokeDataProcess() {
                 Room room = sessionService.getRoom(workspaceId, sessionId);
                 Member member = sessionService.getMember(workspaceId, sessionId, userId);
 
                 ResultResponse resultResponse = new ResultResponse();
                 resultResponse.setResult(false);
-                ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
+                //ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
                 if(room == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
                     response.setData(response.getData());
-                    return response;
+                    return response;*/
                 } else if(member == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                     response.setData(response.getData());
-                    return response;
+                    return response;*/
                 } else {
                     if(room.getMembers().isEmpty()) {
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
+                        /*response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
                         response.setData(response.getData());
-                        return response;
+                        return response;*/
                     } else {
                         ErrorCode errorCode = sessionService.exitRoom(room, member);
                         if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
                             resultResponse.setResult(true);
-                            return new ApiResponse<>(resultResponse);
+                            return new DataProcess<>(resultResponse);
                         } else {
-                            response.setErrorResponseData(errorCode);
+                            return new DataProcess<>(ErrorCode.ERR_SERVICE_PROCESS);
+                            /*response.setErrorResponseData(errorCode);
                             response.setData(response.getData());
-                            return response;
+                            return response;*/
                         }
                     }
                 }
@@ -515,7 +670,7 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<Void> invokeDataProcess() {
+            DataProcess<Void> invokeDataProcess() {
                 JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -545,48 +700,73 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<Void> invokeDataProcess() {
+            DataProcess<Void> invokeDataProcess() {
                 sessionService.destroySession(sessionId);
                 return null;
             }
         }.asResponseData();
     }
 
-    public ApiResponse<ResultResponse> kickFromRoom(String workspaceId, String sessionId, KickRoomRequest kickRoomRequest) {
-        return new RepoDecoder<Void, ResultResponse>(RepoDecoderType.DELETE) {
+    public DataProcess<String> evictParticipant(String workspaceId, String sessionId, String userId) {
+        return new RepoDecoder<Member, String>(RepoDecoderType.READ) {
             @Override
-            Void loadFromDatabase() {
-                return null;
+            Member loadFromDatabase() {
+                return sessionService.getMember(workspaceId, sessionId, userId);
             }
 
             @Override
-            ApiResponse<ResultResponse> invokeDataProcess() {
+            DataProcess<String> invokeDataProcess() {
+                Member member = loadFromDatabase();
+                if(member != null) {
+                    return new DataProcess<>(member.getConnectionId());
+                }
+                return null;
+            }
+        }.asResponseData();
+    }
+
+    public ApiResponse<ResultResponse> kickFromRoom(String workspaceId, String sessionId, KickRoomRequest kickRoomRequest) {
+        return new RepoDecoder<Member, ResultResponse>(RepoDecoderType.DELETE) {
+            @Override
+            Member loadFromDatabase() {
+                return sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+            }
+
+            @Override
+            DataProcess<ResultResponse> invokeDataProcess() {
                 ResultResponse resultResponse = new ResultResponse();
                 resultResponse.setResult(false);
-                ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
-
+                //DataProcess<ResultResponse> response = new DataProcess<>(resultResponse);
                 Room room = sessionService.getRoom(workspaceId, sessionId);
-                Member member = sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+                Member member = loadFromDatabase();
+                //Member member = sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
                 if(room == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    //response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
                 } else if(member == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                    //response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                 } else {
                     if (room.getMembers().isEmpty()) {
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
+                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
                     } else if (!room.getLeaderId().equals(kickRoomRequest.getLeaderId())) {
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     } else {
                         if(sessionService.removeMember(room, kickRoomRequest.getParticipantId()).equals(ErrorCode.ERR_SUCCESS)) {
                             resultResponse.setResult(true);
-                        } /*else {
-
+                            return new DataProcess<>(resultResponse);
+                            //resultResponse.setResult(true);
+                        } else {
+                            return new DataProcess<>(ErrorCode.ERR_ROOM_PROCESS_FAIL);
                         }
-                        response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                        response.setData(response.getData());*/
+                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                        //response.setData(response.getData());*/
                     }
                 }
-                return response;
+                //return new DataProcess<>(resultResponse);
+                //return response;
             }
         }.asApiResponse();
     }
@@ -599,12 +779,12 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<MemberInfoResponse> invokeDataProcess() {
+            DataProcess<MemberInfoResponse> invokeDataProcess() {
                 Member member = sessionService.getMember(workspaceId, sessionId, userId);
                 MemberInfoResponse resultResponse;
                 // mapping data
                 resultResponse = modelMapper.map(member, MemberInfoResponse.class);
-                return new ApiResponse<>(resultResponse);
+                return new DataProcess<>(resultResponse);
             }
         }.asApiResponse();
     }
@@ -622,7 +802,7 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<RoomHistoryInfoListResponse> invokeDataProcess() {
+            DataProcess<RoomHistoryInfoListResponse> invokeDataProcess() {
                 if (!paging) {
                     // get all member history by uuid
                     //List<MemberHistory> memberHistoryList = historyService.getMemberHistoryList(workspaceId, userId);
@@ -699,7 +879,7 @@ public class DataRepository {
                         // Set Member List to Room Information Response
                         response.setMemberList(memberInfoList);
                     }
-                    return new ApiResponse<>(new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta));
+                    return new DataProcess<>(new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta));
 
                 } else {
                     //Page<RoomHistory> roomPage;
@@ -786,7 +966,7 @@ public class DataRepository {
                         response.setMemberList(memberInfoList);
                         //log.debug("getRoomInfoList: {}", response.toString());
                     }
-                    return new ApiResponse<>(new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta));
+                    return new DataProcess<>(new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta));
                 }
             }
         }.asApiResponse();
@@ -800,13 +980,14 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<RoomHistoryDetailInfoResponse> invokeDataProcess() {
+            DataProcess<RoomHistoryDetailInfoResponse> invokeDataProcess() {
                 log.info("ROOM HISTORY INFO RETRIEVE BY SESSION ID => [{}]", sessionId);
-                ApiResponse<RoomHistoryDetailInfoResponse> response = new ApiResponse<>();
+                //ApiResponse<RoomHistoryDetailInfoResponse> response = new ApiResponse<>();
                 RoomHistory roomHistory = loadFromDatabase();
                 if(roomHistory == null) {
-                    response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    return response;
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return response;*/
                 } else {
                     // mapping data
                     RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(roomHistory, RoomHistoryDetailInfoResponse.class);
@@ -843,7 +1024,7 @@ public class DataRepository {
                     }
                     // Set Member List to Room Detail Information Response
                     resultResponse.setMemberList(memberInfoList);
-                    return new ApiResponse<>(resultResponse);
+                    return new DataProcess<>(resultResponse);
                 }
 
             }
@@ -858,13 +1039,13 @@ public class DataRepository {
             }
 
             @Override
-            ApiResponse<ResultResponse> invokeDataProcess() {
+            DataProcess<ResultResponse> invokeDataProcess() {
                 log.info("ROOM HISTORY INFO DELETE ALL BY USER ID => [{}]", userId);
                 ResultResponse resultResponse = new ResultResponse();
                 List<MemberHistory> memberHistoryList = historyService.getMemberHistoryList(workspaceId, userId);
                 historyService.removeRoomHistory(memberHistoryList);
                 resultResponse.setResult(true);
-                return new ApiResponse<>(resultResponse);
+                return new DataProcess<>(resultResponse);
             }
         }.asApiResponse();
     }
@@ -876,7 +1057,7 @@ public class DataRepository {
                 return null;
             }
             @Override
-            ApiResponse<ResultResponse> invokeDataProcess() {
+            DataProcess<ResultResponse> invokeDataProcess() {
                 log.info("ROOM HISTORY INFO DELETE BY USER ID => [{}]", roomHistoryDeleteRequest.getUuid());
                 ResultResponse resultResponse = new ResultResponse();
                 //resultResponse.setResult(false);
@@ -895,7 +1076,7 @@ public class DataRepository {
                     }
                 }
                 resultResponse.setResult(true);
-                return new ApiResponse<>(resultResponse);
+                return new DataProcess<>(resultResponse);
             }
         }.asApiResponse();
     }

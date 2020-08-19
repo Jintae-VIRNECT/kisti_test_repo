@@ -1,4 +1,4 @@
-package com.virnect.data.dto.rest;
+package com.virnect.data.dto.feign;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
