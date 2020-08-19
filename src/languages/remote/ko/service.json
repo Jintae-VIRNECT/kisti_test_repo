@@ -28,7 +28,7 @@
 
     "participant_mute": "음소거",
     "participant_kick": "내보내기",
-    "participant_kick_confirm": "{name}님을 협업에서 제외 하시겠습니까?",
+    "participant_kick_confirm": "<em>{name}</em>님을 협업에서 제외 하시겠습니까?",
     "participant_invite": "추가 초대하기",
     "participant_invite_title": "협업 참가 요청",
     "participant_invite_selected": "선택한 멤버 ({num}/{max})",
