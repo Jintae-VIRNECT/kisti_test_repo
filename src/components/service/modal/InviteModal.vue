@@ -9,23 +9,48 @@
     customClass="service-invite"
   >
     <div class="invite-modal__body">
-      <div v-if="!nouser" class="invite-modal__selected">
-        <p class="invite-modal__selected-title">
-          {{
-            $t('service.participant_invite_selected', {
-              num: selection.length,
-              max: maxSelect,
-            })
-          }}
-        </p>
-        <profile-list
-          v-if="selection.length > 0"
-          :users="selection"
-          size="3.714em"
-        ></profile-list>
-        <p class="invite-modal__selected-empty" v-else>
-          {{ $t('service.participant_invite_add_member') }}
-        </p>
+      <div class="invite-modal__current">
+        <div class="invite-modal__current-title">
+          <p>
+            {{ '협업 미접속 멤버 리스트' }}
+          </p>
+          <tooltip
+            customClass="tooltip-guide"
+            :content="
+              `협업 요청 후 참가를 기다리는 멤버 리스트입니다.<br>
+                      프로필 제거 버튼으로 대기 목록 멤버를 삭제할 수 있습니다.`
+            "
+            placement="right"
+            effect="blue"
+          >
+            <img
+              slot="body"
+              class="setting__tooltip--icon"
+              src="~assets/image/ic_tool_tip.svg"
+            />
+          </tooltip>
+        </div>
+
+        <div class="invite-modal__current-list">
+          <figure
+            class="invite-modal__current-user"
+            v-for="user of currentUser"
+            :key="user.uuid"
+          >
+            <tooltip :content="user.nickname || user.nickName">
+              <div class="invite-modal__profile" slot="body">
+                <profile
+                  :image="user.profile"
+                  :thumbStyle="{ width: '3.714em', height: '3.714em' }"
+                ></profile>
+                <button class="invite-modal__current-kickout" @click="kickout">
+                  {{ $t('button.kickout') }}
+                </button>
+              </div>
+              <span>{{ user.nickname || user.nickName }}</span>
+            </tooltip>
+          </figure>
+        </div>
       </div>
       <room-invite
         :users="users"
@@ -35,19 +60,31 @@
         @userSelect="selectUser"
         @inviteRefresh="init"
       ></room-invite>
-      <div class="invite-modal__footer">
-        <button class="btn" :disabled="selection.length === 0" @click="invite">
-          {{ $t('service.participant_invite_require') }}
-        </button>
-      </div>
+    </div>
+    <div slot="footer" class="invite-modal__footer">
+      <p
+        class="invite-modal__selected-title"
+        v-html="
+          $t('service.participant_invite_selected', {
+            num: selection.length,
+            max: maxSelect,
+          })
+        "
+      ></p>
+      <profile-list :users="selection" size="2.143em"></profile-list>
+      <button class="btn" :disabled="selection.length === 0" @click="invite">
+        {{ $t('service.participant_invite_require') }}
+      </button>
     </div>
   </modal>
 </template>
 
 <script>
 import Modal from 'Modal'
+import Profile from 'Profile'
 import ProfileList from 'ProfileList'
 import RoomInvite from 'components/workspace/partials/ModalCreateRoomInvite'
+import Tooltip from 'Tooltip'
 
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
@@ -59,11 +96,14 @@ export default {
   mixins: [toastMixin, confirmMixin],
   components: {
     Modal,
+    Profile,
     ProfileList,
     RoomInvite,
+    Tooltip,
   },
   data() {
     return {
+      currentUser: [],
       selection: [],
       nouser: false,
       visibleFlag: false,
@@ -101,6 +141,9 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
+    kickout() {
+      console.log('kickout user')
+    },
     selectUser(user) {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
@@ -123,6 +166,9 @@ export default {
       const roomInfo = await getRoomInfo({
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
+      })
+      this.currentUser = roomInfo.memberList.filter(user => {
+        return user.memberStatus !== 'LOAD'
       })
       this.users = res.memberInfoList.filter(
         member =>
