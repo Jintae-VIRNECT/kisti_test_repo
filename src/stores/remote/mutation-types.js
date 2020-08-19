@@ -59,3 +59,8 @@ export const ADD_PDF_PAGE = 'ADD_PDF_PAGE'
 export const REMOVE_PDF_PAGE = 'REMOVE_PDF_PAGE'
 export const SET_CAPTURE = 'SET_CAPTURE'
 export const CLEAR_CAPTURE = 'CLEAR_CAPTURE'
+
+// alarm
+export const ADD_ALARM = 'ADD_ALARM'
+export const REMOVE_ALARM = 'REMOVE_ALARM'
+export const UPDATE_ALARM = 'UPDATE_ALARM'
