@@ -120,13 +120,13 @@ export default {
       if (this.videoDevices.length === 0) return
       const mediaRes = await getUserMedia(false, {
         deviceId: {
-          exact: this.videoId,
+          ideal: this.videoId,
         },
         width: {
-          exact: this.currentQuality.width,
+          ideal: this.currentQuality.width,
         },
         height: {
-          exact: this.currentQuality.height,
+          ideal: this.currentQuality.height,
         },
       })
       if (typeof mediaRes === 'string') {
