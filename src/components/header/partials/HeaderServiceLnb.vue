@@ -65,7 +65,7 @@ export default {
     },
     hasLeader() {
       const idx = this.participants.findIndex(
-        user => user.roleType === ROLE.EXPERT_LEADER,
+        user => user.roleType === ROLE.LEADER,
       )
       if (idx < 0) return false
       return true
@@ -113,7 +113,7 @@ export default {
       if (type === this.currentView) return
 
       // leader
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         if (this.currentView === 'ar') {
           // TODO: MESSAGE
           this.confirmCancel(this.$t('service.toast_exit_ar'), {
@@ -177,7 +177,7 @@ export default {
       }
     },
     goDrawing() {
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         this.setView(VIEW.DRAWING)
         return
       }
@@ -235,7 +235,7 @@ export default {
       if (data.from === this.account.uuid) return
 
       if (
-        this.account.roleType === ROLE.EXPERT_LEADER &&
+        this.account.roleType === ROLE.LEADER &&
         data.type === CAPTURE_PERMISSION.RESPONSE
       ) {
         this.updateParticipant({
@@ -250,7 +250,7 @@ export default {
       const data = JSON.parse(receive.data)
 
       if (data.from === this.account.uuid) return
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         if (data.type === AR_FEATURE.FEATURE) {
           if ('hasArFeature' in data) {
             this.updateParticipant({

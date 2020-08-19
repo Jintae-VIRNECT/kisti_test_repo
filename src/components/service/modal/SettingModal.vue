@@ -223,7 +223,7 @@ export default {
       ]
     },
     isLeader() {
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
         return false
