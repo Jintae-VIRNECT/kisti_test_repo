@@ -19,6 +19,22 @@
         loop
       ></video>
       <template v-if="loaded">
+        <!-- 전체공유 표출 -->
+        <transition name="opacity">
+          <div class="main-video__sharing" v-if="viewForce">
+            <button
+              v-if="isLeader"
+              class="btn small main-video__sharing-button active"
+              @click="cancelSharing"
+            >
+              전체 공유 취소
+            </button>
+            <button v-else class="btn small main-video__sharing-button">
+              전체 공유
+            </button>
+          </div>
+        </transition>
+
         <!-- 녹화 시간 정보 -->
         <div class="main-video__recording">
           <div class="main-video__recording--time" v-if="serverTimer">
@@ -146,6 +162,13 @@ export default {
       initing: 'initing',
       viewForce: 'viewForce',
     }),
+    isLeader() {
+      if (this.account.roleType === ROLE.LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
     resolution() {
       const idx = this.resolutions.findIndex(
         data => data.connectionId === this.mainView.connectionId,
@@ -244,7 +267,11 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['updateAccount', 'setCapture', 'addChat']),
+    ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
+    cancelSharing() {
+      this.setMainView({ force: false })
+      this.$call.mainview(this.mainView.id, false)
+    },
     mediaPlay() {
       this.$nextTick(() => {
         this.optimizeVideoSize()

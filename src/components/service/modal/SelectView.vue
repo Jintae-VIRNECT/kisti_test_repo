@@ -1,5 +1,5 @@
 <template>
-  <modal :visible.sync="visibleFlag" :width="'460px'" class="select-view">
+  <modal :visible.sync="visibleFlag" width="32.857rem" class="select-view">
     <div class="select-view__layout">
       <div class="select-view__header">
         <p>선택한 영상을 모든 참가자와 공유하시겠습니까?</p>
