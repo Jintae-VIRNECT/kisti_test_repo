@@ -225,6 +225,8 @@
     }
     .chat-item__body--chatbox {
       position: relative;
+      width: fit-content;
+      max-width: 100%;
       padding: 0.5rem 0.929rem;
       line-height: 1.57;
       word-break: break-word;
@@ -238,6 +240,7 @@
   &.me {
     .chat-item__body--chatbox {
       width: fit-content;
+      max-width: 100%;
       margin-left: auto;
       padding: 0.786rem 0.929rem;
       line-height: 1.57;
@@ -362,14 +365,42 @@
 }
 
 .chat-item__file--name {
-  width: 9.7143rem;
+  position: relative;
+  width: 9.714rem;
   overflow: hidden;
   color: rgba($color_darkgray_1000, 0.78);
   font-weight: 500;
   font-size: 1.0714rem;
   white-space: nowrap;
+  text-indent: 2.071rem;
   text-overflow: ellipsis;
-  background: url() center/100% no-repeat;
+  &:before {
+    position: absolute;
+    left: 0;
+    width: 1.7143rem;
+    height: 1.7143rem;
+    margin-right: 0.4286rem;
+    background: center/100% no-repeat;
+    content: "";
+  }
+  &.pdf:before {
+    background-image: url(~assets/image/call/chat_ic_pdf_b.svg);
+  }
+  &.txt:before {
+    background-image: url(~assets/image/call/chat_ic_file_b.svg);
+  }
+  &.jpg:before {
+    background-image: url(~assets/image/call/chat_ic_jpgpng_b.svg);
+  }
+  &.png:before {
+    background-image: url(~assets/image/call/chat_ic_jpgpng_b.svg);
+  }
+  &.mp3:before {
+    background-image: url(~assets/image/call/chat_ic_mp3_b.svg);
+  }
+  &.video:before {
+    background-image: url(~assets/image/call/chat_ic_video_b.svg);
+  }
 }
 
 .chat-item__file--size {

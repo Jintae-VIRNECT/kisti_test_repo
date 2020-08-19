@@ -12,8 +12,8 @@
         }}</span>
         <div v-if="isFile" class="chat-item__file">
           <div class="chat-item__file--wrapper">
-            <div class="chat-item__file--icon" :class="extension"></div>
-            <div class="chat-item__file--name">
+            <!-- <div class="chat-item__file--icon" :class="extension"></div> -->
+            <div class="chat-item__file--name" :class="extension">
               {{ chat.file[0].fileName }}
             </div>
           </div>

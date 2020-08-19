@@ -107,10 +107,6 @@ export default {
   methods: {
     ...mapActions(['addChat']),
     toggleMenu(menu) {
-      if (this.checkBeta() && menu === 'file') {
-        return false
-      }
-
       this.show = menu
     },
   },
