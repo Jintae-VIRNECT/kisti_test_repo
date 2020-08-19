@@ -7,6 +7,7 @@
           v-for="participant of participants"
           :key="participant.id"
           :participant="participant"
+          @selectMain="selectMain(participant.id)"
         ></participant-video>
         <article v-if="showInvite" key="append">
           <div class="participant-video more" @click="more">
@@ -16,24 +17,32 @@
       </transition-group>
     </vue2-scrollbar>
     <invite-modal :visible.sync="invite" :maxSelect="max"></invite-modal>
+    <select-view
+      :visible.sync="selectview"
+      @share="share"
+      @normal="normal"
+    ></select-view>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { maxParticipants } from 'utils/callOptions'
 import { ROLE } from 'configs/remote.config'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
+import SelectView from '../modal/SelectView'
 export default {
   name: 'ParticipantList',
   components: {
     ParticipantVideo,
     InviteModal,
+    SelectView,
   },
   data() {
     return {
+      selectview: false,
       invite: false,
     }
   },
@@ -84,6 +93,23 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setMainView']),
+    selectMain(id) {
+      this.selectview = id
+    },
+    normal() {
+      console.log('normal')
+      this.changeMainView(this.selectview, false)
+    },
+    share() {
+      console.log('share')
+      this.changeMainView(this.selectview, true)
+    },
+    changeMainView(id, force) {
+      this.selectview = false
+      this.$call.mainview(id, force)
+      this.setMainView({ id, force })
+    },
     more() {
       this.invite = !this.invite
     },
