@@ -17,6 +17,12 @@ ENV KMS_STUN_PORT ""
 ENV KMS_TURN_URL ""
 ENV KMS_DTLS_PEM_CERT_RSA "/etc/kurento/cert/cert+key.pem"
 ENV KMS_DTLS_PEM_CERT_ECDSA ""
+ENV INFLUXDB_URL "http://13.125.24.98:8086/MEDIA"
+ENV NODE_ENV production
+
+COPY ./docker/entrypoint.sh ./docker/healthchecker.sh ./docker/start.sh /
+COPY ./cert/cert+key.pem /etc/kurento/cert/cert+key.pem
+COPY ./stats-collector/package.json ./stats-collector/main.js ./stats-collector/run.sh /stats-collector/
 
 RUN apt-get update && \
     apt-get install --no-install-recommends --yes gnupg && \
@@ -31,15 +37,17 @@ RUN apt-get update && \
     apt-get remove --yes libnice-dev openwebrtc-gst-plugins-dev kmsjsoncpp-dev && \
     apt-get install --no-install-recommends --yes libboost-filesystem1.58.0 libboost-thread1.58.0 libboost-program-options1.58.0 libboost-log1.58.0 && \
     apt-get install --no-install-recommends --yes kms-core kms-elements kms-datachannelexample && \
+    apt-get install --no-install-recommends --yes curl git && \
+    curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+    apt-get install --no-install-recommends --yes nodejs && \
+    cd /stats-collector && npm install && npm install -g pm2 && \
+    apt-get remove --yes curl git && \
     apt-get autoremove --yes && \
     rm -rf /kurento && \
     rm -rf /var/lib/apt/lists/*
-
-COPY ./docker/entrypoint.sh ./docker/healthchecker.sh /
-COPY ./cert/cert+key.pem /etc/kurento/cert/cert+key.pem
 
 EXPOSE 8888
 
 HEALTHCHECK --start-period=15s --interval=30s --timeout=3s --retries=1 CMD /healthchecker.sh
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/start.sh"]

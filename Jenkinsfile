@@ -84,7 +84,7 @@ pipeline {
               }
               steps {
                 sh 'count=`docker ps -a | grep rm-mediaserver | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-mediaserver && docker rm rm-mediaserver; else echo "Not Running STOP&DELETE"; fi;'
-                sh 'docker run -p 8888:8888 --restart=always -d --name=rm-mediaserver rm-mediaserver'
+                sh 'docker run -p 8888:8888 -e NODE_ENV=development --restart=always -d --name=rm-mediaserver rm-mediaserver'
                 sh 'docker image prune -a -f'
               }
             }

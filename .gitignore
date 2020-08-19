@@ -7,3 +7,6 @@ build
 obj-x86_64-linux-gnu
 .excludes
 CMakeLists.txt.user
+
+*.log
+node_modules
