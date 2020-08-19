@@ -23,7 +23,7 @@
     "toast_current_stream": "본인 영상입니다.",
     "toast_unsupport_ar": "AR 기능을 사용할 수 없는 장치입니다.",
     "toast_request_permission": "상대방에게 AR 기능 허가를 요청했습니다. 잠시만 기다려주세요.",
-    "toast_ar_start": "리더가 AR 공유를 시작했습니다.",
+    "toast_ar_start": "<em>{name}</em> 님의 AR 공유를 시작했습니다.",
     "toast_ar_exit": "리더가 AR 공유를 종료했습니다.",
 
     "participant_mute": "음소거",
