@@ -1,14 +1,14 @@
 {
   "title": "Download Center",
-  "needPlan": "Purchase a plan to use one of our products.",
+  "needPlan": "You need a plan to use the product.",
   "visual": {
-    "title": "Optimize worksite performances by introducing VIRNECT products.",
-    "desc": "Refer to the Installation guide and install VIRNECT products on your device."
+    "title": "Adapting our products and <br>optimize your industrial site.",
+    "desc": "Download the products and refer to <br>the installation guides to install on your devices."
   },
   "make": "VIRNECT Make",
   "view": "VIRNECT View",
   "remote": "VIRNECT Remote",
   "installFileDownload": "Download Installation Files.",
-  "downloadLink": "To Downloads",
-  "guideDownload": "Download Installation Guide"
+  "downloadLink": "Shortcut to Downloads",
+  "guideDownload": "Donwload user's manual"
 }
