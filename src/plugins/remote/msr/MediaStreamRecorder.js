@@ -336,7 +336,9 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
   var isStopDrawingFrames = false
 
   canvas = document.createElement('canvas')
-  var context = canvas.getContext('2d')
+
+  //remove alpha channel
+  var context = canvas.getContext('2d', { alpha: false })
 
   //so.. where is delete canvas??????
   canvas.style =
