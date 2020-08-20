@@ -37,7 +37,7 @@ export default {
   computed: {
     ...mapGetters(['view', 'viewAction', 'shareArImage']),
     isDrawing() {
-      if (this.account.roleType !== ROLE.EXPERT_LEADER) {
+      if (this.account.roleType !== ROLE.LEADER) {
         return false
       }
       if (this.viewAction === ACTION.AR_DRAWING) {
@@ -62,7 +62,7 @@ export default {
 
       if (data.from === this.account.uuid) return
 
-      if (this.account.roleType !== ROLE.EXPERT_LEADER) {
+      if (this.account.roleType !== ROLE.LEADER) {
         if (data.type === AR_DRAWING.START_DRAWING) {
           this.leaderDrawing = true
           this.$eventBus.$emit('leaderDrawing', true)
@@ -71,7 +71,7 @@ export default {
           this.$eventBus.$emit('leaderDrawing', false)
         }
       }
-      if (this.account.roleType !== ROLE.EXPERT_LEADER) {
+      if (this.account.roleType !== ROLE.LEADER) {
         return false
       }
 

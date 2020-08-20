@@ -24,10 +24,7 @@ export default {
         let myInfo = room.memberList.find(
           member => member.uuid === this.account.uuid,
         )
-        let role =
-          myInfo.memberType === ROLE.EXPERT_LEADER
-            ? ROLE.EXPERT_LEADER
-            : ROLE.EXPERT
+        let role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
 
         const res = await joinRoom({
           uuid: this.account.uuid,

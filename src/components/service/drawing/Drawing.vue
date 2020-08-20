@@ -82,7 +82,7 @@ export default {
       if (val !== VIEW.DRAWING) {
         // clear image
         // TODO: 협업보드 나갈 때 클리어 할지 선택해야함
-        if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        if (this.account.roleType === ROLE.LEADER) {
           this.showImage({})
         }
       }
@@ -92,7 +92,7 @@ export default {
   methods: {
     ...mapActions(['showImage']),
     participantChange(length, oldLength) {
-      if (this.account.roleType !== ROLE.EXPERT_LEADER) return
+      if (this.account.roleType !== ROLE.LEADER) return
       if (length > oldLength && this.shareFile && this.shareFile.id) {
         if (!this.shareFile.json || this.shareFile.json.length === 0) {
           this.refreshCanvas()

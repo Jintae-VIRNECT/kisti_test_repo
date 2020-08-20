@@ -49,7 +49,7 @@ export default {
   methods: {
     leave() {
       try {
-        if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        if (this.account.roleType === ROLE.LEADER) {
           if (this.view === VIEW.DRAWING) {
             this.$call.drawing(DRAWING.END_DRAWING)
           }

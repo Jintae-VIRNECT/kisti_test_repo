@@ -14,7 +14,6 @@
       :active="false"
       :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
       @action="notice"
-      @click.native.stop="clickNotice"
     ></toggle-button>
 
     <div>
@@ -25,6 +24,21 @@
       <div class="popover-notice__body">
         <scroller height="28.571rem" v-if="alarmList.length > 0">
           <notice-item
+            v-for="(alarm, idx) of alarmList"
+            :key="'alarm_' + idx"
+            :type="alarm.type"
+            :info="alarm.info"
+            :description="alarm.description"
+            :date="alarm.date"
+            :filename="alarm.filename"
+            :filelink="alarm.filelink"
+            :image="alarm.image"
+            :accept="alarm.accept"
+            @accept="accept(alarm)"
+            @refuse="refuse(alarm)"
+            @remove="remove(alarm)"
+          ></notice-item>
+          <!-- <notice-item
             type="file"
             :info="'Harry Ha 님'"
             :description="'파일 링크 전달드립니다.'"
@@ -33,7 +47,7 @@
             :filelink="'https://virnect.com'"
             :image="'default'"
           ></notice-item>
-          <!-- <notice-item
+          <notice-item
             type="file"
             :info="'Harry Ha 님'"
             :description="'파일 링크 전달드립니다.'"
@@ -93,7 +107,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { EVENT } from 'configs/push.config'
 import { sendPush } from 'api/common/message'
 import { getRoomInfo } from 'api/workspace'
@@ -122,8 +136,11 @@ export default {
     return {
       onPush: true,
       key: '',
-      alarmList: [],
+      // alarmList: [],
     }
+  },
+  computed: {
+    ...mapGetters(['alarmList']),
   },
   watch: {
     onPush(push) {
@@ -135,10 +152,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo']),
-    clickNotice() {
-      this.checkBeta()
-    },
+    ...mapActions(['setRoomInfo', 'addAlarm', 'removeAlarm', 'updateAlarm']),
     notice() {
       if (this.onPush) return
       console.log('notice list refresh logic')
@@ -154,17 +168,49 @@ export default {
 
       switch (body.event) {
         case EVENT.INVITE:
-          // this.$refs['noticeAudio'].play()
+          this.addAlarm({
+            type: 'invite',
+            info: this.$t('alarm.member_name_from', {
+              name: body.contents.nickName,
+            }),
+            image: body.contents.profile,
+            description: this.$t('alarm.invite_request'),
+            roomSessionId: body.contents.roomSessionId,
+            userId: body.userId,
+            accept: 'none',
+            date: new Date(),
+          })
+          if (!this.onPush) return
           this.alarmInvite(
             body.contents,
-            () => this.acceptInvite(body),
+            () => this.acceptInvite(body.contents.roomSessionId, body.userId),
             () => this.inviteDenied(body.userId),
           )
           break
         case EVENT.INVITE_ACCEPTED:
+          this.addAlarm({
+            type: 'info_user',
+            info: this.$t('alarm.member_name_from', {
+              name: body.contents.nickName,
+            }),
+            title: '',
+            description: this.$t('alarm.invite_accept'),
+            date: new Date(),
+          })
+          if (!this.onPush) return
           this.alarmInviteAccepted(body.contents.nickName)
           break
         case EVENT.INVITE_DENIED:
+          this.addAlarm({
+            type: 'info_user',
+            info: this.$t('alarm.member_name_from', {
+              name: body.contents.nickName,
+            }),
+            title: '',
+            description: this.$t('alarm.invite_refuse'),
+            date: new Date(),
+          })
+          if (!this.onPush) return
           this.alarmInviteDenied(body.contents.nickName)
           break
         case EVENT.LICENSE_EXPIRATION:
@@ -179,6 +225,16 @@ export default {
           break
       }
     },
+    remove(alarm) {
+      this.removeAlarm(alarm.id)
+    },
+    refuse(alarm) {
+      this.updateAlarm({
+        id: alarm.id,
+        accept: 'refuse',
+      })
+      this.inviteDenied(alarm.userId)
+    },
     async inviteDenied(userId) {
       const contents = {
         nickName: this.account.nickname,
@@ -186,7 +242,14 @@ export default {
 
       await sendPush(EVENT.INVITE_DENIED, [userId], contents)
     },
-    async acceptInvite(body) {
+    accept(alarm) {
+      this.updateAlarm({
+        id: alarm.id,
+        accept: 'accept',
+      })
+      this.acceptInvite(alarm.roomSessionId, alarm.userId)
+    },
+    async acceptInvite(roomSessionId, userId) {
       if (this.$call.session !== null) {
         // TODO: MESSAGE
         this.toastError(this.$t('alarm.notice_already_call'))
@@ -194,7 +257,7 @@ export default {
       }
       const params = {
         workspaceId: this.workspace.uuid,
-        sessionId: body.contents.roomSessionId,
+        sessionId: roomSessionId,
       }
       try {
         const room = await getRoomInfo(params)
@@ -202,7 +265,7 @@ export default {
         const contents = {
           nickName: this.account.nickname,
         }
-        sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
+        sendPush(EVENT.INVITE_ACCEPTED, [userId], contents)
       } catch (err) {
         if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))

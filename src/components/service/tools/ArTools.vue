@@ -46,14 +46,14 @@ export default {
     return {
       active: 'pointing',
       isRecording: false,
-      EXPERT_LEADER: ROLE.EXPERT_LEADER,
+      LEADER: ROLE.LEADER,
       leaderDrawing: false,
     }
   },
   computed: {
     ...mapGetters(['viewAction']),
     isLeader() {
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
         return false
@@ -61,7 +61,7 @@ export default {
     },
     canDrawing() {
       if (
-        this.account.roleType === ROLE.EXPERT_LEADER &&
+        this.account.roleType === ROLE.LEADER &&
         this.viewAction === ACTION.AR_DRAWING
       ) {
         return true
@@ -71,7 +71,7 @@ export default {
     },
     canPointing() {
       if (this.viewAction === ACTION.AR_POINTING) {
-        if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        if (this.account.roleType === ROLE.LEADER) {
           return true
         }
         if (!this.leaderDrawing) {
