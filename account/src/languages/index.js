@@ -25,7 +25,11 @@ function loader(foldername) {
     })
   const json = {}
   files.forEach(file => {
-    json[file.key] = JSON.parse(file.val)
+    if (/\.md$/.test(file.key)) {
+      json[file.key] = file.val
+    } else {
+      json[file.key] = JSON.parse(file.val)
+    }
   })
 
   return json

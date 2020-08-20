@@ -123,14 +123,14 @@
               {{ $t('profile.account.marketingChange') }}
             </el-button>
           </div>
-          <!-- <div class="profile__info">
+          <div class="profile__info">
             <h4>{{ $t('profile.account.secession') }}</h4>
             <div class="content">
               <el-button type="info" @click="visible.SecessionModal = true">
                 {{ $t('profile.account.secession') }}
               </el-button>
             </div>
-          </div> -->
+          </div>
         </div>
       </el-card>
       <!-- 사용자 추가 정보 -->

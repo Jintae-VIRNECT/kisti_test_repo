@@ -36,27 +36,19 @@
               :key="item"
               :label="item"
               :value="item"
-            ></el-option>
+            />
+            <el-option :label="$t('profile.secession.etc')" value="etc" />
           </el-select>
-          <!-- <el-input
-            :placeholder="$t('profile.secession.passwordDesk')"
-            v-model="form.secessionReason"
-          /> -->
+          <el-input
+            v-if="form.secessionReason === 'etc'"
+            v-model="form.etcReason"
+            :placeholder="$t('profile.secession.secessionReasonEtc')"
+          />
         </el-form-item>
       </el-form>
-      <dl class="secession-notice">
-        <dt>{{ $t('profile.secession.notice') }}</dt>
-        <dd>
-          <ul>
-            <li
-              v-for="(notice, idx) of $t('profile.secession.noticeLists')"
-              :key="idx"
-            >
-              <p>{{ notice }}</p>
-            </li>
-          </ul>
-        </dd>
-      </dl>
+      <div class="secession-notice">
+        <vue-markdown :source="$t('secession-notice.md')" />
+      </div>
 
       <el-checkbox v-model="agree">{{
         $t('profile.secession.done')
@@ -74,9 +66,13 @@
 <script>
 import dialogMixin from '@/mixins/dialog'
 import profileService from '@/services/profile'
+import VueMarkdown from 'vue-markdown'
 
 export default {
   mixins: [dialogMixin],
+  components: {
+    VueMarkdown,
+  },
   props: {
     me: Object,
   },
@@ -85,37 +81,20 @@ export default {
       form: {
         password: '',
         secessionReason: '',
+        etcReason: '',
       },
       agree: false,
     }
   },
-  watch: {
-    // visible() {
-    //   this.$props.me.marketInfoReceive === 'ACCEPT'
-    //     ? (this.agree = true)
-    //     : (this.agree = false)
-    //   this.form.marketInfoReceive = this.$props.me.marketInfoReceive
-    // },
-    // agree() {
-    //   this.agree === true
-    //     ? (this.form.marketInfoReceive = 'ACCEPT')
-    //     : (this.form.marketInfoReceive = 'REJECT')
-    // },
-  },
   methods: {
     async submit() {
+      const form = { ...this.form }
+      if (form.secessionReason === 'etc') form.secessionReason = form.etcReason
       try {
-        await profileService.updateMyProfile(this.form)
-        this.$notify.success({
-          message: this.$t('profile.marketInfoReceive.message.success'),
-          position: 'bottom-left',
-          duration: 2000,
-        })
-        this.$emit('changedMarketInfoReceive', this.form.marketInfoReceive)
+        throw new Error()
       } catch (e) {
         this.$notify.error({
-          message:
-            this.$t('profile.marketInfoReceive.message.fail') + `\n(${e})`,
+          message: this.$t('profile.secession.message.fail'),
           position: 'bottom-left',
           duration: 2000,
         })
@@ -126,22 +105,48 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .market-receive-modal .el-dialog__body {
-  .mail-box {
-    padding: 28px 0;
-    text-align: center;
-    background-color: #f5f7fa;
+#__nuxt .secession-modal .el-dialog__body {
+  .secession-form {
+    margin: 28px 0 24px;
+    .el-select + .el-input {
+      margin-top: 8px;
+    }
   }
-  .el-checkbox__label {
-    color: #0b1f48;
+  .secession-notice {
+    width: 360px;
+    height: 200px;
+    margin: 16px 0;
+    padding: 6px;
+    border: solid 1px #e6e9ee;
+    border-radius: 3px;
   }
-  .el-form {
-    margin: 0;
-  }
-  .contents {
-    padding-left: 27px;
-    color: #5e6b81;
-    font-size: 13px;
+  .secession-notice > div {
+    width: 100%;
+    height: 100%;
+    padding: 6px 10px;
+    overflow: auto;
+    color: $font-color-desc;
+    font-size: 12px;
+
+    h2 {
+      margin-bottom: 12px;
+      color: $font-color-content;
+      font-size: 13px;
+    }
+    h3 {
+      margin: 8px 0 4px;
+      color: $font-color-content;
+    }
+    ol {
+      counter-reset: unit;
+      & > li:before {
+        content: counter(unit, decimal) '. ';
+        counter-increment: unit;
+      }
+    }
+    ul li:before {
+      content: '- ';
+    }
   }
 }
 </style>
