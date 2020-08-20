@@ -15,6 +15,7 @@ export default {
     async startServerRecord() {
       try {
         logger('SERVER RECORD', 'start')
+
         let today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
 
         const options = {
@@ -37,6 +38,10 @@ export default {
           userData: {},
         })
         this.recordingId = result.recordingId
+
+        setTimeout(() => {
+          this.$eventBus.$emit('serverRecord', false)
+        }, 5 * 60 * 1000)
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
         this.$eventBus.$emit('serverRecord', false)
@@ -46,6 +51,7 @@ export default {
       logger('SERVER RECORD', 'stop')
       if (this.recordingId) {
         await stopServerRecord({ id: this.recordingId })
+        this.recordingId = null
       }
     },
     async toggleServerRecord(isStart) {
