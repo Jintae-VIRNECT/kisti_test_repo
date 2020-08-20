@@ -161,7 +161,7 @@ function MultiStreamRecorder(arrayOfMediaStreams, options) {
   }
 
   if (!options.frameInterval) {
-    options.frameInterval = 10
+    options.frameInterval = 25
   }
 
   if (!options.video) {
