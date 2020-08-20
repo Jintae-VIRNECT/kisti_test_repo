@@ -220,13 +220,16 @@ export default {
      */
     async getStreams() {
       const streams = []
+      const mainStream = this.mainView.stream
 
       streams.push(this.audioContextDes.stream)
 
       switch (this.localRecordTarget) {
         case RECORD_TARGET.WORKER:
-          if (this.mainView.stream) {
-            streams.push(this.mainView.stream)
+          if (mainStream && mainStream.getVideoTracks().length > 0) {
+            const videoStream = new MediaStream()
+            videoStream.addTrack(mainStream.getVideoTracks()[0])
+            streams.push(videoStream)
           }
           break
         case RECORD_TARGET.SCREEN:
