@@ -99,7 +99,9 @@
 
 				<p class="input-title must-check">{{ $t('signup.birth.birth') }}</p>
 				<el-date-picker
+					v-if="!isMobile"
 					class="birth-input year-input"
+					popper-class="year"
 					v-model="birth.year"
 					type="year"
 					name="birtnY"
@@ -111,7 +113,9 @@
 				></el-date-picker>
 
 				<el-date-picker
+					v-if="!isMobile"
 					class="birth-input month-input"
+					popper-class="month"
 					v-model="birth.month"
 					type="month"
 					name="birthM"
@@ -123,7 +127,9 @@
 				></el-date-picker>
 
 				<el-date-picker
+					v-if="!isMobile"
 					class="birth-input date-input"
+					popper-class="day"
 					v-model="birth.date"
 					type="date"
 					name="birthD"
@@ -133,6 +139,17 @@
 					v-validate="'required'"
 					:clearable="false"
 				></el-date-picker>
+
+				<!-- mobile datepicker -->
+				<div class="el-input">
+					<input
+						v-if="isMobile"
+						type="date"
+						class="el-input__inner"
+						v-model="birth.mobile"
+						:placeholder="$t('signup.birth.date')"
+					/>
+				</div>
 
 				<p class="input-title must-check">{{ $t('signup.route.title') }}</p>
 				<el-select
@@ -231,6 +248,7 @@ export default {
 				year: '',
 				month: '',
 				date: '',
+				mobile: '',
 			},
 			pickerOptions: {
 				disabledDate(time) {
@@ -248,6 +266,7 @@ export default {
 			check: {
 				isEmail: false,
 			},
+			isMobile: false,
 		}
 	},
 	computed: {
@@ -286,6 +305,11 @@ export default {
 		},
 	},
 	watch: {
+		'birth.mobile'(newDate) {
+			this.birth.year = newDate
+			this.birth.month = newDate
+			this.birth.date = newDate
+		},
 		'birth.year'(newDate) {
 			const newYear = dayjs(newDate).year()
 			const newMonth = dayjs(newDate).month()
@@ -474,8 +498,14 @@ export default {
 			birth = year.format('YYYY-') + month.format('MM-') + date.format('DD')
 			this.signup.birth = birth
 		},
+		mobileCheck() {
+			if (this.checkMobile() || window.outerWidth < 1200)
+				return (this.isMobile = true)
+			else return (this.isMobile = false)
+		},
 	},
 	mounted() {
+		this.mobileCheck()
 		if (!this.policyAgree) {
 			this.$router.push('/')
 		}
@@ -489,5 +519,18 @@ export default {
 <style lang="scss" scoped>
 .el-button.next-btn {
 	margin-top: 60px;
+}
+</style>
+<style lang="scss">
+.el-popper {
+	&.month,
+	&.day {
+		.el-date-picker__header-label {
+			pointer-events: none;
+		}
+		.el-picker-panel__icon-btn {
+			display: none;
+		}
+	}
 }
 </style>
