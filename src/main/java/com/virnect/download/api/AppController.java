@@ -10,6 +10,8 @@ import com.virnect.download.exception.AppServiceException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +39,9 @@ public class AppController {
     private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
     @ApiOperation(value = "앱 등록 API")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "uploadAppFile", value = "업로드 앱 파일", paramType = "form", dataType = "__file")
+    })
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AppUploadResponse>> appUploadRequestHandler(@ModelAttribute @Valid AppUploadRequest appUploadRequest, BindingResult result) {
         log.info("Request: {}", appUploadRequest.toString());
