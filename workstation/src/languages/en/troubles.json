@@ -2,12 +2,12 @@
   "list": {
     "title": "Trouble memo(TM)",
     "myTm": "My TM",
-    "tmList": "List of Trouble memo",
+    "tmList": "Trouble Memo (TM) list",
     "column": {
-      "content": "Content of Trouble memo",
-      "user": "Report made by",
-      "reportedDate": "Report date"
+      "content": "TM contents",
+      "user": "By whom",
+      "reportedDate": "Date"
     }
   },
-  "detail": "Trouble memo details"
+  "detail": "TM details"
 }

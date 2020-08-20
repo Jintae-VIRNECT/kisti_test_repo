@@ -1,37 +1,38 @@
 {
   "list": {
-    "title": "List of Workspace tasks",
+    "title": "Task Overview",
     "newTask": "Add new tasks",
-    "allTasksList": "List of overall tasks",
+    "allTasksList": "Overall task list",
     "allTasks": "All tasks",
-    "waitTasks": "Tasks on hold",
+    "waitTasks": "Pending tasks",
     "startedTasks": "Started tasks",
     "endTasks": "Ended tasks",
-    "taskCount": "Upated task counts",
+    "taskCount": "Registered Tasks",
     "myTasks": "My tasks",
-    "dailyRateGraph": "Graph of Daily Task Progress",
-    "dailyRateGraphDesc": "Review progress of daily tasks. The daily task progress is average progress rate of each day of started tasks.",
-    "rate": "Progress",
+    "dailyRateGraph": "Daily task progress graph",
+    "dailyRateGraphDesc": "Review progress of daily tasks. The daily task progress rate is average progress rate of started tasks per each day.",
+    "rate": "Progress rate",
     "close": "End",
+    "empty": "There is no tasks registered.",
     "dashboard": {
-      "title": "Real-time task progress",
+      "title": "Real-time progress of task",
       "titleDesc": "The task progress status is shown based on the time of your access to this page.",
-      "allProgress": "Overview of progressing tasks",
-      "countOfConditions": "Task count per progress state",
-      "countOfConditionsDesc": "The \"Task progress status\" of Tasks/subtasks/phase in \"Task management\" is based on the Task schedule and Progress rate.",
-      "graphOn": "Unfold graph",
-      "graphOff": "Fold graph"
+      "allProgress": "Task progress overview",
+      "countOfConditions": "Task counts per progress status",
+      "countOfConditionsDesc": "Progress status of task/subtask/step in \"Task management\" depends on the \"schedule\" and \"progress rate\"",
+      "graphOn": "Unfold",
+      "graphOff": "Fold"
     },
     "column": {
       "id": "Task ID",
-      "name": "Task name",
-      "endedSubTasks": "Subtask completed",
-      "endedSubTasksTooltip": "Completed subtasks / subtask counts",
-      "schedule": "Task schedule",
-      "progressRate": "Progress",
-      "status": "In progress",
-      "reportedDate": "Time of last report made",
-      "issue": "Issues in task",
+      "name": "Task title",
+      "endedSubTasks": "Completed Subtasks",
+      "endedSubTasksTooltip": "Completed subtasks / Total subtasks",
+      "schedule": "Schedule",
+      "progressRate": "Progress rate",
+      "status": "Progress status",
+      "reportedDate": "Report time",
+      "issue": "Issue",
       "endStatus": "Ended status"
     },
     "dropdown": {
@@ -43,16 +44,16 @@
       "taskDelete": "Delete task"
     },
     "hasIssue": {
-      "yes": "Present",
-      "no": "Not present"
+      "yes": "Yes",
+      "no": "No"
     },
     "message": {
-      "closeSure": "Are you sure you want to end the selected tasks? If you end it",
+      "closeSure": "Are you sure you want to end the selected tasks? If you end it relevant data will be no longer collected.",
       "closeSuccess": "Selected task is ended",
-      "closeFail": "Failed to end the task",
-      "deleteSure": "Are you sure you want to delete the selected tasks? If you delete it",
+      "closeFail": "Failed to end the task please try again later",
+      "deleteSure": "Are you sure you want to delete the selected tasks? If you delete it relevant data will be no longer collected and be deleted. The deleted data cannot be restored.",
       "deleteSuccess": "Selected task is deleted",
-      "deleteFail": "Failed to delete the task"
+      "deleteFail": "Failed to delete the task please try again later"
     }
   },
   "detail": {
@@ -60,83 +61,84 @@
     "taskPosition": "Task location",
     "subTaskList": "subtask list",
     "allSubTasks": "All subtasks",
-    "waitSubTasks": "Subtasks on hold",
+    "waitSubTasks": "Pending Subtasks",
     "startedSubTasks": "Started subtask",
     "endSubTasks": "Ended subtask",
-    "subTaskCount": "Updated subtask counts",
+    "subTaskCount": "Total subtasks",
     "mySubTasks": "My subtasks",
     "subTasksProgressGraph": "Subtask progress graph",
     "subTasksProgressGraphDesc": "The progress of subtask is calculated based on the progress of overall phases.",
+    "empty": "There is no registered subtasks",
     "subTaskColumn": {
       "no": "Number",
       "id": "Subtask ID",
-      "name": "Subtask name",
-      "endedSteps": "Phase completed",
-      "endedStepsTooltip": "Completed phase / phase counts",
-      "schedule": "Sub task schedule",
-      "progressRate": "Progress",
+      "name": "Subtask title",
+      "endedSteps": "Step completed",
+      "endedStepsTooltip": "Completed steps / Total steps",
+      "schedule": "Subtask schedule",
+      "progressRate": "Progress rate",
       "status": "Progress status",
-      "reportedDate": "Time of last report made",
-      "issue": "Task location",
+      "reportedDate": "Report time",
+      "issue": "Task issue",
       "worker": "Task assignee",
       "endStatus": "Ended status"
     },
     "dropdown": {
-      "subTaskEdit": "Update subtasks"
+      "subTaskEdit": "Edit subtasks"
     },
     "subTaskTooltip": {
-      "title": "Subtasks details",
+      "title": "Subtasks detail",
       "issue": "Existence of subtask issues",
       "more": "Show more"
     }
   },
   "subTaskDetail": {
     "title": "Selected subtask details",
-    "stepsList": "Phase list",
-    "allSteps": "Overall phases",
-    "waitSteps": "Phases on hold",
-    "startedSteps": "Started phase",
-    "endSteps": "Ended phase",
-    "stepsCount": "Updated phase",
-    "mySteps": "My phases",
-    "stepsProgressGraph": "Phase progress graph",
-    "stepsProgressGraphDesc": "The progress of phase is calculated based on the progress of overall activity.",
+    "stepsList": "Step list",
+    "allSteps": "All steps",
+    "waitSteps": "Pending steps",
+    "startedSteps": "Started steps",
+    "endSteps": "Ended steps",
+    "stepsCount": "Number of registered steps",
+    "stepsProgressGraph": "Step progress graph",
+    "stepsProgressGraphDesc": "The progress rate of step is calculated based on the overall progress rate of actions.",
+    "empty": "There is no registered steps",
     "stepsColumn": {
       "no": "Number",
-      "id": "Phase ID",
-      "name": "Phase name",
-      "endedActions": "Acti",
-      "progressRate": "Progress",
+      "id": "Step ID",
+      "name": "Step title",
+      "endedActions": "Action completed",
+      "progressRate": "Progress rate",
       "status": "Progress status",
-      "reportedDate": "Time of last report made",
-      "issue": "Issue details",
-      "paper": "Paper details"
+      "reportedDate": "Report time",
+      "issue": "Issue detail",
+      "paper": "Paper detail"
     },
-    "showIssue": "View issues",
+    "showIssue": "View issue",
     "showPaper": "View paper",
     "stepTooltip": {
-      "title": "Phase details"
+      "title": "Step detail"
     }
   },
   "new": {
-    "title": "Add new tasks",
-    "contentsInfo": "Content details of newly added task",
-    "sceneGroupInfo": "Task composition details",
-    "sceneGroupInfoDesc": "The selected content is added as a task. The scene group of content is turned to subtask and you can set up an assignee and its schedule.",
+    "title": "Add New Tasks",
+    "contentsInfo": "New task's content detail",
+    "sceneGroupInfo": "Task components",
+    "sceneGroupInfoDesc": "The selected \"Content\" is added as a \"Task\". The \"Scene group\" within the Content is turned into \"Subtask\" and you can set up assignee and schedule.",
     "moveContentInfo": "Go to content details"
   },
   "manage": {
     "registerNewTaskInfo": "Add new task details",
     "registerNewTaskInfoDesc": "Set up a task schedule and task assignee to record task report data based on the schedule.",
-    "registerTaskInfo": "Add task details",
-    "taskInfo": "Task details",
+    "registerTaskInfo": "Add task detail",
+    "taskInfo": "Task detail",
     "taskEdit": "Edit tasks",
     "taskAdd": "Generate new tasks",
     "taskAddNotice": "Guide to adding new tasks",
-    "taskAddNoticeDesc": "Based on the information registered in the existing task",
+    "taskAddNoticeDesc": "Based on the information registered in the existing task newly set the task schedule and the task assignee and record the task report data based on the schedule.",
     "taskEditNotice": "Guide to editing tasks",
     "taskEditNoticeDesc": "Update the set task details",
-    "taskName": "Task name",
+    "taskName": "Task title",
     "taskSchedule": "Task schedule",
     "taskWorker": "Task assignee",
     "taskWorkerPlaceholder": "Select a task assignee",
@@ -144,38 +146,38 @@
     "taskPosition": "Task location",
     "taskPositionPlaceholder": "Please enter task location",
     "taskPositionDesc": "Notify the task location to task assignee",
-    "subTaskCount": "subtask list counts",
+    "subTaskCount": "Subtask Counts",
     "subTaskSetting": "Subtask settings",
-    "subTaskName": "Subtask name",
+    "subTaskName": "Subtask title",
     "subTaskSchedule": "Subtask schedule",
     "subTaskScheduleDesc": "Sub-task schedules can be changed within the given task period.",
     "subTaskWorker": "Subtask assignee",
     "subTaskWorkerPlaceholder": "Select the subtask assignee",
-    "scheduleStart": "Started date",
-    "scheduleEnd": "Ended date",
+    "scheduleStart": "Start",
+    "scheduleEnd": "End",
     "subTaskWorkerSelected": "Assignee is set per subtasks",
     "update": "Edit",
     "subTaskWorkerChangeDesc": "Receive subtask reports with updated information",
     "message": {
       "taskUpdateSuccess": "Task details updated",
-      "taskUpdateFail": "Failed to edit the task",
-      "subTaskUpdateSuccess": "Subtask details have updated",
-      "subTaskUpdateFail": "Failed to edit the subtask"
+      "taskUpdateFail": "Failed to edit the Task please try again later",
+      "subTaskUpdateSuccess": "Subtask details are updated",
+      "subTaskUpdateFail": "Failed to edit the Subtask please try again later."
     }
   },
   "newTarget": {
     "targetSetting": "Target settings",
     "beforeTarget": "Target content",
     "afterTarget": "Target task",
-    "duplicate": "Duplicate content and register it as a task",
-    "duplicateDesc": "Duplicate content into task management. Manage tasks by issuing new task targets to duplicated content.",
-    "transform": "Switch contents to tasks and then update",
-    "transformDesc": "Use an existing content target as a task target. Content switched to a task goes to the task management item and cannot be managed in the content menu.",
+    "duplicate": "Duplicate content and register it as a Task",
+    "duplicateDesc": "Duplicate the \"Content\" and place it into \"Task Management\". Issue new \"Task target\" to the duplicated content and manage it as a \"Task\".",
+    "transform": "Turn Content into a Task and then update.",
+    "transformDesc": "Use existing \"Content targets\" as the \"Task targets\". Since a \"Content\" is turned into a \"Task\" it is moved to \"Task Management\" and can no longer be managed from \"Content list\"",
     "register": "New task",
     "registerComment": "Updating a new task with the information you entered.",
     "message": {
       "registerSuccess": "New task is added",
-      "registerFail": "Failed to update the task",
+      "registerFail": "Failed to update the task please try again later",
       "registerStroageFail": "Updating task failed due to the insuffient storage capacity. Please purchase more storage."
     }
   },
@@ -191,16 +193,16 @@
     "registerComment": "Create additional task with the information you entered.",
     "message": {
       "registerSuccess": "Creating additional task completed",
-      "registerFail": "Failed to create additional task",
-      "registerStroageFail": "Failed to create additional task due to insuffient storage capacity"
+      "registerFail": "Failed to create additional task please try again later",
+      "registerStroageFail": "Failed to create additional task due to insuffient storage capacity please purchase more storage."
     }
   },
   "targetInfo": {
-    "title": "Targe task details",
+    "title": "Target task detail",
     "id": "Task ID",
-    "name": "Task name",
-    "capacity": "Task capacity",
-    "createdDate": "Task added date",
+    "name": "Task title",
+    "capacity": "Size",
+    "createdDate": "Upload date",
     "targetType": "Task type"
   }
 }

@@ -1,12 +1,12 @@
 {
   "conditions": {
-    "wait": "Waiting",
-    "unprogressing": "Not in progress",
+    "wait": "Pending",
+    "unprogressing": "Not started",
     "progressing": "In progress",
     "incompleted": "Inadequate",
     "completed": "Completed",
-    "failed": "Not done",
-    "success": "Done",
-    "fault": "Fault"
+    "failed": "Overdue",
+    "success": "Accomplished",
+    "fault": "Incomplete"
   }
 }
