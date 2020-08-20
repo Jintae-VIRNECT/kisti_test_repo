@@ -32,9 +32,24 @@ public class MemberRestController implements IMemberRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<Void>> getMembers(String workspaceId, String sessionId, BindingResult result) {
+    public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(String workspaceId, String sessionId, String userId, String filter, int page, int size) {
         return null;
     }
+
+    /*@Override
+    public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(
+            String workspaceId,
+            String sessionId,
+            String filter,
+            int page,
+            int size) {
+        log.info("REST API: GET {}/{}", REST_PATH, workspaceId != null ? workspaceId: "{}");
+
+        //todo: after delete user itself
+        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberService.getMembers(workspaceId, filter, page, size);
+        log.debug(TAG, apiResponse.toString());
+        return ResponseEntity.ok(apiResponse);
+    }*/
 
     /*@ApiOperation(value = "Lookup Member Information List", notes = "워크스페이스 멤버 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({

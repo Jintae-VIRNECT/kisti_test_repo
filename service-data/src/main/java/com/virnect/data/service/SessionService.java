@@ -3,15 +3,12 @@ package com.virnect.data.service;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.dao.*;
+import com.virnect.data.dto.request.*;
 import com.virnect.data.repository.MemberHistoryRepository;
 import com.virnect.data.repository.MemberRepository;
 import com.virnect.data.repository.RoomHistoryRepository;
 import com.virnect.data.repository.RoomRepository;
 import com.virnect.data.dto.SessionResponse;
-import com.virnect.data.dto.request.JoinRoomRequest;
-import com.virnect.data.dto.request.ModifyRoomInfoRequest;
-import com.virnect.data.dto.request.RoomProfileUpdateRequest;
-import com.virnect.data.dto.request.RoomRequest;
 import com.virnect.data.dto.rpc.ClientMetaData;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
@@ -72,14 +69,13 @@ public class SessionService {
         room.setSessionProperty(sessionProperty);
 
         // set room members
-        if(!roomRequest.getLeaderId().isEmpty() && !roomRequest.getLeaderEmail().isEmpty()) {
+        if(!roomRequest.getLeaderId().isEmpty()) {
             log.debug("leader Id is {}", roomRequest.getLeaderId());
             Member member = Member.builder()
                     .room(room)
                     .memberType(MemberType.LEADER)
                     .workspaceId(roomRequest.getWorkspaceId())
                     .uuid(roomRequest.getLeaderId())
-                    .email(roomRequest.getLeaderEmail())
                     .sessionId(room.getSessionId())
                     .build();
 
@@ -88,15 +84,14 @@ public class SessionService {
             log.debug("leader Id is null");
         }
 
-        if(!roomRequest.getParticipants().isEmpty()) {
-            for (RoomRequest.Participant participant : roomRequest.getParticipants()) {
-                log.debug("getParticipants Id is {}", participant.toString());
+        if(!roomRequest.getParticipantIds().isEmpty()) {
+            for (String participant : roomRequest.getParticipantIds()) {
+                log.debug("getParticipants Id is {}", participant);
                 Member member = Member.builder()
                         .room(room)
                         .memberType(MemberType.UNKNOWN)
                         .workspaceId(roomRequest.getWorkspaceId())
-                        .uuid(participant.getId())
-                        .email(participant.getEmail())
+                        .uuid(participant)
                         .sessionId(room.getSessionId())
                         .build();
 
@@ -136,14 +131,13 @@ public class SessionService {
         room.setSessionProperty(sessionProperty);
 
         // set room members
-        if(!roomRequest.getLeaderId().isEmpty() && !roomRequest.getLeaderEmail().isEmpty()) {
+        if(!roomRequest.getLeaderId().isEmpty()) {
             log.debug("leader Id is {}", roomRequest.getLeaderId());
             Member member = Member.builder()
                     .room(room)
                     .memberType(MemberType.LEADER)
                     .workspaceId(roomRequest.getWorkspaceId())
                     .uuid(roomRequest.getLeaderId())
-                    .email(roomRequest.getLeaderEmail())
                     .sessionId(room.getSessionId())
                     .build();
 
@@ -152,15 +146,14 @@ public class SessionService {
             log.debug("leader Id is null");
         }
 
-        if(!roomRequest.getParticipants().isEmpty()) {
-            for (RoomRequest.Participant participant : roomRequest.getParticipants()) {
-                log.debug("getParticipants Id is {}", participant.toString());
+        if(!roomRequest.getParticipantIds().isEmpty()) {
+            for (String participant : roomRequest.getParticipantIds()) {
+                log.debug("getParticipants Id is {}", participant);
                 Member member = Member.builder()
                         .room(room)
                         .memberType(MemberType.UNKNOWN)
                         .workspaceId(roomRequest.getWorkspaceId())
-                        .uuid(participant.getId())
-                        .email(participant.getEmail())
+                        .uuid(participant)
                         .sessionId(room.getSessionId())
                         .build();
 
@@ -253,7 +246,6 @@ public class SessionService {
                         .roomHistory(roomHistory)
                         .workspaceId(member.getWorkspaceId())
                         .uuid(member.getUuid())
-                        .email(member.getEmail())
                         .memberType(member.getMemberType())
                         .deviceType(member.getDeviceType())
                         .sessionId(member.getSessionId())
@@ -310,7 +302,6 @@ public class SessionService {
                     .roomHistory(roomHistory)
                     .workspaceId(roomMember.getWorkspaceId())
                     .uuid(roomMember.getUuid())
-                    .email(roomMember.getEmail())
                     .memberType(roomMember.getMemberType())
                     .deviceType(roomMember.getDeviceType())
                     .sessionId(roomMember.getSessionId())
@@ -367,7 +358,6 @@ public class SessionService {
                         .roomHistory(roomHistory)
                         .workspaceId(member.getWorkspaceId())
                         .uuid(member.getUuid())
-                        .email(member.getEmail())
                         .memberType(member.getMemberType())
                         .deviceType(member.getDeviceType())
                         .sessionId(member.getSessionId())
@@ -486,7 +476,10 @@ public class SessionService {
             } else {
                 for (Member member : room.getMembers()) {
                     if (member.getUuid().equals(clientMetaData.getClientData())) {
+                        //set status unload
                         member.setMemberStatus(MemberStatus.UNLOAD);
+                        //set connection id to empty
+                        member.setConnectionId("");
                         //set end time
                         LocalDateTime endTime = LocalDateTime.now();
                         member.setEndDate(endTime);
@@ -503,6 +496,28 @@ public class SessionService {
                 //log.info("session leave and sessionEventHandler is here: room members not found");
             }
         }
+    }
+
+    @Transactional
+    public Room updateRoom(Room room, InviteRoomRequest inviteRoomRequest) {
+        log.info("updateRoom by InviteRoomRequest");
+        // set room members
+        if(!inviteRoomRequest.getParticipantIds().isEmpty()) {
+            for (String participant : inviteRoomRequest.getParticipantIds()) {
+                log.debug("getParticipants Id is {}", participant);
+                Member member = Member.builder()
+                        .room(room)
+                        .memberType(MemberType.UNKNOWN)
+                        .workspaceId(room.getWorkspaceId())
+                        .uuid(participant)
+                        .sessionId(room.getSessionId())
+                        .build();
+                room.getMembers().add(member);
+            }
+        } else {
+            log.debug("participants Id List is null");
+        }
+        return roomRepository.save(room);
     }
 
     @Transactional

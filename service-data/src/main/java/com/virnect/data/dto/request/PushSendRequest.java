@@ -16,7 +16,7 @@ import java.util.Map;
 public class PushSendRequest {
     @ApiModelProperty(value = "푸시 발송 서비스 명", example = "rm-service", required = true, position = 0)
     @NotBlank
-    private String service = "remote";
+    private String service;
 
     @ApiModelProperty(value = "워크스페이스 식별자", example = "4ff0606102fbe", required = true, position = 1)
     @NotBlank
@@ -30,7 +30,7 @@ public class PushSendRequest {
     @NotNull
     private List<String> targetUserIds;
 
-    @ApiModelProperty(value = "이벤트 이름", example = "ROOM_INVITE", required = true, position = 4)
+    @ApiModelProperty(value = "이벤트 이름", example = "invite", required = true, position = 4)
     @NotBlank
     private String event;
 

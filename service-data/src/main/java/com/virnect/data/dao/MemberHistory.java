@@ -24,8 +24,8 @@ public class MemberHistory extends BaseTimeEntity {
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
-    @Column(name = "email", nullable = false)
-    private String email;
+   /* @Column(name = "email", nullable = false)
+    private String email;*/
 
     @Column(name = "member_type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -58,7 +58,6 @@ public class MemberHistory extends BaseTimeEntity {
             DeviceType deviceType,
             String workspaceId,
             String uuid,
-            String email,
             String sessionId,
             LocalDateTime startDate,
             LocalDateTime endDate,
@@ -69,7 +68,7 @@ public class MemberHistory extends BaseTimeEntity {
         this.deviceType = deviceType;
         this.workspaceId = workspaceId;
         this.uuid = uuid;
-        this.email = email;
+        //this.email = email;
         this.sessionId = sessionId;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -83,7 +82,7 @@ public class MemberHistory extends BaseTimeEntity {
                 ", memberType='" + memberType + '\'' +
                 ", deviceType='" + deviceType + '\'' +
                 ", uuid='" + uuid + '\'' +
-                ", email='" + email + '\'' +
+                //", email='" + email + '\'' +
                 ", sessionId='" + sessionId + '\'' +
                 '}';
     }

@@ -103,21 +103,4 @@ public class ValidationController implements IValidationRestAPI {
         ApiResponse<LicenseInfoListResponse> response = this.remoteGatewayService.getLicenseValidity(workspaceId, userId);
         return ResponseEntity.ok(response);
     }*/
-
-    /*@ApiOperation(value = "Service Push Message ", notes = "푸시 메시지를 발행하는 API 입니다.")
-    @PostMapping(value = "message/push")
-    public ResponseEntity<ApiResponse<PushResponse>> sendPushMessageHandler(
-            @RequestBody @Valid PushSendRequest pushSendRequest,
-            BindingResult result) {
-
-        log.info("REST API: POST {}/message/push", REST_PATH);
-
-        if(result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-
-        ApiResponse<PushResponse> response = this.remoteGatewayService.sendPushMessage(pushSendRequest);
-        return ResponseEntity.ok(response);
-    }*/
 }

@@ -28,15 +28,15 @@ public class RoomRequest {
     @NotNull
     private String leaderId;
 
-    @ApiModelProperty(value = "리더 유저 이메일", position = 5, example = "test18@test.com")
+    /*@ApiModelProperty(value = "리더 유저 이메일", position = 5, example = "test18@test.com")
     @NotNull
-    private String leaderEmail;
+    private String leaderEmail;*/
 
     @ApiModelProperty(value = "워크스페이 uuid", position = 6, example = "40f9bbee9d85dca7a34a0dd205aae718")
     @NotNull
     private String workspaceId;
 
-    @ApiModelProperty(
+    /*@ApiModelProperty(
             value = "협업 방 참여자 정보",
             position = 7,
             dataType = "List",
@@ -52,27 +52,38 @@ public class RoomRequest {
                     "  }\n" +
                     "\n" +
                     "]"
+    )*/
+    @ApiModelProperty(
+            value = "협업 방 참여자 정보",
+            position = 7,
+            dataType = "List",
+            example = "[\n" +
+                    "    \"4705cf50e6d02c59b0eef9591666e2a3\",\n" +
+                    "    \"473b12854daa6afeb9e505551d1b2743\"\n" +
+                    "\n" +
+                    "]"
     )
-    private List<Participant> participants;
+    @NotNull
+    private List<String> participantIds;
 
     /**
      * test17@test.com 4705cf50e6d02c59b0eef9591666e2a3
      * test19@test.com 473b12854daa6afeb9e505551d1b2743
      */
-    @Getter
+    /*@Getter
     @Setter
     public static class Participant {
         @ApiModelProperty(value = "초대할 사용자 uuid")
         private String id; //participant uuid
-        @ApiModelProperty(value = "초대할 사용자 e-mail")
-        private String email; //participant e-mail
+        *//*@ApiModelProperty(value = "초대할 사용자 e-mail")
+        private String email; //participant e-mail*//*
 
         @Override
         public String toString() {
             return "Participant{" +
                     "id='" + id + '\'' +
-                    ", email='" + email + '\'' +
+                    //", email='" + email + '\'' +
                     '}';
         }
-    }
+    }*/
 }

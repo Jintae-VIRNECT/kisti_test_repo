@@ -1,8 +1,7 @@
 package com.virnect.serviceserver.session;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
+import com.virnect.client.RemoteServiceException;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dao.Room;
 import com.virnect.data.dao.RoomStatus;
@@ -27,6 +26,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -37,15 +38,19 @@ import java.util.stream.Collectors;
 public class ServiceSessionManager {
     private static final String TAG = ServiceSessionManager.class.getSimpleName();
     private final String SESSION_METHOD = "generateSession";
+    private final String SESSION_MESSAGE_METHOD = "generateMessage";
     private final String SESSION_TOKEN_METHOD = "generateSessionToken";
 
-    private final SessionManager sessionManager;
-    private final DataRepository dataRepository;
+    @Autowired
+    SessionManager sessionManager;
 
-    public ServiceSessionManager(@Lazy SessionManager sessionManager, DataRepository dataRepository) {
+    @Autowired
+    DataRepository dataRepository;
+
+    /*public ServiceSessionManager(@Lazy SessionManager sessionManager, DataRepository dataRepository) {
         this.sessionManager = sessionManager;
         this.dataRepository = dataRepository;
-    }
+    }*/
 
     private JsonObject generateErrorMessage(String errorMessage, String path, HttpStatus status) {
         JsonObject responseJson = new JsonObject();
@@ -132,6 +137,89 @@ public class ServiceSessionManager {
 
         Session sessionNotActive = sessionManager.storeSessionNotActive(sessionId, sessionProperties);
         log.info("New session {} initialized {}", sessionId, this.sessionManager.getSessionsWithNotActive().stream()
+                .map(Session::getSessionId).collect(Collectors.toList()).toString());
+        JsonObject sessionJson = new JsonObject();
+        sessionJson.addProperty("id", sessionNotActive.getSessionId());
+        sessionJson.addProperty("createdAt", sessionNotActive.getStartTime());
+
+        return sessionJson;
+    }
+
+    public JsonObject generateSession(String customSessionId) {
+        SessionData sessionData = new SessionData();
+        SessionProperties.Builder builder = new SessionProperties.Builder();
+        //String customSessionId = sessionData.getCustomSessionId();
+        try {
+            // Safe parameter retrieval. Default values if not defined
+            if (sessionData.getRecordingMode() != null) {
+                RecordingMode recordingMode = RecordingMode.valueOf(sessionData.getRecordingMode());
+                builder = builder.recordingMode(recordingMode);
+            } else {
+                builder = builder.recordingMode(RecordingMode.MANUAL);
+            }
+            if (sessionData.getDefaultOutputMode() != null) {
+                Recording.OutputMode defaultOutputMode = Recording.OutputMode.valueOf(sessionData.getDefaultOutputMode());
+                builder = builder.defaultOutputMode(defaultOutputMode);
+            } else {
+                builder.defaultOutputMode(Recording.OutputMode.COMPOSED);
+            }
+            if (sessionData.getDefaultRecordingLayout() != null) {
+                RecordingLayout defaultRecordingLayout = RecordingLayout.valueOf(sessionData.getDefaultRecordingLayout());
+                builder = builder.defaultRecordingLayout(defaultRecordingLayout);
+            } else {
+                builder.defaultRecordingLayout(RecordingLayout.BEST_FIT);
+            }
+            if (sessionData.getMediaMode() != null) {
+                MediaMode mediaMode = MediaMode.valueOf(sessionData.getMediaMode());
+                builder = builder.mediaMode(mediaMode);
+            } else {
+                builder = builder.mediaMode(MediaMode.ROUTED);
+            }
+            if (customSessionId != null && !customSessionId.isEmpty()) {
+                if (!sessionManager.formatChecker.isValidCustomSessionId(customSessionId)) {
+                    return generateErrorMessage(
+                            "Parameter \"customSessionId\" is wrong. Must be an alphanumeric string",
+                            SESSION_METHOD,
+                            HttpStatus.BAD_REQUEST);
+                }
+                builder = builder.customSessionId(customSessionId);
+            }
+            builder = builder.defaultCustomLayout((sessionData.getDefaultCustomLayout() != null) ? sessionData.getDefaultCustomLayout() : "");
+
+        } catch (IllegalArgumentException e) {
+            return generateErrorMessage(
+                    "RecordingMode " + sessionData.getRecordingMode() + " | "
+                            + "Default OutputMode " + sessionData.getDefaultOutputMode() + " | "
+                            + "Default RecordingLayout " + sessionData.getDefaultRecordingLayout() + " | "
+                            + "MediaMode " + sessionData.getMediaMode()
+                            + ". Some parameter is not defined",
+                    "/api/sessions",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        SessionProperties sessionProperties = builder.build();
+        /*String sessionId;
+        if (customSessionId != null && !customSessionId.isEmpty()) {
+            if (sessionManager.getSessionWithNotActive(customSessionId) != null) {
+                return generateErrorMessage(
+                        "customSessionId" + customSessionId + " | "
+                                +"RecordingMode " + sessionData.getRecordingMode() + " | "
+                                + "Default OutputMode " + sessionData.getDefaultOutputMode() + " | "
+                                + "Default RecordingLayout " + sessionData.getDefaultRecordingLayout() + " | "
+                                + "MediaMode " + sessionData.getMediaMode()
+                                + ". Custom session is already defined",
+                        SESSION_METHOD,
+                        HttpStatus.CONFLICT
+                );
+            }
+            sessionId = customSessionId;
+        } else {
+            sessionId = IdentifierPrefixes.SESSION_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
+                    + RandomStringUtils.randomAlphanumeric(9);
+        }*/
+
+        Session sessionNotActive = sessionManager.storeSessionNotActive(customSessionId, sessionProperties);
+        log.info("New session {} initialized with custom id: {}", customSessionId, this.sessionManager.getSessionsWithNotActive().stream()
                 .map(Session::getSessionId).collect(Collectors.toList()).toString());
         JsonObject sessionJson = new JsonObject();
         sessionJson.addProperty("id", sessionNotActive.getSessionId());
@@ -342,6 +430,72 @@ public class ServiceSessionManager {
         }
     }
 
+    public JsonObject generateMessage(
+            String sessionId,
+            List<String> to,
+            String type,
+            String data
+
+    ) {
+        log.info("session generateMessage event is here");
+        JsonObject completeMessage = new JsonObject();
+
+        Session session = sessionManager.getSession(sessionId);
+        if (session == null) {
+            session = sessionManager.getSessionNotActive(sessionId);
+            if (session != null) {
+                // Session is not active (no connected participants)
+                return generateErrorMessage(
+                        "Session is not active (no connected participants)",
+                        SESSION_MESSAGE_METHOD,
+                        HttpStatus.NOT_ACCEPTABLE);
+            }
+            // Session does not exist
+            return generateErrorMessage(
+                    "Session does not exist",
+                    SESSION_MESSAGE_METHOD,
+                    HttpStatus.NOT_FOUND);
+        }
+
+        if (type != null) {
+            completeMessage.addProperty("type", type);
+        }
+
+        if (data != null) {
+            completeMessage.addProperty("data", data);
+        }
+
+        if (to != null) {
+            try {
+                Gson gson = new GsonBuilder().create();
+                JsonArray toArray = gson.toJsonTree(to).getAsJsonArray();
+                completeMessage.add("to", toArray);
+            } catch (IllegalStateException exception) {
+                return generateErrorMessage(
+                        "\"to\" parameter is not a valid JSON array",
+                        SESSION_MESSAGE_METHOD,
+                        HttpStatus.BAD_REQUEST);
+            }
+        }
+
+        try {
+            sessionManager.sendMessage(completeMessage.toString(), sessionId);
+        } catch (RemoteServiceException e) {
+            return this.generateErrorMessage(
+                    "\"to\" array has no valid connection identifiers",
+                    SESSION_MESSAGE_METHOD,
+                    HttpStatus.NOT_ACCEPTABLE);
+        }
+        return this.generateErrorMessage(
+                "\"to\" array has no valid connection identifiers",
+                SESSION_MESSAGE_METHOD,
+                HttpStatus.NOT_ACCEPTABLE);
+        //return completeMessage;
+        //return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+
+
     //
     public void createSession(Session sessionNotActive) {
         log.info("session create and sessionEventHandler is here");
@@ -358,7 +512,7 @@ public class ServiceSessionManager {
 
     public void leaveSession(Participant participant, String sessionId, Set<Participant> remainingParticipants, Integer transactionId, EndReason reason) {
         log.info("session leave and sessionEventHandler is here:[participant] {}", participant);
-        log.info("session leave and sessionEventHandler is here:[reason] {}", participant.getClientMetadata());
+        log.info("session leave and sessionEventHandler is here:[clientMetadata] {}", participant.getClientMetadata());
         log.info("session leave and sessionEventHandler is here:[sessionId] {}", sessionId);
         log.info("session leave and sessionEventHandler is here:[remainingParticipants] {}", remainingParticipants);
         log.info("session leave and sessionEventHandler is here:[transactionId] {}", transactionId);
@@ -367,7 +521,8 @@ public class ServiceSessionManager {
     }
 
     public void destroySession(KurentoSession session, EndReason reason) {
-        log.info("session destroy and sessionEventHandler is here: {}", session.getSessionId());
+        log.info("session destroy and sessionEventHandler is here: [sessionId] {}", session.getSessionId());
+        log.info("session destroy and sessionEventHandler is here: [reason] {}", reason);
         dataRepository.destroySession(session.getSessionId());
     }
 

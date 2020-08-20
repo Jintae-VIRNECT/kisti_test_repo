@@ -15,10 +15,4 @@ public interface IValidationRestAPI {
     ResponseEntity<ApiResponse<LicenseItemResponse>> getLicenseInfo(
             @PathVariable String workspaceId,
             @PathVariable String userId);
-
-    /*@ApiOperation(value = "Service Push Message ", notes = "푸시 메시지를 발행하는 API 입니다.")
-    @PostMapping(value = "message/push")
-    ResponseEntity<ApiResponse<PushResponse>> sendPushMessageHandler(
-            @RequestBody @Valid PushSendRequest pushSendRequest,
-            BindingResult result);*/
 }

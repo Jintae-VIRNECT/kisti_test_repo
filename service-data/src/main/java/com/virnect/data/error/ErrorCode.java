@@ -29,10 +29,11 @@ public enum  ErrorCode {
     ERR_ROOM_MEMBER_NOT_ASSIGNED(4014, "any member not assigned, cannot join the room"),
     ERR_ROOM_LEADER_INVALID_EXIT(4015, "Room leader can not exit the room, must delete."),
     ERR_ROOM_MEMBER_ALREADY_JOINED(4016, "This member is already joined"),
-    ERR_ROOM_MEMBER_STATUS_LOADED(4017, "This member is already joined"),
+    ERR_ROOM_MEMBER_STATUS_LOADED(4017, "This member status is loaded"),
     ERR_ROOM_MEMBER_KICK_FAIL(4018, "This member cannot enforce disconnect."),
     ERR_ROOM_CREATE_FAIL(4019, "Room Create fail"),
     ERR_ROOM_PROCESS_FAIL(4020, "Current Room request is failed"),
+    ERR_ROOM_MEMBER_MAX_COUNT(4021, "Current Room member is over the limit"),
 
     //원격협업 유효성 정보 관련 에러
     ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),

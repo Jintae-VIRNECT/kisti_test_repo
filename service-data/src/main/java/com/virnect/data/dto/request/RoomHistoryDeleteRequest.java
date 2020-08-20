@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,13 +19,14 @@ public class RoomHistoryDeleteRequest {
     private String uuid;
 
     @ApiModelProperty(value = "삭제할 세션 리스트", position = 1)
+    @NotNull
     private List<String> sessionIdList = new ArrayList<>();
 
     @Override
     public String toString() {
         return "RoomHistoryDeleteRequest{" +
                 "uuid='" + uuid + '\'' +
-                "email='" + sessionIdList.toString() + '\'' +
+                "sessionIdList='" + sessionIdList.toString() + '\'' +
                 '}';
     }
 }

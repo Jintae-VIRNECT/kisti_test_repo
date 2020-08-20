@@ -23,7 +23,7 @@ public abstract class RepoDecoder<EntityType, ResponseType> {
                 break;
 
             case UPDATE:
-                entity = loadFromDatabase();
+                //entity = loadFromDatabase();
                 processData();
                 //invokeDataProcess();
                 break;

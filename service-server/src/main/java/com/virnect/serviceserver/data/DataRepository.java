@@ -159,17 +159,18 @@ public class DataRepository {
         }.asApiResponse();
     }
 
-    public DataProcess<Void> generateRoomSession(String sessionId) {
-        return new RepoDecoder<Room, Void>(RepoDecoderType.UPDATE) {
+    public DataProcess<Boolean> generateRoomSession(String sessionId) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.UPDATE) {
             @Override
             Room loadFromDatabase() {
                 return null;
             }
 
             @Override
-            DataProcess<Void> invokeDataProcess() {
+            DataProcess<Boolean> invokeDataProcess() {
+                log.info("GENERATE ROOM SESSION RETRIEVE BY SESSION ID => [{}]", sessionId);
                 sessionService.createSession(sessionId);
-                return null;
+                return new DataProcess<>(true);
             }
         }.asResponseData();
     }
@@ -584,15 +585,15 @@ public class DataRepository {
         }.asApiResponse();
     }
 
-    public DataProcess<Void> joinSession(Participant participant, String sessionId) {
-        return new RepoDecoder<Room, Void>(RepoDecoderType.UPDATE) {
+    public DataProcess<Boolean> joinSession(Participant participant, String sessionId) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.UPDATE) {
             @Override
             Room loadFromDatabase() {
                 return null;
             }
 
             @Override
-            DataProcess<Void> invokeDataProcess() {
+            DataProcess<Boolean> invokeDataProcess() {
                 JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -609,7 +610,7 @@ public class DataRepository {
                 log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
                 sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
-                return null;
+                return new DataProcess<>(true);
             }
         }.asResponseData();
     }
@@ -662,15 +663,15 @@ public class DataRepository {
         }.asApiResponse();
     }
 
-    public DataProcess<Void> leaveSession(Participant participant, String sessionId) {
-        return new RepoDecoder<Room, Void>(RepoDecoderType.DELETE) {
+    public DataProcess<Boolean> leaveSession(Participant participant, String sessionId) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.DELETE) {
             @Override
             Room loadFromDatabase() {
                 return null;
             }
 
             @Override
-            DataProcess<Void> invokeDataProcess() {
+            DataProcess<Boolean> invokeDataProcess() {
                 JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -682,27 +683,27 @@ public class DataRepository {
                 }
                 assert clientMetaData != null;
 
-                log.info("session join and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
-                log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
-                log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
+                log.info("session leave and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
+                log.info("session leave and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
+                log.info("session leave and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
                 sessionService.leaveSession(sessionId, clientMetaData);
-                return null;
+                return new DataProcess<>(true);
             }
         }.asResponseData();
     }
 
-    public DataProcess<Void> destroySession(String sessionId) {
-        return new RepoDecoder<Room, Void>(RepoDecoderType.DELETE) {
+    public DataProcess<Boolean> destroySession(String sessionId) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.DELETE) {
             @Override
             Room loadFromDatabase() {
                 return null;
             }
 
             @Override
-            DataProcess<Void> invokeDataProcess() {
+            DataProcess<Boolean> invokeDataProcess() {
                 sessionService.destroySession(sessionId);
-                return null;
+                return new DataProcess<>(true);
             }
         }.asResponseData();
     }
@@ -720,7 +721,7 @@ public class DataRepository {
                 if(member != null) {
                     return new DataProcess<>(member.getConnectionId());
                 }
-                return null;
+                return new DataProcess<>("");
             }
         }.asResponseData();
     }
@@ -770,6 +771,47 @@ public class DataRepository {
             }
         }.asApiResponse();
     }
+
+    public ApiResponse<ResultResponse> inviteMember(String workspaceId, String sessionId, InviteRoomRequest inviteRoomRequest) {
+        return new RepoDecoder<Room, ResultResponse>(RepoDecoderType.UPDATE) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
+            }
+
+            @Override
+            DataProcess<ResultResponse> invokeDataProcess() {
+                log.info("ROOM INVITE MEMBER UPDATE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
+                Room room = loadFromDatabase();
+                ResultResponse resultResponse = new ResultResponse();
+                resultResponse.setResult(false);
+                if(room != null) {
+                    if(room.getLeaderId().equals(inviteRoomRequest.getLeaderId())) {
+                        if(room.getMembers().size() + inviteRoomRequest.getParticipantIds().size() >= room.getMaxUserCount()) {
+                            return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+                        }
+
+                        for(String participant : inviteRoomRequest.getParticipantIds()) {
+                            for(Member member: room.getMembers()) {
+                                if(participant.equals(member.getUuid())) {
+                                    return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                                }
+                            }
+                        }
+                        sessionService.updateRoom(room, inviteRoomRequest);
+                        resultResponse.setResult(true);
+                        return new DataProcess<>(resultResponse);
+                    } else {
+                        return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                    }
+                } else {
+                    return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+            }
+        }.asApiResponse();
+    }
+
+
 
     public ApiResponse<MemberInfoResponse> loadMember(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Member, MemberInfoResponse>(RepoDecoderType.READ) {

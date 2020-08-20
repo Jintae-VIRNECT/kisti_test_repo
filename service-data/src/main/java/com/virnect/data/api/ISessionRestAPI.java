@@ -1,8 +1,10 @@
 package com.virnect.data.api;
 
 import com.virnect.data.ApiResponse;
+import com.virnect.data.dto.feign.PushResponse;
 import com.virnect.data.dto.request.*;
 import com.virnect.data.dto.response.*;
+import com.virnect.data.dto.rpc.RpcParamsRequest;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +20,12 @@ import javax.validation.Valid;
 @RequestMapping("/remote")
 public interface ISessionRestAPI {
 
+    @ApiOperation(value = "Service Push Message ", notes = "푸시 메시지를 발행 하는 API 입니다.")
+    @PostMapping(value = "message/push")
+    ResponseEntity<ApiResponse<PushResponse>> sendPushMessageHandler(
+            @RequestBody @Valid PushSendRequest pushSendRequest,
+            BindingResult result);
+
     /**
      * 1. check room request handler
      * 2. check user license type using user uuid
@@ -32,8 +40,6 @@ public interface ISessionRestAPI {
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestBody @Valid RoomRequest roomRequest,
             BindingResult result);
-
-
 
     /*@PostMapping(value = "room", consumes = )
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
@@ -113,7 +119,7 @@ public interface ISessionRestAPI {
 
     @ApiOperation(value = "Invite a Member to Specific Room", notes = "특정 멤버를 원격협업 방에 초대하는 API 입니다.")
     @PostMapping(value = "room/{workspaceId}/{sessionId}/member")
-    ResponseEntity<ApiResponse<InviteRoomResponse>> inviteMember(
+    ResponseEntity<ApiResponse<ResultResponse>> inviteMember(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestBody @Valid InviteRoomRequest inviteRoomRequest,
@@ -130,10 +136,10 @@ public interface ISessionRestAPI {
     );
 
     @ApiOperation(value = "send signal to the specific room session", notes = "특정 원격협업 방에 신호를 보내는 API 입니다.")
-    @PostMapping(value = "room/{workspaceId}/{sessionId}/signal")
+    @PostMapping(value = "room/{workspaceId}/signal")
     ResponseEntity<ApiResponse<ResultResponse>> sendSignal(
             @PathVariable("workspaceId") String workspaceId,
-            @PathVariable("sessionId") String sessionId,
+            @RequestBody @Valid SendSignalRequest sendSignalRequest,
             BindingResult result
     );
 }

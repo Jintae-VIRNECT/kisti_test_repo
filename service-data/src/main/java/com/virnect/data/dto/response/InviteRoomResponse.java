@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @ApiModel
 public class InviteRoomResponse {
-    @ApiModelProperty(value = "메시지 수신 서비스 명", example = "workspace")
+    @ApiModelProperty(value = "메시지 수신 서비스 명", example = "remote")
     private String service;
     @ApiModelProperty(value = "메시지 이벤트", position = 1, example = "something event")
     private String event;
