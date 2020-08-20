@@ -154,6 +154,17 @@ export default {
       content: '일';
     }
   }
+  &:lang(en) {
+    .year:after {
+      content: 'year';
+    }
+    .month:after {
+      content: 'month';
+    }
+    .day:after {
+      content: 'date';
+    }
+  }
 }
 .el-popper {
   &.month,

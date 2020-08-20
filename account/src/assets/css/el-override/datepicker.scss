@@ -1,15 +1,103 @@
-body .el-date-picker {
-  .el-date-picker__header-label.active,
-  .el-date-picker__header-label:hover,
-  .el-picker-panel__icon-btn:hover,
-  .el-month-table td .cell:hover,
-  .el-month-table td.current:not(.disabled) .cell,
-  .el-year-table td .cell:hover,
-  .el-year-table td.current:not(.disabled) .cell,
-  .el-date-table td.available:hover {
-    color: $color-primary;
+.el-date-picker {
+  $color-today: #1468e2;
+  $color-hover: #f5f7fa;
+
+  .el-date-picker__header {
+    margin: 0;
+    padding: 13px 20px;
+    border-bottom: solid 1px #e6e9ee;
   }
-  .el-date-table td.current:not(.disabled) span {
-    background-color: $color-primary;
+  .el-picker-panel__icon-btn {
+    margin: 7px 4px 0;
+    color: #697484;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  .el-picker-panel__content {
+    margin-top: 12px;
+    margin-bottom: 12px;
+  }
+  .el-year-table,
+  .el-month-table,
+  .el-date-table {
+    th {
+      font-weight: 500;
+      font-size: 14px;
+      border-bottom: none;
+    }
+    td {
+      padding: 2px 0;
+      div {
+        height: 40px;
+        padding: 7px 0;
+        border-radius: 4px;
+      }
+      .cell,
+      span {
+        font-weight: 500;
+        font-size: 14px;
+        border-radius: 4px;
+      }
+    }
+    // selected
+    td.current:not(.disabled) {
+      div {
+        background: #4d5d74;
+      }
+      span {
+        color: #fff;
+        background: none;
+      }
+      .cell {
+        color: #fff;
+        background: #4d5d74;
+      }
+    }
+    // hover
+    .cell:hover {
+      color: inherit;
+    }
+    td:not(.current):not(.today):hover {
+      color: inherit;
+      div {
+        background: #f5f7fa;
+      }
+    }
+
+    td.today div {
+      background-color: $color-today;
+      .cell,
+      span {
+        color: #fff;
+      }
+    }
+  }
+  // month
+  .el-month-table {
+    td {
+      padding: 5px 0;
+    }
+    td div {
+      width: 66px;
+      height: 44px;
+    }
+    .cell {
+      line-height: 2;
+    }
+  }
+  // year
+  .el-year-table {
+    td {
+      padding: 5px 0;
+    }
+    .cell {
+      width: 56px;
+      height: 44px;
+      line-height: 3;
+    }
+    td.today .cell {
+      color: #fff;
+      background-color: $color-today;
+    }
   }
 }

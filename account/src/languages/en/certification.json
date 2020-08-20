@@ -5,6 +5,6 @@
   "forgetPassword": "Forgot your password?",
   "message": {
     "wrong": "Wrong password",
-    "fail": "Failed to verify entered account"
+    "fail": "Failed to verify entered account please try again later"
   }
 }

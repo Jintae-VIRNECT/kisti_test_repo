@@ -9,69 +9,40 @@
     "autoPaymentEveryMonth": "Authomatic monthly payment"
   },
   "way": {
-    "register": "Update payment method",
-    "change": "Modify payment method",
-    "changeDesc": "If you want to change your plan",
-    "changeCaution": "Even if you change your payment method",
-    "autoPayment": "Automatic payment",
-    "autoPaymentNow": "Automaic payment method activated",
-    "autoPaymentCancel": "Deactivate automatic payment method"
+    "change": "Notice of payment method change",
+    "changeDesc": "In order to change the payment method you must repurchase the product and service voucher at the payment center after automatic payment is canceled. Upon repurchase payment will be made with the changed payment method from the next payment date. After canceling the automatic payment proceed to purchase the voucher at the payment center.",
+    "cancel": "Notice on change of subscribed product and automatic payment cancellation.",
+    "cancelDesc": "When automatic payment is canceled or the subscribed product is changed the previously applied coupon will not be applied and cannot be reused. When automatic payment is canceled all users of the workspace will not be able to use VIRNECT products from the next payment date and product and service data will be kept for up to two weeks. If you pay again within 2 weeks of the scheduled payment date you can use the VIRNECT product with your existing information.",
+    "autoPayment": "Automatic Payment",
+    "autoPaymentNow": "Automatic payment is currentl",
+    "autoPaymentCancel": "Automaic payment method activated"
   },
   "log": {
-    "title": "Payment history",
+    "title": "Deactivate automatic payment method",
     "column": {
-      "no": "Purchase numbers",
-      "way": "Payment method",
-      "price": "Payment amount",
-      "paidDate": "Date of Payment"
+      "no": "Payment history",
+      "way": "Purchase numbers",
+      "price": "Payment method",
+      "paidDate": "Payment amount"
     }
+  },
+  "autoPaymentInfoModal": {
+    "desc": "Please check the payment information.",
+    "submit": "Change"
   },
   "autoPaymentCancelModal": {
     "desc": "Please double-check the product plan and subscription you want to cancel.",
     "column": {
       "product": "Product plans and additional services",
       "count": "Quantity",
-      "numbersUnit": "Item"
+      "numbersUnit": "Count"
     },
-    "caution": "* If you cancel now",
+    "caution": "* If you cancel now you will be able to use the product and services until the remaining period. <br>* After 7 days of expiration data related to products and services will be deleted and cannot be recovered.",
     "submit": "Cancel",
     "submitDone": "Cancelling automatic payment",
-    "submitDoneDesc": "Automatic payment has been cancelled. If you want to maintain the automatic payment",
+    "submitDoneDesc": "Automatic payment has been cancelled. If you want to maintain the automatic payment you can cancel the \"cancellation of the automatic payment\" from tomorrow to one day before the expiration date.",
     "cancelRequestCancel": "Cancel automatic payment application",
-    "cancelRequestCancelDesc": "If you cancel the automatic payment cancellation application"
-  },
-  "logDetail": {
-    "title": "Payment history details",
-    "info": "Payment details",
-    "paymentNo": "Purchase numbers",
-    "creditCardSlip": "Credit card slip",
-    "detail": "Detailed purchasement details",
-    "priceWithVat": "Price (inc. VAT)",
-    "productPrice": "Product price",
-    "vat": "VAT",
-    "discount": "Discount amount",
-    "period": "Subscription Period",
-    "totalPayment": "Total amount"
-  },
-  "creditCardSlip": {
-    "title": "Credit card sales receipt",
-    "paymentInfo": "Purchase details",
-    "cardType": "Payment card type",
-    "cardNo": "Payment card number",
-    "tradeType": "Transaction type",
-    "tradeDate": "Time of transaction",
-    "instalmentMonth": "Instalment period",
-    "approvalNo": "Authorized number",
-    "buyInfo": "Purchase details",
-    "buyNo": "Purhcase number",
-    "buyUser": "Purchaser",
-    "tax": "Tax amount",
-    "taxFree": "Tax-free amount",
-    "surtax": "VAT",
-    "sellerInfo": "Seller details",
-    "sellerCompanyName": "Name of seller",
-    "sellerCompanyNo": "Seller's business registration number",
-    "sellerAddress": "Address of seller",
-    "caution": "Credit card sales slips were issued in accordance with Article 32-2"
+    "cancelRequestCancelDesc": "If you cancel the automatic payment cancellation application automatic payment will be resumed.",
+    "cancelRequestCancelDone": "Succesfully canceled automatic payment"
   }
 }
