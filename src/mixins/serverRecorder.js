@@ -35,7 +35,7 @@ export default {
           resolution: '720p',
           sessionId: this.roomInfo.sessionId,
           token: token,
-          userData: {},
+          metaData: {},
         })
         this.recordingId = result.recordingId
 

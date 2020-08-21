@@ -8,7 +8,7 @@ import http from 'api/gateway'
  * @param {String} resolution 해상도
  * @param {String} sessionId 녹화대상 세션 Id (openvidu 세션 id)
  * @param {String} token 토큰값
- * @param {Object} userData 유저 데이터
+ * @param {Object} metaData 유저 데이터
  */
 export const startServerRecord = async ({
   framerate = 20,
@@ -17,7 +17,7 @@ export const startServerRecord = async ({
   resolution = '720p',
   sessionId,
   token,
-  userData = {},
+  metaData = {},
 }) => {
   const returnVal = await http('START_SERVER_RECORD', {
     framerate,
@@ -26,7 +26,7 @@ export const startServerRecord = async ({
     resolution,
     sessionId,
     token,
-    userData,
+    metaData,
   })
   return returnVal
 }
