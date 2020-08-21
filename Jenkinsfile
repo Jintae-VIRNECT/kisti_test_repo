@@ -120,7 +120,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-mediaserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-mediaserver && docker rm rm-mediaserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8888:8888 -p 50000-50100:50000-50100/udp -e KMS_EXTERNAL_ADDRESS=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4` -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8888:8888 -p 50000-50100:50000-50100/udp -e NODE_ENV=staging -e KMS_EXTERNAL_ADDRESS=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4` -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -167,7 +167,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-mediaserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-mediaserver && docker rm rm-mediaserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8888:8888 -p 50000-50100:50000-50100/udp -e KMS_EXTERNAL_ADDRESS=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4` -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8888:8888 -p 50000-50100:50000-50100/udp -e NODE_ENV=production -e KMS_EXTERNAL_ADDRESS=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4` -e KMS_MIN_PORT=50000 -e KMS_MAX_PORT=50100 --restart=always  -d --name=rm-mediaserver $aws_ecr_address/rm-mediaserver:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
