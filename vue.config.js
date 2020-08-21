@@ -20,12 +20,12 @@ module.exports = {
 
   configureWebpack: {
     resolve: {
-      modules: ['node_modules'],
-      // modules: ['node_modules', path.resolve(__dirname, './src')],
+      modules: ['node_modules', 'modules'],
       alias: {
         '@': path.join(__dirname, '/src'),
         components: path.join(__dirname, '/src/components'),
         assets: path.join(__dirname, '/src/assets'),
+        plugins: path.join(__dirname, '/src/plugins'),
       },
     },
   },
