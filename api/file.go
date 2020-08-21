@@ -55,7 +55,7 @@ type Query struct {
 // @Param filename query Query false "description"
 // @Produce json
 // @Success 200 {object} successResponse{data=ListRecordingFilesResponse}
-// @Failure 9999 {} json "{"error":"error message"}"
+// @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/file [get]
 func ListRecordingFiles(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
@@ -130,7 +130,7 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 // @tags Recording File
 // @Produce json
 // @Success 200 {object} successResponse{data=RemoveRecordingFilesResponse}
-// @Failure 9999 {} json "{"error":"error message"}"
+// @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/file [delete]
 func RemoveRecordingFileAll(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
@@ -150,8 +150,8 @@ func RemoveRecordingFileAll(c *gin.Context) {
 // @Produce json
 // @Param id path string true "recording id"
 // @Success 200 {object} successResponse
-// @Failure 1000 {} json "{"error":"not found id"}"
-// @Failure 9999 {} json "{"error":"error message"}"
+// @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
+// @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/file/{id} [delete]
 func RemoveRecordingFile(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
@@ -175,8 +175,8 @@ func RemoveRecordingFile(c *gin.Context) {
 // @tags Recording File
 // @Produce json
 // @Param id path string true "recording id"
-// @Failure 1000 {} json "{"error":"not found id"}"
-// @Failure 9999 {} json "{"error":"error message"}"
+// @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
+// @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/file/download/{id} [get]
 func DownloadRecordingFile(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)

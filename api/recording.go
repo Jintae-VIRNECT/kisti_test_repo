@@ -48,10 +48,10 @@ type ListRecordingResponse struct {
 // @Produce json
 // @Param body body StartRecordingRequest true "information for recording"
 // @Success 200 {object} successResponse{data=StartRecordingResponse}
-// @Failure 1001 {} json "{"error":"Too Many Recordings"}""
-// @Failure 1002 {} json "{"error":"not enough free space"}"
-// @Failure 8001 {} json "{"error":"error message"}"
-// @Failure 9999 {} json "{"error":"error message"}"
+// @Failure 1001 {} json "{"code":1001,"message":"Too Many Recordings","service":"remote-record-server","data":{}}"
+// @Failure 1002 {} json "{"code":1002,"message":"Not Enough Free Space","service":"remote-record-server","data":{}}"
+// @Failure 8001 {} json "{"code":8001,"message":"error message","service":"remote-record-server","data":{}}"
+// @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/recording [post]
 func StartRecording(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
@@ -155,7 +155,7 @@ func convertResolution(resolution string) (string, error) {
 // @Produce json
 // @Param id path string true "recording id"
 // @Success 200 {object} successResponse{data=StopRecordingResponse}
-// @Failure 1000 {} json "{ "error": "not found id" }"
+// @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/recording/{id} [delete]
 func StopRecording(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
@@ -180,7 +180,7 @@ func StopRecording(c *gin.Context) {
 // @tags Recording
 // @Produce json
 // @Success 200 {object} successResponse{data=ListRecordingResponse}
-// @Failure 9999 {} json "{"error":"error message"}"
+// @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/recording [get]
 func ListRecordings(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
