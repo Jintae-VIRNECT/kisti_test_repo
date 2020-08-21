@@ -461,8 +461,14 @@ public class ServiceSessionManager {
             completeMessage.addProperty("type", type);
         }
 
+        //create data to json object string
         if (data != null) {
-            completeMessage.addProperty("data", data);
+            //example as {data : {"type" : "evict"}}
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("type", data);
+            completeMessage.addProperty("data", jsonObject.toString());
+            log.info("generateMessage data is {}", jsonObject.toString());
+            //completeMessage.addProperty("data", data);
         }
 
         if (to != null) {
@@ -486,11 +492,7 @@ public class ServiceSessionManager {
                     SESSION_MESSAGE_METHOD,
                     HttpStatus.NOT_ACCEPTABLE);
         }
-        return this.generateErrorMessage(
-                "\"to\" array has no valid connection identifiers",
-                SESSION_MESSAGE_METHOD,
-                HttpStatus.NOT_ACCEPTABLE);
-        //return completeMessage;
+        return completeMessage;
         //return new ResponseEntity<>(HttpStatus.OK);
     }
 

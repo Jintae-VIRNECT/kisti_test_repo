@@ -352,10 +352,11 @@ public class SessionRestController implements ISessionRestAPI {
                 response.setResult(false);
 
                 connectionId = dataProcess.getData();
+
                 JsonObject jsonObject = serviceSessionManager.generateMessage(
                         sessionId,
                         Arrays.asList(connectionId),
-                        "signal::system",
+                        PushConstants.PUSH_SIGNAL_SYSTEM,
                         PushConstants.SEND_PUSH_ROOM_EVICT
                 );
 

@@ -95,6 +95,21 @@ public class S3FileUploadService implements FileUploadService {
         return null;
     }
 
+    @Override
+    public String getFileExtension(String originFileName) {
+        return null;
+    }
+
+    @Override
+    public boolean isAllowFileExtension(String fileExtension) {
+        return false;
+    }
+
+    @Override
+    public String base64ImageUpload(String base64Image) {
+        return null;
+    }
+
     // 로컬 임시 파일 삭제
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {

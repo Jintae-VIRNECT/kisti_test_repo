@@ -95,6 +95,10 @@ dependencies {
     implementation(group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.9")
     // aws s3
     implementation(group = "com.amazonaws", name = "aws-java-sdk-s3", version = "1.11.415") // AWS Storage Service
+    // minio
+    //implementation(group = "io.minio", name = "minio", version = "7.1.0") // minio Storage Service
+    implementation("io.minio:minio:7.1.0")
+
     //============================ MEDIA SERVER DEPENDENCIES ===========================================//
     implementation("org.kurento:kurento-jsonrpc-server:6.14.0")
     implementation("org.kurento:kurento-client:6.14.0")

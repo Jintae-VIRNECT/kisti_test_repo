@@ -49,6 +49,12 @@ public enum  ErrorCode {
     ERR_HISTORY_PRODUCT_VALIDITY(6004, "License has no product"),
     ERR_HISTORY_UNEXPECTED_TYPE(6005, "This license is not unexpected type"),
 
+    //원격협업 파일 업로드/다운로드 관련 에러
+    ERR_FILE_UPLOAD_FAILED(7001, "File upload has failed"),
+    ERR_FILE_ASSUME_DUMMY(7002, "File is assumed to dummy"),
+    ERR_FILE_UNSUPPORTED_EXTENSION(7003, "This file extension is not supported"),
+    ERR_FILE_SIZE_LIMIT(7004, "This file size is exceeded"),
+
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),
     ERR_USER_PASSWORD_CHANGE_DUPLICATE(4009, "Password is duplicated with previous password"),
