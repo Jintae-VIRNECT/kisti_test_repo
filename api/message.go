@@ -18,9 +18,15 @@ type responseError struct {
 	message string
 }
 
-type response struct {
+type successResponse struct {
 	Data    interface{} `json:"data"`
-	Service string      `json:"service,omitempty"`
+	Code    int         `json:"code"`
+	Message string      `json:"message"`
+}
+
+type failResponse struct {
+	Data    interface{} `json:"data"`
+	Service string      `json:"service"`
 	Code    int         `json:"code"`
 	Message string      `json:"message"`
 }
@@ -49,7 +55,7 @@ func NewErrorInternalServer(err error) *responseError {
 }
 
 func sendResponseWithSuccess(c *gin.Context, data interface{}) {
-	response := &response{
+	response := &successResponse{
 		Data:    data,
 		Code:    200,
 		Message: "success",
@@ -63,9 +69,10 @@ func sendResponseWithSuccess(c *gin.Context, data interface{}) {
 }
 
 func sendResponseWithError(c *gin.Context, err *responseError) {
-	response := &response{
+	service := viper.GetString("general.service")
+	response := &failResponse{
 		Data:    empty{},
-		Service: viper.GetString("general.service"),
+		Service: service,
 		Code:    err.code,
 		Message: err.message,
 	}

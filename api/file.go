@@ -54,7 +54,7 @@ type Query struct {
 // @tags Recording File
 // @Param filename query Query false "description"
 // @Produce json
-// @Success 200 {object} response{data=ListRecordingFilesResponse}
+// @Success 200 {object} successResponse{data=ListRecordingFilesResponse}
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [get]
 func ListRecordingFiles(c *gin.Context) {
@@ -129,7 +129,7 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 // @Description Remove All Recording Files
 // @tags Recording File
 // @Produce json
-// @Success 200 {object} response{data=RemoveRecordingFilesResponse}
+// @Success 200 {object} successResponse{data=RemoveRecordingFilesResponse}
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file [delete]
 func RemoveRecordingFileAll(c *gin.Context) {
@@ -149,7 +149,7 @@ func RemoveRecordingFileAll(c *gin.Context) {
 // @tags Recording File
 // @Produce json
 // @Param id path string true "recording id"
-// @Success 200 {object} response
+// @Success 200 {object} successResponse
 // @Failure 1000 {} json "{"error":"not found id"}"
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/file/{id} [delete]

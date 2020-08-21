@@ -35,8 +35,6 @@ type StartRecordingResponse struct {
 
 type StopRecordingResponse struct {
 	RecordingID string `json:"recordingId"`
-	Filename    string `json:"filename"`
-	Duration    int    `json:"duration"`
 }
 
 type ListRecordingResponse struct {
@@ -49,7 +47,7 @@ type ListRecordingResponse struct {
 // @Accept json
 // @Produce json
 // @Param body body StartRecordingRequest true "information for recording"
-// @Success 200 {object} response{data=StartRecordingResponse}
+// @Success 200 {object} successResponse{data=StartRecordingResponse}
 // @Failure 1001 {} json "{"error":"Too Many Recordings"}""
 // @Failure 1002 {} json "{"error":"not enough free space"}"
 // @Failure 8001 {} json "{"error":"error message"}"
@@ -156,7 +154,7 @@ func convertResolution(resolution string) (string, error) {
 // @tags Recording
 // @Produce json
 // @Param id path string true "recording id"
-// @Success 200 {} {object} response
+// @Success 200 {object} successResponse{data=StopRecordingResponse}
 // @Failure 1000 {} json "{ "error": "not found id" }"
 // @Router /remote/recorder/recording/{id} [delete]
 func StopRecording(c *gin.Context) {
@@ -174,14 +172,14 @@ func StopRecording(c *gin.Context) {
 
 	recorder.StopRecording(c.Request.Context(), recordingID, "stop")
 
-	sendResponseWithSuccess(c, nil)
+	sendResponseWithSuccess(c, StopRecordingResponse{recordingID})
 }
 
 // @Summary List Recordings
 // @Description List Recordings
 // @tags Recording
 // @Produce json
-// @Success 200 {object} response{data=ListRecordingResponse}
+// @Success 200 {object} successResponse{data=ListRecordingResponse}
 // @Failure 9999 {} json "{"error":"error message"}"
 // @Router /remote/recorder/recording [get]
 func ListRecordings(c *gin.Context) {
