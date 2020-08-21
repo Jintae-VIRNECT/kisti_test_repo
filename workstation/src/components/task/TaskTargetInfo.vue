@@ -15,7 +15,7 @@
       <el-row type="flex">
         <el-col>
           <dt>{{ $t('task.targetInfo.capacity') }}</dt>
-          <dd></dd>
+          <dd>{{ taskInfo.contentSize | byte2mb }}</dd>
         </el-col>
         <el-col>
           <dt>{{ $t('task.targetInfo.createdDate') }}</dt>
