@@ -3,7 +3,7 @@
     type="button"
     class="record-button"
     :class="{ nodata: count <= 0, normal: count > 0, seleted: selected }"
-    @click="toggle"
+    @click="showList"
   >
     <img :src="imgSrc" />
     <p
@@ -28,6 +28,10 @@ export default {
       type: Number,
       default: 0,
     },
+    serialNum: {
+      type: [Number, String],
+      default: null,
+    },
   },
   computed: {
     imgSrc() {
@@ -41,11 +45,22 @@ export default {
     },
   },
   methods: {
-    toggle() {
+    showList() {
       if (this.count > 0) {
+        this.$eventBus.$emit('open::record-list', this.serialNum)
         this.selected = !this.selected
       }
     },
+    toggle(visible) {
+      console.log('s')
+      this.selected = visible
+    },
+  },
+  mounted() {
+    this.$eventBus.$on('update:visible', this.toggle)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('update:visible')
   },
 }
 </script>
