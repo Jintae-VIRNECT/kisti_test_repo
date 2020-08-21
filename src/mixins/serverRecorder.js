@@ -20,7 +20,7 @@ export default {
 
         const options = {
           iceServers: this.roomInfo.coturn,
-          role: 'PUSLISHER',
+          role: 'PUBLISHER',
           wsUri: this.roomInfo.wss,
         }
 
