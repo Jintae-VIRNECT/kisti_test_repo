@@ -66,26 +66,22 @@ export default {
   watch: {
     participants: {
       handler() {
-        this.participants.forEach(participant => {
-          const conId = participant.connectionId
+        //for joined
+        this.connectAudio()
 
-          if (participant.stream && !this.audioSourceMap.has(conId)) {
-            let audioSource = this.audioContext.createMediaStreamSource(
-              participant.stream,
-            )
-            audioSource.connect(this.audioContextDes)
-            this.audioSourceMap.set(conId, audioSource)
-          }
-        })
+        //for leaved
+        this.disconnectAudio()
 
-        for (let conId of this.audioSourceMap.keys()) {
-          const isStay = this.participants.some(participant => {
-            return participant.connectionId === conId
+        if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
+          const anyStreamAlive = this.participants.some(participant => {
+            return participant.video === true
           })
 
-          if (!isStay) {
-            this.audioSourceMap.get(conId).disconnect()
-            this.audioSourceMap.delete(conId)
+          if (!anyStreamAlive) {
+            this.$eventBus.$emit('localRecord', {
+              isStart: false,
+              stopType: 'nostream',
+            })
           }
         }
       },
@@ -123,7 +119,7 @@ export default {
       } else {
         //TODO : MESSAGE
         //녹화 시작 실패시의 안내 메시지
-        this.$eventBus.$emit('localRecord', false)
+        this.$eventBus.$emit('localRecord', { isStart: false })
         return false
       }
     },
@@ -167,7 +163,7 @@ export default {
       })
 
       this.recorder.setStopSignal(() => {
-        this.$eventBus.$emit('localRecord', false)
+        this.$eventBus.$emit('localRecord', { isStart: false })
       })
 
       this.recorder.setNoQuotaCallback(() => {
@@ -193,8 +189,9 @@ export default {
     /**
      * stop recorder
      * @param {Boolean} showMsg show toast msg
+     *
      */
-    async stopRecord(showMsg) {
+    async stopRecord(showMsg, stopType) {
       try {
         if (this.recorder) {
           this.recorder.stopRecord()
@@ -205,7 +202,16 @@ export default {
           }
 
           if (showMsg) {
-            this.toastDefault(this.$t('service.record_end_message'))
+            switch (stopType) {
+              case 'nostream':
+                this.toastDefault(
+                  this.$t('service.record_end_no_stream_message'),
+                )
+                break
+              default:
+                this.toastDefault(this.$t('service.record_end_message'))
+                break
+            }
           }
         }
       } catch (e) {
@@ -265,10 +271,14 @@ export default {
 
     stopLocalRecordByKeyPress(e) {
       if (e.key === 'Escape') {
-        this.$eventBus.$emit('localRecord', false)
+        this.$eventBus.$emit('localRecord', { isStart: false })
       }
     },
-    async toggleStatus(isStart) {
+
+    async toggleLocalRecordStatus(status) {
+      const isStart = status.isStart
+      const stopType = status.stopType
+
       if (isStart && this.localRecordStatus === LCOAL_RECORD_STAUTS.STOP) {
         this.startRecord()
       } else if (
@@ -276,12 +286,39 @@ export default {
         this.localRecordStatus === LCOAL_RECORD_STAUTS.START
       ) {
         const showMsg = true
-        this.stopRecord(showMsg)
+        this.stopRecord(showMsg, stopType)
+      }
+    },
+
+    connectAudio() {
+      this.participants.forEach(participant => {
+        const conId = participant.connectionId
+
+        if (participant.stream && !this.audioSourceMap.has(conId)) {
+          let audioSource = this.audioContext.createMediaStreamSource(
+            participant.stream,
+          )
+          audioSource.connect(this.audioContextDes)
+          this.audioSourceMap.set(conId, audioSource)
+        }
+      })
+    },
+
+    disconnectAudio() {
+      for (let conId of this.audioSourceMap.keys()) {
+        const isStay = this.participants.some(participant => {
+          return participant.connectionId === conId
+        })
+
+        if (!isStay) {
+          this.audioSourceMap.get(conId).disconnect()
+          this.audioSourceMap.delete(conId)
+        }
       }
     },
   },
   mounted() {
-    this.$eventBus.$on('localRecord', this.toggleStatus)
+    this.$eventBus.$on('localRecord', this.toggleLocalRecordStatus)
 
     this.audioContext = new AudioContext()
     this.audioContextDes = this.audioContext.createMediaStreamDestination()

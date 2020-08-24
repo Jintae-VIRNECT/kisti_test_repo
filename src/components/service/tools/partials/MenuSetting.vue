@@ -65,8 +65,8 @@ export default {
     serverRecording(isStart) {
       this.logger('Server Record ::', isStart)
     },
-    localRecording(isStart) {
-      this.recording = isStart
+    localRecording(status) {
+      this.recording = status.isStart
     },
   },
 
