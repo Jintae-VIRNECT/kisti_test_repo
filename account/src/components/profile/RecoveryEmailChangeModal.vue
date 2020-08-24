@@ -11,12 +11,14 @@
         class="virnect-login-form"
         ref="form"
         :model="form"
+        :rules="rules"
         @submit.native.prevent="submit"
       >
         <el-form-item
           :label="$t('profile.recoveryEmailChangeModal.recoveryEmail')"
+          prop="recoveryEmail"
         >
-          <el-input v-model="form.recoveryEmail" />
+          <el-input v-model="form.recoveryEmail" :maxlength="50" />
         </el-form-item>
       </el-form>
     </div>
@@ -43,6 +45,15 @@ export default {
       form: {
         recoveryEmail: '',
       },
+      rules: {
+        recoveryEmail: [
+          {
+            type: 'email',
+            max: 50,
+            message: this.$t('profile.recoveryEmailChangeModal.message.wrong'),
+          },
+        ],
+      },
     }
   },
   watch: {
@@ -52,6 +63,12 @@ export default {
   },
   methods: {
     async submit() {
+      // 유효성 검사
+      try {
+        await this.$refs.form.validate()
+      } catch (e) {
+        return false
+      }
       try {
         await profileService.updateMyProfile(this.form)
         this.$notify.success({

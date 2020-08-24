@@ -121,3 +121,13 @@
   border-color: #edf0f4;
   opacity: 0.6;
 }
+
+// element ui danger
+.el-form-item__error {
+  color: $color-danger;
+}
+.el-form-item.is-error {
+  .el-input__inner {
+    border-color: $color-danger;
+  }
+}
