@@ -1,7 +1,8 @@
 package com.virnect.content.event;
 
-import com.virnect.content.dao.ContentRepository;
+import com.virnect.content.dao.ContentDownloadLogRepository;
 import com.virnect.content.domain.Content;
+import com.virnect.content.domain.ContentDownloadLog;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
@@ -9,7 +10,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.io.FileOutputStream;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -22,7 +22,7 @@ import java.io.FileOutputStream;
 @RequiredArgsConstructor
 @Slf4j
 public class ContentEventListener {
-    private final ContentRepository contentRepository;
+    private final ContentDownloadLogRepository contentDownloadLogRepository;
 
     @EventListener
     public void contentUpdateRollback(ContentUpdateFileRollbackEvent event) {
@@ -40,9 +40,14 @@ public class ContentEventListener {
     @EventListener
     public void ContentDownloadHit(ContentDownloadHitEvent event) {
         Content content = event.getContent();
-        log.info("CURRENT => Content: [{}] DownloadHits: [{}]", content.getName(), content.getDownloadHits());
-        content.setDownloadHits(content.getDownloadHits() + 1);
-        contentRepository.save(content);
-        log.info("UPDATE => Content: [{}] DownloadHits: [{}]", content.getName(), content.getDownloadHits());
+        ContentDownloadLog contentDownloadLog = ContentDownloadLog.
+                builder()
+                .workspaceUUID(content.getWorkspaceUUID())
+                .contentName(content.getName())
+                .contentSize(content.getSize())
+                .contentUploader(content.getUserUUID())
+                .downloader(event.getDownloader())
+                .build();
+        contentDownloadLogRepository.save(contentDownloadLog);
     }
 }

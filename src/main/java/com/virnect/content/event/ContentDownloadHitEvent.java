@@ -15,4 +15,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ContentDownloadHitEvent {
     private final Content content;
+    private final String downloader;
 }

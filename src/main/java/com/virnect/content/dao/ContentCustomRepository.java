@@ -27,5 +27,5 @@ public interface ContentCustomRepository {
 
     List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList);
 
-    ContentResourceUsageInfoResponse calculateResourceUsageAmountByWorkspaceId(String workspaceId);
+    Long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
 }

@@ -8,10 +8,7 @@ import com.virnect.content.application.license.LicenseRestService;
 import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.application.workspace.WorkspaceRestService;
-import com.virnect.content.dao.ContentRepository;
-import com.virnect.content.dao.SceneGroupRepository;
-import com.virnect.content.dao.TargetRepository;
-import com.virnect.content.dao.TypeRepository;
+import com.virnect.content.dao.*;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataDto;
 import com.virnect.content.dto.request.*;
@@ -54,6 +51,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,6 +73,7 @@ public class ContentService {
     private final SceneGroupRepository sceneGroupRepository;
     private final TargetRepository targetRepository;
     private final TypeRepository typeRepository;
+    private final ContentDownloadLogRepository contentDownloadLogRepository;
 
     private final UserRestService userRestService;
     private final ProcessRestService processRestService;
@@ -489,7 +488,7 @@ public class ContentService {
         checkLicenseDownload(content.getWorkspaceUUID());
 
         ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
-        eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
         return responseEntity;
     }
 
@@ -507,7 +506,7 @@ public class ContentService {
         checkLicenseDownload(content.getWorkspaceUUID());
 
         ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
-        eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
         return responseEntity;
     }
 
@@ -523,7 +522,7 @@ public class ContentService {
         checkLicenseDownload(content.getWorkspaceUUID());
 
         ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
-        eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
         return responseEntity;
     }
 
@@ -1021,7 +1020,7 @@ public class ContentService {
          */
         ContentUploadResponse contentUploadResponse = contentUpload(uploadRequest).getData();
         List<ContentTargetResponse> contentTargetResponseList = content.getTargetList().stream()
-                .map(target -> this.modelMapper.map(target,ContentTargetResponse.class)).collect(Collectors.toList());
+                .map(target -> this.modelMapper.map(target, ContentTargetResponse.class)).collect(Collectors.toList());
 
         contentUploadResponse.setTargets(contentTargetResponseList);
         return new ApiResponse<>(contentUploadResponse);
@@ -1574,8 +1573,9 @@ public class ContentService {
     }
 
     @Transactional(readOnly = true)
-    public ApiResponse<ContentResourceUsageInfoResponse> getContentResourceUsageInfo(String workspaceId) {
-        ContentResourceUsageInfoResponse contentResourceUsageInfoResponse = contentRepository.calculateResourceUsageAmountByWorkspaceId(workspaceId);
-        return new ApiResponse<>(contentResourceUsageInfoResponse);
+    public ApiResponse<ContentResourceUsageInfoResponse> getContentResourceUsageInfo(String workspaceId, LocalDateTime startDate, LocalDateTime endDate) {
+        long storageUsage = contentRepository.calculateTotalStorageAmountByWorkspaceId(workspaceId);
+        long downloadHit = contentDownloadLogRepository.calculateResourceUsageAmountByWorkspaceIdAndStartDateAndEndDate(workspaceId, startDate, endDate);
+        return new ApiResponse<>(new ContentResourceUsageInfoResponse(workspaceId, storageUsage, downloadHit, LocalDateTime.now()));
     }
 }

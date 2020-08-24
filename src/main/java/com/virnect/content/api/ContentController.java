@@ -13,6 +13,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -472,14 +474,20 @@ public class ContentController {
 
     @ApiOperation(value = "워크스페이스 사용 용량 및 다운로드 횟수 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "워크스페이스 식별자", name = "workspaceId", required = true, paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8")
+            @ApiImplicitParam(value = "워크스페이스 식별자", name = "workspaceId", required = true, paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(value = "사용랑 조회 시작 일자", name = "startDate", required = true, paramType = "query", example = "2020-07-24T10:00:00"),
+            @ApiImplicitParam(value = "사용랑 조회 종료 일자", name = "endDate", required = true, paramType = "query", example = "2020-08-24T23:59:59")
     })
     @GetMapping("/resources/report/{workspaceId}")
-    public ResponseEntity<ApiResponse<ContentResourceUsageInfoResponse>> getContentResourceUsageInfoRequest(@PathVariable("workspaceId") String workspaceId) {
+    public ResponseEntity<ApiResponse<ContentResourceUsageInfoResponse>> getContentResourceUsageInfoRequest(@PathVariable("workspaceId") String workspaceId,
+                                                                                                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+                                                                                                            @RequestParam(name = "startDate") LocalDateTime startDate,
+                                                                                                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+                                                                                                            @RequestParam(name = "endDate") LocalDateTime endDate) {
         if (StringUtils.isEmpty(workspaceId)) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(workspaceId);
+        ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(workspaceId, startDate, endDate);
         return ResponseEntity.ok(responseMessage);
     }
 }
