@@ -6,6 +6,8 @@
 import Vue from 'vue'
 import SubTasksGraphTooltip from '@/components/task/SubTasksGraphTooltip'
 import StepsGraphTooltip from '@/components/task/StepsGraphTooltip'
+import { conditions } from '@/models/task/Task'
+import color from '@/models/color'
 
 // ssr error
 let bb = null
@@ -24,6 +26,9 @@ export default {
     },
   },
   methods: {
+    con2color(con) {
+      return color[conditions.find(c => c.value === con).color]
+    },
     initProcessGraph() {
       const json = this.data
       const heightSize = 200 + json.length * 60
@@ -36,9 +41,8 @@ export default {
             ['x', ...json.map(item => item.id || item.subTaskId)],
             ['value', ...graphData],
           ],
-          color(color, d) {
-            const colors = ['#f89637', '#2cbc65', '#186ae2']
-            return colors[d.index % 3]
+          color(_, d) {
+            return self.con2color(json[d.index].conditions)
           },
           type: 'bar',
           axes: {
