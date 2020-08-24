@@ -233,7 +233,6 @@ export default {
 
   .modal--footer {
     padding: 1.714em 2em 2.429em;
-    // border-top: 1px solid #7f7f7f;
   }
 }
 
