@@ -148,6 +148,7 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-rabbitmq:master").push("master")
+                  docker.image("pf-rabbitmq:master").push("latest")
                 }
               }
 
