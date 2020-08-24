@@ -125,9 +125,7 @@ export default {
     }
   },
   methods: {
-    showList() {
-      console.log('fuck')
-    },
+    showList() {},
   },
 }
 </script>
