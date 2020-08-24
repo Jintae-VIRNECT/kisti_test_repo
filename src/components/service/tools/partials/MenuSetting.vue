@@ -62,8 +62,8 @@ export default {
       }
       this.status = !this.status
     },
-    localRecording(isStart) {
-      this.recording = isStart
+    localRecording(status) {
+      this.recording = status.isStart
     },
   },
 
