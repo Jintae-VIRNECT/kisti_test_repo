@@ -4,7 +4,6 @@ import LocalRecorder from 'utils/localRecorder'
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { getWH, RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
-import { logger } from 'utils/logger'
 
 export default {
   name: 'LocalRecordMenu',
@@ -181,17 +180,12 @@ export default {
 
         return true
       } else {
-        logger('LocalRecorder', 'initRecorder Failed')
+        this.logger('LocalRecorder', 'initRecorder Failed')
         return false
       }
     },
 
-    /**
-     * stop recorder
-     * @param {Boolean} showMsg show toast msg
-     *
-     */
-    async stopRecord(showMsg, stopType) {
+    async stopRecord(stopType) {
       try {
         if (this.recorder) {
           this.recorder.stopRecord()
@@ -201,17 +195,13 @@ export default {
             })
           }
 
-          if (showMsg) {
-            switch (stopType) {
-              case 'nostream':
-                this.toastDefault(
-                  this.$t('service.record_end_no_stream_message'),
-                )
-                break
-              default:
-                this.toastDefault(this.$t('service.record_end_message'))
-                break
-            }
+          switch (stopType) {
+            case 'nostream':
+              this.toastDefault(this.$t('service.record_end_no_stream_message'))
+              break
+            default:
+              this.toastDefault(this.$t('service.record_end_message'))
+              break
           }
         }
       } catch (e) {
@@ -285,8 +275,7 @@ export default {
         !isStart &&
         this.localRecordStatus === LCOAL_RECORD_STAUTS.START
       ) {
-        const showMsg = true
-        this.stopRecord(showMsg, stopType)
+        this.stopRecord(stopType)
       }
     },
 

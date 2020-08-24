@@ -1,6 +1,5 @@
 import { startServerRecord, stopServerRecord } from 'api/workspace/record'
 import { mapGetters } from 'vuex'
-import { logger } from 'utils/logger'
 
 export default {
   data() {
@@ -14,7 +13,7 @@ export default {
   methods: {
     async startServerRecord() {
       try {
-        logger('SERVER RECORD', 'start')
+        this.logger('SERVER RECORD', 'start')
 
         let today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
 
@@ -48,7 +47,7 @@ export default {
       }
     },
     async stopServerRecord() {
-      logger('SERVER RECORD', 'stop')
+      this.logger('SERVER RECORD', 'stop')
       if (this.recordingId) {
         await stopServerRecord({ id: this.recordingId })
         this.recordingId = null
