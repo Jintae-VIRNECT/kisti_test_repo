@@ -11,7 +11,6 @@ pipeline {
         catchError() {
           sh 'npm cache verify'
           sh 'npm install'
-          sh 'cp docker/Dockerfile ./'
         }
       }
     }
