@@ -44,6 +44,7 @@ func SetupRouter() *gin.Engine {
 		recording := recorder.Group("/recording")
 		{
 			recording.POST("", api.StartRecording)
+			recording.DELETE("", api.StopRecordingBySessionID)
 			recording.DELETE(":id", api.StopRecording)
 			recording.GET("", api.ListRecordings)
 		}

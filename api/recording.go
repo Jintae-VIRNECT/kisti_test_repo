@@ -34,11 +34,16 @@ type StartRecordingResponse struct {
 }
 
 type StopRecordingResponse struct {
-	RecordingID string `json:"recordingId"`
+	RecordingIDs []string `json:"recordingIds"`
 }
 
 type ListRecordingResponse struct {
 	RecordingIDs []string `json:"recordingIds"`
+}
+
+type StopRecordingQuery struct {
+	// search by session id
+	SessionID string `json:"session_id" example:"session_id"`
 }
 
 // @Summary Start Recording
@@ -172,7 +177,28 @@ func StopRecording(c *gin.Context) {
 
 	recorder.StopRecording(c.Request.Context(), recordingID, "stop")
 
-	sendResponseWithSuccess(c, StopRecordingResponse{recordingID})
+	sendResponseWithSuccess(c, StopRecordingResponse{[]string{recordingID}})
+}
+
+// @Summary Stop Recordings By SessionId
+// @Description Stop Recordings By SessionId
+// @tags Recording
+// @Produce json
+// @Param sessionID query StopRecordingQuery false "description"
+// @Success 200 {object} successResponse{data=StopRecordingResponse}
+// @Router /remote/recorder/recording [delete]
+func StopRecordingBySessionID(c *gin.Context) {
+	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
+
+	sessionID, _ := c.GetQuery("session_id")
+
+	log.Debug("stop recordings (session_id:", sessionID, ")")
+
+	body := ListRecordingResponse{make([]string, 0)}
+	ids, _ := recorder.StopRecordingBySessionID(c.Request.Context(), sessionID)
+	log.Debug(ids)
+	body.RecordingIDs = append(body.RecordingIDs, ids...)
+	sendResponseWithSuccess(c, body)
 }
 
 // @Summary List Recordings

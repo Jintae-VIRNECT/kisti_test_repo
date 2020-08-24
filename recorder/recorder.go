@@ -141,14 +141,27 @@ func StopRecording(ctx context.Context, recordingID string, reason string) error
 		return ErrNotFoundRecordingID
 	}
 
-	r.timeout.Stop()
-
-	dockerclient.StopContainer(ctx, r.containerID)
-
-	insertIntoDB(ctx, recordingID)
-
-	delete(recorderMap, recordingID)
+	r.stop(ctx)
 	return nil
+}
+
+func StopRecordingBySessionID(ctx context.Context, sessionID string) ([]string, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	var recordingIDs []string
+
+	recorderMapMux.Lock()
+	defer recorderMapMux.Unlock()
+	for id, recording := range recorderMap {
+		if recording.sessionID == sessionID {
+			recordingIDs = append(recordingIDs, id)
+
+			recording.stop(ctx)
+		}
+	}
+	log.Debugf("stop recording: sessionID:%s recordingIDs:%+v", sessionID, recordingIDs)
+
+	return recordingIDs, nil
 }
 
 func RestoreRecording(ctx context.Context, recordingID string, containerID string, recordingTimeLimit int64) {
@@ -269,4 +282,13 @@ func restoreRecordingFromContainer(ctx context.Context) {
 		RestoreRecording(ctx, container.RecordingID, container.ID, recordingTimeLimit)
 	}
 	log.Info("End: Restore Recording From Container")
+}
+
+func (r *recording) stop(ctx context.Context) {
+	r.timeout.Stop()
+	delete(recorderMap, r.ID)
+	go func() {
+		dockerclient.StopContainer(ctx, r.containerID)
+		insertIntoDB(ctx, r.ID)
+	}()
 }

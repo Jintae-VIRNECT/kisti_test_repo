@@ -24,7 +24,7 @@ type RemoveRecordingFilesResponse struct {
 	Count int `json:"count"`
 }
 
-type Query struct {
+type ListRecordingFilesQuery struct {
 	// search by filename. exact match and partial match is supported
 	Filename string `json:"filename" example:"2020-08-14_12-00-00.mp4"`
 	// search by recording_id
@@ -52,7 +52,7 @@ type Query struct {
 // @Summary List Recording Files
 // @Description List Recordings Files
 // @tags Recording File
-// @Param filename query Query false "description"
+// @Param filename query ListRecordingFilesQuery false "description"
 // @Produce json
 // @Success 200 {object} successResponse{data=ListRecordingFilesResponse}
 // @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
