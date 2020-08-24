@@ -153,6 +153,7 @@ pipeline {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                                     docker.image("rm-recordserver:${GIT_TAG}").push("${GIT_TAG}")
+                                    docker.image("rm-recordserver:${GIT_TAG}").push("latest")
                                 }
                             }
 
