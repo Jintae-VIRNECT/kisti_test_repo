@@ -16,7 +16,7 @@
         </article>
       </transition-group>
     </vue2-scrollbar>
-    <invite-modal :visible.sync="invite" :maxSelect="max"></invite-modal>
+    <invite-modal :visible.sync="invite"></invite-modal>
     <select-view
       :visible.sync="selectview"
       @share="share"
@@ -27,7 +27,6 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { maxParticipants } from 'utils/callOptions'
 import { ROLE } from 'configs/remote.config'
 
 import ParticipantVideo from './ParticipantVideo'
@@ -47,16 +46,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['participants', 'roomMember', 'mainView', 'viewForce']),
+    ...mapGetters(['participants', 'mainView', 'viewForce']),
     showInvite() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
         return false
       }
-    },
-    max() {
-      return maxParticipants - this.roomMember.length
     },
   },
   watch: {

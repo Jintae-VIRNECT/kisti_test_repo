@@ -17,7 +17,7 @@
         v-for="room of roomList"
         :key="room.sessionId"
         :room="room"
-        @join="join(room)"
+        @join="join"
         @leave="leave(room.sessionId)"
         @remove="remove(room.sessionId)"
       ></remote-card>
@@ -33,7 +33,6 @@ import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
 import roomMixin from 'mixins/room'
 
-import { mapActions } from 'vuex'
 export default {
   name: 'WorkspaceRemote',
   mixins: [searchMixin, confirmMixin, roomMixin],
@@ -76,7 +75,6 @@ export default {
     'list.length': 'scrollReset',
   },
   methods: {
-    ...mapActions(['setRoomInfo']),
     async refresh() {
       this.loading = true
       await this.init()

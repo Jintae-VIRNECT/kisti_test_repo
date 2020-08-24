@@ -31,16 +31,19 @@
         <div class="invite-modal__current-list">
           <figure
             class="invite-modal__current-user"
-            v-for="user of currentUser"
+            v-for="(user, idx) of currentUser"
             :key="user.uuid"
           >
             <tooltip :content="user.nickname || user.nickName">
               <div class="invite-modal__profile" slot="body">
                 <profile
-                  :image="user.profile"
+                  :image="user ? user.profile : 'default'"
                   :thumbStyle="{ width: '3.714em', height: '3.714em' }"
                 ></profile>
-                <button class="invite-modal__current-kickout" @click="kickout">
+                <button
+                  class="invite-modal__current-kickout"
+                  @click="kickout(user.uuid, idx)"
+                >
                   {{ $t('button.kickout') }}
                 </button>
               </div>
@@ -52,7 +55,7 @@
       <room-invite
         :users="users"
         :selection="selection"
-        :total="totalElements"
+        :total="users.length"
         :loading="loading"
         @userSelect="selectUser"
         @inviteRefresh="init"
@@ -86,8 +89,7 @@ import Tooltip from 'Tooltip'
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { inviteRoom, getMember } from 'api/service'
-import { getRoomInfo } from 'api/workspace'
+import { inviteRoom, getMember, kickMember } from 'api/service'
 export default {
   name: 'InviteModal',
   mixins: [toastMixin, confirmMixin],
@@ -100,12 +102,10 @@ export default {
   },
   data() {
     return {
-      currentUser: [],
       selection: [],
       nouser: false,
       visibleFlag: false,
       users: [],
-      totalElements: 0,
       loading: false,
     }
   },
@@ -114,32 +114,55 @@ export default {
       type: Boolean,
       default: false,
     },
-    maxSelect: {
-      type: Number,
-      default: 0,
-    },
   },
   computed: {
-    ...mapGetters(['roomInfo', 'roomMember']),
+    ...mapGetters(['roomInfo']),
+    currentUser() {
+      return this.roomInfo.memberList.filter(user => {
+        return user.memberStatus !== 'LOAD'
+      })
+    },
+    maxSelect() {
+      return this.roomInfo.maxUserCount - 1
+    },
   },
   watch: {
     visible(flag) {
       if (flag) {
         this.init()
+      } else {
+        this.selection = []
+        this.nouser = false
+        this.visibleFlag = false
+        this.users = []
+        this.loading = false
       }
       this.visibleFlag = flag
     },
   },
   methods: {
-    ...mapActions(['addMember']),
+    ...mapActions(['addMember', 'removeMember']),
     reset() {
       this.selection = []
     },
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    kickout() {
-      console.log('kickout user')
+    async kickout(participantId, idx) {
+      const params = {
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+        leaderId: this.account.uuid,
+        participantId,
+      }
+      const res = await kickMember(params)
+      if (res.result === true) {
+        this.toastNotify('사용자를 내보냈습니다.')
+
+        const user = this.currentUser.slice(idx, 1)[0]
+        this.users.push(user)
+        this.removeMember(participantId)
+      }
     },
     selectUser(user) {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
@@ -160,18 +183,12 @@ export default {
         size: 100,
         workspaceId: this.workspace.uuid,
       })
-      const roomInfo = await getRoomInfo({
-        sessionId: this.roomInfo.sessionId,
-        workspaceId: this.workspace.uuid,
-      })
-      this.currentUser = roomInfo.memberList.filter(user => {
-        return user.memberStatus !== 'LOAD'
-      })
       this.users = res.memberInfoList.filter(
         member =>
-          roomInfo.memberList.findIndex(part => part.uuid === member.uuid) < 0,
+          this.roomInfo.memberList.findIndex(
+            part => part.uuid === member.uuid,
+          ) < 0,
       )
-      this.totalElements = res.pageMeta.totalElements - this.roomMember.length
       this.loading = false
       this.selection = []
     },
@@ -187,7 +204,7 @@ export default {
         participantIds,
       }
       const res = await inviteRoom(params)
-      if (res === true) {
+      if (res.result === true) {
         this.addMember(this.selection)
         // TODO: MESSAGE
         this.toastNotify(this.$t('service.invite_success'))

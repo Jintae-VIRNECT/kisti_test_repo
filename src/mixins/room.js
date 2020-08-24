@@ -6,7 +6,7 @@ import { mapActions } from 'vuex'
 export default {
   mixins: [toastMixin],
   methods: {
-    ...mapActions(['roomClear']),
+    ...mapActions(['roomClear', 'setRoomInfo']),
     async join(room) {
       this.logger('>>> JOIN ROOM')
       try {

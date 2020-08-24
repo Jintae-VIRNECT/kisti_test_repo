@@ -62,7 +62,6 @@ export default {
   data() {
     return {
       show: 'chat',
-      participantsCount: 1,
     }
   },
   computed: {

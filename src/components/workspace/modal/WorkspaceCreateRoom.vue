@@ -36,6 +36,7 @@ import {
   getHistorySingleItem,
   createRoom,
   updateRoomProfile,
+  getRoomInfo,
 } from 'api/workspace'
 import { sendPush } from 'api/common'
 import { ROLE } from 'configs/remote.config'
@@ -176,17 +177,15 @@ export default {
         }
         const connRes = await this.$call.connect(createdRes, ROLE.LEADER)
 
-        const roomInfo = {
+        const roomInfo = await getRoomInfo({
           sessionId: createdRes.sessionId,
-          title: info.title,
-          description: info.description,
-          leaderId: this.account.uuid,
-          participantsCount: selectedUserIds.length + 1,
-          maxParticipantCount: 3,
-          memberList: [...selectedUser, this.account],
-        }
+          workspaceId: this.workspace.uuid,
+        })
 
-        this.setRoomInfo(roomInfo)
+        this.setRoomInfo({
+          ...roomInfo,
+          leaderId: this.account.uuid,
+        })
         if (connRes) {
           this.$eventBus.$emit('popover:close')
 

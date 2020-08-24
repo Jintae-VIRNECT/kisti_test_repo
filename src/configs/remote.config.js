@@ -15,6 +15,7 @@ export const SIGNAL = {
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
+  SYSTEM: 'signal:system',
 }
 
 export const VIDEO = {
@@ -94,6 +95,10 @@ export const AR_DRAWING = {
 export const CAPTURE_PERMISSION = {
   REQUEST: 'request',
   RESPONSE: 'response',
+}
+
+export const SYSTEM = {
+  EVICT: 'evict',
 }
 
 export const ROLE = {

@@ -109,6 +109,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { EVENT } from 'configs/push.config'
+import { ROLE } from 'configs/remote.config'
 import { sendPush } from 'api/common/message'
 import { getRoomInfo } from 'api/workspace'
 
@@ -152,7 +153,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo', 'addAlarm', 'removeAlarm', 'updateAlarm']),
+    ...mapActions(['addAlarm', 'removeAlarm', 'updateAlarm']),
     notice() {
       if (this.onPush) return
       console.log('notice list refresh logic')
@@ -261,7 +262,13 @@ export default {
       }
       try {
         const room = await getRoomInfo(params)
-        this.join(room)
+        const user = room.memberList.find(
+          member => member.memberType === ROLE.LEADER,
+        )
+        this.join({
+          ...room,
+          leaderId: user ? user.uuid : null,
+        })
         const contents = {
           nickName: this.account.nickname,
         }

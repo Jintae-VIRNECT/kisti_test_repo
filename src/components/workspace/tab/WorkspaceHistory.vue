@@ -11,7 +11,7 @@
     :showDeleteButton="true"
     :showRefreshButton="true"
     :deleteButtonText="$t('button.remove_all')"
-    :listCount="historyList.length"
+    :listCount="pageMeta.totalElements"
     :loading="loading"
     @refresh="init"
     @delete="deleteAll"
@@ -79,6 +79,7 @@ export default {
         currentSize: 0,
         totalElements: 0,
         totalPage: 0,
+        last: false,
       },
       paging: false,
     }
@@ -112,7 +113,6 @@ export default {
       }
     },
     searchFilter() {},
-    'list.length': 'scrollReset',
   },
   methods: {
     //상세보기
@@ -200,7 +200,7 @@ export default {
       if (event.bottom !== true) return
       if (
         this.historyList.length === 0 ||
-        this.pageMeta.currentPage === this.pageMeta.totalPage ||
+        this.pageMeta.last === true ||
         this.paging === true
       )
         return
@@ -214,7 +214,7 @@ export default {
         const datas = await getHistoryList({
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
-          paging: false,
+          paging: true,
           page,
         })
         this.pageMeta = datas.pageMeta

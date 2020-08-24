@@ -159,7 +159,10 @@ export default {
       this.title = info.title
     },
     join() {
-      this.$emit('join')
+      this.$emit('join', {
+        ...this.room,
+        leaderId: this.leader.uuid,
+      })
     },
   },
 

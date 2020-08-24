@@ -93,6 +93,12 @@ export const addSessionEventListener = session => {
     Store.commit('removeStream', connectionId)
     removeSubscriber(event.stream.streamId)
   })
+  // user leave
+  session.on(SIGNAL.SYSTEM, () => {
+    logger('room', 'evict by system')
+    _.leave()
+    vue.$router.push({ name: 'workspace' })
+  })
 
   /** 메인뷰 변경 */
   session.on(SIGNAL.VIDEO, event => {
