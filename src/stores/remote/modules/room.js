@@ -15,9 +15,6 @@ function getDefaultRoomInfo() {
     leaderId: null,
     maxParticipantCount: 0,
     memberList: [],
-    token: null,
-    coturn: [],
-    wss: null,
   }
 }
 const state = getDefaultRoomInfo()
@@ -32,9 +29,6 @@ const mutations = {
     state.leaderId = payload.leaderId
     state.maxParticipantCount = payload.maxParticipantCount
     state.memberList = payload.memberList
-    state.token = payload.token
-    state.coturn = payload.coturn
-    state.wss = payload.wss
   },
 
   [ADD_ROOM_MEMBER](state, payload) {

@@ -181,10 +181,11 @@ export default {
           participantsCount: selectedUser.length + 1,
           maxParticipantCount: 3,
           memberList: [...selectedUser, this.account],
-          token: createdRes.token,
-          coturn: createdRes.coturn,
-          wss: createdRes.wss,
         }
+
+        window.urls['token'] = createdRes.token
+        window.urls['coturn'] = createdRes.coturn
+        window.urls['wss'] = createdRes.wss
 
         this.setRoomInfo(roomInfo)
         if (connRes) {

@@ -18,13 +18,13 @@ export default {
         let today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
 
         const options = {
-          iceServers: this.roomInfo.coturn,
+          iceServers: window.urls['coturn'],
           role: 'PUBLISHER',
-          wsUri: this.roomInfo.wss,
+          wsUri: window.urls['wss'],
         }
 
         const token = `${
-          this.roomInfo.token
+          window.urls['token']
         }&recorder=true&options=${JSON.stringify(options)}`
 
         const result = await startServerRecord({
