@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const path = require('path')
 const config = require('./server/config')
+const url = require('url')
 
 function IsAllowBrowser(req) {
   const userAgent = req.headers['user-agent']
@@ -82,7 +83,18 @@ router.get('/urls', function(req, res) {
 })
 
 router.get('/record', function(req, res) {
-  res.sendFile(path.join(__dirname, '/record/record.html'))
+  const parsedURL = url.parse(req.url, true)
+  const query = parsedURL.query
+
+  const token = query.token
+  const options = query.options
+  const recorder = query.recorder
+
+  if (token !== undefined && options !== undefined && recorder !== undefined) {
+    res.sendFile(path.join(__dirname, '/record/record.html'))
+  } else {
+    res.redirect('/home')
+  }
 })
 
 router.get('/*', function(req, res) {
