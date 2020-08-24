@@ -12,7 +12,6 @@
 
 <script>
 import toolMixin from './toolMixin'
-import { ROLE } from 'configs/remote.config'
 export default {
   name: 'ServerRecordMenu',
   mixins: [toolMixin],
@@ -25,11 +24,8 @@ export default {
     canRecord() {
       if (this.disabled) {
         return false
-      }
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
       } else {
-        return false
+        return true
       }
     },
   },
