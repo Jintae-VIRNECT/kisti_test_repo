@@ -52,6 +52,7 @@ const layoutSelector = streamCount => {
 
   videoContainer.classList.remove(
     'container',
+    'one',
     'two',
     'three',
     'four',
@@ -61,7 +62,9 @@ const layoutSelector = streamCount => {
 
   videoContainer.classList.add('container')
 
-  if (streamCount === 2) {
+  if (streamCount === 1) {
+    videoContainer.classList.add('one')
+  } else if (streamCount === 2) {
     videoContainer.classList.add('two')
   } else if (streamCount === 3) {
     videoContainer.classList.add('three')
