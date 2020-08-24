@@ -9,6 +9,7 @@
     "stream_no_worker": "접속중인 작업자가 없습니다.",
     "stream_stop": "영상을 정지하였습니다.",
     "stream_background": "작업자의 Remote App이<br />백그라운드 상태입니다.",
+    "stream_stoped": "참가자의 영상이 일시정지 상태입니다.",
     "stream_off": "카메라 꺼짐",
     "stream_choice": "참가자 리스트에서 영상을<br> 선택해 주세요.",
     "stream_choice_share": "선택한 영상을 모든 참가자와 공유하시겠습니까?",

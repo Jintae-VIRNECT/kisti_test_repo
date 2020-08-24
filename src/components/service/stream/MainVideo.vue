@@ -97,7 +97,7 @@
       >
         <transition name="opacity">
           <!-- 영상 백그라운드 및 정지 표출 -->
-          <div class="main-video__empty-inner">
+          <div class="main-video__empty-inner" v-if="mainView.me !== true">
             <img src="~assets/image/img_video_stop.svg" />
             <p>{{ $t('service.stream_stop') }}</p>
             <p
@@ -108,6 +108,10 @@
             <p class="inner-discription" v-else>
               {{ $t('service.stream_stoped') }}
             </p>
+          </div>
+          <div class="main-video__empty-inner" v-else>
+            <img src="~assets/image/img_novideo.svg" />
+            <p>{{ $t('service.stream_off') }}</p>
           </div>
         </transition>
       </div>
