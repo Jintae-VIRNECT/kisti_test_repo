@@ -200,6 +200,7 @@ export default {
     },
     saveInfo() {
       const params = {
+        uuid: this.account.uuid,
         title: this.title,
         description: this.description,
         sessionId: this.room.sessionId,

@@ -18,7 +18,6 @@ export default {
 
         const res = await joinRoom({
           uuid: this.account.uuid,
-          email: this.account.email,
           memberType: role,
           deviceType: DEVICE.WEB,
           sessionId: room.sessionId,

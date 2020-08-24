@@ -5,19 +5,19 @@ import http from 'api/gateway'
  * @query {String} sessionId
  * @query {String} workspaceId
  * @param {String} leaderId
- * @param {Array[Object]} participants { id, email }
+ * @param {Array[String]} participantIds
  */
 export const inviteRoom = async ({
   sessionId,
   workspaceId,
   leaderId,
-  participants,
+  participantIds = [],
 }) => {
   const returnVal = await http('INVITE_ROOM', {
     sessionId,
     workspaceId,
     leaderId,
-    participants,
+    participantIds,
   })
 
   return returnVal
@@ -66,6 +66,24 @@ export const kickMember = async function({
     workspaceId,
     leaderId,
     participantId,
+  })
+  return returnVal
+}
+
+/**
+ * 통화중 신호 전송
+ * @query {String} workspaceId
+ * @param {String} sessionId
+ * @param {Array[String]} to
+ * @param {String} type
+ * @param {String} data
+ */
+export const sendSignal = async function({ sessionId, to, type, data }) {
+  const returnVal = await http('SEND_SIGNAL', {
+    sessionId,
+    to,
+    type,
+    data: JSON.stringify(data),
   })
   return returnVal
 }

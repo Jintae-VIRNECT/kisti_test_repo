@@ -176,19 +176,15 @@ export default {
       this.selection = []
     },
     async invite() {
-      if (this.checkBeta()) return
-      const participants = []
+      const participantIds = []
       for (let select of this.selection) {
-        participants.push({
-          id: select.uuid,
-          email: select.email,
-        })
+        participantIds.push(select.uuid)
       }
       const params = {
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
         leaderId: this.account.uuid,
-        participants,
+        participantIds,
       }
       const res = await inviteRoom(params)
       if (res === true) {

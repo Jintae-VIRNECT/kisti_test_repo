@@ -17,6 +17,7 @@ import { reset } from 'utils/callOptions'
 import { hexToAHEX, ahexToHEX } from 'utils/color'
 import { SIGNAL } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
+// import { sendSignal } from 'api/service'
 import {
   normalizedPosX,
   normalizedPosY,
@@ -59,7 +60,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'mainView', 'viewAction']),
+    ...mapGetters(['tools', 'mainView', 'viewAction', 'roomInfo']),
     pointingColor() {
       return this.tools ? this.tools.color : reset.color
     },
@@ -78,6 +79,8 @@ export default {
       let posY = normalizedPosY(event.offsetY, this.videoSize.height)
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
+      if (posX < -1) posX = -1
+      if (posY < -1) posY = -1
       this.$call.pointing({
         to: [this.mainView.id],
         from: this.account.uuid,
@@ -87,6 +90,20 @@ export default {
         posX,
         posY,
       })
+      // sendSignal({
+      //   sessionId: this.roomInfo.sessionId,
+      //   to: [this.mainView.connectionId],
+      //   type: 'signal:pointing',
+      //   data: {
+      //     to: [this.mainView.id],
+      //     from: this.account.uuid,
+      //     color: hexToAHEX(this.pointingColor, 1),
+      //     opacity: 1,
+      //     width: this.radius,
+      //     posX,
+      //     posY,
+      //   },
+      // })
     },
     receivePointing(receive) {
       const data = JSON.parse(receive.data)

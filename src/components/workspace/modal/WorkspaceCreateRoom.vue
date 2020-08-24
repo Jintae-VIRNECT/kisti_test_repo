@@ -32,10 +32,13 @@ import { mapActions } from 'vuex'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
-import { createRoom } from 'api/workspace/room'
-import { sendPush } from 'api/common/message'
+import {
+  getHistorySingleItem,
+  createRoom,
+  updateRoomProfile,
+} from 'api/workspace'
+import { sendPush } from 'api/common'
 import { ROLE } from 'configs/remote.config'
-import { getHistorySingleItem } from 'api/workspace/history'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { EVENT } from 'configs/push.config'
@@ -157,14 +160,20 @@ export default {
         }
 
         const createdRes = await createRoom({
-          file: info.imageFile,
           title: info.title,
           description: info.description,
           leaderId: this.account.uuid,
-          leaderEmail: this.account.email,
-          participants: selectedUser,
+          participantIds: selectedUserIds,
           workspaceId: this.workspace.uuid,
         })
+        if (info.imageFile) {
+          updateRoomProfile({
+            profile: info.imageFile,
+            sessionId: createdRes.sessionId,
+            uuid: this.account.uuid,
+            workspaceId: this.workspace.uuid,
+          })
+        }
         const connRes = await this.$call.connect(createdRes, ROLE.LEADER)
 
         const roomInfo = {
@@ -172,7 +181,7 @@ export default {
           title: info.title,
           description: info.description,
           leaderId: this.account.uuid,
-          participantsCount: selectedUser.length + 1,
+          participantsCount: selectedUserIds.length + 1,
           maxParticipantCount: 3,
           memberList: [...selectedUser, this.account],
         }

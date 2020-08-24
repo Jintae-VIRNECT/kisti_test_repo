@@ -52,7 +52,7 @@
 
 <script>
 import Modal from 'Modal'
-import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
+import { getRoomInfo, updateRoomInfo, updateRoomProfile } from 'api/workspace'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import Profile from 'Profile'
@@ -125,6 +125,15 @@ export default {
     },
     async update(params) {
       try {
+        if ('image' in params && params['image'] !== null) {
+          await updateRoomProfile({
+            profile: params.image,
+            sessionId: params.sessionId,
+            uuid: this.account.uuid,
+            workspaceId: this.workspace.uuid,
+          })
+          delete params['image']
+        }
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
           this.$emit('updatedInfo', params)
