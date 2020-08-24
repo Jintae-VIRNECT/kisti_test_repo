@@ -162,8 +162,8 @@
             >
               <template slot-scope="scope">
                 <el-button
-                  v-if="scope.row.paper"
-                  @click="moveToPaper(scope.row.paper.id)"
+                  v-if="scope.row.hasPaper"
+                  @click="moveToPaper(scope.row.id)"
                 >
                   {{ $t('task.subTaskDetail.showPaper') }}
                 </el-button>
