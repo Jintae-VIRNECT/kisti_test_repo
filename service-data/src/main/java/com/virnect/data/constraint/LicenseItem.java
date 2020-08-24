@@ -3,7 +3,7 @@ package com.virnect.data.constraint;
 import static com.virnect.data.constraint.LicenseConstants.*;
 
 public enum LicenseItem {
-    ITEM_BASIC(3, LICENSE_BASIC),
+    ITEM_BASIC(6, LICENSE_BASIC),
     ITEM_BUSINESS(6, LICENSE_BUSINESS),
     ITEM_PERMANENT(9, LICENSE_PERMANENT);
 

@@ -13,8 +13,7 @@ import javax.validation.constraints.NotNull;
 @Getter
 @Setter
 @ApiModel
-public class FileUploadRequest {
-
+public class FileDownloadRequest {
     @ApiModelProperty(value = "Workspace id", example = "40f9bbee9d85dca7a34a0dd205aae718")
     @NotBlank
     private String workspaceId;
@@ -28,15 +27,15 @@ public class FileUploadRequest {
     private String uuid;
 
     @NotNull
-    private MultipartFile file;
+    private String fileName;
 
     @Override
     public String toString() {
-        return "FileUploadRequest{" +
+        return "FileDownloadRequest{" +
                 "workspaceId='" + workspaceId + '\'' +
                 ", sessionId='" + sessionId + '\'' +
                 ", userId='" + uuid + '\'' +
-                ", file='" + file.toString() + '\'' +
+                ", file='" + fileName + '\'' +
                 '}';
     }
 }

@@ -2,6 +2,9 @@ package com.virnect.serviceserver.data;
 
 
 import com.virnect.data.ApiResponse;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 public abstract class RepoDecoder<EntityType, ResponseType> {
 
@@ -34,6 +37,9 @@ public abstract class RepoDecoder<EntityType, ResponseType> {
             case DELETE:
                 processData();
                 break;
+            case FETCH:
+                processData();
+                break;
             default:
         }
 
@@ -63,6 +69,8 @@ public abstract class RepoDecoder<EntityType, ResponseType> {
 
     //abstract void invokeValidation();
 
+    //abstract EntityType fetchFromRepository();
+
     abstract EntityType loadFromDatabase();
 
     //abstract ApiResponse<ResponseType> invokeDataProcess();
@@ -74,6 +82,10 @@ public abstract class RepoDecoder<EntityType, ResponseType> {
 
     ApiResponse<ResponseType> asApiResponse() {
         return new ApiResponse<>(response.data, response.code, response.message);
+    }
+
+    ResponseEntity<byte[]> asResponseByteArray(byte[] data, HttpHeaders httpHeaders, HttpStatus status) {
+        return new ResponseEntity<>(data, httpHeaders, status);
     }
 
 

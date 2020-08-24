@@ -3,6 +3,7 @@ package com.virnect.serviceserver.api;
 import com.google.gson.JsonObject;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.api.ISessionRestAPI;
+import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.constraint.PushConstants;
 import com.virnect.data.constraint.ServiceConstants;
 import com.virnect.data.dto.feign.PushResponse;
@@ -62,10 +63,30 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        // 2. check room request member count is over
-        if(roomRequest.getLeaderId() != null && roomRequest.getParticipantIds().size() > (ServiceConstants.PRODUCT_BASIC_MAX_USER - 1)) {
-            throw new RestServiceException(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
+        DataProcess<LicenseItem> licenseItem = this.dataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
+
+        if (licenseItem.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+            ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
+                    new RoomResponse(),
+                    licenseItem.getCode(),
+                    licenseItem.getMessage()
+            );
+            return ResponseEntity.ok(apiResponse);
         }
+
+        // 2. check room request member count is over
+        if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getData().getUserCapacity()) {
+            ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
+                    new RoomResponse(),
+                    ErrorCode.ERR_ROOM_MEMBER_IS_OVER
+            );
+            return ResponseEntity.ok(apiResponse);
+        }
+
+        // 2. check room request member count is over
+        /*if(roomRequest.getLeaderId() != null && roomRequest.getParticipantIds().size() > (ServiceConstants.PRODUCT_BUSINESS_MAX_USER - 1)) {
+            throw new RestServiceException(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
+        }*/
 
         // 3. check user license type using user uuid
         //TODO : License check after test account has remote product
@@ -101,7 +122,7 @@ public class SessionRestController implements ISessionRestAPI {
 
         // 5. create room
         return ResponseEntity.ok(
-                this.dataRepository.generateRoom(roomRequest, sessionJson.toString(), tokenResult.toString())
+                this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString())
         );
     }
 

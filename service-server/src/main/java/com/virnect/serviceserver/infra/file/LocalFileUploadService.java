@@ -1,11 +1,11 @@
 package com.virnect.serviceserver.infra.file;
 
+import com.google.common.hash.Hashing;
+import com.google.common.io.BaseEncoding;
 import com.google.common.io.Files;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
+import io.minio.*;
 import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,17 +43,14 @@ public class LocalFileUploadService implements FileUploadService {
     @Value("${upload.dir}")
     private String path;
 
-
     private MinioClient minioClient = null;
-
-
 
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/remote/";
     final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
     final List<String> PROFILE_IMAGE_ALLOW_EXTENSION = Arrays.asList("jpg", "png", "JPG", "PNG");
 
     @PostConstruct
-    public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException, XmlParserException {
+    public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
         try {
             log.info("LocalFileUploadService initialised");
             minioClient = MinioClient.builder()
@@ -72,7 +70,7 @@ public class LocalFileUploadService implements FileUploadService {
     }
 
     @Override
-    public String upload(MultipartFile file) throws IOException {
+    public String upload(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 1. 빈 파일 여부 확인
         if (file.getSize() == 0) {
             throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
@@ -90,33 +88,49 @@ public class LocalFileUploadService implements FileUploadService {
             throw new RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT);
         }
 
-        log.info("UPLOAD SERVICE: ==> originName: [{}] , size: {}", file.getOriginalFilename(), file.getSize());
+        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(), file.getName(), file.getSize());
 
         String fileName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
 
         log.info("{}, {}, {}", path, fileName, fileExtension);
 
-        //minioClient.pu
+
+        String filePath = "";
+        // 4. file upload
+        // Create a InputStream for object upload.
+        //ByteArrayInputStream bais = new ByteArrayInputStream(file.getBytes());
+        try {
+            ObjectWriteResponse objectWriteResponse = minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(file.getOriginalFilename())
+                    .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                    .contentType(file.getContentType())
+                    .build());
+            filePath = "";
+        } catch (MinioException e) {
+            log.info("Upload error occurred:: {}", e.getMessage());
+        }
 
         // 3. 파일 복사
-        File convertFile = new File(path + fileName + fileExtension);
+        /*File convertFile = new File(path + fileName + fileExtension);
         log.info("{}", convertFile.getAbsolutePath());
         if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
             }
-        }
+        }*/
 
         // 4. 파일 경로 추출
-        String filePath = String.format("%s%s", url, convertFile.getPath()).replace("\\", "/");
+        //String filePath = String.format("%s%s", url, convertFile.getPath()).replace("\\", "/");
+        //String filePath = "";
         log.info("SAVE FILE_URL: {}", filePath);
         return filePath;
     }
 
     @Override
-    public String upload(MultipartFile file, String fileName) throws IOException {
+    public String upload(MultipartFile file, String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 1. 빈 파일 여부 확인
-        if(file.getSize() == 0) {
+        if (file.getSize() == 0) {
             throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
         }
 
@@ -132,23 +146,41 @@ public class LocalFileUploadService implements FileUploadService {
             throw new RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT);
         }
 
-        log.info("UPLOAD SERVICE: ==> originName: [{}] , size: {}", file.getOriginalFilename(), file.getSize());
+        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(), file.getName(), file.getSize());
 
         //String fileName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
 
         log.info("{}, {}, {}", path, fileName, fileExtension);
 
+
+        String filePath = null;
+        // 4. file upload
+        // Create a InputStream for object upload.
+        //ByteArrayInputStream bais = new ByteArrayInputStream(file.getBytes());
+        try {
+            filePath = fileName + file.getOriginalFilename();
+            ObjectWriteResponse objectWriteResponse = minioClient.putObject(PutObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(filePath)
+                    .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                    .contentType(file.getContentType())
+                    .build());
+        } catch (MinioException e) {
+            log.info("Upload error occurred:: {}", e.getMessage());
+        }
+
         // 3. 파일 복사
-        File convertFile = new File(path + fileName + fileExtension);
+        /*File convertFile = new File(path + fileName + fileExtension);
         log.info("{}", convertFile.getAbsolutePath());
         if (convertFile.createNewFile()) {
             try (FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
             }
-        }
+        }*/
 
         // 4. 파일 경로 추출
-        String filePath = String.format("%s%s", url, convertFile.getPath()).replace("\\", "/");
+        //String filePath = String.format("%s%s", url, convertFile.getPath()).replace("\\", "/");
+        //String filePath = "";
         log.info("SAVE FILE_URL: {}", filePath);
         return filePath;
     }

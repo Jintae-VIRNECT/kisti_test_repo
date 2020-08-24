@@ -39,16 +39,22 @@ public class MemberInfoResponse {
     @ApiModelProperty(value = "멤버 타입 ( LEADER(방장), EXPERT(전문가), WORKER(작업자) )", position = 8)
     private MemberType memberType;
 
+    @ApiModelProperty(value = "사용자 등급 ( MASTER(마스터), MANAGER(매니저), MEMBER(멤버) )", position = 9)
+    private String role;
+
+    @ApiModelProperty(value = "사용자 등급 아이디 ( MASTER(0), MANAGER(1), MEMBER(2) )", position = 10)
+    private Long roleId;
+
     @ApiModelProperty(
             value = "장치 타입 " +
                     "( UNKNOWN(알 수 없음), DESKTOP(PC), MOBILE(모바일), SMART_GLASSES(스마트 글라스), HOLOLENS(홀로렌즈) )",
-            position = 9)
+            position = 11)
     private DeviceType deviceType;
 
     @ApiModelProperty(
             value = "멤버 상태 타입 " +
                     "( ONLINE(로그인), OFFLINE(로그아웃), LOAD(참여 중), UNLOAD(미 참여 중), LOADING(접속 중) )",
-            position = 10)
+            position = 12)
     private MemberStatus memberStatus;
 
     /*@ApiModelProperty(value = "계정 생성 일자", position = 11, example = "2020-01-20T14:05:30")

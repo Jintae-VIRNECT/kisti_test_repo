@@ -15,4 +15,6 @@ public interface IValidationRestAPI {
     ResponseEntity<ApiResponse<LicenseItemResponse>> getLicenseInfo(
             @PathVariable String workspaceId,
             @PathVariable String userId);
+
+
 }

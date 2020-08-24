@@ -28,6 +28,12 @@ public class ApiResponse<T> {
         this.message = message;
     }
 
+    public ApiResponse(T data, ErrorCode errorCode) {
+        this.data = data;
+        this.code = errorCode.getCode();
+        this.message = errorCode.getMessage();
+    }
+
     public ApiResponse(ErrorCode errorCode) {
         this.code = errorCode.getCode();
         this.message = errorCode.getMessage();

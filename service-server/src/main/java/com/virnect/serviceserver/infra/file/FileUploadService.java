@@ -4,6 +4,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 public interface FileUploadService {
 
@@ -12,7 +14,8 @@ public interface FileUploadService {
      * @param file - 파일 업로드 요청
      * @return - 업로드된 파일 url
      */
-    String upload(MultipartFile file) throws IOException;
+    String upload(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+
 
     /**
      * 파일 업로드 처리
@@ -21,7 +24,7 @@ public interface FileUploadService {
      * @return - 업로드된 파일 url
      * @throws IOException
      */
-    String upload(MultipartFile file, String fileName) throws IOException;
+    String upload(MultipartFile file, String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     /**
      * 업로드 된 파일 삭제 요청

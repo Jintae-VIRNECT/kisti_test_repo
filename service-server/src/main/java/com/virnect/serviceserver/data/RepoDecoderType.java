@@ -4,5 +4,6 @@ public enum RepoDecoderType {
     CREATE,
     UPDATE,
     READ,
-    DELETE
+    DELETE,
+    FETCH
 }

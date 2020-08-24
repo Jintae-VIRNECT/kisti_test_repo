@@ -1,9 +1,12 @@
 package com.virnect.data.api;
 
 import com.virnect.data.ApiResponse;
+import com.virnect.data.dto.file.request.FileDownloadRequest;
 import com.virnect.data.dto.file.request.FileUploadRequest;
+import com.virnect.data.dto.file.response.FileInfoListResponse;
 import com.virnect.data.dto.file.response.FileUploadResponse;
 import com.virnect.data.dto.request.PageRequest;
+import com.virnect.data.dto.response.ResultResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -22,15 +25,51 @@ public interface IFileRestAPI {
 
     @ApiOperation(value = "Upload file", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48254844-235e-4421-b713-4ea682994a98"),
-            @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "form", required = true, defaultValue = "ses_Qqak8KEqPH"),
-            @ApiImplicitParam(name = "userId", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "48254844-235e-4421-b713-4ea682994a98"),
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48acaade22f3e2bba74bb6f1c44389a9"),
+            @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "form", required = true, defaultValue = "ses_JRG7p1fFox"),
+            @ApiImplicitParam(name = "uuid", value = "업로드 사용자 고유 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "4218059539d944fca0a27fc5a57ce05b"),
             @ApiImplicitParam(name = "file", value = "업로드 파일", dataType = "__file", paramType = "form", required = true),
     })
     @PostMapping(value = "file/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<ApiResponse<FileUploadResponse>> fileUploadRequestHandler(
             @ModelAttribute @Valid FileUploadRequest fileUploadRequest,
             BindingResult result);
+
+    @ApiOperation(value = "Download file", notes = "파일을 다운로드.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true),
+            @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "query", required = true),
+            @ApiImplicitParam(name = "uuid", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
+            @ApiImplicitParam(name = "fileName", value = "다운로드 파일", dataType = "string", paramType = "query", required = true),
+    })
+    @GetMapping(value = "file/download")
+    ResponseEntity<byte[]> fileDownloadRequestHandler(
+            @RequestHeader @Valid FileDownloadRequest fileDownloadRequest,
+            BindingResult result
+    ) throws IOException;
+
+    @ApiOperation(value = "Load Room File List", notes = "원격협업에서 등록된 파일 목록을 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+            @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
+    })
+    @GetMapping("file")
+    ResponseEntity<ApiResponse<FileInfoListResponse>> getFileList(
+            @RequestParam(value = "workspaceId") String workspaceId,
+            @RequestParam(value = "sessionId") String sessionId,
+            @RequestParam(name = "userId") String userId,
+            @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
+            @ApiIgnore PageRequest pageable);
+
+    @ApiOperation(value = "Delete the specific file", notes = "파일을 삭제")
+    @DeleteMapping(value = "file/{workspaceId}/{sessionId}/{userId}")
+    ResponseEntity<ApiResponse<ResultResponse>> deleteFileRequestHandler(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId,
+            @PathVariable("userId") String userId,
+            @RequestParam("fileName") String fileName);
 
     /*@ApiOperation(value = "워크스테이션 기준 사용자별 업로드한 컨텐츠 수 ", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.")
     @ApiImplicitParams({
@@ -61,25 +100,7 @@ public interface IFileRestAPI {
             @RequestParam(value = "converteds", required = false, defaultValue = "ALL") String converteds,
             @ApiIgnore PageRequest pageable);
 
-    @ApiOperation(value = "내 컨텐츠 목록 조회", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
-            @ApiImplicitParam(name = "search", value = "검색어(컨텐츠명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
-            @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
-            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = ""),
-            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL")
-    })
-    @GetMapping("file/{userUUID}")
-    ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
-            @PathVariable(value = "userUUID") String userUUID
-            , @RequestParam(value = "search", required = false) String search
-            , @RequestParam(value = "shareds", defaultValue = "ALL") String shareds
-            , @RequestParam(value = "converteds", defaultValue = "ALL") String converteds
-            , @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
-            , @ApiIgnore PageRequest pageable);
+
 
 
 

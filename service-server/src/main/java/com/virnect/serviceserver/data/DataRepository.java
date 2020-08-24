@@ -39,6 +39,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -67,9 +69,59 @@ public class DataRepository {
         this.sessionService = sessionService;
     }
 
+    public DataProcess<LicenseItem> checkLicenseValidation(String workspaceId, String userId) {
+        return new RepoDecoder<DataProcess<LicenseInfoResponse>, LicenseItem>(RepoDecoderType.FETCH) {
+            @Override
+            DataProcess<LicenseInfoResponse> loadFromDatabase() {
+                ApiResponse<LicenseInfoListResponse> licenseValidation = licenseRestService.getUserLicenseValidation(workspaceId, userId);
+                if(licenseValidation.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+                    log.info("licenseValidation code is not ok");
+                    return new DataProcess<>(licenseValidation.getCode(), licenseValidation.getMessage());
+                }
+
+                LicenseInfoResponse currentLicense = null;
+                for (LicenseInfoResponse licenseInfoResponse: licenseValidation.getData().getLicenseInfoList()) {
+                    if (licenseInfoResponse.getProductName().contains(LicenseConstants.PRODUCT_NAME)) {
+                        currentLicense = licenseInfoResponse;
+                    }
+                }
+                return new DataProcess<>(currentLicense);
+            }
+
+            @Override
+            DataProcess<LicenseItem> invokeDataProcess() {
+                LicenseItem licenseItem = null;
+                LicenseInfoResponse currentLicense = loadFromDatabase().getData();
+                if(currentLicense != null) {
+                    if (currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
+                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BASIC)) {
+                            licenseItem = LicenseItem.ITEM_BASIC;
+                        }
+                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BUSINESS)) {
+                            licenseItem = LicenseItem.ITEM_BUSINESS;
+                        }
+                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_PERMANENT)) {
+                            licenseItem = LicenseItem.ITEM_PERMANENT;
+                        }
+                    } else {
+                        return new DataProcess<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY);
+                    }
+                } else {
+                    return new DataProcess<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY);
+                }
+
+                if(licenseItem == null) {
+                    return new DataProcess<>(ErrorCode.ERR_LICENSE_TYPE_VALIDITY);
+                } else {
+                    return new DataProcess<>(licenseItem);
+                }
+            }
+        }.asResponseData();
+    }
 
     public ApiResponse<RoomResponse> generateRoom(
             RoomRequest roomRequest,
+            LicenseItem licenseItem,
             String session,
             String sessionToken
     ) {
@@ -101,7 +153,7 @@ public class DataRepository {
             @Override
             DataProcess<RoomResponse> invokeDataProcess() {
                 log.info("createRoom: " + roomRequest.toString());
-                ApiResponse<LicenseInfoListResponse> licenseValidation = licenseRestService.getUserLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
+                /*ApiResponse<LicenseInfoListResponse> licenseValidation = licenseRestService.getUserLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
                 if(licenseValidation.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
                     log.info("licenseValidation code is not ok");
                     return new DataProcess<>(licenseValidation.getCode(), licenseValidation.getMessage());
@@ -135,7 +187,7 @@ public class DataRepository {
 
                 if(licenseItem == null) {
                     return new DataProcess<>(ErrorCode.ERR_LICENSE_TYPE_VALIDITY);
-                }
+                }*/
 
                 Room room = sessionService.createRoom(roomRequest, licenseItem, finalSessionResponse);
                 if(room != null) {
@@ -318,7 +370,8 @@ public class DataRepository {
                             for (MemberInfoResponse memberInfoResponse : memberInfoList) {
                                 ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
                                 log.debug("getUsers: " + userInfo.getData().toString());
-
+                                //todo://user infomation does not have role and role id change to workspace member info
+                                //memberInfoResponse.setRole(userInfo.getData().get);
                                 memberInfoResponse.setEmail(userInfo.getData().getEmail());
                                 memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
                                 memberInfoResponse.setLastName(userInfo.getData().getLastName());
@@ -401,6 +454,10 @@ public class DataRepository {
                                 profile = localFileUploadService.upload(roomProfileUpdateRequest.getProfile());
                             } catch (IOException e) {
                                 log.error(e.getMessage());
+                            } catch (NoSuchAlgorithmException e) {
+                                e.printStackTrace();
+                            } catch (InvalidKeyException e) {
+                                e.printStackTrace();
                             }
                         }
                         profileUpdateResponse.setSessionId(sessionId);
@@ -787,6 +844,8 @@ public class DataRepository {
                 resultResponse.setResult(false);
                 if(room != null) {
                     if(room.getLeaderId().equals(inviteRoomRequest.getLeaderId())) {
+                        //remove member room is null
+                        room.getMembers().removeIf(member -> member.getRoom() == null);
                         if(room.getMembers().size() + inviteRoomRequest.getParticipantIds().size() >= room.getMaxUserCount()) {
                             return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
                         }

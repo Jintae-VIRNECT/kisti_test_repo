@@ -24,12 +24,15 @@ public class FileService {
                 .workspaceId(fileUploadRequest.getWorkspaceId())
                 .sessionId(fileUploadRequest.getSessionId())
                 .uuid(fileUploadRequest.getUuid())
-                .name(fileUploadRequest.getFile().getName())
+                .name(fileUploadRequest.getFile().getOriginalFilename())
                 .size(fileUploadRequest.getFile().getSize())
                 .path(filePath)
                 .deleted(false)
                 .build();
-
         return fileRepository.save(file);
+    }
+
+    public File getFile(String workspaceId, String sessionId, String name) {
+        return this.fileRepository.findByWorkspaceIdAndSessionIdAndName(workspaceId, sessionId, name).orElse(null);
     }
 }
