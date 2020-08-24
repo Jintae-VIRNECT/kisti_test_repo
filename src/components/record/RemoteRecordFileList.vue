@@ -28,10 +28,11 @@
             <tr class="file-list__thead--row">
               <th class="file-list__thead--column toggle">
                 <toggle-button
-                  size="1.714em"
-                  :active="true"
+                  size="24px"
+                  :active="toggleAllFlag"
                   :activeSrc="require('assets/img/ic_check.svg')"
                   :inactiveSrc="require('assets/img/ic_uncheck.svg')"
+                  @action="toggleAll"
                 ></toggle-button>
               </th>
               <th class="file-list__thead--column filename"><p>파일명</p></th>
@@ -43,12 +44,14 @@
             <tr
               class="file-list__tbody--row"
               v-for="(file, index) in fileList"
+              :class="{ active: selectedArray[index] }"
               :key="index"
+              @click="toggleItem($event, index)"
             >
               <td class="file-list__tbody--column toggle">
                 <toggle-button
-                  size="1.714em"
-                  :active="false"
+                  size="24px"
+                  :active="selectedArray[index]"
                   :activeSrc="require('assets/img/ic_check.svg')"
                   :inactiveSrc="require('assets/img/ic_uncheck.svg')"
                 ></toggle-button>
@@ -57,10 +60,10 @@
                 <p>{{ file.filename }}</p>
               </td>
               <td class="file-list__tbody--column">
-                <p>{{ file.duration }}</p>
+                <p>{{ convertTime(file.duration) }}</p>
               </td>
               <td class="file-list__tbody--column">
-                <p>{{ file.size }}</p>
+                <p>{{ convertSize(file.size) }}</p>
               </td>
             </tr>
           </tbody>
@@ -68,7 +71,7 @@
       </scroller>
     </div>
 
-    <button class="file-list--button"><p>확인</p></button>
+    <button class="file-list--button" @click="beforeClose"><p>확인</p></button>
   </modal>
 </template>
 
@@ -77,6 +80,10 @@ import ToggleButton from 'components/modules/ToggleButton'
 import Scroller from 'components/modules/Scroller'
 import IconButton from 'components/modules/IconButton'
 import Modal from 'components/modules/Modal'
+
+import FileSaver from 'file-saver'
+import { downloadRecordFile, deleteRecordFile } from 'api/remote/record'
+
 export default {
   components: {
     Scroller,
@@ -84,6 +91,7 @@ export default {
     IconButton,
     Modal,
   },
+
   props: {
     visible: {
       type: Boolean,
@@ -96,19 +104,168 @@ export default {
   },
   data() {
     return {
-      visibleFlag: true,
+      visibleFlag: false,
+      toggleAllFlag: false,
+      selectedArray: [],
     }
   },
+  computed: {},
   watch: {
     async visible(flag) {
+      this.setSelectedArray()
       this.visibleFlag = flag
+    },
+    selectedArray: {
+      handler(ary) {
+        //this.$eventBus.$emit('table:selectedarray', ary)
+
+        if (ary.length > 0) {
+          const allSelected = ary.every(select => {
+            return select === true
+          })
+
+          if (allSelected) {
+            this.toggleAllFlag = true
+          } else {
+            this.toggleAllFlag = false
+          }
+        }
+      },
+      deep: true,
+    },
+    fileList: {
+      handler() {
+        // this.setRenderArray()
+        this.setSelectedArray()
+        this.toggleAllFlag = false
+      },
+      deep: true,
     },
   },
 
   methods: {
+    async download() {
+      for (const [index, val] of this.selectedArray.entries()) {
+        if (val) {
+          console.log(
+            'this.fileList[index].recordingId ::',
+            this.fileList[index].recordingId,
+          )
+          const data = await downloadRecordFile({
+            id: this.fileList[index].recordingId,
+          })
+
+          FileSaver.saveAs(data)
+
+          // FileSaver.saveAs(
+          //   new File([data], {
+          //     type: 'application/octet-stream',
+          //   }),
+          //   'test.mp4',
+          //   true,
+          // )
+
+          // FileSaver.saveAs(
+          //   'https://192.168.6.3:8073/remote/recorder/file/download/ses_WhkdbDiEW2-ki3MR3CY',
+
+          //   'test.mp4',
+          // )
+        }
+      }
+    },
+    deleteItems() {
+      this.selectedArray.forEach((val, index) => {
+        if (val) {
+          deleteRecordFile({
+            id: this.fileList[index].recordingId,
+          })
+
+          this.$eventBus.$emit('load::record-list')
+        }
+      })
+
+      console.log('deleteItems')
+    },
     beforeClose() {
       this.$emit('update:visible', false)
     },
+
+    setSelectedArray() {
+      this.selectedArray = []
+
+      this.fileList.forEach(() => {
+        this.selectedArray.push(false)
+      })
+    },
+
+    toggleItem(event, index) {
+      const toggleData = !this.selectedArray[index]
+      this.selectedArray.splice(index, 1, toggleData)
+    },
+    toggleAll() {
+      this.selectedArray = []
+      this.toggleAllFlag = !this.toggleAllFlag
+
+      this.fileList.forEach(() => {
+        this.selectedArray.push(this.toggleAllFlag)
+      })
+    },
+    convertTime(duration) {
+      let sec_num = Number.parseInt(duration, 10)
+      let hours = Math.floor(sec_num / 3600)
+      let minutes = Math.floor((sec_num - hours * 3600) / 60)
+      let seconds = sec_num - hours * 3600 - minutes * 60
+
+      let hText = '시 '
+      let mText = '분 '
+      let sText = '초'
+
+      if (hours === 0 && minutes === 0 && seconds < 1) {
+        hours = ''
+        hText = ''
+
+        minutes = ''
+        mText = ''
+
+        seconds = '0'
+      } else {
+        if (hours === 0) {
+          hours = ''
+          hText = ''
+        }
+        if (minutes === 0) {
+          minutes = ''
+          mText = ''
+        }
+        if (seconds === 0) {
+          seconds = ''
+          sText = ''
+        }
+      }
+
+      return hours + hText + minutes + mText + seconds + sText
+    },
+    convertSize(size) {
+      const mb = 1048576
+
+      if (size >= mb) {
+        size = size / 1024 / 1024
+        return `${size.toFixed(1)}MB`
+      } else {
+        size = size / 1024
+        return `${size.toFixed(1)}KB`
+      }
+    },
+    // close() {
+    //   this.visibleFlag = false
+    // },
+  },
+
+  mounted() {
+    this.setSelectedArray()
+  },
+  beforeDestroy() {
+    this.selectedArray = []
   },
 }
 </script>

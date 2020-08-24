@@ -26,6 +26,8 @@ module.exports = {
         components: path.join(__dirname, '/src/components'),
         assets: path.join(__dirname, '/src/assets'),
         plugins: path.join(__dirname, '/src/plugins'),
+        api: path.join(__dirname, '/src/api'),
+        utils: path.join(__dirname, '/src/utils'),
       },
     },
   },

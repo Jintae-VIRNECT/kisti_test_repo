@@ -23,7 +23,9 @@ import SearchBar from './RemoteSearchBar'
 import UserTable from './RemoteUserTable'
 import PaginationTool from './partials/RemotePaginationTool'
 import RecordFileList from './RemoteRecordFileList'
-// import Modal from 'components/modules/Modal'
+
+import { getRecordFiles } from 'api/remote/record'
+
 export default {
   name: 'RemoteCooperationList',
   components: {
@@ -37,62 +39,7 @@ export default {
     return {
       targetId: 0,
       modalVisible: false,
-      fileList: [
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-        {
-          filename: '2020-06-11 HH-MM-SS_00.mp4​',
-          recordingId: '123456',
-          duration: 30,
-          size: 5590847,
-        },
-      ],
+      fileList: [],
     }
   },
 
@@ -101,13 +48,25 @@ export default {
       console.log(serialNum)
       this.modalVisible = true
     },
+    async getRecordList(userId) {
+      console.log(userId)
+      const params = {}
+      const datas = await getRecordFiles(params)
+      this.fileList = datas.infos
+    },
   },
 
-  mounted() {
+  async mounted() {
+    //세션명? 유저명 기반 요청 필요함
+
+    this.getRecordList(1234)
+
     this.$eventBus.$on('open::record-list', this.showList)
+    this.$eventBus.$on('load::record-list', this.getRecordList)
   },
   beforeDestroy() {
     this.$eventBus.$off('open::record-list')
+    this.$eventBus.$off('load::record-list')
   },
 
   // 유저 목록 호출 및 테이블 갱신
