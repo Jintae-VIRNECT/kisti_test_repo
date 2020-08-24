@@ -40,7 +40,7 @@ export const addSessionEventListener = session => {
       _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.stream.connection])
       if (_.account.roleType === ROLE.LEADER) {
         if (Store.getters['viewForce'] === true) {
-          _.mainview(Store.getters['mainView'].uuid, true, [
+          _.mainview(Store.getters['mainView'].id, true, [
             event.stream.connection,
           ])
         }
