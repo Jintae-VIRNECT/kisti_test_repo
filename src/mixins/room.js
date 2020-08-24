@@ -2,13 +2,11 @@ import { joinRoom } from 'api/workspace'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import toastMixin from 'mixins/toast'
-import { mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 export default {
   mixins: [toastMixin],
-  computed: {
-    ...mapGetters(['roomClear']),
-  },
   methods: {
+    ...mapActions(['roomClear']),
     async join(room) {
       this.logger('>>> JOIN ROOM')
       try {
@@ -37,21 +35,24 @@ export default {
           console.error('>>>join room fail')
         }
       } catch (err) {
-        if (err === 'nodevice') {
-          this.toastError('연결된 디바이스를 찾을 수 없습니다.')
+        if (typeof err === 'string') {
+          if (err === 'nodevice') {
+            this.toastError(this.$t('workspace.error_no_connected_device'))
+          } else if (err.toLowerCase() === 'requested device not found') {
+            this.toastError(this.$t('workspace.error_no_device'))
+          } else if (err.toLowerCase() === 'device access deined') {
+            this.$eventBus.$emit('devicedenied:show')
+          }
         } else if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))
         } else if (err.code === 4016) {
           // TODO: MESSAGE
           this.toastError(this.$t('workspace.remote_already_invite'))
-        } else if (err.toLowerCase() === 'requested device not found') {
-          this.toastError('디바이스를 찾을 수 없습니다.')
-        } else if (err.toLowerCase() === 'device access deined') {
-          this.$eventBus.$emit('devicedenied:show')
         } else {
           this.toastError(this.$t('workspace.remote_invite_impossible'))
         }
         this.roomClear()
+        console.error(err)
       }
     },
   },

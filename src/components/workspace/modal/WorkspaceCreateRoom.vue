@@ -40,6 +40,7 @@ import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { EVENT } from 'configs/push.config'
 import { getMember } from 'api/service'
+import { maxParticipants } from 'utils/callOptions'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -54,7 +55,7 @@ export default {
       selection: [],
       visibleFlag: false,
       users: [],
-      maxSelect: 2,
+      maxSelect: maxParticipants - 1,
       roomInfo: {},
       loading: false,
     }
@@ -108,7 +109,9 @@ export default {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
-          this.toastNotify(this.$t('workspace.create_max_member'))
+          this.toastNotify(
+            this.$t('workspace.create_max_member', { length: this.maxSelect }),
+          )
           return
         }
         this.selection.push(user)
@@ -195,12 +198,14 @@ export default {
           console.error('join room fail')
         }
       } catch (err) {
-        if (err === 'nodevice') {
-          this.toastError('연결된 디바이스를 찾을 수 없습니다.')
-        } else if (err.toLowerCase() === 'requested device not found') {
-          this.toastError('디바이스를 찾을 수 없습니다.')
-        } else if (err.toLowerCase() === 'device access deined') {
-          this.$eventBus.$emit('devicedenied:show')
+        if (typeof err === 'string') {
+          if (err === 'nodevice') {
+            this.toastError(this.$t('workspace.error_no_connected_device'))
+          } else if (err.toLowerCase() === 'requested device not found') {
+            this.toastError(this.$t('workspace.error_no_device'))
+          } else if (err.toLowerCase() === 'device access deined') {
+            this.$eventBus.$emit('devicedenied:show')
+          }
         }
         this.roomClear()
         console.error(err)
