@@ -30,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -106,7 +107,7 @@ public class LicenseService {
 
         ResourceCalculate serviceProductResource = serviceProductResourceCalculate(serviceProductList);
 
-        ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = getContentResourceUsageInfoFromContentService(workspaceId);
+        ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = getContentResourceUsageInfoFromContentService(workspaceId, licensePlanInfo.getStartDate(), licensePlanInfo.getEndDate());
         log.info("[WORKSPACE_USAGE_RESOURCE_REPORT] -> {}", workspaceCurrentResourceUsageInfo.toString());
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(licensePlan.get(), WorkspaceLicensePlanInfoResponse.class);
         workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlan.get().getUserId());
@@ -176,8 +177,8 @@ public class LicenseService {
      * @param workspaceId - 워크스페이스 식별자 정보
      * @return - 워크스페이스 서비스 사용량 정보
      */
-    private ContentResourceUsageInfoResponse getContentResourceUsageInfoFromContentService(final String workspaceId) {
-        ApiResponse<ContentResourceUsageInfoResponse> workspaceResourceUsageApiResponse = contentRestService.getContentResourceUsageInfoRequest(workspaceId);
+    private ContentResourceUsageInfoResponse getContentResourceUsageInfoFromContentService(final String workspaceId, final LocalDateTime startDate, final LocalDateTime endDate) {
+        ApiResponse<ContentResourceUsageInfoResponse> workspaceResourceUsageApiResponse = contentRestService.getContentResourceUsageInfoRequest(workspaceId, startDate, endDate);
         return workspaceResourceUsageApiResponse.getData();
     }
 
