@@ -185,7 +185,7 @@ export default {
       }
     },
 
-    async stopRecord(stopType) {
+    async stopLocalRecord(stopType) {
       try {
         if (this.recorder) {
           this.recorder.stopRecord()
@@ -275,7 +275,7 @@ export default {
         !isStart &&
         this.localRecordStatus === LCOAL_RECORD_STAUTS.START
       ) {
-        this.stopRecord(stopType)
+        this.stopLocalRecord(stopType)
       }
     },
 
