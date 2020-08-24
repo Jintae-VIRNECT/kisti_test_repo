@@ -25,15 +25,15 @@
         </div>
       </dd>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ paymentInfo.basisAvailable.storage.toLocaleString() }} GB</dd>
+      <dd>{{ plansInfo.storage.default.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ paymentInfo.basisAvailable.viewCount.toLocaleString() }}
+        {{ plansInfo.viewCount.default.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ paymentInfo.basisAvailable.callTime.toLocaleString() }}
+        {{ plansInfo.callTime.default.toLocaleString() }}
         {{ $t('purchases.hoursUnit') }}
       </dd>
     </dl>
@@ -41,15 +41,15 @@
     <h5>{{ $t('purchases.info.extendPurchasesInfo') }}</h5>
     <dl>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ paymentInfo.extendAvailable.storage.toLocaleString() }} GB</dd>
+      <dd>{{ plansInfo.storage.add.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ paymentInfo.extendAvailable.viewCount.toLocaleString() }}
+        {{ plansInfo.viewCount.add.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ paymentInfo.extendAvailable.callTime.toLocaleString() }}
+        {{ plansInfo.callTime.add.toLocaleString() }}
         {{ $t('purchases.hoursUnit') }}
       </dd>
     </dl>
@@ -98,10 +98,7 @@ export default {
     },
     paymentInfo: {
       type: Object,
-      default: () => ({
-        basisAvailable: {},
-        extendAvailable: {},
-      }),
+      default: () => ({}),
     },
   },
   computed: {
