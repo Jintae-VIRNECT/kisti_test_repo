@@ -116,6 +116,7 @@
                   :end-placeholder="$t('task.manage.scheduleEnd')"
                   format="yyyy. MM. dd.  HH:mm"
                   time-arrow-control
+                  :picker-options="subScheduleOption()"
                 />
               </el-form-item>
               <el-form-item
@@ -184,6 +185,18 @@ export default {
       rules: {
         schedule: [{ required: true, trigger: 'change' }],
         worker: [{ required: true, trigger: 'change' }],
+      },
+      subScheduleOption() {
+        const schedule = this.mainForm.schedule
+        return {
+          disabledDate(time) {
+            if (!schedule.length) return false
+            const t = time.getTime()
+            const start = schedule[0].getTime()
+            const end = schedule[1].getTime()
+            return t < start || t > end
+          },
+        }
       },
     }
   },
