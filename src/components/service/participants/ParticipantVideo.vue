@@ -50,7 +50,7 @@
             :style="statusHover"
           >
             <span :class="participant.status"
-              >신호 세기 : {{ participant.status | networkStatus }}</span
+              >{{ $t('service.participant_network') }} : {{ participant.status | networkStatus }}</span
             >
           </div>
         </div>
@@ -230,38 +230,38 @@ export default {
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {
           if (this.participant.hasArFeature === false) {
-            this.toastDefault('AR 기능을 사용할 수 없는 장치입니다.')
+            this.toastDefault(this.$t('service.chat_ar_unsupport'))
             return
           }
-          this.toastDefault('AR 사용 도중에는 영상을 변경할 수 없습니다.')
+          this.toastDefault(this.$t('service.participant_ar_cannot_change'))
           return
           // this.confirmCancel(
-          //   '선택하신 참가자로 AR 공유 시작 시,\n 현재 AR 작업은 모두 삭제됩니다. \n변경하시겠습니까?',
-          //   { text: '확인', action: this.changeAr },
+          //  this.$t('service.participant_ar_change_alarm'),
+          //   { text: this.$t('button.confirm'), action: this.changeAr },
           //   {
-          //     text: '취소',
+          //     text: this.$t('button.cancel'),
           //   },
           // )
           // return
         }
         this.$emit('selectMain')
         // this.confirmCancel(
-        //   '선택한 영상을 모든 참가자와 공유하시겠습니까? \n공유 시, 포인팅 기능을 사용할 수 있습니다.',
-        //   { text: '전체 공유', action: this.forceMain },
+        //   this.$t('service.participant_sharing'),
+        //   { text: this.$t('button.stream_sharing'), action: this.forceMain },
         //   {
-        //     text: '일반 보기',
+        //     text: this.$t('button.stream_normal'),
         //     action: this.normalMain,
         //     backdrop: true,
         //   },
         // )
       } else {
         if (this.view === VIEW.AR) {
-          this.toastDefault('AR 공유 중에는 영상을 변경할 수 없습니다.')
+          this.toastDefault(this.$t('service.participant_ar_cannot_change'))
           return
         }
         if (this.viewForce === true) {
           this.toastDefault(
-            '전체 공유 상태에서는 다른 영상을 선택할 수 없습니다.​',
+            this.$t('service.participant_sharing_cannot_change'),
           )
           return
         }

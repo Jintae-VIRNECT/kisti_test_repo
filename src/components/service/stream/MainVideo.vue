@@ -27,10 +27,10 @@
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
-              전체 공유 취소
+              {{ $t('button.stream_sharing_cancel') }}
             </button>
             <button v-else class="btn small main-video__sharing-button">
-              전체 공유
+              {{ $t('button.stream_sharing') }}
             </button>
           </div>
         </transition>
@@ -78,7 +78,7 @@
         </div>
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/call/img_select_video.svg" />
-          <p v-html="'참가자 리스트에서 영상을<br> 선택해 주세요.'"></p>
+          <p v-html="$t('service.stream_choice')"></p>
         </div>
       </transition>
       <!-- 영상 초기화 로딩 -->

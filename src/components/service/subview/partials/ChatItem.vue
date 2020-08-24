@@ -165,15 +165,13 @@ export default {
               name: this.chat.name,
             })
           case 'sharing-start':
-            // return this.$t('service.chat_stream_stop', {
-            //   name: this.chat.name,
-            // })
-            return `<span class="emphasize">${this.chat.name}</span> 님의 영상을 전체 공유합니다.`
+            return this.$t('service.chat_sharing_start', {
+              name: this.chat.name,
+            })
           case 'sharing-stop':
-            // return this.$t('service.chat_stream_stop', {
-            //   name: this.chat.name,
-            // })
-            return `<span class="emphasize">${this.chat.name}</span> 님의 영상을 공유 취소합니다.`
+            return this.$t('service.chat_sharing_stop', {
+              name: this.chat.name,
+            })
           case 'stream-stop':
             return this.$t('service.chat_stream_stop', {
               name: this.chat.name,

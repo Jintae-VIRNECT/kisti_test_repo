@@ -123,8 +123,8 @@ export default {
         if (this.currentView === 'ar') {
           // TODO: MESSAGE
           this.serviceConfirmTitle(
-            'AR 저작 작업 종료',
-            '저작 중인 AR 작업이 모두 종료됩니다. <br> 그래도 종료 하시겠습니까?',
+            this.$t('service.ar_exit'),
+            this.$t('service.ar_exit_description'),
             {
               text: this.$t('button.exit'),
               action: () => {
@@ -191,7 +191,7 @@ export default {
       }
       if (type === 'ar') {
         if (this.viewForce === false) {
-          this.toastDefault('강제 공유 중인 영상이 없습니다.')
+          this.toastDefault(this.$t('service.toast_no_sharing'))
           return
         }
         this.permissionCheck()

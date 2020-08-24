@@ -2,8 +2,8 @@
   <modal :visible.sync="visibleFlag" width="32.857rem" class="select-view">
     <div class="select-view__layout">
       <div class="select-view__header">
-        <p>선택한 영상을 모든 참가자와 공유하시겠습니까?</p>
-        <p>공유 시, 포인팅 기능을 사용할 수 있습니다.</p>
+        <p>{{ $t('service.stream_choice_share') }}</p>
+        <p>{{ $t('service.stream_choice_share_description') }}</p>
       </div>
       <div class="select-view__body">
         <figure>
@@ -14,7 +14,7 @@
             class="btn select-view__button normal_view"
             @click="$emit('normal')"
           >
-            일반 보기
+            {{ $t('button.stream_normal') }}
           </button>
         </figure>
         <figure>
@@ -25,7 +25,7 @@
             class="btn select-view__button share_view"
             @click="$emit('share')"
           >
-            전체 공유
+            {{ $t('button.stream_sharing') }}
           </button>
         </figure>
       </div>

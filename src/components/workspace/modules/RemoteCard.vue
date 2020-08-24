@@ -30,7 +30,11 @@
         <div class="info__section">
           <p class="info__title">{{ $t('workspace.remote_group_info') }}</p>
           <p class="info__description">
-            <b>{{ `접속 멤버 &nbsp;&nbsp;${activeMemberList.length}` }}</b>
+            <b>{{
+              `${$t('workspace.remote_connected_member_num')} &nbsp;&nbsp;${
+                activeMemberList.length
+              }`
+            }}</b>
             {{ `/ ${room.memberList.length}` }}
           </p>
         </div>

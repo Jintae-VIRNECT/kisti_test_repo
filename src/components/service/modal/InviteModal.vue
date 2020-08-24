@@ -1,6 +1,6 @@
 <template>
   <modal
-    :title="$t('service.participant_invite_title')"
+    :title="$t('service.invite_title')"
     width="50.857em"
     height="60.143em"
     :showClose="true"
@@ -12,14 +12,11 @@
       <div class="invite-modal__current">
         <div class="invite-modal__current-title">
           <p>
-            {{ '협업 미접속 멤버 리스트' }}
+            {{ $t('service.invite_unconnected_list') }}
           </p>
           <tooltip
             customClass="tooltip-guide"
-            :content="
-              `협업 요청 후 참가를 기다리는 멤버 리스트입니다.<br>
-                      프로필 제거 버튼으로 대기 목록 멤버를 삭제할 수 있습니다.`
-            "
+            :content="$t('service.invite_unconnected_remove')"
             placement="right"
             effect="blue"
           >
@@ -65,7 +62,7 @@
       <p
         class="invite-modal__selected-title"
         v-html="
-          $t('service.participant_invite_selected', {
+          $t('service.invite_selected', {
             num: selection.length,
             max: maxSelect,
           })
@@ -73,7 +70,7 @@
       ></p>
       <profile-list :users="selection" size="2.143em"></profile-list>
       <button class="btn" :disabled="selection.length === 0" @click="invite">
-        {{ $t('service.participant_invite_require') }}
+        {{ $t('service.invite_require') }}
       </button>
     </div>
   </modal>
@@ -149,7 +146,7 @@ export default {
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
           // TODO: MESSAGE
-          this.toastNotify(this.$t('service.participant_invite_max'))
+          this.toastNotify(this.$t('service.invite_max'))
           return
         }
         this.selection.push(user)
@@ -197,7 +194,7 @@ export default {
       if (res === true) {
         this.addMember(this.selection)
         // TODO: MESSAGE
-        this.toastNotify(this.$t('service.participant_invite_success'))
+        this.toastNotify(this.$t('service.invite_success'))
         this.$nextTick(() => {
           this.visibleFlag = false
         })

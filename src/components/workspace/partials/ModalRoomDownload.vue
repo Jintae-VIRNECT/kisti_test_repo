@@ -6,8 +6,8 @@
     <div class="roominfo-view__body">
       <table class="download-table">
         <tr class="download-table__header">
-          <th>이름</th>
-          <th>기간</th>
+          <th>{{ $t('workspace.info_name') }}</th>
+          <th>{{ $t('workspace.info_dutation') }}</th>
           <th></th>
         </tr>
         <tr
@@ -17,7 +17,9 @@
         >
           <td>{{ data.name }}</td>
           <td>{{ data.time }}</td>
-          <td><button class="btn small">다운로드</button></td>
+          <td>
+            <button class="btn small">{{ $t('button.download') }}</button>
+          </td>
         </tr>
       </table>
     </div>

@@ -1,6 +1,8 @@
 <template>
   <section class="setting-section">
-    <div class="setting-section__title">{{ `영상 장치 선택` }}</div>
+    <div class="setting-section__title">
+      {{ $t('workspace.setting_video_choice') }}
+    </div>
     <div class="setting-section__body horizon first">
       <figure class="setting__figure">
         <p class="setting__label">{{ $t('workspace.setting_camera') }}</p>
@@ -16,7 +18,7 @@
 
       <figure class="setting__figure">
         <p class="setting__label">
-          {{ '입력 해상도' }}
+          {{ $t('workspace.setting_video_resolution') }}
         </p>
         <r-select
           class="setting__r-selecter"
@@ -31,7 +33,9 @@
     </div>
     <div class="setting-section__body">
       <figure class="setting__figure">
-        <p class="setting__label">{{ '영상 미리보기' }}</p>
+        <p class="setting__label">
+          {{ this.$t('workspace.setting_video_preview') }}
+        </p>
         <div class="setting-video">
           <video
             v-if="stream"

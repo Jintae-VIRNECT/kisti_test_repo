@@ -36,7 +36,7 @@
           :class="{ active: tabview === 'download' }"
           @click="tabChange('download')"
         >
-          {{ '다운로드' }}
+          {{ $t('button.download') }}
         </button>
       </section>
       <room-info

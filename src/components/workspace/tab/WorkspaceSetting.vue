@@ -88,7 +88,7 @@ export default {
       return [
         {
           key: 'video',
-          text: '영상 설정',
+          text: this.$t('workspace.setting_video'),
         },
         {
           key: 'audio',
