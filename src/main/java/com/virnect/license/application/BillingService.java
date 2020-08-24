@@ -215,14 +215,16 @@ public class BillingService {
                 // 추가 라이선스 상품의 경우 라이선스 생성
                 licenseRegisterByProduct(licenseAllocateRequest.getProductList(), licensePlan);
 
-                // 라이선스 만료 일자 변경 (추가 구매일자 기준)
+                // 라이선스 시작, 만료 일자 변경 (추가 구매일자 기준)
+                licensePlan.setStartDate(LocalDateTime.now());
                 licensePlan.setEndDate(additionalProductPurchaseDate);
             } else { // 정기 결제인 경우
                 // 다음달 결제일 자정에 만료
                 LocalDateTime nextLicenseExpiredDate = licensePlanExpireDate
                         .plusMonths(1)
                         .atTime(LICENSE_EXPIRED_HOUR, LICENSE_EXPIRED_MINUTE, LICENSE_EXPIRED_SECONDS);
-                // 만료일자 갱신
+                // 라이선스 시작, 만료일자 갱신
+                licensePlan.setStartDate(LocalDateTime.now());
                 licensePlan.setEndDate(nextLicenseExpiredDate);
             }
 
