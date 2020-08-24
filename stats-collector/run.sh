@@ -1,6 +1,8 @@
 #!/bin/bash
 
-export INFLUXDB_URL="http://13.125.24.98:8086/MEDIA"
+if [[ -z "${INFLUXDB_URL}" ]]; then
+  export INFLUXDB_URL="http://10.0.0.40:8086/MEDIA"
+fi
 
 if [[ -z "${KMS_EXTERNAL_ADDRESS}" ]]; then
   export PUBLIC_IP=$(hostname -I | cut -d' ' -f1)
