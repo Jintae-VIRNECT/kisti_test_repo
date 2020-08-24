@@ -267,97 +267,6 @@ public class ContentService {
         return flag;
     }
 
-    private String updateTargetToContent(Content content, TargetType targetType, String targetData) {
-        String imgPath = ""; //this.fileUploadService.base64ImageUpload(targetData);
-
-        Target target = Target.builder()
-                .type(targetType)
-                .content(content)
-                .data(targetData)
-                .imgPath(imgPath)
-                .build();
-        content.addTarget(target);
-
-        this.targetRepository.save(target);
-
-        return targetData;
-    }
-
-    public ApiResponse<ContentInfoResponse> contentAddTarget(final String contentUUID, final ContentTargetRequest targetRequest) {
-        // 컨텐츠의 타겟을 신규 추가 - 다수 추가 가능
-        // 1. 수정 대상 컨텐츠 데이터 조회
-        Content targetContent = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
-
-        // 컨텐츠 소유자 확인
-        if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
-
-        // 수정할 수 없는 조건 (공유 상태에 관한 내용 없앨지 논의 필요)
-        if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
-        }
-
-        String targetData = null;
-
-        // 이미 있는 타겟 데이터인지 체크
-        if (isExistTargetData(targetRequest.getTargetData())) {
-            throw new ContentServiceException(ErrorCode.ERR_TARGET_DATA_ALREADY_EXIST);
-        } else {
-            targetData = addTargetToContent(targetContent, TargetType.valueOf(targetRequest.getTargetType()), targetRequest.getTargetData());
-        }
-
-        // 반환할 타겟정보
-        List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
-        ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
-                .type(TargetType.valueOf(targetRequest.getTargetType()))
-                .data(targetData)
-                .build();
-        contentTargetResponseList.add(contentTargetResponse);
-
-        ContentInfoResponse updateResult = this.modelMapper.map(targetContent, ContentInfoResponse.class);
-
-        updateResult.setTargets(contentTargetResponseList);
-
-        return new ApiResponse<>(updateResult);
-    }
-
-    public ApiResponse<ContentInfoResponse> contentUpdateTarget(final String contentUUID, final Long oldTargetId, final ContentTargetRequest targetRequest) {
-        // 컨텐츠의 타겟을 업데이트
-        // 1. 수정 대상 컨텐츠 데이터 조회
-        Content targetContent = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
-
-        // 컨텐츠 소유자 확인
-        // [2020-7-15 오후 6:07] 강현석
-        // 메이크에서 이미 업로드 되어 있는 컨텐츠에 업로드할 때 업로드한 사용자가 다르면 다음과 같은 리턴과 함께 업로드가 되지 않습니다.
-        // "code":4015, "message":"An error occurred in the request. Because it is NOT ownership.
-        // 혹시 업로드할 때 사용자의 확인을 해제하여 주실 수 있으신지요? 해당 부분에 관련하여 수환님과는 논의가 되었습니다.
-        // if (!targetContent.getUserUUID().equals(targetRequest.getUserUUID()))
-        //     throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
-
-        // 수정할 수 없는 조건(공유 상태에 관한 내용 없앨지 논의 필요)
-        if (targetContent.getConverted() != YesOrNo.NO || targetContent.getShared() != YesOrNo.NO || targetContent.getDeleted() != YesOrNo.NO) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_MANAGED);
-        }
-
-        // 타겟 조회
-        Target target = this.targetRepository.findById(oldTargetId).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
-        // 변경
-        target.setType(TargetType.valueOf(targetRequest.getTargetType()));
-        this.targetRepository.save(target);
-
-        ContentInfoResponse updateResult = this.modelMapper.map(targetContent, ContentInfoResponse.class);
-
-        List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
-        ContentTargetResponse contentTargetResponse = this.modelMapper.map(target, ContentTargetResponse.class);
-        contentTargetResponseList.add(contentTargetResponse);
-
-        updateResult.setTargets(contentTargetResponseList);
-
-        return new ApiResponse<>(updateResult);
-    }
-
     /**
      * 콘텐츠 수정 요청 처리
      *
@@ -510,40 +419,6 @@ public class ContentService {
         return responseEntity;
     }
 
-    // K앱시스트용 View에서 호출 시
-    public ResponseEntity<byte[]> contentDownloadForTargetHandler_temp(final String targetData, final String memberUUID) {
-        // 컨텐츠 데이터 조회
-        Content content = this.contentRepository.getContentOfTarget(targetData);
-
-        if (content == null)
-            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
-
-        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
-        checkLicenseDownload(content.getWorkspaceUUID());
-
-        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
-        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
-        return responseEntity;
-    }
-
-    /**
-     * 콘텐츠 파일 다운로드 요청 처리
-     *
-     * @param fileName - 콘텐츠 파일 이름
-     * @return - 리소스
-     */
-    public Resource loadContentFile(final String fileName) {
-        try {
-            Path file = load(fileName);
-            Resource resource = new UrlResource(file.toUri());
-            if (resource.exists() || resource.isReadable()) {
-                return resource;
-            }
-        } catch (Exception e) {
-            log.error("FILE LOAD ERROR: [{}]", e.getMessage());
-        }
-        return null;
-    }
 
     /**
      * 콘텐츠 삭제 요청 처리
@@ -765,52 +640,6 @@ public class ContentService {
         }
     }
 
-    private Path load(final String fileName) {
-        Path rootLocation = Paths.get(uploadPath);
-        return rootLocation.resolve(fileName);
-    }
-
-    public ApiResponse<WorkspaceSceneGroupListResponse> getSceneGroupsInWorkspace(String workspaceUUID, String search, Pageable pageable) {
-        Page<SceneGroup> sceneGroupPage = this.sceneGroupRepository.getSceneGroupInWorkspace(workspaceUUID, search, pageable);
-
-        List<WorkspaceSceneGroupInfoResponse> responseList = sceneGroupPage.stream().map(sceneGroup -> {
-            String contentUUID = sceneGroup.getContent().getUuid();
-
-            Content content = this.contentRepository.findByUuid(contentUUID)
-                    .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-
-            List<ContentTargetResponse> targetList = content.getTargetList().stream().map(target -> ContentTargetResponse.builder()
-                    .id(target.getId())
-                    .type(target.getType())
-                    .data(target.getData())
-                    .build()).collect(Collectors.toList());
-
-            ContentInfoResponse contentInfoResponse = this.modelMapper.map(content, ContentInfoResponse.class);
-            contentInfoResponse.setTargets(targetList);
-
-            ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(content.getUserUUID());
-            contentInfoResponse.setUploaderUUID(userInfoResponse.getData().getUuid());
-            contentInfoResponse.setUploaderName(userInfoResponse.getData().getNickname());    // name -> nickname으로 변경
-            contentInfoResponse.setUploaderProfile(userInfoResponse.getData().getProfile());
-
-            return WorkspaceSceneGroupInfoResponse.builder()
-                    .id(sceneGroup.getUuid())
-                    .name(sceneGroup.getName())
-                    .jobTotal(sceneGroup.getJobTotal())
-                    .priority(sceneGroup.getPriority())
-                    .content(contentInfoResponse)
-                    .build();
-        }).collect(Collectors.toList());
-
-        PageMetadataResponse pageMetadataResponse = PageMetadataResponse.builder()
-                .currentPage(pageable.getPageNumber())
-                .currentSize(pageable.getPageSize())
-                .totalPage(sceneGroupPage.getTotalPages())
-                .totalElements(sceneGroupPage.getTotalElements())
-                .build();
-
-        return new ApiResponse<>(new WorkspaceSceneGroupListResponse(responseList, pageMetadataResponse));
-    }
 
     /**
      * 씬그룹 목록 가져오기
@@ -1059,43 +888,6 @@ public class ContentService {
                 .build());
     }
 
-    public ApiResponse<ContentPropertiesResponse> setContentPropertiesMetadata(String contentUUID, ContentPropertiesMetadataRequest metadataRequest) {
-        // 컨텐츠 조회
-        Content content = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-
-        if (!metadataRequest.getUserUUID().equals(content.getUserUUID())) {
-            throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
-        }
-
-        content.setProperties(metadataRequest.getProperties());
-        this.contentRepository.save(content);
-
-        Content returnContent = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-
-        // 사용자 조회
-        ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(returnContent.getUserUUID());
-
-        // 속성 메타데이터 저장
-        return new ApiResponse<>(ContentPropertiesResponse.builder()
-                .workspaceUUID(returnContent.getWorkspaceUUID())
-                .contentUUID(contentUUID)
-                .contentName(returnContent.getName())
-                .shared(returnContent.getShared())
-                .sceneGroupTotal(returnContent.getSceneGroupList().size())
-                .contentSize(returnContent.getSize())
-                .uploaderUUID(returnContent.getUserUUID())
-                .uploaderName(userInfoResponse.getData().getNickname())    // name -> nickname으로 변경
-                .uploaderProfile(userInfoResponse.getData().getProfile())
-                .path(returnContent.getPath())
-                .converted(returnContent.getConverted())
-                .createdDate(returnContent.getCreatedDate())
-                .propertiesMetadata(returnContent.getProperties())
-                .build());
-    }
-
-
     private void workspaceMemberCheck(String memberUUID, String contentWorkspaceUUID) {
         ApiResponse<WorkspaceInfoListResponse> workspaceInfoResponse = this.workspaceRestService.getMyWorkspaceInfoList(memberUUID);
         List<WorkspaceInfoResponse> workspaceInfoList = workspaceInfoResponse.getData().getWorkspaceList();
@@ -1148,36 +940,6 @@ public class ContentService {
         }).collect(Collectors.toList());
 
         return new ApiResponse<>(countList);
-    }
-
-    // property 정보 -> metadata로 변환
-    public ApiResponse<MetadataInfoResponse> propertyToMetadata(String contentUUID) {
-
-        Content content = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-
-        String contentName = content.getName();
-        String userUuid = content.getUserUUID();
-        String properties = content.getProperties();
-
-        JsonObject metaObject = makeMetadata(contentName, userUuid, properties);
-
-        String metaString = metaObject.toString();
-
-        log.debug("metaString {}", metaString);
-
-        Gson gson = new Gson();
-
-        // Gson으로 json -> Class로 변환
-        MetadataInfoResponse metaResponse = gson.fromJson(metaObject, MetadataInfoResponse.class);
-
-        metaResponse.getContents().setUuid(content.getUuid());
-
-        log.debug("contentMeta {}", metaResponse.getContents());
-
-        //addSceneGroupToContent(content,metaString);
-
-        return new ApiResponse<>(metaResponse);
     }
 
     /**
