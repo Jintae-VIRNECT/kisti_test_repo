@@ -45,6 +45,7 @@
   }
   &:focus {
     color: #fff;
+    background: $color-info-active;
   }
 }
 .el-button--primary {
@@ -60,6 +61,7 @@
   }
   &:focus {
     color: #fff;
+    background: $color-primary-active;
   }
 }
 .el-button--danger {
@@ -68,12 +70,15 @@
 
   &:hover {
     color: #fff;
+    background: $color-danger-hover;
   }
   &:active {
     color: #fff;
+    background: $color-danger-active;
   }
   &:focus {
     color: #fff;
+    background: $color-danger-active;
   }
 }
 

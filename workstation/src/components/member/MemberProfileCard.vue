@@ -113,14 +113,15 @@ export default {
         form.licenseView && plans.view.value,
       ].filter(_ => _)
       this.showMemberSettingModal = false
+      this.$emit('refresh')
     },
     kicked() {
       this.showMemberKickModal = false
       this.showMemberSettingModal = false
+      this.$emit('refresh')
     },
     kick() {
       this.showMemberKickModal = true
-      // this.showMemberSettingModal = false
     },
     back() {
       this.showMemberSettingModal = true

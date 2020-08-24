@@ -41,6 +41,9 @@ export default {
   head() {
     return {
       title: `VIRNECT | ${this.$t('common.workstation')}`,
+      htmlAttrs: {
+        lang: this.$i18n.locale,
+      },
     }
   },
   data() {

@@ -44,7 +44,7 @@
           v-for="member in membersList"
           :key="member.uuid"
         >
-          <member-profile-card :data="member" />
+          <member-profile-card :data="member" @refresh="searchMembers" />
         </el-col>
       </el-row>
       <searchbar-page
