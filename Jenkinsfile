@@ -115,7 +115,6 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-contentsmanagement:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-contentsmanagement:${GIT_TAG}").push("latest")
                 }
               }
 
@@ -163,6 +162,7 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-contentsmanagement:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-contentsmanagement:${GIT_TAG}").push("latest")
                 }
               }
 
