@@ -36,6 +36,7 @@
         <td style="text-align: center;" class="">
           <record-count-button
             :count="userItem.recordCount"
+            :serialNum="userItem.serialNum"
           ></record-count-button>
         </td>
       </tr>
@@ -47,6 +48,7 @@
 
 <script>
 import RecordCountButton from './partials/RemoteRecordCountButton'
+
 export default {
   name: 'RemoteUserTable',
   components: {
@@ -68,51 +70,62 @@ export default {
             '일이삼사아육칠팔구십일이삼사아육칠팔구십일이삼사아육칠팔구십…',
           startDate: '2020.07.30',
           recordCount: 10,
+          serialNum: 123456,
         },
         {
           index: 2,
           userName: 'test1',
           startDate: '2020.07.30',
           recordCount: 10,
+          serialNum: 12342134,
         },
         {
           index: 3,
           userName: 'test1',
           startDate: '2020.07.30',
           recordCount: 10,
+          serialNum: 65467543,
         },
         {
           index: 4,
           userName: 'test1',
           startDate: '2020.07.30',
           recordCount: 10,
+          serialNum: 264565196,
         },
         {
           index: 5,
           userName: 'test1',
           startDate: '2020.07.30',
           recordCount: 0,
+          serialNum: 745864123,
         },
         {
           index: 6,
           userName: 'test1',
           startDate: '2020.07.30',
           recordCount: 999,
+          serialNum: 1215,
         },
         {
           index: 7,
           userName: 'test1',
           startDate: '2020.07.30',
           recordCount: 2,
+          serialNum: 4984,
         },
         {
           index: 8,
           userName: 'test1',
           startDate: '2020.07.30',
           recordCount: 10,
+          serialNum: 4567984,
         },
       ],
     }
+  },
+  methods: {
+    showList() {},
   },
 }
 </script>

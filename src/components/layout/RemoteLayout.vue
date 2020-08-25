@@ -1,20 +1,20 @@
 <template>
   <div class="remote-layout offsetwidth">
     <!-- <remote-header></remote-header> -->
-    <remote-record-list></remote-record-list>
+    <remote-cooperation-list></remote-cooperation-list>
   </div>
 </template>
 
 <script>
 // import RemoteHeader from '../header/RemoteHeader'
 
-import RemoteRecordList from '../record/RemoteRecordList'
+import RemoteCooperationList from '../record/RemoteCooperationList'
 export default {
   name: 'RemoteLayout',
   components: {
     // RemoteHeader,
 
-    RemoteRecordList,
+    RemoteCooperationList,
   },
 }
 </script>

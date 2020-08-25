@@ -1,0 +1,219 @@
+@import "~assets/style/mixin";
+
+.rtl {
+  direction: rtl;
+}
+.vdp-wrapper {
+  width: 137px;
+  height: 48px;
+}
+
+.vdp-datepicker {
+  position: relative;
+  width: 137px;
+  height: 48px;
+  text-align: left;
+  * {
+    box-sizing: border-box;
+  }
+
+  input[type="text"] {
+    color: #757f91;
+    font-weight: 500;
+    font-size: 16px;
+  }
+}
+
+.vdp-datepicker--input {
+  width: 100%;
+  height: 100%;
+  padding: 10px 0 14px 20px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(229, 231, 233);
+  border-right: none;
+}
+
+.vdp-datepicker__calendar {
+  position: absolute;
+  z-index: 100;
+  width: 280px;
+  height: 303px;
+  background: #fff;
+  border: 1px solid #e5e7e9;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+  header {
+    display: flex;
+    width: 100%;
+    height: 48px;
+    // line-height: 40px;
+    background: rgb(125, 139, 160);
+    border-radius: 0px;
+
+    span {
+      display: inline-block;
+      // float: left;
+      width: 71%;
+      text-align: center;
+    }
+    .prev {
+      position: relative;
+      float: left;
+      width: 14.285714285714286%;
+      background: url(~@/assets/img/ic_calendar_left.svg) center/50% no-repeat;
+
+      &:not(.disabled) {
+        cursor: pointer;
+        // &:hover {
+        //   background: #eee;
+        // }
+      }
+    }
+    .next {
+      position: relative;
+      float: left;
+      width: 14.285714285714286%;
+      background: url(~@/assets/img/ic_calendar_right.svg) center/50% no-repeat;
+      &:not(.disabled) {
+        cursor: pointer;
+        // &:hover {
+        //   background: #eee;
+        // }
+      }
+    }
+    .prev.disabled {
+      &:after {
+        border-right: 10px solid #ddd;
+      }
+    }
+    .next.disabled {
+      &:after {
+        border-left: 10px solid #ddd;
+      }
+    }
+    .up {
+      &:not(.disabled) {
+        cursor: pointer;
+        // &:hover {
+        //   background: #eee;
+        // }
+      }
+    }
+  }
+  .disabled {
+    color: #ddd;
+    cursor: default;
+  }
+  .flex-rtl {
+    display: flex;
+    flex-wrap: wrap;
+    width: inherit;
+  }
+  .cell {
+    display: inline-block;
+    width: 14%;
+    height: 28px;
+    margin: 2px 0;
+    // padding: 0 5px;
+    color: rgb(84, 84, 84);
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid transparent;
+    &:not(.blank) {
+      &:not(.disabled).day {
+        cursor: pointer;
+        &:hover {
+          border: 1px solid #5c98f0;
+        }
+      }
+      &:not(.disabled).month {
+        cursor: pointer;
+        &:hover {
+          border: 1px solid #5c98f0;
+        }
+      }
+      &:not(.disabled).year {
+        cursor: pointer;
+        &:hover {
+          border: 1px solid #5c98f0;
+        }
+      }
+    }
+    &.day {
+      padding: 4px;
+    }
+  }
+  .cell.selected {
+    color: rgb(255, 255, 255);
+    background: #5c98f0;
+    border-radius: 100px;
+    &:hover {
+      background: #5c98f0;
+    }
+  }
+  .cell.selected.highlighted {
+    background: #4bd;
+  }
+  .cell.highlighted {
+    background: #cae5ed;
+  }
+  .cell.highlighted.disabled {
+    color: #a3a3a3;
+  }
+  .cell.grey {
+    color: #888;
+    &:hover {
+      background: inherit;
+    }
+  }
+  .cell.day-header {
+    margin-top: 19px;
+    margin-bottom: 0px;
+    color: rgb(35, 53, 90);
+    font-size: normal;
+    white-space: nowrap;
+    cursor: inherit;
+    &:hover {
+      background: inherit;
+    }
+  }
+
+  .month {
+    width: 33.333%;
+  }
+  .year {
+    width: 33.333%;
+  }
+}
+.vdp-datepicker__clear-button {
+  font-style: normal;
+  cursor: pointer;
+}
+.vdp-datepicker__calendar-button {
+  font-style: normal;
+  cursor: pointer;
+}
+.vdp-datepicker__clear-button.disabled {
+  color: #999;
+  cursor: default;
+}
+.vdp-datepicker__calendar-button.disabled {
+  color: #999;
+  cursor: default;
+}
+
+.vdp-datepicker__header {
+  background: rgb(125, 139, 160);
+  border-radius: 0px;
+}
+
+.month__year_btn,
+.day__month_btn,
+.year__decade {
+  margin-top: 11px;
+  color: rgb(255, 255, 255);
+  font-weight: 500;
+  font-size: 16px;
+}
