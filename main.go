@@ -145,6 +145,10 @@ func readConfig() {
 		viper.Set("log.stdout", true)
 	}
 
+	if instanceIP, ok := os.LookupEnv("EUREKA_INSTANCE_IP"); ok {
+		viper.Set("eureka.instanceIp", instanceIP)
+	}
+
 	var recDir string
 	if _, err := os.Stat("/.dockerenv"); err == nil {
 		recDir = viper.GetString("record.dirOnDocker")

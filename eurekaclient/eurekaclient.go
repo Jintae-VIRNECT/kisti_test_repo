@@ -111,15 +111,22 @@ func (c *EurekaClient) runDeRegister() {
 func NewClient() *EurekaClient {
 	port := viper.GetInt("general.port")
 	appName := viper.GetString("eureka.app")
-	baseURL := "http://" + util.GetLocalIP() + ":" + strconv.Itoa(port) + "/"
+	var ipAddr string
+	if viper.IsSet("eureka.instanceIp") {
+		ipAddr = viper.GetString("eureka.instanceIp")
+	} else {
+		ipAddr = util.GetLocalIP()
+	}
+	baseURL := "http://" + ipAddr + ":" + strconv.Itoa(port) + "/"
 	c := &EurekaClient{
 		serverURL: viper.GetString("eureka.serverURL") + "/apps/" + viper.GetString("eureka.app"),
 	}
+
 	c.instance = &Instance{
 		InstanceId:        util.GetHostName() + ":" + viper.GetString("eureka.app") + ":" + strconv.Itoa(port),
-		HostName:          util.GetLocalIP(),
+		HostName:          ipAddr,
 		App:               appName,
-		IPAddr:            util.GetLocalIP(),
+		IPAddr:            ipAddr,
 		Status:            UP,
 		Overriddenstatus:  UNKNOWN,
 		Port:              port,
