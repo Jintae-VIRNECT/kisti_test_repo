@@ -239,7 +239,7 @@ public class RemoteGatewayService {
                 .recordingMode("MANUAL")
                 .defaultOutputMode("COMPOSED")
                 .defaultRecordingLayout("BEST_FIT")
-                .recording(false)
+                .recording(true)
                 .room(room)
                 .build();
 
@@ -301,10 +301,10 @@ public class RemoteGatewayService {
         //roomResponse.setRoomId(sessionTokenResponse.getId());
         roomResponse.setToken(sessionTokenResponse.getToken());
         roomResponse.setWss(ServiceServerApplication.wssUrl);
-        for (String coturnUrl: config.getCoturnUrisList()) {
+        for (String coturnUrl: config.remoteServiceProperties.getCoturnUrisList()) {
             CoturnResponse coturnResponse = new CoturnResponse();
-            coturnResponse.setUsername(config.getCoturnUsername());
-            coturnResponse.setCredential(config.getCoturnCredential());
+            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
             coturnResponse.setUrl(coturnUrl);
             roomResponse.getCoturn().add(coturnResponse);
         }
@@ -745,10 +745,10 @@ public class RemoteGatewayService {
                 roomResponse.setToken(sessionTokenResponse.getToken());
 
                 roomResponse.setWss(ServiceServerApplication.wssUrl);
-                for (String coturnUrl: config.getCoturnUrisList()) {
+                for (String coturnUrl: config.remoteServiceProperties.getCoturnUrisList()) {
                     CoturnResponse coturnResponse = new CoturnResponse();
-                    coturnResponse.setUsername(config.getCoturnUsername());
-                    coturnResponse.setCredential(config.getCoturnCredential());
+                    coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                    coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
                     coturnResponse.setUrl(coturnUrl);
                     roomResponse.getCoturn().add(coturnResponse);
                 }

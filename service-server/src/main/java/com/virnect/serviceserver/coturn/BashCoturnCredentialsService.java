@@ -45,7 +45,7 @@ public class BashCoturnCredentialsService extends CoturnCredentialsService {
 				log.warn("Redis DB is not accesible with connection string " + this.coturnDatabaseString);
 				log.error("No COTURN server will be automatically configured for clients");
 			} else {
-				log.info("COTURN IP: " + this.remoteServiceConfig.getCoturnIp());
+				log.info("COTURN IP: " + this.remoteServiceConfig.remoteServiceProperties.getCoturnIp());
 				log.info("COTURN Redis DB accessible with string " + this.coturnDatabaseString);
 				log.info("Cleaning COTURN DB...");
 				if (response.contains("log file opened")) {
@@ -55,11 +55,11 @@ public class BashCoturnCredentialsService extends CoturnCredentialsService {
 					log.info("Path of COTURN log files: " + this.logPath);
 				}
 				response = CommandExecutor.execCommand(10000, "/bin/sh", "-c",
-						"redis-cli -a " + this.remoteServiceConfig.getCoturnDatabasePassword() + " -n "
-								+ this.remoteServiceConfig.getCoturnDatabaseDbname() + " flushdb");
+						"redis-cli -a " + this.remoteServiceConfig.remoteServiceProperties.getCoturnDatabasePassword() + " -n "
+								+ this.remoteServiceConfig.remoteServiceProperties.getCoturnDatabaseDbname() + " flushdb");
 				String response2 = CommandExecutor.execCommand(10000, "/bin/sh", "-c",
-						"redis-cli -a " + this.remoteServiceConfig.getCoturnDatabasePassword() + " -n "
-								+ this.remoteServiceConfig.getCoturnDatabaseDbname() + " --scan --pattern '*'");
+						"redis-cli -a " + this.remoteServiceConfig.remoteServiceProperties.getCoturnDatabasePassword() + " -n "
+								+ this.remoteServiceConfig.remoteServiceProperties.getCoturnDatabaseDbname() + " --scan --pattern '*'");
 				if ("OK".equals(response) && response2.isEmpty()) {
 					log.info("COTURN DB is now empty");
 				} else {

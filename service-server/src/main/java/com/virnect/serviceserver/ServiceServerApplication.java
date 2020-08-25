@@ -5,6 +5,7 @@ import com.virnect.serviceserver.cdr.CDRLoggerFile;
 import com.virnect.serviceserver.cdr.CallDetailRecord;
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.config.RemoteServiceProperties;
 import com.virnect.serviceserver.core.SessionEventsHandler;
 import com.virnect.serviceserver.core.SessionManager;
 import com.virnect.serviceserver.core.TokenGenerator;
@@ -37,6 +38,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -59,6 +62,7 @@ import java.util.concurrent.Semaphore;
 
 //@EnableWebSecurity
 @Import({ JsonRpcConfiguration.class })
+//@EnableConfigurationProperties(RemoteServiceProperties.class)
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 
@@ -82,11 +86,30 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         return new ModelMapper();
     }
 
+    /*@Bean
+    @ConditionalOnMissingBean
+    @DependsOn("remoteServiceProperties")
+    public RemoteServiceConfig remoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
+        return new RemoteServiceConfig();
+    }*/
+
+    /*@Bean
+    @ConditionalOnMissingBean
+    @DependsOn("remoteServiceConfig")
+    public RemoteServiceProperties remoteServiceProperties() {
+        return new RemoteServiceProperties();
+    }*/
 
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
     public KmsManager kmsManager(RemoteServiceConfig remoteServiceConfig) {
+        /*if (remoteServiceConfig.getKmsUris().isEmpty()) {
+            throw new IllegalArgumentException("'KMS_URIS' should contain at least one KMS url");
+        }
+        String firstKmsWsUri = remoteServiceConfig.getKmsUris().get(0);
+        log.info("RemoteService Server using one KMS: {}", firstKmsWsUri);
+        return new FixedOneKmsManager();*/
         if (remoteServiceConfig.getKmsUris().isEmpty()) {
             throw new IllegalArgumentException("'KMS_URIS' should contain at least one KMS url");
         }

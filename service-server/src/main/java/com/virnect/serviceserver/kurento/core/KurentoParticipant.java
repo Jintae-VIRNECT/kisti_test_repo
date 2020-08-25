@@ -181,7 +181,7 @@ public class KurentoParticipant extends Participant {
 		log.info("PARTICIPANT {}: Is now publishing video in room {}", this.getParticipantPublicId(),
 				this.session.getSessionId());
 
-		if (this.remoteServiceConfig.isRecordingModuleEnabled()
+		if (this.remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()
 				&& this.recordingManager.sessionIsBeingRecorded(session.getSessionId())) {
 			this.recordingManager.startOneIndividualStreamRecording(session, null, null, this);
 		}
@@ -447,7 +447,7 @@ public class KurentoParticipant extends Participant {
 		// Remove streamId from publisher's map
 		this.session.publishedStreamIds.remove(this.getPublisherStreamId());
 
-		if (this.remoteServiceConfig.isRecordingModuleEnabled()
+		if (this.remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()
 				&& this.recordingManager.sessionIsBeingRecorded(session.getSessionId())) {
 			this.recordingManager.stopOneIndividualStreamRecording(session, this.getPublisherStreamId(),
 					kmsDisconnectionTime);
