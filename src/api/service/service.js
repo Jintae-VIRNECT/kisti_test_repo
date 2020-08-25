@@ -49,7 +49,7 @@ export const getMember = async function({
 }
 
 /**
- * 멤버 리스트 조회
+ * 멤버 내보내기
  * @query {String} sessionId
  * @query {String} workspaceId
  * @param {String} leaderId
@@ -84,6 +84,37 @@ export const sendSignal = async function({ sessionId, to, type, data }) {
     to,
     type,
     data: JSON.stringify(data),
+  })
+  return returnVal
+}
+
+/**
+ * 초대 가능 멤버 리스트
+ * @param {String} workspaceId
+ * @param {String} sessionId
+ * @param {String} userId
+ * @param {String} filter
+ * @param {String} page
+ * @param {String} size
+ * @param {String} sort
+ */
+export const invitableList = async function({
+  filter = '',
+  page = 0,
+  size = 50,
+  sort = 'role,desc',
+  workspaceId,
+  sessionId,
+  userId,
+}) {
+  const returnVal = await http('INVITABLE_MEMBER_LIST', {
+    filter,
+    page,
+    size,
+    sort,
+    workspaceId,
+    sessionId,
+    userId,
   })
   return returnVal
 }
