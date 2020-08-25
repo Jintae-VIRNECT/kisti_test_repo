@@ -87,7 +87,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps -a | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8082:8082 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-workspace pf-workspace'
+            sh 'docker run -p 8082:8082 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-workspace pf-workspace'
             sh 'docker image prune -a -f'
           }
         }
@@ -122,7 +122,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8082:8082 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8082:8082 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -145,6 +145,7 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-workspace:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-workspace:${GIT_TAG}").push("latest")
                 }
               }
 
@@ -166,7 +167,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-workspace | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace && docker rm pf-workspace; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8082:8082 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8082:8082 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'

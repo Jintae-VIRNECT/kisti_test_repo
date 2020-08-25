@@ -21,13 +21,14 @@ public class WorkspaceUpdateRequest {
     private String workspaceId;
     @NotBlank
     private String userId;
-    @NotBlank
-    @Length(min = 0, max=29, message = "워크스페이스 이름은 최대 29자까지 가능합니다.")
+
+    @NotBlank(message = "워크스페이스 이름은 최대 29자까지 가능합니다.")
+    @Length(max=29)
     private String name;
 
     private MultipartFile profile;
 
-    @NotBlank
-    @Length(min = 0, max=39, message = "워크스페이스 설명은 최대 39자까지 가능합니다.")
+    @NotBlank(message = "워크스페이스 설명은 최대 39자까지 가능합니다.")
+    @Length(max=39)
     private String description;
 }
