@@ -228,7 +228,6 @@ const utils = {
       .replace(/M(?!a|ä|e)/, month)
       .replace(/su/, this.getNthSuffix(this.getDate(date)))
       .replace(/D(?!e|é|i)/, this.getDayNameAbbr(date, translation.days))
-    console.log(str)
     return str
   },
 
