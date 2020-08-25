@@ -170,8 +170,17 @@ export default {
         this.searchCoupons()
         this.addCouponForm.newCouponCode = ''
       } catch (e) {
+        const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
+        const strKey =
+          {
+            4030: 'coupon.message.registerNotExist',
+            4031: 'coupon.message.registerAlready',
+            6668: 'coupon.message.useExpired',
+            6760: 'coupon.message.useAlready',
+          }[errCode] || 'coupon.message.registerFail'
+
         this.$notify.error({
-          message: e.message.replace(/^[0-9]*: /, ''),
+          message: this.$t(strKey),
           position: 'bottom-left',
           duration: 2000,
         })
