@@ -55,6 +55,7 @@ dependencies {
 
     // ModelMapper
     implementation group: 'org.modelmapper', name: 'modelmapper', version: '2.3.0'
+    implementation group: 'org.modelmapper.extensions', name: 'modelmapper-jackson', version: '2.3.0'
 
     // Query DSL
     implementation("com.querydsl:querydsl-jpa") // querydsl
