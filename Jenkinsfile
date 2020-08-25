@@ -125,7 +125,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=staging" -e "NODE_ENV=staging" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}'
+                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e 'NODE_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk \'{print \$1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -172,7 +172,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=production" -e "NODE_ENV=production" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}'
+                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e 'NODE_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk \'{print \$1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
