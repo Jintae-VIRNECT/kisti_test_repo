@@ -10,6 +10,8 @@ spring:
 eureka:
   instance:
     prefer-ip-address: true
+  client:
+    fetch-registry: false
   server:
     enable-self-preservation: false
     response-cache-update-interval-ms: 3000
