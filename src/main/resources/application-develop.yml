@@ -22,6 +22,7 @@ spring:
 logging:
   level:
     com.virnect.download.application.*: DEBUG
+    org.hibernate.type.descriptor.sql: trace
 
 ## Server Configuration
 server:
