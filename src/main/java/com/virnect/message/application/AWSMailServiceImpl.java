@@ -9,7 +9,19 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.mail.BodyPart;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Properties;
 
 
 /**
@@ -59,4 +71,66 @@ public class AWSMailServiceImpl implements MailService {
         this.amazonSimpleEmailServiceAsyncClient.sendEmailAsync(sendEmailRequest);
 
     }
+
+    @Override
+    public void sendAttachmentMail(String receiver, String sender, String subject, String html, byte[] bytes, String fileName) throws MessagingException, IOException {
+
+        Session session = Session.getDefaultInstance(new Properties());
+
+        MimeMessage message = new MimeMessage(session);
+        message.setSubject(subject, "UTF-8");
+        message.setFrom(new InternetAddress(sender));
+        message.setRecipients(javax.mail.Message.RecipientType.TO, InternetAddress.parse(receiver));
+
+        MimeMultipart msg_body = new MimeMultipart("alternative");
+        MimeBodyPart wrap = new MimeBodyPart();
+        MimeBodyPart htmlPart = new MimeBodyPart();
+        htmlPart.setContent(html, "text/html; charset=UTF-8");
+        msg_body.addBodyPart(htmlPart);
+        wrap.setContent(msg_body);
+
+        MimeMultipart msg = new MimeMultipart("mixed");
+        message.setContent(msg);
+        msg.addBodyPart(wrap);
+
+        //첨부파일
+        File convertFile = new File("버넥트 솔루션 도입 ROI 측정 결과.pdf");
+        if (convertFile.createNewFile()) {
+            FileOutputStream fos = new FileOutputStream(convertFile);
+            fos.write(bytes);
+            fos.close();
+        }
+        DataSource dataSource = new ByteArrayDataSource(bytes, "application/octet-stream", "버넥트 솔루션 도입 ROI 측정 결과.pdf");
+        BodyPart bodyPart = new MimeBodyPart();
+        bodyPart.setDataHandler(new DataHandler(dataSource));
+        bodyPart.setFileName("버넥트 솔루션 도입 ROI 측정 결과.pdf");
+        msg.addBodyPart(bodyPart);
+
+        try {
+            System.out.println("Attempting to send an email through Amazon SES "
+                    + "using the AWS SDK for Java...");
+
+            PrintStream out = System.out;
+            message.writeTo(out);
+
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            message.writeTo(outputStream);
+            RawMessage rawMessage =
+                    new RawMessage(ByteBuffer.wrap(outputStream.toByteArray()));
+
+            SendRawEmailRequest rawEmailRequest =
+                    new SendRawEmailRequest(rawMessage);
+
+            amazonSimpleEmailServiceAsyncClient.sendRawEmail(rawEmailRequest);
+            System.out.println("Email sent!");
+
+        } catch (Exception ex) {
+            System.out.println("Email Failed");
+            System.err.println("Error message: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+        convertFile.delete();
+    }
+
+
 }

@@ -21,9 +21,12 @@ spring:
   rabbitmq:
     port: 5672
     host: localhost
-    username: admin
-    password: admin1234
-
+    username: guest
+    password: guest
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 40MB
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
@@ -47,4 +50,9 @@ cloud:
     credentials:
       access-key: AKIARQGLJD3UCFBXNUWQ
       secret-key: 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
-
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: "virnect-homepagestorage"
+        resource: "resource"
