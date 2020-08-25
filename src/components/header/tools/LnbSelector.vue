@@ -5,27 +5,29 @@
     width="14rem"
     popperClass="header-lnb-selector"
   >
-    <ul>
-      <li
-        class="header-lnb-selector__button"
-        v-for="work of workspaceList"
-        :key="work.uuid"
-      >
-        <button
-          @click="changeSelect(work)"
-          :class="{ active: work.uuid === workspace.uuid }"
+    <vue2-scrollbar>
+      <ul>
+        <li
+          class="header-lnb-selector__button"
+          v-for="work of workspaceList"
+          :key="work.uuid"
         >
-          <span
-            class="header-lnb-selector__check"
+          <button
+            @click="changeSelect(work)"
             :class="{ active: work.uuid === workspace.uuid }"
-          ></span>
-          <p class="header-lnb-selector__title">{{ work.title }}</p>
-          <!-- <p class="header-lnb-selector__description">
-            워크스테이션 멤버: {{ option.member }}명
-          </p> -->
-        </button>
-      </li>
-    </ul>
+          >
+            <span
+              class="header-lnb-selector__check"
+              :class="{ active: work.uuid === workspace.uuid }"
+            ></span>
+            <p class="header-lnb-selector__title">{{ work.title }}</p>
+            <!-- <p class="header-lnb-selector__description">
+              워크스테이션 멤버: {{ option.member }}명
+            </p> -->
+          </button>
+        </li>
+      </ul>
+    </vue2-scrollbar>
 
     <button slot="reference" class="header-workspace-selector">
       {{ workspace.title }}

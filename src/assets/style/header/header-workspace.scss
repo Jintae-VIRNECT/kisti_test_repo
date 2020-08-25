@@ -42,11 +42,26 @@
   border-radius: 0.286rem;
   // transform: translateX(40px);
   > .popover--body {
-    padding: 0.429rem 0;
+    padding: 0;
+    > .vue-scrollbar__wrapper {
+      height: fit-content;
+      max-height: calc(80vh - 0.858rem);
+      margin-bottom: 0;
+      // padding-bottom: calc(0.429rem + 10px);
+      > .vue-scrollbar__area {
+        width: 100%;
+      }
+    }
   }
 }
 .header-lnb-selector__button {
   height: 4rem;
+  &:first-child {
+    padding-top: 0.429rem;
+  }
+  &:last-child {
+    padding-bottom: 0.429rem;
+  }
   > button {
     position: relative;
     width: 100%;
