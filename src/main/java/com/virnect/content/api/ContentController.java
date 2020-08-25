@@ -2,7 +2,10 @@ package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
 import com.virnect.content.domain.YesOrNo;
-import com.virnect.content.dto.request.*;
+import com.virnect.content.dto.request.ContentDeleteRequest;
+import com.virnect.content.dto.request.ContentInfoRequest;
+import com.virnect.content.dto.request.ContentUpdateRequest;
+import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
@@ -13,6 +16,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -23,6 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -113,7 +118,7 @@ public class ContentController {
             @ApiImplicitParam(name = "contentType", value = "컨텐츠 종류(AUGMENTED_REALITY(default), ASSISTED_REALITY, CROCESS_PLATFORM, MIXED_REALITY)", dataType = "string", paramType = "form", required = true, defaultValue = "AUGMENTED_REALITY"),
             @ApiImplicitParam(name = "name", value = "컨텐츠 명", dataType = "string", paramType = "form", required = true, defaultValue = "test_content"),
             @ApiImplicitParam(name = "metadata", value = "작업 메타데이터", dataType = "string", paramType = "form"),
-            @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"TargetID\":\"97802bc0-cc5e-436b-bdb3-2ba55f390406\",\"PropertyInfo\":{\"c1eab583-8c05-4e4a-a590-484d5e94db7e\":{\"PropertyInfo\":{\"sceneGroupTitle\":\"\",\"sceneGroupDetail\":\"\",\"ComponentName\":\"씬 그룹\",\"ComponentType\":2,\"identifier\":\"c1eab583-8c05-4e4a-a590-484d5e94db7e\"},\"Child\":{\"9d011d83-2576-4fef-9cbc-13aca71f5410\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"9d011d83-2576-4fef-9cbc-13aca71f5410\"},\"Child\":{\"1a6ae16e-19fb-4363-9ae3-f80332468890\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"1a6ae16e-19fb-4363-9ae3-f80332468890\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"0a7331a9-06a6-4edd-a454-ac324458576b\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"0a7331a9-06a6-4edd-a454-ac324458576b\"},\"Child\":{\"d1976492-190d-4010-8048-fdbf257486d6\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"d1976492-190d-4010-8048-fdbf257486d6\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"d34a2dfe-4b6a-4e18-be14-8d4167b6447f\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"d34a2dfe-4b6a-4e18-be14-8d4167b6447f\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"a27a995a-34f5-44a1-bf78-f67c10f79d6d\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"a27a995a-34f5-44a1-bf78-f67c10f79d6d\"},\"Child\":{\"f8da39d1-1540-4877-95d4-a4865b3d37a3\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"f8da39d1-1540-4877-95d4-a4865b3d37a3\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"be2493ed-7523-4c78-9fc0-3d4ace20b887\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"be2493ed-7523-4c78-9fc0-3d4ace20b887\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}}}},\"0b5539a5-f34b-4d86-8258-12534a9c4623\":{\"PropertyInfo\":{\"sceneGroupTitle\":\"\",\"sceneGroupDetail\":\"\",\"ComponentName\":\"씬 그룹\",\"ComponentType\":2,\"identifier\":\"0b5539a5-f34b-4d86-8258-12534a9c4623\"},\"Child\":{\"dab58732-ce23-484f-9ae2-06805dbab721\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"dab58732-ce23-484f-9ae2-06805dbab721\"},\"Child\":{\"623d96cd-0c40-4d6e-b704-5f5252e1565d\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"623d96cd-0c40-4d6e-b704-5f5252e1565d\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"e80b5a77-e784-426f-986e-fdd8f381f2a7\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"e80b5a77-e784-426f-986e-fdd8f381f2a7\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"eb002e12-f797-44b2-b20f-37a0caff4181\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"eb002e12-f797-44b2-b20f-37a0caff4181\"},\"Child\":{\"5bd34aef-9352-4f00-863b-b83332af996a\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"5bd34aef-9352-4f00-863b-b83332af996a\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"5d9a5fb7-5955-490d-8c3d-bbdfeb434d34\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"5d9a5fb7-5955-490d-8c3d-bbdfeb434d34\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}}}},\"2310ed96-3d86-4b6e-af9f-cb1d600bbdba\":{\"PropertyInfo\":{\"sceneGroupTitle\":\"\",\"sceneGroupDetail\":\"\",\"ComponentName\":\"씬 그룹\",\"ComponentType\":2,\"identifier\":\"2310ed96-3d86-4b6e-af9f-cb1d600bbdba\"},\"Child\":{\"593c35fb-d337-4cf8-b884-57f8b3e5a105\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"593c35fb-d337-4cf8-b884-57f8b3e5a105\"},\"Child\":{\"c345e399-bfa8-42c8-b163-e97c78aceba5\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"c345e399-bfa8-42c8-b163-e97c78aceba5\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"cbb1e6fe-f1d1-44ea-806c-d91b9b31236e\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"cbb1e6fe-f1d1-44ea-806c-d91b9b31236e\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"56015194-4fec-4d19-b6aa-091f7f7a1129\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"56015194-4fec-4d19-b6aa-091f7f7a1129\"},\"Child\":{\"a44b43e5-3dcc-4cdb-be52-f8de0d7aca1c\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"a44b43e5-3dcc-4cdb-be52-f8de0d7aca1c\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"d33e669e-3137-4151-b513-069960b25ef5\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"d33e669e-3137-4151-b513-069960b25ef5\"},\"Child\":{\"00cca620-6e82-48bd-89d0-8b7b24e533dd\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"00cca620-6e82-48bd-89d0-8b7b24e533dd\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}}}}}}"),
+            @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"TargetID\":\"97802bc0-cc5e-436b-bdb3-2ba55f390406\",\"TargetSize\":10,\"PropertyInfo\":{\"c1eab583-8c05-4e4a-a590-484d5e94db7e\":{\"PropertyInfo\":{\"sceneGroupTitle\":\"\",\"sceneGroupDetail\":\"\",\"ComponentName\":\"씬 그룹\",\"ComponentType\":2,\"identifier\":\"c1eab583-8c05-4e4a-a590-484d5e94db7e\"},\"Child\":{\"9d011d83-2576-4fef-9cbc-13aca71f5410\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"9d011d83-2576-4fef-9cbc-13aca71f5410\"},\"Child\":{\"1a6ae16e-19fb-4363-9ae3-f80332468890\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"1a6ae16e-19fb-4363-9ae3-f80332468890\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"0a7331a9-06a6-4edd-a454-ac324458576b\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"0a7331a9-06a6-4edd-a454-ac324458576b\"},\"Child\":{\"d1976492-190d-4010-8048-fdbf257486d6\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"d1976492-190d-4010-8048-fdbf257486d6\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"d34a2dfe-4b6a-4e18-be14-8d4167b6447f\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"d34a2dfe-4b6a-4e18-be14-8d4167b6447f\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"a27a995a-34f5-44a1-bf78-f67c10f79d6d\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"a27a995a-34f5-44a1-bf78-f67c10f79d6d\"},\"Child\":{\"f8da39d1-1540-4877-95d4-a4865b3d37a3\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"f8da39d1-1540-4877-95d4-a4865b3d37a3\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"be2493ed-7523-4c78-9fc0-3d4ace20b887\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"be2493ed-7523-4c78-9fc0-3d4ace20b887\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}}}},\"0b5539a5-f34b-4d86-8258-12534a9c4623\":{\"PropertyInfo\":{\"sceneGroupTitle\":\"\",\"sceneGroupDetail\":\"\",\"ComponentName\":\"씬 그룹\",\"ComponentType\":2,\"identifier\":\"0b5539a5-f34b-4d86-8258-12534a9c4623\"},\"Child\":{\"dab58732-ce23-484f-9ae2-06805dbab721\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"dab58732-ce23-484f-9ae2-06805dbab721\"},\"Child\":{\"623d96cd-0c40-4d6e-b704-5f5252e1565d\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"623d96cd-0c40-4d6e-b704-5f5252e1565d\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"e80b5a77-e784-426f-986e-fdd8f381f2a7\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"e80b5a77-e784-426f-986e-fdd8f381f2a7\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"eb002e12-f797-44b2-b20f-37a0caff4181\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"eb002e12-f797-44b2-b20f-37a0caff4181\"},\"Child\":{\"5bd34aef-9352-4f00-863b-b83332af996a\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"5bd34aef-9352-4f00-863b-b83332af996a\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"5d9a5fb7-5955-490d-8c3d-bbdfeb434d34\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"5d9a5fb7-5955-490d-8c3d-bbdfeb434d34\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}}}},\"2310ed96-3d86-4b6e-af9f-cb1d600bbdba\":{\"PropertyInfo\":{\"sceneGroupTitle\":\"\",\"sceneGroupDetail\":\"\",\"ComponentName\":\"씬 그룹\",\"ComponentType\":2,\"identifier\":\"2310ed96-3d86-4b6e-af9f-cb1d600bbdba\"},\"Child\":{\"593c35fb-d337-4cf8-b884-57f8b3e5a105\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"593c35fb-d337-4cf8-b884-57f8b3e5a105\"},\"Child\":{\"c345e399-bfa8-42c8-b163-e97c78aceba5\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"c345e399-bfa8-42c8-b163-e97c78aceba5\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}},\"cbb1e6fe-f1d1-44ea-806c-d91b9b31236e\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"cbb1e6fe-f1d1-44ea-806c-d91b9b31236e\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"56015194-4fec-4d19-b6aa-091f7f7a1129\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"56015194-4fec-4d19-b6aa-091f7f7a1129\"},\"Child\":{\"a44b43e5-3dcc-4cdb-be52-f8de0d7aca1c\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"a44b43e5-3dcc-4cdb-be52-f8de0d7aca1c\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}},\"d33e669e-3137-4151-b513-069960b25ef5\":{\"PropertyInfo\":{\"sceneTitle\":\"\",\"sceneDetail\":\"\",\"ComponentName\":\"씬\",\"ComponentType\":3,\"identifier\":\"d33e669e-3137-4151-b513-069960b25ef5\"},\"Child\":{\"00cca620-6e82-48bd-89d0-8b7b24e533dd\":{\"PropertyInfo\":{\"text\":\"텍스트를 입력해주세요\",\"fontSize\":32,\"alignment\":3,\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0,\"ComponentName\":\"텍스트\",\"ComponentType\":101,\"identifier\":\"00cca620-6e82-48bd-89d0-8b7b24e533dd\"},\"Transform\":{\"worldPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"worldScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"screenPosition\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenRotation\":{\"x\":0.0,\"y\":0.0,\"z\":0.0},\"screenScale\":{\"x\":1.0,\"y\":1.0,\"z\":1.0},\"ScreenMode\":0},\"BackGround\":{\"sprite\":\"TextBoxBg/0\",\"color\":{\"r\":1.0,\"g\":1.0,\"b\":1.0,\"a\":1.0},\"shadow\":0.0}}}}}}}}"),
             @ApiImplicitParam(name = "userUUID", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -188,72 +193,6 @@ public class ContentController {
 //                .body(resource);
     }
 
-    @ApiOperation(value = "타겟 데이터로 컨텐츠 다운로드(K앱시스트용)", notes = "컨텐츠 식별자 또는 타겟 데이터를 통해 컨텐츠를 다운로드. 컨텐츠 식별자, 타겟 데이터 둘 중 하나는 필수.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "path", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
-            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
-    })
-    @GetMapping("/download/targetData/{targetData}")
-    public ResponseEntity<byte[]> contentDownloadRequestForTargetHandler_temp(
-            @PathVariable("targetData") String targetData
-            , @RequestParam(value = "memberUUID") String memberUUID) throws IOException {
-        log.info("[DOWNLOAD] USER: [{}] => targetData: [{}]", memberUUID, targetData);
-        if (targetData.isEmpty() || memberUUID.isEmpty()) {
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        return this.contentService.contentDownloadForTargetHandler_temp(targetData, memberUUID);
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-//                .contentLength(resource.getFile().length())
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .body(resource);
-    }
-
-    @ApiOperation(value = "컨텐츠 타겟 추가", notes = "컨텐츠의 타겟을 추가. 이미 타겟이 있어도 추가 가능하며, 여러 형태의 타겟종류들을 등록 가능. 동일 타겟종류도 여러개 등록 가능함.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 고유 번호", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "targetData", value = "타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
-            @ApiImplicitParam(name = "targetType", value = "타겟 종류(QR,VTarget)", dataType = "string", paramType = "form", required = true, defaultValue = "QR"),
-            @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true)
-    })
-    @PostMapping("/target/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentInfoResponse>> contentTargetRequestHandler(
-            @PathVariable("contentUUID") String contentUUID
-            , @ModelAttribute @Valid ContentTargetRequest targetRequestDto, BindingResult result) {
-        log.debug(targetRequestDto.getTargetData());
-        log.debug(targetRequestDto.getTargetType());
-        log.debug(targetRequestDto.getUserUUID());
-
-        if (result.hasErrors() || contentUUID.isEmpty()) {
-            log.info("[ContentTargetRequest] => [{}]", targetRequestDto.toString());
-            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<ContentInfoResponse> responseMessage = this.contentService.contentAddTarget(contentUUID, targetRequestDto);
-        return ResponseEntity.ok(responseMessage);
-    }
-
-    @ApiOperation(value = "컨텐츠 타겟 업데이트", notes = "컨텐츠에 이미 부여되어 있는 타겟의 데이터를 변경")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 고유 번호", dataType = "string", paramType = "path", required = true, defaultValue = "58d6b7bd-cfc8-4abf-aab8-74b14dbad822"),
-            @ApiImplicitParam(name = "oldTargetId", value = "변경 대상 타겟 아이디", dataType = "string", paramType = "query", required = true, defaultValue = "2"),
-            @ApiImplicitParam(name = "targetData", value = "저장할 타겟 데이터(URL encoding된 데이터)", dataType = "string", paramType = "form", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
-            @ApiImplicitParam(name = "targetType", value = "저장할 타겟 종류(QR, VTarget)", dataType = "string", allowableValues = "QR", paramType = "form", required = true, defaultValue = "QR"),
-            @ApiImplicitParam(name = "userUUID", value = "수정 요청 사용자의 고유번호", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
-    })
-    @PutMapping("/target/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentInfoResponse>> contentTargetRequestHandler(
-            @PathVariable("contentUUID") String contentUUID
-            , @RequestParam(value = "oldTargetId") Long oldTargetId
-            , @ModelAttribute @Valid ContentTargetRequest targetRequestDto, BindingResult result) {
-        if (result.hasErrors() || contentUUID.isEmpty()) {
-            log.info("[ContentTargetRequest] => [{}]", targetRequestDto.toString());
-            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<ContentInfoResponse> responseMessage = this.contentService.contentUpdateTarget(contentUUID, oldTargetId, targetRequestDto);
-        return ResponseEntity.ok(responseMessage);
-    }
 
     @ApiOperation(value = "컨텐츠 파일 업데이트", notes = "컨텐츠의 파일을 업데이트하며, 컨텐츠명 속성 파라미터 타겟도 함께 업데이트가 가능함.")
     @ApiImplicitParams({
@@ -301,26 +240,6 @@ public class ContentController {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<MetadataInfoResponse> responseMessage = this.contentService.getContentRawMetadata(contentUUID);
-        return ResponseEntity.ok(responseMessage);
-    }
-
-    @ApiOperation(value = "워크스페이스 내 씬그룹 목록 조회", notes = "워크스페이스 내 모든 컨텐츠의 씬그룹들의 목록을 조회 - 바닥 인식시 사용된다고 함.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
-            @ApiImplicitParam(name = "search", value = "검색어(컨텐츠명/사용자명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
-    })
-    @GetMapping("/sceneGroups/workspace/{workspaceUUID}")
-    public ResponseEntity<ApiResponse<WorkspaceSceneGroupListResponse>> getSceneGroupsInWorkspace(
-            @PathVariable("workspaceUUID") String workspaceUUID
-            , @RequestParam(value = "search", required = false) String search
-            , @ApiIgnore PageRequest pageable) {
-        if (workspaceUUID.isEmpty()) {
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<WorkspaceSceneGroupListResponse> responseMessage = this.contentService.getSceneGroupsInWorkspace(workspaceUUID, search, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -422,37 +341,6 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "컨텐츠 속성 메타데이터 수정", tags = "next")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, dataType = "string", paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
-            @ApiImplicitParam(name = "properties", value = "컨텐츠 속성 메타데이터", dataType = "string", paramType = "form", required = true, defaultValue = "{\"content\":[{\"PropertyInfo\":{\"ComponentName\":\"SceneGroup\",\"ComponentType\":\"SceneGroup\",\"identifier\":\"8b7860ef-7617-4c92-a272-50f4e60e127e\",\"sceneGroupDetail\":\"\",\"sceneGroupTitle\":\"\"},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Scene\",\"ComponentType\":\"Scene\",\"identifier\":\"2f6b453a-f5b0-406e-8f45-04f222279f25\",\"sceneDetail\":\"\",\"sceneTitle\":\"\"},\"Transform\":{},\"child\":[{\"PropertyInfo\":{\"ComponentName\":\"Text\",\"ComponentType\":\"Text\",\"alignment\":\"MiddleLeft\",\"backGround\":\"TextBoxBg/0$1|1|1|1$0\",\"color\":\"1|1|1|1\",\"font\":\"NotoSansCJKkr-Bold (UnityEngine.Font)\",\"fontSize\":\"32\",\"identifier\":\"978a9d27-de13-4bfc-8a25-644e3b446c9a\",\"shadow\":\"0\",\"text\":\"텍스트를 입력해주세요\"},\"Transform\":{\"ScreenMode\":\"World\",\"screenPosition\":\"0|0|0\",\"screenRotation\":\"0|0|0\",\"screenScale\":\"1|1|1\",\"worldPosition\":\"0.2940716|0|0\",\"worldRotation\":\"0|0|0\",\"worldScale\":\"1|1|1\"}}]}]}]}"),
-            @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", required = true, dataType = "string", paramType = "form")
-    })
-    @PutMapping("/properties/metadata/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentPropertiesResponse>> contentPropertiesMetadataRequestHandler(
-            @PathVariable("contentUUID") String contentUUID
-            , @ModelAttribute @Valid ContentPropertiesMetadataRequest metadataRequest
-            , BindingResult result) {
-        if (contentUUID.isEmpty() || result.hasErrors()) {
-            log.error("REQUEST BINDING contentUUID: {}, metadataRequest: {}", contentUUID, metadataRequest.toString());
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<ContentPropertiesResponse> responseMessage = this.contentService.setContentPropertiesMetadata(contentUUID, metadataRequest);
-        return ResponseEntity.ok(responseMessage);
-    }
-
-    @ApiOperation(value = "프로퍼티 -> 메타데이터", tags = "test")
-    @GetMapping("/propertyToMetadata/{contentUUID}")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", example = "16ac0c7e-9e64-409a-b412-7583ca3e3be4")
-    })
-    public ResponseEntity<ApiResponse<MetadataInfoResponse>> propertyToMetadata(
-            @PathVariable("contentUUID") String contentUUID
-    ) {
-        ApiResponse<MetadataInfoResponse> response = this.contentService.propertyToMetadata(contentUUID);
-        return ResponseEntity.ok(response);
-    }
-
     @ApiOperation(value = "타겟 데이터 존재 유무", notes = "타겟 데이터의 존재 유무 확인 (true : 존재함, false : 존재하지 않음)")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "타겟 데이터", name = "targetData", required = true, paramType = "query", example = "mgbvuA6RhUXL%2bJPrK2Z7YoKi7HEp4K0XmmkLbV7SlBRXN%2fJJAuzDX1%2bNyyt7%2fLCM")
@@ -470,14 +358,20 @@ public class ContentController {
 
     @ApiOperation(value = "워크스페이스 사용 용량 및 다운로드 횟수 조회")
     @ApiImplicitParams({
-            @ApiImplicitParam(value = "워크스페이스 식별자", name = "workspaceId", required = true, paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8")
+            @ApiImplicitParam(value = "워크스페이스 식별자", name = "workspaceId", required = true, paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(value = "사용랑 조회 시작 일자", name = "startDate", required = true, paramType = "query", example = "2020-07-24T10:00:00"),
+            @ApiImplicitParam(value = "사용랑 조회 종료 일자", name = "endDate", required = true, paramType = "query", example = "2020-08-24T23:59:59")
     })
     @GetMapping("/resources/report/{workspaceId}")
-    public ResponseEntity<ApiResponse<ContentResourceUsageInfoResponse>> getContentResourceUsageInfoRequest(@PathVariable("workspaceId") String workspaceId) {
+    public ResponseEntity<ApiResponse<ContentResourceUsageInfoResponse>> getContentResourceUsageInfoRequest(@PathVariable("workspaceId") String workspaceId,
+                                                                                                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+                                                                                                            @RequestParam(name = "startDate") LocalDateTime startDate,
+                                                                                                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+                                                                                                            @RequestParam(name = "endDate") LocalDateTime endDate) {
         if (StringUtils.isEmpty(workspaceId)) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(workspaceId);
+        ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(workspaceId, startDate, endDate);
         return ResponseEntity.ok(responseMessage);
     }
 }

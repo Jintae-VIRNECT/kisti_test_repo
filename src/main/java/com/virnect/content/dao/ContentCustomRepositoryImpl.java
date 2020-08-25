@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -138,29 +139,16 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     }
 
     @Override
-    public ContentResourceUsageInfoResponse calculateResourceUsageAmountByWorkspaceId(String workspaceId) {
+    public Long calculateTotalStorageAmountByWorkspaceId(String workspaceId) {
         QContent qContent = QContent.content;
-        Tuple result = from(qContent)
-                .select(qContent.workspaceUUID,
-                        qContent.size.sum().as("storageUsage"),
-                        qContent.downloadHits.sum().as("totalHit")
-                )
-                .where(qContent.workspaceUUID.eq(workspaceId)).fetchOne();
-
-        Long totalStorageUsage = result.get(qContent.size.sum().as("storageUsage"));
-        Long totalHits = result.get(qContent.downloadHits.sum().as("totalHit"));
-
-        if (totalStorageUsage == null) {
-            totalStorageUsage = 0L;
+        Optional<Long> calculateTotalUsedStorageAmount = Optional.ofNullable(
+                from(qContent).select(qContent.size.sum()).where(qContent.workspaceUUID.eq(workspaceId)).fetchOne()
+        );
+        if (calculateTotalUsedStorageAmount.isPresent()) {
+            long totalStorageUsage = calculateTotalUsedStorageAmount.get();
+            totalStorageUsage /= 1024 * 1024;
+            return totalStorageUsage;
         }
-
-        if (totalHits == null) {
-            totalHits = 0L;
-        }
-
-        totalStorageUsage /= 1024 * 1024;
-
-
-        return new ContentResourceUsageInfoResponse(workspaceId, totalStorageUsage, totalHits, LocalDateTime.now());
+        return 0L;
     }
 }
