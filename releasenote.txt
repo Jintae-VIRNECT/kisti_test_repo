@@ -1,14 +1,11 @@
 RELEASE
 
 New Features
-단순 워크스페이스 정보 조회 API 추가(except user 정보)
-지프킨 서버 연동
 
 Bug Fixes
-워크스페이스 플랜 사용자 정보 조회 기능 응답데이터 수정
-지프킨 discovery client disable
 
 Limitation
-워크스페이스 정보변경 이메일 전송 케이스 변경(to be:이름 변경시에만 전송)
+내가 속한 워크스페이스 조회 API에서 응답 데이터 Default 정렬 변경(권한 순)
+redis db 주소 변경(production)
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

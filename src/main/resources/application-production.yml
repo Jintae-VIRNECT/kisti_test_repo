@@ -7,7 +7,7 @@ spring:
     password: qjsprxm2020!#@$
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
       org:
@@ -15,15 +15,15 @@ spring:
           envers:
             audit_table_suffix: _history
   redis:
-    host: virnect-qa-redis.b84gc2.0001.apn2.cache.amazonaws.com
+    host: virnect-prod-redis.b84gc2.0001.apn2.cache.amazonaws.com
   cloud:
     loadbalancer:
       ribbon:
         enabled: false
   servlet:
     multipart:
-      max-file-size: 30MB
-      max-request-size: 40MB
+      max-file-size: 300MB
+      max-request-size: 400MB
   zipkin:
     base-url: http://zipkin.virnect.com
     discovery-client-enabled: false
