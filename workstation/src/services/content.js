@@ -33,33 +33,18 @@ export default {
     }
     params.sort = params.sort && params.sort.replace('contentName', 'name')
 
-    const userUUID = myProfileGetter().uuid
+    const userUUID = params.mine && myProfileGetter().uuid
     const workspaceUUID = activeWorkspaceGetter().uuid
-    let data = null
-    // 내 컨텐츠
-    if (params.mine) {
-      data = await api('CONTENTS_LIST_MINE', {
-        route: { userUUID },
-        params: {
-          converteds: 'NO',
-          workspaceUUID,
-          userUUID,
-          size: 10,
-          ...params,
-        },
-      })
-    }
-    // 전체 컨텐츠
-    else {
-      data = await api('CONTENTS_LIST', {
-        params: {
-          workspaceUUID: activeWorkspaceGetter().uuid,
-          converteds: 'NO',
-          size: 10,
-          ...params,
-        },
-      })
-    }
+
+    const data = await api('CONTENTS_LIST', {
+      params: {
+        converteds: 'NO',
+        workspaceUUID,
+        userUUID,
+        size: 10,
+        ...params,
+      },
+    })
     return {
       list: data.contentInfo.map(content => new Content(content)),
       total: data.pageMeta.totalElements,
