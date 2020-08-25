@@ -1,5 +1,6 @@
 {
   "login": {
+    "subTitle": "Login Center",
     "title": "Log in",
     "email": "Email address",
     "emailPlaceholder": "Please enter your email address",
@@ -9,10 +10,10 @@
     "autoLogin": "Enable auto login",
     "findAccount": "Find your email account",
     "resetPassword": "Reset password",
-    "signUp": "Sign up",
+    "signUp": "This service requires login.",
     "needTo": {
-      "title": "로그인이 필요한 서비스입니다",
-      "contents": "로그인 페이지로 이동합니다."
+      "title": "Moving to the login page.",
+      "contents": "You have entered incorrect login information."
     },
     "accountError": {
       "title": "You have entered incorrect login information.",

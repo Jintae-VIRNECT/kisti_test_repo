@@ -14,7 +14,9 @@
 			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
-			<TheHeader :showSection="showSection" :logoUrl="logoUrl" />
+			<TheHeader :showSection="showSection" :logoUrl="logoUrl">
+				<template slot="subTitle">{{ $t('login.subTitle') }}</template>
+			</TheHeader>
 			<transition name="app-fade" mode="out-in">
 				<router-view />
 			</transition>
@@ -33,7 +35,7 @@ export default {
 				login: false,
 				language: true,
 			},
-			logoUrl: '/',
+			logoUrl: 'https://www.virnect.com',
 		}
 	},
 	components: {

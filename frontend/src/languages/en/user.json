@@ -15,11 +15,11 @@
     },
     "nickName": {
       "title": "Nickname",
-      "contents": "Please enter 20 characters or less. You can use Korean, English, special characters (excluding (&lt;), (&gt;)), and spaces.\""
+      "contents": "Please enter 20 characters or less. You can use Korean English special characters (excluding (&lt;) (&gt;)) and spaces."
     },
     "recoveryInfo": {
       "title": "Enter account recovery information",
-      "placeHolder": "In case you forget account information, please enter the verification information.\""
+      "placeHolder": "In case you forget account information please enter the verification information."
     },
     "phoneNumber": {
       "title": "Contact detail",
@@ -34,11 +34,11 @@
     "error": {
       "etc": {
         "title": "Error",
-        "message": "Failed to proceed with account registration, please try again later\""
+        "message": "Failed to proceed with account registration please try again later"
       },
       "nickName": {
         "title": "Nickname settup error",
-        "message": "Please enter a nickname of 20 characters or less. You may use Korean, English, special characters, and spaces.\""
+        "message": "Please enter a nickname of 20 characters or less. You may use Kor"
       }
     }
   }

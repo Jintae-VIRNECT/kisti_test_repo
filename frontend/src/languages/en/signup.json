@@ -5,7 +5,7 @@
     "account": "Account email address",
     "mailPlaceholder": "Please enter your email address",
     "authentication": {
-      "mail": "Sending verification code",
+      "mail": "Send Verification Code",
       "number": "Enter 6 digit verification code",
       "reSubmit": "Re-sending verification code",
       "verification": "Confirm verification",
@@ -17,9 +17,9 @@
         },
         "errors": {
           "title": "Verification code match error",
-          "contents": "Entered verification code does not match, please try again",
+          "contents": "Entered verification code does not match please try again",
           "fail": "Email verification failed",
-          "failContent": "Failed to send a verification code to your email, please try again later."
+          "failContent": "Failed to send a verification code to your email please try again later."
         }
       }
     },
@@ -27,11 +27,11 @@
       "pass": "Password",
       "comfirm": "Please enter your password",
       "reComfirm": "Please re-enter your password",
-      "notice": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. Uppercase letter, Lowercase letter, Number, Special character ( . , !, @, #, $, % ), Also your password must not contain consecutive numbers and more than four of same characters."
+      "notice": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % )."
     },
     "name": {
-      "name": "Given name",
-      "first": "Given name",
+      "name": "First name",
+      "first": "First name",
       "last": "Last name"
     },
     "birth": {
@@ -52,13 +52,13 @@
       "VIRENCT Official Blog",
       "Online advertisement",
       "SNS and Community",
-      "Press, news, articles and magazines\"",
+      "Press news articles and magazines",
       "Newsletter and email promotion",
       "Friends or Family",
       "Please specify"
     ],
     "serviceInfo": {
-      "title": "Industry Clasification",
+      "title": "Industry Classification",
       "select": "Select your Industry Classification",
       "placeholder": "Tell us what type of Industry Classification you are from.",
       "other": "Other"
@@ -80,8 +80,8 @@
     "next": "Next",
     "done": {
       "verification": {
-        "title": "Succesfully sent email verification",
-        "contents": "A verification code is sent to your email address. Check your email and type in the code please."
+        "title": "Succesfully sent verification email",
+        "contents": "A verification code is sent to your email address. Please check your email and type in the code."
       }
     },
     "errors": {
@@ -90,16 +90,16 @@
         "contents": "Users under the age of 14 cannot sign up and use the service."
       },
       "password": {
-        "title": "Worng passord",
-        "contents": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. Uppercase letter, Lowercase letter, Number, Special character ( . , !, @, #, $, % ), Also your password must not contain consecutive numbers and more than four of same characters."
+        "title": "Wrong password",
+        "contents": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters."
       },
       "duplicateEmail": {
-        "title": "Failed to send email verification",
+        "title": "Failed to send verification email",
         "contents": "We found an existing account with that email address"
       },
       "verification": {
-        "title": "Failed to send email verification",
-        "contents": "Failed to send email verification, please try later"
+        "title": "Failed to send verification email",
+        "contents": "Failed to send email verification please try later"
       }
     }
   }
