@@ -84,7 +84,7 @@ public class AppService {
         }
 
 
-        App apps = App.registerNewApp()
+        App apps = App.builder()
                 .uuid(generateAppUUID())
                 .device(device)
                 .product(product)
