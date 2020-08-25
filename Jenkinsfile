@@ -177,7 +177,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8761:8761 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                          execCommand: 'docker run -p 8761:8761 --restart=always -e "SPRING_PROFILES_ACTIVE=production" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_TAG}'
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
