@@ -9,7 +9,7 @@
           :participant="participant"
           @selectMain="selectMain(participant)"
         ></participant-video>
-        <article v-if="showInvite" key="append">
+        <article v-if="isLeader" key="append">
           <div class="participant-video more" @click="more">
             <p>{{ $t('service.participant_invite') }}</p>
           </div>
@@ -47,7 +47,7 @@ export default {
   },
   computed: {
     ...mapGetters(['participants', 'mainView', 'viewForce']),
-    showInvite() {
+    isLeader() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
@@ -106,14 +106,14 @@ export default {
         if (force) {
           this.addChat({
             name: select.nickname,
-            status: 'sharing-start',
+            status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
             type: 'system',
           })
         } else {
           if (this.viewForce === true) {
             this.addChat({
               name: this.mainView.nickname,
-              status: 'sharing-stop',
+              status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
               type: 'system',
             })
           }

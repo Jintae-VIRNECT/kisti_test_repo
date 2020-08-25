@@ -252,7 +252,7 @@ export default {
         if (flag === false && oldFlag === true) {
           this.addChat({
             name: this.mainView.nickname,
-            status: 'sharing-stop',
+            status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
             type: 'system',
           })
         }
@@ -260,7 +260,7 @@ export default {
           this.$nextTick(() => {
             this.addChat({
               name: this.mainView.nickname,
-              status: 'sharing-start',
+              status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
               type: 'system',
             })
           })
@@ -297,7 +297,7 @@ export default {
     cancelSharing() {
       this.addChat({
         name: this.mainView.nickname,
-        status: 'sharing-stop',
+        status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
         type: 'system',
       })
       this.setMainView({ force: false })

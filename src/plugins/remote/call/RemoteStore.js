@@ -230,9 +230,12 @@ const mutations = {
         }
       }
     }
-    if (state.participants[idx].me === true && 'video' in param) {
+    if (state.participants[idx].me === true && param['hasVideo'] === true) {
       state.initing = false
-      if (param['video'] === true && (!state.mainView || !state.mainView.id)) {
+      if (
+        param['hasVideo'] === true &&
+        (!state.mainView || !state.mainView.id)
+      ) {
         state.mainView = state.participants[idx]
       }
     }

@@ -126,7 +126,7 @@ const _ = {
           video: _.publisher.stream.videoActive,
           audio: _.publisher.stream.audioActive,
         })
-        if (_.publisher.properties.publishVideo) {
+        if (_.publisher.stream.hasVideo) {
           const track = mediaStream.getVideoTracks()[0]
           const settings = track.getSettings()
           const capability = track.getCapabilities()

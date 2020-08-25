@@ -296,7 +296,7 @@
     background-image: url(~assets/image/call/ic_chat_local_record.svg);
   }
 
-  .emphasize {
+  > em {
     display: inline-block;
     max-width: calc(100% - 1.429rem);
     overflow: hidden;

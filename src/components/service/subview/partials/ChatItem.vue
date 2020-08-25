@@ -39,6 +39,7 @@
 import Profile from 'Profile'
 import FileSaver from 'file-saver'
 import linkifyHtml from 'linkifyjs/html'
+import { systemClass, systemText } from './chatUtils'
 export default {
   name: 'ChatItem',
   components: {
@@ -125,92 +126,13 @@ export default {
     },
     subClass() {
       if (this.chat.type === 'system') {
-        switch (this.chat.status) {
-          case 'create':
-            return 'init'
-          case 'invite':
-          case 'leave':
-            return 'people'
-          case 'sharing-start':
-          case 'sharing-stop':
-            return 'sharing'
-          case 'stream-stop':
-            return 'cancel'
-          case 'stream-start':
-          case 'stream-background':
-            return 'alarm'
-          case 'drawing':
-            return 'board'
-          case 'ar-deny':
-          case 'ar-unsupport':
-          case 'ar-start':
-          case 'ar-pointing':
-          case 'ar-area':
-            return 'ar'
-          case 'pointing-allow':
-          case 'pointing-not-allow':
-            return 'pointing'
-          case 'record-allow':
-          case 'record-not-allow':
-            return 'record'
-        }
+        return systemClass(this.chat.status)
       }
       return ''
     },
     chatText() {
       if (this.chat.type === 'system') {
-        switch (this.chat.status) {
-          case 'create':
-            return this.$t('service.chat_create')
-          case 'invite':
-            return this.$t('service.chat_invite', {
-              name: this.chat.name,
-            })
-          case 'leave':
-            return this.$t('service.chat_leave', {
-              name: this.chat.name,
-            })
-          case 'sharing-start':
-            return this.$t('service.chat_sharing_start', {
-              name: this.chat.name,
-            })
-          case 'sharing-stop':
-            return this.$t('service.chat_sharing_stop', {
-              name: this.chat.name,
-            })
-          case 'stream-stop':
-            return this.$t('service.chat_stream_stop', {
-              name: this.chat.name,
-            })
-          case 'stream-start':
-            return this.$t('service.chat_stream_start', {
-              name: this.chat.name,
-            })
-          case 'stream-background':
-            return this.$t('service.chat_stream_background', {
-              name: this.chat.name,
-            })
-          case 'drawing':
-            return this.$t('service.chat_drawing', { name: this.chat.name })
-          case 'ar-deny':
-            return this.$t('service.chat_ar_deny')
-          case 'ar-unsupport':
-            return this.$t('service.chat_ar_unsupport')
-          case 'ar-start':
-            return this.$t('service.chat_ar_start', { name: this.chat.name })
-          case 'ar-pointing':
-            return this.$t('service.chat_ar_pointing', { name: this.chat.name })
-          case 'ar-area':
-            return this.$t('service.chat_ar_area')
-          case 'pointing-allow':
-            return this.$t('service.chat_pointing_allow')
-          case 'pointing-not-allow':
-            return this.$t('service.chat_pointing_not_allow')
-          case 'record-allow':
-            return this.$t('service.chat_record_allow')
-          case 'record-not-allow':
-            return this.$t('service.chat_record_not_allow')
-        }
+        return systemText(this.chat.status, this.chat.name)
       }
       let chatText = this.chat.text ? this.chat.text : ''
       chatText = linkifyHtml(chatText, {
