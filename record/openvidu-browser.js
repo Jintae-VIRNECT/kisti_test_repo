@@ -7724,7 +7724,13 @@ var PING_INTERVAL = 5000;
 var RECONNECTING = 'RECONNECTING';
 var CONNECTED = 'CONNECTED';
 var DISCONNECTED = 'DISCONNECTED';
-var Logger = console;
+var Logger = {
+    debug:this.isProdMode? console.debug:()=>{},
+    error:this.isProdMode? console.error:()=>{},
+    log:this.isProdMode? console.log:()=>{},
+    warn:this.isProdMode? console.warn:()=>{},
+    info:this.isProdMode? console.info:()=>{}
+}
 function JsonRpcClient(configuration) {
     var self = this;
     var wsConfig = configuration.ws;
@@ -7926,7 +7932,13 @@ exports.WebSocketWithReconnection = WebSocketWithReconnection;
 
 },{"./webSocketWithReconnection":51}],51:[function(require,module,exports){
 "use strict";
-var Logger = console;
+var Logger = {
+    debug:this.isProdMode? console.debug:()=>{},
+    error:this.isProdMode? console.error:()=>{},
+    log:this.isProdMode? console.log:()=>{},
+    warn:this.isProdMode? console.warn:()=>{},
+    info:this.isProdMode? console.info:()=>{}
+}
 var MAX_RETRIES = 2000;
 var RETRY_TIME_MS = 3000;
 var CONNECTING = 0;
