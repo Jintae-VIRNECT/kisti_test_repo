@@ -1,4 +1,4 @@
-package com.virnect.gateway.filter;
+package com.virnect.gateway.filter.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -25,7 +25,6 @@ import java.util.Objects;
 @Slf4j
 @Component
 public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<LoggingGatewayFilterFactory.Config> {
-    private static String MESSAGE_DIVIDE_LINE = "-----------------------------------------------------------------------------------------------------------------------------------------";
 
     public LoggingGatewayFilterFactory() {
         super(Config.class);

@@ -1,4 +1,4 @@
-package com.virnect.gateway.filter;
+package com.virnect.gateway.filter.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -32,7 +32,7 @@ import java.util.Optional;
 @Profile(value = {"staging", "production"})
 @Component
 @RequiredArgsConstructor
-public class JwtAuthenticate implements GlobalFilter {
+public class JwtAuthenticationFilter implements GlobalFilter {
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -43,14 +43,14 @@ public class JwtAuthenticate implements GlobalFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String requestUriPath = exchange.getRequest().getURI().getPath();
-        boolean isAuthenticateSkipUrl = requestUriPath.startsWith("/auth") ||
-                requestUriPath.startsWith("/admin") ||
-                requestUriPath.startsWith("/users/find") ||
-                requestUriPath.startsWith("/licenses/allocate/check") ||
-                requestUriPath.startsWith("/licenses/allocate") ||
-                requestUriPath.startsWith("/licenses/deallocate") ||
-                requestUriPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
+        String requestUrlPath = exchange.getRequest().getURI().getPath();
+        boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auth") ||
+                requestUrlPath.startsWith("/admin") ||
+                requestUrlPath.startsWith("/users/find") ||
+                requestUrlPath.startsWith("/licenses/allocate/check") ||
+                requestUrlPath.startsWith("/licenses/allocate") ||
+                requestUrlPath.startsWith("/licenses/deallocate") ||
+                requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
 
         if (isAuthenticateSkipUrl) {
             return chain.filter(exchange);

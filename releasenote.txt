@@ -2,14 +2,13 @@
 RELEASE
 
 New Features
-- 운영 토큰 인증키 변경
-- 리모트 서버 등록
-- 리모트 서버 웹 소켓 등록
+- API 메시지 암호화 및 복호화 기능 추가
 
 Bug Fixes
-- 메세지 서버 Path 설정
+- 없음
 
 Limitation
-- 없음
+- API 메시지 암복호화 기능은 메시지 헤더에 deviceAuthKey와 encrypt 필드 값을 바탕으로 동작하며, deviceAuthKey의 경우
+  앱 인증을 통해 키값을 얻을 수 있다 (앱 어플리케이션만 적용 대상).
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

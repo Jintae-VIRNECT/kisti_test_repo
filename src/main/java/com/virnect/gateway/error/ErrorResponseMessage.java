@@ -1,4 +1,4 @@
-package com.virnect.gateway.security;
+package com.virnect.gateway.error;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
