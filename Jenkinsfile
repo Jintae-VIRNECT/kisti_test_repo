@@ -138,7 +138,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker run -p 8632:8632 --restart=always -e "SPRING_PROFILES_ACTIVE=staging" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}'
+                                                    execCommand: "docker run -p 8632:8632 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
@@ -185,7 +185,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker run -p 8632:8632 --restart=always -e "SPRING_PROFILES_ACTIVE=production" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}'
+                                                    execCommand: "docker run -p 8632:8632 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
