@@ -1,5 +1,8 @@
 package com.virnect.serviceserver.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.api.ISessionRestAPI;
@@ -7,6 +10,8 @@ import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.constraint.PushConstants;
 import com.virnect.data.constraint.ServiceConstants;
 import com.virnect.data.dto.feign.PushResponse;
+import com.virnect.data.dto.feign.UserInfoResponse;
+import com.virnect.data.dto.push.InviteRoomContents;
 import com.virnect.data.dto.request.*;
 import com.virnect.data.dto.response.*;
 import com.virnect.data.dto.rpc.RpcParamsRequest;
@@ -62,9 +67,11 @@ public class SessionRestController implements ISessionRestAPI {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+        // check user is valid
+        DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(roomRequest.getLeaderId());
 
+        // check user license type using user id
         DataProcess<LicenseItem> licenseItem = this.dataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
-
         if (licenseItem.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
             ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
                     new RoomResponse(),
@@ -82,11 +89,6 @@ public class SessionRestController implements ISessionRestAPI {
             );
             return ResponseEntity.ok(apiResponse);
         }
-
-        // 2. check room request member count is over
-        /*if(roomRequest.getLeaderId() != null && roomRequest.getParticipantIds().size() > (ServiceConstants.PRODUCT_BUSINESS_MAX_USER - 1)) {
-            throw new RestServiceException(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
-        }*/
 
         // 3. check user license type using user uuid
         //TODO : License check after test account has remote product
@@ -121,9 +123,37 @@ public class SessionRestController implements ISessionRestAPI {
         JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
         // 5. create room
-        return ResponseEntity.ok(
-                this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString())
-        );
+        ApiResponse<RoomResponse> apiResponse = this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
+        if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
+            //send push message invite
+            PushSendRequest pushSendRequest = new PushSendRequest();
+            pushSendRequest.setService(PushConstants.PUSH_EVENT_REMOTE);
+            pushSendRequest.setEvent(PushConstants.SEND_PUSH_ROOM_INVITE);
+            pushSendRequest.setWorkspaceId(roomRequest.getWorkspaceId());
+            pushSendRequest.setUserId(roomRequest.getLeaderId());
+            pushSendRequest.setTargetUserIds(roomRequest.getParticipantIds());
+            //set push message invite room contents
+            InviteRoomContents inviteRoomContents = new InviteRoomContents();
+            inviteRoomContents.setSessionId(apiResponse.getData().getSessionId());
+            inviteRoomContents.setTitle(roomRequest.getTitle());
+            inviteRoomContents.setNickName(userInfo.getData().getNickname());
+            inviteRoomContents.setProfile("default");
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String jsonString = mapper.writeValueAsString(inviteRoomContents);
+                pushSendRequest.setContents(mapper.readValue(jsonString, new TypeReference<Map<Object, Object>>() {}));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            ApiResponse<PushResponse> pushResponse = this.messageRestService.sendPush(pushSendRequest);
+            if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+                log.info("push send message executed but not success");
+                log.info("push response: [code] {}", pushResponse.getCode());
+                log.info("push response: [message] {}", pushResponse.getMessage());
+            }
+        }
+        return ResponseEntity.ok(apiResponse);
     }
 
     @Override
@@ -388,6 +418,10 @@ public class SessionRestController implements ISessionRestAPI {
                     apiResponse.setCode(Integer.parseInt(jsonObject.get("status").getAsString()));
                     apiResponse.setMessage(jsonObject.get("message").getAsString());
                 } else {
+                    //send force disconnected
+                    //todo:forceResult when get false do process something.
+                    boolean forceResult = serviceSessionManager.evictParticipant(sessionId, connectionId);
+                    log.info("evictParticipant :{}", forceResult);
                     response.setResult(true);
                 }
                 apiResponse.setData(response);

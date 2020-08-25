@@ -32,8 +32,10 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
             }
 
             @Override
-            public ApiResponse<UserInfoResponse> getUserInfoByUuid(String userId) {
-                return null;
+            public ApiResponse<UserInfoResponse> getUserInfoByUserId(String userId) {
+                log.info("[USER INFORMATION API FALLBACK] => USER_ID: {}", userId);
+                UserInfoResponse empty = new UserInfoResponse();
+                return new ApiResponse<>(empty);
             }
         };
 

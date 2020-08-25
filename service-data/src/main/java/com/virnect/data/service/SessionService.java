@@ -499,23 +499,54 @@ public class SessionService {
     }
 
     @Transactional
+    public void disconnectSession(String sessionId, ClientMetaData clientMetaData) {
+        Room room = roomRepository.findBySessionId(sessionId).orElse(null);
+        if (room == null) {
+            log.info("session disconnect and sessionEventHandler is faild. room data is null");
+        } else {
+            if (room.getMembers().isEmpty()) {
+                log.info("session disconnect and sessionEventHandler is here: room members empty");
+            } else {
+                for (Member member : room.getMembers()) {
+                    if (member.getUuid().equals(clientMetaData.getClientData())) {
+                        //set status evicted
+                        member.setMemberStatus(MemberStatus.EVICTED);
+                        //set connection id to empty
+                        member.setConnectionId("");
+                        //set end time
+                        LocalDateTime endTime = LocalDateTime.now();
+                        member.setEndDate(endTime);
+
+                        //time diff seconds
+                        Long totalDuration = member.getDurationSec();
+                        Duration duration = Duration.between(member.getStartDate(), endTime);
+                        member.setDurationSec(totalDuration + duration.getSeconds());
+
+                        //set room null
+                        //member.setRoom(null);
+
+                        //save member
+                        memberRepository.save(member);
+                    }
+                }
+                //log.info("session leave and sessionEventHandler is here: room members not found");
+            }
+        }
+    }
+
+    @Transactional
     public Room updateRoom(Room room, InviteRoomRequest inviteRoomRequest) {
         log.info("updateRoom by InviteRoomRequest");
-        // set room members
-        if(!inviteRoomRequest.getParticipantIds().isEmpty()) {
-            for (String participant : inviteRoomRequest.getParticipantIds()) {
-                log.debug("getParticipants Id is {}", participant);
-                Member member = Member.builder()
-                        .room(room)
-                        .memberType(MemberType.UNKNOWN)
-                        .workspaceId(room.getWorkspaceId())
-                        .uuid(participant)
-                        .sessionId(room.getSessionId())
-                        .build();
-                room.getMembers().add(member);
-            }
-        } else {
-            log.debug("participants Id List is null");
+        for (String participant : inviteRoomRequest.getParticipantIds()) {
+            log.debug("getParticipants Id is {}", participant);
+            Member member = Member.builder()
+                    .room(room)
+                    .memberType(MemberType.UNKNOWN)
+                    .workspaceId(room.getWorkspaceId())
+                    .uuid(participant)
+                    .sessionId(room.getSessionId())
+                    .build();
+            room.getMembers().add(member);
         }
         return roomRepository.save(room);
     }
@@ -532,6 +563,34 @@ public class SessionService {
         log.info("generate room profile string is {}", profile);
         room.setProfile(profile);
         roomRepository.save(room);
+    }
+
+    @Transactional
+    public void createOrUpdateMember(Room room, String userId) {
+        log.debug("updateRoom member Id is {}", userId);
+        for(Member member : room.getMembers()) {
+            if(member.getUuid().equals(userId) && member.getMemberStatus().equals(MemberStatus.EVICTED)) {
+                member.setMemberStatus(MemberStatus.UNLOAD);
+                memberRepository.save(member);
+            } else {
+                room.getMembers().add(
+                        Member.builder()
+                                .room(room)
+                                .memberType(MemberType.UNKNOWN)
+                                .workspaceId(room.getWorkspaceId())
+                                .uuid(userId)
+                                .sessionId(room.getSessionId())
+                                .build()
+                );
+            }
+        }
+        roomRepository.save(room);
+    }
+
+    @Transactional
+     public void updateMember(Member member, MemberStatus memberStatus) {
+        member.setMemberStatus(memberStatus);
+        memberRepository.save(member);
     }
 
     @Transactional

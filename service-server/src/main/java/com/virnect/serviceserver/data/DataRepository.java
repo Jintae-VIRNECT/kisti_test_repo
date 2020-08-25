@@ -13,15 +13,14 @@ import com.virnect.data.dto.CoturnResponse;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.SessionResponse;
 import com.virnect.data.dto.SessionTokenResponse;
-import com.virnect.data.dto.feign.LicenseInfoListResponse;
-import com.virnect.data.dto.feign.LicenseInfoResponse;
+import com.virnect.data.dto.feign.*;
 import com.virnect.data.dto.request.*;
 import com.virnect.data.dto.response.*;
-import com.virnect.data.dto.feign.UserInfoResponse;
 import com.virnect.data.dto.rpc.ClientMetaData;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.feign.service.LicenseRestService;
 import com.virnect.data.feign.service.UserRestService;
+import com.virnect.data.feign.service.WorkspaceRestService;
 import com.virnect.data.service.HistoryService;
 import com.virnect.data.service.SessionService;
 import com.virnect.serviceserver.ServiceServerApplication;
@@ -41,10 +40,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -56,6 +52,7 @@ public class DataRepository {
     private final RemoteServiceConfig config;
     private SessionService sessionService;
     private final HistoryService historyService;
+    private final WorkspaceRestService workspaceRestService;
     private final UserRestService userRestService;
     private final LicenseRestService licenseRestService;
     private final ModelMapper modelMapper;
@@ -67,6 +64,23 @@ public class DataRepository {
     @Qualifier(value = "sessionService")
     public void setSessionService(SessionService sessionService) {
         this.sessionService = sessionService;
+    }
+
+    public DataProcess<UserInfoResponse> checkUserValidation(String userId) {
+        return new RepoDecoder<ApiResponse<UserInfoResponse>, UserInfoResponse>(RepoDecoderType.FETCH) {
+            @Override
+            ApiResponse<UserInfoResponse> loadFromDatabase() {
+                return userRestService.getUserInfoByUserId(userId);
+            }
+
+            @Override
+            DataProcess<UserInfoResponse> invokeDataProcess() {
+                ApiResponse<UserInfoResponse> feignResponse = loadFromDatabase();
+                //todo:check something?
+
+                return new DataProcess<>(feignResponse.getData());
+            }
+        }.asResponseData();
     }
 
     public DataProcess<LicenseItem> checkLicenseValidation(String workspaceId, String userId) {
@@ -264,17 +278,22 @@ public class DataRepository {
                                 .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
 
-                        // find and get extra information from use-server using uuid
+                        // remove members who is evicted
+                        memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+
+                        // find and get extra information from workspace-server using uuid
                         if(!memberInfoList.isEmpty()) {
                             for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                                ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                                log.debug("getUsers: " + userInfo.getData().toString());
-
-                                memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                                memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                                memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                                memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                                memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                                ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                                log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                                //todo://user infomation does not have role and role id change to workspace member info
+                                WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                                memberInfoResponse.setRole(workspaceMemberData.getRole());
+                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                                memberInfoResponse.setName(workspaceMemberData.getName());
+                                memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                                memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                             }
                         }
                         // Set Member List to Room Information Response
@@ -308,18 +327,22 @@ public class DataRepository {
                                 .stream()
                                 .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
+                        // remove members who is evicted
+                        memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
-                        // find and get extra information from use-server using uuid
+                        // find and get extra information from workspace-server using uuid
                         if(!memberInfoList.isEmpty()) {
                             for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                                ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                                log.debug("getUsers: " + userInfo.getData().toString());
-
-                                memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                                memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                                memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                                memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                                memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                                ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                                log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                                //todo://user infomation does not have role and role id change to workspace member info
+                                WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                                memberInfoResponse.setRole(workspaceMemberData.getRole());
+                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                                memberInfoResponse.setName(workspaceMemberData.getName());
+                                memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                                memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                             }
                         }
                         // Set Member List to Room Information Response
@@ -345,13 +368,9 @@ public class DataRepository {
                 Room room = loadFromDatabase();
                 if(room == null) {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    //response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    //return response;
                 } else {
                     if (room.getRoomStatus() != RoomStatus.ACTIVE) {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
-                        //return response;
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
                     } else {
                         RoomDetailInfoResponse resultResponse;
                         // mapping data
@@ -365,20 +384,24 @@ public class DataRepository {
                                 .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
 
-                        // find and get extra information from use-server using uuid
-                        if (!memberInfoList.isEmpty()) {
-                            for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                                ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                                log.debug("getUsers: " + userInfo.getData().toString());
-                                //todo://user infomation does not have role and role id change to workspace member info
-                                //memberInfoResponse.setRole(userInfo.getData().get);
-                                memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                                memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                                memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                                memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                                memberInfoResponse.setProfile(userInfo.getData().getProfile());
-                            }
+                        //remove members who is evicted
+                        memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+
+                        // find and get extra information from workspace-server using uuid
+                        //if (!memberInfoList.isEmpty()) {
+                        for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+                            ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                            log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                            //todo://user infomation does not have role and role id change to workspace member info
+                            WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                            memberInfoResponse.setRole(workspaceMemberData.getRole());
+                            memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                            memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                            memberInfoResponse.setName(workspaceMemberData.getName());
+                            memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                            memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                         }
+                        //}
                         // Set Member List to Room Detail Information Response
                         resultResponse.setMemberList(memberInfoList);
                         return new DataProcess<>(resultResponse);
@@ -503,14 +526,25 @@ public class DataRepository {
                         // find and get extra information from use-server using uuid
                         if (!memberInfoList.isEmpty()) {
                             for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                                ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
+                                ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                                log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                                //todo://user infomation does not have role and role id change to workspace member info
+                                WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                                memberInfoResponse.setRole(workspaceMemberData.getRole());
+                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                                memberInfoResponse.setName(workspaceMemberData.getName());
+                                memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                                memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+
+                                /*ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
                                 log.debug("getUsers: " + userInfo.getData().toString());
 
                                 memberInfoResponse.setEmail(userInfo.getData().getEmail());
                                 memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
                                 memberInfoResponse.setLastName(userInfo.getData().getLastName());
                                 memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                                memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                                memberInfoResponse.setProfile(userInfo.getData().getProfile());*/
                             }
                         }
                         // Set Member List to Room Detail Information Response
@@ -721,7 +755,7 @@ public class DataRepository {
     }
 
     public DataProcess<Boolean> leaveSession(Participant participant, String sessionId) {
-        return new RepoDecoder<Room, Boolean>(RepoDecoderType.DELETE) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.UPDATE) {
             @Override
             Room loadFromDatabase() {
                 return null;
@@ -748,6 +782,37 @@ public class DataRepository {
                 return new DataProcess<>(true);
             }
         }.asResponseData();
+    }
+
+    public DataProcess<Boolean> disconnectSession(Participant participant, String sessionId) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.DELETE) {
+            @Override
+            Room loadFromDatabase() {
+                return null;
+            }
+
+            @Override
+            DataProcess<Boolean> invokeDataProcess() {
+                JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                ClientMetaData clientMetaData = null;
+                try {
+                    clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                assert clientMetaData != null;
+
+                log.info("session disconnect and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
+                log.info("session disconnect and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
+                log.info("session disconnect and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
+
+                sessionService.disconnectSession(sessionId, clientMetaData);
+                return new DataProcess<>(true);
+            }
+        }.asResponseData();
+
     }
 
     public DataProcess<Boolean> destroySession(String sessionId) {
@@ -812,6 +877,7 @@ public class DataRepository {
                         return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                         //response.setErrorResponseData(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     } else {
+                        sessionService.updateMember(member, MemberStatus.EVICTED);
                         if(sessionService.removeMember(room, kickRoomRequest.getParticipantId()).equals(ErrorCode.ERR_SUCCESS)) {
                             resultResponse.setResult(true);
                             return new DataProcess<>(resultResponse);
@@ -819,8 +885,6 @@ public class DataRepository {
                         } else {
                             return new DataProcess<>(ErrorCode.ERR_ROOM_PROCESS_FAIL);
                         }
-                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                        //response.setData(response.getData());*/
                     }
                 }
                 //return new DataProcess<>(resultResponse);
@@ -845,19 +909,27 @@ public class DataRepository {
                 if(room != null) {
                     if(room.getLeaderId().equals(inviteRoomRequest.getLeaderId())) {
                         //remove member room is null
-                        room.getMembers().removeIf(member -> member.getRoom() == null);
+                        //room.getMembers().removeIf(member -> member.getRoom() == null);
+                        room.getMembers().removeIf(member -> member.getMemberStatus().equals(MemberStatus.EVICTED));
+
+                        //check room member is exceeded limitation
                         if(room.getMembers().size() + inviteRoomRequest.getParticipantIds().size() >= room.getMaxUserCount()) {
                             return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
                         }
 
+                        //check room member is already joined
                         for(String participant : inviteRoomRequest.getParticipantIds()) {
                             for(Member member: room.getMembers()) {
-                                if(participant.equals(member.getUuid())) {
+                                if(participant.equals(member.getUuid()) && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
                                     return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
                                 }
                             }
                         }
-                        sessionService.updateRoom(room, inviteRoomRequest);
+
+                        //update room member
+                        for(String participant : inviteRoomRequest.getParticipantIds()) {
+                            sessionService.createOrUpdateMember(room, participant);
+                        }
                         resultResponse.setResult(true);
                         return new DataProcess<>(resultResponse);
                     } else {
@@ -871,6 +943,141 @@ public class DataRepository {
     }
 
 
+    //========================================= MEMBER INFORMATION RELATION =================================================//
+    public ApiResponse<WorkspaceMemberInfoListResponse> loadMemberList(String workspaceId, String filter, int page, int size) {
+        return new RepoDecoder<ApiResponse<WorkspaceMemberInfoListResponse>, WorkspaceMemberInfoListResponse>(RepoDecoderType.FETCH) {
+            @Override
+            ApiResponse<WorkspaceMemberInfoListResponse> loadFromDatabase() {
+                log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
+                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, page, size);
+            }
+
+            @Override
+            DataProcess<WorkspaceMemberInfoListResponse> invokeDataProcess() {
+                ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = loadFromDatabase();
+                List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
+                int currentPage = feignResponse.getData().getPageMeta().getCurrentPage();
+                int totalPage = feignResponse.getData().getPageMeta().getTotalPage();
+
+                // set Page Metadata
+                feignResponse.getData().getPageMeta().setNumberOfElements(workspaceMemberInfoList.size());
+                feignResponse.getData().getPageMeta().setLast(currentPage >= totalPage);
+
+                return new DataProcess<>(feignResponse.getData());
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<MemberInfoListResponse> loadMemberList(String workspaceId, String userId, String filter, int page, int size) {
+        return new RepoDecoder<ApiResponse<WorkspaceMemberInfoListResponse>, MemberInfoListResponse>(RepoDecoderType.FETCH) {
+            @Override
+            ApiResponse<WorkspaceMemberInfoListResponse> loadFromDatabase() {
+                log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
+                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, page, size);
+            }
+
+            @Override
+            DataProcess<MemberInfoListResponse> invokeDataProcess() {
+                ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = loadFromDatabase();
+                List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
+                PageMetadataResponse workspaceMemberPageMeta = feignResponse.getData().getPageMeta();
+                int currentPage = workspaceMemberPageMeta.getCurrentPage();
+                int currentSize = workspaceMemberPageMeta.getCurrentSize();
+                int totalPage = workspaceMemberPageMeta.getTotalPage();
+                long totalElements = workspaceMemberPageMeta.getTotalElements();
+
+                //remove members who does not have any license plan or remote license
+                workspaceMemberInfoList.removeIf(memberInfoResponses ->
+                        Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
+                                !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME));
+
+                //remove member who has the same user id(::uuid)
+                workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
+
+                // Page Metadata
+                PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+                        .currentPage(currentPage)
+                        .currentSize(currentSize)
+                        .totalPage(totalPage)
+                        .totalElements(totalElements)
+                        .numberOfElements(workspaceMemberInfoList.size())
+                        .build();
+
+                // set page meta data last field to true or false
+                pageMeta.setLast(currentPage >= totalPage);
+
+                List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+                        .map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+                        .collect(Collectors.toList());
+
+                return new DataProcess<>(new MemberInfoListResponse(memberInfoList, pageMeta));
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<MemberInfoListResponse> loadMemberList(String workspaceId, String sessionId, String userId, String filter, int page, int size) {
+        return new RepoDecoder<ApiResponse<WorkspaceMemberInfoListResponse>, MemberInfoListResponse>(RepoDecoderType.FETCH) {
+            @Override
+            ApiResponse<WorkspaceMemberInfoListResponse> loadFromDatabase() {
+                log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
+                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, page, size);
+            }
+
+            @Override
+            DataProcess<MemberInfoListResponse> invokeDataProcess() {
+                Room room = sessionService.getRoom(workspaceId, sessionId);
+                if(room == null) {
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                } else {
+                    // Get Member List from Room
+                    // Mapping Member List Data to Member Information List
+                    List<Member> memberList = room.getMembers();
+                    //remove members who does not have room id
+                    memberList.removeIf(member -> member.getRoom() == null);
+
+                    //fetch workspace member information from workspace
+                    ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = loadFromDatabase();
+                    List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
+                    PageMetadataResponse workspaceMemberPageMeta = feignResponse.getData().getPageMeta();
+                    int currentPage = workspaceMemberPageMeta.getCurrentPage();
+                    int currentSize = workspaceMemberPageMeta.getCurrentSize();
+                    int totalPage = workspaceMemberPageMeta.getTotalPage();
+                    long totalElements = workspaceMemberPageMeta.getTotalElements();
+
+                    //remove members who does not have any license plan or remote license
+                    workspaceMemberInfoList.removeIf(memberInfoResponses ->
+                            Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
+                                    !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME));
+
+                    //remove member who has the same user id(::uuid)
+                    //workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
+                    memberList.forEach(member -> {
+                        workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(member.getUuid()));
+                    });
+
+
+                    // Page Metadata
+                    PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+                            .currentPage(currentPage)
+                            .currentSize(currentSize)
+                            .totalPage(totalPage)
+                            .totalElements(totalElements)
+                            .numberOfElements(workspaceMemberInfoList.size())
+                            .build();
+
+                    // set page meta data last field to true or false
+                    pageMeta.setLast(currentPage >= totalPage);
+                    //pageMeta.setLast(workspaceMemberInfoList.size() == 0);
+
+                    List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+                            .map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+                            .collect(Collectors.toList());
+
+                    return new DataProcess<>(new MemberInfoListResponse(memberInfoList, pageMeta));
+                }
+            }
+        }.asApiResponse();
+    }
 
     public ApiResponse<MemberInfoResponse> loadMember(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Member, MemberInfoResponse>(RepoDecoderType.READ) {
@@ -890,7 +1097,7 @@ public class DataRepository {
         }.asApiResponse();
     }
 
-    //=========================================================
+    //========================================= ROOM HISTORY INFORMATION RELATION ===========================================//
     public ApiResponse<RoomHistoryInfoListResponse> loadRoomHistoryInfoList(
             String workspaceId,
             String userId,
@@ -953,18 +1160,22 @@ public class DataRepository {
                                 .map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
 
+                        // remove members who is evicted
+                        memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+
                         // find and get extra information from use-server using uuid
                         if (!memberInfoList.isEmpty()) {
                             for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                                ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                                log.debug("getUsers: " + userInfo.getData().toString());
-
-                                memberInfoResponse.setMemberStatus(MemberStatus.UNLOAD);
-                                memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                                memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                                memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                                memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                                memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                                ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                                log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                                //todo://user infomation does not have role and role id change to workspace member info
+                                WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                                memberInfoResponse.setRole(workspaceMemberData.getRole());
+                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                                memberInfoResponse.setName(workspaceMemberData.getName());
+                                memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                                memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                             }
 
                             Collections.sort(memberInfoList, new Comparator<MemberInfoResponse>() {
@@ -1040,18 +1251,22 @@ public class DataRepository {
                                 .map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
 
+                        // remove members who is evicted
+                        memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+
                         // find and get extra information from use-server using uuid
                         if (!memberInfoList.isEmpty()) {
                             for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                                ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                                log.debug("getUsers: " + userInfo.getData().toString());
-
-                                memberInfoResponse.setMemberStatus(MemberStatus.UNLOAD);
-                                memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                                memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                                memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                                memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                                memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                                ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                                log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                                //todo://user infomation does not have role and role id change to workspace member info
+                                WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                                memberInfoResponse.setRole(workspaceMemberData.getRole());
+                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                                memberInfoResponse.setName(workspaceMemberData.getName());
+                                memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                                memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                             }
                             Collections.sort(memberInfoList, new Comparator<MemberInfoResponse>() {
                                 @Override
@@ -1100,18 +1315,22 @@ public class DataRepository {
                             .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                             .collect(Collectors.toList());
 
+                    // remove members who is evicted
+                    memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+
                     // find and get extra information from use-server using uuid
                     if (!memberInfoList.isEmpty()) {
                         for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                            ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                            log.debug("getUsers: " + userInfo.getData().toString());
-
-                            memberInfoResponse.setMemberStatus(MemberStatus.UNLOAD);
-                            memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                            memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                            memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                            memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                            memberInfoResponse.setProfile(userInfo.getData().getProfile());
+                            ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                            log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                            //todo://user infomation does not have role and role id change to workspace member info
+                            WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                            memberInfoResponse.setRole(workspaceMemberData.getRole());
+                            memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                            memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                            memberInfoResponse.setName(workspaceMemberData.getName());
+                            memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                            memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                         }
                         Collections.sort(memberInfoList, new Comparator<MemberInfoResponse>() {
                             @Override
@@ -1181,12 +1400,6 @@ public class DataRepository {
             }
         }.asApiResponse();
     }
-
-
-
-
-
-
     /*public DataProcess<JsonObject> requestRoom() {
         return new RepoDecoder<JsonObject, JsonObject>() {
 

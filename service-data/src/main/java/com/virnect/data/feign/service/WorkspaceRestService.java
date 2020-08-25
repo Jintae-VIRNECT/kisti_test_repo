@@ -3,6 +3,7 @@ package com.virnect.data.feign.service;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
+import com.virnect.data.dto.feign.WorkspaceMemberInfoResponse;
 import com.virnect.data.feign.WorkspaceRestFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,4 +20,10 @@ public interface WorkspaceRestService {
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size
             );
+
+    @GetMapping("/workspaces/{workspaceId}/members/info")
+    ApiResponse<WorkspaceMemberInfoResponse> getWorkspaceMemberInfo(
+            @PathVariable("workspaceId") String workspaceId,
+            @RequestParam(value = "userId") String userId
+    );
 }

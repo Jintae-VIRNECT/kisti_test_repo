@@ -519,7 +519,11 @@ public class ServiceSessionManager {
         log.info("session leave and sessionEventHandler is here:[remainingParticipants] {}", remainingParticipants);
         log.info("session leave and sessionEventHandler is here:[transactionId] {}", transactionId);
         log.info("session leave and sessionEventHandler is here:[reason] {}", reason);
-        dataRepository.leaveSession(participant, sessionId);
+        if(reason.equals(EndReason.forceDisconnectByUser)) {
+            dataRepository.disconnectSession(participant, sessionId);
+        } else {
+            dataRepository.leaveSession(participant, sessionId);
+        }
     }
 
     public void destroySession(KurentoSession session, EndReason reason) {
@@ -534,9 +538,10 @@ public class ServiceSessionManager {
             return false;
         }
 
+        //evictedParticipant
         Participant participant = session.getParticipantByPublicId(connectionId);
         if (participant != null) {
-            this.sessionManager.evictParticipant(participant, null, null, EndReason.forceDisconnectByServer);
+            this.sessionManager.evictParticipant(participant, null, null, EndReason.forceDisconnectByUser);
             return true;
             //return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
