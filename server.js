@@ -1,5 +1,5 @@
 const express = require('express')
-// const route = require('./route')
+const route = require('./route')
 const app = express()
 const server = require('./server/module')
 const path = require('path')
@@ -9,7 +9,7 @@ app.use(bodyParser.json())
 
 app.use(express.static(path.join(__dirname, 'dist')))
 
-// app.use(route)
+app.use(route)
 
 server
   .start(app)
