@@ -1,6 +1,5 @@
 package com.virnect.process.domain;
 
-import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
 import org.hibernate.envers.Audited;
 

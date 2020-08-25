@@ -1,6 +1,6 @@
 package com.virnect.process.domain;
 
-import com.virnect.process.model.BaseTimeEntity;
+import com.virnect.process.application.ProgressManager;
 import lombok.*;
 import org.hibernate.envers.Audited;
 

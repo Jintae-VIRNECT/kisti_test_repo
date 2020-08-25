@@ -1,4 +1,4 @@
-package com.virnect.process.api;
+package com.virnect.process.domain;
 
 /**
  * Project: PF-ProcessManagement

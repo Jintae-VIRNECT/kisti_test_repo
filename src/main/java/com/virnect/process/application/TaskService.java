@@ -682,41 +682,6 @@ public class TaskService {
         return new ApiResponse<>(processRegisterResponse);
     }
 
-    /**
-     * 신규 하위작업 존재 여부
-     *
-     * @param workspaceUUID
-     * @param workerUUID
-     * @return
-     */
-    public ApiResponse<RecentSubProcessResponse> getNewWork(String workspaceUUID, String workerUUID) {
-        // 신규 작업 존재 여부 검사 요청 처리
-        boolean hasNewSubProcess = this.subProcessRepository.existsByIsRecentAndWorkerUUIDAndWorkspaceUUID(YesOrNo.YES, workspaceUUID, workerUUID);
-        return new ApiResponse<>(new RecentSubProcessResponse(hasNewSubProcess));
-    }
-
-    /**
-     * 컨텐츠 식별자로 작업조회
-     *
-     * @param contentUUID
-     * @return
-     */
-    public ApiResponse<ProcessIdRetrieveResponse> getProcessIdOfContent(String contentUUID) {
-        // 컨텐츠 식별자로 작업 조회
-        List<Process> processList = this.processRepository.findByContentUUID(contentUUID);
-
-        // 반환할 공정 아이디 목록
-        List<Long> processIds = new ArrayList<>();
-        processList.forEach(process -> {
-            // 공정의 상태 필터링
-            if (!(process.getState() == State.CLOSED || process.getState() == State.DELETED)) {
-                processIds.add(process.getId());
-            }
-        });
-
-        return new ApiResponse<>(new ProcessIdRetrieveResponse(processIds));
-    }
-
     public ApiResponse<ProcessContentAndTargetResponse> getRelatedInfoOfProcess(Long processId) {
         // 공정의 타겟 데이터와 contentUUID 가져오기
         Process process = this.processRepository.findById(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
@@ -726,92 +691,6 @@ public class TaskService {
                 .build();
 
         return new ApiResponse<>(processContentAndTargetResponse);
-    }
-
-    public ApiResponse<ProcessMetadataResponse.ProcessesMetadata> getMetadataTheProcess(Long[] processesId, String workerUUID) {
-        // 공정의 메타데이터 가져오기
-        // 반환할 공정 메타데이터
-        List<ProcessMetadataResponse.Process> returnProcessMetadataList = new ArrayList<>();
-
-        for (Long processId : processesId) {
-            // 요청한 공정들을 모두 조회
-            Process process = this.processRepository.findById(processId)
-                    .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_FOR_PROCESS_METADATA));
-//            Process process = this.processRepository.getProcessInfo(processId).orElseGet(() -> null);
-            if (Objects.isNull(process)) {
-                log.info("getMetadataTheProcess - getProcessInfo is null");
-                // 조회되는 공정이 없을 경우 예외처리
-                // TODO : 예외로 던질지, 메시지를 남길지 고민되는 부분임. 메시지를 남기는 것이 사용성이 더 좋을 것으로 생각됨. 추후 개선.
-                throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_FOR_PROCESS_METADATA);
-            } else {
-                // 공정을 메타데이터로 전환 후 리스트에 등록
-                ProcessMetadataResponse.Process metadataProcess = buildMetadataProcess(process, null, workerUUID);
-                log.info(">>> processId {} , metadataProcess - {}", process.getId(), metadataProcess);
-                // (세부)공정의 권한이 없어 조회되지 않을 경우 null로 반환되어 리스트에 적재되지 않음.
-                if (!Objects.isNull(metadataProcess)) {
-                    returnProcessMetadataList.add(metadataProcess);
-                }
-            }
-        }
-
-        return new ApiResponse<>(ProcessMetadataResponse.ProcessesMetadata.builder()
-                .tasks(returnProcessMetadataList)
-                .build());
-    }
-
-    public ApiResponse<ProcessMetadataResponse.ProcessesMetadata> getMetadataTheSubProcess(Long[] subProcessesId, String workerUUID) {
-        // 세부공정의 메타데이터 가져오기
-        // 공정 메타데이터 가져오기의 파라미터로 들어갈 공정아이디 배열
-        List<ProcessMetadataResponse.Process> returnProcessMetadataList = new ArrayList<>();
-        List<Long> processIdList = new ArrayList<>();
-
-        for (Long subProcessId : subProcessesId) {
-            // 요청한 세부공정들을 모두 조회
-            SubProcess subProcess = this.subProcessRepository.findById(subProcessId).orElseGet(() -> SubProcess.builder().build());
-            // 조회되는 세부공정이 없을 경우 예외처리
-            if (Objects.isNull(subProcess)) {
-                log.info("getMetadataTheSubProcess - subProcessInfo is null");
-                throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS_FOR_PROCESS_METADATA);
-            } else {
-                // 공정 조회 후 배열에 add
-                Long processId = Optional.of(subProcess).map(SubProcess::getProcess).map(Process::getId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_SUBPROCESS));
-                if (!processIdList.contains(processId)) processIdList.add(processId);
-            }
-        }
-
-        // 중복제거
-        HashSet<Long> processHashSet = new HashSet<>(processIdList);
-        ArrayList<Long> processArrayList = new ArrayList<>(processHashSet);
-
-        // 공정 메타데이터 가져오기에 보낼 파라미터 생성
-        Long[] processesId = new Long[processArrayList.size()];
-        processArrayList.toArray(processesId);
-        log.debug("processesId : {}", Arrays.toString(processesId));
-
-
-        for (Long processId : processesId) {
-            // 요청한 공정들을 모두 조회
-            Process process = this.processRepository.findById(processId)
-                    .orElseGet(() -> null);
-//            Process process = this.processRepository.getProcessInfo(processId).orElseGet(() -> null);
-            if (Objects.isNull(process)) {
-                log.info("getMetadataTheProcess - getProcessInfo is null");
-                // 조회되는 공정이 없을 경우 예외처리
-                throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_FOR_PROCESS_METADATA);
-            } else {
-                // 공정을 메타데이터로 전환 후 리스트에 등록
-                ProcessMetadataResponse.Process metadataProcess = buildMetadataProcess(process, subProcessesId, workerUUID);
-                log.info(">>> processId {} , metadataProcess - {}", process.getId(), metadataProcess);
-                // (세부)공정의 권한이 없어 조회되지 않을 경우 null로 반환되어 리스트에 적재되지 않음.
-                if (!Objects.isNull(metadataProcess)) {
-                    returnProcessMetadataList.add(metadataProcess);
-                }
-            }
-        }
-
-        return new ApiResponse<>(ProcessMetadataResponse.ProcessesMetadata.builder()
-                .tasks(returnProcessMetadataList)
-                .build());
     }
 
     /**
@@ -1010,11 +889,6 @@ public class TaskService {
                 .build();
     }
 
-    public ApiResponse<HourlyReportCountListResponse> getHourlyReports(String targetDate, String status) {
-        // 해당일의 상태의 조건으로 리포트 개수를 시간대별로 조회
-        List<HourlyReportCountOfaDayResponse> hourlyReportCountOfaDayResponses = this.reportRepository.selectHourlyReportsTemp(targetDate);
-        return new ApiResponse<>(new HourlyReportCountListResponse(hourlyReportCountOfaDayResponses));
-    }
 
     public ApiResponse<MonthlyStatisticsResponse> getDailyTotalRateAtMonth(String workspaceUUID, String month) {
         if (Objects.isNull(workspaceUUID)) {
@@ -1952,55 +1826,6 @@ public class TaskService {
     }
 
     /**
-     * 타겟 데이터로 작업 조회
-     *
-     * @param workspaceUUID
-     * @param targetData
-     * @param pageable
-     * @return
-     */
-    public ApiResponse<SubProcessesOfTargetResponse> getSubProcessesOfTarget(String workspaceUUID, String targetData, Pageable pageable) {
-
-        // URLDecode된 데이터를 다시 encoding
-        String encodedData = checkParameterEncoded(targetData);
-
-        Process process = this.processRepository.getProcessUnClosed(workspaceUUID, encodedData).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_TARGET));
-//        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
-        Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(null, process.getId(), null, null, pageable);
-        SubProcessesOfTargetResponse subProcessesOfTargetResponse = SubProcessesOfTargetResponse.builder()
-                .taskId(process.getId())
-                .taskName(process.getName())
-                .contentUUID(process.getContentUUID())
-                .downloadPath(this.contentRestService.getContentInfo(process.getContentUUID()).getData().getPath())
-                .subTasks(subProcessPage.getContent().stream().map(subProcess -> {
-                    ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
-                    return SubProcessOfTargetResponse.builder()
-                            .subTaskId(subProcess.getId())
-                            .subTaskName(subProcess.getName())
-                            .priority(subProcess.getPriority())
-                            .stepTotal(subProcess.getJobList().size())
-                            .startDate(subProcess.getStartDate())
-                            .endDate(subProcess.getEndDate())
-                            .reportedDate(subProcess.getReportedDate())
-                            .conditions(subProcess.getConditions())
-                            .progressRate(subProcess.getProgressRate())
-                            .isRecent(subProcess.getIsRecent())
-                            .workerUUID(subProcess.getWorkerUUID())
-                            .workerName(userInfoResponse.getData().getNickname())
-                            .workerProfile(userInfoResponse.getData().getProfile())
-                            .build();
-                }).collect(Collectors.toList()))
-                .pageMeta(PageMetadataResponse.builder()
-                        .currentPage(pageable.getPageNumber())
-                        .currentSize(pageable.getPageSize())
-                        .totalPage(subProcessPage.getTotalPages())
-                        .totalElements(subProcessPage.getTotalElements())
-                        .build())
-                .build();
-        return new ApiResponse<>(subProcessesOfTargetResponse);
-    }
-
-    /**
      * 하위 작업 수정
      *
      * @param subProcessId
@@ -2130,7 +1955,7 @@ public class TaskService {
             //report도 issue 처럼 job 하위에 여러개 생성할 수 있으므로 report도 리스트로 리턴하는 것으로 수정함.(VECHOSYS-1287)
             List<JobResponse.Paper> jobPaperList = new ArrayList<>();
             if (job.getReportList().size() > 0) {
-                for(Report report : job.getReportList()){
+                for (Report report : job.getReportList()) {
                     JobResponse.Paper jobPaper = JobResponse.Paper.builder()
                             .id(report.getId())
                             .build();
@@ -2464,25 +2289,6 @@ public class TaskService {
         }
     }
 
-    /**
-     * 타겟으로 작업 정보 호출
-     *
-     * @param targetData
-     * @return
-     */
-    public ApiResponse<ProcessInfoResponse> getProcessInfoByTarget(String targetData) {
-        // URLDecode된 데이터를 다시 URLEncoding
-        String encodedData = checkParameterEncoded(targetData);
-
-        Process process = this.processRepository.findByTargetDataAndState(encodedData, State.CREATED);
-
-        if (Objects.isNull(process)) {
-            throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS);
-        }
-
-        ProcessInfoResponse processInfoResponse = this.modelMapper.map(process, ProcessInfoResponse.class);
-        return new ApiResponse<>(processInfoResponse);
-    }
 
     /**
      * return file path which uploaded
@@ -2511,49 +2317,6 @@ public class TaskService {
     private String getFileUploadUrl(String base64EncodedImage) {
         return Optional.of(fileUploadService.base64ImageUpload(base64EncodedImage))
                 .orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_PROCESS_WORK_RESULT_SYNC));
-    }
-
-    public ApiResponse<CountSubProcessOnWorkerResponse> getCountSubProcessOnWorker(String workspaceUUID, String workerUUID) {
-        List<SubProcess> subProcesses = this.subProcessRepository.findByWorkerUUID(workerUUID);
-        int ing = 0;
-        for (SubProcess subProcess : subProcesses) {
-            Process process = subProcess.getProcess();
-            State state = process.getState();
-            String processWorkspaceUUID = process.getWorkspaceUUID();
-            // 공정상태가 종료 또는 삭제가 아니고 그리고 세부공정상태가 대기상태가 아닐 때, 마지막으로 워크스페이스가 동일한 프로세스에 대해 필터
-            if ((state != State.CLOSED || state != State.DELETED) && subProcess.getConditions() != Conditions.WAIT && (workspaceUUID == null || processWorkspaceUUID.equals(workspaceUUID)))
-                ing++;
-        }
-        ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(workerUUID);
-        CountSubProcessOnWorkerResponse response = CountSubProcessOnWorkerResponse.builder()
-                .workerUUID(workerUUID)
-                .workerName(userInfoResponse.getData().getNickname())
-                .workerProfile(userInfoResponse.getData().getProfile())
-                .countAssigned(subProcesses.size())
-                .countProgressing(ing)
-                .build();
-        return new ApiResponse<>(response);
-    }
-
-    @Transactional
-    public ApiResponse<ProcessInfoResponse> convertProcess(Long processId, String workerUUID, State state) {
-        Process process = this.processRepository.findById(processId).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-        if (!process.getContentManagerUUID().equals(workerUUID))
-            throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-
-        process.setState(state);
-
-        // 컨텐츠를 작업으로 전환시 컨텐츠의 converted가 YES가 되어 있으므로 NO로 변경하여 작업으로 전환되지 않았암을 저장 요청함.
-        //ApiResponse<ContentInfoResponse> contentInfoResponseApiResponse =
-        this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
-
-        // 작업을 컨텐츠로 전환
-        //ApiResponse<ContentUploadResponse> contentUploadResponseApiResponse =
-        this.contentRestService.taskToContentConvertHandler(processId, workerUUID);
-
-        ProcessInfoResponse processInfoResponse = modelMapper.map(process, ProcessInfoResponse.class);
-
-        return new ApiResponse<>(processInfoResponse);
     }
 
     /**
@@ -2970,10 +2733,52 @@ public class TaskService {
         return new ApiResponse<>(new TroubleMemoUploadResponse(true, LocalDateTime.now()));
     }
 
-    public void temp(String search, String workspaceId) {
+    /**
+     * 타겟 데이터로 작업 조회
+     *
+     * @param workspaceUUID
+     * @param targetData
+     * @param pageable
+     * @return
+     */
+    public ApiResponse<SubProcessesOfTargetResponse> getSubProcessesOfTarget(String workspaceUUID, String targetData, Pageable pageable) {
 
-        getUserInfo(search, workspaceId);
+        // URLDecode된 데이터를 다시 encoding
+        String encodedData = checkParameterEncoded(targetData);
 
-//        List<HourlyReportCountOfaDayResponse> resultList = this.reportRepository.selectHourlyReportsTemp("2020-05-19");
+        Process process = this.processRepository.getProcessUnClosed(workspaceUUID, encodedData).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS_OF_TARGET));
+//        Page<SubProcess> subProcessPage = this.subProcessRepository.selectSubProcesses(null, process.getId(), null, null, pageable);
+        Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(null, process.getId(), null, null, pageable);
+        SubProcessesOfTargetResponse subProcessesOfTargetResponse = SubProcessesOfTargetResponse.builder()
+                .taskId(process.getId())
+                .taskName(process.getName())
+                .contentUUID(process.getContentUUID())
+                .downloadPath(this.contentRestService.getContentInfo(process.getContentUUID()).getData().getPath())
+                .subTasks(subProcessPage.getContent().stream().map(subProcess -> {
+                    ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(subProcess.getWorkerUUID());
+                    return SubProcessOfTargetResponse.builder()
+                            .subTaskId(subProcess.getId())
+                            .subTaskName(subProcess.getName())
+                            .priority(subProcess.getPriority())
+                            .stepTotal(subProcess.getJobList().size())
+                            .startDate(subProcess.getStartDate())
+                            .endDate(subProcess.getEndDate())
+                            .reportedDate(subProcess.getReportedDate())
+                            .conditions(subProcess.getConditions())
+                            .progressRate(subProcess.getProgressRate())
+                            .isRecent(subProcess.getIsRecent())
+                            .workerUUID(subProcess.getWorkerUUID())
+                            .workerName(userInfoResponse.getData().getNickname())
+                            .workerProfile(userInfoResponse.getData().getProfile())
+                            .build();
+                }).collect(Collectors.toList()))
+                .pageMeta(PageMetadataResponse.builder()
+                        .currentPage(pageable.getPageNumber())
+                        .currentSize(pageable.getPageSize())
+                        .totalPage(subProcessPage.getTotalPages())
+                        .totalElements(subProcessPage.getTotalElements())
+                        .build())
+                .build();
+        return new ApiResponse<>(subProcessesOfTargetResponse);
     }
 }
