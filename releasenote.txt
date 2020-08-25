@@ -3,6 +3,7 @@ RELEASE
 
 New Features
 - API 메시지 암호화 및 복호화 기능 추가
+- eureka instance host ip 등록 설정 추가
 
 Bug Fixes
 - 없음
