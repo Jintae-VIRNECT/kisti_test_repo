@@ -41,7 +41,8 @@
     "stylelint-scss": "^3.18.0",
     "vue-router": "^3.4.2",
     "vue-template-compiler": "^2.6.11",
-    "vue2-scrollbar": "0.0.3"
+    "vue2-scrollbar": "0.0.3",
+    "vuejs-datepicker": "^1.6.2"
   },
   "eslintConfig": {
     "root": true,

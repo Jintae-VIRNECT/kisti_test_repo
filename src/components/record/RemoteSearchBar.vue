@@ -3,14 +3,12 @@
     <span class="search--label">기간 검색</span>
     <!-- 캘린더 컴포넌트 -->
     <div class="search-calender">
-      <!-- 캘린더1 -->
-      <span class="search-calender--selected-date"><p>2020-08-30</p></span>
+      <datepicker></datepicker>
       <calender-button></calender-button>
     </div>
     <span class="search-calender--tilde"> <!-- 007E Tilde 표시 -->~ </span>
     <div class="search-calender">
-      <!-- 캘린더2 -->
-      <span class="search-calender--selected-date"><p>2020-08-30</p></span>
+      <datepicker></datepicker>
       <calender-button></calender-button>
     </div>
     <div class="search__wrapper">
@@ -26,9 +24,11 @@
 
 <script>
 import CalenderButton from './partials/RemoteCalenderButton'
+import Datepicker from 'components/modules/Datepicker'
 export default {
   components: {
     CalenderButton,
+    Datepicker,
   },
   name: 'RemoteSearchBar',
 }

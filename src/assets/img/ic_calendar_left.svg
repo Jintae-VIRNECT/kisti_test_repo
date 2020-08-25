@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>FA1BC7B7-4ACB-4090-BA18-9E0C9FF98328@1.00x</title>
+    <g id="내역관리" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="02_내역관리-페이지_검색날짜지정" transform="translate(-788.000000, -301.000000)">
+            <g id="calendar" transform="translate(772.000000, 286.000000)">
+                <g id="btn_left" transform="translate(16.000000, 15.000000)">
+                    <rect id="tr" x="0" y="0" width="18" height="18"></rect>
+                    <polygon id="icon/navigation/arrow_forward_ios_24px-copy" fill="#FFFFFF" fill-rule="nonzero" transform="translate(9.000000, 9.000000) scale(-1, 1) translate(-9.000000, -9.000000) " points="5 14.7484848 6.21336761 16 13 9 6.21336761 2 5 3.25151515 10.5732648 9"></polygon>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
