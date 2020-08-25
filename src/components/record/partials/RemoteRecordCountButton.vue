@@ -51,16 +51,16 @@ export default {
         this.selected = !this.selected
       }
     },
-    toggle(visible) {
-      console.log('s')
-      this.selected = visible
+    off() {
+      this.selected = false
     },
   },
   mounted() {
-    this.$eventBus.$on('update:visible', this.toggle)
+    this.$eventBus.$on('close::record-list', this.off)
   },
   beforeDestroy() {
     this.$eventBus.$off('update:visible')
+    this.$eventBus.$off('close::record-list')
   },
 }
 </script>

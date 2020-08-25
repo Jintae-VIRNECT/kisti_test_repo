@@ -183,11 +183,10 @@ export default {
           this.$eventBus.$emit('load::record-list')
         }
       })
-
-      console.log('deleteItems')
     },
     beforeClose() {
       this.$emit('update:visible', false)
+      this.$eventBus.$emit('close::record-list')
     },
 
     setSelectedArray() {
@@ -256,9 +255,6 @@ export default {
         return `${size.toFixed(1)}KB`
       }
     },
-    // close() {
-    //   this.visibleFlag = false
-    // },
   },
 
   mounted() {
