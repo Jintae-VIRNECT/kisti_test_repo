@@ -61,6 +61,8 @@ dependencies {
     // Zipkin
     implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
     implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
+
+    implementation 'net.dongliu:apk-parser:2.6.10'
 }
 
 test {

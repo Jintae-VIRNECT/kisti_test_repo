@@ -1,6 +1,7 @@
 package com.virnect.download.application;
 
 import com.virnect.download.dao.AppRepository;
+import com.virnect.download.dao.ProductRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.Product;
 import com.virnect.download.dto.response.AppInfoListResponse;
@@ -8,8 +9,7 @@ import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
-import com.virnect.download.infra.file.S3FileUploadService;
-import lombok.AccessLevel;
+import com.virnect.download.infra.file.donwload.S3FileDownloadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -20,10 +20,11 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class DownloadService {
-    private final S3FileUploadService fileUploadService;
+    private final S3FileDownloadService fileUploadService;
     private final AppRepository appRepository;
+    private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
 
     public ApiResponse<Boolean> downloadApp(String uuid) {
@@ -74,17 +75,19 @@ public class DownloadService {
     }
 
     public ApiResponse<AppInfoListResponse> getAppList(String productName, Locale locale) {
-        Product product = Product.valueOf(productName.toUpperCase());
+        Product product = productRepository.findByName(productName.toUpperCase())
+                .orElseThrow(() -> new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER));
+
         List<App> apps = this.appRepository.getAppList(product);
         Map<List<Object>, List<App>> result = apps.stream().collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice().getId(), app.getOs().getId())));
 
         List<AppInfoResponse> appInfoList = new ArrayList<>();
         result.forEach((objects, appList) -> {
             AppInfoResponse appInfo = modelMapper.map(appList.get(0), AppInfoResponse.class);
-            appInfo.setDeviceName(appList.get(0).getDevice().getName());
+            appInfo.setDeviceName(appList.get(0).getDevice().getDisplayTitle());
             appInfo.setReleaseTime(appList.get(0).getCreatedDate());
-            appInfo.setDeviceType(appList.get(0).getDevice().getType().getName());
-            appInfo.setVersion("v." + appList.get(0).getVersion());
+            appInfo.setDeviceType(appList.get(0).getDevice().getType());
+            appInfo.setVersion("v." + appList.get(0).getVersionName());
             appInfo.setImageUrl(appList.get(0).getImage());
             appInfo.setGuideUrl(appList.get(0).getGuideUrl());
 

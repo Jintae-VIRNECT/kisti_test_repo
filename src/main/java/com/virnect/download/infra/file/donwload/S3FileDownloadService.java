@@ -1,4 +1,4 @@
-package com.virnect.download.infra.file;
+package com.virnect.download.infra.file.donwload;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
@@ -19,7 +19,7 @@ import java.io.IOException;
  */
 @Slf4j
 @Service
-public class S3FileUploadService {
+public class S3FileDownloadService implements FileDownloadService {
 
     @Value("${cloud.aws.s3.bucket.name}")
     private String bucketName;
@@ -29,7 +29,7 @@ public class S3FileUploadService {
 
     private AmazonS3 amazonS3Client;
 
-    public S3FileUploadService(AmazonS3 amazonS3) {
+    public S3FileDownloadService(AmazonS3 amazonS3) {
         this.amazonS3Client = amazonS3;
     }
 

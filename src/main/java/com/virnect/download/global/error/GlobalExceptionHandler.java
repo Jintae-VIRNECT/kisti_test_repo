@@ -1,6 +1,7 @@
 package com.virnect.download.global.error;
 
 import com.virnect.download.exception.DownloadException;
+import com.virnect.download.exception.AppServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DownloadException.class)
     protected ResponseEntity<ErrorResponseMessage> handleDownloadException(final DownloadException e) {
         log.error("handleDownloadException", e);
+        return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
+    }
+
+    @ExceptionHandler(AppServiceException.class)
+    protected ResponseEntity<ErrorResponseMessage> handleUploadServiceException(final AppServiceException e) {
+        log.error("[UPLOAD_SERVICE_EXCEPTION]", e);
         return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
     }
 }

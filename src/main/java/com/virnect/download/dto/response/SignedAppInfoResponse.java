@@ -5,17 +5,12 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Project: PF-Download
- * DATE: 2020-08-06
- * AUTHOR: jeonghyeon.chang (johnmark)
- * EMAIL: practice1356@gmail.com
- * DESCRIPTION:
- */
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ApiModel
-public class AppUploadResponse {
+public class SignedAppInfoResponse {
     @ApiModelProperty(value = "앱 식별자", example = "05d1-8795535a1234")
     private String uuid = "";
     @ApiModelProperty(value = "앱 버전 정보", position = 1, example = "v1.0.20")
@@ -30,5 +25,10 @@ public class AppUploadResponse {
     private String appUrl = "";
     @ApiModelProperty(value = "앱 제품 정보", position = 6, example = "REMOTE")
     private String productName = "";
-
+    @ApiModelProperty(value = "앱 강제 업데이트 여부", position = 7, example = "false")
+    private boolean isUpdateRequired;
+    @ApiModelProperty(value = "앱 등록 정보 생성일자", position = 8)
+    private LocalDateTime createdDate;
+    @ApiModelProperty(value = "앱 등록 정보 업데이트 일자", position = 9)
+    private LocalDateTime appInfoUpdatedDate;
 }
