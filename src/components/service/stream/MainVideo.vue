@@ -92,7 +92,9 @@
       <div
         class="main-video__empty"
         v-if="
-          (loaded && cameraStatus === 'off') || cameraStatus === 'background'
+          cameraStatus !== -1 &&
+            ((loaded && cameraStatus.state === 'off') ||
+              cameraStatus.state === 'background')
         "
       >
         <transition name="opacity">
@@ -102,7 +104,7 @@
             <p>{{ $t('service.stream_stop') }}</p>
             <p
               class="inner-discription"
-              v-if="cameraStatus === 'background'"
+              v-if="cameraStatus !== -1 && cameraStatus.state === 'background'"
               v-html="$t('service.stream_background')"
             ></p>
             <p class="inner-discription" v-else>
@@ -188,11 +190,20 @@ export default {
     cameraStatus() {
       if (this.mainView && this.mainView.id) {
         if (this.mainView.cameraStatus === CAMERA.CAMERA_OFF) {
-          return 'off'
+          return {
+            state: 'off',
+            id: this.mainView.id,
+          }
         } else if (this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
-          return 'background'
+          return {
+            state: 'background',
+            id: this.mainView.id,
+          }
         }
-        return 'on'
+        return {
+          state: 'on',
+          id: this.mainView.id,
+        }
       } else {
         return -1
       }
@@ -257,22 +268,22 @@ export default {
       }
     },
     cameraStatus(status, oldStatus) {
-      if (status === oldStatus || oldStatus === -1) return
-      if (!this.mainView || !this.mainView.id) return
-      if (status === 'off') {
-        if (oldStatus === 'background') return
+      if (status === -1 || oldStatus === -1) return
+      if (status.id !== oldStatus.id || status.state === oldStatus.state) return
+      if (status.state === 'off') {
+        if (oldStatus.state === 'background') return
         this.addChat({
           name: this.mainView.nickname,
           status: 'stream-stop',
           type: 'system',
         })
-      } else if (status === 'background') {
+      } else if (status.state === 'background') {
         this.addChat({
           name: this.mainView.nickname,
           status: 'stream-background',
           type: 'system',
         })
-      } else if (status === 'on') {
+      } else if (status.state === 'on') {
         this.addChat({
           name: this.mainView.nickname,
           status: 'stream-start',

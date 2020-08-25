@@ -2,24 +2,12 @@
   <nav class="header-lnbs service">
     <ul class="flex">
       <lnb-button
-        :text="$t('service.stream')"
-        :active="currentView === 'stream'"
-        :image="require('assets/image/call/gnb_ic_shareframe.svg')"
-        @click="goTab('stream')"
-      ></lnb-button>
-      <lnb-button
-        :text="$t('service.drawing')"
-        :active="currentView === 'drawing'"
-        :notice="drawingNotice"
-        :image="require('assets/image/call/gnb_ic_creat_basic.svg')"
-        @click="goTab('drawing')"
-      ></lnb-button>
-      <lnb-button
-        :text="$t('service.ar')"
-        :active="currentView === 'ar'"
-        :notice="arNotice"
-        :image="require('assets/image/call/gnb_ic_creat_ar.svg')"
-        @click="goTab('ar')"
+        v-for="menu of menus"
+        :key="menu.text"
+        :text="menu.text"
+        :active="view === menu.key"
+        :image="menu.icon"
+        @click="goTab(menu.key)"
       ></lnb-button>
     </ul>
   </nav>
@@ -49,6 +37,23 @@ export default {
     return {
       drawingNotice: false,
       arNotice: false,
+      menus: [
+        {
+          text: this.$t('service.stream'),
+          key: VIEW.STREAM,
+          icon: require('assets/image/call/gnb_ic_shareframe.svg'),
+        },
+        {
+          text: this.$t('service.drawing'),
+          key: VIEW.DRAWING,
+          icon: require('assets/image/call/gnb_ic_creat_basic.svg'),
+        },
+        {
+          text: this.$t('service.ar'),
+          key: VIEW.AR,
+          icon: require('assets/image/call/gnb_ic_creat_ar.svg'),
+        },
+      ],
     }
   },
   computed: {
@@ -59,16 +64,6 @@ export default {
       'shareFile',
       'viewForce',
     ]),
-    currentView() {
-      if (this.view === VIEW.STREAM) {
-        return 'stream'
-      } else if (this.view === VIEW.DRAWING) {
-        return 'drawing'
-      } else if (this.view === VIEW.AR) {
-        return 'ar'
-      }
-      return ''
-    },
     hasLeader() {
       const idx = this.participants.findIndex(
         user => user.roleType === ROLE.LEADER,
@@ -92,7 +87,7 @@ export default {
           status: 'drawing',
           type: 'system',
         })
-        if (this.currentView !== 'drawing') {
+        if (this.view !== VIEW.DRAWING) {
           this.drawingNotice = true
         }
       }
@@ -111,16 +106,26 @@ export default {
         }
       }
     },
+    mainView: {
+      deep: true,
+      handler(val, oldVal) {
+        // AR 기능 도중 메인뷰 참가자가 나갔을 경우
+        if (this.view === VIEW.AR && val.id !== oldVal.id) {
+          this.$call.stopArFeature()
+          this.goTabConfirm(VIEW.STREAM)
+        }
+      },
+    },
   },
   methods: {
     ...mapActions(['setView', 'addChat']),
     ...mapMutations(['updateParticipant']),
     goTab(type) {
-      if (type === this.currentView) return
+      if (type === this.view) return
 
       // leader
       if (this.account.roleType === ROLE.LEADER) {
-        if (this.currentView === 'ar') {
+        if (this.view === VIEW.AR) {
           // TODO: MESSAGE
           this.serviceConfirmTitle(
             this.$t('service.ar_exit'),
@@ -142,7 +147,7 @@ export default {
           // })
           return
         }
-        if (this.currentView === 'drawing') {
+        if (this.view === VIEW.DRAWING) {
           if (this.shareFile && this.shareFile.id) {
             // TODO: MESSAGE
             this.confirmCancel(this.$t('service.toast_exit_drawing'), {
@@ -158,11 +163,11 @@ export default {
         this.goTabConfirm(type)
       } // other user
       else {
-        if (this.currentView === VIEW.AR) {
+        if (this.view === VIEW.AR) {
           this.toastDefault(this.$t('service.toast_cannot_leave_ar'))
           return
         }
-        if (type === 'stream') {
+        if (type === VIEW.STREAM) {
           this.setView(VIEW.STREAM)
         }
         if (type === 'drawing') {
@@ -174,7 +179,7 @@ export default {
           }
           this.goDrawing()
         }
-        if (type === 'ar') {
+        if (type === VIEW.AR) {
           if (!this.arNotice) {
             this.toastDefault(this.$t('service.toast_cannot_invite_ar'))
             return
@@ -183,13 +188,13 @@ export default {
       }
     },
     goTabConfirm(type) {
-      if (type === 'stream') {
+      if (type === VIEW.STREAM) {
         this.setView(VIEW.STREAM)
       }
-      if (type === 'drawing') {
+      if (type === VIEW.DRAWING) {
         this.setView(VIEW.DRAWING)
       }
-      if (type === 'ar') {
+      if (type === VIEW.AR) {
         if (this.viewForce === false) {
           this.toastDefault(this.$t('service.toast_no_sharing'))
           return

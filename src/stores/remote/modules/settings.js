@@ -48,7 +48,6 @@ const mutations = {
   },
   [SETTINGS.SET_VIDEO_DEVICE](state, video) {
     Object.assign(state.video, video)
-    console.log(state.video)
   },
   [SETTINGS.SET_RECORD](state, recordInfo) {
     Object.assign(state.localRecordInfo, recordInfo)
