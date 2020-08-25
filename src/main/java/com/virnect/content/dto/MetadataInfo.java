@@ -1,37 +1,46 @@
 package com.virnect.content.dto;
 
-import com.virnect.content.domain.ItemType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
 
+/**
+ * Project: PF-ContentManagement
+ * DATE: 2020-08-25
+ * AUTHOR: jkleee (Jukyoung Lee)
+ * EMAIL: ljk@virnect.com
+ * DESCRIPTION:
+ */
 @Getter
 @Setter
-public class MetadataDto {
-    private Content contents;
+@ToString
+public class MetadataInfo {
+
+    private Contents contents;
 
     @Getter
     @Setter
     @ToString
-    public static class Content {
+    public static class Contents {
         private String id;
+        private Float targetSize;
         private String name;
         private String managerUUID;
         private int subProcessTotal;
-        private List<SceneGroup> sceneGroups;
+        private List<Scenegroup> sceneGroups;
     }
 
     @Getter
     @Setter
     @ToString
-    public static class SceneGroup {
+    public static class Scenegroup {
         private String id;
         private int priority;
         private String name;
         private int jobTotal;
-        private List<Scene> sceneList;
+        private List<Scene> scenes;
     }
 
     @Getter
@@ -42,25 +51,25 @@ public class MetadataDto {
         private int priority;
         private String name;
         private int subJobTotal;
-        private List<ReportObject> reportObjects;
+        private List<Reportobject> reportObjects;
+       // private List<String> smartToolObjects;
     }
 
     @Getter
     @Setter
     @ToString
-    public static class ReportObject {
+    public static class Reportobject {
         private String id;
-        private List<ReportObjectItem> items;
+        private List<Item> items;
     }
 
     @Getter
     @Setter
     @ToString
-    public static class ReportObjectItem {
+    public static class Item {
         private String id;
         private int priority;
-        private ItemType type;
         private String title;
+        private String item;
     }
 }
-
