@@ -94,7 +94,7 @@ pipeline {
           steps {
             catchError() {
               sh 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 8761:8761 -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --restart=always --name=pf-eureka pf-eureka'
+              sh 'docker run -p 8761:8761 -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk "{print $1}"` -d --restart=always --name=pf-eureka pf-eureka'
               sh 'docker image prune -a -f'
             }
           }
