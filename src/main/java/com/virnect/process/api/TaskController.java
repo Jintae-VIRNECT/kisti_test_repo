@@ -696,15 +696,17 @@ public class TaskController {
             @ApiImplicitParam(name = "search", value = "검색어 - user, name을 검색", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "string", paramType = "query", defaultValue = "updatedDate,desc"),
+            @ApiImplicitParam(name = "filter", value = "필터명", dataType = "string", paramType = "query", defaultValue = "ALL"),
     })
     @GetMapping("/subTasks")
     public ResponseEntity<ApiResponse<SubProcessesResponse>> getSubProcesses(
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID
             , @RequestParam(required = false, value = "taskId") Long taskId
             , @RequestParam(value = "search", required = false) String search
+            , @RequestParam(value = "filter",required = false) Conditions filter
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<SubProcessesResponse> subProcessesResponseApiResponse = this.taskService.getSubProcesses(workspaceUUID, taskId, search, pageable.of());
+        ApiResponse<SubProcessesResponse> subProcessesResponseApiResponse = this.taskService.getSubProcesses(workspaceUUID, taskId, search, pageable.of(), filter);
         return ResponseEntity.ok(subProcessesResponseApiResponse);
     }
 

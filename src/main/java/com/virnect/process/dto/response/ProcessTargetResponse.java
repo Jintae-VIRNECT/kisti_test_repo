@@ -24,12 +24,15 @@ public class ProcessTargetResponse {
     private String data;
     @ApiModelProperty(value = "타겟 이미지 경로", position = 3)
     private String imgPath;
+    @ApiModelProperty(value = "타겟 사이즈", position = 4)
+    private Float size;
 
     @Builder
-    public ProcessTargetResponse(Long id, TargetType type, String data, String imgPath) {
+    public ProcessTargetResponse(Long id, TargetType type, String data, String imgPath, Float size) {
         this.id = id;
         this.type = type;
         this.data = data;
         this.imgPath = imgPath;
+        this.size = size;
     }
 }
