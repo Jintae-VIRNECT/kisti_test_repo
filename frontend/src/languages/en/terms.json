@@ -1,7 +1,7 @@
 {
   "terms": {
     "page": {
-      "title": "Agree to the Terms & Conditions",
+      "title": "Terms & Contions",
       "pageInfo": "Sign up begins if you agree to the Terms & Conditions",
       "entire": "Agree to all the terms",
       "termsContents": "[Contents of agreement to the Terms of Service]",
@@ -16,7 +16,7 @@
         "wordArray": [
           {
             "word": "",
-            "wordContents": "These terms and conditions are related to VIRNECT products provided by Vernect Co., Ltd. (hereinafter referred to as the'Company'), and the terms and conditions of use of the products between the company and members, rights and obligations between the company and members, and other necessary matters"
+            "wordContents": "These terms and conditions are related to VIRNECT products provided by Vernect Co. Ltd. (hereinafter referred to as the'Company') and the terms and conditions of use of the products between the company and members rights and obligations between the company and members and other necessary matters"
           }
         ]
       },
@@ -30,19 +30,19 @@
           },
           {
             "word": "2",
-            "wordContents": "A member who agrees to these terms and is registered as a member is subject to the terms and conditions agreed upon from the time of agreement, and if there is a change in terms of terms, the terms and conditions of the change are applied from the time the change takes effect.\""
+            "wordContents": "A member who agrees to these terms and is registered as a member is subject to the terms and conditions agreed upon from the time of agreement and if there is a change in terms of terms the terms and conditions of the change are applied from the time the change takes effect."
           },
           {
             "word": "3",
-            "wordContents": "The company may change these terms if deemed necessary. In the event that the Terms and Conditions are changed, the Company shall set the contents and the application date of the changed Terms and Conditions, and notify the Members by posting them on the website or sending them by e-mail to the Members 7 days before the date of application. The revised terms and conditions become effective from the date of disclosure or notice.\""
+            "wordContents": "The company may change these terms if deemed necessary. In the event that the Terms and Conditions are changed the Company shall set the contents and the application date of the changed Terms and Conditions and notify the Members by posting them on the website or sending them by e-mail to the Members 7 days before the date of application. The revised terms and conditions become effective from the date of disclosure or notice."
           },
           {
             "word": "4",
-            "wordContents": "Members who have objections to changes to these terms and conditions may stop using the product and terminate the use contract (withdrawal from membership). Even if the company has clearly announced that it intends to agree to change the terms and conditions of the revised terms in accordance with the preceding paragraph, it is deemed that the members have agreed to the terms and conditions of change if the member has not expressly expressed their intention to refuse.\""
+            "wordContents": "Members who have objections to changes to these terms and conditions may stop using the product and terminate the use contract (withdrawal from membership). Even if the company has clearly announced that it intends to agree to change the terms and conditions of the revised terms in accordance with the preceding paragraph it is deemed that the members have agreed to the terms and conditions of change if the member has not expressly expressed their intention to refuse."
           },
           {
             "word": "5",
-            "wordContents": "If the member who uses the product does not agree to these terms and conditions and terminates the use contract, a separate refund policy will be followed.\""
+            "wordContents": "If the member who uses the product does not agree to these terms and conditions and terminates the use contract a separate refund policy will be followed."
           }
         ]
       },
@@ -52,11 +52,11 @@
         "wordArray": [
           {
             "word": "1",
-            "wordContents": "The company can sign a separate contract for each product depending on the product characteristics, and if the content conflicts with these terms, a separate contract takes precedence.\""
+            "wordContents": "The company can sign a separate contract for each product depending on the product characteristics and if the content conflicts with these terms a separate contract takes precedence."
           },
           {
             "word": "2",
-            "wordContents": ""
+            "wordContents": "臾몄옣 �솗�씤�씠 �븘�슂�븿. �빐�꽍�뿉 愿��븯�뿬�뒗 �빟愿��쓽 洹쒖젣�뿉 愿��븳 踰뺣쪧(�씠�븯 '�빟愿�洹쒖젣踰�')\" �쓣 李멸퀬?"
           }
         ]
       },
@@ -70,7 +70,7 @@
           },
           {
             "word": "1",
-            "wordContents": "Member: A person who accesses the site operated by the company and agrees to these terms and conditions, enters into an agreement with the company, obtains an ID and password, and uses the product provided by the company. Member is distinguished between associate member and full members.\""
+            "wordContents": "Member: A person who accesses the site operated by the company and agrees to these terms and conditions enters into an agreement with the company obtains an ID and password and uses the product provided by the company. Member is distinguished between associate member and full members."
           },
           {
             "word": "2",
@@ -90,7 +90,7 @@
           },
           {
             "word": "6",
-            "wordContents": ""
+            "wordContents": "Service fee: The fee that a member pays the company to use the product."
           },
           {
             "word": "7",
@@ -104,15 +104,15 @@
         "wordArray": [
           {
             "word": "1",
-            "wordContents": "The Use Agreement is concluded by the person who wishes to become a member, agrees to the terms and conditions, then applies for membership and the company approves the application.\""
+            "wordContents": "The Use Agreement is concluded by the person who wishes to become a member agrees to the terms and conditions then applies for membership and the company approves the application."
           },
           {
             "word": "2",
-            "wordContents": "In principle, the company approves the use of the product for the application of the subscription applicant and grants a member ID. In principle, member ID cannot be changed. If you want to change due to unavoidable reasons, you must cancel the ID and get a new ID.\""
+            "wordContents": "In principle the company approves the use of the product for the application of the subscription applicant and grants a member ID. In principle member ID cannot be changed. If you want to change due to unavoidable reasons you must cancel the ID and get a new ID."
           },
           {
             "word": "3",
-            "wordContents": "In the process of granting the member ID in paragraph 2, the company can proceed with the authentication process via email address entered by the member in order to verify the member's information.\""
+            "wordContents": "In the process of granting the member ID in paragraph 2 the company can proceed with the authentication process via email address entered by the member in order to verify the member's information."
           }
         ]
       },
@@ -122,14 +122,14 @@
         "wordArray": [
           {
             "word": "1",
-            "wordContents": "In the event of any of the following reasons, the member shall immediately notify the company of the change in accordance with the email or the company's instructions and request a change in the contract immediately after the occurrence of the reason.\"",
+            "wordContents": "In the event of any of the following reasons the member shall immediately notify the company of the change in accordance with the email or the company's instructions and request a change in the contract immediately after the occurrence of the reason.",
             "wordList": {
               "array": [
                 {
                   "text": "Changes in contact details of customers and person responsible for payments"
                 },
                 {
-                  "text": "Change of product contents (type, contract period, etc.)\""
+                  "text": "Change of product contents (type contract period etc.)"
                 },
                 {
                   "text": "Changes to payment methods for product service fees"
@@ -153,7 +153,7 @@
           },
           {
             "word": "2",
-            "wordContents": "When the members request for the termination of contract and the contract is ended, they cannot claim compensation for damages due to loss of their data.\""
+            "wordContents": "When the members request for the termination of contract and the contract is ended they cannot claim compensation for damages due to loss of their data."
           },
           {
             "word": "4",
@@ -161,7 +161,7 @@
             "wordList": {
               "array": [
                 {
-                  "text": "In case of illegal use of other person's personal information, user ID and password\""
+                  "text": "In case of illegal use of other person's personal information user ID and password"
                 },
                 {
                   "text": "When the same user double-registers with a different ID"
@@ -170,19 +170,19 @@
                   "text": "If the registered name is not a real name"
                 },
                 {
-                  "text": "In the case of acts that are detrimental to national interests, social public interests, public order or morals\""
+                  "text": "In the case of acts that are detrimental to national interests social public interests public order or morals"
                 },
                 {
                   "text": "In the case of acts that damage or defamation of others"
                 },
                 {
-                  "text": "If you intentionally interfere with the operation of the service, such as transmitting a large amount of information or advertisement information, providing illegal programs, or distributing malicious programs\""
+                  "text": "If you intentionally interfere with the operation of the service such as transmitting a large amount of information or advertisement information providing illegal programs or distributing malicious programs"
                 },
                 {
-                  "text": "When the information obtained by using the company's service information is reproduced, distributed, or used commercially without prior consent of the company\""
+                  "text": "When the information obtained by using the company's service information is reproduced distributed or used commercially without prior consent of the company"
                 },
                 {
-                  "text": "Infringe on intellectual property rights of the company, other members or third parties\""
+                  "text": "Infringe on intellectual property rights of the company other members or third parties"
                 },
                 {
                   "text": "In case of violating the terms of use or other related laws and regulations set by the company including these terms and conditions"
@@ -198,7 +198,7 @@
         "wordArray": [
           {
             "word": "",
-            "wordContents": "In principle, when the member pays the initial product service fee according to the procedure provided by the company after the product Use Agreement is established, the company will start servicing the product . However, if there is a separate agreement in the contract between the company and the member, it will be subject to a separate agreement.\""
+            "wordContents": "In principle when the member pays the initial product service fee according to the procedure provided by the company after the product Use Agreement is established the company will start servicing the product . However if there is a separate agreement in the contract between the company and the member it will be subject to a separate agreement."
           }
         ]
       },
@@ -212,14 +212,11 @@
           },
           {
             "word": "2",
-            "wordContents": "The Subscription Product Use Agreement of paragraph 1 can be concluded in the following types, and detailed product contents provided for each type are based on the item criteria for each type below.\"",
+            "wordContents": "The Subscription Product Use Agreement of paragraph 1 can be concluded in the following types and detailed product contents provided for each type are based on the item criteria for each type below.",
             "wordList": {
               "array": [
                 {
                   "text": "Basic Plan"
-                },
-                {
-                  "text": "Premium Plan"
                 }
               ]
             }
@@ -236,7 +233,7 @@
           },
           {
             "word": "2",
-            "wordContents": "In principle, the use of the product is 24 hours a day, 7 days a week, unless there is a specific hindrance to the company's business or technology. However, if a system inspection or other company is needed, the use of some or all of the products may be restricted.\""
+            "wordContents": "In principle the use of the product is 24 hours a day 7 days a week unless there is a specific hindrance to the company's business or technology. However if a system inspection or other company is needed the use of some or all of the products may be restricted."
           }
         ]
       },
@@ -246,7 +243,7 @@
         "wordArray": [
           {
             "word": "",
-            "wordContents": "If necessary, the company can add or change product contents after prior notice, and post what is changed or added on the webpage where the product is serviced, or use the email service to notify.\""
+            "wordContents": "If necessary the company can add or change product contents after prior notice and post what is changed or added on the webpage where the product is serviced or use the email service to notify."
           }
         ]
       },
@@ -255,16 +252,16 @@
         "contents": "Article 12 (Agree to use members' personal information)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": "The company collects and uses personal information with the consent of members. The specific processing procedure and contents related to this are in accordance with the company's personal information processing policy.\"\"\""
+            "word": "1",
+            "wordContents": "The company collects and uses personal information with the consent of members. The specific processing procedure and contents related to this are in accordance with the company's personal information processing policy.\""
           },
           {
-            "word": "",
+            "word": "2",
             "wordContents": "The company uses the personal information of paragraph 1 for the purpose of fulfilling the Use Agreement and providing products under this Use Agreement."
           },
           {
-            "word": "",
-            "wordContents": "The company may use personal information of some or all of members' to generate statistical data in connection with work, and may send cookies to the member's computer through the product. In this case, the member change the settings of your computer's browser to refuse to receive cookies or to warn you about the receipt of cookies. However, the personal information collected in this way is used only for overall statistical data.\""
+            "word": "3",
+            "wordContents": "The company may use personal information of some or all of members' to generate statistical data in connection with work and may send cookies to the member's computer through the product. In this case the member change the settings of your computer's browser to refuse to receive cookies or to warn you about the receipt of cookies. However the personal information collected in this way is used only for overall statistical data."
           }
         ]
       },
@@ -273,12 +270,12 @@
         "contents": "Article 13 (Provision of information and advertisement)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": "The company can provide a variety of information that the member deems necessary while using the product to members by means of online announcement or email. However, members can opt out at any time via email.\""
+            "word": "1",
+            "wordContents": "The company can provide a variety of information that the member deems necessary while using the product to members by means of online announcement or email. However members can opt out at any time via email."
           },
           {
-            "word": "",
-            "wordContents": "The company may post advertisements on the product screen, homepage, email, etc. in relation to the operation of the product. Members who receive e-mails with advertisements can opt-out.\""
+            "word": "2",
+            "wordContents": "The company may post advertisements on the product screen homepage email etc. in relation to the operation of the product. Members who receive e-mails with advertisements can opt-out."
           }
         ]
       },
@@ -295,23 +292,23 @@
                   "text": "When a telecommunications business operator prescribed in the Telecommunications Business Act suspends telecommunication products"
                 },
                 {
-                  "text": "Due to construction, such as maintenance and regular maintenance of product facilities\""
+                  "text": "Due to construction such as maintenance and regular maintenance of product facilities"
                 },
                 {
-                  "text": "If there is a problem with the use of the product due to power outages, equipment failure, or congestion\""
+                  "text": "If there is a problem with the use of the product due to power outages equipment failure or congestion"
                 },
                 {
-                  "text": "When there is a force majeure reason, such as a natural disaster or a national emergency\""
+                  "text": "When there is a force majeure reason such as a natural disaster or a national emergency"
                 },
                 {
-                  "text": "When it is deemed necessary to discontinue the product for business, contract, or technical reasons.\""
+                  "text": "When it is deemed necessary to discontinue the product for business contract or technical reasons."
                 }
               ]
             }
           },
           {
             "word": "2",
-            "wordContents": "In case of discontinuation of the product, the company notifies the member in advance by the method specified in Article 23 (Notification to Members). However, if it is impossible to notify in advance due to reasons beyond the company's control, it may be announced on the company's website afterwards.\""
+            "wordContents": "In case of discontinuation of the product the company notifies the member in advance by the method specified in Article 23 (Notification to Members). However if it is impossible to notify in advance due to reasons beyond the company's control it may be announced on the company's website afterwards."
           },
           {
             "word": "3",
@@ -329,7 +326,7 @@
             "wordList": {
               "array": [
                 {
-                  "text": "VIRNECT products provide - AR real-time remote collaboration products, AR content production and distribution, AR information and data visualization, data-linked virtual monitoring and simulation systems, and all other augmented reality-based products.\""
+                  "text": "VIRNECT products provide - AR real-time remote collaboration products AR content production and distribution AR information and data visualization data-linked virtual monitoring and simulation systems and all other augmented reality-based products."
                 }
               ]
             }
@@ -347,9 +344,6 @@
               "array": [
                 {
                   "text": "Basic Plan"
-                },
-                {
-                  "text": "Premium Plan"
                 }
               ]
             }
@@ -362,19 +356,19 @@
         "wordArray": [
           {
             "word": "1",
-            "wordContents": "The service fee is calculated and charged from the product subscription date according to the contract, regardless of whether or not the product is actually used.\""
+            "wordContents": "The service fee is calculated and charged from the product subscription date according to the contract regardless of whether or not the product is actually used."
           },
           {
             "word": "2",
-            "wordContents": "Calculation of daily service fee is from 00:00 to 23:59 per day, and if the start time or end time of product delivery is in the middle of day 1, it is regarded as 1 day.\""
+            "wordContents": "Calculation of daily service fee is from 00:00 to 23:59 per day and if the start time or end time of product delivery is in the middle of day 1 it is regarded as 1 day."
           },
           {
             "word": "3",
-            "wordContents": "The monthly fee is charged starting from the subscription date, to one day before the next month of subscription date. (eg. 5th of June to 4th of July)\""
+            "wordContents": "The monthly fee is charged starting from the subscription date to one day before the next month of subscription date. (eg. 5th of June to 4th of July)"
           },
           {
             "word": "4",
-            "wordContents": "The annual fee is calculated from the product subscription date to one day before the next year's subscription date, and the other conditions are the same as the monthly fee.\""
+            "wordContents": "The annual fee is calculated from the product subscription date to one day before the next year's subscription date and the other conditions are the same as the monthly fee."
           }
         ]
       },
@@ -383,23 +377,23 @@
         "contents": "Article 18 (Payment)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": "The company sends the receipt of the service fee or invoice to the member based on the application list. It is sent via mail, email, or other method operated by the payment agency when the company recieves the application from a user or before the product subscription begins.\""
+            "word": "1",
+            "wordContents": "The company sends the receipt of the service fee or invoice to the member based on the application list. It is sent via mail email or other method operated by the payment agency when the company recieves the application from a user or before the product subscription begins."
           },
           {
-            "word": "",
-            "wordContents": "Members are obliged to pay the first month's service fee prior to product subscription. The payment is possible through payment methods provided by the company such as wire transfer and credit card payments. However, some payment methods may be limited due to company circumstances.\""
+            "word": "2",
+            "wordContents": "Members are obliged to pay the first month's service fee prior to product subscription. The payment is possible through payment methods provided by the company such as wire transfer and credit card payments. However some payment methods may be limited due to company circumstances."
           },
           {
-            "word": "",
+            "word": "3",
             "wordContents": "The member's payment method can be done in one of the following ways.",
             "wordList": {
               "array": [
                 {
-                  "text": "Various bank transfers such as phone banking, internet banking, and mail banking\""
+                  "text": "Various bank transfers such as phone banking internet banking and mail banking"
                 },
                 {
-                  "text": "Prepaid card, debit card, credit card, etc.\""
+                  "text": "Prepaid card debit card credit card etc."
                 },
                 {
                   "text": "Wire Transfer"
@@ -414,25 +408,25 @@
             }
           },
           {
-            "word": "",
-            "wordContents": "If there is a separate payment agency operating each payment method, the user must perform the procedures presented by the payment agency before using the payment method. When paying the company's product service fee, it is deemed to have agreed to the procedures and terms of use provided by the payment agency.\""
+            "word": "4",
+            "wordContents": "If there is a separate payment agency operating each payment method the user must perform the procedures presented by the payment agency before using the payment method. When paying the company's product service fee it is deemed to have agreed to the procedures and terms of use provided by the payment agency."
           },
           {
             "word": "5",
-            "wordContents": "In the case of wire transfer payment method, the relevant amount must be deposited within one week of application. if the names of the user and the payer are different, the user must notify the company by phone, email or fax. The user bears all responsibility for not notifying to company.\""
+            "wordContents": "In the case of wire transfer payment method the relevant amount must be deposited within one week of application. if the names of the user and the payer are different the user must notify the company by phone email or fax. The user bears all responsibility for not notifying to company."
           },
           {
             "word": "6",
-            "wordContents": "Payment is confirmed within the business hours of the company (weekdays, Monday through Friday, 9:30 am to 6:30 pm), unless otherwise specified, and payment after the end of business is processed within the next business hours.\""
+            "wordContents": "Payment is confirmed within the business hours of the company (weekdays Monday through Friday 9:30 am to 6:30 pm) unless otherwise specified and payment after the end of business is processed within the next business hours."
           },
           {
             "word": "7",
-            "wordContents": "If payment is not confirmed within one week after application for use, the company may refuse to use of the product.\""
+            "wordContents": "If payment is not confirmed within one week after application for use the company may refuse to use of the product."
           }
         ]
       },
       {
-        "title": "Chapter 5 Product Use Restrictions, etc.\"",
+        "title": "Chapter 5 Product Use Restrictions etc.",
         "contents": "Article 19 (Resale Restriction)",
         "wordArray": [
           {
@@ -451,23 +445,23 @@
         "wordArray": [
           {
             "word": "1",
-            "wordContents": "The company allows the member to use the product on the desired subscription date of the product, unless under special circumstances.\""
+            "wordContents": "The company allows the member to use the product on the desired subscription date of the product unless under special circumstances."
           },
           {
-            "word": "",
-            "wordContents": "The company provides products 24 hours a day, 7 days a week, 365 days a year, unless there is a business or technical problem. However, regular or irregular inspection times conducted to stabilize the product are excluded.\""
+            "word": "2",
+            "wordContents": "The company provides products 24 hours a day 7 days a week 365 days a year unless there is a business or technical problem. However regular or irregular inspection times conducted to stabilize the product are excluded."
           },
           {
-            "word": "",
-            "wordContents": "The company should immediately handle any opinions or complaints from members that are considered legitimate. However, if it is difficult to process immediately, the member must be notified of the reason and schedule by email or wire.\""
+            "word": "3",
+            "wordContents": "The company should immediately handle any opinions or complaints from members that are considered legitimate. However if it is difficult to process immediately the member must be notified of the reason and schedule by email or wire."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "4",
+            "wordContents": "The company cannot distribute any members' information acquired through product servicing process to others without getting prior consent from the members. However as long as it is in accordance with personal information processing policy (when requested by the relevant organizations for investigation purposes pursuant to related laws upon request of the Information and Communication Ethics Committee or to Credit information providers or credit information collection agencies regardless of payment default notice) it can be provided to a third party."
           },
           {
-            "word": "",
-            "wordContents": "The company cannot distribute any members' information acquired through product servicing process to others without getting prior consent from the members. However, as long as it is in accordance with personal information processing policy (when requested by the relevant organizations for investigation purposes pursuant to related laws, upon request of the Information and Communication Ethics Committee, or to Credit information providers or credit information collection agencies regardless of payment default notice), it can be provided to a third party.\""
+            "word": "5",
+            "wordContents": "The company shall recommend that the member's password be changed at least once every half a year in order to protect the member's personal information and when changing the password the company should make efforts to manage the member's personal information such as providing guidance on the restriction of reuse of the previously used password."
           }
         ]
       },
@@ -477,7 +471,7 @@
         "wordArray": [
           {
             "word": "1",
-            "wordContents": "When applying for membership, the member must list all matters based on the facts, and cannot claim any rights when registering false or other information.\""
+            "wordContents": "When applying for membership the member must list all matters based on the facts and cannot claim any rights when registering false or other information."
           },
           {
             "word": "2",
@@ -485,28 +479,28 @@
             "wordList": {
               "array": [
                 {
-                  "text": "When apply for a subscription, changing member information, list false information, use other people's personal informationor user ID and password illegally\""
+                  "text": "When apply for a subscription changing member information list false information use other people's personal informationor user ID and password illegally"
                 },
                 {
                   "text": "The same user double-registers with a different ID or trading ID with others"
                 },
                 {
-                  "text": "Impersonate as another company's employee, operator or stealing someone else's name\""
+                  "text": "Impersonate as another company's employee operator or stealing someone else's name"
                 },
                 {
-                  "text": "Acts that are impeded by national or social public interests, public order, and morals\""
+                  "text": "Acts that are impeded by national or social public interests public order and morals"
                 },
                 {
                   "text": "In the case of acts that damage or defamation of others"
                 },
                 {
-                  "text": "If you intentionally interfere with the operation of the service, such as transmitting a large amount of information or advertisement information, providing illegal programs, or distributing malicious programs\""
+                  "text": "If you intentionally interfere with the operation of the service such as transmitting a large amount of information or advertisement information providing illegal programs or distributing malicious programs"
                 },
                 {
-                  "text": "When the information obtained by using the company's service information is replicated, distributed, or used commercially without prior consent of the company\""
+                  "text": "When the information obtained by using the company's service information is replicated distributed or used commercially without prior consent of the company"
                 },
                 {
-                  "text": "Infringe on intellectual property rights of the company, other members or third parties\""
+                  "text": "Infringe on intellectual property rights of the company other members or third parties"
                 },
                 {
                   "text": "In case of violating the terms of use or other related laws and regulations set by the company including these terms and conditions"
@@ -516,195 +510,190 @@
           },
           {
             "word": "3",
-            "wordContents": "Members must comply with the company's notices, such as Product Use Agreement, related laws, provisions of these terms and conditions, usage guidelines and precautions, and should not engage in any other act that interferes with the company's business.\""
+            "wordContents": "Members must comply with the company's notices such as Product Use Agreement related laws provisions of these terms and conditions usage guidelines and precautions and should not engage in any other act that interferes with the company's business."
           },
           {
             "word": "4",
-            "wordContents": "The member is obliged to pay the fee set in this agreement in exchange for the use of the product, and the member is responsible for any problems arising from the failure to pay for the service fee. However, this is not the case in case of the company's negligence or the reason the company recognized.\""
+            "wordContents": "The member is obliged to pay the fee set in this agreement in exchange for the use of the product and the member is responsible for any problems arising from the failure to pay for the service fee. However this is not the case in case of the company's negligence or the reason the company recognized."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "5",
+            "wordContents": "Members must immediately notify the company of any change in customer information at the time of product subscription and the company is not responsible for any problems caused by delay in notification."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "6"
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "7",
+            "wordContents": "Members are responsible for any issues related to copyright of all information provided by members."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "8",
+            "wordContents": "The payment amount subscribed on a regular basis cannot be transferred or resold to another person and the Company shall not request that the ID and password provided to the member be exchanged for cash or other securities."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "9",
+            "wordContents": "Member shall not transfer or give the right to use the product any status regarding the use of product to other person."
           }
         ]
       },
       {
         "title": "",
-        "contents": "",
+        "contents": "Article 22 (Obligations and responsibilities for member ID and password management)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "Members must thoroughly manage their member ID and password."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "Members are responsible for all consequences arising from negligence and illegal use of member ID and password."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "3",
+            "wordContents": "Members shall not allow their ID and password to be used by a third party. If the Member member's ID and password are stolen or the member is aware that a third party is using it the member must immediately notify the company and follow the guidelines provided by the company."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "4",
+            "wordContents": "Members cannot transfer or lend the product usage rights and product usage contract status to a third party nor provide them as collateral. The company may restrict the member's use of the product if the member does not follow this rule and the member is responsible for the consequences caused by the member's above behavior."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "5",
+            "wordContents": "The member's ID cannot be changed without the prior consent of the company."
           }
         ]
       },
       {
         "title": "",
-        "contents": "",
+        "contents": "Article 23 (conversion of inactive accounts for long-term unconnected members)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "If it is confirmed that a member has not accessed or used the product for more than one year from the date of last access the company may classify the member as an inactive account terminate the contract and manage personal information separately. However at the request of a member even if the user has not accessed or used the product for less than one year from the last access date it can be classified as an inactive account.."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "In the case of Paragraph 1 the Company may separately manage personal information after notifying the fact of separate management of personal information by e-mail writing or telephone 30 days before the expiration of the product-non-use-period."
           }
         ]
       },
       {
         "title": "",
-        "contents": "",
+        "contents": "Article 24 (Notice to Members)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "The company can notify the member via the email address or contact information (phone number mobile phone number) submitted by the member to the company."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "In the case of notification to a large number of unspecified members the company may substitute individual notification by posting it on the homepage."
           }
         ]
       },
       {
         "title": "",
-        "contents": "",
+        "contents": "Article 25 (Change of Member Information)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "Members can view and modify their personal information at any time through the personal information management page. However it is not possible to modify product management related information such as ID."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "Members must make changes online or notify the company of the changes by e-mail etc. The company is not responsible for any disadvantages caused by not notifying the company of the changes in the preceding paragraph."
           }
         ]
       },
       {
         "title": "",
-        "contents": "",
+        "contents": "Article 26 (protection of personal information)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "The company shall strive to protect the personal information of members including member registration information in accordance with the relevant laws and regulations."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "The company shall strive to protect the personal information of members including member registration information in accordance with the relevant laws and regulations."
           }
         ]
       },
       {
         "title": "",
-        "contents": "",
+        "contents": "Article 27 (Preservation of Transaction Records etc.)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "The company keeps transaction records for up to 5 years in accordance with related laws such as the Information and Communication Network Act."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "If the content of the data stored in the database within the company and the data stored in the database of the requesting institution are different the member must respond to the company��셲 requests to confirm the content of the data."
           }
         ]
       },
       {
-        "title": "",
-        "contents": "",
+        "title": "Chapter 7 compensation for damages",
+        "contents": "Article 28 (Scope of Compensation for Damage)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "If a member violates the provisions of these terms and conditions and causes damage to the company the member who violates these terms and conditions must compensate the company for all damages incurred."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "If the company receives a claim for damages or various objections including lawsuits from a third party other than the member due to illegal acts performed by a member in using the product or violation of the use contract concluded with the company the member is responsible and must indemnify the company for all the expenses. If the company is not indemnified the member must compensate for all damages caused to the company."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "3",
+            "wordContents": "The company shall not be held liable for any damages incurred to members in connection with the use of products for which the product (including products for testing purposes) is provided free of charge or free products."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "4",
+            "wordContents": "In the event that a member cannot use the product due to reasons attributable to the company it is handled according to the terms specified in the use contract concluded with the members."
           }
         ]
       },
       {
         "title": "",
-        "contents": "",
+        "contents": "Article 29 (Exemption)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "The company is not responsible for the provision of the product in the event that the product cannot be provided due to force majeure such as a national emergency natural disaster or equivalent to national emergency."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "The company is not responsible for any failure to use the product due to reasons attributable to the member such as the member's negligence."
           },
           {
-            "word": "",
-            "wordContents": ""
-          },
-          {
-            "word": "",
-            "wordContents": ""
+            "word": "3",
+            "wordContents": "The Company shall not be liable for any damages in the process of using the product due to reasons attributable to the member such as the member's negligence."
           }
         ]
       },
       {
         "title": "",
-        "contents": "",
+        "contents": "Article 30 (Dispute Resolution)",
         "wordArray": [
           {
-            "word": "",
-            "wordContents": ""
+            "word": "1",
+            "wordContents": "The member and the company negotiate faithfully with each other in order to amicably solve the problems that arise in relation to the use of the product."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "2",
+            "wordContents": "In spite of the agreement in paragraph 1 of this article if a lawsuit is filed due to a dispute the dispute will be resolved through the competent court in accordance with the Civil Procedure Act."
           },
           {
-            "word": "",
-            "wordContents": ""
+            "word": "3",
+            "wordContents": "Laws of the Republic of Korea apply to lawsuits filed between the company and members."
           }
         ]
       },
       {
-        "title": "",
-        "contents": ""
+        "title": "Supplementary provisions",
+        "contents": "These terms is effective from July 9 2020."
       }
     ]
   }

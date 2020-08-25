@@ -1,5 +1,6 @@
 {
   "login": {
+    "subTitle": "로그인 센터",
     "title": "로그인",
     "email": "이메일",
     "emailPlaceholder": "이메일을 입력해 주세요",
