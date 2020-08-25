@@ -90,7 +90,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps -a | grep pf-login | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e "NODE_ENV=develop" -d --name=pf-login pf-login'
+            sh 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e "NODE_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login pf-login'
             sh 'docker image prune -a -f'
           }
         }
@@ -125,7 +125,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e 'NODE_ENV=staging' -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
+                          execCommand: 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=staging" -e "NODE_ENV=staging" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}'
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -172,7 +172,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e 'NODE_ENV=production' -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
+                          execCommand: 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=production" -e "NODE_ENV=production" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}'
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
