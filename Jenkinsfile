@@ -136,7 +136,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: 'docker run -p 8079:8079 --restart=always -e "SPRING_PROFILES_ACTIVE=staging" -v /data/content/processmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}'
+                          execCommand: "docker run -p 8079:8079 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -v /data/content/processmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -183,7 +183,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: 'docker run -p 8079:8079 --restart=always -e "SPRING_PROFILES_ACTIVE=production" -v /data/content/processmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}'
+                          execCommand: "docker run -p 8079:8079 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -v /data/content/processmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
