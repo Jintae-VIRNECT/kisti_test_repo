@@ -62,22 +62,17 @@ export default {
       }
       this.status = !this.status
     },
-    serverRecording(isStart) {
-      this.logger('Server Record ::', isStart)
-    },
-    localRecording(isStart) {
-      this.recording = isStart
+    localRecording(status) {
+      this.recording = status.isStart
     },
   },
 
   /* Lifecycles */
   beforeDestroy() {
     this.$eventBus.$off('localRecord')
-    this.$eventBus.$off('serverRecord')
   },
   mounted() {
     this.$eventBus.$on('localRecord', this.localRecording)
-    this.$eventBus.$on('serverRecord', this.serverRecording)
   },
 }
 </script>
