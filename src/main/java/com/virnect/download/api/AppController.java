@@ -32,7 +32,7 @@ import javax.validation.Valid;
 @Api
 @Slf4j
 @RestController
-@RequestMapping("/app")
+@RequestMapping("/download/app")
 @RequiredArgsConstructor
 public class AppController {
     private final AppService appService;
