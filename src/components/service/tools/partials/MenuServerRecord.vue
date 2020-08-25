@@ -25,9 +25,6 @@ export default {
   methods: {
     recording() {
       if (this.disabled) return
-      if (this.checkBeta()) {
-        return false
-      }
       if (!this.isRecording) {
         this.record()
         this.$eventBus.$emit('serverRecord', true)

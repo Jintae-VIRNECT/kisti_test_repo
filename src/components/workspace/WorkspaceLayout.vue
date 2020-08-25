@@ -104,8 +104,6 @@ export default {
           workspace['role'] = info.role
         }
         this.initWorkspace(workspaces)
-        // BETA: 1hour logout setting
-        this.$parent.init()
       }
     },
     handleMaxScroll(event) {

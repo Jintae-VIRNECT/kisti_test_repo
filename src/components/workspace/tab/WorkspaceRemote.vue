@@ -81,7 +81,6 @@ export default {
       this.loading = false
     },
     leave(sessionId) {
-      // if (this.checkBeta()) return
       this.confirmCancel(
         this.$t('workspace.confirm_remote_leave'),
         {
@@ -94,7 +93,6 @@ export default {
       )
     },
     remove(sessionId) {
-      // if (this.checkBeta()) return
       this.confirmCancel(
         this.$t('workspace.confirm_remove_room'),
         {
