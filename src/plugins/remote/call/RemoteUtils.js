@@ -12,7 +12,6 @@ import {
 import { FLASH as FLASH_STATUE } from 'configs/device.config'
 
 import { getUserInfo } from 'api/common'
-import vue from 'apps/remote/app'
 import { logger, debug } from 'utils/logger'
 
 export const addSessionEventListener = session => {
@@ -73,7 +72,7 @@ export const addSessionEventListener = session => {
     _.clear()
     if (event.reason === 'sessionClosedByServer') {
       // TODO: MESSAGE
-      vue.$toasted.error('리더가 협업을 삭제했습니다.', {
+      window.vue.$toasted.error('리더가 협업을 삭제했습니다.', {
         position: 'bottom-center',
         duration: 5000,
         action: {
@@ -83,7 +82,7 @@ export const addSessionEventListener = session => {
           },
         },
       })
-      vue.$router.push({ name: 'workspace' })
+      window.vue.$router.push({ name: 'workspace' })
     }
   })
   // user leave
@@ -97,7 +96,7 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.SYSTEM, () => {
     logger('room', 'evict by system')
     _.leave()
-    vue.$router.push({ name: 'workspace' })
+    window.vue.$router.push({ name: 'workspace' })
   })
 
   /** 메인뷰 변경 */

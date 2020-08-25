@@ -187,6 +187,10 @@ export default {
     async init() {
       this.loading = true
       const list = await this.getHistory()
+      if (list === false) {
+        this.loading = false
+        return
+      }
       this.historyList = list.sort((roomA, roomB) => {
         return (
           new Date(roomB.activeDate).getTime() -
@@ -221,6 +225,7 @@ export default {
         return datas.roomHistoryInfoList
       } catch (err) {
         console.error(err)
+        return false
       }
     },
   },
