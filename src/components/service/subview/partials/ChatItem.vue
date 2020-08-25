@@ -147,6 +147,12 @@ export default {
           case 'ar-pointing':
           case 'ar-area':
             return 'ar'
+          case 'pointing-allow':
+          case 'pointing-not-allow':
+            return 'pointing'
+          case 'record-allow':
+          case 'record-not-allow':
+            return 'record'
         }
       }
       return ''
@@ -196,6 +202,14 @@ export default {
             return this.$t('service.chat_ar_pointing', { name: this.chat.name })
           case 'ar-area':
             return this.$t('service.chat_ar_area')
+          case 'pointing-allow':
+            return this.$t('service.chat_pointing_allow')
+          case 'pointing-not-allow':
+            return this.$t('service.chat_pointing_not_allow')
+          case 'record-allow':
+            return this.$t('service.chat_record_allow')
+          case 'record-not-allow':
+            return this.$t('service.chat_record_not_allow')
         }
       }
       let chatText = this.chat.text ? this.chat.text : ''

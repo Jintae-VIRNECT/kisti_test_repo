@@ -23,7 +23,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['control', 'viewForce']),
+    ...mapGetters(['allowPointing', 'viewForce']),
     canPointing() {
       if (this.disabled) {
         return false
@@ -34,7 +34,7 @@ export default {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
-      if (this.control.pointing) {
+      if (this.allowPointing) {
         return true
       } else {
         return false

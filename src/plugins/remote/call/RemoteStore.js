@@ -131,10 +131,6 @@ const getDefaultState = () => {
       //   height: 600
       // }
     ],
-
-    // user option
-    allowLocalRecord: true,
-    allowPointing: true,
   }
 }
 
@@ -298,12 +294,6 @@ const getters = {
   chatList: state => state.chatList,
   resolutions: state => state.resolutions,
   initing: state => state.initing,
-  control: state => {
-    return {
-      localRecord: state.allowLocalRecord,
-      pointing: state.allowPointing,
-    }
-  },
 }
 
 export default {

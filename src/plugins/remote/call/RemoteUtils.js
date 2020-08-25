@@ -38,17 +38,17 @@ export const addSessionEventListener = session => {
       _.speaker(Store.getters['speaker'].isOn, [event.stream.connection])
       _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.stream.connection])
       if (_.account.roleType === ROLE.LEADER) {
-        if (Store.getters['viewForce'] === true) {
-          _.mainview(Store.getters['mainView'].id, true, [
-            event.stream.connection,
-          ])
-        }
         _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
           event.stream.connection,
         ])
         _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
           event.stream.connection,
         ])
+        if (Store.getters['viewForce'] === true) {
+          _.mainview(Store.getters['mainView'].id, true, [
+            event.stream.connection,
+          ])
+        }
       }
     })
   })
@@ -175,15 +175,15 @@ export const addSessionEventListener = session => {
   })
   /** 리더 컨트롤(pointing, local record) */
   session.on(SIGNAL.CONTROL, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
+    // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type === CONTROL.POINTING) {
-      Store.commit('deviceControl', {
-        allowPointing: data.enable,
+      Store.dispatch('setAllow', {
+        pointing: data.enable,
       })
     } else if (data.type === CONTROL.LOCAL_RECORD) {
-      Store.commit('deviceControl', {
-        allowLocalRecord: data.enable,
+      Store.dispatch('setAllow', {
+        localRecord: data.enable,
       })
     }
   })

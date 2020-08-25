@@ -24,7 +24,7 @@ const state = {
   },
   allow: {
     pointing: true,
-    localRecording: true,
+    localRecord: true,
   },
 
   videoDevice: null,
@@ -84,8 +84,7 @@ const getters = {
   speaker: state => state.speaker,
   video: state => state.video,
   localRecord: state => state.localRecordInfo,
-  allow: state => state.allow,
-  allowLocalRecord: state => state.allow.localRecording,
+  allowLocalRecord: state => state.allow.localRecord,
   allowPointing: state => state.allow.pointing,
   language: state => state.language,
 

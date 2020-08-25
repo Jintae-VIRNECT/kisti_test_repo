@@ -28,7 +28,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['control', 'localRecordStatus']),
+    ...mapGetters(['allowLocalRecord', 'localRecordStatus']),
     canRecord() {
       if (this.disabled) {
         return false
@@ -36,7 +36,7 @@ export default {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
-      if (this.control.localRecord) {
+      if (this.allowLocalRecord) {
         return true
       } else {
         return false

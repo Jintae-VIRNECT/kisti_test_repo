@@ -23,7 +23,7 @@ export default {
       'screenStream',
       'localRecord',
       'resolutions',
-      'control',
+      'allowLocalRecord',
       'localRecordStatus',
       'roomInfo',
     ]),
@@ -52,7 +52,7 @@ export default {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
-      if (this.control.localRecord) {
+      if (this.allowLocalRecord) {
         return true
       } else {
         return false

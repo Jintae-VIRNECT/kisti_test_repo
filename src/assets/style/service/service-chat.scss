@@ -289,6 +289,12 @@
   &.cancel::before {
     background-image: url(~assets/image/call/ic_chat_filecancel.svg);
   }
+  &.pointing::before {
+    background-image: url(~assets/image/call/ic_chat_pointing.svg);
+  }
+  &.record::before {
+    background-image: url(~assets/image/call/ic_chat_local_record.svg);
+  }
 
   .emphasize {
     display: inline-block;
