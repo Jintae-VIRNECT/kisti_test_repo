@@ -23,7 +23,7 @@
         /> -->
         <p class="profile__name">{{ title ? title : room.title }}</p>
         <p class="profile__leader">
-          {{ `${$t('common.leader')} : ${leader.nickname}` }}
+          {{ `${$t('common.leader')} : ${leader.nickName}` }}
         </p>
       </div>
       <div class="groupcard-info">

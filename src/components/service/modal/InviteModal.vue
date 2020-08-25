@@ -89,7 +89,7 @@ import Tooltip from 'Tooltip'
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { inviteRoom, getMember, kickMember } from 'api/service'
+import { inviteRoom, kickMember, invitableList } from 'api/service'
 export default {
   name: 'InviteModal',
   mixins: [toastMixin, confirmMixin],
@@ -159,8 +159,8 @@ export default {
       if (res.result === true) {
         this.toastNotify('사용자를 내보냈습니다.')
 
-        const user = this.currentUser.slice(idx, 1)[0]
-        this.users.push(user)
+        this.currentUser.slice(idx, 1)[0]
+        this.init()
         this.removeMember(participantId)
       }
     },
@@ -179,16 +179,12 @@ export default {
     },
     async init() {
       this.loading = true
-      const res = await getMember({
-        size: 100,
+      const res = await invitableList({
         workspaceId: this.workspace.uuid,
+        sessionId: this.roomInfo.sessionId,
+        userId: this.account.uuid,
       })
-      this.users = res.memberInfoList.filter(
-        member =>
-          this.roomInfo.memberList.findIndex(
-            part => part.uuid === member.uuid,
-          ) < 0,
-      )
+      this.users = res.memberList
       this.loading = false
       this.selection = []
     },

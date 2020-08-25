@@ -7,7 +7,7 @@
       <profile
         class="profile-short"
         :image="user.profile"
-        :mainText="user.nickname"
+        :mainText="user.nickName"
         :subText="user.email"
         :role="user.memberType"
         :thumbStyle="{ width: '3em', height: '3em' }"
