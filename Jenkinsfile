@@ -135,7 +135,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker run -p  8073:8073 --restart=always -e "SPRING_PROFILES_ACTIVE=staging" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}'
+                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
@@ -182,7 +182,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker run -p  8073:8073 --restart=always -e "SPRING_PROFILES_ACTIVE=production" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}'
+                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
