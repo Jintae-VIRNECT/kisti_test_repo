@@ -51,7 +51,6 @@ export default {
   },
   methods: {
     async kickout(id) {
-      if (this.checkBeta()) return
       if (this.account.uuid === id) return
       try {
         const removeRtn = await kickoutMember({
