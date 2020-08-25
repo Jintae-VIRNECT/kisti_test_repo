@@ -37,6 +37,7 @@ export const getMember = async function({
   size = 10,
   sort = 'email,desc',
   workspaceId,
+  userId,
 }) {
   const returnVal = await http('MEMBER_LIST', {
     filter,
@@ -44,6 +45,7 @@ export const getMember = async function({
     size,
     sort,
     workspaceId,
+    userId,
   })
   return returnVal
 }

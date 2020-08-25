@@ -126,24 +126,22 @@ export default {
     async inviteRefresh() {
       this.loading = true
       const inviteList = await getMember({
-        size: 100,
+        size: 50,
         workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
       })
-      this.users = inviteList.memberInfoList
-        .filter(member => member.uuid !== this.account.uuid)
-        .sort((a, b) => {
-          var nameA = a.name.toUpperCase()
-          var nameB = b.name.toUpperCase()
-          if (nameA < nameB) {
-            return -1
-          }
-          if (nameA > nameB) {
-            return 1
-          }
-
-          // 이름이 같을 경우
+      this.users = inviteList.memberList
+      this.users.sort((A, B) => {
+        if (A.role === 'MASTER') {
+          return -1
+        } else if (B.role === 'MASTER') {
+          return 1
+        } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
+          return -1
+        } else {
           return 0
-        })
+        }
+      })
       this.loading = false
     },
     async startRemote(info) {
