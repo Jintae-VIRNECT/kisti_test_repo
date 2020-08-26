@@ -5,34 +5,83 @@ export default {
   ACCOUNT: ['GET', '/users/info', { type: 'form' }],
   USER_INFO: ['GET', '/users/{userId}'],
   /* Workspace - History */
-  HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
-  HISTORY_ITEM: ['GET', '/remote/history/{workspaceId}/{sessionId}'],
-  DELETE_HISTORY_ITEM: ['DELETE', '/remote/history/{workspaceId}'],
-  DELETE_HISTORY_ALL: ['DELETE', '/remote/history/{workspaceId}/{userId}'],
+  HISTORY_LIST: [
+    'GET',
+    'https://192.168.13.36:8000/remote/history?userId={userId}',
+  ],
+  HISTORY_ITEM: [
+    'GET',
+    'https://192.168.13.36:8000/remote/history/{workspaceId}/{sessionId}',
+  ],
+  DELETE_HISTORY_ITEM: [
+    'DELETE',
+    'https://192.168.13.36:8000/remote/history/{workspaceId}',
+  ],
+  DELETE_HISTORY_ALL: [
+    'DELETE',
+    'https://192.168.13.36:8000/remote/history/{workspaceId}/{userId}',
+  ],
 
   /* Workspace - Member */
-  MEMBER_LIST: ['GET', '/remote/members/{workspaceId}'],
+  MEMBER_LIST: [
+    'GET',
+    'https://192.168.13.36:8000/remote/members/{workspaceId}/{userId}',
+  ],
+  INVITABLE_MEMBER_LIST: [
+    'GET',
+    'https://192.168.13.36:8000/remote/members/{workspaceId}/{sessionId}/{userId}',
+  ],
 
   /* Workspace - Room */
-  ROOM_LIST: ['GET', '/remote/room?workspaceId={workspaceId}'],
-  CREATE_ROOM: ['POST', '/remote/room'],
-  JOIN_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/join'],
-  ROOM_INFO: ['GET', '/remote/room/{workspaceId}/{sessionId}'],
-  DELETE_ROOM: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/{userId}'],
+  ROOM_LIST: [
+    'GET',
+    'https://192.168.13.36:8000/remote/room?workspaceId={workspaceId}',
+  ],
+  CREATE_ROOM: ['POST', 'https://192.168.13.36:8000/remote/room'],
+  UPDATE_ROOM_PROFILE: [
+    'POST',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}/profile',
+    { type: 'form' },
+  ],
+  JOIN_ROOM: [
+    'POST',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}/join',
+  ],
+  ROOM_INFO: [
+    'GET',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}',
+  ],
+  DELETE_ROOM: [
+    'DELETE',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}/{userId}',
+  ],
   LEAVE_ROOM: [
     'DELETE',
-    '/remote/room/{workspaceId}/{sessionId}/exit?userId={userId}',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}/exit?userId={userId}',
   ],
-  UPDATE_ROOM_INFO: ['POST', '/remote/room/{workspaceId}/{sessionId}/info'],
+  UPDATE_ROOM_INFO: [
+    'POST',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}/info',
+  ],
 
   /* CALL */
-  INVITE_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/member'],
-  KICKOUT_MEMBER: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/member'],
+  INVITE_ROOM: [
+    'POST',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}/member',
+  ],
+  KICKOUT_MEMBER: [
+    'DELETE',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}/member',
+  ],
+  SEND_SIGNAL: [
+    'POST',
+    'https://192.168.13.36:8000/remote/room/{workspaceId}/signal',
+  ],
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}'],
   /* MESSAGE */
-  SEND_PUSH: ['POST', '/messages/push'],
+  SEND_PUSH: ['POST', 'https://192.168.13.36:8000/remote/message/push'],
 
   /* CHAT FILE */
   SEND_FILE: [
@@ -43,6 +92,6 @@ export default {
 }
 
 export const wsUri = {
-  REMOTE: '/remote/websocket',
+  REMOTE: 'https://192.168.13.36:8000/remote/websocket',
   MESSAGE: '/message',
 }
