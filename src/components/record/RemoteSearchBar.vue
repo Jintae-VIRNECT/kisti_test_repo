@@ -12,11 +12,7 @@
       <calendar-button :isActive="buttonStatus.to"></calendar-button>
     </div>
     <div class="search__wrapper">
-      <input
-        class="search--input"
-        type="text"
-        placeholder="사용자 이름 / 사원 번호를 입력해 주세요"
-      />
+      <input class="search--input" type="text" placeholder="사용자 이름" />
       <button class="search--button">검색</button>
     </div>
   </section>
