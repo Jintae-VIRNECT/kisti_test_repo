@@ -8,10 +8,10 @@ log4js.configure({
       layout: {
         type: 'pattern',
         pattern:
-          `${chalk.default.green('[RMWEB]')} - ` +
-          `${chalk.default.white('[%d{yyyy-MM-dd hh:mm:ss}]')} - ` +
+          `${chalk.green('[RMWEB]')} - ` +
+          `${chalk.white('[%d{yyyy-MM-dd hh:mm:ss}]')} - ` +
           `[%p] - ` +
-          `${chalk.default.cyan(`[%c]`)} - ` +
+          `${chalk.cyan(`[%c]`)} - ` +
           `%m%`,
       },
     },

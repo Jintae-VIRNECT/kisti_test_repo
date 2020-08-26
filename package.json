@@ -10,6 +10,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "chalk": "^4.1.0",
     "core-js": "^3.6.5",
     "express": "^4.17.1",
     "log4js": "^6.3.0",
@@ -20,7 +21,7 @@
     "@vue/cli-plugin-eslint": "~4.4.0",
     "@vue/cli-plugin-router": "^4.5.2",
     "@vue/cli-plugin-unit-jest": "^4.4.6",
-    "@vue/cli-service": "~4.4.0",
+    "@vue/cli-service": "^4.4.6",
     "@vue/test-utils": "^1.0.3",
     "axios": "^0.20.0",
     "babel-eslint": "^10.1.0",
