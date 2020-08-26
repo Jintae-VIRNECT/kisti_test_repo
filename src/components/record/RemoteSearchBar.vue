@@ -3,12 +3,12 @@
     <span class="search--label">기간 검색</span>
     <!-- 캘린더 컴포넌트 -->
     <div class="search-calender">
-      <datepicker></datepicker>
+      <datepicker :pickerName="'from'" :highlighted="highlighted"></datepicker>
       <calender-button></calender-button>
     </div>
     <span class="search-calender--tilde"> <!-- 007E Tilde 표시 -->~ </span>
     <div class="search-calender">
-      <datepicker></datepicker>
+      <datepicker :pickerName="'to'" :highlighted="highlighted"></datepicker>
       <calender-button></calender-button>
     </div>
     <div class="search__wrapper">
@@ -26,11 +26,31 @@
 import CalenderButton from './partials/RemoteCalenderButton'
 import Datepicker from 'components/modules/Datepicker'
 export default {
+  name: 'RemoteSearchBar',
+
   components: {
     CalenderButton,
     Datepicker,
   },
-  name: 'RemoteSearchBar',
+  data() {
+    return {
+      highlighted: {
+        from: null,
+        to: null,
+      },
+    }
+  },
+  methods: {
+    setHighlighting(dateInfo) {
+      this.highlighted[dateInfo.pickerName] = new Date(dateInfo.date)
+    },
+  },
+  mounted() {
+    this.$eventBus.$on('update::datepicker', this.setHighlighting)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('update::datepicker')
+  },
 }
 </script>
 
@@ -47,8 +67,6 @@ export default {
 }
 
 .search--label {
-  // width: 52px;
-  // height: 20px;
   margin-right: 18px;
   color: rgb(11, 31, 72);
   font-weight: 500;

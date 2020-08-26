@@ -75,6 +75,10 @@ export default {
     typeable: Boolean,
     bootstrapStyling: Boolean,
     useUtc: Boolean,
+    pickerName: {
+      type: String,
+      default: '',
+    },
   },
   data() {
     const constructedDateUtils = makeDateUtils(this.useUtc)
@@ -115,6 +119,12 @@ export default {
   watch: {
     resetTypedDate() {
       this.typedDate = false
+    },
+    formattedValue(date) {
+      this.$eventBus.$emit('update::datepicker', {
+        pickerName: this.pickerName,
+        date: date,
+      })
     },
   },
   methods: {

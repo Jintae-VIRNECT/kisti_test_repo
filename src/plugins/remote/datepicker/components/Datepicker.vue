@@ -22,6 +22,7 @@
       :required="required"
       :bootstrapStyling="bootstrapStyling"
       :use-utc="useUtc"
+      :pickerName="pickerName"
       @showCalendar="showCalendar"
       @closeCalendar="close"
       @typedDate="setTypedDate"
@@ -156,6 +157,10 @@ export default {
     maximumView: {
       type: String,
       default: 'year',
+    },
+    pickerName: {
+      type: String,
+      default: '',
     },
   },
   data() {

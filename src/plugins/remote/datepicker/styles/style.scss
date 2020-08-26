@@ -152,12 +152,37 @@
     &:hover {
       background: #5c98f0;
     }
+
+    &.highlighted {
+      color: rgb(255, 255, 255);
+      background: #5c98f0;
+      border-radius: 0px;
+    }
+
+    &.highlight-start {
+      border-radius: 100px 0 0 100px;
+    }
+
+    &.highlight-end {
+      border-radius: 0 100px 100px 0;
+    }
+
+    &.highlight-start.highlight-end {
+      border-radius: 0px;
+    }
   }
-  .cell.selected.highlighted {
-    background: #4bd;
-  }
+
   .cell.highlighted {
-    background: #cae5ed;
+    color: rgb(255, 255, 255);
+    background: #5c98f0;
+
+    &.highlight-start {
+      border-radius: 100px 0 0 100px;
+    }
+
+    &.highlight-end {
+      border-radius: 0 100px 100px 0;
+    }
   }
   .cell.highlighted.disabled {
     color: #a3a3a3;
