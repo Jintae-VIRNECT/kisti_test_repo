@@ -130,6 +130,7 @@ export default {
   methods: {
     showCalendar() {
       this.$emit('showCalendar')
+      this.$eventBus.$emit('open::calendar', this.pickerName)
     },
     /**
      * Attempt to parse a typed date

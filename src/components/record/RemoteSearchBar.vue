@@ -4,12 +4,12 @@
     <!-- 캘린더 컴포넌트 -->
     <div class="search-calender">
       <datepicker :pickerName="'from'" :highlighted="highlighted"></datepicker>
-      <calender-button></calender-button>
+      <calendar-button :isActive="buttonStatus.from"></calendar-button>
     </div>
     <span class="search-calender--tilde"> <!-- 007E Tilde 표시 -->~ </span>
     <div class="search-calender">
       <datepicker :pickerName="'to'" :highlighted="highlighted"></datepicker>
-      <calender-button></calender-button>
+      <calendar-button :isActive="buttonStatus.to"></calendar-button>
     </div>
     <div class="search__wrapper">
       <input
@@ -23,13 +23,13 @@
 </template>
 
 <script>
-import CalenderButton from './partials/RemoteCalenderButton'
+import CalendarButton from './partials/RemoteCalendarButton'
 import Datepicker from 'components/modules/Datepicker'
 export default {
   name: 'RemoteSearchBar',
 
   components: {
-    CalenderButton,
+    CalendarButton,
     Datepicker,
   },
   data() {
@@ -38,15 +38,28 @@ export default {
         from: null,
         to: null,
       },
+      buttonStatus: {
+        from: false,
+        to: false,
+      },
     }
   },
   methods: {
     setHighlighting(dateInfo) {
       this.highlighted[dateInfo.pickerName] = new Date(dateInfo.date)
     },
+    active(pickerName) {
+      this.buttonStatus[pickerName] = true
+    },
+    deActive(pickerName) {
+      console.log(pickerName)
+      this.buttonStatus[pickerName] = false
+    },
   },
   mounted() {
     this.$eventBus.$on('update::datepicker', this.setHighlighting)
+    this.$eventBus.$on('open::calendar', this.active)
+    this.$eventBus.$on('close::calendar', this.deActive)
   },
   beforeDestroy() {
     this.$eventBus.$off('update::datepicker')

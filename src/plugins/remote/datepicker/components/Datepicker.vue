@@ -448,6 +448,7 @@ export default {
         if (emitEvent) {
           this.$emit('closed')
         }
+        this.$eventBus.$emit('close::calendar', this.pickerName)
         document.removeEventListener('click', this.clickOutside, false)
       }
     },
