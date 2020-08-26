@@ -8,7 +8,7 @@
           :key="participant.id"
           :participant="participant"
           @selectMain="selectMain(participant)"
-          @kickout="kickout(participant)"
+          @kickout="kickout(participant.id)"
         ></participant-video>
         <article v-if="isLeader" key="append">
           <div class="participant-video more" @click="more">
@@ -30,14 +30,12 @@
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { kickMember } from 'api/service'
-import confirmMixin from 'mixins/confirm'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
 import SelectView from '../modal/SelectView'
 export default {
   name: 'ParticipantList',
-  mixins: [confirmMixin],
   components: {
     ParticipantVideo,
     InviteModal,
@@ -129,24 +127,7 @@ export default {
     more() {
       this.invite = !this.invite
     },
-    kickout(participant) {
-      this.$eventBus.$emit('popover:close')
-      this.serviceConfirmCancel(
-        this.$t('service.participant_kick_confirm', {
-          name: participant.nickName,
-        }),
-        {
-          text: this.$t('button.confirm'),
-          action: () => {
-            this.kick(participant.id)
-          },
-        },
-        {
-          text: this.$t('button.cancel'),
-        },
-      )
-    },
-    async kick(participantId) {
+    async kickout(participantId) {
       const params = {
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,

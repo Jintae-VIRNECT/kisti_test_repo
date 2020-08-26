@@ -156,7 +156,11 @@ export default {
       })
     },
     updateInfo(info) {
-      this.title = info.title
+      if ('title' in info) {
+        this.title = info.title
+      } else {
+        this.$emit('init')
+      }
     },
     join() {
       this.$emit('join', {

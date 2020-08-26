@@ -110,7 +110,7 @@
               </button>
             </li>
             <li v-if="iamLeader">
-              <button class="video-pop__button" @click="$emit('kickout')">
+              <button class="video-pop__button" @click="kickout">
                 {{ $t('service.participant_kick') }}
               </button>
             </li>
@@ -126,13 +126,14 @@ import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
 
 import Profile from 'Profile'
 import Popover from 'Popover'
 
 export default {
   name: 'ParticipantVideo',
-  mixins: [toastMixin],
+  mixins: [confirmMixin, toastMixin],
   components: {
     Profile,
     Popover,
@@ -312,6 +313,23 @@ export default {
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
       })
+    },
+    kickout() {
+      this.$eventBus.$emit('popover:close')
+      this.serviceConfirmCancel(
+        this.$t('service.participant_kick_confirm', {
+          name: this.participant.nickname,
+        }),
+        {
+          text: this.$t('button.confirm'),
+          action: () => {
+            this.$emit('kickout')
+          },
+        },
+        {
+          text: this.$t('button.cancel'),
+        },
+      )
     },
   },
 }

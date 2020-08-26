@@ -5,7 +5,7 @@
         {{ '다운로드' }}
       </p>
     </div>
-    <div class="roominfo-view__body">
+    <div class="roominfo-view__body table">
       <div class="download-table">
         <div class="download-table__header">
           <div class="download-table__column name" style="width: 50%;">

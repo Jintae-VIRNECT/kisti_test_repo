@@ -516,6 +516,9 @@ body {
       font-size: 1.286em;
       white-space: pre-line;
       text-align: center;
+      > em {
+        color: #6bb4f9;
+      }
     }
   }
 

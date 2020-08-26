@@ -20,6 +20,7 @@
         @join="join"
         @leave="leave(room.sessionId)"
         @remove="remove(room.sessionId)"
+        @init="init"
       ></remote-card>
     </div>
   </tab-view>

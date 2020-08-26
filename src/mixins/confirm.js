@@ -41,7 +41,7 @@ export default {
       cancel = { text: this.$t('button.cancel') },
     ) {
       Alert.fire({
-        text: text,
+        html: text,
         showCancelButton: true,
         confirmButtonText: confirm.text,
         cancelButtonText: cancel.text,

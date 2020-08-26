@@ -42,7 +42,7 @@
                 ></profile>
                 <button
                   class="invite-modal__current-kickout"
-                  @click="kickout(user.uuid, idx)"
+                  @click="kickoutConfirm(user, idx)"
                 >
                   {{ $t('button.kickout') }}
                 </button>
@@ -151,6 +151,23 @@ export default {
     },
     beforeClose() {
       this.$emit('update:visible', false)
+    },
+    kickoutConfirm(participant, idx) {
+      this.serviceConfirmCancel(
+        this.$t('service.participant_kick_confirm', {
+          name: participant.nickName,
+        }),
+        {
+          text: this.$t('button.confirm'),
+          action: () => {
+            this.$emit('kickout')
+            this.kickout(participant.name, idx)
+          },
+        },
+        {
+          text: this.$t('button.cancel'),
+        },
+      )
     },
     async kickout(participantId, idx) {
       const params = {
