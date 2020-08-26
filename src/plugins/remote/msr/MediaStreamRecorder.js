@@ -161,7 +161,7 @@ function MultiStreamRecorder(arrayOfMediaStreams, options) {
   }
 
   if (!options.frameInterval) {
-    options.frameInterval = 10
+    options.frameInterval = 25
   }
 
   if (!options.video) {
@@ -336,7 +336,9 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
   var isStopDrawingFrames = false
 
   canvas = document.createElement('canvas')
-  var context = canvas.getContext('2d')
+
+  //remove alpha channel
+  var context = canvas.getContext('2d', { alpha: false })
 
   //so.. where is delete canvas??????
   canvas.style =
