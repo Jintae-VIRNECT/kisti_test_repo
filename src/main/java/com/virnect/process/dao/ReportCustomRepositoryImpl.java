@@ -24,8 +24,10 @@ import java.util.Objects;
  * @since 2020.05.20
  */
 @Slf4j
-public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implements ReportCustomRepository{
-    public ReportCustomRepositoryImpl() { super(Report.class); }
+public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implements ReportCustomRepository {
+    public ReportCustomRepositoryImpl() {
+        super(Report.class);
+    }
 
     @Override
     public Page<Report> getPages(String myUUID, String workspaceUUID, Long processId, Long subProcessId, String search, List<String> userUUIDList, Boolean reported, Pageable pageable, Long stepId) {
@@ -62,12 +64,13 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
 
         if (!userUUIDList.isEmpty()) {
             query = query.where(qSubProcess.workerUUID.in(userUUIDList));
+        } else {
+            // 프로필 -> 바로가기 시 처리를 위해
+            if (Objects.nonNull(search)) {
+                query = query.where(qSubProcess.workerUUID.eq(search));
+            }
         }
 
-        // 프로필 -> 바로가기 시 처리를 위해
-        if (Objects.nonNull(search)) {
-            query = query.where(qSubProcess.workerUUID.eq(search));
-        }
 
         if (Objects.nonNull(reported)) {
             if (reported) {
@@ -90,16 +93,16 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
         LocalDate date = LocalDate.parse(targetDate);
 
         LocalDateTime from = date.atStartOfDay();
-        LocalDateTime to   = date.atTime(23, 59);
+        LocalDateTime to = date.atTime(23, 59);
 
         JPQLQuery<HourlyReportCountOfaDayResponse> query = from(qReport)
                 .join(qReport.job, qJob)
                 .select(Projections.bean(HourlyReportCountOfaDayResponse.class,
                         qReport.count().intValue().as("reportCount"),
                         new CaseBuilder()
-                        .when(qReport.updatedDate.hour().stringValue().length().eq(1))
-                        .then(qReport.updatedDate.hour().stringValue().prepend("0"))
-                        .otherwise(qReport.updatedDate.hour().stringValue()).as("hour")))
+                                .when(qReport.updatedDate.hour().stringValue().length().eq(1))
+                                .then(qReport.updatedDate.hour().stringValue().prepend("0"))
+                                .otherwise(qReport.updatedDate.hour().stringValue()).as("hour")))
                 .where(qReport.updatedDate.between(from, to))
                 .groupBy(new CaseBuilder()
                         .when(qReport.updatedDate.hour().stringValue().length().eq(1))
