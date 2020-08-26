@@ -35,6 +35,10 @@ export default {
           workspaceId: this.workspace.uuid,
         })
 
+        window.urls['token'] = res.token
+        window.urls['coturn'] = res.coturn
+        window.urls['wss'] = res.wss
+
         const joinRtn = await this.$call.connect(res, role)
         if (joinRtn) {
           this.$nextTick(() => {
