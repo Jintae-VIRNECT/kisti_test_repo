@@ -116,10 +116,14 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['roomInfo']),
+    ...mapGetters(['roomInfo', 'participants']),
     currentUser() {
       return this.roomInfo.memberList.filter(user => {
-        return user.memberStatus !== 'LOAD'
+        const idx = this.participants.findIndex(loaded => {
+          return user.uuid === loaded.id
+        })
+        if (idx < 0) return true
+        else return false
       })
     },
     maxSelect() {

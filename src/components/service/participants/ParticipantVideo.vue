@@ -110,10 +110,7 @@
               </button>
             </li>
             <li v-if="iamLeader">
-              <button
-                class="video-pop__button"
-                @click="disconnectUser(account.nickname)"
-              >
+              <button class="video-pop__button" @click="$emit('kickout')">
                 {{ $t('service.participant_kick') }}
               </button>
             </li>
@@ -128,8 +125,6 @@
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
-import { kickMember } from 'api/service'
-import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
 
 import Profile from 'Profile'
@@ -137,7 +132,7 @@ import Popover from 'Popover'
 
 export default {
   name: 'ParticipantVideo',
-  mixins: [confirmMixin, toastMixin],
+  mixins: [toastMixin],
   components: {
     Profile,
     Popover,
@@ -308,14 +303,6 @@ export default {
         this.$eventBus.$off('startAr', this.getPermission)
       })
     },
-    // normalMain() {
-    //   this.$call.mainview(this.participant.id, false)
-    //   this.setMainView({ id: this.participant.id })
-    // },
-    // forceMain() {
-    //   this.$call.mainview(this.participant.id, true)
-    //   this.setMainView({ id: this.participant.id, force: true })
-    // },
     profileImageError(event) {
       event.target.style.display = 'none'
     },
@@ -325,29 +312,6 @@ export default {
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
       })
-    },
-    disconnectUser(nickName) {
-      this.$eventBus.$emit('popover:close')
-      this.serviceConfirmCancel(
-        this.$t('service.participant_kick_confirm', { name: nickName }),
-        {
-          text: this.$t('button.confirm'),
-          action: this.kick,
-        },
-        {
-          text: this.$t('button.cancel'),
-        },
-      )
-    },
-    async kick() {
-      const params = {
-        sessionId: this.roomInfo.sessionId,
-        workspaceId: this.workspace.uuid,
-        leaderId: this.account.uuid,
-        participantId: this.participant.id,
-      }
-      await kickMember(params)
-      // this.$call.disconnect(this.participant.connectionId)
     },
   },
 }

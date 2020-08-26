@@ -8,6 +8,7 @@
           :key="participant.id"
           :participant="participant"
           @selectMain="selectMain(participant)"
+          @kickout="kickout(participant)"
         ></participant-video>
         <article v-if="isLeader" key="append">
           <div class="participant-video more" @click="more">
@@ -28,12 +29,15 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
+import { kickMember } from 'api/service'
+import confirmMixin from 'mixins/confirm'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
 import SelectView from '../modal/SelectView'
 export default {
   name: 'ParticipantList',
+  mixins: [confirmMixin],
   components: {
     ParticipantVideo,
     InviteModal,
@@ -46,7 +50,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['participants', 'mainView', 'viewForce']),
+    ...mapGetters(['participants', 'mainView', 'viewForce', 'roomInfo']),
     isLeader() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
@@ -86,7 +90,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setMainView', 'addChat']),
+    ...mapActions(['setMainView', 'addChat', 'removeMember']),
     selectMain(participant) {
       this.selectview = {
         id: participant.id,
@@ -124,6 +128,36 @@ export default {
     },
     more() {
       this.invite = !this.invite
+    },
+    kickout(participant) {
+      this.$eventBus.$emit('popover:close')
+      this.serviceConfirmCancel(
+        this.$t('service.participant_kick_confirm', {
+          name: participant.nickName,
+        }),
+        {
+          text: this.$t('button.confirm'),
+          action: () => {
+            this.kick(participant.id)
+          },
+        },
+        {
+          text: this.$t('button.cancel'),
+        },
+      )
+    },
+    async kick(participantId) {
+      const params = {
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+        leaderId: this.account.uuid,
+        participantId: participantId,
+      }
+      const rtn = await kickMember(params)
+      if (rtn.result === true) {
+        this.removeMember(participantId)
+      }
+      // this.$call.disconnect(this.participant.connectionId)
     },
   },
 
