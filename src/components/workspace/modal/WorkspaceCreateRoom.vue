@@ -192,15 +192,6 @@ export default {
         if (connRes) {
           this.$eventBus.$emit('popover:close')
 
-          const contents = {
-            roomSessionId: createdRes.sessionId,
-            title: info.title,
-            nickName: this.account.nickname,
-            profile: this.account.profile,
-          }
-
-          await sendPush(EVENT.INVITE, selectedUserIds, contents)
-
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
           })

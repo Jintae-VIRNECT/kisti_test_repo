@@ -1,4 +1,4 @@
-import { getAccount, tokenRequest } from 'api/common'
+import { getAccount, tokenRequest } from 'api/common/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'

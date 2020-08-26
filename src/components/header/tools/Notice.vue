@@ -176,7 +176,7 @@ export default {
             }),
             image: body.contents.profile,
             description: this.$t('alarm.invite_request'),
-            roomSessionId: body.contents.roomSessionId,
+            sessionId: body.contents.sessionId,
             userId: body.userId,
             accept: 'none',
             date: new Date(),
@@ -184,7 +184,7 @@ export default {
           if (!this.onPush) return
           this.alarmInvite(
             body.contents,
-            () => this.acceptInvite(body.contents.roomSessionId, body.userId),
+            () => this.acceptInvite(body.contents.sessionId, body.userId),
             () => this.inviteDenied(body.userId),
           )
           break
@@ -248,9 +248,9 @@ export default {
         id: alarm.id,
         accept: 'accept',
       })
-      this.acceptInvite(alarm.roomSessionId, alarm.userId)
+      this.acceptInvite(alarm.sessionId, alarm.userId)
     },
-    async acceptInvite(roomSessionId, userId) {
+    async acceptInvite(sessionId, userId) {
       if (this.$call.session !== null) {
         // TODO: MESSAGE
         this.toastError(this.$t('alarm.notice_already_call'))
@@ -258,7 +258,7 @@ export default {
       }
       const params = {
         workspaceId: this.workspace.uuid,
-        sessionId: roomSessionId,
+        sessionId: sessionId,
       }
       try {
         const room = await getRoomInfo(params)
