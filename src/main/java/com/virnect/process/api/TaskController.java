@@ -273,7 +273,8 @@ public class TaskController {
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
             @ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건) - ex)reported_date,desc", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc"),
-            @ApiImplicitParam(name = "myUUID", value = "사용자 식별자 (내 페이퍼 보기용)", dataType = "String", paramType = "query")
+            @ApiImplicitParam(name = "myUUID", value = "사용자 식별자 (내 페이퍼 보기용)", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "stepId", value = " 단계 식별자", dataType = "string", paramType = "query")
     })
     @GetMapping("/papers")
     public ResponseEntity<ApiResponse<ReportsResponse>> getPapers(
@@ -283,8 +284,9 @@ public class TaskController {
             , @RequestParam(value = "search", required = false) String search
             , @RequestParam(value = "reported", required = false) Boolean reported
             , @RequestParam(value = "myUUID", required = false) String myUUID
+            , @RequestParam(value = "stepId", required = false) Long stepId
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<ReportsResponse> reportsResponseApiResponse = this.taskService.getReports(myUUID, workspaceUUID, taskId, subTaskId, search, reported, pageable.of());
+        ApiResponse<ReportsResponse> reportsResponseApiResponse = this.taskService.getReports(myUUID, workspaceUUID, taskId, subTaskId, search, reported, pageable.of(), stepId);
         return ResponseEntity.ok(reportsResponseApiResponse);
     }
 

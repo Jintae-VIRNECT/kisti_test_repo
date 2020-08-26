@@ -1064,7 +1064,7 @@ public class TaskService {
      * @param pageable
      * @return
      */
-    public ApiResponse<ReportsResponse> getReports(String myUUID, String workspaceUUID, Long processId, Long subProcessId, String search, Boolean reported, Pageable pageable) {
+    public ApiResponse<ReportsResponse> getReports(String myUUID, String workspaceUUID, Long processId, Long subProcessId, String search, Boolean reported, Pageable pageable, Long stepId) {
 
         List<String> userUUIDList = new ArrayList<>();
 
@@ -1073,7 +1073,7 @@ public class TaskService {
             List<UserInfoResponse> userInfos = getUserInfo(search, workspaceUUID);
             userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
         }
-        Page<Report> reportPage = this.reportRepository.getPages(myUUID, workspaceUUID, processId, subProcessId, search, userUUIDList, reported, pageable);
+        Page<Report> reportPage = this.reportRepository.getPages(myUUID, workspaceUUID, processId, subProcessId, search, userUUIDList, reported, pageable, stepId);
 
         List<ReportInfoResponse> reportInfoResponseList = reportPage.stream().map(report -> {
             List<Item> items = Optional.ofNullable(this.itemRepository.findByReport(report)).orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_REPORT_ITEM));
