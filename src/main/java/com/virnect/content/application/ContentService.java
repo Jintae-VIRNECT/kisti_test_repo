@@ -81,6 +81,7 @@ public class ContentService {
     private final ProcessRestService processRestService;
     private final WorkspaceRestService workspaceRestService;
     private final LicenseRestService licenseRestService;
+    private final MetadataService metadataService;
 
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
@@ -140,7 +141,7 @@ public class ContentService {
             String fileUploadPath = this.fileUploadService.upload(uploadRequest.getContent(), contentUUID + "");
 
             // 2-1. 프로퍼티로 메타데이터 생성
-            MetadataInfo metadataInfo = convertMetadata(uploadRequest.getProperties(), uploadRequest.getUserUUID(), uploadRequest.getName());
+            MetadataInfo metadataInfo = metadataService.convertMetadata(uploadRequest.getProperties(), uploadRequest.getUserUUID(), uploadRequest.getName());
             String metadata = gson.toJson(metadataInfo);
 
             // 2-2. 업로드 컨텐츠 정보 수집
@@ -333,7 +334,7 @@ public class ContentService {
         targetContent.setName(updateRequest.getName());
 
         // 8. 컨텐츠 메타데이터 변경 (업데이트 하려는 속성으로 메타데이터 생성)
-        MetadataInfo metadataInfo = convertMetadata(updateRequest.getProperties(), updateRequest.getUserUUID(), updateRequest.getName());
+        MetadataInfo metadataInfo = metadataService.convertMetadata(updateRequest.getProperties(), updateRequest.getUserUUID(), updateRequest.getName());
         String metadata = gson.toJson(metadataInfo);
 
         targetContent.setMetadata(metadata);
@@ -386,38 +387,6 @@ public class ContentService {
 
         return new ApiResponse<>(updateResult);
     }
-
-    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
-        // 1. 컨텐츠 데이터 조회
-        Content content = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-
-        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
-        checkLicenseDownload(content.getWorkspaceUUID());
-
-        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
-        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
-        return responseEntity;
-    }
-
-
-    public ResponseEntity<byte[]> contentDownloadForTargetHandler(final String targetData, final String memberUUID) {
-        String checkedData = checkParameterEncoded(targetData);
-
-        Content content = this.contentRepository.getContentOfTarget(checkedData);
-        // 컨텐츠 데이터 조회
-
-        if (content == null)
-            throw new ContentServiceException(ErrorCode.ERR_MISMATCH_TARGET);
-
-        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
-        checkLicenseDownload(content.getWorkspaceUUID());
-
-        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
-        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
-        return responseEntity;
-    }
-
 
     /**
      * 콘텐츠 삭제 요청 처리
@@ -618,26 +587,6 @@ public class ContentService {
         return new ApiResponse<>(new ContentInfoListResponse(contentInfoList, pageMetadataResponse));
     }
 
-    /**
-     * 콘텐츠 메타데이터 조회 요청 처리
-     *
-     * @param contentUUID - 콘텐츠 식별자
-     * @return - 콘텐츠 로우 메타데이터 및 콘텐츠 식별자 데이터
-     */
-    @Transactional(readOnly = true)
-    public ApiResponse<MetadataInfoResponse> getContentRawMetadata(String contentUUID) {
-        Content content = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-        try {
-            MetadataInfoResponse metadataInfoResponse = this.objectMapper.readValue(content.getMetadata(), MetadataInfoResponse.class);
-            metadataInfoResponse.getContents().setUuid(contentUUID);
-            log.info("{}", content.toString());
-            return new ApiResponse<>(metadataInfoResponse);
-        } catch (JsonProcessingException e) {
-            log.error(e.getMessage());
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_METADATA_READ);
-        }
-    }
 
 
     /**
@@ -697,18 +646,6 @@ public class ContentService {
 //        Type type = this.typeRepository.findByType(contentType).orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_CONTENT_TYPE));
 //        content.setType(type);
         content.setShared(shared);
-
-        this.contentRepository.save(content);
-
-        return getContentInfoResponseApiResponse(content);
-    }
-
-    @Transactional
-    public ApiResponse<ContentInfoResponse> setConverted(final String contentUUID, final YesOrNo converted) {
-        Content content = this.contentRepository.findByUuid(contentUUID)
-                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
-
-        content.setConverted(converted);
 
         this.contentRepository.save(content);
 
@@ -1020,7 +957,7 @@ public class ContentService {
      * @param workspaceUUID
      * @return
      */
-    private LicenseInfoResponse checkLicenseDownload(String workspaceUUID) {
+    protected LicenseInfoResponse checkLicenseDownload(String workspaceUUID) {
 
         LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
@@ -1132,125 +1069,5 @@ public class ContentService {
         return new ApiResponse<>(new ContentResourceUsageInfoResponse(workspaceId, storageUsage, downloadHit, LocalDateTime.now()));
     }
 
-    public MetadataInfo convertMetadata(String properties, String userId, String contentsName) {
-        MetadataInfo metadataInfo = new MetadataInfo();
-
-        // 1-DEPTH
-        JsonParser jsonParser = new JsonParser();
-        JsonObject propertyObj = (JsonObject) jsonParser.parse(properties);
-        JsonObject propertyInfoObj = propertyObj.getAsJsonObject("PropertyInfo");
-        String targetId = propertyObj.get("TargetID").getAsString();
-        Optional<JsonElement> jsonElement = Optional.ofNullable(propertyObj.get("TargetSize"));
-        Float targetSize = 10f;
-        if (jsonElement.isPresent()) {
-            targetSize = jsonElement.get().getAsFloat();
-        }
-
-        MetadataInfo.Contents contents = new MetadataInfo.Contents();
-        contents.setId(targetId);
-        contents.setName(contentsName);
-        contents.setManagerUUID(userId);
-        contents.setTargetSize(targetSize);
-        contents.setSubProcessTotal(propertyInfoObj.keySet().size());
-        List<MetadataInfo.Scenegroup> scenegroupList = getSceneGroups(propertyInfoObj);
-        contents.setSceneGroups(scenegroupList);
-
-        metadataInfo.setContents(contents);
-
-        log.debug("Contents Property convert Metadata Result : {}", gson.toJson(metadataInfo));
-        return metadataInfo;
-    }
-
-    private List<MetadataInfo.Scenegroup> getSceneGroups(JsonObject propertyInfoObj) {
-        List<MetadataInfo.Scenegroup> scenegroupList = new ArrayList<>();
-        // 2-DEPTH
-        int sceneGroupPriority = 0;
-        Set<Map.Entry<String, JsonElement>> sceneGroupEntrySet = propertyInfoObj.entrySet();
-        for (Map.Entry<String, JsonElement> sceneGroupEntry : sceneGroupEntrySet) {
-            sceneGroupPriority++;
-            JsonObject subPropertyObj = sceneGroupEntry.getValue().getAsJsonObject();
-            JsonObject subPropertyInfoObj = subPropertyObj.getAsJsonObject("PropertyInfo");
-            Optional<JsonObject> childObj = Optional.ofNullable(subPropertyObj.getAsJsonObject("Child"));
-
-            MetadataInfo.Scenegroup scenegroup = new MetadataInfo.Scenegroup();
-            scenegroup.setId(Optional.ofNullable(subPropertyInfoObj.get("identifier").getAsString()).orElse(""));
-            scenegroup.setName(Optional.ofNullable(subPropertyInfoObj.get("sceneGroupTitle").getAsString()).orElse("기본 하위 작업명"));
-            scenegroup.setPriority(sceneGroupPriority);
-
-            if (!childObj.isPresent()) {
-                scenegroup.setJobTotal(0);
-                scenegroup.setScenes(new ArrayList<>());
-            } else {
-                List<MetadataInfo.Scene> sceneList = getScenes(childObj);
-                scenegroup.setJobTotal(childObj.get().size());
-                scenegroup.setScenes(sceneList);
-            }
-            scenegroupList.add(scenegroup);
-        }
-        return scenegroupList;
-    }
-
-    private List<MetadataInfo.Scene> getScenes(Optional<JsonObject> childObj) {
-        List<MetadataInfo.Scene> sceneList = new ArrayList<>();
-        // 3-DEPTH
-        int scenePriority = 0;
-        Set<Map.Entry<String, JsonElement>> sceneEntrySet = childObj.get().entrySet();
-        for (Map.Entry<String, JsonElement> sceneEntry : sceneEntrySet) {
-            scenePriority++;
-            JsonObject childPropertyObj = sceneEntry.getValue().getAsJsonObject();
-            JsonObject childPropertyInfoObj = childPropertyObj.getAsJsonObject("PropertyInfo");
-            Optional<JsonObject> subChildObj = Optional.ofNullable(childPropertyObj.getAsJsonObject("Child"));
-
-            MetadataInfo.Scene scene = new MetadataInfo.Scene();
-            scene.setId(Optional.ofNullable(childPropertyInfoObj.get("identifier").getAsString()).orElse(""));
-            scene.setName(Optional.ofNullable(childPropertyInfoObj.get("sceneTitle").getAsString()).orElse("기본 단계명"));
-            scene.setPriority(scenePriority);
-
-            if (!subChildObj.isPresent()) {
-                scene.setSubJobTotal(1);
-                scene.setReportObjects(new ArrayList<>());
-                //scene.setSmartToolObjects(new ArrayList<>());
-            } else {
-                List<MetadataInfo.Reportobject> reportobjectList = getReportObjects(subChildObj);
-                scene.setSubJobTotal(reportobjectList.size() == 0 ? 1 : reportobjectList.size());
-                scene.setReportObjects(reportobjectList);
-                //scene.setSmartToolObjects(new ArrayList<>());
-            }
-            sceneList.add(scene);
-        }
-        return sceneList;
-    }
-
-    private List<MetadataInfo.Reportobject> getReportObjects(Optional<JsonObject> subChildObj) {
-        List<MetadataInfo.Reportobject> reportobjectList = new ArrayList<>();
-        // 4-DEPTH
-        Set<Map.Entry<String, JsonElement>> reportEntrySet = subChildObj.get().entrySet();
-        for (Map.Entry<String, JsonElement> reportEntry : reportEntrySet) {
-            JsonObject subChildPropertyObj = reportEntry.getValue().getAsJsonObject();
-            JsonObject subChildPropertyInfoObj = subChildPropertyObj.getAsJsonObject("PropertyInfo");
-            MetadataInfo.Reportobject reportobject = new MetadataInfo.Reportobject();
-
-            // 5-DEPTH
-            Optional<JsonElement> reportListItems = Optional.ofNullable(subChildPropertyInfoObj.get("reportListItems"));
-            if (reportListItems.isPresent()) {
-                List<MetadataInfo.Item> itemList = new ArrayList<>();
-                int itemPrority = 0;
-                for (JsonElement jsonElement : reportListItems.get().getAsJsonArray()) {
-                    itemPrority++;
-                    MetadataInfo.Item item = new MetadataInfo.Item();
-                    JsonObject jsonObject = jsonElement.getAsJsonObject();
-                    item.setId(jsonObject.get("identifier").getAsString());
-                    item.setPriority(itemPrority);
-                    item.setTitle(jsonObject.get("contents").getAsString());
-                    item.setItem("NONE"); // 협의 필요
-                    itemList.add(item);
-                }
-                reportobject.setId(subChildPropertyInfoObj.get("identifier").getAsString());
-                reportobject.setItems(itemList);
-            }
-            reportobjectList.add(reportobject);
-        }
-        return reportobjectList;
-    }
 
 }
