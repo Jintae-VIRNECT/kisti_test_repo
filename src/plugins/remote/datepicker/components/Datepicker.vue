@@ -8,7 +8,6 @@
       :inline="inline"
       :id="id"
       :name="name"
-      :refName="refName"
       :openDate="openDate"
       :placeholder="placeholder"
       :inputClass="inputClass"
@@ -116,7 +115,6 @@ export default {
       validator: val => utils.validateDateInput(val),
     },
     name: String,
-    refName: String,
     id: String,
     format: {
       type: [String, Function],
@@ -260,6 +258,7 @@ export default {
         return this.close(true)
       }
       this.setInitialView()
+      this.$eventBus.$emit('open::calendar', this.pickerName)
     },
     /**
      * Sets the initial picker page view: day, month or year
@@ -448,9 +447,9 @@ export default {
         if (emitEvent) {
           this.$emit('closed')
         }
-        this.$eventBus.$emit('close::calendar', this.pickerName)
         document.removeEventListener('click', this.clickOutside, false)
       }
+      this.$eventBus.$emit('closed::calendar', this.pickerName)
     },
     /**
      * Initiate the component

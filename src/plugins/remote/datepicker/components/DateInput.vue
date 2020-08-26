@@ -130,8 +130,13 @@ export default {
   methods: {
     showCalendar() {
       this.$emit('showCalendar')
-      this.$eventBus.$emit('open::calendar', this.pickerName)
     },
+    showCalendarByName(pickerName) {
+      if (this.pickerName === pickerName) {
+        this.$emit('showCalendar')
+      }
+    },
+
     /**
      * Attempt to parse a typed date
      * @param {Event} event
@@ -177,6 +182,10 @@ export default {
   },
   mounted() {
     this.input = this.$el.querySelector('input')
+    this.$eventBus.$on('toggle::calendar', this.showCalendarByName)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('toggle::calendar')
   },
 }
 // eslint-disable-next-line

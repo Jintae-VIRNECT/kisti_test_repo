@@ -4,12 +4,18 @@
     <!-- 캘린더 컴포넌트 -->
     <div class="search-calender">
       <datepicker :pickerName="'from'" :highlighted="highlighted"></datepicker>
-      <calendar-button :isActive="buttonStatus.from"></calendar-button>
+      <calendar-button
+        :pickerName="'from'"
+        :isActive="buttonStatus.from"
+      ></calendar-button>
     </div>
     <span class="search-calender--tilde"> <!-- 007E Tilde 표시 -->~ </span>
     <div class="search-calender">
       <datepicker :pickerName="'to'" :highlighted="highlighted"></datepicker>
-      <calendar-button :isActive="buttonStatus.to"></calendar-button>
+      <calendar-button
+        :pickerName="'to'"
+        :isActive="buttonStatus.to"
+      ></calendar-button>
     </div>
     <div class="search__wrapper">
       <input class="search--input" type="text" placeholder="사용자 이름" />
@@ -48,17 +54,18 @@ export default {
       this.buttonStatus[pickerName] = true
     },
     deActive(pickerName) {
-      console.log(pickerName)
       this.buttonStatus[pickerName] = false
     },
   },
   mounted() {
     this.$eventBus.$on('update::datepicker', this.setHighlighting)
     this.$eventBus.$on('open::calendar', this.active)
-    this.$eventBus.$on('close::calendar', this.deActive)
+    this.$eventBus.$on('closed::calendar', this.deActive)
   },
   beforeDestroy() {
     this.$eventBus.$off('update::datepicker')
+    this.$eventBus.$off('open::calendar')
+    this.$eventBus.$off('closed::calendar')
   },
 }
 </script>

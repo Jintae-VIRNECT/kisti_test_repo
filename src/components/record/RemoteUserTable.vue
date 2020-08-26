@@ -10,6 +10,7 @@
             사용자
           </p>
         </th>
+        <th><p class="user-table__header--text align-left">협업 이름</p></th>
         <th><p class="user-table__header--text">협업시작일</p></th>
         <th><p class="user-table__header--text">녹화</p></th>
       </tr>
@@ -26,6 +27,11 @@
         <td class="user-table--user-name">
           <p class="user-table__text align-left">
             {{ userItem.userName }}
+          </p>
+        </td>
+        <td class="user-table--cooperation-name">
+          <p class="user-table__text align-left">
+            {{ userItem.cooperateName }}
           </p>
         </td>
         <td class="">
@@ -67,7 +73,8 @@ export default {
         {
           index: 1,
           userName:
-            '일이삼사아육칠팔구십일이삼사아육칠팔구십일이삼사아육칠팔구십…',
+            '일이삼사아육칠팔구십일이삼사아육칠팔구십일이삼사아육칠팔구',
+          cooperateName: '일이삼사오',
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 123456,
@@ -75,6 +82,7 @@ export default {
         {
           index: 2,
           userName: 'test1',
+          cooperateName: '일이삼사오',
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 12342134,
@@ -82,6 +90,7 @@ export default {
         {
           index: 3,
           userName: 'test1',
+          cooperateName: '일이삼사오',
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 65467543,
@@ -89,6 +98,7 @@ export default {
         {
           index: 4,
           userName: 'test1',
+          cooperateName: '일이삼사오',
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 264565196,
@@ -96,6 +106,7 @@ export default {
         {
           index: 5,
           userName: 'test1',
+          cooperateName: '일이삼사오',
           startDate: '2020.07.30',
           recordCount: 0,
           serialNum: 745864123,
@@ -103,6 +114,7 @@ export default {
         {
           index: 6,
           userName: 'test1',
+          cooperateName: '일이삼사오',
           startDate: '2020.07.30',
           recordCount: 999,
           serialNum: 1215,
@@ -110,6 +122,7 @@ export default {
         {
           index: 7,
           userName: 'test1',
+          cooperateName: '일이삼사오',
           startDate: '2020.07.30',
           recordCount: 2,
           serialNum: 4984,
@@ -117,6 +130,7 @@ export default {
         {
           index: 8,
           userName: 'test1',
+          cooperateName: '일이삼사오',
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 4567984,
@@ -159,7 +173,13 @@ export default {
 }
 
 .user-table--user-name {
-  width: 600px;
+  max-width: 153px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.user-table--cooperation-name {
+  width: 319px;
 }
 
 .user-table__row {

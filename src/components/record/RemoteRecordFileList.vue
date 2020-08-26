@@ -117,8 +117,6 @@ export default {
     },
     selectedArray: {
       handler(ary) {
-        //this.$eventBus.$emit('table:selectedarray', ary)
-
         if (ary.length > 0) {
           const allSelected = ary.every(select => {
             return select === true
