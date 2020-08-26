@@ -17,6 +17,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ import java.util.Optional;
  */
 
 @Slf4j
-@Profile(value = {"staging", "production"})
+@Profile(value = {"local","staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements GlobalFilter {
@@ -58,8 +59,19 @@ public class JwtAuthenticationFilter implements GlobalFilter {
         String jwt = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()))
                 .orElseThrow(() -> new MalformedJwtException("JWT Token not exist"));
         Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
-        log.info("[AUTHENTICATION TOKEN] : [{}]", claims.getBody().toString());
-        return chain.filter(exchange);
+        Claims body = claims.getBody();
+        log.info("[AUTHENTICATION TOKEN] : [{}]", body.toString());
+        ServerHttpRequest authenticateRequest = exchange.getRequest().mutate()
+                .header("X-jwt-uuid", body.get("uuid", String.class))
+                .header("X-jwt-email", body.get("email", String.class))
+                .header("X-jwt-name", Base64.getEncoder().encodeToString(body.get("name", String.class).getBytes()))
+                .header("X-jwt-ip", body.get("ip", String.class))
+                .header("X-jwt-country", body.get("country", String.class))
+                .header("X-jwt-countryCode", body.get("countryCode", String.class))
+                .header("X-jwt-jwtId", body.get("jwtId", String.class))
+                .build();
+        authenticateRequest.getHeaders().entrySet().forEach((entry -> log.info("[AUTHENTICATE_REQUEST] [HEADER] [{}] => {} ",  entry.getKey(), Arrays.toString(entry.getValue().toArray()))));
+        return chain.filter(exchange.mutate().request(authenticateRequest).build());
     }
 
 
