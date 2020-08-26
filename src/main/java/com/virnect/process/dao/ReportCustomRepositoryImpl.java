@@ -62,12 +62,14 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
 
         if (!userUUIDList.isEmpty()) {
             query = query.where(qSubProcess.workerUUID.in(userUUIDList));
+        }else{
+            // 프로필 -> 바로가기 시 처리를 위해
+            if (Objects.nonNull(search)) {
+                query = query.where(qSubProcess.workerUUID.eq(search));
+            }
+
         }
 
-        // 프로필 -> 바로가기 시 처리를 위해
-        if (Objects.nonNull(search)) {
-            query = query.where(qSubProcess.workerUUID.eq(search));
-        }
 
         if (Objects.nonNull(reported)) {
             if (reported) {
