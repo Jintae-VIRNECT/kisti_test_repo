@@ -375,8 +375,8 @@ export default {
         })
       }, 'image/png')
     },
-    localRecord(isStart) {
-      if (isStart) {
+    localRecord(status) {
+      if (status.isStart) {
         this.localStart = this.$dayjs().unix()
         this.localTimer = setInterval(() => {
           const diff = this.$dayjs().unix() - this.localStart

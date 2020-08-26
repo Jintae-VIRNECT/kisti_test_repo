@@ -2,7 +2,7 @@
   <menu-button
     :text="$t('service.record_server')"
     :active="isRecording"
-    :disabled="disabled"
+    :disabled="!canRecord"
     :src="require('assets/image/ic_record_off.svg')"
     :icActive="isRecording"
     :activeSrc="require('assets/image/ic_record_ing.svg')"
@@ -20,29 +20,37 @@ export default {
       isRecording: false,
     }
   },
-  computed: {},
+  computed: {
+    canRecord() {
+      if (this.disabled) {
+        return false
+      } else {
+        return true
+      }
+    },
+  },
   watch: {},
   methods: {
     recording() {
-      if (this.disabled) return
+      if (this.disabled) return false
+
       if (!this.isRecording) {
-        this.record()
         this.$eventBus.$emit('serverRecord', true)
       } else {
-        this.stop()
         this.$eventBus.$emit('serverRecord', false)
       }
     },
-    record() {
-      this.isRecording = true
-    },
-    stop() {
-      this.isRecording = false
+    toggleButton(isStart) {
+      this.isRecording = isStart
     },
   },
 
   /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
+  mounted() {
+    this.$eventBus.$on('serverRecord', this.toggleButton)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('serverRecord')
+  },
 }
 </script>

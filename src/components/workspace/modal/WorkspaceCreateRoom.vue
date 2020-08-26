@@ -184,6 +184,11 @@ export default {
           ...roomInfo,
           leaderId: this.account.uuid,
         })
+        window.urls['token'] = createdRes.token
+        window.urls['coturn'] = createdRes.coturn
+        window.urls['wss'] = createdRes.wss
+
+        this.setRoomInfo(roomInfo)
         if (connRes) {
           this.$eventBus.$emit('popover:close')
 
