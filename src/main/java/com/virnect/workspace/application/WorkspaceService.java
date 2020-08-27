@@ -18,7 +18,6 @@ import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import com.virnect.workspace.infra.file.FileUploadService;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -42,10 +41,7 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -1503,8 +1499,14 @@ public class WorkspaceService {
      */
     @Transactional
     public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String workspaceUUID) {
-        Workspace workspace = workspaceRepository.findByUuid(workspaceUUID)
-                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_SECESSION));
+        Optional<Workspace> workspaceInfo = workspaceRepository.findByUuid(workspaceUUID);
+
+        // workspace 정보가 없는 경우
+        if (!workspaceInfo.isPresent()) {
+            return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+        }
+
+        Workspace workspace = workspaceInfo.get();
 
         List<WorkspaceUser> workspaceUserList = workspace.getWorkspaceUserList();
 

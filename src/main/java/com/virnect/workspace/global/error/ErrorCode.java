@@ -25,9 +25,6 @@ public enum ErrorCode {
     ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN(2002,"Workspace license plan not found"),
     ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE(2003,"Useful workspace license not found"),
 
-    // 회원 탈퇴 관련 워크스페이스 정보 삭제 에러
-    ERR_WORKSPACE_SECESSION(7999,"Workspace Secession Fail."),
-
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004,"Invalid Value"),
