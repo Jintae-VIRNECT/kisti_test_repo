@@ -67,16 +67,17 @@ public class LocalFileDownloadService implements IFileDownload {
 
     @Override
     //public ResponseEntity<byte[]> fileDownload(String path) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-    public byte[] fileDownload(String path) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public byte[] fileDownload(String filePath) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // Get input stream to have content of 'my-objectname' from 'my-bucketname'
         InputStream stream = null;
         try {
             stream = minioClient.getObject(GetObjectArgs.builder()
                     .bucket(bucketName)
-                    .object(path)
+                    .object(filePath)
                     .build());
-
-            byte[] bytes = IOUtils.toByteArray(stream, stream.available());
+            log.info("fileDownload input stream:: {}_{}", stream.available(), stream.read());
+            //byte[] bytes = IOUtils.toByteArray(stream, stream.available());
+            byte[] bytes = IOUtils.toByteArray(stream);
             stream.close();
             return bytes;
             /*HttpHeaders httpHeaders = new HttpHeaders();

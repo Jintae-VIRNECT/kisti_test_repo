@@ -388,6 +388,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
                 + "   * RemoteService Server: " + httpUrl + "\n" + "\n"
                 + "   * RemoteService Dashboard: " + dashboardUrl + "\n" + "\n"
                 + "   * RemoteService Websocket: " + websocket + "\n" + "\n"
+                + "   * RemoteService Temp Directory: " + System.getProperty("java.io.tmpdir") + "\n" + "\n"
                 + "----------------------------------------------------\n";
         // @formatter:on
 

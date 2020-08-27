@@ -55,6 +55,8 @@ public enum  ErrorCode {
     ERR_FILE_UNSUPPORTED_EXTENSION(7003, "This file extension is not supported"),
     ERR_FILE_SIZE_LIMIT(7004, "This file size is exceeded"),
     ERR_FILE_DOWNLOAD_FAILED(7005, "File download has failed"),
+    ERR_FILE_DELETE_FAILED(7006, "File delete has failed"),
+    ERR_FILE_DELETE_EXCEPTION(7007, "File delete has an exception"),
 
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),

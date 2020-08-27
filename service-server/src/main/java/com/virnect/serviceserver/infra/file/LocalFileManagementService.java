@@ -8,6 +8,7 @@ import com.virnect.data.error.exception.RestServiceException;
 import io.minio.*;
 import io.minio.errors.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -15,10 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
@@ -30,7 +28,7 @@ import java.util.Objects;
 @Profile({"local", "test"})
 @Slf4j
 @Component
-public class LocalFileUploadService implements FileUploadService {
+public class LocalFileManagementService implements IFileManagementService {
 
     @Value("${cms.bucket-name}")
     private String bucketName;
@@ -39,9 +37,9 @@ public class LocalFileUploadService implements FileUploadService {
     @Value("${cms.secret-key}")
     private String secretKey;
     @Value("${upload.serverUrl}")
-    private String url;
+    private String serverUrl;
     @Value("${upload.dir}")
-    private String path;
+    private String dirPath;
 
     private MinioClient minioClient = null;
 
@@ -54,7 +52,7 @@ public class LocalFileUploadService implements FileUploadService {
         try {
             log.info("LocalFileUploadService initialised");
             minioClient = MinioClient.builder()
-                    .endpoint(url)
+                    .endpoint(serverUrl)
                     .credentials(accessKey, secretKey)
                     .build();
 
@@ -92,7 +90,7 @@ public class LocalFileUploadService implements FileUploadService {
 
         String fileName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
 
-        log.info("{}, {}, {}", path, fileName, fileExtension);
+        log.info("{}, {}, {}", dirPath, fileName, fileExtension);
 
 
         String filePath = "";
@@ -150,7 +148,7 @@ public class LocalFileUploadService implements FileUploadService {
 
         //String fileName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
 
-        log.info("{}, {}, {}", path, fileName, fileExtension);
+        log.info("{}, {}, {}", dirPath, fileName, fileExtension);
 
 
         String filePath = null;
@@ -185,9 +183,18 @@ public class LocalFileUploadService implements FileUploadService {
         return filePath;
     }
 
+    public boolean removeObject(String path) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(path).build());
+            return true;
+        } catch (MinioException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     @Override
     public boolean delete(String url) {
-
         log.info("{}", url.replaceAll(HOST_REGEX, "").replace("\\", "/"));
         File file = new File(url.replaceAll(HOST_REGEX, "").replace('\\', '/'));
 
@@ -215,11 +222,11 @@ public class LocalFileUploadService implements FileUploadService {
         try {
             byte[] image = Base64.getDecoder().decode(base64Image);
             String randomFileName = String.format("%s_%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase());
-            File convertImage = new File(path + randomFileName + ".jpg");
+            File convertImage = new File(dirPath + randomFileName + ".jpg");
             FileOutputStream fos = new FileOutputStream(convertImage);
             fos.write(image);
             // 4. 파일 경로 추출
-            String filePath = String.format("%s%s", url, convertImage.getPath()).replace("\\", "/");
+            String filePath = String.format("%s%s", dirPath, convertImage.getPath()).replace("\\", "/");
             log.info("SAVE FILE_URL: {}", filePath);
             return filePath;
         } catch (Exception e) {
@@ -232,5 +239,29 @@ public class LocalFileUploadService implements FileUploadService {
     public File getFile(String fileUrl) {
         log.info("{}", fileUrl.replaceAll(HOST_REGEX, "").replace("\\", "/"));
         return new File(fileUrl.replaceAll(HOST_REGEX, "").replace('\\', '/'));
+    }
+
+    @Override
+    public byte[] fileDownload(String filePath) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        // Get input stream to have content of 'my-objectname' from 'my-bucketname'
+        InputStream stream = null;
+        try {
+            stream = minioClient.getObject(GetObjectArgs.builder()
+                    .bucket(bucketName)
+                    .object(filePath)
+                    .build());
+            log.info("fileDownload input stream:: {}_{}", stream.available(), stream.read());
+            byte[] bytes = IOUtils.toByteArray(stream);
+            stream.close();
+            return bytes;
+        } catch (MinioException e) {
+            log.info("Download error occurred:: {}", e.getMessage());
+            throw new RestServiceException(ErrorCode.ERR_FILE_DOWNLOAD_FAILED);
+        }
+    }
+
+    @Override
+    public void copyFileS3ToLocal(String fileName) {
+
     }
 }

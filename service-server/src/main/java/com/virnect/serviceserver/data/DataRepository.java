@@ -27,7 +27,7 @@ import com.virnect.serviceserver.ServiceServerApplication;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.core.Participant;
 import com.virnect.serviceserver.infra.file.Default;
-import com.virnect.serviceserver.infra.file.LocalFileUploadService;
+import com.virnect.serviceserver.infra.file.LocalFileManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -57,7 +57,7 @@ public class DataRepository {
     private final LicenseRestService licenseRestService;
     private final ModelMapper modelMapper;
     //
-    private final LocalFileUploadService localFileUploadService;
+    private final LocalFileManagementService localFileManagementService;
 
     //private final ImplementationTest implementationTest;
     @Autowired(required = true)
@@ -474,7 +474,7 @@ public class DataRepository {
                     if(room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
                         if (roomProfileUpdateRequest.getProfile() != null) {
                             try {
-                                profile = localFileUploadService.upload(roomProfileUpdateRequest.getProfile());
+                                profile = localFileManagementService.upload(roomProfileUpdateRequest.getProfile());
                             } catch (IOException e) {
                                 log.error(e.getMessage());
                             } catch (NoSuchAlgorithmException e) {

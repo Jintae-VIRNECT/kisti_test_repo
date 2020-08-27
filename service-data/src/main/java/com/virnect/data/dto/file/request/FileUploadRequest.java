@@ -16,16 +16,16 @@ import javax.validation.constraints.NotNull;
 public class FileUploadRequest {
 
     @ApiModelProperty(value = "Workspace id", example = "40f9bbee9d85dca7a34a0dd205aae718")
-    @NotBlank
+    @NotNull
     private String workspaceId;
 
     @ApiModelProperty(value = "Seesion id")
-    @NotBlank
+    @NotNull
     private String sessionId;
 
     @ApiModelProperty(value = "user id", example = "410df50ca6e32db0b6acba09bcb457ff")
-    @NotBlank
-    private String uuid;
+    @NotNull
+    private String userId;
 
     @NotNull
     private MultipartFile file;
@@ -35,7 +35,7 @@ public class FileUploadRequest {
         return "FileUploadRequest{" +
                 "workspaceId='" + workspaceId + '\'' +
                 ", sessionId='" + sessionId + '\'' +
-                ", userId='" + uuid + '\'' +
+                ", userId='" + userId + '\'' +
                 ", file='" + file.toString() + '\'' +
                 '}';
     }

@@ -58,7 +58,7 @@ public interface ISessionRestAPI {
     ResponseEntity<ApiResponse<RoomInfoListResponse>> getRoomList(
             @RequestParam(name = "workspaceId") String workspaceId,
             @RequestParam(name = "userId") String userId,
-            @RequestParam("paging") boolean paging,
+            @RequestParam(name = "paging") boolean paging,
             @ApiIgnore PageRequest pageRequest
     );
 

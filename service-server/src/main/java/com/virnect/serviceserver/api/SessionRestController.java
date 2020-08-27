@@ -137,7 +137,7 @@ public class SessionRestController implements ISessionRestAPI {
             inviteRoomContents.setSessionId(apiResponse.getData().getSessionId());
             inviteRoomContents.setTitle(roomRequest.getTitle());
             inviteRoomContents.setNickName(userInfo.getData().getNickname());
-            inviteRoomContents.setProfile("default");
+            inviteRoomContents.setProfile(userInfo.getData().getProfile());
             ObjectMapper mapper = new ObjectMapper();
             try {
                 String jsonString = mapper.writeValueAsString(inviteRoomContents);
