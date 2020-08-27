@@ -12,6 +12,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-public interface HistoryRepository extends JpaRepository<History,Long> {
+public interface HistoryRepository extends JpaRepository<History,Long> , HistoryCustomRepository{
     Page<History> findAllByUserIdAndWorkspace_Uuid(String userId, String workspaceId, Pageable pageable);
 }

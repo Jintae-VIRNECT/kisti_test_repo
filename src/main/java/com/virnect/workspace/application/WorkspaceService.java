@@ -30,6 +30,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
@@ -49,7 +50,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
@@ -1495,4 +1496,35 @@ public class WorkspaceService {
         return new ApiResponse<>(workspaceLicenseInfoResponse);
     }
 
+    /***
+     * 워크스페이스 정보 전체 삭제 처리
+     * @param workspaceUUID - 삭제될 워크스페이스 식별자
+     * @return
+     */
+    @Transactional
+    public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String workspaceUUID) {
+        Workspace workspace = workspaceRepository.findByUuid(workspaceUUID)
+                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_SECESSION));
+
+        List<WorkspaceUser> workspaceUserList = workspace.getWorkspaceUserList();
+
+        // workspace user permission 삭제
+        workspaceUserPermissionRepository.deleteAllWorkspaceUserPermissionByWorkspaceUser(workspaceUserList);
+
+        // workspace user 삭제
+        workspaceUserRepository.deleteAllWorkspaceUserByWorkspace(workspace);
+
+        // workspace history 삭제
+        historyRepository.deleteAllHistoryInfoByWorkspace(workspace);
+
+        // workspace profile 삭제 (기본 이미지인 경우 제외)
+        if (!workspace.getProfile().equals("default")) {
+            fileUploadService.delete(workspace.getProfile());
+        }
+
+        // workspace 삭제
+        workspaceRepository.delete(workspace);
+
+        return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+    }
 }
