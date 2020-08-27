@@ -29,11 +29,6 @@
           </div>
         </div>
       </div>
-      <div
-        v-if="isValid"
-        class="chat-file-item--check-outer"
-        :class="{ active: checked }"
-      ></div>
     </button>
   </article>
 </template>
