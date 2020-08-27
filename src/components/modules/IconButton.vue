@@ -1,6 +1,10 @@
 <template>
-  <button class="icon-button" @click="clickListener">
-    <img :src="imgSrc" :class="animateClass" />
+  <button
+    class="icon-button"
+    @click="clickListener"
+    :class="{ active: active }"
+  >
+    <img :src="active ? activeImgSrc : imgSrc" :class="animateClass" />
     {{ text }}
   </button>
 </template>
@@ -17,9 +21,17 @@ export default {
       tpye: String,
       default: '',
     },
+    activeImgSrc: {
+      type: String,
+      default: '',
+    },
     animation: {
       type: String,
       default: null,
+    },
+    active: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
@@ -47,7 +59,7 @@ export default {
   padding: 10px 18px 10px 18px;
   color: #0b1f48;
   font-weight: normal;
-  font-size: 0.929em;
+  font-size: 13px;
   line-height: 1.429em;
   background: #edf0f4 0.929em 50%/1.571em no-repeat;
   border-radius: 2px;
@@ -61,6 +73,11 @@ export default {
   > img {
     height: 1.429em;
     margin-right: 4px;
+  }
+
+  &.active {
+    color: rgb(255, 255, 255);
+    background: #1665d8 0.929em 50%/1.571em no-repeat;
   }
 }
 </style>

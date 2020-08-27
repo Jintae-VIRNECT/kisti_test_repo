@@ -12,6 +12,8 @@
         <icon-button
           :text="'선택 다운로드'"
           :imgSrc="require('assets/img/ic_down_off.svg')"
+          :activeImgSrc="require('assets/img/ic_down_on.svg')"
+          :active="selected"
           @click="download"
         ></icon-button>
         <icon-button
@@ -109,7 +111,13 @@ export default {
       selectedArray: [],
     }
   },
-  computed: {},
+  computed: {
+    selected() {
+      return this.selectedArray.some(val => {
+        return val
+      })
+    },
+  },
   watch: {
     async visible(flag) {
       this.setSelectedArray()
@@ -312,6 +320,10 @@ export default {
   height: 62px;
   border-top: 1px solid rgb(234, 237, 243);
   border-bottom: 1px solid rgb(234, 237, 243);
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .file-list__tbody--column {
