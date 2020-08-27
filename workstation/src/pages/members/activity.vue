@@ -56,16 +56,20 @@
             >
               <template slot-scope="scope">
                 <div class="column-links">
-                  <router-link :to="`/contents?search=${scope.row.workerUUID}`">
+                  <router-link
+                    :to="`/contents?search=${scope.row.workerEmail}`"
+                  >
                     <img src="~assets/images/icon/ic-contents.svg" />
                     <span>{{ $t('members.card.contents') }}</span>
                   </router-link>
-                  <router-link :to="`/tasks?search=${scope.row.workerUUID}`">
+                  <router-link :to="`/tasks?search=${scope.row.workerEmail}`">
                     <img src="~assets/images/icon/ic-work.svg" />
                     <span>{{ $t('members.card.work') }}</span>
                   </router-link>
                   <router-link
-                    :to="`/tasks/results/papers?search=${scope.row.workerUUID}`"
+                    :to="
+                      `/tasks/results/papers?search=${scope.row.workerEmail}`
+                    "
                   >
                     <img src="~assets/images/icon/ic-report.svg" />
                     <span>{{ $t('members.card.paper') }}</span>
