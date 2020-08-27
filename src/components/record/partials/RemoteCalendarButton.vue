@@ -24,7 +24,6 @@ export default {
   },
   methods: {
     toggleCalendar(event) {
-      console.log(event.type)
       if (event.type === 'blur' && !this.isActive) {
         return
       }
