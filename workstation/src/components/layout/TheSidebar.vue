@@ -63,8 +63,12 @@ export default {
   },
   methods: {
     openCollapse(component) {
-      this.collapseComponent = component
-      this.showCollapse = true
+      if (this.showCollapse && this.collapseComponent === component) {
+        this.showCollapse = false
+      } else {
+        this.collapseComponent = component
+        this.showCollapse = true
+      }
     },
     closeCollapse() {
       this.showCollapse = false
