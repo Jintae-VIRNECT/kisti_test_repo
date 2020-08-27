@@ -2400,18 +2400,18 @@ public class TaskService {
                 percent = (int) (((double) ing / (double) subProcessList.size()) * 100);
             }
 
-            WorkspaceUserInfoResponse response = WorkspaceUserInfoResponse.builder()
-                    .workerUUID(memberInfo.getUuid())
-                    .workerName(memberInfo.getNickName())
-                    .workerProfile(memberInfo.getProfile())
-                    .countAssigned(subProcessList.size())
-                    .countProgressing(ing)
-                    .percent(percent)
-                    .countContent(countContent)
-                    .lastestReportedTime(lastestTime)
-                    .build();
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = new WorkspaceUserInfoResponse();
+            workspaceUserInfoResponse.setWorkerUUID(memberInfo.getUuid());
+            workspaceUserInfoResponse.setWorkerName(memberInfo.getNickName());
+            workspaceUserInfoResponse.setWorkerProfile(memberInfo.getProfile());
+            workspaceUserInfoResponse.setWorkerEmail(memberInfo.getEmail());
+            workspaceUserInfoResponse.setCountAssigned(subProcessList.size());
+            workspaceUserInfoResponse.setCountProgressing(ing);
+            workspaceUserInfoResponse.setCountContent(countContent);
+            workspaceUserInfoResponse.setPercent(percent);
+            workspaceUserInfoResponse.setLastestReportedTime(lastestTime);
 
-            resultList.add(response);
+            resultList.add(workspaceUserInfoResponse);
         }
 
         List<WorkspaceUserInfoResponse> list = new ArrayList<>();

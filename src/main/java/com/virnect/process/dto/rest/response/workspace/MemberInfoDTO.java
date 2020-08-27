@@ -18,6 +18,7 @@ public class MemberInfoDTO {
     private String nickName;
     private String profile;
     private String role;
+    private String email;
 
     @Override
     public String toString() {
