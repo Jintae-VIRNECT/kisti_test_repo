@@ -309,6 +309,11 @@ export default {
         this.loaded = true
       })
     },
+    nextOptimize() {
+      setTimeout(() => {
+        this.optimizeVideoSize()
+      }, 1000)
+    },
     optimizeVideoSize() {
       const mainWrapper = this.$el
       const videoBox = this.$el.querySelector('.main-video__box')
@@ -414,13 +419,13 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('localRecord', this.localRecord)
     this.$eventBus.$off('serverRecord', this.serverRecord)
-    window.removeEventListener('resize', this.optimizeVideoSize)
+    window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('localRecord', this.localRecord)
     this.$eventBus.$on('serverRecord', this.serverRecord)
-    window.addEventListener('resize', this.optimizeVideoSize)
+    window.addEventListener('resize', this.nextOptimize)
   },
 }
 </script>

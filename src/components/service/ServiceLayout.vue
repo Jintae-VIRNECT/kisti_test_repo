@@ -86,7 +86,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox']),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants']),
     isExpert() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
@@ -106,7 +106,21 @@ export default {
     },
   },
 
-  methods: {},
+  methods: {
+    changeOrientation(event) {
+      if (!(this.participants.length > 0)) return
+      const participant = this.participants[0]
+      if (!participant.me || !participant.stream) return
+      const track = participant.stream.getVideoTracks()[0]
+      const settings = track.getSettings()
+      this.logger('call', `resolution::${settings.width}X${settings.height}`)
+      this.$call.sendResolution({
+        width: settings.width,
+        height: settings.height,
+        orientation: event.target.screen.orientation.type,
+      })
+    },
+  },
 
   /* Lifecycles */
   async created() {
@@ -114,10 +128,12 @@ export default {
       return true
     }
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
+    window.addEventListener('orientationchange', this.changeOrientation)
   },
   beforeDestroy() {
     window.onbeforeunload = () => {}
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
+    window.removeEventListener('orientationchange', this.changeOrientation)
 
     this.stopLocalRecord()
     this.stopServerRecord()

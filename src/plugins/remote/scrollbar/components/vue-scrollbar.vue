@@ -183,6 +183,14 @@ export default {
 
         this.normalizeVertical(nextY)
         this.normalizeHorizontal(nextX)
+        if (this.$listeners['onScroll']) {
+          let canScrollY = this.scrollAreaHeight > this.scrollWrapperHeight
+          let canScrollX = this.scrollAreaWidth > this.scrollWrapperWidth
+          this.$listeners['onScroll'](
+            canScrollX ? nextX : 0,
+            canScrollY ? nextY : 0,
+          )
+        }
       }
     },
 
