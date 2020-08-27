@@ -7,10 +7,11 @@
       </p>
     </section>
     <search-bar></search-bar>
-    <user-table :showList="showList"></user-table>
-    <pagination-tool :totalPage="5"></pagination-tool>
-    <!-- 테이블 -->
-    <!-- 페이지네이션 툴 -->
+    <user-table :userList="userList"></user-table>
+    <pagination-tool
+      :totalPage="totalPage"
+      @currentPage="currentPage"
+    ></pagination-tool>
     <record-file-list
       :visible.sync="modalVisible"
       :fileList="fileList"
@@ -40,6 +41,76 @@ export default {
       targetId: 0,
       modalVisible: false,
       fileList: [],
+      userList: [
+        {
+          index: 1,
+          userName:
+            '일이삼사아육칠팔구십일이삼사아육칠팔구십일이삼사아육칠팔구',
+          cooperateName: '일이삼사오',
+          startDate: '2020.07.30',
+          recordCount: 10,
+          serialNum: 123456,
+        },
+        {
+          index: 2,
+          userName: 'test1',
+          cooperateName:
+            '일이삼사아육칠팔구십일이삼사아육칠팔구asgfasfgsafssdsfdsfdfdsdsfdsfdsfdsfdfdsfdsfdsfddsfsdfafs십',
+          startDate: '2020.07.30',
+          recordCount: 10,
+          serialNum: 12342134,
+        },
+        {
+          index: 3,
+          userName: 'test1',
+          cooperateName: '일이삼사오',
+          startDate: '2020.07.30',
+          recordCount: 10,
+          serialNum: 65467543,
+        },
+        {
+          index: 4,
+          userName: 'test1',
+          cooperateName: '일이삼사오',
+          startDate: '2020.07.30',
+          recordCount: 10,
+          serialNum: 264565196,
+        },
+        {
+          index: 5,
+          userName: 'test1',
+          cooperateName: '일이삼사오',
+          startDate: '2020.07.30',
+          recordCount: 0,
+          serialNum: 745864123,
+        },
+        {
+          index: 6,
+          userName: 'test1',
+          cooperateName: '일이삼사오',
+          startDate: '2020.07.30',
+          recordCount: 999,
+          serialNum: 1215,
+        },
+        {
+          index: 7,
+          userName: 'test1',
+          cooperateName: '일이삼사오',
+          startDate: '2020.07.30',
+          recordCount: 2,
+          serialNum: 4984,
+        },
+        {
+          index: 8,
+          userName: 'test1',
+          cooperateName: '일이삼사오',
+          startDate: '2020.07.30',
+          recordCount: 10,
+          serialNum: 4567984,
+        },
+      ],
+
+      totalPage: 13,
     }
   },
 
@@ -53,6 +124,9 @@ export default {
       const params = {}
       const datas = await getRecordFiles(params)
       this.fileList = datas.infos
+    },
+    currentPage(pageNum) {
+      console.log(pageNum)
     },
   },
 
