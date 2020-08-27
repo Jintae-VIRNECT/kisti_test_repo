@@ -183,6 +183,10 @@
     &.highlight-end {
       border-radius: 0 100px 100px 0;
     }
+
+    &.highlight-start.highlight-end {
+      border-radius: 100px;
+    }
   }
   .cell.highlighted.disabled {
     color: #a3a3a3;
@@ -210,6 +214,10 @@
   }
   .year {
     width: 33.333%;
+  }
+
+  & > .day__body {
+    padding-left: 6px;
   }
 }
 .vdp-datepicker__clear-button {

@@ -25,7 +25,7 @@
         :class="{ disabled: isRightNavDisabled }"
       ></span>
     </header>
-    <div :class="isRtl ? 'flex-rtl' : ''">
+    <div class="day__body" :class="isRtl ? 'flex-rtl' : ''">
       <span
         class="cell day-header"
         v-for="d in daysOfWeek"
