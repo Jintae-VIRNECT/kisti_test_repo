@@ -9,4 +9,7 @@ export default {
     'DELETE',
     'https://192.168.6.3:8073/remote/recorder/file/{id}',
   ],
+
+  /* USER */
+  USER_LIST: ['GET'],
 }

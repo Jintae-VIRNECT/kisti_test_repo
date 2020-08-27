@@ -1,1 +1,7 @@
-//차후 유저 리스트를 가지고 올때 사용
+import http from 'api/gateway'
+
+export const getUserList = async function(data) {
+  const returnVal = await http('USER_LIST', data)
+
+  return returnVal
+}
