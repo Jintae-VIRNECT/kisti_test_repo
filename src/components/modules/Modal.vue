@@ -187,8 +187,8 @@ export default {
     background-color: #ffffff;
     border: 1px solid rgba(#a9a9a9, 0.08);
     border-radius: 0.714em;
-    box-shadow: 0 0 0.714em 0 rgba($color_darkgray_1000, 0.07),
-      0 0.857em 0.857em 0 rgba($color_darkgray_1000, 0.3);
+    // box-shadow: 0 0 0.714em 0 rgba($color_darkgray_1000, 0.07),
+    //   0 0.857em 0.857em 0 rgba($color_darkgray_1000, 0.3);
   }
 
   .modal--header {
