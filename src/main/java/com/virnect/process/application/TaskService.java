@@ -32,7 +32,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -687,65 +686,6 @@ public class TaskService {
     }
 
     /**
-     * 작업 메타데이터 Builder
-     *
-     * @param process
-     * @param subProcessesId
-     * @param workerUUID
-     * @return
-     */
-    // CONVERT metadata - PROCESS
-    private ProcessMetadataResponse.Process buildMetadataProcess(Process process, Long[] subProcessesId, String workerUUID) {
-        List<ProcessMetadataResponse.SubProcess> metaSubProcessList = buildSubProcessList(process.getSubProcessList(), subProcessesId, workerUUID);
-        if (metaSubProcessList.isEmpty()) return null;
-        else {
-            return ProcessMetadataResponse.Process.builder()
-                    .targetList(process.getTargetList().stream().map(target -> this.modelMapper.map(target, ProcessTargetResponse.class)).collect(Collectors.toList()))
-                    .taskId(process.getId())
-                    .taskName(process.getName())
-                    .managerUUID(null)
-                    .position(process.getPosition())
-                    .subTaskTotal(process.getSubProcessList().size())
-                    .startDate(process.getStartDate())
-                    .endDate(process.getEndDate())
-                    .conditions(process.getConditions())
-                    .state(process.getState())
-                    .progressRate(process.getProgressRate())
-                    .subTasks(metaSubProcessList)
-                    .build();
-        }
-    }
-
-    /**
-     * 하위 작업 리스트 Builder
-     *
-     * @param subProcesses
-     * @param subProcessesId
-     * @param workerUUID
-     * @return
-     */
-    // CONVERT metadata - SUB PROCESS LIST
-    private List<ProcessMetadataResponse.SubProcess> buildSubProcessList(List<SubProcess> subProcesses, Long[] subProcessesId, String workerUUID) {
-        List<ProcessMetadataResponse.SubProcess> metaSubProcessList = new ArrayList<>();
-        ArrayList<Long> longs = null;
-        if (subProcessesId != null) longs = new ArrayList<>(Arrays.asList(subProcessesId));
-        for (SubProcess subProcess : subProcesses) {
-            ProcessMetadataResponse.SubProcess metadataSubProcess = buildMetadataSubProcess(subProcess, workerUUID);
-            // 권한으로 인해 세부공정이 없을 수 있으므로 null체크
-            if (!Objects.isNull(metadataSubProcess)) {
-                metaSubProcessList.add(metadataSubProcess);
-                // subProcessesId로 필터링
-                if (subProcessesId != null && longs != null) {
-                    if (!longs.contains(subProcess.getId())) {
-                        metaSubProcessList.remove(metaSubProcessList.size() - 1);
-                    }
-                }
-            }
-        }
-        return metaSubProcessList;
-    }
-
-    /**
      * 하위 작업 메타데이터 Builder
      *
      * @param subProcess
@@ -1366,24 +1306,6 @@ public class TaskService {
             );
         }
         return subProcessesAssign;
-    }
-
-    /**
-     * return file path which uploaded
-     *
-     * @param file - upload file
-     * @return - file path
-     */
-    private String getFileUploadUrl(MultipartFile file) {
-        String url = "NONE";
-        if (file != null && file.getSize() > 0) {
-            try {
-                url = this.fileUploadService.upload(file);
-            } catch (Exception e) {
-                log.error("file upload error: {}", e.getCause().getMessage());
-            }
-        }
-        return url;
     }
 
     /**

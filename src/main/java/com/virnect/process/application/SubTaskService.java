@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * Project: PF-ProcessManagement
  * DATE: 2020-08-27
  * AUTHOR: jkleee (Jukyoung Lee)
- * EMAIL: ljk@virnect.com
+ *  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
 @Slf4j

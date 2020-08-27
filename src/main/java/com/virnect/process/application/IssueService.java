@@ -20,7 +20,6 @@ import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.common.PageMetadataResponse;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.infra.file.FileUploadService;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -191,34 +190,6 @@ public class IssueService {
         return getIssuesResponseApiResponse(pageable, issuePage);
     }
 
-    public ApiResponse<IssuesResponse> getIssuesInSearchProcessTitle(String workspaceUUID, String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchProcessTitle(null, workspaceUUID, title, pageable);
-
-        return getIssuesResponseApiResponse(pageable, issuePage);
-    }
-
-    public ApiResponse<IssuesResponse> getIssuesInSearchSubProcessTitle(String workspaceUUID, String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchSubProcessTitle(null, workspaceUUID, title, pageable);
-
-        return getIssuesResponseApiResponse(pageable, issuePage);
-    }
-
-    public ApiResponse<IssuesResponse> getIssuesInSearchJobTitle(String workspaceUUID, String title, Pageable pageable) {
-        Page<Issue> issuePage = this.issueRepository.getIssuesInSearchJobTitle(null, workspaceUUID, title, pageable);
-
-        return getIssuesResponseApiResponse(pageable, issuePage);
-    }
-
-    public ApiResponse<IssuesResponse> getIssuesAllSearchUserName(String workspaceUUID, String search, Pageable pageable) {
-        List<UserInfoResponse> userInfos = getUserInfoSearch(search);
-        List<String> userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
-        // querydsl 에서는 null처리를 자동으로 해주지만 native이기 때문에 null처리 해야만 함.
-        if (userUUIDList.size() == 0) userUUIDList = null;
-        Page<Issue> issuePage = this.issueRepository.getIssuesAllSearchUserName(workspaceUUID, userUUIDList, pageable);
-
-        return getIssuesResponseApiResponse(pageable, issuePage);
-    }
-
     private ApiResponse<IssuesResponse> getIssuesResponseApiResponse(Pageable pageable, Page<Issue> issuePage) {
         List<IssueInfoResponse> issueInfoResponseList = issuePage.stream().map(issue -> {
             Job job = Optional.of(issue).map(Issue::getJob).orElseGet(() -> null);
@@ -253,25 +224,6 @@ public class IssueService {
                 .totalElements(issuePage.getTotalElements())
                 .build();
         return new ApiResponse<>(new IssuesResponse(issueInfoResponseList, pageMetadataResponse));
-    }
-
-    /**
-     * 사용자 검색 (이름, 이메일)
-     *
-     * @param search
-     * @return
-     */
-    private List<UserInfoResponse> getUserInfoSearch(String search) {
-        ApiResponse<UserInfoListResponse> userInfoListResult = this.userRestService.getUserInfoSearch(search, false);
-        List<UserInfoResponse> userInfoResponses = new ArrayList<>();
-        if (userInfoListResult != null) {
-            UserInfoListResponse userInfoList = userInfoListResult.getData();
-            userInfoResponses = userInfoList.getUserInfoList();
-            log.info("GET USER INFO BY SEARCH KEYWORD: [{}]", userInfoList.getUserInfoList());
-        } else {
-            log.info("GET USER INFO BY SEARCH is null");
-        }
-        return userInfoResponses;
     }
 
     /**
