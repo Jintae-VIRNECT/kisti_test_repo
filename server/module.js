@@ -4,7 +4,7 @@ const path = require('path')
 const os = require('os')
 const fs = require('fs')
 const logger = require('./logger')
-const config = require('./config')
+// const config = require('./config')
 
 var ServerModule = (function() {
   'use strict'
@@ -12,24 +12,25 @@ var ServerModule = (function() {
   let instance
 
   const NODE_ENV = process.env.NODE_ENV || 'production'
-  const SSL_ENV = config.getSSLEnv() || 'public'
+  // const SSL_ENV = config.getSSLEnv() || 'public'
   const PORT = process.env.PORT || 9989
 
   function start(app) {
     return new Promise(function(resolve, reject) {
       process.on('uncaughtException', onProcessError)
 
-      const options = {
-        key: fs.readFileSync(path.join('./ssl/server.key')),
-        cert: fs.readFileSync(path.join('./ssl/server.crt')),
-      }
+      // const options = {
+      //   key: fs.readFileSync(path.join('./ssl/server.key')),
+      //   cert: fs.readFileSync(path.join('./ssl/server.crt')),
+      // }
 
       try {
-        if (SSL_ENV === 'public') {
-          instance = http.createServer(app)
-        } else {
-          instance = https.createServer(options, app)
-        }
+        instance = http.createServer(app)
+        // if (SSL_ENV === 'public') {
+        //   instance = http.createServer(app)
+        // } else {
+        //   instance = https.createServer(options, app)
+        // }
 
         instance
           .on('listening', onListening)
@@ -71,12 +72,12 @@ var ServerModule = (function() {
     logger.log(`server is running...`, 'LISTENING')
     logger.log(`ip: ${getServerIp()}:${PORT}`, 'LISTENING')
     logger.log(`NODE ENV: ${NODE_ENV}`, 'LISTENING')
-    logger.log(`SSL ENV: ${SSL_ENV}`, 'LISTENING')
+    // logger.log(`SSL ENV: ${SSL_ENV}`, 'LISTENING')
 
-    const urls = config.getUrls()
-    Object.keys(urls).forEach(key => {
-      logger.log(`${key.toUpperCase()}: ${urls[key]}`, 'LISTENING')
-    })
+    // const urls = config.getUrls()
+    // Object.keys(urls).forEach(key => {
+    //   logger.log(`${key.toUpperCase()}: ${urls[key]}`, 'LISTENING')
+    // })
   }
 
   function onProcessError(err) {
@@ -89,13 +90,13 @@ var ServerModule = (function() {
     const ifaces = os.networkInterfaces()
     let result = ''
     for (const dev in ifaces) {
-      // let alias = 0
+      let alias = 0
       // tslint:disable-next-line: ter-arrow-parens
       ifaces[dev].forEach(details => {
         if (details.family === 'IPv4' && !details.internal) {
           result = details.address
           // tslint:disable-next-line: no-increment-decrement
-          // ++alias
+          ++alias
         }
       })
     }
