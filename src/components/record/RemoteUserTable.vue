@@ -21,25 +21,19 @@
         v-for="(userItem, index) in userlist"
         :key="index"
       >
-        <td class="user-table__index">
+        <td class="user-table__text index">
           <p>{{ userItem.index }}</p>
         </td>
-        <td class="user-table--user-name">
-          <p class="user-table__text align-left">
-            {{ userItem.userName }}
-          </p>
+        <td class="user-table__text user-name">
+          <p>{{ userItem.userName }}</p>
         </td>
-        <td class="user-table--cooperation-name">
-          <p class="user-table__text align-left">
-            {{ userItem.cooperateName }}
-          </p>
+        <td class="user-table__text cooperation-name">
+          <p>{{ userItem.cooperateName }}</p>
         </td>
-        <td class="">
-          <p class="user-table__text">
-            {{ userItem.startDate }}
-          </p>
+        <td class="user-table__text">
+          {{ userItem.startDate }}
         </td>
-        <td style="text-align: center;" class="">
+        <td>
           <record-count-button
             :count="userItem.recordCount"
             :serialNum="userItem.serialNum"
@@ -82,7 +76,8 @@ export default {
         {
           index: 2,
           userName: 'test1',
-          cooperateName: '일이삼사오',
+          cooperateName:
+            '일이삼사아육칠팔구십일이삼사아육칠팔구asgfasfgsafssdsfdsfdfdsdsfdsfdsfdsfdfdsfdsfdsfddsfsdfafs십',
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 12342134,
@@ -172,16 +167,6 @@ export default {
   }
 }
 
-.user-table--user-name {
-  max-width: 153px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.user-table--cooperation-name {
-  width: 319px;
-}
-
 .user-table__row {
   border-color: rgb(234, 237, 243);
   box-shadow: 0px 1px 0px 0px rgb(234, 237, 243);
@@ -191,14 +176,36 @@ export default {
   font-weight: 500;
   font-size: 15px;
   text-align: center;
-}
-.user-table__index {
-  color: rgb(117, 127, 145);
-  font-weight: 500;
-  font-size: 15px;
-  text-align: center;
-}
 
+  &.index {
+    color: rgb(117, 127, 145);
+    font-weight: 500;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  &.user-name {
+    width: 201px;
+    text-align: left;
+
+    & > p {
+      width: 154px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &.cooperation-name {
+    width: 369px;
+    text-align: left;
+
+    & > p {
+      width: 319px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}
 .align-left {
   text-align: left;
 }
