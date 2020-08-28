@@ -40,7 +40,7 @@ export default {
   CREATE_ROOM: ['POST', 'https://192.168.13.36:8000/remote/room'],
   UPDATE_ROOM_PROFILE: [
     'POST',
-    'https://192.168.13.36:8000/remote/room/{workspaceId}/{sessionId}/profile',
+    'https://192.168.13.36:8000/remote/file/{workspaceId}/{sessionId}/profile',
     { type: 'form' },
   ],
   JOIN_ROOM: [

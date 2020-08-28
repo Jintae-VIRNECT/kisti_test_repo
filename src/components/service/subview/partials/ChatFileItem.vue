@@ -2,18 +2,18 @@
   <article>
     <button
       class="chat-file-item"
-      :class="{ active: checked, invalid: !isValid }"
-      @click="toggle"
+      :class="{ active: checked, invalid: isInvalid }"
+      @click="$emit('toggle')"
     >
       <div class="chat-file-item__wrapper">
         <img class="chat-file-item__icon" :src="icon" />
 
         <div class="chat-file-item__body">
-          <p class="chat-file-item__name" :class="{ invalid: !isValid }">
-            {{ fileName }}
+          <p class="chat-file-item__name" :class="{ invalid: isInvalid }">
+            {{ fileInfo.name }}
           </p>
 
-          <p class="chat-file-item__valid" :class="{ invalid: !isValid }">
+          <p class="chat-file-item__valid" :class="{ invalid: isInvalid }">
             {{ $t('service.file_validdatae') + validDate }}
             <em>{{ fileSize }}</em>
           </p>
@@ -26,38 +26,38 @@
 <script>
 export default {
   name: 'ChatFileItem',
-  data() {
-    return {
-      checked: false,
-    }
-  },
   props: {
-    id: {
-      type: [String, Number],
-      default: null,
-    },
-    fileName: {
-      type: String,
-      default: '',
+    fileInfo: {
+      type: Object,
+      default: () => {
+        return {}
+      },
     },
     ext: {
       type: String,
       default: '',
     },
-    validDate: {
-      type: String,
-      default: '',
-    },
-    fileSize: {
-      type: String,
-      default: '',
-    },
-    isValid: {
+    checked: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   computed: {
+    fileSize() {
+      if (this.fileInfo.size > 1024 * 1024) {
+        return parseFloat(this.fileInfo.size / 1024 / 1024).toFixed(1) + 'MB'
+      }
+      return parseFloat(this.fileInfo.size / 1024).toFixed(1) + 'KB'
+    },
+    isInvalid() {
+      if (this.fileInfo.size > 1024 * 1024) {
+        return true
+      }
+      return false
+    },
+    validDate() {
+      return this.$dayjs(this.fileInfo.createdDate).format('YYYY.MM.DD')
+    },
     icon() {
       switch (this.ext) {
         case 'pdf':
@@ -73,24 +73,8 @@ export default {
       }
     },
   },
-  methods: {
-    toggle() {
-      this.checked = !this.checked
-      if (this.checked) {
-        this.$eventBus.$emit('chatfile::selected', this.id)
-      } else {
-        this.$eventBus.$emit('chatfile::unselected', this.id)
-      }
-    },
-    release() {
-      this.checked = false
-    },
-  },
   mounted() {
-    this.$eventBus.$on('chatfile::release', this.release)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off('chatfile::release')
+    console.log(this.fileInfo)
   },
 }
 </script>

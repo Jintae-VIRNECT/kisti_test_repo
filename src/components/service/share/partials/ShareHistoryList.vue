@@ -31,7 +31,7 @@ import HistoryImage from './ShareHistoryImage'
 import { mapGetters } from 'vuex'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
-import { base64urlToBlob } from 'utils/blobs'
+import { base64ToBlob } from 'utils/file'
 import confirmMixin from 'mixins/confirm'
 import mimeTypes from 'mime-types'
 
@@ -93,7 +93,7 @@ export default {
           if (his.id === selId) {
             const spts = his.img.split(',')
             const dataType = spts[0].replace('data:', '').replace(';base64', '')
-            const file = await base64urlToBlob(his.img, dataType, his.fileName)
+            const file = await base64ToBlob(his.img, dataType, his.fileName)
             downFile.push(file)
           }
         }

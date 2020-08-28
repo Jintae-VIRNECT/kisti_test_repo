@@ -92,7 +92,6 @@ const sender = async function(constant, params, headers = {}, custom) {
     url: url,
     ...option,
   }
-  console.log(option)
   if (custom && custom.type === 'blob') {
     // option.headers['Content-Type'] = 'image/jpeg'
     request.responseType = 'blob'
@@ -138,7 +137,6 @@ const sender = async function(constant, params, headers = {}, custom) {
  * @param {Object} res
  */
 const receiver = function(res) {
-  // console.log(res)
   if (res.data) {
     const code = res.data['code']
     if (code === 200) {

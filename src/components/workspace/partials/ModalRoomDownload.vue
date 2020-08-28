@@ -51,6 +51,7 @@
 
 <script>
 import { getFileList, downloadFile } from 'api/workspace/call'
+import { downloadByDataURL } from 'utils/file'
 export default {
   name: 'ModalParticipantsInfo',
   data() {
@@ -66,49 +67,6 @@ export default {
           name: '중진공_설계도면.pdf',
           time: '1일 남음',
           link: 'https://virnect.com',
-        },
-        {
-          name: '중진공_설계도면.pdf',
-          time: '1일 남음',
-          link: 'https://virnect.com',
-        },
-        {
-          name: '중진공_설계도면.pdf',
-          time: '1일 남음',
-          link: 'https://virnect.com',
-        },
-        {
-          name: '중진공_설계도면.pdf',
-          time: '1일 남음',
-          link: 'https://virnect.com',
-        },
-        {
-          name: '중진공_설계도면.pdf',
-          time: '1일 남음',
-          link: 'https://virnect.com',
-        },
-        {
-          name: '긴제목_짱긴제목_말.pdf',
-          time: '1일 남음',
-          link: 'https://virnect.com',
-        },
-        {
-          name: '기획_v0.1_2020.10.22.pptx',
-          time: '기간 만료',
-          link: 'https://virnect.com',
-          expire: true,
-        },
-        {
-          name: '기획_v0.1_2020.10.22.pptx',
-          time: '기간 만료',
-          link: 'https://virnect.com',
-          expire: true,
-        },
-        {
-          name: '기획_v0.1_2020.10.22.pptx',
-          time: '기간 만료',
-          link: 'https://virnect.com',
-          expire: true,
         },
         {
           name: '기획_v0.1_2020.10.22.pptx',
@@ -139,51 +97,20 @@ export default {
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
       })
-      console.log(res)
       this.files = res.fileInfoList
       this.$nextTick(() => {
         this.$refs['downloadScrollbar'].calculateSize()
       })
     },
     async download(file) {
-      console.log(file)
       const res = await downloadFile({
-        fileName: file.name,
+        filePath: file.path,
         sessionId: this.sessionId,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
       })
-      // console.log(new FileReader(res))
-      // console.log(res)
-      // console.log(window.btoa(res))
-      this.downloadLocal(res, file.name)
-    },
-    blobToDataURL(blob) {
-      return new Promise(resolve => {
-        var a = new FileReader()
-        a.onload = e => {
-          resolve(e.target.result)
-        }
-        a.readAsDataURL(blob)
-      })
-    },
-    async downloadLocal(data, name) {
-      console.log(data)
-      const dataUrl = await this.byteToArray(data)
-      console.log(dataUrl)
-      let a = document.createElement('a')
-      document.body.appendChild(a)
-      a.style = 'display: none'
-      a.href = dataUrl
-      a.download = name
-      a.click()
-      window.URL.revokeObjectURL(dataUrl)
-    },
-    async byteToArray(data) {
-      let blob = new Blob([data], { type: 'image/jpeg' })
-      console.log(blob)
-      let url = await this.blobToDataURL(blob)
-      return url
+
+      downloadByDataURL(res, file.name)
     },
   },
   mounted() {

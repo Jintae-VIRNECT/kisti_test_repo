@@ -267,6 +267,7 @@ body {
   // font-size: $swal2-font-size;
   background: $swal2-background;
   border-radius: $swal2-border-radius;
+  box-shadow: 2px 2px 5px 2px rgba(#101011, 0.25);
 
   &:focus {
     outline: none;

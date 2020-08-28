@@ -1,6 +1,6 @@
 <template>
   <div class="chat-input">
-    <div class="chat-input__preview" v-if="fileList.length > 0">
+    <!-- <div class="chat-input__preview" v-if="fileList.length > 0">
       <vue2-scrollbar ref="chatUploadScrollbar" :reverseAxios="true">
         <div class="chat-input__preview-list">
           <div
@@ -15,7 +15,7 @@
           </div>
         </div>
       </vue2-scrollbar>
-    </div>
+    </div> -->
 
     <div
       class="chat-input__form"
@@ -33,7 +33,7 @@
         ref="inputFile"
         style="display: none"
         class="el-input__form-input"
-        accept="image/jpeg,image/png"
+        accept="*/*"
         @change="fileUpload($event)"
       />
       <textarea
@@ -52,7 +52,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { sendFile, uploadFile } from 'api/workspace/call'
+import { uploadFile } from 'api/workspace/call'
 import toastMixin from 'mixins/toast'
 export default {
   name: 'ChatInput',
@@ -87,16 +87,6 @@ export default {
       if (e) {
         e.preventDefault()
       }
-      if (this.inputText.length > 0) {
-        this.$call.sendChat(this.inputText)
-      }
-      // this.$call.sendFile({
-      //   fileName: 'profile.png',
-      //   mimeType: 'png',
-      //   size: 5483,
-      //   fileDownloadUrl:
-      //     '4bdebc670244f7c886ace5340ea01fa7/ses_K1c2tOU2Nr/profile.png',
-      // })
 
       if (this.fileList.length > 0) {
         for (const file of this.fileList) {
@@ -106,7 +96,6 @@ export default {
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
           }
-          console.log(params)
           const res = await uploadFile(params)
 
           this.$call.sendFile({
@@ -119,6 +108,8 @@ export default {
 
         this.clearUploadFile()
         this.fileList = []
+      } else if (this.inputText.length > 0) {
+        this.$call.sendChat(this.inputText)
       }
 
       this.inputText = ''
@@ -138,11 +129,9 @@ export default {
       }
     },
     loadFile(file) {
-      console.log(file)
       if (file) {
         const sizeMB = file.size / 1024 / 1024
         if (sizeMB > 20) {
-          // @TODO: MESSAGE
           this.toastDefault(this.$t('service.file_upload_maxsize'))
           this.clearUploadFile()
           return false
@@ -151,8 +140,8 @@ export default {
         const isValid = [
           'image/jpeg',
           'image/png',
-          'image/bmp',
-          'application/pdf',
+          // 'image/bmp',
+          // 'application/pdf',
         ].includes(file.type)
 
         if (isValid) {
@@ -166,6 +155,7 @@ export default {
 
           docItem.filedata = file
           docItem.loaded = 0
+          this.inputText = file.name
 
           const oReader = new FileReader()
           oReader.onload = event => {
@@ -185,10 +175,23 @@ export default {
           }
           oReader.readAsDataURL(file)
         } else {
-          // @TODO: MESSAGE
-          this.toastDefault(this.$t('service.file_type_notsupport'))
-          this.clearUploadFile()
-          return false
+          const docItem = {
+            id: Date.now(),
+            filedata: '',
+            pages: new Array(1),
+            loaded: 1,
+            imageUrl: null,
+          }
+
+          docItem.filedata = file
+          docItem.loaded = 0
+          docItem.fileData = file
+          this.fileList = []
+          this.fileList.push(docItem)
+          this.inputText = file.name
+          // this.toastDefault(this.$t('service.file_type_notsupport'))
+          // this.clearUploadFile()
+          // return false
         }
       }
     },

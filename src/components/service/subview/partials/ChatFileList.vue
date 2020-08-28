@@ -3,19 +3,15 @@
     <vue2-scrollbar ref="chatFileListScrollbar">
       <div>
         <chat-file-item
-          v-for="(fileItem, index) in fileList"
-          :key="index"
-          :id="fileItem.id"
-          :fileName="fileItem.name"
-          :ext="fileItem.ext"
-          :checked="fileItem.checked"
-          :validDate="fileItem.validDate"
-          :fileSize="fileItem.fileSize"
-          :isValid="fileItem.isValid"
+          v-for="(file, idx) in fileList"
+          :key="idx"
+          :checked="file.checked"
+          :fileInfo="file"
+          @toggle="selectFile(file, idx)"
         ></chat-file-item>
       </div>
     </vue2-scrollbar>
-    <chat-file-down></chat-file-down>
+    <chat-file-down :fileList="selectedList" @clear="clear"></chat-file-down>
   </div>
 </template>
 
@@ -143,6 +139,7 @@ export default {
         //   isValid: false,
         // },
       ],
+      selectedList: [],
     }
   },
   computed: {
@@ -156,9 +153,32 @@ export default {
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
       })
-      this.fileList = res.fileInfoList
+      this.fileList = res.fileInfoList.map(fileInfo => {
+        fileInfo['checked'] = false
+        return fileInfo
+      })
       this.$nextTick(() => {
         this.$refs['chatFileListScrollbar'].calculateSize()
+      })
+    },
+    selectFile(file, idx) {
+      const checked = this.fileList[idx].checked
+      if (checked) {
+        const idx = this.selectedList.findIndex(
+          selected => selected.path === file.path,
+        )
+        if (idx < 0) return
+        this.selectedList.splice(idx, 1)
+      } else {
+        this.selectedList.push(file)
+      }
+      this.fileList[idx].checked = !checked
+    },
+    clear() {
+      this.selectedList = []
+      this.fileList.map(fileInfo => {
+        fileInfo['checked'] = false
+        return fileInfo
       })
     },
   },

@@ -1,9 +1,9 @@
 <template>
   <div class="chat-down">
     <div class="chat-down__bar">
-      <button class="chat-down__bar--cancel" @click="release"></button>
-      <label v-if="selectedList.length > 0" class="chat-down__bar--count">{{
-        $t('service.file_choice_num', { number: selectedList.length })
+      <button class="chat-down__bar--cancel" @click="$emit('clear')"></button>
+      <label v-if="fileList.length > 0" class="chat-down__bar--count">{{
+        $t('service.file_choice_num', { number: fileList.length })
       }}</label>
       <button class="chat-down__bar--button" @click="download">
         {{ $t('button.download') }}
@@ -13,44 +13,36 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import { downloadFile } from 'api/workspace/call'
+import { downloadByDataURL } from 'utils/file'
 export default {
   name: 'ChatFileDownload',
-  components: {},
-  data() {
-    return {
-      selectedList: [],
-    }
+  props: {
+    fileList: {
+      type: Array,
+      default: () => {
+        return []
+      },
+    },
   },
-  props: {},
-  computed: {},
-  watch: {},
+  computed: {
+    ...mapGetters(['roomInfo']),
+  },
   methods: {
-    download() {
-      this.logger('download :: selectedList', this.selectedList)
-    },
-    release() {
-      this.selectedList = []
-      this.$eventBus.$emit('chatfile::release')
-    },
-    add(id) {
-      this.selectedList.push(id)
-    },
-    del(id) {
-      const idx = this.selectedList.findIndex(fileId => {
-        return id === fileId
-      })
-      if (idx >= 0) {
-        this.selectedList.splice(idx, 1)
+    async download() {
+      for (let file of this.fileList) {
+        const res = await downloadFile({
+          filePath: file.path,
+          sessionId: this.roomInfo.sessionId,
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
+
+        downloadByDataURL(res, file.name)
       }
+      this.$emit('clear')
     },
-  },
-  mounted() {
-    this.$eventBus.$on('chatfile::selected', this.add)
-    this.$eventBus.$on('chatfile::unselected', this.del)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off('chatfile::selected')
-    this.$eventBus.$off('chatfile::unselected')
   },
 }
 </script>
