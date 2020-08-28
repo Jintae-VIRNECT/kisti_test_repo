@@ -638,8 +638,8 @@ public class WorkspaceService {
             });
         }
 
-        //이미 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 최대 개수 9개 체크
-        if (this.workspaceUserRepository.countWorkspaceUsersByUserId(userId) > 8) {
+        //이미 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 최대 개수 9개 체크 <-- 제한 수 없어짐
+        /*if (this.workspaceUserRepository.countWorkspaceUsersByUserId(userId) > 8) {
             Context context = new Context();
             context.setVariable("workspaceName", workspace.getName());
             context.setVariable("workspaceMasterNickName", masterUser.getNickname());
@@ -666,7 +666,7 @@ public class WorkspaceService {
             redirectView.setUrl(redirectUrl + RedirectPath.WORKSPACE_OVER_JOIN_FAIL.getValue());
             redirectView.setContentType("application/json");
             return redirectView;
-        }
+        }*/
 
         //라이선스 플랜 - 라이선스 플랜 보유 체크, 멤버 제한 수 체크
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(workspaceId).getData();
