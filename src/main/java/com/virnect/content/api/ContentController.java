@@ -1,7 +1,6 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
-import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.ContentDeleteRequest;
 import com.virnect.content.dto.request.ContentInfoRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
@@ -26,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,7 +35,7 @@ import java.util.List;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: Content Api Controller
  */
-@CrossOrigin
+
 @Slf4j
 @Controller
 @RequestMapping("/contents")
@@ -67,8 +65,9 @@ public class ContentController {
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, converteds, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
-/*
-    @ApiOperation(value = "내 컨텐츠 목록 조회", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.")
+
+    //make, view에서 사용하고 있어서 못지움.
+    @ApiOperation(value = "내 컨텐츠 목록 조회", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.", hidden = true)
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "search", value = "검색어(컨텐츠명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
@@ -92,7 +91,7 @@ public class ContentController {
         }
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, converteds, pageable.of());
         return ResponseEntity.ok(responseMessage);
-    }*/
+    }
 
     @ApiOperation(value = "워크스테이션 기준 사용자별 업로드한 컨텐츠 수 ", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.")
     @ApiImplicitParams({
@@ -153,49 +152,6 @@ public class ContentController {
         return ResponseEntity.ok(uploadResponse);
     }
 
-    @ApiOperation(value = "컨텐츠 식별자로 컨텐츠 다운로드", notes = "컨텐츠 식별자를 통해 컨텐츠를 다운로드.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
-    })
-    @GetMapping("/download/contentUUID/{contentUUID}")
-    public ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
-            @PathVariable("contentUUID") String contentUUID
-            , @RequestParam(value = "memberUUID") String memberUUID) throws IOException {
-        log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
-        if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        return this.contentService.contentDownloadForUUIDHandler(contentUUID, memberUUID);
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-//                .contentLength(resource.getFile().getAbsoluteFile().length())
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .body(resource);
-    }
-
-    @ApiOperation(value = "타겟 데이터로 컨텐츠 다운로드", notes = "컨텐츠 식별자 또는 타겟 데이터를 통해 컨텐츠를 다운로드. 컨텐츠 식별자, 타겟 데이터 둘 중 하나는 필수.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query", required = true, defaultValue = "0jXPVGTgaHBUXHFoTJwi0bLcK7XxmdrCXp0%2ft9pkT%2bQ%3d"),
-            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true)
-    })
-    @GetMapping("/download")
-    public ResponseEntity<byte[]> contentDownloadRequestForTargetHandler(
-            @RequestParam(value = "targetData") String targetData
-            , @RequestParam(value = "memberUUID") String memberUUID) throws IOException {
-        log.info("[DOWNLOAD] USER: [{}] => targetData: [{}]", memberUUID, targetData);
-        if (targetData.isEmpty() || memberUUID.isEmpty()) {
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        return this.contentService.contentDownloadForTargetHandler(targetData, memberUUID);
-//        return ResponseEntity.ok()
-//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-//                .contentLength(resource.getFile().length())
-//                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-//                .body(resource);
-    }
-
-
     @ApiOperation(value = "컨텐츠 파일 업데이트", notes = "컨텐츠의 파일을 업데이트하며, 컨텐츠명 속성 파라미터 타겟도 함께 업데이트가 가능함.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 고유 번호", dataType = "string", paramType = "path", required = true),
@@ -232,18 +188,6 @@ public class ContentController {
         return ResponseEntity.ok(responseMessage);
     }
 
-    @ApiOperation(value = "컨텐츠 메타데이터 조회", notes = "컨텐츠의 작업으로 전환될 메타데이터를 조회. 제품 2.0에서는 속성 메타데이터로 대체됨")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 고유 번호", dataType = "string", paramType = "query")
-    })
-    @GetMapping("/metadata")
-    public ResponseEntity<ApiResponse<MetadataInfoResponse>> getContentRawMetadata(@RequestParam(value = "contentUUID") String contentUUID) {
-        if (contentUUID.isEmpty()) {
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<MetadataInfoResponse> responseMessage = this.contentService.getContentRawMetadata(contentUUID);
-        return ResponseEntity.ok(responseMessage);
-    }
 
     @ApiOperation(value = "컨텐츠 내 씬그룹 목록 조회", notes = "컨텐츠 내에 구성되어 있는 씬그룹의 목록을 조회")
     @ApiImplicitParams({
@@ -295,23 +239,6 @@ public class ContentController {
         return ResponseEntity.ok(response);
     }
 
-    @ApiOperation(value = "컨텐츠 전환 수정", tags = "process server only", notes = "컨텐츠를 작업 전환시 공정서버에서 컨텐츠에 전환되었음을 저장")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", dataType = "string", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
-            @ApiImplicitParam(name = "converted", value = "컨텐츠의 공정 전환 여부(YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO")
-    })
-    @PutMapping("/convert/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentInfoResponse>> contentConvertHandler(
-            @PathVariable("contentUUID") String contentUUID
-            , @RequestParam(value = "converted", defaultValue = "NO") YesOrNo converted
-    ) {
-        if (contentUUID.isEmpty()) {
-            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<ContentInfoResponse> response = this.contentService.setConverted(contentUUID, converted);
-        return ResponseEntity.ok(response);
-    }
-
     @ApiOperation(value = "작업에서 컨텐츠로의 전환", notes = "작업의 컨텐츠를 복제한 후 컨텐츠 목록에 노출. 중복 가능하며 컨텐츠 식별자가 신규발급됨.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "taskId", value = "작업 식별자로 컨텐츠 파일을 판별.", dataType = "string", required = true, paramType = "path"),
@@ -356,7 +283,6 @@ public class ContentController {
         ApiResponse<Boolean> responseMessage = this.contentService.checkTargetData(targetData);
         return ResponseEntity.ok(responseMessage);
     }
-
 
     @ApiOperation(value = "워크스페이스 사용 용량 및 다운로드 횟수 조회")
     @ApiImplicitParams({
