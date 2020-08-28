@@ -235,7 +235,7 @@ public class TaskController {
         return ResponseEntity.ok(processInfoResponseApiResponse);
     }
 
-    @ApiOperation(value = "워크스페이스 내 사용자 정보", tags = "next", notes = "정렬 아직 안됨")
+    @ApiOperation(value = "워크스페이스 내 사용자 정보", notes = "정렬 아직 안됨")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
             @ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
