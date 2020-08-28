@@ -58,6 +58,13 @@ export default {
   },
   methods: {
     async submit() {
+      // 유효성 검사
+      try {
+        await this.$refs.form.validate()
+      } catch (e) {
+        return false
+      }
+
       try {
         await profileService.updateMyProfile(this.form)
         this.$notify.success({

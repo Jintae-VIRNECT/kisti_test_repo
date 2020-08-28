@@ -67,6 +67,13 @@ export default {
     margin-top: 4px;
     font-size: 20px;
   }
+  .column-user > span {
+    display: inline-block;
+    max-width: 80%;
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
+  }
   .el-button {
     width: 100%;
     height: 36px;
