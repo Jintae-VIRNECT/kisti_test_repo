@@ -14,6 +14,7 @@
       :active="false"
       :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
       @action="notice"
+      @click.native.stop="clickNotice"
     ></toggle-button>
 
     <div>
@@ -153,6 +154,9 @@ export default {
   },
   methods: {
     ...mapActions(['setRoomInfo', 'addAlarm', 'removeAlarm', 'updateAlarm']),
+    clickNotice() {
+      this.checkBeta()
+    },
     notice() {
       if (this.onPush) return
       console.log('notice list refresh logic')
