@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { fileList, downloadFile } from 'api/workspace/call'
+import { getFileList, downloadFile } from 'api/workspace/call'
 export default {
   name: 'ModalParticipantsInfo',
   data() {
@@ -134,7 +134,7 @@ export default {
   },
   methods: {
     async init() {
-      const res = await fileList({
+      const res = await getFileList({
         sessionId: this.sessionId,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,

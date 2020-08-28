@@ -5,28 +5,18 @@
       :class="{ active: checked, invalid: !isValid }"
       @click="toggle"
     >
-      <div class="chat-file-item--wrapper">
-        <img class="chat-file-item--icon" :src="icon" />
+      <div class="chat-file-item__wrapper">
+        <img class="chat-file-item__icon" :src="icon" />
 
         <div class="chat-file-item__body">
-          <div class="chat-file-item__center">
-            <p
-              class="chat-file-item__center--file-name"
-              :class="{ invalid: !isValid }"
-            >
-              {{ fileName }}
-            </p>
-          </div>
+          <p class="chat-file-item__name" :class="{ invalid: !isValid }">
+            {{ fileName }}
+          </p>
 
-          <div class="chat-file-item__sub">
-            <p
-              class="chat-file-item__sub--valid-text"
-              :class="{ invalid: !isValid }"
-            >
-              {{ $t('service.file_validdatae') + validDate }}
-              <span>{{ fileSize }}</span>
-            </p>
-          </div>
+          <p class="chat-file-item__valid" :class="{ invalid: !isValid }">
+            {{ $t('service.file_validdatae') + validDate }}
+            <em>{{ fileSize }}</em>
+          </p>
         </div>
       </div>
     </button>

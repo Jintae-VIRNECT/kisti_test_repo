@@ -80,7 +80,7 @@ export const downloadFile = async ({
  * @param {Query} userId
  * @param {Query} fileName
  */
-export const fileList = async ({ sessionId, workspaceId, userId }) => {
+export const getFileList = async ({ sessionId, workspaceId, userId }) => {
   const returnVal = await http('FILE_LIST', {
     sessionId,
     workspaceId,

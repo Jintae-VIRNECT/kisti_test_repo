@@ -527,18 +527,17 @@
   right: 1.286rem;
   padding: 0.214rem 0.857rem;
   color: $color_text_sub;
-  font-size: 1.071rem;
   background-color: $color_primary;
   border-radius: 2px;
   transition: background-color 0.2s;
 
+  &:focus {
+    background-color: $color_primary;
+  }
   &:hover {
     background-color: $color_primary_700;
   }
   &:active {
-    background-color: $color_primary_dark;
-  }
-  &:focus {
     background-color: $color_primary_dark;
   }
 }
@@ -586,23 +585,24 @@
     // }
   }
 }
-.chat-file-item--wrapper {
+.chat-file-item__wrapper {
   display: flex;
 }
 
-.chat-file-item--icon {
+.chat-file-item__icon {
   width: 1.7143rem;
   height: 1.7143rem;
-  margin: auto 0.8571rem auto 0;
+  margin: 0 0.8571rem auto 0;
 }
 
-.chat-file-item__center--file-name {
+.chat-file-item__name {
   width: 16.4286rem;
-  height: 1.5rem;
+  height: 1.7rem;
   overflow: hidden;
   color: rgba(#ffffff, 0.78);
   font-weight: 500;
   font-size: 1.1429rem;
+  line-height: 1.5rem;
   white-space: nowrap;
   text-align: left;
   text-overflow: ellipsis;
@@ -614,19 +614,18 @@
   text-align: left;
 }
 
-.chat-file-item__sub--valid-text {
-  margin: 0px 0.2857rem 0px 0px;
+.chat-file-item__valid {
   color: $color_primary_500;
-  font-size: 0.9286rem;
+  font-size: 0.929rem;
   text-align: left;
 
   &.invalid {
     color: #e34850;
   }
 
-  & > span {
+  & > em {
     color: rgba(#ffffff, 0.78);
-    font-size: 0.9286rem;
+    font-size: 0.929rem;
     opacity: 0.6;
   }
 }
@@ -643,7 +642,7 @@
 .chat-down__bar {
   display: flex;
   height: 4.286rem;
-  padding: 1.071rem 1.286rem 1.071rem 0.857rem;
+  padding: 1.071rem 1.286rem 1.071rem 1.429rem;
   border-top: solid 1px $color_chat_bg_default;
 }
 
@@ -667,20 +666,19 @@
 .chat-down__bar--button {
   position: absolute;
   right: 1.286rem;
-  padding: 0.357rem 0.857rem;
+  padding: 0.214rem 0.857rem;
   color: $color_text_sub;
-  font-size: 1.071rem;
   background-color: $color_primary;
   border-radius: 2px;
   transition: background-color 0.2s;
 
+  &:focus {
+    background-color: $color_primary;
+  }
   &:hover {
     background-color: $color_primary_700;
   }
   &:active {
-    background-color: $color_primary_dark;
-  }
-  &:focus {
     background-color: $color_primary_dark;
   }
 }

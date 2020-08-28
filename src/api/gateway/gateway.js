@@ -51,6 +51,7 @@ const sender = async function(constant, params, headers = {}, custom) {
     // Token
     const accessToken = Cookies.get('accessToken')
     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+    axios.defaults.headers.common['Accept'] = `*/*`
 
     // URI 전환
     url = url.replace(/{(\w+)}/g, (match, $1) => {
@@ -91,15 +92,16 @@ const sender = async function(constant, params, headers = {}, custom) {
     url: url,
     ...option,
   }
+  console.log(option)
+  if (custom && custom.type === 'blob') {
+    // option.headers['Content-Type'] = 'image/jpeg'
+    request.responseType = 'blob'
+    // request.headers['Accept'] = 'image/jpeg'
+  }
   if (method === 'get') {
     request['params'] = parameter
   } else {
     request['data'] = parameter
-  }
-  if (custom && custom.type === 'blob') {
-    // option.headers['Content-Type'] = 'image/jpeg'
-    request.responseType = 'blob'
-    request.headers['Accept'] = 'image/jpeg'
   }
   try {
     const response = await axios(request)
