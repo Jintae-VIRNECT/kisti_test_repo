@@ -30,7 +30,7 @@ export default {
     return {
       currentPage: 1,
       pages: [],
-      pagesLimit: 5,
+      maxPage: 5,
     }
   },
 
@@ -50,25 +50,23 @@ export default {
 
       if (this.currentPage === 1) {
         const remained = this.totalPage - this.currentPage
-        const end = remained <= this.pagesLimit ? remained + 1 : this.pagesLimit
+        const end = remained <= this.maxPage ? remained + 1 : this.maxPage
         for (let i = 1; i <= end; i++) {
           pagesArray.push(i)
         }
-        this.pages = pagesArray
       } else if (this.currentPage - 1 === this.pages[this.pages.length - 1]) {
-        //to remain 까지
         const remained = this.totalPage - this.currentPage
-        const end = remained < this.pagesLimit ? remained + 1 : this.pagesLimit
+        const end = remained < this.maxPage ? remained + 1 : this.maxPage
         for (let i = 0; i < end; i++) {
           pagesArray.push(this.currentPage + i)
         }
-
-        this.pages = pagesArray
       } else if (this.currentPage === this.pages[0] - 1) {
         for (let i = 4; i >= 0; i--) {
           pagesArray.push(this.currentPage - i)
         }
+      }
 
+      if (pagesArray.length > 0) {
         this.pages = pagesArray
       }
     },

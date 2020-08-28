@@ -13,7 +13,7 @@
           :text="'선택 다운로드'"
           :imgSrc="require('assets/img/ic_down_off.svg')"
           :activeImgSrc="require('assets/img/ic_down_on.svg')"
-          :active="selectedList.length > 0"
+          :active="selectedFiles.length > 0"
           @click="download"
         ></icon-button>
         <icon-button
@@ -62,10 +62,10 @@
                 <p>{{ file.filename }}</p>
               </td>
               <td class="file-list__tbody--column">
-                <p>{{ convertTime(file.duration) }}</p>
+                <p>{{ file.duration | convertTime }}</p>
               </td>
               <td class="file-list__tbody--column">
-                <p>{{ convertSize(file.size) }}</p>
+                <p>{{ file.size | convertSize }}</p>
               </td>
             </tr>
           </tbody>
@@ -93,7 +93,6 @@ export default {
     IconButton,
     Modal,
   },
-
   props: {
     visible: {
       type: Boolean,
@@ -104,101 +103,7 @@ export default {
       default: () => [],
     },
   },
-  data() {
-    return {
-      visibleFlag: false,
-      toggleAllFlag: false,
-      selectedArray: [],
-    }
-  },
-  computed: {
-    selectedList() {
-      return this.selectedArray
-        .map((val, idx) => {
-          return val ? this.fileList[idx] : false
-        })
-        .filter(Boolean)
-    },
-  },
-  watch: {
-    async visible(flag) {
-      this.setSelectedArray()
-      this.visibleFlag = flag
-    },
-    selectedArray: {
-      handler(ary) {
-        if (ary.length > 0) {
-          this.toggleAllFlag = ary.every(select => select === true)
-        }
-      },
-      deep: true,
-    },
-    fileList: {
-      handler() {
-        this.setSelectedArray()
-        this.toggleAllFlag = false
-      },
-      deep: true,
-    },
-  },
-
-  methods: {
-    async download() {
-      for (const file of this.selectedList) {
-        try {
-          const data = await downloadRecordFile({
-            id: file.recordingId,
-          })
-
-          FileSaver.saveAs(
-            new Blob([data], {
-              type: data.type,
-            }),
-            file.filename,
-          )
-        } catch (e) {
-          console.error(e)
-        }
-      }
-    },
-    async deleteItems() {
-      for (const file of this.selectedList) {
-        const recordingId = file.recordingId
-        try {
-          await deleteRecordFile({
-            id: recordingId,
-          })
-        } catch (e) {
-          console.error(e)
-        }
-      }
-      this.$eventBus.$emit('load::record-list')
-    },
-    beforeClose() {
-      this.$emit('update:visible', false)
-      this.$eventBus.$emit('close::record-list')
-    },
-
-    setSelectedArray() {
-      this.selectedArray = []
-
-      this.fileList.forEach(() => {
-        this.selectedArray.push(false)
-      })
-    },
-
-    toggleItem(event, index) {
-      const toggleData = !this.selectedArray[index]
-      this.selectedArray.splice(index, 1, toggleData)
-    },
-    toggleAll() {
-      this.selectedArray = []
-      this.toggleAllFlag = !this.toggleAllFlag
-
-      this.fileList.forEach(() => {
-        this.selectedArray.push(this.toggleAllFlag)
-      })
-    },
+  filters: {
     convertTime(duration) {
       let sec_num = Number.parseInt(duration, 10)
       let hours = Math.floor(sec_num / 3600)
@@ -246,9 +151,95 @@ export default {
       }
     },
   },
+  data() {
+    return {
+      visibleFlag: false,
+      toggleAllFlag: false,
+      selectedArray: [],
+    }
+  },
+  computed: {
+    selectedFiles() {
+      return this.selectedArray
+        .map((val, idx) => {
+          return val ? this.fileList[idx] : false
+        })
+        .filter(Boolean)
+    },
+  },
+  watch: {
+    async visible(flag) {
+      this.initSelectedArray()
+      this.visibleFlag = flag
+    },
+    selectedArray: {
+      handler(ary) {
+        if (ary.length > 0) {
+          this.toggleAllFlag = ary.every(select => select === true)
+        }
+      },
+      deep: true,
+    },
+    fileList: {
+      handler() {
+        this.initSelectedArray()
+        this.toggleAllFlag = false
+      },
+      deep: true,
+    },
+  },
+
+  methods: {
+    async download() {
+      for (const file of this.selectedFiles) {
+        try {
+          const data = await downloadRecordFile({
+            id: file.recordingId,
+          })
+
+          FileSaver.saveAs(
+            new Blob([data], {
+              type: data.type,
+            }),
+            file.filename,
+          )
+        } catch (e) {
+          console.error(e)
+        }
+      }
+    },
+    async deleteItems() {
+      for (const file of this.selectedFiles) {
+        const recordingId = file.recordingId
+        try {
+          await deleteRecordFile({
+            id: recordingId,
+          })
+        } catch (e) {
+          console.error(e)
+        }
+      }
+      this.$eventBus.$emit('load::record-list')
+    },
+    initSelectedArray() {
+      this.selectedArray = this.fileList.map(() => false)
+    },
+    toggleItem(event, index) {
+      const toggleData = !this.selectedArray[index]
+      this.selectedArray.splice(index, 1, toggleData)
+    },
+    toggleAll() {
+      this.toggleAllFlag = !this.toggleAllFlag
+      this.selectedArray = this.fileList.map(() => this.toggleAllFlag)
+    },
+    beforeClose() {
+      this.$emit('update:visible', false)
+      this.$eventBus.$emit('close::record-list')
+    },
+  },
 
   mounted() {
-    this.setSelectedArray()
+    this.initSelectedArray()
   },
   beforeDestroy() {
     this.selectedArray = []
