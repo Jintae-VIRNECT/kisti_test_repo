@@ -74,3 +74,11 @@ supportUrl: "https://virnect.com/contact/inquiry"
 feign:
   hystrix:
     enabled: true
+
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
