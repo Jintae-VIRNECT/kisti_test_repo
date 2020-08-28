@@ -56,7 +56,7 @@
           },
           {
             "word": "2",
-            "wordContents": "臾몄옣 �솗�씤�씠 �븘�슂�븿. �빐�꽍�뿉 愿��븯�뿬�뒗 �빟愿��쓽 洹쒖젣�뿉 愿��븳 踰뺣쪧(�씠�븯 '�빟愿�洹쒖젣踰�')\" �쓣 李멸퀬?"
+            "wordContents": "문장 확인이 필요함.  해석에 관하여는 약관의 규제에 관한 법률(이하 '약관규제법') 을 참고?"
           }
         ]
       },
@@ -521,7 +521,8 @@
             "wordContents": "Members must immediately notify the company of any change in customer information at the time of product subscription and the company is not responsible for any problems caused by delay in notification."
           },
           {
-            "word": "6"
+            "word": "6",
+            "wordContents": "회원이 회사의 제품 장애를 초래하게 하였을 경우에는 그 보충, 수선 또는 기타 공사에 소요되는 비용과 이로 인해 발생되는 회사의 손해를 전액 부담하여야 합니다."
           },
           {
             "word": "7",
@@ -629,7 +630,7 @@
           },
           {
             "word": "2",
-            "wordContents": "If the content of the data stored in the database within the company and the data stored in the database of the requesting institution are different the member must respond to the company��셲 requests to confirm the content of the data."
+            "wordContents": "If the content of the data stored in the database within the company and the data stored in the database of the requesting institution are different the member must respond to the company's requests to confirm the content of the data."
           }
         ]
       },
