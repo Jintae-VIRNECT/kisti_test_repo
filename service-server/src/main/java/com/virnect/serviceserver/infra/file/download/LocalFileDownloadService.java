@@ -32,7 +32,7 @@ import java.security.NoSuchAlgorithmException;
 @Component
 public class LocalFileDownloadService implements IFileDownload {
 
-    @Value("${cms.bucket-name}")
+    @Value("${cms.bucket-file-name}")
     private String bucketName;
     @Value("${cms.access-key}")
     private String accessKey;
@@ -75,16 +75,10 @@ public class LocalFileDownloadService implements IFileDownload {
                     .bucket(bucketName)
                     .object(filePath)
                     .build());
-            log.info("fileDownload input stream:: {}_{}", stream.available(), stream.read());
-            //byte[] bytes = IOUtils.toByteArray(stream, stream.available());
+            //log.info("fileDownload input stream:: {}_{}", stream.available(), stream.read());
             byte[] bytes = IOUtils.toByteArray(stream);
             stream.close();
             return bytes;
-            /*HttpHeaders httpHeaders = new HttpHeaders();
-            httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            httpHeaders.setContentLength(bytes.length);
-            httpHeaders.setContentDispositionFormData("attachment", "");
-            return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);*/
         } catch (MinioException e) {
             log.info("Download error occurred:: {}", e.getMessage());
             throw new RestServiceException(ErrorCode.ERR_FILE_DOWNLOAD_FAILED);

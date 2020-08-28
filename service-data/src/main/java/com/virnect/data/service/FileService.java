@@ -30,6 +30,7 @@ public class FileService {
                 .sessionId(fileUploadRequest.getSessionId())
                 .uuid(fileUploadRequest.getUserId())
                 .name(fileUploadRequest.getFile().getOriginalFilename())
+                .contentType(fileUploadRequest.getFile().getContentType())
                 .size(fileUploadRequest.getFile().getSize())
                 .path(filePath)
                 .deleted(false)
@@ -37,8 +38,12 @@ public class FileService {
         return fileRepository.save(file);
     }
 
-    public File getFile(String workspaceId, String sessionId, String name) {
+    public File getFileByName(String workspaceId, String sessionId, String name) {
         return this.fileRepository.findByWorkspaceIdAndSessionIdAndName(workspaceId, sessionId, name).orElse(null);
+    }
+
+    public File getFileByPath(String workspaceId, String sessionId, String path) {
+        return this.fileRepository.findByWorkspaceIdAndSessionIdAndPath(workspaceId, sessionId, path).orElse(null);
     }
 
     public Page<File> getFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {

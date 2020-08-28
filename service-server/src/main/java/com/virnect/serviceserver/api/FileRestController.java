@@ -8,7 +8,9 @@ import com.virnect.data.dto.file.response.FileDeleteResponse;
 import com.virnect.data.dto.file.response.FileInfoListResponse;
 import com.virnect.data.dto.file.response.FileUploadResponse;
 import com.virnect.data.dto.request.PageRequest;
+import com.virnect.data.dto.request.RoomProfileUpdateRequest;
 import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataRepository;
@@ -46,16 +48,32 @@ public class FileRestController implements IFileRestAPI {
     }
 
     @Override
-    public ResponseEntity<byte[]> fileDownloadRequestHandler(String workspaceId, String sessionId, String userId, String fileName) throws IOException {
+    public ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> profileUploadRequestHandler(@Valid RoomProfileUpdateRequest roomProfileUpdateRequest, String workspaceId, String sessionId, BindingResult result) {
+        log.info("REST API: POST {}/{}/{}/profile",
+                REST_PATH,
+                workspaceId != null ? workspaceId : "{}",
+                sessionId != null ? sessionId : "{}");
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        return ResponseEntity.ok(
+                this.fileDataRepository.uploadProfile(workspaceId, sessionId, roomProfileUpdateRequest)
+        );
+    }
+
+    @Override
+    public ResponseEntity<byte[]> fileDownloadRequestHandler(String workspaceId, String sessionId, String userId, String filePath) throws IOException {
         log.info("REST API: GET {}/download/{}/{}",
                 REST_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}");
 
-        if(userId == null && fileName == null) {
+        if(userId == null && filePath == null) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ResponseEntity<byte[]> responseEntity = this.fileDataRepository.downloadFile(workspaceId, sessionId, userId, fileName).getData();
+        ResponseEntity<byte[]> responseEntity = this.fileDataRepository.downloadFile(workspaceId, sessionId, userId, filePath).getData();
         //eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
         return responseEntity;
     }
@@ -78,17 +96,17 @@ public class FileRestController implements IFileRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<FileDeleteResponse>> deleteFileRequestHandler(String workspaceId, String sessionId, String userId, String fileName) {
+    public ResponseEntity<ApiResponse<FileDeleteResponse>> deleteFileRequestHandler(String workspaceId, String sessionId, String userId, String filePath) {
         log.info("REST API: GET {}/{}/{}/{}",
                 REST_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
-                fileName != null ? fileName : "{}");
-        if (userId == null || fileName == null) {
+                filePath != null ? filePath : "{}");
+        if (userId == null || filePath == null) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return ResponseEntity.ok(
-                this.fileDataRepository.removeFile(workspaceId, sessionId, userId, fileName)
+                this.fileDataRepository.removeFile(workspaceId, sessionId, userId, filePath)
         );
     }
 }

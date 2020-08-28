@@ -2,14 +2,19 @@ package com.virnect.serviceserver.data;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dao.File;
+import com.virnect.data.dao.Room;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.file.request.FileUploadRequest;
 import com.virnect.data.dto.file.response.FileDeleteResponse;
 import com.virnect.data.dto.file.response.FileInfoListResponse;
 import com.virnect.data.dto.file.response.FileInfoResponse;
 import com.virnect.data.dto.file.response.FileUploadResponse;
+import com.virnect.data.dto.request.RoomProfileUpdateRequest;
+import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.service.FileService;
+import com.virnect.data.service.SessionService;
+import com.virnect.serviceserver.infra.file.Default;
 import com.virnect.serviceserver.infra.file.LocalFileManagementService;
 import com.virnect.serviceserver.infra.file.download.LocalFileDownloadService;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +40,7 @@ import java.util.stream.Collectors;
 public class FileDataRepository {
     private static final String TAG = FileDataRepository.class.getSimpleName();
 
+    private final SessionService sessionService;
     private final FileService fileService;
     private final LocalFileManagementService localFileManagementService;
     private final LocalFileDownloadService localFileDownloadService;
@@ -80,18 +86,67 @@ public class FileDataRepository {
         }.asApiResponse();
     }
 
+    public ApiResponse<RoomProfileUpdateResponse> uploadProfile(
+            String workspaceId,
+            String sessionId,
+            RoomProfileUpdateRequest roomProfileUpdateRequest) {
+        return new RepoDecoder<Room, RoomProfileUpdateResponse>(RepoDecoderType.UPDATE) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
+            }
+
+            @Override
+            DataProcess<RoomProfileUpdateResponse> invokeDataProcess() {
+                log.info("ROOM INFO UPDATE PROFILE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
+                RoomProfileUpdateResponse profileUpdateResponse = new RoomProfileUpdateResponse();
+                StringBuilder stringBuilder;
+                stringBuilder = new StringBuilder();
+                stringBuilder.append(workspaceId).append("/").append(sessionId).append("/");
+                String profileUrl = Default.ROOM_PROFILE.getValue();
+
+                Room room = loadFromDatabase();
+                if(room != null) {
+                    if(room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
+                        if (roomProfileUpdateRequest.getProfile() != null) {
+                            try {
+                                profileUrl = localFileManagementService.uploadProfile(roomProfileUpdateRequest.getProfile(), stringBuilder.toString());
+                            } catch (IOException e) {
+                                log.error(e.getMessage());
+                            } catch (NoSuchAlgorithmException e) {
+                                e.printStackTrace();
+                            } catch (InvalidKeyException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        profileUpdateResponse.setSessionId(sessionId);
+                        profileUpdateResponse.setProfile(profileUrl);
+                        sessionService.updateRoom(room, profileUrl);
+                        return new DataProcess<>(profileUpdateResponse);
+                    } else {
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                    }
+                } else {
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+            }
+        }.asApiResponse();
+    }
+
+
+
     public DataProcess<ResponseEntity<byte[]>> downloadFile(
             String workspaceId,
             String sessionId,
             String userId,
-            String fileName) {
+            String filePath) {
         return new RepoDecoder<File, ResponseEntity<byte[]>>(RepoDecoderType.READ) {
             @Override
             File loadFromDatabase() {
-                return fileService.getFile(
+                return fileService.getFileByPath(
                         workspaceId,
                         sessionId,
-                        fileName);
+                        filePath);
             }
 
             @Override
@@ -100,11 +155,24 @@ public class FileDataRepository {
                 log.info("file download: {}", file.getPath());
                 try {
                     byte[] byteArray = localFileDownloadService.fileDownload(file.getPath());
-                    String[] resources = file.getPath().split("/");
+                    //String[] resources = file.getPath().split("/");
                     HttpHeaders httpHeaders = new HttpHeaders();
-                    httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
                     httpHeaders.setContentLength(byteArray.length);
-                    httpHeaders.setContentDispositionFormData("attachment", resources[2]);
+                    httpHeaders.setContentDispositionFormData("attachment", file.getName());
+                    switch (file.getContentType()) {
+                        case MediaType.IMAGE_JPEG_VALUE:
+                            httpHeaders.setContentType(MediaType.IMAGE_JPEG);
+                            break;
+                        case MediaType.IMAGE_GIF_VALUE:
+                            httpHeaders.setContentType(MediaType.IMAGE_GIF);
+                            break;
+                        case MediaType.IMAGE_PNG_VALUE:
+                            httpHeaders.setContentType(MediaType.IMAGE_PNG);
+                            break;
+                        default:
+                            httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                            break;
+                    }
                     return new DataProcess<>(new ResponseEntity<>(byteArray, httpHeaders, HttpStatus.OK));
                 } catch (IOException exception) {
                     exception.printStackTrace();
@@ -163,11 +231,11 @@ public class FileDataRepository {
     public ApiResponse<FileDeleteResponse> removeFile(String workspaceId,
                                                       String sessionId,
                                                       String userId,
-                                                      String fileName) {
+                                                      String filePath) {
         return new RepoDecoder<File, FileDeleteResponse>(RepoDecoderType.DELETE) {
             @Override
             File loadFromDatabase() {
-                return fileService.getFile(workspaceId, sessionId, fileName);
+                return fileService.getFileByPath(workspaceId, sessionId, filePath);
             }
 
             @Override

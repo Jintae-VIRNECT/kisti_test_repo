@@ -11,6 +11,8 @@ import java.util.Optional;
 public interface FileRepository extends JpaRepository<File, Long> {
     Optional<File> findByWorkspaceIdAndSessionIdAndName(final String workspaceId, final String sessionId, final String name);
 
+    Optional<File> findByWorkspaceIdAndSessionIdAndPath(final String workspaceId, final String sessionId, final String path);
+
     List<File> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     Page<File> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId, Pageable pageable);

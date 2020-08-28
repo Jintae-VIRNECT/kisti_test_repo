@@ -28,8 +28,14 @@ public class File extends BaseTimeEntity {
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
+    @Column(name = "origin_name", nullable = false)
+    private String originName;
+
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "content_type", nullable = false)
+    private String contentType;
 
     @Column(name = "path", nullable = false, unique = true)
     private String path;
@@ -55,7 +61,9 @@ public class File extends BaseTimeEntity {
             String workspaceId,
             String sessionId,
             String uuid,
+            String originName,
             String name,
+            String contentType,
             String path,
             Long size,
             boolean deleted
@@ -63,11 +71,12 @@ public class File extends BaseTimeEntity {
         this.workspaceId = workspaceId;
         this.sessionId = sessionId;
         this.uuid = uuid;
+        this.originName = originName;
         this.name = name;
+        this.contentType = contentType;
         this.path = path;
         this.size = size;
         this.deleted = deleted;
-
         //
         this.downloadHits = 0L;
     }

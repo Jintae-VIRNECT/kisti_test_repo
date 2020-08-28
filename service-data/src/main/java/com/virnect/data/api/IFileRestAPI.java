@@ -7,7 +7,9 @@ import com.virnect.data.dto.file.response.FileDeleteResponse;
 import com.virnect.data.dto.file.response.FileInfoListResponse;
 import com.virnect.data.dto.file.response.FileUploadResponse;
 import com.virnect.data.dto.request.PageRequest;
+import com.virnect.data.dto.request.RoomProfileUpdateRequest;
 import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -44,19 +46,30 @@ public interface IFileRestAPI {
             @ModelAttribute @Valid FileUploadRequest fileUploadRequest,
             BindingResult result);
 
+    @ApiOperation(value = "Update a Remote Room profile image file", notes = "원격협업 방 프로필을 업데이트 합니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "변경할 프로필 이미지", name = "profile", paramType = "form", dataType = "__file", required = true)
+    })
+    @PostMapping(value = "file/{workspaceId}/{sessionId}/profile", headers = {"content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> profileUploadRequestHandler(
+            @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId,
+            BindingResult result);
+
     @ApiOperation(value = "Download file", notes = "파일을 다운로드.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "userId", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
-            @ApiImplicitParam(name = "fileName", value = "다운로드 파일", dataType = "string", paramType = "query", required = true),
+            @ApiImplicitParam(name = "filePath", value = "다운로드 파일 경로", dataType = "string", paramType = "query", required = true),
     })
     @GetMapping(value = "file/download/{workspaceId}/{sessionId}")
     ResponseEntity<byte[]> fileDownloadRequestHandler(
             @PathVariable(name = "workspaceId") String workspaceId,
             @PathVariable(name = "sessionId") String sessionId,
             @RequestParam(name = "userId") String userId,
-            @RequestParam(name = "fileName") String fileName
+            @RequestParam(name = "filePath") String filePath
     ) throws IOException;
 
     @ApiOperation(value = "Load Room File List", notes = "원격협업에서 등록된 파일 목록을 조회")
@@ -80,7 +93,9 @@ public interface IFileRestAPI {
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @RequestParam("userId") String userId,
-            @RequestParam("fileName") String fileName);
+            @RequestParam("filePath") String filePath);
+
+
 
     /*@ApiOperation(value = "워크스테이션 기준 사용자별 업로드한 컨텐츠 수 ", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.")
     @ApiImplicitParams({
