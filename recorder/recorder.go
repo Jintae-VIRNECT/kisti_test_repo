@@ -257,6 +257,11 @@ func garbageCollector() {
 			remainDays := int64(period) - (now - time.Time(info.CreateAt).Unix())
 			logger.Debug("recordingId:", info.RecordingID, " file:", info.Filename, " create:", info.CreateAt, " remain:", remainDays)
 			if remainDays < 0 {
+				// delete file record from DB.
+				filter := &data.Filter{RecordingID: &info.RecordingID}
+				deleteOnDB(ctx, filter)
+
+				// delete file on local storage.
 				removeFile(ctx, info.FullPath)
 			}
 		}
