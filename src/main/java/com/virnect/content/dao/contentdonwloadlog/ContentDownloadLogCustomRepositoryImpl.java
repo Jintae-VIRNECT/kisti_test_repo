@@ -1,4 +1,4 @@
-package com.virnect.content.dao;
+package com.virnect.content.dao.contentdonwloadlog;
 
 import com.virnect.content.domain.ContentDownloadLog;
 import com.virnect.content.domain.QContentDownloadLog;
@@ -19,5 +19,11 @@ public class ContentDownloadLogCustomRepositoryImpl extends QuerydslRepositorySu
                 .where(qContentDownloadLog.workspaceUUID.eq(workspaceId)
                         .and(qContentDownloadLog.createdDate.between(startDate, endDate)))
                 .fetchCount();
+    }
+
+    @Override
+    public long deleteAllContentDownloadLogByWorkspaceUUID(String workspaceUUID) {
+        QContentDownloadLog qContentDownloadLog = QContentDownloadLog.contentDownloadLog;
+        return delete(qContentDownloadLog).where(qContentDownloadLog.workspaceUUID.eq(workspaceUUID)).execute();
     }
 }

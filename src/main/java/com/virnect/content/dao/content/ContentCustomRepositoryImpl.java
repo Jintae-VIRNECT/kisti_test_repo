@@ -1,4 +1,4 @@
-package com.virnect.content.dao;
+package com.virnect.content.dao.content;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.jpa.JPQLQuery;
@@ -6,13 +6,11 @@ import com.virnect.content.domain.Content;
 import com.virnect.content.domain.QContent;
 import com.virnect.content.domain.QTarget;
 import com.virnect.content.domain.YesOrNo;
-import com.virnect.content.dto.response.ContentResourceUsageInfoResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -150,5 +148,11 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
             return totalStorageUsage;
         }
         return 0L;
+    }
+
+    @Override
+    public long deleteAllContentByWorkspaceUUID(String workspaceUUID) {
+        QContent qContent = QContent.content;
+        return delete(qContent).where(qContent.workspaceUUID.eq(workspaceUUID)).execute();
     }
 }

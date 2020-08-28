@@ -64,3 +64,10 @@ cloud:
 file:
   upload-path: "workspace/report/"
   url: "https://virnect-platform.s3.ap-northeast-2.amazonaws.com/"
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus

@@ -1,4 +1,4 @@
-package com.virnect.content.dao;
+package com.virnect.content.dao.content;
 
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.YesOrNo;
@@ -40,6 +40,8 @@ public interface ContentRepository extends JpaRepository<Content, Long>, Content
     Page<Content> findByWorkspaceUUIDAndNameIsContainingOrUserUUIDIsIn(String workspaceUUID, String contentName, List<String> userUUIDList, Pageable pageable);
 
     Page<Content> findByWorkspaceUUID(String workspaceUUID, Pageable pageable);
+
+    List<Content> findByWorkspaceUUID(String workspaceUUID);
 
 //    @Transactional(readOnly = true)
 //    List<Content> findByStatus(ContentStatus contentStatus);

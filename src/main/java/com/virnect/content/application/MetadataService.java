@@ -6,7 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.virnect.content.dao.ContentRepository;
+import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.domain.Content;
 import com.virnect.content.dto.MetadataInfo;
 import com.virnect.content.dto.response.MetadataInfoResponse;

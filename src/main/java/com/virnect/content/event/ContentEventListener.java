@@ -1,6 +1,6 @@
 package com.virnect.content.event;
 
-import com.virnect.content.dao.ContentDownloadLogRepository;
+import com.virnect.content.dao.contentdonwloadlog.ContentDownloadLogRepository;
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.ContentDownloadLog;
 import lombok.RequiredArgsConstructor;

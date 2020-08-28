@@ -1,6 +1,6 @@
 package com.virnect.content.application;
 
-import com.virnect.content.dao.ContentRepository;
+import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.domain.Content;
 import com.virnect.content.event.ContentDownloadHitEvent;
 import com.virnect.content.exception.ContentServiceException;
