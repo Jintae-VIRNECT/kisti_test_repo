@@ -1,5 +1,7 @@
-package com.virnect.process.domain;
+package com.virnect.process.application;
 
+import com.virnect.process.domain.*;
+import com.virnect.process.domain.Process;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
@@ -189,12 +191,12 @@ public class ProgressManager {
         return baseRule.get(rateRange).get(period).get(yn);
     }
 
-    public static Integer getAllProcessesTotalProgressRate(List<Process> processes) {
+    public static Integer getAllProcessesTotalProgressRate(List<com.virnect.process.domain.Process> processes) {
         AtomicInteger rate = new AtomicInteger(0);
         if (processes.size() > 0) {
             int count = 0;
             // 세부공정들의 공정률을 합산
-            for (Process process : processes) {
+            for (com.virnect.process.domain.Process process : processes) {
                 rate.set(process.getProgressRate() + rate.get());
                 count++;
             }
@@ -206,7 +208,7 @@ public class ProgressManager {
 
 
     // 공정의 공정률
-    public static Integer getProcessProgressRate(Process process) {
+    public static Integer getProcessProgressRate(com.virnect.process.domain.Process process) {
         AtomicInteger rate = new AtomicInteger(0);
         if (process.getSubProcessList().size() > 0) {
             int count = 0;

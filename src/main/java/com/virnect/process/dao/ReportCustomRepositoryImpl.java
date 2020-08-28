@@ -28,7 +28,7 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
     public ReportCustomRepositoryImpl() { super(Report.class); }
 
     @Override
-    public Page<Report> getPages(String myUUID, String workspaceUUID, Long processId, Long subProcessId, String search, List<String> userUUIDList, Boolean reported, Pageable pageable) {
+    public Page<Report> getPages(String myUUID, String workspaceUUID, Long processId, Long subProcessId, String search, List<String> userUUIDList, Boolean reported, Pageable pageable, Long stepId) {
         QProcess qProcess = QProcess.process;
         QSubProcess qSubProcess = QSubProcess.subProcess;
         QJob qJob = QJob.job;
@@ -39,6 +39,10 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
         query.join(qReport.job, qJob);
         query.join(qJob.subProcess, qSubProcess);
         query.join(qSubProcess.process, qProcess);
+
+        if (Objects.nonNull(stepId)) {
+            query = query.where(qJob.id.eq(stepId));
+        }
 
         if (Objects.nonNull(myUUID)) {
             query = query.where(qSubProcess.workerUUID.eq(myUUID));
@@ -58,12 +62,14 @@ public class ReportCustomRepositoryImpl extends QuerydslRepositorySupport implem
 
         if (!userUUIDList.isEmpty()) {
             query = query.where(qSubProcess.workerUUID.in(userUUIDList));
+        }else{
+            // 프로필 -> 바로가기 시 처리를 위해
+            if (Objects.nonNull(search)) {
+                query = query.where(qSubProcess.workerUUID.eq(search));
+            }
+
         }
 
-        // 프로필 -> 바로가기 시 처리를 위해
-        if (Objects.nonNull(search)) {
-            query = query.where(qSubProcess.workerUUID.eq(search));
-        }
 
         if (Objects.nonNull(reported)) {
             if (reported) {

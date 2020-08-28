@@ -23,19 +23,10 @@ public class ContentFallbackService implements ContentRestService {
     }
 
     @Override
-    public ApiResponse<ContentUploadResponse> taskToContentConvertHandler(Long taskId, String userUUID) {
-        return null;
-    }
-
-    @Override
     public ApiResponse<ContentDeleteListResponse> contentDeleteRequestHandler(ContentDeleteRequest contentDeleteRequest) {
         return null;
     }
 
-    @Override
-    public ApiResponse<ContentStatusInfoResponse> changeContentStatus(ContentStatusChangeRequest contentStatusChangeRequest) {
-        return null;
-    }
 
     @Override
     public ApiResponse<ContentUploadResponse> contentDuplicate(String contentUUID, String workspaceUUID, String userUUID) {

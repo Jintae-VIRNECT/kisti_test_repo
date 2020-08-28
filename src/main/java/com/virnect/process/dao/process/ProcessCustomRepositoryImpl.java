@@ -49,11 +49,11 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
         if (!userUUIDList.isEmpty()) {
             query = query.where(qSubProcess.workerUUID.in(userUUIDList));
-        }
-
-        if (Objects.nonNull(search)){
-            // or 뒤의 조건은 프로필 -> 바로가기 때문에 추가
-            query = query.where(qProcess.name.contains(search).or(qSubProcess.workerUUID.eq(search)));
+        }else {
+            if (Objects.nonNull(search)) {
+                // or 뒤의 조건은 프로필 -> 바로가기 때문에 추가
+                query = query.where(qProcess.name.contains(search).or(qSubProcess.workerUUID.eq(search)));
+            }
         }
 
         log.debug(">>>>>>>>>>>>>>>>>>>>>>> : {}", query);
