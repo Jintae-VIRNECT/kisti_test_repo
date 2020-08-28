@@ -13,7 +13,7 @@
           :text="'선택 다운로드'"
           :imgSrc="require('assets/img/ic_down_off.svg')"
           :activeImgSrc="require('assets/img/ic_down_on.svg')"
-          :active="selected"
+          :active="selectedList.length > 0"
           @click="download"
         ></icon-button>
         <icon-button
@@ -112,10 +112,12 @@ export default {
     }
   },
   computed: {
-    selected() {
-      return this.selectedArray.some(val => {
-        return val
-      })
+    selectedList() {
+      return this.selectedArray
+        .map((val, idx) => {
+          return val ? this.fileList[idx] : false
+        })
+        .filter(Boolean)
     },
   },
   watch: {
@@ -126,15 +128,7 @@ export default {
     selectedArray: {
       handler(ary) {
         if (ary.length > 0) {
-          const allSelected = ary.every(select => {
-            return select === true
-          })
-
-          if (allSelected) {
-            this.toggleAllFlag = true
-          } else {
-            this.toggleAllFlag = false
-          }
+          this.toggleAllFlag = ary.every(select => select === true)
         }
       },
       deep: true,
@@ -150,32 +144,32 @@ export default {
 
   methods: {
     async download() {
-      for (const [index, val] of this.selectedArray.entries()) {
-        if (val) {
+      for (const file of this.selectedList) {
+        try {
           const data = await downloadRecordFile({
-            id: this.fileList[index].recordingId,
+            id: file.recordingId,
           })
 
           FileSaver.saveAs(
             new Blob([data], {
               type: data.type,
             }),
-            this.fileList[index].filename,
+            file.filename,
           )
+        } catch (e) {
+          console.error(e)
         }
       }
     },
     async deleteItems() {
-      for (const [index, val] of this.selectedArray.entries()) {
-        const recordingId = this.fileList[index].recordingId
-        if (val) {
-          try {
-            await deleteRecordFile({
-              id: recordingId,
-            })
-          } catch (e) {
-            console.error(e)
-          }
+      for (const file of this.selectedList) {
+        const recordingId = file.recordingId
+        try {
+          await deleteRecordFile({
+            id: recordingId,
+          })
+        } catch (e) {
+          console.error(e)
         }
       }
       this.$eventBus.$emit('load::record-list')
