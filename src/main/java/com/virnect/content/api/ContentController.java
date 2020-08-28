@@ -1,6 +1,7 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.ContentService;
+import com.virnect.content.domain.YesOrNo;
 import com.virnect.content.dto.request.ContentDeleteRequest;
 import com.virnect.content.dto.request.ContentInfoRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
@@ -301,5 +302,22 @@ public class ContentController {
         }
         ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(workspaceId, startDate, endDate);
         return ResponseEntity.ok(responseMessage);
+    }
+
+    @ApiOperation(value = "컨텐츠 전환 수정", tags = "process server only", notes = "컨텐츠를 작업 전환시 공정서버에서 컨텐츠에 전환되었음을 저장")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", dataType = "string", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29"),
+            @ApiImplicitParam(name = "converted", value = "컨텐츠의 공정 전환 여부(YES, NO)", dataType = "string", paramType = "query", required = true, defaultValue = "NO")
+    })
+    @PutMapping("/convert/{contentUUID}")
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> contentConvertHandler(
+            @PathVariable("contentUUID") String contentUUID
+            , @RequestParam(value = "converted", defaultValue = "NO") YesOrNo converted
+    ) {
+        if (contentUUID.isEmpty()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ApiResponse<ContentInfoResponse> response = this.contentService.setConverted(contentUUID, converted);
+        return ResponseEntity.ok(response);
     }
 }
