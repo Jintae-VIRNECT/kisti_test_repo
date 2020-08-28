@@ -1096,4 +1096,16 @@ public class ContentService {
 
         return new ContentSecessionResponse(workspaceUUID, true, LocalDateTime.now());
     }
+
+    @Transactional
+    public ApiResponse<ContentInfoResponse> setConverted(final String contentUUID, final YesOrNo converted) {
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        content.setConverted(converted);
+
+        this.contentRepository.save(content);
+
+        return getContentInfoResponseApiResponse(content);
+    }
 }
