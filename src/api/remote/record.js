@@ -1,5 +1,4 @@
 import http from 'api/gateway'
-import API from '../gateway/api'
 
 export const getRecordFiles = async function(data) {
   const returnVal = await http('RECORD_FILES', data)
@@ -7,10 +6,9 @@ export const getRecordFiles = async function(data) {
 }
 
 export const downloadRecordFile = async function(data) {
-  // const returnVal = await http('DOWNLOAD_RECORD_FILE', data)
-  let url = API['DOWNLOAD_RECORD_FILE'][1]
-  const dataId = data.id
-  return url + dataId
+  const returnVal = await http('DOWNLOAD_RECORD_FILE', data)
+
+  return returnVal
 }
 
 export const deleteRecordFile = async function(data) {

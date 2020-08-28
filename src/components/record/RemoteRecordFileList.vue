@@ -141,7 +141,6 @@ export default {
     },
     fileList: {
       handler() {
-        // this.setRenderArray()
         this.setSelectedArray()
         this.toggleAllFlag = false
       },
@@ -153,29 +152,16 @@ export default {
     async download() {
       for (const [index, val] of this.selectedArray.entries()) {
         if (val) {
-          console.log(
-            'this.fileList[index].recordingId ::',
-            this.fileList[index].recordingId,
-          )
           const data = await downloadRecordFile({
             id: this.fileList[index].recordingId,
           })
 
-          FileSaver.saveAs(data)
-
-          // FileSaver.saveAs(
-          //   new File([data], {
-          //     type: 'application/octet-stream',
-          //   }),
-          //   'test.mp4',
-          //   true,
-          // )
-
-          // FileSaver.saveAs(
-          //   'https://192.168.6.3:8073/remote/recorder/file/download/ses_WhkdbDiEW2-ki3MR3CY',
-
-          //   'test.mp4',
-          // )
+          FileSaver.saveAs(
+            new Blob([data], {
+              type: data.type,
+            }),
+            this.fileList[index].filename,
+          )
         }
       }
     },

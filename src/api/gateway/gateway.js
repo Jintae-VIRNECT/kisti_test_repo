@@ -73,6 +73,8 @@ const sender = async function(constant, params, headers = {}, custom) {
         parameter.append(param, params[param])
       }
       // debug(option)
+    } else if (custom && 'application/octet-stream') {
+      option.headers['Content-Type'] = 'application/octet-stream'
     } else {
       option.headers['Content-Type'] = 'application/json'
     }
