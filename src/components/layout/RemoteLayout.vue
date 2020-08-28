@@ -1,19 +1,14 @@
 <template>
-  <div class="remote-layout offsetwidth">
-    <!-- <remote-header></remote-header> -->
+  <main class="remote-layout offsetwidth">
     <remote-cooperation-list></remote-cooperation-list>
-  </div>
+  </main>
 </template>
 
 <script>
-// import RemoteHeader from '../header/RemoteHeader'
-
 import RemoteCooperationList from '../record/RemoteCooperationList'
 export default {
   name: 'RemoteLayout',
   components: {
-    // RemoteHeader,
-
     RemoteCooperationList,
   },
 }
@@ -22,7 +17,6 @@ export default {
 <style lang="scss">
 @import '~@/assets/style/remote.scss';
 .remote-layout {
-  // height: 1080px;
   min-height: calc(100vh - 50px);
 }
 .offsetwidth {
