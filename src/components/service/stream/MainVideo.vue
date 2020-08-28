@@ -6,6 +6,7 @@
       @mouseleave="showTools = false"
       :class="{ shutter: showShutter }"
     >
+      <!-- 메인 비디오 뷰 -->
       <video
         ref="mainVideo"
         id="main-video"
@@ -18,6 +19,7 @@
         loop
       ></video>
       <template v-if="loaded">
+        <!-- 녹화 시간 정보 -->
         <div class="main-video__recording">
           <div class="main-video__recording--time" v-if="serverTimer">
             <p class="server">
@@ -29,10 +31,12 @@
           </div>
         </div>
 
+        <!-- 포인팅 -->
         <pointing
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
+        <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
             <video-tools v-if="showTools"></video-tools>
@@ -42,10 +46,12 @@
     </div>
     <div class="main-video__empty" v-if="!loaded">
       <transition name="opacity">
+        <!-- 영상 연결중 -->
         <div class="main-video__empty-inner" v-if="resolutions.length > 0">
           <img src="~assets/image/img_video_connecting.svg" />
           <p>{{ $t('service.stream_connecting') }}</p>
         </div>
+        <!-- 영상이 없을 경우 -->
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/img_novideo.svg" />
           <p>{{ $t('service.stream_no_video') }}</p>
@@ -54,6 +60,7 @@
           </p>
         </div>
       </transition>
+      <!-- 영상 초기화 로딩 -->
       <transition name="opacity">
         <div class="main-video__empty-inner loading" v-if="initing">
           <img src="~assets/image/gif_loading.svg" />
@@ -68,6 +75,7 @@
         "
       >
         <transition name="opacity">
+          <!-- 영상 백그라운드 및 정지 표출 -->
           <div class="main-video__empty-inner">
             <img src="~assets/image/img_video_stop.svg" />
             <p>{{ $t('service.stream_stop') }}</p>
@@ -158,7 +166,7 @@ export default {
     },
     allowTools() {
       if (
-        this.account.roleType === ROLE.EXPERT_LEADER &&
+        this.account.roleType === ROLE.LEADER &&
         this.viewAction !== ACTION.STREAM_POINTING
       ) {
         return true
@@ -287,8 +295,8 @@ export default {
         })
       }, 'image/png')
     },
-    localRecord(isStart) {
-      if (isStart) {
+    localRecord(status) {
+      if (status.isStart) {
         this.localStart = this.$dayjs().unix()
         this.localTimer = setInterval(() => {
           const diff = this.$dayjs().unix() - this.localStart

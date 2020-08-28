@@ -52,6 +52,7 @@ import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import alarmMixin from 'mixins/alarm'
 import localRecorderMixin from 'mixins/localRecorder'
+import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
 
 import { mapGetters } from 'vuex'
@@ -68,7 +69,7 @@ export default {
     Store.dispatch('callReset')
     next()
   },
-  mixins: [alarmMixin, localRecorderMixin],
+  mixins: [alarmMixin, localRecorderMixin, serverRecordMixin],
   components: {
     HeaderSection,
     SubView,
@@ -87,7 +88,7 @@ export default {
   computed: {
     ...mapGetters(['view', 'captureFile', 'chatBox']),
     isExpert() {
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
         return false
@@ -118,7 +119,8 @@ export default {
     window.onbeforeunload = () => {}
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
 
-    this.stopRecord()
+    this.stopLocalRecord()
+    this.stopServerRecord()
   },
 }
 </script>

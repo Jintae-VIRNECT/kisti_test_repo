@@ -33,7 +33,7 @@ export default {
       if (this.disabled) {
         return false
       }
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       }
       if (this.control.localRecord) {
@@ -57,14 +57,14 @@ export default {
       }
 
       if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
-        this.$eventBus.$emit('localRecord', false)
+        this.$eventBus.$emit('localRecord', { isStart: false })
         return false
       } else {
-        this.$eventBus.$emit('localRecord', true)
+        this.$eventBus.$emit('localRecord', { isStart: true })
       }
     },
-    toggleButton(isStart) {
-      this.isRecording = isStart
+    toggleButton(status) {
+      this.isRecording = status.isStart
     },
   },
   mounted() {

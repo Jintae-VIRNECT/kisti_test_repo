@@ -1,6 +1,6 @@
 <template>
   <div class="main-body drawing">
-    <drawing-tools v-show="account.roleType === EXPERT_LEADER"></drawing-tools>
+    <drawing-tools v-show="account.roleType === LEADER"></drawing-tools>
     <menus :viewType="viewType"></menus>
     <drawing></drawing>
   </div>
@@ -23,7 +23,7 @@ export default {
   },
   data() {
     return {
-      EXPERT_LEADER: ROLE.EXPERT_LEADER,
+      LEADER: ROLE.LEADER,
       viewType: VIEW.DRAWING,
     }
   },

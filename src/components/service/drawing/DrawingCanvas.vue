@@ -166,7 +166,7 @@ export default {
       const canvas = new fabric.Canvas('drawingCanvas', {
         backgroundColor: '#000000',
         isDrawingMode:
-          !!this.viewAction && this.account.roleType === ROLE.EXPERT_LEADER,
+          !!this.viewAction && this.account.roleType === ROLE.LEADER,
         freeDrawingCursor: 'default',
       })
 
@@ -193,7 +193,7 @@ export default {
           // 히스토리 초기화
           this.stackClear()
 
-          if (this.account.roleType === ROLE.EXPERT_LEADER) {
+          if (this.account.roleType === ROLE.LEADER) {
             const params = {
               imgId: this.file.id,
               imgName: this.file.oriName

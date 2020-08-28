@@ -40,6 +40,10 @@ export default {
     'https://192.168.13.94:4443/file/upload',
     { type: 'form' },
   ],
+
+  /* SERVER RECORD */
+  START_SERVER_RECORD: ['POST', '/remote/recorder/recording'],
+  STOP_SERVER_RECORD: ['DELETE', '/remote/recorder/recording/{id}'],
 }
 
 export const wsUri = {

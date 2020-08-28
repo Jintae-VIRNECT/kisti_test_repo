@@ -123,7 +123,7 @@ export default {
       )
         return {}
       const idx = this.room.memberList.findIndex(
-        member => member.memberType === ROLE.EXPERT_LEADER,
+        member => member.memberType === ROLE.LEADER,
       )
       if (idx < 0) return {}
       return this.room.memberList[idx]

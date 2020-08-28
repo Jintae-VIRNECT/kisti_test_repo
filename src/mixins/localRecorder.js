@@ -4,7 +4,6 @@ import LocalRecorder from 'utils/localRecorder'
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { getWH, RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
-import { logger } from 'utils/logger'
 
 export default {
   name: 'LocalRecordMenu',
@@ -13,6 +12,10 @@ export default {
     return {
       recorder: null,
       workerJoined: false,
+
+      audioContext: null,
+      audioContextDes: null,
+      audioSourceMap: new Map(),
     }
   },
   computed: {
@@ -49,7 +52,7 @@ export default {
       if (this.disabled) {
         return false
       }
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       }
       if (this.control.localRecord) {
@@ -61,21 +64,27 @@ export default {
   },
   watch: {
     participants: {
-      handler(participants) {
-        const checkWorker = participant => {
-          return participant.roleType === ROLE.WORKER
+      handler() {
+        //for joined
+        this.connectAudio()
+
+        //for leaved
+        this.disconnectAudio()
+
+        if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
+          const anyStreamAlive = this.participants.some(participant => {
+            return participant.video === true
+          })
+
+          if (!anyStreamAlive) {
+            this.$eventBus.$emit('localRecord', {
+              isStart: false,
+              stopType: 'nostream',
+            })
+          }
         }
-        this.workerJoined = participants.some(checkWorker)
       },
       deep: true,
-    },
-    workerJoined: {
-      handler(now, before) {
-        //if worker out -> then stop local recording
-        if (now === false && before === true) {
-          this.$eventBus.$emit('localRecord', false)
-        }
-      },
     },
     resolutions: {
       handler() {
@@ -89,11 +98,18 @@ export default {
       },
       deep: true,
     },
+    mainView: {
+      handler(current) {
+        if (this.recorder !== null && this.screenStream === null) {
+          this.changeVideoStream(current.stream)
+        }
+      },
+    },
   },
   methods: {
     ...mapActions(['setScreenStream', 'setLocalRecordStatus']),
 
-    async startRecord() {
+    async startLocalRecord() {
       this.recorder = new LocalRecorder()
 
       if (await this.initRecorder()) {
@@ -102,7 +118,7 @@ export default {
       } else {
         //TODO : MESSAGE
         //녹화 시작 실패시의 안내 메시지
-        this.$eventBus.$emit('localRecord', false)
+        this.$eventBus.$emit('localRecord', { isStart: false })
         return false
       }
     },
@@ -146,7 +162,7 @@ export default {
       })
 
       this.recorder.setStopSignal(() => {
-        this.$eventBus.$emit('localRecord', false)
+        this.$eventBus.$emit('localRecord', { isStart: false })
       })
 
       this.recorder.setNoQuotaCallback(() => {
@@ -164,16 +180,12 @@ export default {
 
         return true
       } else {
-        logger('LocalRecorder', 'initRecorder Failed')
+        this.logger('LocalRecorder', 'initRecorder Failed')
         return false
       }
     },
 
-    /**
-     * stop recorder
-     * @param {Boolean} showMsg show toast msg
-     */
-    async stopRecord(showMsg) {
+    async stopLocalRecord(stopType) {
       try {
         if (this.recorder) {
           this.recorder.stopRecord()
@@ -183,8 +195,13 @@ export default {
             })
           }
 
-          if (showMsg) {
-            this.toastDefault(this.$t('service.record_end_message'))
+          switch (stopType) {
+            case 'nostream':
+              this.toastDefault(this.$t('service.record_end_no_stream_message'))
+              break
+            default:
+              this.toastDefault(this.$t('service.record_end_message'))
+              break
           }
         }
       } catch (e) {
@@ -199,31 +216,16 @@ export default {
      */
     async getStreams() {
       const streams = []
-      const participantsAudioStream = []
+      const mainStream = this.mainView.stream
 
-      //get participants audio stream
-      this.participants.forEach(participant => {
-        if (participant.stream) {
-          const audioTracks = participant.stream.getAudioTracks()
-
-          if (audioTracks && audioTracks.length > 0) {
-            const audioStream = new MediaStream()
-            const audioTrack = participant.stream.getAudioTracks()[0]
-
-            audioStream.addTrack(audioTrack)
-            participantsAudioStream.push(audioStream)
-          }
-        }
-      })
-
-      if (participantsAudioStream.length > 0) {
-        streams.push(...participantsAudioStream)
-      }
+      streams.push(this.audioContextDes.stream)
 
       switch (this.localRecordTarget) {
         case RECORD_TARGET.WORKER:
-          if (this.mainView.stream) {
-            streams.push(this.mainView.stream)
+          if (mainStream && mainStream.getVideoTracks().length > 0) {
+            const videoStream = new MediaStream()
+            videoStream.addTrack(mainStream.getVideoTracks()[0])
+            streams.push(videoStream)
           }
           break
         case RECORD_TARGET.SCREEN:
@@ -251,25 +253,64 @@ export default {
       this.setScreenStream(displayStream)
     },
 
-    stopLocalRecordByKeyPress(e) {
-      if (e.key === 'Escape') {
-        this.$eventBus.$emit('localRecord', false)
+    changeVideoStream(videoStream) {
+      if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
+        this.recorder.changeVideoStream(videoStream)
       }
     },
-    async toggleStatus(isStart) {
+
+    stopLocalRecordByKeyPress(e) {
+      if (e.key === 'Escape') {
+        this.$eventBus.$emit('localRecord', { isStart: false })
+      }
+    },
+
+    async toggleLocalRecordStatus(status) {
+      const isStart = status.isStart
+      const stopType = status.stopType
+
       if (isStart && this.localRecordStatus === LCOAL_RECORD_STAUTS.STOP) {
-        this.startRecord()
+        this.startLocalRecord()
       } else if (
         !isStart &&
         this.localRecordStatus === LCOAL_RECORD_STAUTS.START
       ) {
-        const showMsg = true
-        this.stopRecord(showMsg)
+        this.stopLocalRecord(stopType)
+      }
+    },
+
+    connectAudio() {
+      this.participants.forEach(participant => {
+        const conId = participant.connectionId
+
+        if (participant.stream && !this.audioSourceMap.has(conId)) {
+          let audioSource = this.audioContext.createMediaStreamSource(
+            participant.stream,
+          )
+          audioSource.connect(this.audioContextDes)
+          this.audioSourceMap.set(conId, audioSource)
+        }
+      })
+    },
+
+    disconnectAudio() {
+      for (let conId of this.audioSourceMap.keys()) {
+        const isStay = this.participants.some(participant => {
+          return participant.connectionId === conId
+        })
+
+        if (!isStay) {
+          this.audioSourceMap.get(conId).disconnect()
+          this.audioSourceMap.delete(conId)
+        }
       }
     },
   },
   mounted() {
-    this.$eventBus.$on('localRecord', this.toggleStatus)
+    this.$eventBus.$on('localRecord', this.toggleLocalRecordStatus)
+
+    this.audioContext = new AudioContext()
+    this.audioContextDes = this.audioContext.createMediaStreamDestination()
   },
   beforeDestroy() {
     this.$eventBus.$off('localRecord')

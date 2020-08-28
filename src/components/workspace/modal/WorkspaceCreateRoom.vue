@@ -171,7 +171,7 @@ export default {
           participants: selectedUser,
           workspaceId: this.workspace.uuid,
         })
-        const connRes = await this.$call.connect(createdRes, ROLE.EXPERT_LEADER)
+        const connRes = await this.$call.connect(createdRes, ROLE.LEADER)
 
         const roomInfo = {
           sessionId: createdRes.sessionId,
@@ -182,6 +182,10 @@ export default {
           maxParticipantCount: 3,
           memberList: [...selectedUser, this.account],
         }
+
+        window.urls['token'] = createdRes.token
+        window.urls['coturn'] = createdRes.coturn
+        window.urls['wss'] = createdRes.wss
 
         this.setRoomInfo(roomInfo)
         if (connRes) {

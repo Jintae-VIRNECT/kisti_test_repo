@@ -24,10 +24,7 @@ export default {
         let myInfo = room.memberList.find(
           member => member.uuid === this.account.uuid,
         )
-        let role =
-          myInfo.memberType === ROLE.EXPERT_LEADER
-            ? ROLE.EXPERT_LEADER
-            : ROLE.EXPERT
+        let role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
 
         const res = await joinRoom({
           uuid: this.account.uuid,
@@ -37,6 +34,10 @@ export default {
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,
         })
+
+        window.urls['token'] = res.token
+        window.urls['coturn'] = res.coturn
+        window.urls['wss'] = res.wss
 
         const joinRtn = await this.$call.connect(res, role)
         if (joinRtn) {
