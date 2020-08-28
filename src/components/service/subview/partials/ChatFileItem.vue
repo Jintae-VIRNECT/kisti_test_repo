@@ -50,9 +50,6 @@ export default {
       return parseFloat(this.fileInfo.size / 1024).toFixed(1) + 'KB'
     },
     isInvalid() {
-      if (this.fileInfo.size > 1024 * 1024) {
-        return true
-      }
       return false
     },
     validDate() {
