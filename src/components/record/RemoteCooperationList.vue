@@ -152,13 +152,13 @@ export default {
 }
 
 .record-list__header--title {
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 32px;
 }
 
 .record-list__header--description {
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 16px;
   line-height: 20px;

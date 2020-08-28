@@ -74,7 +74,7 @@ export default {
   height: 40px;
   margin: 0 auto;
   padding: 0px 12px;
-  color: rgb(117, 127, 145);
+  color: #757f91;
   font-weight: 500;
   font-size: 15px;
   background: #f5f7fa;

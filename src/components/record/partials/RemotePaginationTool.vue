@@ -103,14 +103,14 @@ export default {
 
   margin: auto;
   border: 1px solid #eaedf3;
-  box-shadow: 0px 1px 0px 0px rgb(234, 237, 243);
+  box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 
 .pagination-tool__link {
   position: relative;
   width: 38px;
   height: 100%;
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: normal;
   font-size: 14px;
   text-align: center;

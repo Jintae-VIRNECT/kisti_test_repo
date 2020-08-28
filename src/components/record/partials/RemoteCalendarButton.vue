@@ -38,8 +38,8 @@ export default {
 .calendar-button {
   width: 48px;
   height: 48px;
-  background: rgb(255, 255, 255);
-  border: 1px solid rgb(229, 231, 233);
+  background: #ffffff;
+  border: 1px solid #e5e7e9;
   border-radius: 0px;
 }
 </style>

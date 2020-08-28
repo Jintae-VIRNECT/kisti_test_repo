@@ -84,7 +84,7 @@ export default {
 
 .search--label {
   margin-right: 18px;
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 14px;
 }
@@ -103,7 +103,7 @@ export default {
   border-radius: 0px;
   &::placeholder {
     padding-left: 16px;
-    color: rgb(186, 194, 204);
+    color: #bac2cc;
     font-weight: 500;
     font-size: 16px;
   }
@@ -116,7 +116,7 @@ export default {
 .search--button {
   width: 104px;
   height: 48px;
-  background: rgb(20, 90, 182);
+  background: #145ab6;
   border-radius: 0px;
 }
 
@@ -124,8 +124,8 @@ export default {
   width: 137px;
   height: 48px;
   padding: 10px 0 14px 20px;
-  background: rgb(255, 255, 255);
-  border: 1px solid rgb(229, 231, 233);
+  background: #ffffff;
+  border: 1px solid #e5e7e9;
   border-right: none;
   & > p {
     color: #757f91;
@@ -138,7 +138,7 @@ export default {
   width: 8px;
   height: 20px;
   margin: 0 10px;
-  color: rgb(117, 127, 145);
+  color: #757f91;
   font-weight: 500;
   font-size: 14px;
 }

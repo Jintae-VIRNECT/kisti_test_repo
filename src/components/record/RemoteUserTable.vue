@@ -74,13 +74,13 @@ export default {
 .user-table {
   width: 100%;
   height: 544px;
-  border: 1px solid rgb(234, 237, 243);
-  box-shadow: 0px 1px 0px 0px rgb(234, 237, 243);
+  border: 1px solid #eaedf3;
+  box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 .user-table__header {
   height: 44px;
   border-radius: 0px;
-  box-shadow: 0px 1px 0px 0px rgb(234, 237, 243);
+  box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 .user-table__header--text {
   color: rgb(74, 83, 97);
@@ -99,8 +99,8 @@ export default {
 }
 
 .user-table__row {
-  border-color: rgb(234, 237, 243);
-  box-shadow: 0px 1px 0px 0px rgb(234, 237, 243);
+  border-color: #eaedf3;
+  box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 .user-table__text {
   color: #0b1f48;
@@ -109,7 +109,7 @@ export default {
   text-align: center;
 
   &.index {
-    color: rgb(117, 127, 145);
+    color: #757f91;
     font-weight: 500;
     font-size: 15px;
     text-align: center;

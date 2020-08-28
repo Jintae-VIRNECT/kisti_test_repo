@@ -28,8 +28,8 @@
   width: 100%;
   height: 100%;
   padding: 10px 0 14px 20px;
-  background: rgb(255, 255, 255);
-  border: 1px solid rgb(229, 231, 233);
+  background: #ffffff;
+  border: 1px solid #e5e7e9;
   border-right: none;
 }
 
@@ -40,13 +40,13 @@
   height: 303px;
   background: #fff;
   border: 1px solid #e5e7e9;
-  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 2px 4px 0px rgba(#000000, 0.1);
   header {
     display: flex;
     width: 100%;
     height: 48px;
     // line-height: 40px;
-    background: rgb(125, 139, 160);
+    background: #7d8ba0;
     border-radius: 0px;
 
     span {
@@ -58,7 +58,7 @@
     .prev {
       position: relative;
       float: left;
-      width: 14.285714285714286%;
+      width: 14%;
       background: url(~@/assets/img/ic_calendar_left.svg) center/50% no-repeat;
 
       &:not(.disabled) {
@@ -71,7 +71,7 @@
     .next {
       position: relative;
       float: left;
-      width: 14.285714285714286%;
+      width: 14%;
       background: url(~@/assets/img/ic_calendar_right.svg) center/50% no-repeat;
       &:not(.disabled) {
         cursor: pointer;
@@ -114,7 +114,7 @@
     height: 28px;
     margin: 2px 0;
     // padding: 0 5px;
-    color: rgb(84, 84, 84);
+    color: #545454;
     font-weight: 500;
     font-size: 14px;
     line-height: 20px;
@@ -200,7 +200,7 @@
   .cell.day-header {
     margin-top: 19px;
     margin-bottom: 0px;
-    color: rgb(35, 53, 90);
+    color: #23355a;
     font-size: normal;
     white-space: nowrap;
     cursor: inherit;
@@ -238,7 +238,7 @@
 }
 
 .vdp-datepicker__header {
-  background: rgb(125, 139, 160);
+  background: #7d8ba0;
   border-radius: 0px;
 }
 
@@ -246,7 +246,7 @@
 .day__month_btn,
 .year__decade {
   margin-top: 11px;
-  color: rgb(255, 255, 255);
+  color: #ffffff;
   font-weight: 500;
   font-size: 16px;
 }

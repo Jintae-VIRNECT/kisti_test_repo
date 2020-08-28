@@ -201,7 +201,7 @@ export default {
   }
 
   .modal--title {
-    color: rgb(11, 31, 72);
+    color: #0b1f48;
     font-weight: 500;
     font-size: 18px;
   }

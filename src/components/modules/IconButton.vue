@@ -76,7 +76,7 @@ export default {
   }
 
   &.active {
-    color: rgb(255, 255, 255);
+    color: #ffffff;
     background: #1665d8 0.929em 50%/1.571em no-repeat;
   }
 }

@@ -258,7 +258,7 @@ export default {
 }
 
 .file-list__header--text {
-  color: rgb(117, 127, 145);
+  color: #757f91;
   font-weight: 500;
   font-size: 18px;
 }
@@ -269,12 +269,12 @@ export default {
 
 .file-list__thead--row {
   height: 56px;
-  background: rgb(245, 247, 250);
-  border-top: 1px solid rgb(234, 237, 243);
+  background: #f5f7fa;
+  border-top: 1px solid #eaedf3;
 }
 
 .file-list__thead--column {
-  color: rgb(117, 127, 145);
+  color: #757f91;
   font-weight: 500;
   font-size: 15px;
   &.filename {
@@ -287,14 +287,14 @@ export default {
 }
 
 .file-list__tbody {
-  border-right: 1px solid rgb(234, 237, 243);
-  border-left: 1px solid rgb(234, 237, 243);
+  border-right: 1px solid #eaedf3;
+  border-left: 1px solid #eaedf3;
 }
 
 .file-list__tbody--row {
   height: 62px;
-  border-top: 1px solid rgb(234, 237, 243);
-  border-bottom: 1px solid rgb(234, 237, 243);
+  border-top: 1px solid #eaedf3;
+  border-bottom: 1px solid #eaedf3;
 
   &:hover {
     cursor: pointer;
@@ -302,13 +302,13 @@ export default {
 }
 
 .file-list__tbody--column {
-  color: rgb(117, 127, 145);
+  color: #757f91;
   font-weight: 500;
   font-size: 15px;
   text-align: center;
 
   &.filename {
-    color: rgb(11, 31, 72);
+    color: #0b1f48;
     text-align: left;
   }
   &.toggle {
@@ -320,11 +320,11 @@ export default {
   width: 246px;
   height: 40px;
   margin: 34px 287px;
-  background: rgb(20, 90, 182);
+  background: #145ab6;
   border-radius: 2px;
 
   & > p {
-    color: rgb(255, 255, 255);
+    color: #ffffff;
     font-weight: 500;
     font-size: 14px;
   }

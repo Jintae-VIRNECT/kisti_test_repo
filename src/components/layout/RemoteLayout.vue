@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import RemoteCooperationList from '../record/RemoteCooperationList'
+import RemoteCooperationList from 'components/record/RemoteCooperationList'
 export default {
   name: 'RemoteLayout',
   components: {
@@ -15,7 +15,8 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~@/assets/style/remote.scss';
+@import '~assets/style/remote.scss';
+@import '~assets/style/vars';
 .remote-layout {
   min-height: calc(100vh - 50px);
 }
