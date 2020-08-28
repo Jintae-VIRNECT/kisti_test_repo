@@ -94,7 +94,9 @@ export default {
       display: block;
     }
     .name {
+      overflow: hidden;
       font-size: 24px;
+      text-overflow: ellipsis;
     }
     .email {
       color: $font-color-desc;

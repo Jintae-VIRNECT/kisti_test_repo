@@ -391,9 +391,12 @@ export default {
   }
   .content {
     flex-grow: 1;
+    overflow: hidden;
     & > span {
       display: block;
       margin: 8px 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .value {
       color: $font-color-content;

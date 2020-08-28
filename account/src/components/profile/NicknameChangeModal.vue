@@ -12,9 +12,13 @@
         class="virnect-login-form"
         ref="form"
         :model="form"
+        :rules="rules"
         @submit.native.prevent="submit"
       >
-        <el-form-item :label="$t('profile.nicknameChangeModal.nickname')">
+        <el-form-item
+          :label="$t('profile.nicknameChangeModal.nickname')"
+          prop="nickname"
+        >
           <el-input v-model="form.nickname" />
         </el-form-item>
       </el-form>
@@ -41,6 +45,9 @@ export default {
     return {
       form: {
         nickname: '',
+      },
+      rules: {
+        nickname: [{ max: 20 }],
       },
     }
   },

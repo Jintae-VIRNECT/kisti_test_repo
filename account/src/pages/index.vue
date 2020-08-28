@@ -115,7 +115,9 @@ export default {
 
   & > h2 {
     margin: 12px;
+    overflow: hidden;
     font-size: 28px;
+    text-overflow: ellipsis;
   }
   & > p {
     font-size: 15px;

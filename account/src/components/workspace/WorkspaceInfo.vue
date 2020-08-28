@@ -41,7 +41,7 @@ export default {
       workspace: {},
     }
   },
-  async beforeMount() {
+  mounted() {
     this.workspace = workspaceService.getMasterWorkspaceInfo()
   },
 }
