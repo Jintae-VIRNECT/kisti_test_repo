@@ -1,5 +1,7 @@
 package com.virnect.workspace.dao;
 
+import com.virnect.workspace.domain.Workspace;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-01-22
@@ -9,4 +11,5 @@ package com.virnect.workspace.dao;
  */
 public interface WorkspaceUserRepositoryCustom {
     long countWorkspaceUser(String workspaceId);
+    long deleteAllWorkspaceUserByWorkspace(Workspace workspace);
 }

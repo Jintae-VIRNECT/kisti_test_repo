@@ -91,3 +91,9 @@ hystrix:
       circuitBreaker.requestVolumeThreshold: 5
       circuitBreaker.errorThresholdPercentage: 50
 
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus

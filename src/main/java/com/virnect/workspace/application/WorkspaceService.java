@@ -18,7 +18,6 @@ import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
 import com.virnect.workspace.infra.file.FileUploadService;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -30,6 +29,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
@@ -41,15 +41,12 @@ import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class WorkspaceService {
     private final WorkspaceRepository workspaceRepository;
     private final WorkspaceUserRepository workspaceUserRepository;
@@ -1506,4 +1503,41 @@ public class WorkspaceService {
         return new ApiResponse<>(workspaceLicenseInfoResponse);
     }
 
+    /***
+     * 워크스페이스 정보 전체 삭제 처리
+     * @param workspaceUUID - 삭제될 워크스페이스 식별자
+     * @return
+     */
+    @Transactional
+    public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String workspaceUUID) {
+        Optional<Workspace> workspaceInfo = workspaceRepository.findByUuid(workspaceUUID);
+
+        // workspace 정보가 없는 경우
+        if (!workspaceInfo.isPresent()) {
+            return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+        }
+
+        Workspace workspace = workspaceInfo.get();
+
+        List<WorkspaceUser> workspaceUserList = workspace.getWorkspaceUserList();
+
+        // workspace user permission 삭제
+        workspaceUserPermissionRepository.deleteAllWorkspaceUserPermissionByWorkspaceUser(workspaceUserList);
+
+        // workspace user 삭제
+        workspaceUserRepository.deleteAllWorkspaceUserByWorkspace(workspace);
+
+        // workspace history 삭제
+        historyRepository.deleteAllHistoryInfoByWorkspace(workspace);
+
+        // workspace profile 삭제 (기본 이미지인 경우 제외)
+        if (!workspace.getProfile().equals("default")) {
+            fileUploadService.delete(workspace.getProfile());
+        }
+
+        // workspace 삭제
+        workspaceRepository.delete(workspace);
+
+        return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+    }
 }
