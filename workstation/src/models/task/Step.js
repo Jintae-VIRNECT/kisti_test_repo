@@ -14,7 +14,7 @@ export default class Step extends Model {
     this.reportedDate = json.reportedDate
     this.progressRate = json.progressRate
     this.conditions = json.conditions
-    this.paper = json.paper
+    this.hasPaper = json.paperList.length ? true : false
     this.hasIssue = json.issueList.length ? true : false
   }
 }

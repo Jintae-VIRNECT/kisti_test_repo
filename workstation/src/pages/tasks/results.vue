@@ -81,19 +81,21 @@ export default {
   },
   watch: {
     activeTab(tab) {
+      let pathTo = ''
       if (tab === 'task') {
-        this.$router.replace(`/tasks/results`)
+        pathTo = `/tasks/results`
         this.searchSubTasks()
         this.myResult = this.$t('results.myTask')
       } else if (tab === 'issue') {
-        this.$router.replace(`/tasks/results/issues`)
+        pathTo = `/tasks/results/issues`
         this.searchIssues()
         this.myResult = this.$t('results.myIssue')
       } else if (tab === 'paper') {
-        this.$router.replace(`/tasks/results/papers`)
+        pathTo = `/tasks/results/papers`
         this.searchPapers()
         this.myResult = this.$t('results.myPaper')
       }
+      this.$router.replace(pathTo).catch(() => {})
     },
   },
   methods: {

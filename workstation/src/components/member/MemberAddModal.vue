@@ -27,6 +27,9 @@
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
+          <button @click.prevent="clearMember(index)">
+            <i class="el-icon-close" />
+          </button>
         </h6>
         <el-form-item class="horizon" prop="email" required>
           <template slot="label">
@@ -119,7 +122,11 @@
       <el-button @click="addMember">
         {{ $t('members.add.addMember') }}
       </el-button>
-      <el-button type="primary" @click="submit">
+      <el-button
+        type="primary"
+        @click="submit"
+        :disabled="!userInfoList.length"
+      >
         {{ $t('members.add.submit') }}
         <span class="number">{{ userInfoList.length }}</span>
       </el-button>
@@ -154,6 +161,9 @@ export default {
     },
     addMember() {
       this.userInfoList.push(new InviteMember())
+    },
+    clearMember(index) {
+      this.userInfoList.splice(index, 1)
     },
     async submit() {
       // 유효성 검사
@@ -241,6 +251,10 @@ export default {
       & > span,
       & > img {
         vertical-align: middle;
+      }
+      & > button {
+        float: right;
+        font-size: 1.1em;
       }
     }
     .el-form-item {

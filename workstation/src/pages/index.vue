@@ -44,16 +44,8 @@
         <!-- 오른쪽 -->
         <el-col class="container__right">
           <user-profile-card />
-          <link-list-card
-            :icon="require('assets/images/icon/ic-phonelink.svg')"
-            :title="$t('home.install.title')"
-            :links="install"
-          />
-          <link-list-card
-            :icon="require('assets/images/icon/ic-local-library.svg')"
-            :title="$t('guide.title')"
-            :links="guide"
-          />
+          <download-center />
+          <guide-list />
           <a :href="`${$url.www}/support/faq`" target="_blank">
             <el-card class="faq-banner">
               <h6>
@@ -78,9 +70,9 @@ import CurrentMemberList from '@/components/home/CurrentMemberList'
 import CurrentContentsList from '@/components/home/CurrentContentsList'
 import CurrentResultList from '@/components/home/CurrentResultList'
 import UserProfileCard from '@/components/home/UserProfileCard'
-import LinkListCard from '@/components/home/LinkListCard'
+import DownloadCenter from '@/components/home/DownloadCenter'
+import GuideList from '@/components/home/GuideList'
 
-import { install, guide } from '@/models/home'
 import workspaceService from '@/services/workspace'
 
 export default {
@@ -91,12 +83,11 @@ export default {
     CurrentContentsList,
     CurrentResultList,
     UserProfileCard,
-    LinkListCard,
+    DownloadCenter,
+    GuideList,
   },
   data() {
     return {
-      install: install(this),
-      guide: guide(this),
       plansInfo: {
         storage: {},
         viewCount: {},
@@ -189,6 +180,35 @@ export default {
   .el-card--table .el-table__body-wrapper,
   .el-card--table .el-table__empty-block {
     min-height: 256px;
+  }
+
+  .link-list-card {
+    .el-card__body {
+      padding: 8px 0;
+    }
+    a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 44px;
+      padding: 0 24px;
+      transition: background-color 0.25s ease;
+      &:hover {
+        background-color: #f5f7fa;
+      }
+
+      & > img:first-child {
+        margin-right: 4px;
+        margin-left: -8px;
+      }
+      & > span {
+        color: $font-color-content;
+      }
+      & > img:last-child {
+        position: absolute;
+        right: 24px;
+      }
+    }
   }
 }
 </style>
