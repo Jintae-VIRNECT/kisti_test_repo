@@ -302,4 +302,18 @@ public class ContentController {
         ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(workspaceId, startDate, endDate);
         return ResponseEntity.ok(responseMessage);
     }
+
+    @ApiOperation(value = "컨텐츠 관련 정보 삭제 - 회원탈퇴", tags = "user server only")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "user-server")
+    })
+    @DeleteMapping("/secession/{workspaceUUID}")
+    public ResponseEntity<ApiResponse<ContentSecessionResponse>> contentSecessionRequest(@PathVariable("workspaceUUID") String workspaceUUID, @RequestHeader("serviceID") String requestServiceID) {
+        if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals("user-server")) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        ContentSecessionResponse responseMessage = contentService.deleteAllContentInfo(workspaceUUID);
+        return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+    }
 }
