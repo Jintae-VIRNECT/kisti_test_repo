@@ -89,6 +89,17 @@ export default {
     'https://192.168.13.94:4443/file/upload',
     { type: 'form' },
   ],
+  FILE_UPLOAD: [
+    'POST',
+    'https://192.168.13.36:8000/remote/file/upload',
+    { type: 'form' },
+  ],
+  FILE_DOWNLOAD: [
+    'GET',
+    'https://192.168.13.36:8000/remote/file/download/{workspaceId}/{sessionId}',
+    { response: 'direct', type: 'blob' },
+  ],
+  FILE_LIST: ['GET', 'https://192.168.13.36:8000/remote/file'],
 
   /* SERVER RECORD */
   START_SERVER_RECORD: ['POST', '/remote/recorder/recording'],

@@ -14,7 +14,7 @@
           <div class="chat-item__file--wrapper">
             <!-- <div class="chat-item__file--icon" :class="extension"></div> -->
             <div class="chat-item__file--name" :class="extension">
-              {{ chat.file[0].fileName }}
+              {{ chat.file.fileName }}
             </div>
           </div>
           <p class="chat-item__file--size">{{ fileSize }}</p>
@@ -40,6 +40,8 @@ import Profile from 'Profile'
 import FileSaver from 'file-saver'
 import linkifyHtml from 'linkifyjs/html'
 import { systemClass, systemText } from './chatUtils'
+import { downloadFile } from 'api/workspace/call'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ChatItem',
   components: {
@@ -54,8 +56,9 @@ export default {
     chat: Object,
   },
   computed: {
+    ...mapGetters(['roomInfo']),
     isFile() {
-      if (this.chat.file && this.chat.file.length > 0) {
+      if (this.chat.file) {
         return true
       } else {
         return false
@@ -110,8 +113,8 @@ export default {
     extension() {
       let ext = ''
       const file = this.chat.file
-      if (file && file.length > 0) {
-        ext = file[0].fileName.split('.').pop()
+      if (file) {
+        ext = file.fileName.split('.').pop()
       } else {
         return ''
       }
@@ -134,7 +137,11 @@ export default {
       if (this.chat.type === 'system') {
         return systemText(this.chat.status, this.chat.name)
       }
+      console.log(this.chat)
       let chatText = this.chat.text ? this.chat.text : ''
+      if (typeof chatText === 'object') {
+        return ''
+      }
       chatText = linkifyHtml(chatText, {
         defaultProtocol: 'https',
         className: 'chat-url',
@@ -142,7 +149,7 @@ export default {
       return chatText ? chatText.replace(/\n/gi, '<br>') : ''
     },
     fileSize() {
-      let size = this.chat.file[0].fileSize
+      let size = this.chat.file.size
       const mb = 1048576
 
       if (size >= mb) {
@@ -156,9 +163,15 @@ export default {
   },
   watch: {},
   methods: {
-    download() {
-      const file = this.chat.file[0]
-      FileSaver.saveAs(file.fileUrl, file.fileName)
+    async download() {
+      const res = await downloadFile({
+        fileName: this.chat.file.fileName,
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+      })
+      console.log(res)
+      // FileSaver.saveAs(file.fileUrl, file.fileName)
     },
   },
 

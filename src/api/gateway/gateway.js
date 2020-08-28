@@ -78,9 +78,9 @@ const sender = async function(constant, params, headers = {}, custom) {
     }
   }
 
-  option = merge(option, {
-    ...custom,
-  })
+  // option = merge(option, {
+  //   ...custom,
+  // })
   option.headers = merge(option.headers, {
     ...headers,
   })
@@ -96,8 +96,16 @@ const sender = async function(constant, params, headers = {}, custom) {
   } else {
     request['data'] = parameter
   }
+  if (custom && custom.type === 'blob') {
+    // option.headers['Content-Type'] = 'image/jpeg'
+    request.responseType = 'blob'
+    request.headers['Accept'] = 'image/jpeg'
+  }
   try {
     const response = await axios(request)
+    if (custom && 'direct' === custom.response) {
+      return response.data
+    }
     return receiver(response)
   } catch (err) {
     if ('message' in err) {

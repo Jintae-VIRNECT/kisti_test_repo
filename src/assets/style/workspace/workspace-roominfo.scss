@@ -18,6 +18,7 @@
   // height: 100%;
   padding: 3em;
   background-color: $color_darkgray_600;
+  border-right: solid 1px rgba(#7f7f7f, 0.2);
 }
 
 .roominfo-nav__image {
@@ -177,22 +178,18 @@
 }
 
 .download-table {
-  // width: 100%;
-  // table-layout: fixed;
   height: 100%;
   margin-bottom: 2px;
-  background-color: #29292c;
-  // border: solid 1px #3d3d3d;
   -moz-border-radius: 26px;
   -webkit-border-radius: 26px;
   border-radius: 2px;
-  // border-collapse: inherit;
   > .vue-scrollbar__wrapper {
     flex: 1;
-    width: 100%;
+    // width: 100%;
+    width: calc(100% + 10px);
     height: calc(100% - 52px);
-    margin-right: 0;
-    padding-right: 0;
+    // margin-right: 0;
+    // padding-right: 0;
   }
 }
 
@@ -209,6 +206,7 @@
 .download-table__row {
   display: flex;
   height: 64px;
+  background-color: #29292c;
   // border-top: solid 1px #3d3d3d;
   border: solid 1px #3d3d3d;
   border-top: none;

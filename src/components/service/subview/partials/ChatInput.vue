@@ -52,7 +52,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { sendFile } from 'api/workspace/call'
+import { sendFile, uploadFile } from 'api/workspace/call'
 import toastMixin from 'mixins/toast'
 export default {
   name: 'ChatInput',
@@ -87,23 +87,33 @@ export default {
       if (e) {
         e.preventDefault()
       }
-      this.$call.sendChat(this.inputText)
+      if (this.inputText.length > 0) {
+        this.$call.sendChat(this.inputText)
+      }
+      // this.$call.sendFile({
+      //   fileName: 'profile.png',
+      //   mimeType: 'png',
+      //   size: 5483,
+      //   fileDownloadUrl:
+      //     '4bdebc670244f7c886ace5340ea01fa7/ses_K1c2tOU2Nr/profile.png',
+      // })
 
       if (this.fileList.length > 0) {
         for (const file of this.fileList) {
-          const response = await sendFile({
+          const params = {
             file: file.filedata,
             sessionId: this.roomInfo.sessionId,
             workspaceId: this.workspace.uuid,
-          })
-
-          const downUrl = response.downloadUrl
+            userId: this.account.uuid,
+          }
+          console.log(params)
+          const res = await uploadFile(params)
 
           this.$call.sendFile({
-            fileName: file.filedata.name,
+            fileName: res.name,
             mimeType: file.filedata.type,
-            size: file.filedata.size,
-            fileDownloadUrl: downUrl,
+            size: res.size,
+            fileDownloadUrl: res.path,
           })
         }
 
@@ -128,6 +138,7 @@ export default {
       }
     },
     loadFile(file) {
+      console.log(file)
       if (file) {
         const sizeMB = file.size / 1024 / 1024
         if (sizeMB > 20) {

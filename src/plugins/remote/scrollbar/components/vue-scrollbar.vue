@@ -2,6 +2,8 @@
   <div
     :class="'vue-scrollbar__wrapper' + (this.classes ? ' ' + this.classes : '')"
     ref="scrollWrapper"
+    @mouseenter="hover = true"
+    @mouseleave="hover = false"
     @wheel="scroll"
     @touchstart="startDrag"
     @touchmove="onDrag"
@@ -23,6 +25,7 @@
 
       <vertical-scrollbar
         v-if="ready"
+        :hover="hover"
         :area="{ height: scrollAreaHeight }"
         :wrapper="{ height: scrollWrapperHeight }"
         :scrolling="vMovement"
@@ -35,6 +38,7 @@
 
       <horizontal-scrollbar
         v-if="ready"
+        :hover="hover"
         :area="{ width: scrollAreaWidth }"
         :wrapper="{ width: scrollWrapperWidth }"
         :scrolling="hMovement"
@@ -94,6 +98,7 @@ export default {
       dragging: false,
       start: { y: 0, x: 0 },
       allowBodyScroll: false,
+      hover: false,
     }
   },
 

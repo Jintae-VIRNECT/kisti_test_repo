@@ -30,9 +30,9 @@ const push = {
           login: 'guest',
           passcode: 'guest',
         },
-        debug: str => {
-          debug('::message::', str)
-        },
+        // debug: str => {
+        //   debug('::message::', str)
+        // },
         reconnectDelay: 3 * 1000,
         heartbeatIncoming: 10 * 1000,
         heartbeatOutgoing: 10 * 1000,

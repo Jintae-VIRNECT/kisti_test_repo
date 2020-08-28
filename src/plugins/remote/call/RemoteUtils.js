@@ -247,7 +247,7 @@ export const addSessionEventListener = session => {
       name: participants[idx].nickname,
       profile: participants[idx].path,
       uuid: event.from.connectionId,
-      text: data,
+      file: data,
     })
   })
 }

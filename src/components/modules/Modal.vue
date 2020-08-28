@@ -187,7 +187,8 @@ export default {
   .modal--inner {
     position: relative;
     min-width: 25.714em;
-    background-color: #1e1e20;
+    overflow: hidden;
+    background-color: #242427;
     border: 1px solid rgba(#a9a9a9, 0.08);
     border-radius: 0.714em;
     box-shadow: 0 0 0.714em 0 rgba($color_darkgray_1000, 0.07),

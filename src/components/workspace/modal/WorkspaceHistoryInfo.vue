@@ -54,7 +54,7 @@
         :sessionId="sessionId"
       ></participants-info>
 
-      <room-download v-else></room-download>
+      <room-download v-else :sessionId="sessionId"></room-download>
     </div>
   </modal>
 </template>

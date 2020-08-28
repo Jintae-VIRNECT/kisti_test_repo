@@ -98,7 +98,7 @@
     "stylelint-order": "^4.0.0",
     "stylelint-prettier": "^1.1.2",
     "stylelint-scss": "^3.14.2",
-    "sweetalert2": "^8.13.0",
+    "sweetalert2": "^9.17.1",
     "url-loader": "^1.1.2",
     "uuid": "^3.4.0",
     "vue-axios": "^2.1.5",
