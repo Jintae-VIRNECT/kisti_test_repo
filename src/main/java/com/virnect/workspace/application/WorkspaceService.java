@@ -169,16 +169,29 @@ public class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return - 소속된 워크스페이스 정보
      */
-    public ApiResponse<WorkspaceInfoListResponse> getUserWorkspaces(String userId, Pageable pageable) {
+    public ApiResponse<WorkspaceInfoListResponse> getUserWorkspaces(String userId, com.virnect.workspace.global.common.PageRequest pageRequest) {
+        String sortName = pageRequest.of().getSort().toString().split(":")[0].trim();
+        String sortDirection = pageRequest.of().getSort().toString().split(":")[1].trim();
+
+        if (sortName.equalsIgnoreCase("role")) {
+            sortName = "workspaceRole";
+            String sort = sortName + "," + sortDirection;
+            pageRequest.setSort(sort);
+        }
+
+        Pageable pageable= pageRequest.of();
         List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceList = new ArrayList<>();
-        Page<WorkspaceUser> workspaceUserPage = this.workspaceUserRepository.findByUserId(userId, pageable);
-        for (WorkspaceUser workspaceUser : workspaceUserPage) {
+
+        Page<WorkspaceUserPermission> workspaceUserPermissionPage = this.workspaceUserPermissionRepository.findByWorkspaceUser_UserId(userId, pageable);
+
+        for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
+
+            WorkspaceUser workspaceUser = workspaceUserPermission.getWorkspaceUser();
             Workspace workspace = workspaceUser.getWorkspace();
+
             WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
-
-            WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser(workspaceUser);
-
             workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
+
             UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
             workspaceInfo.setMasterName(userInfoRestResponse.getName());
             workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
@@ -189,13 +202,11 @@ public class WorkspaceService {
         }
 
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
-        pageMetadataResponse.setTotalElements(workspaceUserPage.getTotalElements());
-        pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
+        pageMetadataResponse.setTotalElements(workspaceUserPermissionPage.getTotalElements());
+        pageMetadataResponse.setTotalPage(workspaceUserPermissionPage.getTotalPages());
         pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
         pageMetadataResponse.setCurrentSize(pageable.getPageSize());
 
-        //master-manager-member 순으로 고정 정렬
-        workspaceList = workspaceList.stream().sorted(Comparator.comparing(WorkspaceInfoListResponse.WorkspaceInfo::getRoleId, Comparator.nullsFirst(Comparator.naturalOrder()))).collect(Collectors.toList());
         return new ApiResponse<>(new WorkspaceInfoListResponse(workspaceList, pageMetadataResponse));
     }
 

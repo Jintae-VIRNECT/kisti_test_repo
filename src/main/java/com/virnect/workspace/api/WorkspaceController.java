@@ -125,7 +125,7 @@ public class WorkspaceController {
         if (!StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId, pageRequest.of());
+        ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(userId, pageRequest);
         return ResponseEntity.ok(apiResponse);
     }
 
