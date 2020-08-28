@@ -65,7 +65,8 @@ public class SubProcess extends BaseTimeEntity {
     @JoinColumn(name = "process_id")
     private Process process;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subProcess", cascade = CascadeType.ALL)
+    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "subProcess", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subProcess")
     private List<Job> jobList = new ArrayList<>();
 
     public void addJob(Job job) {

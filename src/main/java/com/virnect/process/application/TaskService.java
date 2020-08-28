@@ -83,7 +83,7 @@ public class TaskService {
          * 1.     컨텐츠 메타데이터 가져오기
          * 1-1.   에러처리
          * 2.     작업 정보 저장
-         *ㄹ
+         *
          * 3.     복제 (Duplicate) / 전환 (Transform) 분기
          * 3-1.   복제 (Duplicate)
          * 3-1-1. 컨텐츠 파일 복제 요청
@@ -454,8 +454,7 @@ public class TaskService {
                                 .build();
 
                         job = this.jobRepository.save(job);
-
-                        //subProcess.addJob(job); subProcess job에 cascase all로 줌으로써 주석처리
+                        subProcess.addJob(job);
 
                         // Job 에 Report 아이템 추가하기
                         addJobToReport(scene, job, newProcess);
@@ -1250,11 +1249,39 @@ public class TaskService {
 
 
         // TODO : 공정 삭제시 히스토리를 남기고 상태값만 바꾼다면, 이슈, 리포트 등 작업 하위의 아이템들을 어떻게 할 것인지 확인해야 함.
+
+
+        process.getSubProcessList().stream().forEach(subProcess -> {
+            subProcess.getJobList().stream().forEach(job -> {
+                job.getReportList().stream().forEach(report -> {
+                    report.getItemList().stream().forEach(item -> {
+                        //item 삭제
+                        this.itemRepository.delete(item);
+                    });
+                    //report 삭제
+                    this.reportRepository.delete(report);
+                });
+                job.getIssueList().stream().forEach(issue -> {
+                    //issue 삭제
+                    this.issueRepository.delete(issue);
+                });
+                //job 삭제
+                this.jobRepository.delete(job);
+            });
+            //sub process 삭제
+            this.subProcessRepository.delete(subProcess);
+        });
+
+        process.getTargetList().stream().forEach(target -> {
+            //target 삭제
+            this.targetRepository.delete(target);
+        });
+
+        //process 삭제
         this.processRepository.delete(process);
 
         return new ApiResponse<>(new ProcessSimpleResponse(apiResponse.getData().getDeleteResponseList().get(0).getResult()));
     }
-
 
     /**
      * 워크스페이스 내 사용자 검색(닉네임, 이메일)
