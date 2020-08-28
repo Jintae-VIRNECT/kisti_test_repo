@@ -62,7 +62,8 @@ public class ContentController {
             , @RequestParam(value = "converteds", required = false, defaultValue = "ALL") String converteds
             , @RequestParam(value = "userUUID", required = false) String userUUID
             , @ApiIgnore PageRequest pageable) {
-        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, converteds, pageable.of());
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID,
+                userUUID, search, shareds, converteds, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -89,7 +90,8 @@ public class ContentController {
         if (userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID, userUUID, search, shareds, converteds, pageable.of());
+        ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(workspaceUUID,
+                userUUID, search, shareds, converteds, pageable.of());
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -106,7 +108,8 @@ public class ContentController {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<List<ContentCountResponse>> responseMessage = this.contentService.countMyContents(workspaceUUID, userUUIDList);
+        ApiResponse<List<ContentCountResponse>> responseMessage = this.contentService.countMyContents(workspaceUUID,
+                userUUIDList);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -123,10 +126,12 @@ public class ContentController {
             @ApiImplicitParam(name = "userUUID", value = "업로드 사용자 고유 식별자(로그인 성공 응답으로 서버에서 사용자 데이터를 내려줌)", dataType = "string", paramType = "form", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
     })
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(@ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result) {
+    public ResponseEntity<ApiResponse<ContentUploadResponse>> contentFileUploadRequestHandler(
+            @ModelAttribute @Valid ContentUploadRequest uploadRequest, BindingResult result) {
         if (result.hasErrors()) {
             log.info("[ContentUploadRequest] => [{}]", uploadRequest);
-            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
+            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(),
+                    result.getFieldError().getDefaultMessage());
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentUpload(uploadRequest);
@@ -148,7 +153,8 @@ public class ContentController {
         if (contentUUID.isEmpty() || workspaceUUID.isEmpty() || userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID, workspaceUUID, userUUID);
+        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentDuplicate(contentUUID,
+                workspaceUUID, userUUID);
         return ResponseEntity.ok(uploadResponse);
     }
 
@@ -169,10 +175,12 @@ public class ContentController {
             , @PathVariable("contentUUID") String contentUUID, BindingResult result) {
         if (result.hasErrors() || contentUUID.isEmpty()) {
             log.info("[ContentUpdateRequest] => [{}]", updateRequestDto.toString());
-            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(), result.getFieldError().getDefaultMessage());
+            log.error("[FIELD ERROR] => [{}] [{}]", result.getFieldError().getField(),
+                    result.getFieldError().getDefaultMessage());
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentUploadResponse> responseMessage = this.contentService.contentUpdate(contentUUID, updateRequestDto);
+        ApiResponse<ContentUploadResponse> responseMessage = this.contentService.contentUpdate(contentUUID,
+                updateRequestDto);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -184,21 +192,23 @@ public class ContentController {
             log.error("REQUEST BINDING contentDeleteRequest: {}", contentDeleteRequest.toString());
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentDeleteListResponse> responseMessage = this.contentService.contentDelete(contentDeleteRequest);
+        ApiResponse<ContentDeleteListResponse> responseMessage = this.contentService.contentDelete(
+                contentDeleteRequest);
         return ResponseEntity.ok(responseMessage);
     }
-
 
     @ApiOperation(value = "컨텐츠 내 씬그룹 목록 조회", notes = "컨텐츠 내에 구성되어 있는 씬그룹의 목록을 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     })
     @GetMapping("/sceneGroups/content/{contentUUID}")
-    public ResponseEntity<ApiResponse<SceneGroupInfoListResponse>> getContentSceneGroupInfoList(@PathVariable("contentUUID") String contentUUID) {
+    public ResponseEntity<ApiResponse<SceneGroupInfoListResponse>> getContentSceneGroupInfoList(
+            @PathVariable("contentUUID") String contentUUID) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<SceneGroupInfoListResponse> responseMessage = this.contentService.getContentSceneGroups(contentUUID);
+        ApiResponse<SceneGroupInfoListResponse> responseMessage = this.contentService.getContentSceneGroups(
+                contentUUID);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -207,7 +217,8 @@ public class ContentController {
             @ApiImplicitParam(value = "컨텐츠 식별자", name = "contentUUID", required = true, paramType = "path", example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     })
     @GetMapping("/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentInfoResponse>> getContentInfo(@PathVariable("contentUUID") String contentUUID) {
+    public ResponseEntity<ApiResponse<ContentInfoResponse>> getContentInfo(
+            @PathVariable("contentUUID") String contentUUID) {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -235,7 +246,8 @@ public class ContentController {
         if (contentUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID, contentInfoRequest);
+        ApiResponse<ContentInfoResponse> response = this.contentService.modifyContentInfo(contentUUID,
+                contentInfoRequest);
         return ResponseEntity.ok(response);
     }
 
@@ -252,7 +264,8 @@ public class ContentController {
         if (taskId == null || userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentUploadResponse> responseApiResponse = this.contentService.convertTaskToContent(taskId, userUUID);
+        ApiResponse<ContentUploadResponse> responseApiResponse = this.contentService.convertTaskToContent(taskId,
+                userUUID);
         return ResponseEntity.ok(responseApiResponse);
     }
 
@@ -262,11 +275,13 @@ public class ContentController {
             @ApiImplicitParam(name = "userUUID", value = "요청 사용자의 고유번호", required = true, dataType = "string", paramType = "query")
     })
     @GetMapping("/properties/metadata/{contentUUID}")
-    public ResponseEntity<ApiResponse<ContentPropertiesResponse>> getContentPropertiesMetadata(@PathVariable("contentUUID") String contentUUID, @RequestParam(value = "userUUID") String userUUID) {
+    public ResponseEntity<ApiResponse<ContentPropertiesResponse>> getContentPropertiesMetadata(
+            @PathVariable("contentUUID") String contentUUID, @RequestParam(value = "userUUID") String userUUID) {
         if (contentUUID.isEmpty() || userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentPropertiesResponse> responseMessage = this.contentService.getContentPropertiesMetadata(contentUUID, userUUID);
+        ApiResponse<ContentPropertiesResponse> responseMessage = this.contentService.getContentPropertiesMetadata(
+                contentUUID, userUUID);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -275,7 +290,8 @@ public class ContentController {
             @ApiImplicitParam(value = "타겟 데이터", name = "targetData", required = true, paramType = "query", example = "mgbvuA6RhUXL%2bJPrK2Z7YoKi7HEp4K0XmmkLbV7SlBRXN%2fJJAuzDX1%2bNyyt7%2fLCM")
     })
     @GetMapping("/target/isExist")
-    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(@RequestParam(value = "targetData") String targetData) {
+    public ResponseEntity<ApiResponse<Boolean>> isExistTargetData(
+            @RequestParam(value = "targetData") String targetData) {
         if (targetData.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -291,15 +307,17 @@ public class ContentController {
             @ApiImplicitParam(value = "사용랑 조회 종료 일자", name = "endDate", required = true, paramType = "query", example = "2020-08-24T23:59:59")
     })
     @GetMapping("/resources/report/{workspaceId}")
-    public ResponseEntity<ApiResponse<ContentResourceUsageInfoResponse>> getContentResourceUsageInfoRequest(@PathVariable("workspaceId") String workspaceId,
-                                                                                                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-                                                                                                            @RequestParam(name = "startDate") LocalDateTime startDate,
-                                                                                                            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
-                                                                                                            @RequestParam(name = "endDate") LocalDateTime endDate) {
+    public ResponseEntity<ApiResponse<ContentResourceUsageInfoResponse>> getContentResourceUsageInfoRequest(
+            @PathVariable("workspaceId") String workspaceId,
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+            @RequestParam(name = "startDate") LocalDateTime startDate,
+            @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+            @RequestParam(name = "endDate") LocalDateTime endDate) {
         if (StringUtils.isEmpty(workspaceId)) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(workspaceId, startDate, endDate);
+        ApiResponse<ContentResourceUsageInfoResponse> responseMessage = contentService.getContentResourceUsageInfo(
+                workspaceId, startDate, endDate);
         return ResponseEntity.ok(responseMessage);
     }
 
@@ -309,8 +327,10 @@ public class ContentController {
             @ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "user-server")
     })
     @DeleteMapping("/secession/{workspaceUUID}")
-    public ResponseEntity<ApiResponse<ContentSecessionResponse>> contentSecessionRequest(@PathVariable("workspaceUUID") String workspaceUUID, @RequestHeader("serviceID") String requestServiceID) {
-        if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals("user-server")) {
+    public ResponseEntity<ApiResponse<ContentSecessionResponse>> contentSecessionRequest(
+            @PathVariable("workspaceUUID") String workspaceUUID, @RequestHeader("serviceID") String requestServiceID) {
+        if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals(
+                "user-server")) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ContentSecessionResponse responseMessage = contentService.deleteAllContentInfo(workspaceUUID);
