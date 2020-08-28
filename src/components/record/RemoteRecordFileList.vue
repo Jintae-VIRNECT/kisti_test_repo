@@ -165,16 +165,20 @@ export default {
         }
       }
     },
-    deleteItems() {
-      this.selectedArray.forEach((val, index) => {
+    async deleteItems() {
+      for (const [index, val] of this.selectedArray.entries()) {
+        const recordingId = this.fileList[index].recordingId
         if (val) {
-          deleteRecordFile({
-            id: this.fileList[index].recordingId,
-          })
-
-          this.$eventBus.$emit('load::record-list')
+          try {
+            await deleteRecordFile({
+              id: recordingId,
+            })
+          } catch (e) {
+            console.error(e)
+          }
         }
-      })
+      }
+      this.$eventBus.$emit('load::record-list')
     },
     beforeClose() {
       this.$emit('update:visible', false)
