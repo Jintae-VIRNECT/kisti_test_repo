@@ -86,16 +86,16 @@ export default {
   color: rgb(74, 83, 97);
   font-weight: 500;
   font-size: 12px;
-  &::after {
-    display: inline-block;
-    width: 14px;
-    height: 10px;
-    background: url(~@/assets/img/ic_list_up.svg) center/100% no-repeat;
-    content: '';
-  }
-  &:hover {
-    cursor: pointer;
-  }
+  // &::after {
+  //   display: inline-block;
+  //   width: 14px;
+  //   height: 10px;
+  //   background: url(~@/assets/img/ic_list_up.svg) center/100% no-repeat;
+  //   content: '';
+  // }
+  // &:hover {
+  //   cursor: pointer;
+  // }
 }
 
 .user-table__row {
