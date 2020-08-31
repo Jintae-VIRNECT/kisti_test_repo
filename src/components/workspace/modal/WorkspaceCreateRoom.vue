@@ -113,9 +113,7 @@ export default {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
       if (idx < 0) {
         if (this.selection.length >= this.maxSelect) {
-          this.toastNotify(
-            this.$t('workspace.create_max_member', { length: this.maxSelect }),
-          )
+          this.toastNotify(this.$t('workspace.create_max_member'))
           return
         }
         this.selection.push(user)

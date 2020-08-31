@@ -1,5 +1,5 @@
-const ALARM_DURATION = 3000
-const ALARM_DURATION_BUTTON = 30000
+const ALARM_DURATION = 3 * 1000
+const ALARM_DURATION_BUTTON = 60 * 1000
 
 const buildTemplate = payload => {
   let icon = payload.icon
@@ -81,7 +81,7 @@ export default {
             },
           }),
         )
-        inviteNotify.goAway(3000)
+        inviteNotify.goAway(ALARM_DURATION)
       }
       const inviteNotify = this.callNotify({
         type: 'invite',
