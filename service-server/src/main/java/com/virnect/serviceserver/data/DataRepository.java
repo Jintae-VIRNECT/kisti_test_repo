@@ -384,6 +384,8 @@ public class DataRepository {
                                 .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
 
+
+
                         //remove members who is evicted
                         memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
@@ -424,28 +426,16 @@ public class DataRepository {
                 Room room = sessionService.getRoom(workspaceId, sessionId);
                 Member member = sessionService.getMember(workspaceId, sessionId, userId);
 
-                ResultResponse resultResponse = new ResultResponse();
-                resultResponse.setResult(false);
-                //ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
-
                 if(room == null) {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    response.setData(response.getData());
-                    return response;*/
                 } else if(member == null) {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                    response.setData(response.getData());
-                    return response;*/
                 } else {
                     if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
                         return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
-                        /*response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
-                        response.setData(response.getData());
-                        return response;*/
                     }
                     sessionService.removeRoom(room);
+                    ResultResponse resultResponse = new ResultResponse();
                     resultResponse.setResult(true);
                     return new DataProcess<>(resultResponse);
                 }
@@ -718,35 +708,21 @@ public class DataRepository {
                 Room room = sessionService.getRoom(workspaceId, sessionId);
                 Member member = sessionService.getMember(workspaceId, sessionId, userId);
 
-                ResultResponse resultResponse = new ResultResponse();
-                resultResponse.setResult(false);
-                //ApiResponse<ResultResponse> response = new ApiResponse<>(resultResponse);
                 if(room == null) {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    response.setData(response.getData());
-                    return response;*/
                 } else if(member == null) {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                    /*response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                    response.setData(response.getData());
-                    return response;*/
                 } else {
                     if(room.getMembers().isEmpty()) {
                         return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
-                        /*response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
-                        response.setData(response.getData());
-                        return response;*/
                     } else {
                         ErrorCode errorCode = sessionService.exitRoom(room, member);
                         if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+                            ResultResponse resultResponse = new ResultResponse();
                             resultResponse.setResult(true);
                             return new DataProcess<>(resultResponse);
                         } else {
-                            return new DataProcess<>(ErrorCode.ERR_SERVICE_PROCESS);
-                            /*response.setErrorResponseData(errorCode);
-                            response.setData(response.getData());
-                            return response;*/
+                            return new DataProcess<>(errorCode);
                         }
                     }
                 }
@@ -893,50 +869,70 @@ public class DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<ResultResponse> inviteMember(String workspaceId, String sessionId, InviteRoomRequest inviteRoomRequest) {
-        return new RepoDecoder<Room, ResultResponse>(RepoDecoderType.UPDATE) {
+    public ApiResponse<InviteRoomResponse> inviteMember(String workspaceId, String sessionId, InviteRoomRequest inviteRoomRequest) {
+        return new RepoDecoder<Room, InviteRoomResponse>(RepoDecoderType.UPDATE) {
             @Override
             Room loadFromDatabase() {
                 return sessionService.getRoom(workspaceId, sessionId);
             }
 
             @Override
-            DataProcess<ResultResponse> invokeDataProcess() {
+            DataProcess<InviteRoomResponse> invokeDataProcess() {
                 log.info("ROOM INVITE MEMBER UPDATE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
                 Room room = loadFromDatabase();
-                ResultResponse resultResponse = new ResultResponse();
-                resultResponse.setResult(false);
                 if(room != null) {
                     if(room.getLeaderId().equals(inviteRoomRequest.getLeaderId())) {
-                        //remove member room is null
+                        //remove if member status is evicted
                         //room.getMembers().removeIf(member -> member.getRoom() == null);
                         room.getMembers().removeIf(member -> member.getMemberStatus().equals(MemberStatus.EVICTED));
 
                         //check room member is exceeded limitation
-                        if(room.getMembers().size() + inviteRoomRequest.getParticipantIds().size() >= room.getMaxUserCount()) {
-                            return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+                        if(room.getMembers().size() + inviteRoomRequest.getParticipantIds().size() > room.getMaxUserCount()) {
+                            return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
                         }
 
-                        //check room member is already joined
+                        //check invited member is already joined
                         for(String participant : inviteRoomRequest.getParticipantIds()) {
                             for(Member member: room.getMembers()) {
                                 if(participant.equals(member.getUuid()) && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-                                    return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
                                 }
                             }
                         }
 
-                        //update room member
-                        for(String participant : inviteRoomRequest.getParticipantIds()) {
+                        //update room member using iterator avoid to ConcurrentModificationException? ...
+                        sessionService.updateMember(room, inviteRoomRequest.getParticipantIds());
+
+                        InviteRoomResponse response = new InviteRoomResponse();
+                        response.setWorkspaceId(workspaceId);
+                        response.setSessionId(sessionId);
+                        response.setLeaderId(inviteRoomRequest.getLeaderId());
+                        response.setParticipantIds(inviteRoomRequest.getParticipantIds());
+                        response.setTitle(room.getTitle());
+
+                        return new DataProcess<>(response);
+
+                        //sessionService.updateRoom(room, inviteRoomRequest.getParticipantIds());
+                        /*for(String participant : inviteRoomRequest.getParticipantIds()) {
                             sessionService.createOrUpdateMember(room, participant);
-                        }
-                        resultResponse.setResult(true);
-                        return new DataProcess<>(resultResponse);
+                        }*/
+                        /*List<String> additionalIds = new ArrayList<>();
+                        for(String participant : inviteRoomRequest.getParticipantIds()) {
+                            for(Member member: room.getMembers()) {
+                                if(participant.equals(member.getUuid()) && member.getMemberStatus().equals(MemberStatus.EVICTED)) {
+                                    additionalIds.add();
+                                } else {
+                                    additionalIds.add();
+                                }
+                            }
+                            sessionService.createOrUpdateMember(room, participant);
+                        }*/
+
                     } else {
-                        return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     }
                 } else {
-                    return new DataProcess<>(resultResponse, ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
             }
         }.asApiResponse();

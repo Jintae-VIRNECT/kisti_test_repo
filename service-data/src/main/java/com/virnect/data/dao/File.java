@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 //@DynamicUpdate
 @Entity
@@ -28,25 +29,31 @@ public class File extends BaseTimeEntity {
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
-    @Column(name = "origin_name", nullable = false)
-    private String originName;
-
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "object_name", nullable = false, unique = true)
+    private String objectName;
 
     @Column(name = "content_type", nullable = false)
     private String contentType;
 
-    @Column(name = "path", nullable = false, unique = true)
-    private String path;
+    /*@Column(name = "path", nullable = false, unique = true)
+    private String path;*/
 
     @Column(name = "size", nullable = false)
     private Long size;
+
+    @Column(name = "expired_at")
+    private LocalDateTime expiredDate;
 
     //@Lob
     //@Enumerated(EnumType.STRING)
     @Column(name = "deleted", nullable = false)
     private boolean deleted;
+
+    @Column(name = "expired", nullable = false)
+    private boolean expired;
 
     @Column(name = "download_hits")
     private Long downloadHits;
@@ -61,23 +68,23 @@ public class File extends BaseTimeEntity {
             String workspaceId,
             String sessionId,
             String uuid,
-            String originName,
             String name,
+            String objectName,
             String contentType,
-            String path,
-            Long size,
-            boolean deleted
+            Long size
             ) {
         this.workspaceId = workspaceId;
         this.sessionId = sessionId;
         this.uuid = uuid;
-        this.originName = originName;
         this.name = name;
+        this.objectName = objectName;
         this.contentType = contentType;
-        this.path = path;
         this.size = size;
-        this.deleted = deleted;
-        //
+
+        // default setting
         this.downloadHits = 0L;
+        this.deleted = false;
+        this.expired = false;
+        this.expiredDate = LocalDateTime.now().plusDays(7);
     }
 }

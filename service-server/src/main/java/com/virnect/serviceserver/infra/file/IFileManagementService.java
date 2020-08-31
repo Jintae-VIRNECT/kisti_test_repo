@@ -16,8 +16,8 @@ import java.util.List;
 public interface IFileManagementService {
 
     String LOG_MESSAGE_TAG = "[FILE MANAGEMENT SERVICE]::";
-    String PROFILE_DIRECTORY = "profile";
-    String FILE_DIRECTORY = "files";
+    //String PROFILE_DIRECTORY = "profile";
+    //String FILE_DIRECTORY = "files";
 
 
     int EXPIRE_DAY = 7; // 7 days expire time

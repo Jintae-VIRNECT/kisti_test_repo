@@ -203,7 +203,21 @@ public class SessionRestController implements ISessionRestAPI {
         ResultResponse resultResponse = new ResultResponse();
         resultResponse.setResult(false);
         ApiResponse<ResultResponse> apiResponse = this.dataRepository.removeRoom(workspaceId, sessionId, userId);
-        if(apiResponse.getData().getResult()) {
+        if(apiResponse.getData() != null) {
+            if(this.serviceSessionManager.closeActiveSession(sessionId)) {
+                resultResponse.setResult(true);
+                return ResponseEntity.ok(apiResponse);
+            }
+
+            if(this.serviceSessionManager.closeNotActiveSession(sessionId)) {
+                return ResponseEntity.ok(apiResponse);
+            } else {
+                return ResponseEntity.ok(apiResponse);
+            }
+        } else {
+            return ResponseEntity.ok(apiResponse);
+        }
+        /*if(apiResponse.getData().getResult()) {
             //Session session = this.sessionManager.getSession(sessionId);
             if(this.serviceSessionManager.closeActiveSession(sessionId)) {
                 resultResponse.setResult(true);
@@ -216,7 +230,7 @@ public class SessionRestController implements ISessionRestAPI {
             }
         } else {
             return ResponseEntity.ok(apiResponse);
-        }
+        }*/
     }
 
     @Override
@@ -327,17 +341,35 @@ public class SessionRestController implements ISessionRestAPI {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<ResultResponse> response = this.dataRepository.inviteMember(workspaceId, sessionId, inviteRoomRequest);
+        ApiResponse<InviteRoomResponse> response = this.dataRepository.inviteMember(workspaceId, sessionId, inviteRoomRequest);
+
         //send push message or not?
         //this send push message
-        if(response.getData().getResult()) {
+        if(response.getData() != null) {
+            // check user is valid
+            DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(response.getData().getLeaderId());
+
             PushSendRequest pushSendRequest = new PushSendRequest();
             pushSendRequest.setService(PushConstants.PUSH_EVENT_REMOTE);
             pushSendRequest.setEvent(PushConstants.SEND_PUSH_ROOM_INVITE);
-            pushSendRequest.setWorkspaceId(workspaceId);
-            pushSendRequest.setUserId(inviteRoomRequest.getLeaderId());
-            pushSendRequest.setTargetUserIds(inviteRoomRequest.getParticipantIds());
-            pushSendRequest.setContents(new HashMap<>());
+            pushSendRequest.setWorkspaceId(response.getData().getWorkspaceId());
+            pushSendRequest.setUserId(response.getData().getLeaderId());
+            pushSendRequest.setTargetUserIds(response.getData().getParticipantIds());
+
+            //set push message invite room contents
+            InviteRoomContents inviteRoomContents = new InviteRoomContents();
+            inviteRoomContents.setSessionId(response.getData().getSessionId());
+            inviteRoomContents.setTitle(response.getData().getTitle());
+
+            inviteRoomContents.setNickName(userInfo.getData().getNickname());
+            inviteRoomContents.setProfile(userInfo.getData().getProfile());
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String jsonString = mapper.writeValueAsString(inviteRoomContents);
+                pushSendRequest.setContents(mapper.readValue(jsonString, new TypeReference<Map<Object, Object>>() {}));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
 
             ApiResponse<PushResponse> pushResponse = this.messageRestService.sendPush(pushSendRequest);
             if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
@@ -345,14 +377,15 @@ public class SessionRestController implements ISessionRestAPI {
                 log.info("push response: [code] {}", pushResponse.getCode());
                 log.info("push response: [message] {}", pushResponse.getMessage());
             }
+            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>();
+            resultResponse.getData().setResult(true);
+            return ResponseEntity.ok(resultResponse);
+        } else {
+            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>();
+            resultResponse.setCode(response.getCode());
+            resultResponse.setMessage(response.getMessage());
+            return ResponseEntity.ok(resultResponse);
         }
-        return ResponseEntity.ok(response);
-        /*else {
-            ApiResponse<InviteRoomResponse> apiResponse = new ApiResponse<>();
-            apiResponse.setCode(response.getCode());
-            apiResponse.setMessage(response.getMessage());
-            return ResponseEntity.ok(apiResponse);
-        }*/
     }
 
     @Override

@@ -2,18 +2,16 @@ package com.virnect.serviceserver.api;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.api.IFileRestAPI;
-import com.virnect.data.dto.file.request.FileDownloadRequest;
 import com.virnect.data.dto.file.request.FileUploadRequest;
 import com.virnect.data.dto.file.response.FileDeleteResponse;
 import com.virnect.data.dto.file.response.FileInfoListResponse;
+import com.virnect.data.dto.file.response.FilePreSignedResponse;
 import com.virnect.data.dto.file.response.FileUploadResponse;
 import com.virnect.data.dto.request.PageRequest;
 import com.virnect.data.dto.request.RoomProfileUpdateRequest;
-import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.data.FileDataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,20 +62,34 @@ public class FileRestController implements IFileRestAPI {
     }
 
     @Override
-    public ResponseEntity<byte[]> fileDownloadRequestHandler(String workspaceId, String sessionId, String userId, String filePath) throws IOException {
+    public ResponseEntity<byte[]> fileDownloadRequestHandler(String workspaceId, String sessionId, String userId, String objectName) throws IOException {
         log.info("REST API: GET {}/download/{}/{}",
                 REST_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}");
 
-        if(userId == null && filePath == null) {
+        if(userId == null && objectName == null) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ResponseEntity<byte[]> responseEntity = this.fileDataRepository.downloadFile(workspaceId, sessionId, userId, filePath).getData();
+        ResponseEntity<byte[]> responseEntity = this.fileDataRepository.downloadFile(workspaceId, sessionId, userId, objectName).getData();
         //eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
         return responseEntity;
     }
 
+    @Override
+    public ResponseEntity<ApiResponse<FilePreSignedResponse>> fileDownloadUrlRequestHandler(String workspaceId, String sessionId, String userId, String objectName) throws IOException {
+        log.info("REST API: GET {}/download/url/{}/{}",
+                REST_PATH,
+                workspaceId != null ? workspaceId : "{}",
+                sessionId != null ? sessionId : "{}");
+
+        if(userId == null && objectName == null) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        return ResponseEntity.ok(
+                this.fileDataRepository.downloadFileUrl(workspaceId, sessionId, userId, objectName)
+        );
+    }
 
     @Override
     public ResponseEntity<ApiResponse<FileInfoListResponse>> getFileList(
@@ -96,17 +108,17 @@ public class FileRestController implements IFileRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<FileDeleteResponse>> deleteFileRequestHandler(String workspaceId, String sessionId, String userId, String filePath) {
+    public ResponseEntity<ApiResponse<FileDeleteResponse>> deleteFileRequestHandler(String workspaceId, String sessionId, String userId, String objectName) {
         log.info("REST API: GET {}/{}/{}/{}",
                 REST_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
-                filePath != null ? filePath : "{}");
-        if (userId == null || filePath == null) {
+                objectName != null ? objectName : "{}");
+        if (userId == null || objectName == null) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return ResponseEntity.ok(
-                this.fileDataRepository.removeFile(workspaceId, sessionId, userId, filePath)
+                this.fileDataRepository.removeFile(workspaceId, sessionId, userId, objectName)
         );
     }
 }

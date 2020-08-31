@@ -24,16 +24,15 @@ public class FileService {
     private final FileRepository fileRepository;
 
     @Transactional
-    public File registerFile(FileUploadRequest fileUploadRequest, String filePath) {
+    public File registerFile(FileUploadRequest fileUploadRequest, String objectName) {
         File file = File.builder()
                 .workspaceId(fileUploadRequest.getWorkspaceId())
                 .sessionId(fileUploadRequest.getSessionId())
                 .uuid(fileUploadRequest.getUserId())
                 .name(fileUploadRequest.getFile().getOriginalFilename())
+                .objectName(objectName)
                 .contentType(fileUploadRequest.getFile().getContentType())
                 .size(fileUploadRequest.getFile().getSize())
-                .path(filePath)
-                .deleted(false)
                 .build();
         return fileRepository.save(file);
     }
@@ -42,8 +41,8 @@ public class FileService {
         return this.fileRepository.findByWorkspaceIdAndSessionIdAndName(workspaceId, sessionId, name).orElse(null);
     }
 
-    public File getFileByPath(String workspaceId, String sessionId, String path) {
-        return this.fileRepository.findByWorkspaceIdAndSessionIdAndPath(workspaceId, sessionId, path).orElse(null);
+    public File getFileByObjectName(String workspaceId, String sessionId, String objectName) {
+        return this.fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
     }
 
     public Page<File> getFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {

@@ -2,11 +2,9 @@ package com.virnect.serviceserver.infra.file.download;
 
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
-import io.minio.BucketExistsArgs;
-import io.minio.GetObjectArgs;
-import io.minio.MakeBucketArgs;
-import io.minio.MinioClient;
+import io.minio.*;
 import io.minio.errors.*;
+import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,13 +25,13 @@ import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
-@Profile({"local", "test"})
+@Profile({"develop", "local", "test"})
 @Slf4j
 @Component
 public class LocalFileDownloadService implements IFileDownload {
 
     @Value("${cms.bucket-file-name}")
-    private String bucketName;
+    private String fileBucketName;
     @Value("${cms.access-key}")
     private String accessKey;
     @Value("${cms.secret-key}")
@@ -54,11 +52,11 @@ public class LocalFileDownloadService implements IFileDownload {
                     .credentials(accessKey, secretKey)
                     .build();
 
-            boolean isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+            boolean isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(fileBucketName).build());
             if(isBucketExist) {
-                log.info("Bucket {} is already exist.", bucketName);
+                log.info("Bucket {} is already exist.", fileBucketName);
             } else {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(fileBucketName).build());
             }
         } catch (MinioException e) {
             log.info("Bucket error occured:: {}", e.getMessage());
@@ -66,13 +64,12 @@ public class LocalFileDownloadService implements IFileDownload {
     }
 
     @Override
-    //public ResponseEntity<byte[]> fileDownload(String path) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
     public byte[] fileDownload(String filePath) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // Get input stream to have content of 'my-objectname' from 'my-bucketname'
         InputStream stream = null;
         try {
             stream = minioClient.getObject(GetObjectArgs.builder()
-                    .bucket(bucketName)
+                    .bucket(fileBucketName)
                     .object(filePath)
                     .build());
             //log.info("fileDownload input stream:: {}_{}", stream.available(), stream.read());
@@ -82,6 +79,24 @@ public class LocalFileDownloadService implements IFileDownload {
         } catch (MinioException e) {
             log.info("Download error occurred:: {}", e.getMessage());
             throw new RestServiceException(ErrorCode.ERR_FILE_DOWNLOAD_FAILED);
+        }
+    }
+
+    @Override
+    public String filePreSignedUrl(String objectPathToName, int expiry) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        try {
+            String url = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(fileBucketName)
+                            .object(objectPathToName)
+                            .expiry(expiry)
+                            .build());
+            log.info("filePreSignedUrl:: {}", url);
+            return url;
+        } catch (MinioException e) {
+            log.info("Download error occurred:: {}", e.getMessage());
+            return null;
         }
     }
 

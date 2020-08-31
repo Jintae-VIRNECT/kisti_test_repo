@@ -188,7 +188,9 @@ public class SessionService {
         List<Member> memberList;
         memberList = this.memberRepository.findByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId);
         for(Member member : memberList ) {
-            if(member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)) {
+            //member status condition added
+            if(member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
+                    && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
                 roomList.add(member.getRoom());
             }
         }
@@ -198,7 +200,9 @@ public class SessionService {
     public List<Room> getRoomList(Page<Member> memberPage) {
         List<Room> roomList = new ArrayList<>();
         for(Member member : memberPage.getContent() ) {
-            if(member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)) {
+            //member status condition added
+            if(member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
+                    && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
                 roomList.add(member.getRoom());
             }
         }
@@ -507,8 +511,10 @@ public class SessionService {
             if (room.getMembers().isEmpty()) {
                 log.info("session disconnect and sessionEventHandler is here: room members empty");
             } else {
+                log.info("session disconnect and sessionEventHandler is try to user evict by disconnection");
                 for (Member member : room.getMembers()) {
                     if (member.getUuid().equals(clientMetaData.getClientData())) {
+                        log.info("session disconnect and sessionEventHandler evict user id::{}", member.getUuid());
                         //set status evicted
                         member.setMemberStatus(MemberStatus.EVICTED);
                         //set connection id to empty
@@ -566,6 +572,32 @@ public class SessionService {
     }
 
     @Transactional
+    public void updateMember(Room room, List<String> userIds) {
+        for (String userId: userIds) {
+            Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(room.getWorkspaceId(), room.getSessionId(), userId).orElse(null);
+            if(member == null) {
+                memberRepository.save(Member.builder()
+                        .room(room)
+                        .memberType(MemberType.UNKNOWN)
+                        .workspaceId(room.getWorkspaceId())
+                        .uuid(userId)
+                        .sessionId(room.getSessionId())
+                        .build());
+            } else {
+                member.setMemberStatus(MemberStatus.UNLOAD);
+                member.setMemberType(MemberType.UNKNOWN);
+                memberRepository.save(member);
+            }
+        }
+    }
+
+    /*@Transactional
+    public void updateMember(Member member, MemberStatus memberStatus) {
+        member.setMemberStatus(memberStatus);
+        memberRepository.save(member);
+    }*/
+
+    /*@Transactional
     public void createOrUpdateMember(Room room, String userId) {
         log.debug("updateRoom member Id is {}", userId);
         for(Member member : room.getMembers()) {
@@ -585,10 +617,10 @@ public class SessionService {
             }
         }
         roomRepository.save(room);
-    }
+    }*/
 
     @Transactional
-     public void updateMember(Member member, MemberStatus memberStatus) {
+    public void updateMember(Member member, MemberStatus memberStatus) {
         member.setMemberStatus(memberStatus);
         memberRepository.save(member);
     }

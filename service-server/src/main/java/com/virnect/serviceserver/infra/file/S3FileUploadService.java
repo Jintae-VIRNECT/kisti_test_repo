@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 
-@Profile({"develop", "staging", "production"})
+@Profile({"staging", "production"})
 @Slf4j
 @Component
 @RequiredArgsConstructor

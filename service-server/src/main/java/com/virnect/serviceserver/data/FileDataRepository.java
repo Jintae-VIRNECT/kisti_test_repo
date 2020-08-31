@@ -5,10 +5,7 @@ import com.virnect.data.dao.File;
 import com.virnect.data.dao.Room;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.file.request.FileUploadRequest;
-import com.virnect.data.dto.file.response.FileDeleteResponse;
-import com.virnect.data.dto.file.response.FileInfoListResponse;
-import com.virnect.data.dto.file.response.FileInfoResponse;
-import com.virnect.data.dto.file.response.FileUploadResponse;
+import com.virnect.data.dto.file.response.*;
 import com.virnect.data.dto.request.RoomProfileUpdateRequest;
 import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
@@ -56,29 +53,28 @@ public class FileDataRepository {
 
             @Override
             DataProcess<FileUploadResponse> invokeDataProcess() {
-                //log.info("file upload: {}", fileUploadRequest.getUserId());
                 StringBuilder stringBuilder;
                 stringBuilder = new StringBuilder();
                 stringBuilder.append(fileUploadRequest.getWorkspaceId()).append("/").append(fileUploadRequest.getSessionId()).append("/");
-                String fileUploadPath = null;
+
+                String objectName;
                 try {
-                    fileUploadPath = localFileManagementService.upload(fileUploadRequest.getFile(), stringBuilder.toString());
-                } catch (IOException exception) {
-                    exception.printStackTrace();
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                    objectName = localFileManagementService.upload(fileUploadRequest.getFile(), stringBuilder.toString());
+                } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+                    log.info("{}", exception.getMessage());
+                    return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
                 }
-                if (fileUploadPath != null) {
-                    File file = fileService.registerFile(fileUploadRequest, fileUploadPath);
-                    if (file != null) {
-                        FileUploadResponse fileUploadResponse = new FileUploadResponse();
-                        fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
-                        return new DataProcess<>(fileUploadResponse);
-                    } else {
-                        return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
-                    }
+
+                File file = fileService.registerFile(fileUploadRequest, objectName);
+                if (file != null) {
+                    //fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
+                    FileUploadResponse fileUploadResponse = new FileUploadResponse();
+                    fileUploadResponse.setWorkspaceId(file.getWorkspaceId());
+                    fileUploadResponse.setSessionId(file.getSessionId());
+                    fileUploadResponse.setUserId(file.getUuid());
+                    fileUploadResponse.setName(file.getName());
+                    fileUploadResponse.setSize(file.getSize());
+                    return new DataProcess<>(fileUploadResponse);
                 } else {
                     return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
                 }
@@ -111,12 +107,9 @@ public class FileDataRepository {
                         if (roomProfileUpdateRequest.getProfile() != null) {
                             try {
                                 profileUrl = localFileManagementService.uploadProfile(roomProfileUpdateRequest.getProfile(), stringBuilder.toString());
-                            } catch (IOException e) {
-                                log.error(e.getMessage());
-                            } catch (NoSuchAlgorithmException e) {
-                                e.printStackTrace();
-                            } catch (InvalidKeyException e) {
-                                e.printStackTrace();
+                            } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+                                log.info("{}", exception.getMessage());
+                                return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
                             }
                         }
                         profileUpdateResponse.setSessionId(sessionId);
@@ -133,28 +126,32 @@ public class FileDataRepository {
         }.asApiResponse();
     }
 
-
-
+    //will be deprecated
     public DataProcess<ResponseEntity<byte[]>> downloadFile(
             String workspaceId,
             String sessionId,
             String userId,
-            String filePath) {
+            String objectName) {
         return new RepoDecoder<File, ResponseEntity<byte[]>>(RepoDecoderType.READ) {
             @Override
             File loadFromDatabase() {
-                return fileService.getFileByPath(
+                return fileService.getFileByObjectName(
                         workspaceId,
                         sessionId,
-                        filePath);
+                        objectName);
             }
 
             @Override
             DataProcess<ResponseEntity<byte[]>> invokeDataProcess() {
                 File file = loadFromDatabase();
-                log.info("file download: {}", file.getPath());
+                log.info("file download: {}", file.getObjectName());
                 try {
-                    byte[] byteArray = localFileDownloadService.fileDownload(file.getPath());
+                    StringBuilder stringBuilder;
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append(workspaceId).append("/")
+                            .append(sessionId).append("/")
+                            .append(file.getObjectName());
+                    byte[] byteArray = localFileDownloadService.fileDownload(stringBuilder.toString());
                     //String[] resources = file.getPath().split("/");
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.setContentLength(byteArray.length);
@@ -174,17 +171,54 @@ public class FileDataRepository {
                             break;
                     }
                     return new DataProcess<>(new ResponseEntity<>(byteArray, httpHeaders, HttpStatus.OK));
-                } catch (IOException exception) {
-                    exception.printStackTrace();
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (InvalidKeyException e) {
-                    e.printStackTrace();
+                } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+                    log.info("{}", exception.getMessage());
+                    return new DataProcess<>(ErrorCode.ERR_FILE_DOWNLOAD_EXCEPTION);
                 }
-                return new DataProcess<>();
-
             }
         }.asResponseData();
+    }
+
+    public ApiResponse<FilePreSignedResponse> downloadFileUrl(String workspaceId,
+                                                           String sessionId,
+                                                           String userId,
+                                                           String objectName) {
+        return new RepoDecoder<File, FilePreSignedResponse>(RepoDecoderType.READ) {
+            @Override
+            File loadFromDatabase() {
+                return fileService.getFileByObjectName(
+                        workspaceId,
+                        sessionId,
+                        objectName);
+            }
+
+            @Override
+            DataProcess<FilePreSignedResponse> invokeDataProcess() {
+                File file = loadFromDatabase();
+                log.info("file download: {}", file.getObjectName());
+                try {
+                    StringBuilder stringBuilder;
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append(workspaceId).append("/")
+                            .append(sessionId).append("/")
+                            .append(file.getObjectName());
+                    int expiry = 60 * 60 *24; //one day
+                    String url = localFileDownloadService.filePreSignedUrl(stringBuilder.toString(), expiry);
+                    FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
+                    filePreSignedResponse.setWorkspaceId(file.getWorkspaceId());
+                    filePreSignedResponse.setSessionId(file.getSessionId());
+                    filePreSignedResponse.setName(file.getName());
+                    filePreSignedResponse.setObjectName(file.getObjectName());
+                    filePreSignedResponse.setContentType(file.getContentType());
+                    filePreSignedResponse.setUrl(url);
+                    filePreSignedResponse.setExpiry(expiry);
+                    return new DataProcess<>(filePreSignedResponse);
+                } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+                    log.info("{}", exception.getMessage());
+                    return new DataProcess<>(new FilePreSignedResponse(), ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+                }
+            }
+        }.asApiResponse();
     }
 
     public ApiResponse<FileInfoListResponse> getFileInfoList(
@@ -207,7 +241,7 @@ public class FileDataRepository {
                 Page<File> filePage = loadFromDatabase();
 
                 for (File file: filePage.toList()) {
-                    log.info("getFileInfoList : {}", file.getPath());
+                    log.info("getFileInfoList : {}", file.getObjectName());
                 }
 
                 List<FileInfoResponse> fileInfoList = filePage.toList()
@@ -231,11 +265,11 @@ public class FileDataRepository {
     public ApiResponse<FileDeleteResponse> removeFile(String workspaceId,
                                                       String sessionId,
                                                       String userId,
-                                                      String filePath) {
+                                                      String objectName) {
         return new RepoDecoder<File, FileDeleteResponse>(RepoDecoderType.DELETE) {
             @Override
             File loadFromDatabase() {
-                return fileService.getFileByPath(workspaceId, sessionId, filePath);
+                return fileService.getFileByObjectName(workspaceId, sessionId, objectName);
             }
 
             @Override
@@ -246,7 +280,12 @@ public class FileDataRepository {
                 //remove object
                 boolean result = false;
                 try {
-                    result = localFileManagementService.removeObject(file.getPath());
+                    StringBuilder stringBuilder;
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append(workspaceId).append("/")
+                            .append(sessionId).append("/")
+                            .append(file.getObjectName());
+                    result = localFileManagementService.removeObject(stringBuilder.toString());
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     exception.printStackTrace();
                     log.info("{}", exception.getMessage());

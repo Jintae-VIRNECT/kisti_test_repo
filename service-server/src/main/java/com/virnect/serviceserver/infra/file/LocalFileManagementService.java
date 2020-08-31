@@ -27,15 +27,15 @@ import java.util.*;
 /**
  *
  */
-@Profile({"local", "test"})
+@Profile({"develop", "local", "test"})
 @Slf4j
 @Component
 public class LocalFileManagementService implements IFileManagementService {
 
     @Value("${cms.bucket-file-name}")
-    private String bucketFileName;
+    private String fileBucketName;
     @Value("${cms.bucket-profile-name}")
-    private String bucketProfileName;
+    private String profileBucketName;
     @Value("${cms.access-key}")
     private String accessKey;
     @Value("${cms.secret-key}")
@@ -75,11 +75,11 @@ public class LocalFileManagementService implements IFileManagementService {
             boolean isBucketExist = false;
 
             //create file bucket
-            isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketFileName).build());
+            isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(fileBucketName).build());
             if(isBucketExist) {
-                log.info("Bucket {} is already exist.", bucketFileName);
+                log.info("Bucket {} is already exist.", fileBucketName);
             } else {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketFileName).build());
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(fileBucketName).build());
             }
             // set bucket lifecycle
             String lifeCycle =
@@ -87,21 +87,21 @@ public class LocalFileManagementService implements IFileManagementService {
                             "<Rule>" +
                                 "<ID>expire-bucket</ID>" +
                                 "<Prefix></Prefix>" +
-                                "<Status>Enabled</Status>" +
+                                "<Status>Disabled</Status>" +
                                 "<Expiration>" +
                                     "<Days>7</Days>" +
                                 "</Expiration>"
                             + "</Rule>" +
                     "</LifecycleConfiguration>";
 
-            minioClient.setBucketLifeCycle(SetBucketLifeCycleArgs.builder().bucket(bucketFileName).config(lifeCycle).build());
+            minioClient.setBucketLifeCycle(SetBucketLifeCycleArgs.builder().bucket(fileBucketName).config(lifeCycle).build());
 
             //create file bucket
-            isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketProfileName).build());
+            isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(profileBucketName).build());
             if(isBucketExist) {
-                log.info("Bucket {} is already exist.", bucketProfileName);
+                log.info("Bucket {} is already exist.", profileBucketName);
             } else {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketProfileName).build());
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(profileBucketName).build());
             }
         } catch (MinioException e) {
             log.info("Bucket error occured:: {}", e.getMessage());
@@ -140,7 +140,7 @@ public class LocalFileManagementService implements IFileManagementService {
         //ByteArrayInputStream bais = new ByteArrayInputStream(file.getBytes());
         try {
             ObjectWriteResponse objectWriteResponse = minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(bucketFileName)
+                    .bucket(fileBucketName)
                     .object(file.getOriginalFilename())
                     .stream(file.getInputStream(), file.getInputStream().available(), -1)
                     .contentType(file.getContentType())
@@ -192,28 +192,23 @@ public class LocalFileManagementService implements IFileManagementService {
 
         // 4. file upload
         // Create a InputStream for object upload.
-        StringBuilder filePath = new StringBuilder();
+        StringBuilder objectPath = new StringBuilder();
         try {
-            filePath.append(dirPath).append(FILE_DIRECTORY).append("/").append(objectName);
+            objectPath.append(dirPath).append(objectName);
             minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(bucketFileName)
-                    .object(filePath.toString())
+                    .bucket(fileBucketName)
+                    .object(objectPath.toString())
                     .stream(file.getInputStream(), file.getInputStream().available(), -1)
                     .contentType(file.getContentType())
                     .build());
-
-            /*minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder()
-                    .method(Method.GET)
-                    .bucket(bucketName)
-                    .object(filePath.toString())
-                    .expiry()
-                    .build());*/
         } catch (MinioException e) {
             log.info("Upload error occurred:: {}", e.getMessage());
+            return null;
         }
 
-        log.info("SAVE FILE_URL: {}, {}", filePath.toString(), file.getContentType());
-        return filePath.toString();
+        log.info("SAVE FILE_URL: {}, {}", objectPath.toString(), file.getContentType());
+        return objectName;
+        //return objectPath.toString();
     }
 
     @Override
@@ -248,13 +243,13 @@ public class LocalFileManagementService implements IFileManagementService {
             objectPath.append(dirPath).append("/").append(objectName);
             //filePath = fileName + file.getOriginalFilename();
             minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(bucketProfileName)
+                    .bucket(profileBucketName)
                     .object(objectPath.toString())
                     .stream(file.getInputStream(), file.getInputStream().available(), -1)
                     .contentType(file.getContentType())
                     .build());
             // 5. get file url
-            fileUrl = minioClient.getObjectUrl(bucketProfileName, objectPath.toString());
+            fileUrl = minioClient.getObjectUrl(profileBucketName, objectPath.toString());
             log.info("SAVE PROFILE FILE_URL: {}, {}", fileUrl, file.getContentType());
             return fileUrl;
         } catch (MinioException e) {
@@ -297,7 +292,7 @@ public class LocalFileManagementService implements IFileManagementService {
         // Create new PostPolicy object for 'my-bucketname', 'my-objectname' and 7 days expire time
         // from now.
         PostPolicy policy = new PostPolicy(
-                bucketFileName,
+                fileBucketName,
                 fileName,
                 ZonedDateTime.now().plusDays(EXPIRE_DAY));
         // 'my-objectname' should be 'image/png' content type
@@ -322,7 +317,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
             filePath = fileName + file.getOriginalFilename();
             ObjectWriteResponse objectWriteResponse = minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(bucketFileName)
+                    .bucket(fileBucketName)
                     .object(filePath)
                     .stream(file.getInputStream(), file.getInputStream().available(), -1)
                     .contentType(file.getContentType())
@@ -350,9 +345,12 @@ public class LocalFileManagementService implements IFileManagementService {
 
     }
 
-    public boolean removeObject(String path) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public boolean removeObject(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
-            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketFileName).object(path).build());
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(fileBucketName)
+                    .object(objectPathToName)
+                    .build());
             return true;
         } catch (MinioException e) {
             e.printStackTrace();
@@ -414,7 +412,7 @@ public class LocalFileManagementService implements IFileManagementService {
         InputStream stream = null;
         try {
             stream = minioClient.getObject(GetObjectArgs.builder()
-                    .bucket(bucketFileName)
+                    .bucket(fileBucketName)
                     .object(filePath)
                     .build());
             log.info("fileDownload input stream:: {}_{}", stream.available(), stream.read());

@@ -20,25 +20,25 @@ public class FileUploadResponse {
     private String sessionId;
 
     @ApiModelProperty(value = "User id")
-    private String uuid;
+    private String userId;
 
     @ApiModelProperty(value = "file name")
     private String name;
 
-    @ApiModelProperty(value = "file path")
-    private String path;
+    /*@ApiModelProperty(value = "file path")
+    private String path;*/
 
     @ApiModelProperty(value = "file size")
-    private int size;
+    private Long size;
 
     @Override
     public String toString() {
         return "FileUploadResponse{" +
                 "workspaceId='" + workspaceId + '\'' +
                 ", sessionId='" + sessionId + '\'' +
-                ", userId='" + uuid + '\'' +
+                ", userId='" + userId + '\'' +
                 ", name='" + name + '\'' +
-                ", path='" + path + '\'' +
+                //", path='" + path + '\'' +
                 ", size='" + size + '\'' +
                 '}';
     }
