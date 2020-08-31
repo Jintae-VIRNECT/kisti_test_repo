@@ -37,7 +37,12 @@
         <img
           v-if="taskInfo.target.imgPath"
           src="~assets/images/icon/ic-file-download.svg"
-          @click="download(taskInfo.target.imgPath)"
+          @click="
+            download(
+              taskInfo.target.imgPath,
+              `task_${taskInfo.id}_${taskInfo.name}`,
+            )
+          "
         />
       </dd>
     </dl>
@@ -67,9 +72,6 @@ export default {
   methods: {
     opened() {
       this.taskInfo = this.task
-    },
-    download(url) {
-      window.open(url)
     },
   },
 }

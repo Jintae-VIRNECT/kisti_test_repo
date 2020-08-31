@@ -21,5 +21,15 @@ export default {
       popup.document.close()
       setTimeout(() => popup.print(), 1)
     },
+    download(url, name) {
+      if (this.$config.TARGET_ENV !== 'production') {
+        alert('개발환경에서는 파일명 설정과 자동 다운로드가 동작하지 않습니다')
+      }
+      const a = document.createElement('a')
+      a.href = url
+      a.download = name
+      a.target = '_blank'
+      a.dispatchEvent(new MouseEvent('click'))
+    },
   },
 }
