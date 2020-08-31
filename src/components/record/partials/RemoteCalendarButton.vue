@@ -38,6 +38,7 @@ export default {
 .calendar-button {
   width: 3.4286rem;
   height: 3.4286rem;
+  padding-top: 0.2143rem;
   background: #ffffff;
   border: 1px solid #e5e7e9;
   border-radius: 0px;
