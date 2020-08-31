@@ -173,7 +173,7 @@ export default {
           })
         } else {
           this.$message.error({
-            message: this.$t('members.add.message.updateFail') + `\n(${e})`,
+            message: this.$t('members.setting.message.updateFail') + `\n(${e})`,
             duration: 2000,
             showClose: true,
           })
