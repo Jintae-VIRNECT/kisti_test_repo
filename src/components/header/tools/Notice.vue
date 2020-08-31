@@ -100,9 +100,9 @@
         <span>{{ $t('alarm.saved_duration') }}</span>
       </div>
     </div>
-    <!-- <audio preload="auto" ref="noticeAudio">
+    <audio preload="auto" ref="noticeAudio">
       <source src="~assets/media/end.mp3" />
-    </audio> -->
+    </audio>
   </popover>
 </template>
 
@@ -143,11 +143,16 @@ export default {
     ...mapGetters(['alarmList']),
   },
   watch: {
-    onPush(push) {
-      if (push) {
-        this.$localStorage.setItem('push', 'true')
-      } else {
-        this.$localStorage.setItem('push', 'false')
+    // onPush(push) {
+    //   if (push) {
+    //     this.$localStorage.setItem('push', 'true')
+    //   } else {
+    //     this.$localStorage.setItem('push', 'false')
+    //   }
+    // },
+    workspace(val, oldVal) {
+      if (val.uuid && !oldVal.uuid) {
+        this.pushInit()
       }
     },
   },
@@ -181,6 +186,7 @@ export default {
             date: new Date(),
           })
           if (!this.onPush) return
+          this.$refs['noticeAudio'].play()
           this.alarmInvite(
             body.contents,
             () => this.acceptInvite(body.contents.roomSessionId, body.userId),
@@ -274,19 +280,18 @@ export default {
         this.toastError(this.$t('workspace.remote_invite_impossible'))
       }
     },
-    pushInit() {
+    async pushInit() {
       if (!this.hasLicense) return
-      const push = this.$localStorage.getItem('push')
+      // const push = this.$localStorage.getItem('push')
       this.key = this.$route.name
-      if (push === 'true') {
-        this.onPush = true
-      } else if (push === 'false') {
-        this.onPush = false
-      }
-      this.$nextTick(async () => {
-        await this.$push.init(this.workspace)
-        this.$push.addListener(this.key, this.alarmListener)
-      })
+      // if (push === 'true') {
+      //   this.onPush = true
+      // } else if (push === 'false') {
+      //   this.onPush = false
+      // }
+      if (!this.workspace.uuid) return
+      await this.$push.init(this.workspace)
+      this.$push.addListener(this.key, this.alarmListener)
     },
   },
 
