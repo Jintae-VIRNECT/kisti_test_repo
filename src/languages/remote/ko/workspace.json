@@ -5,9 +5,9 @@
     "tab_empty_description": "원격 협업을 시작해보세요.",
     "create_room": "원격 협업 생성",
     "expire_license": "라이선스 만료",
-    "welcome": "{name} 님, 반갑습니다.",
-    "welcome_license": "{name} 님, <br> 할당된 라이선스가 없습니다.",
-    "welcome_expire": "{name} 님, <br> 라이선스가 만료되었습니다.",
+    "welcome": "&nbsp님, 반갑습니다.",
+    "welcome_license": "&nbsp님, <br> 할당된 라이선스가 없습니다.",
+    "welcome_expire": "&nbsp님, <br> 라이선스가 만료되었습니다.",
     "search_empty": "검색된 내용이 없습니다.",
 
     "select_workspace": "워크스페이스를 선택해 주세요.",
