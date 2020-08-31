@@ -63,6 +63,10 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-zipkin'
 
     implementation 'net.dongliu:apk-parser:2.6.10'
+
+    // monitoring
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
 }
 
 test {

@@ -32,6 +32,9 @@ public class S3FileUploadService implements FileUploadService {
     @Value("#{'${file.allowed-extension}'.split(',')}")
     private List<String> allowedExtension;
 
+    @Value("${cloud.aws.cdn}")
+    private String cdnUrl;
+
     @Override
     public String upload(MultipartFile file) throws IOException {
         log.info("[AWS S3 UPLOADER] - UPLOAD BEGIN");
@@ -54,12 +57,13 @@ public class S3FileUploadService implements FileUploadService {
 
         // 3. 스트림으로 aws s3에 업로드
         try {
-            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileUploadPath+file.getOriginalFilename(), file.getInputStream(), objectMetadata);
+            PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileUploadPath + file.getOriginalFilename(), file.getInputStream(), objectMetadata);
             amazonS3Client.putObject(putObjectRequest);
             log.info("[AWS S3 UPLOADER] - UPLOAD END");
-            String url = amazonS3Client.getUrl(bucketName, fileUploadPath+file.getOriginalFilename()).toExternalForm();
+            String url = amazonS3Client.getUrl(bucketName, fileUploadPath + file.getOriginalFilename()).toExternalForm();
             log.info("[AWS S3 RESOURCE URL: {}]", url);
-            return url;
+            log.info("[AWS CDN URL: {}]", cdnUrl + fileUploadPath + file.getOriginalFilename());
+            return cdnUrl + fileUploadPath + file.getOriginalFilename();
         } catch (AmazonServiceException e) {
             log.error("Caught an AmazonServiceException from PUT requests, rejected reasons:");
             log.error("Error Message:     {}", e.getMessage());

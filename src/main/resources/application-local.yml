@@ -53,3 +53,10 @@ cloud:
     s3:
       bucket:
         name: "virnect-download"
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
