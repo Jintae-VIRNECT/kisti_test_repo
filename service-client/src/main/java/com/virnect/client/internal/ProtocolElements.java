@@ -26,11 +26,14 @@ public class ProtocolElements {
 
 	// ---------------------------- CLIENT REQUESTS -----------------------
 
+	// ------------- CLIENT REQUESTS [SENDMESSAGE_ROOM_METHOD] ----------------------
 	public static final String SENDMESSAGE_ROOM_METHOD = "sendMessage";
 	public static final String SENDMESSAGE_MESSAGE_PARAM = "message";
 
+	// ------------- CLIENT REQUESTS [LEAVEROOM_METHOD] ----------------------
 	public static final String LEAVEROOM_METHOD = "leaveRoom";
 
+	// ------------- CLIENT REQUESTS [JOINROOM_METHOD] ----------------------
 	public static final String JOINROOM_METHOD = "joinRoom";
 	public static final String JOINROOM_USER_PARAM = "user";
 	public static final String JOINROOM_TOKEN_PARAM = "token";
@@ -53,6 +56,7 @@ public class ProtocolElements {
 	public static final String JOINROOM_PEERSTREAMVIDEODIMENSIONS_PARAM = "videoDimensions";
 	public static final String JOINROOM_PEERSTREAMFILTER_PARAM = "filter";
 
+	// ------------- CLIENT REQUESTS [PUBLISHVIDEO_METHOD] ----------------------
 	public static final String PUBLISHVIDEO_METHOD = "publishVideo";
 	public static final String PUBLISHVIDEO_SDPOFFER_PARAM = "sdpOffer";
 	public static final String PUBLISHVIDEO_DOLOOPBACK_PARAM = "doLoopback";
@@ -70,22 +74,27 @@ public class ProtocolElements {
 
 	public static final String UNPUBLISHVIDEO_METHOD = "unpublishVideo";
 
+	// ------------- CLIENT REQUESTS [RECEIVEVIDEO_METHOD] ----------------------
 	public static final String RECEIVEVIDEO_METHOD = "receiveVideoFrom";
 	public static final String RECEIVEVIDEO_SDPOFFER_PARAM = "sdpOffer";
 	public static final String RECEIVEVIDEO_SENDER_PARAM = "sender";
 	public static final String RECEIVEVIDEO_SDPANSWER_PARAM = "sdpAnswer";
 
+	// ------------- CLIENT REQUESTS [UNSUBSCRIBEFROMVIDEO_METHOD] ----------------------
 	public static final String UNSUBSCRIBEFROMVIDEO_METHOD = "unsubscribeFromVideo";
 	public static final String UNSUBSCRIBEFROMVIDEO_SENDER_PARAM = "sender";
 
+	// ------------- CLIENT REQUESTS [ONICECANDIDATE_METHOD] ----------------------
 	public static final String ONICECANDIDATE_METHOD = "onIceCandidate";
 	public static final String ONICECANDIDATE_EPNAME_PARAM = "endpointName";
 	public static final String ONICECANDIDATE_CANDIDATE_PARAM = "candidate";
 	public static final String ONICECANDIDATE_SDPMIDPARAM = "sdpMid";
 	public static final String ONICECANDIDATE_SDPMLINEINDEX_PARAM = "sdpMLineIndex";
 
+	// ------------- CLIENT REQUESTS [CUSTOMREQUEST_METHOD] ----------------------
 	public static final String CUSTOMREQUEST_METHOD = "customRequest";
 
+	// ------------- CLIENT REQUESTS [STREAMPROPERTYCHANGED_METHOD] ----------------------
 	public static final String STREAMPROPERTYCHANGED_METHOD = "streamPropertyChanged";
 	public static final String STREAMPROPERTYCHANGED_CONNECTIONID_PARAM = "connectionId";
 	public static final String STREAMPROPERTYCHANGED_STREAMID_PARAM = "streamId";
@@ -93,9 +102,11 @@ public class ProtocolElements {
 	public static final String STREAMPROPERTYCHANGED_NEWVALUE_PARAM = "newValue";
 	public static final String STREAMPROPERTYCHANGED_REASON_PARAM = "reason";
 
+	// ------------- CLIENT REQUESTS [FORCEDISCONNECT_METHOD] ----------------------
 	public static final String FORCEDISCONNECT_METHOD = "forceDisconnect";
 	public static final String FORCEDISCONNECT_CONNECTIONID_PARAM = "connectionId";
 
+	// ------------- CLIENT REQUESTS [FORCEUNPUBLISH_METHOD] ----------------------
 	public static final String FORCEUNPUBLISH_METHOD = "forceUnpublish";
 	public static final String FORCEUNPUBLISH_STREAMID_PARAM = "streamId";
 

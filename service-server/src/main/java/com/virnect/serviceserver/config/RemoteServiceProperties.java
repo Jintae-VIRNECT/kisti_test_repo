@@ -65,7 +65,7 @@ public class RemoteServiceProperties extends PropertyService {
     private String dotenvPath;
     private String domainOrPublicIp;
     private String remoteServicePublicUrl;
-    private String remoteWebsockUrl;
+    private String remoteWebsocketUrl;
     private Integer httpsPort;
     private String remoteServiceSecret;
     private String certificateType;
@@ -402,7 +402,7 @@ public class RemoteServiceProperties extends PropertyService {
             this.domainOrPublicIp = domain;
             this.remoteServicePublicUrl = "https://" + domain;
             //this.remoteServicePublicwss = "wss://" + getValue("service.gateway");
-            this.remoteWebsockUrl = getValue("service.wss");
+            this.remoteWebsocketUrl = getValue("service.wss");
             if (this.httpsPort != null && this.httpsPort != 443) {
                 this.remoteServicePublicUrl += (":" + this.httpsPort);
             }
@@ -465,7 +465,8 @@ public class RemoteServiceProperties extends PropertyService {
         //ServiceServerApplication.httpUrl = this.getFinalUrl();
         ServiceServerApplication.httpUrl = finalUrl;
         //
-        ServiceServerApplication.wssUrl = this.remoteWebsockUrl + ServiceServerApplication.WS_PATH;
+        ServiceServerApplication.wssUrl = this.remoteWebsocketUrl + ServiceServerApplication.WS_PATH;
+        log.info("calculateWssUrl : {}", ServiceServerApplication.wssUrl);
     }
 
     public List<String> checkCoturnUris() {

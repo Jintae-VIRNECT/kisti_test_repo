@@ -7,13 +7,13 @@ plugins {
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
 }
-java.sourceCompatibility = JavaVersion.VERSION_1_8
+//java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
-}
+//configurations {
+//    compileOnly {
+//        extendsFrom(configurations.annotationProcessor.get())
+//    }
+//}
 
 ext {
     set("springCloudVersion", "Hoxton.SR1")
@@ -76,12 +76,12 @@ dependencies {
     testImplementation("org.springframework.security:spring-security-test")
     //============================ SERVICE DEPENDENCIES ===========================================//
     // Eureka
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    //implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     // Netflex Feign Client
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+    //implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     // Swagger
-    implementation("io.springfox:springfox-swagger2:2.9.2")
-    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+    //implementation("io.springfox:springfox-swagger2:2.9.2")
+    //implementation("io.springfox:springfox-swagger-ui:2.9.2")
     // ModelMapper
     implementation(group = "org.modelmapper", name = "modelmapper", version = "2.3.0")
     // Query DSL
@@ -95,6 +95,10 @@ dependencies {
     implementation(group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.9")
     // aws s3
     implementation(group = "com.amazonaws", name = "aws-java-sdk-s3", version = "1.11.415") // AWS Storage Service
+    // minio
+    //implementation(group = "io.minio", name = "minio", version = "7.1.0") // minio Storage Service
+    implementation("io.minio:minio:7.1.0")
+
     //============================ MEDIA SERVER DEPENDENCIES ===========================================//
     implementation("org.kurento:kurento-jsonrpc-server:6.14.0")
     implementation("org.kurento:kurento-client:6.14.0")
