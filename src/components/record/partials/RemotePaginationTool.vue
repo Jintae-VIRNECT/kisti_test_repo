@@ -92,14 +92,14 @@ export default {
 .pagination-tool {
   display: flex;
   margin: auto;
-  margin-top: 43px;
+  margin-top: 3.0714rem;
 }
 
 .pagination-tool__container {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 38px;
+  height: 2.7143rem;
 
   margin: auto;
   border: 1px solid #eaedf3;
@@ -108,11 +108,11 @@ export default {
 
 .pagination-tool__link {
   position: relative;
-  width: 38px;
+  width: 2.7143rem;
   height: 100%;
   color: #0b1f48;
   font-weight: normal;
-  font-size: 14px;
+  font-size: 1rem;
   text-align: center;
   border-radius: 3px;
 
@@ -121,45 +121,45 @@ export default {
   }
 
   &.page {
-    padding-top: 6px;
+    padding-top: 0.4286rem;
   }
 
   &.prev {
-    width: 39px;
-    padding: 6px 15px;
+    width: 2.7857rem;
+    padding: 0.4286rem 1.0714rem;
     background: url(~@/assets/img/ic_arrow_left.svg) center/60% no-repeat;
     transform: rotate(180deg);
   }
 
   &.prev::after {
     position: absolute;
-    top: 2px;
-    left: 2px;
-    height: 30px;
+    top: 0.1429rem;
+    left: 0.1429rem;
+    height: 2.1429rem;
     border-right: 1px solid #e9edf4;
     content: '';
   }
 
   &.next {
-    width: 39px;
-    padding: 6px 15px;
+    width: 2.7857rem;
+    padding: 0.4286rem 1.0714rem;
     background: url(~@/assets/img/ic_arrow_right.svg) center/60% no-repeat;
   }
 
   &.next::before {
     position: absolute;
-    top: 3px;
-    right: 36px;
-    height: 30px;
+    top: 0.2143rem;
+    right: 2.5714rem;
+    height: 2.1429rem;
     border-right: 1px solid #e9edf4;
     content: '';
   }
 
   &.current {
-    width: 32px;
-    height: 32px;
-    margin: 5px 3px 5px 3px;
-    padding-top: 4px;
+    width: 2.2857rem;
+    height: 2.2857rem;
+    margin: 0.3571rem 0.2143rem 0.3571rem 0.2143rem;
+    padding-top: 0.2857rem;
     color: #ffffff;
     font-weight: 500;
     background: #1665d8;

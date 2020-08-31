@@ -36,8 +36,8 @@ export default {
 
 <style lang="scss">
 .calendar-button {
-  width: 48px;
-  height: 48px;
+  width: 3.4286rem;
+  height: 3.4286rem;
   background: #ffffff;
   border: 1px solid #e5e7e9;
   border-radius: 0px;

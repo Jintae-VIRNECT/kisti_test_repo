@@ -15,10 +15,11 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/layout.scss';
 @import '~assets/style/remote.scss';
-@import '~assets/style/vars';
+// @import '~assets/style/_vars.scss';
 .remote-layout {
-  min-height: calc(100vh - 50px);
+  min-height: calc(100vh - 3.5714rem);
 }
 .offsetwidth {
   position: relative;

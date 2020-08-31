@@ -154,13 +154,13 @@ export default {
 .record-list__header--title {
   color: #0b1f48;
   font-weight: 500;
-  font-size: 32px;
+  font-size: 2.2857rem;
 }
 
 .record-list__header--description {
   color: #0b1f48;
   font-weight: 500;
-  font-size: 16px;
-  line-height: 20px;
+  font-size: 1.1429rem;
+  line-height: 1.4286rem;
 }
 </style>

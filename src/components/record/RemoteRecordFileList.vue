@@ -3,8 +3,8 @@
     title="녹화 파일"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
-    :width="'820px'"
-    :height="'658px'"
+    :width="'58.5714rem'"
+    :height="'47rem'"
   >
     <div class="file-list__header">
       <p class="file-list__header--text">녹화 파일 보기</p>
@@ -24,13 +24,13 @@
       </div>
     </div>
     <div>
-      <scroller height="429px">
+      <scroller height="30.6429rem">
         <table class="file-list__table">
           <thead class="file-list__thead">
             <tr class="file-list__thead--row">
               <th class="file-list__thead--column toggle">
                 <toggle-button
-                  size="24px"
+                  size="1.7143rem"
                   :active="toggleAllFlag"
                   :activeSrc="require('assets/img/ic_check.svg')"
                   :inactiveSrc="require('assets/img/ic_uncheck.svg')"
@@ -52,7 +52,7 @@
             >
               <td class="file-list__tbody--column toggle">
                 <toggle-button
-                  size="24px"
+                  size="1.7143rem"
                   :active="selectedArray[index]"
                   :activeSrc="require('assets/img/ic_check.svg')"
                   :inactiveSrc="require('assets/img/ic_uncheck.svg')"
@@ -251,7 +251,7 @@ export default {
 .file-list__header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 13px;
+  margin-bottom: 0.9286rem;
 }
 .file-list__header--tools {
   display: flex;
@@ -260,7 +260,7 @@ export default {
 .file-list__header--text {
   color: #757f91;
   font-weight: 500;
-  font-size: 18px;
+  font-size: 1.2857rem;
 }
 
 .file-list__table {
@@ -268,7 +268,7 @@ export default {
 }
 
 .file-list__thead--row {
-  height: 56px;
+  height: 4rem;
   background: #f5f7fa;
   border-top: 1px solid #eaedf3;
 }
@@ -276,13 +276,13 @@ export default {
 .file-list__thead--column {
   color: #757f91;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
   &.filename {
-    width: 330px;
+    width: 23.5714rem;
     text-align: left;
   }
   &.toggle {
-    padding-top: 5px;
+    padding-top: 0.3571rem;
   }
 }
 
@@ -292,7 +292,7 @@ export default {
 }
 
 .file-list__tbody--row {
-  height: 62px;
+  height: 4.4286rem;
   border-top: 1px solid #eaedf3;
   border-bottom: 1px solid #eaedf3;
 
@@ -304,7 +304,7 @@ export default {
 .file-list__tbody--column {
   color: #757f91;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
   text-align: center;
 
   &.filename {
@@ -312,21 +312,21 @@ export default {
     text-align: left;
   }
   &.toggle {
-    padding-top: 5px;
+    padding-top: 0.3571rem;
   }
 }
 
 .file-list--button {
-  width: 246px;
-  height: 40px;
-  margin: 34px 287px;
+  width: 17.5714rem;
+  height: 2.8571rem;
+  margin: 2.4286rem 20.5rem;
   background: #145ab6;
   border-radius: 2px;
 
   & > p {
     color: #ffffff;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 1rem;
   }
 }
 </style>

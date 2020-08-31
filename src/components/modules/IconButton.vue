@@ -56,10 +56,10 @@ export default {
   display: flex;
   margin-left: 0.643em;
   // padding: 0.571em 1.071em 0.571em 0.714em;
-  padding: 10px 18px 10px 18px;
+  padding: 0.7143rem 1.2857rem 0.7143rem 1.2857rem;
   color: #0b1f48;
   font-weight: normal;
-  font-size: 13px;
+  font-size: 0.9286rem;
   line-height: 1.429em;
   background: #edf0f4 0.929em 50%/1.571em no-repeat;
   border-radius: 2px;
@@ -72,7 +72,7 @@ export default {
   }
   > img {
     height: 1.429em;
-    margin-right: 4px;
+    margin-right: 0.2857rem;
   }
 
   &.active {

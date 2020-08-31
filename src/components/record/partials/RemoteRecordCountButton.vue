@@ -70,13 +70,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: space-around;
-  width: 82px;
-  height: 40px;
+  width: 5.8571rem;
+  height: 2.8571rem;
   margin: 0 auto;
   padding: 0px 12px;
   color: #757f91;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
   background: #f5f7fa;
   border-radius: 2px;
   &.nodata {
@@ -91,13 +91,13 @@ export default {
 .record-button--count {
   color: #0b1f48;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
   &.nodata {
     color: #757f91;
   }
   &.seleted {
     color: #ffffff;
-    font-size: 15px;
+    font-size: 1.0714rem;
   }
 }
 </style>

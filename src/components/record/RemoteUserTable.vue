@@ -73,19 +73,19 @@ export default {
 <style lang="scss">
 .user-table {
   width: 100%;
-  height: 544px;
+  height: 38.8571rem;
   border: 1px solid #eaedf3;
   box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 .user-table__header {
-  height: 44px;
+  height: 3.1429rem;
   border-radius: 0px;
   box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 .user-table__header--text {
-  color: rgb(74, 83, 97);
+  color: #4a5361;
   font-weight: 500;
-  font-size: 12px;
+  font-size: 0.8571rem;
   // &::after {
   //   display: inline-block;
   //   width: 14px;
@@ -105,33 +105,33 @@ export default {
 .user-table__text {
   color: #0b1f48;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
   text-align: center;
 
   &.index {
     color: #757f91;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 1.0714rem;
     text-align: center;
   }
 
   &.user-name {
-    width: 201px;
+    width: 14.3571rem;
     text-align: left;
 
     & > p {
-      width: 154px;
+      width: 11rem;
       overflow: hidden;
       text-overflow: ellipsis;
     }
   }
 
   &.cooperation-name {
-    width: 369px;
+    width: 26.3571rem;
     text-align: left;
 
     & > p {
-      width: 319px;
+      width: 22.7857rem;
       overflow: hidden;
       text-overflow: ellipsis;
     }
