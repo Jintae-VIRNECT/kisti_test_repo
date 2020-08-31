@@ -83,7 +83,7 @@
     "create_select_member_list": "선택 가능한 멤버 리스트",
     "create_select_empty_title": "협업 가능한 멤버가 없습니다.",
     "create_select_empty_description": "협업 멤버를 추가해주세요.",
-    "create_max_member": "최대 {length}명까지 선택이 가능합니다.",
+    "create_max_member": "선택 가능 멤버 수를 초과하였습니다.",
 
     "info_remote_detail": "원격협업 상세보기",
     "info_remote": "협업 정보",
