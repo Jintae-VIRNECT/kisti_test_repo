@@ -19,6 +19,7 @@
           :label="$t('profile.secession.password')"
         >
           <el-input
+            show-password
             :placeholder="$t('profile.secession.passwordDesk')"
             v-model="form.password"
           />
@@ -87,6 +88,14 @@ export default {
     }
   },
   methods: {
+    opened() {
+      this.form = {
+        password: '',
+        secessionReason: '',
+        etcReason: '',
+      }
+      this.agree = false
+    },
     async submit() {
       const form = { ...this.form }
       if (form.secessionReason === 'etc') form.secessionReason = form.etcReason
