@@ -147,9 +147,10 @@ export default {
 }
 .user-table__text {
   color: #0b1f48;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1.0714rem;
   text-align: center;
+  opacity: 0.9;
 
   &.index {
     width: 12.1429rem;
