@@ -33,8 +33,9 @@
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ plansInfo.callTime.default.toLocaleString() }}
-        {{ $t('purchases.hoursUnit') }}
+        <!-- {{ plansInfo.callTime.default.toLocaleString() }}
+        {{ $t('purchases.hoursUnit') }} -->
+        {{ $t('purchases.infinity') }}
       </dd>
     </dl>
     <el-divider />
@@ -49,8 +50,9 @@
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ plansInfo.callTime.add.toLocaleString() }}
-        {{ $t('purchases.hoursUnit') }}
+        <!-- {{ plansInfo.callTime.add.toLocaleString() }}
+        {{ $t('purchases.hoursUnit') }} -->
+        {{ $t('purchases.infinity') }}
       </dd>
     </dl>
     <el-divider />

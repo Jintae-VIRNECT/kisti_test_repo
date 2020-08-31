@@ -11,7 +11,7 @@ export class Plan {
     this.value = value
     this.label = label
     this.logo = logo
-    this.licenseType = 'BASIC'
+    this.licenseType = 'PUBLIC'
     this.amount = 0
     this.usedAmount = 0
   }

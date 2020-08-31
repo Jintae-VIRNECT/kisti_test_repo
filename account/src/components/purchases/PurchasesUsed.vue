@@ -141,11 +141,11 @@ export default {
             this.plansInfo.viewCount.max,
           ),
         },
-        callTime: {
-          label: 'purchases.info.callTime',
-          i18nGroup: 'purchases.call',
-          ...calc(this.plansInfo.callTime.current, this.plansInfo.callTime.max),
-        },
+        // callTime: {
+        //   label: 'purchases.info.callTime',
+        //   i18nGroup: 'purchases.call',
+        //   ...calc(this.plansInfo.callTime.current, this.plansInfo.callTime.max),
+        // },
       },
     }
   },

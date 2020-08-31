@@ -131,7 +131,7 @@ export default {
       this.searchCoupons(searchParams)
     },
     goGetCouponPage() {
-      window.open(`${this.$url.www}/coupon`)
+      window.open(`${this.$url.www}/contact/inquiry`)
     },
     /**
      * 상품 리스트
