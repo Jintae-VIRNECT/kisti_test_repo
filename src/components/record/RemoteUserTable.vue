@@ -30,7 +30,7 @@
         <td class="user-table__text cooperation-name">
           <p>{{ userItem.cooperateName }}</p>
         </td>
-        <td class="user-table__text">
+        <td class="user-table__text start-date">
           {{ userItem.startDate }}
         </td>
         <td>
@@ -109,6 +109,7 @@ export default {
   text-align: center;
 
   &.index {
+    width: 10.7143rem;
     color: #757f91;
     font-weight: 500;
     font-size: 1.0714rem;
@@ -124,6 +125,10 @@ export default {
       overflow: hidden;
       text-overflow: ellipsis;
     }
+  }
+
+  &.start-date {
+    width: 5.7143rem;
   }
 
   &.cooperation-name {

@@ -2,15 +2,15 @@
   <section class="search">
     <span class="search--label">기간 검색</span>
     <!-- 캘린더 컴포넌트 -->
-    <div class="search-calender">
+    <div class="search-calendar">
       <datepicker :pickerName="'from'" :highlighted="highlighted"></datepicker>
       <calendar-button
         :pickerName="'from'"
         :isActive="buttonStatus.from"
       ></calendar-button>
     </div>
-    <span class="search-calender--tilde"> <!-- 007E Tilde 표시 -->~ </span>
-    <div class="search-calender">
+    <span class="search-calendar--tilde"> <!-- 007E Tilde 표시 -->~ </span>
+    <div class="search-calendar">
       <datepicker :pickerName="'to'" :highlighted="highlighted"></datepicker>
       <calendar-button
         :pickerName="'to'"
@@ -109,10 +109,6 @@ export default {
   }
 }
 
-.search-calender {
-  display: flex;
-}
-
 .search--button {
   width: 7.4286rem;
   height: 3.4286rem;
@@ -120,7 +116,11 @@ export default {
   border-radius: 0px;
 }
 
-.search-calender--selected-date {
+.search-calendar {
+  display: flex;
+}
+
+.search-calendar--selected-date {
   width: 9.7857rem;
   height: 3.4286rem;
   padding: 0.7143rem 0 1rem 1.4286rem;
@@ -134,7 +134,7 @@ export default {
   }
 }
 
-.search-calender--tilde {
+.search-calendar--tilde {
   width: 0.5714rem;
   height: 1.4286rem;
   margin: 0 0.7143rem;
