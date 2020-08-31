@@ -49,3 +49,10 @@ user:
 feign:
   hystrix:
     enabled: true
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
