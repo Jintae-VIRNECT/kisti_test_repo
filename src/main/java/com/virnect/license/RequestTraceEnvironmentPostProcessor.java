@@ -1,5 +1,8 @@
 package com.virnect.license;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
@@ -8,9 +11,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class RequestTraceEnvironmentPostProcessor implements EnvironmentPostProcessor {
@@ -34,8 +34,10 @@ public class RequestTraceEnvironmentPostProcessor implements EnvironmentPostProc
 		addOrReplace(environment.getPropertySources(), map);
 	}
 
-	private void addOrReplace(MutablePropertySources propertySources,
-		Map<String, Object> map) {
+	private void addOrReplace(
+		MutablePropertySources propertySources,
+		Map<String, Object> map
+	) {
 		MapPropertySource target = null;
 		if (propertySources.contains(PROPERTY_SOURCE_NAME)) {
 			PropertySource<?> source = propertySources.get(PROPERTY_SOURCE_NAME);
