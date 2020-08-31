@@ -13,7 +13,7 @@ VIRNECT DashBoard Web frontend project
 ## ENV
 
 ```
-Not Yet
+NODE_ENV: local, develop, production / SSL_ENV: private, public
 ```
 
 ## Environment
@@ -27,24 +27,31 @@ node -> v12.16.1
 ## Build
 
 ```
-Not Yet
+npm install
+npm run build
 ```
 
 ## Running the application
 
-```shell script
-Not Yet
-```
+| Type | script | description |
+|------|--------|-------------|
+|Develop| npm run serve       | Run in local webpack|
+|Build      | npm run build       | Build script in production|
+|Run Node server with develop     |    npm run start:develop    | Run node server with NODE_ENV=develop|
+|Run Node server with staging     |    npm run start:staging    | Run node server with NODE_ENV=staging|
+|Run Node server with production  |    npm run start:production    | Run node server with NODE_ENV=production|
+|Docker      | npm  run start       | Run node server in Docker |
+
 
 ## Running the application with Docker
 
 #### Build docker image from dockerfile
 ```shell script
-Not Yet
+docker build -t rm-dashboard .
 ```
 
 #### Run application as docker container via docker image
 ```shell script
-Not Yet
+docker run -p 9989:9989 --restart=always -e 'NODE_ENV=production' -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}
 ```
 
