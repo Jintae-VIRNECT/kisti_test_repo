@@ -297,8 +297,9 @@ export default {
       //   this.onPush = false
       // }
       if (!this.workspace.uuid) return
-      await this.$push.init(this.workspace)
-      this.$push.addListener(this.key, this.alarmListener)
+      this.$push.init(this.workspace).then(() => {
+        this.$push.addListener(this.key, this.alarmListener)
+      })
     },
   },
 

@@ -17,7 +17,7 @@ const push = {
   init: workspace => {
     return new Promise((resolve, reject) => {
       if (push._inited === true) {
-        resolve()
+        reject()
         return
       }
       push._inited = true
