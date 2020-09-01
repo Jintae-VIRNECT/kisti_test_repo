@@ -14,6 +14,8 @@
 
     "confirm_remove_room": "협업을 삭제 하시겠습니까?",
     "confirm_removed_room": "협업을 삭제하였습니다.​",
+    "confirm_removed_room_leader": "리더가 협업을 삭제하였습니다.",
+    "confirm_kickout_leader": "리더가 협업에서 내보냈습니다.",
     "confirm_remove_all": "모든 목록을 삭제하시겠습니까?",
     "confirm_remote_leave": "협업에서 나가시겠습니까?",
     "confirm_remote_already": "이미 참가중인 협업입니다.",
@@ -41,6 +43,7 @@
     "remote_already_removed": "이미 삭제된 협업입니다.",
     "remote_invite_impossible": "협업에 참가가 불가능합니다.",
     "remote_already_invite": "동일 계정으로 협업을 진행 중입니다. 협업을 참가할 수 없습니다.",
+    "remote_access_removed": "리더에 의해 참가 권한이 삭제되었습니다.",
 
     "user_title": "협업 가능 멤버",
     "user_description": "협업 가능한 회원을 선택하고 메세지를 보내보세요.",
@@ -86,6 +89,7 @@
     "create_select_empty_title": "협업 가능한 멤버가 없습니다.",
     "create_select_empty_description": "협업 멤버를 추가해주세요.",
     "create_max_member": "선택 가능 멤버 수를 초과하였습니다.",
+    "create_remote_fail": "협업 생성을 실패하였습니다.",
 
     "info_remote_detail": "원격협업 상세보기",
     "info_remote": "협업 정보",
