@@ -137,7 +137,6 @@ export default {
       if (this.chat.type === 'system') {
         return systemText(this.chat.status, this.chat.name)
       }
-      console.log(this.chat)
       let chatText = this.chat.text ? this.chat.text : ''
       if (typeof chatText === 'object') {
         return ''

@@ -155,7 +155,7 @@ export default {
     },
     kickoutConfirm(id) {
       this.confirmCancel(
-        '내보내시겠습니까?',
+        this.$t('confirm.access_remove'),
         {
           text: this.$t('button.confirm'),
           action: () => {

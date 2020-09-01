@@ -2,7 +2,7 @@
   <section class="roominfo-view">
     <div class="roominfo-view__title">
       <p>
-        {{ '다운로드' }}
+        {{ $t('button.download') }}
       </p>
     </div>
     <div class="roominfo-view__body table">

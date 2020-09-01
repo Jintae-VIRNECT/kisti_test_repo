@@ -178,7 +178,7 @@ export default {
       }
       const res = await kickMember(params)
       if (res.result === true) {
-        this.toastNotify('사용자를 내보냈습니다.')
+        this.toastNotify(this.$t('confirm.access_removed'))
 
         this.currentUser.slice(idx, 1)[0]
         this.init()
