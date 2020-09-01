@@ -206,9 +206,16 @@ export default {
             top -= (popover.offsetHeight - reference.offsetHeight) / 2
           }
         }
+        console.log(popover)
+        console.log(this.width)
         this.$set(this.style, 'top', top + 'px')
         this.$set(this.style, 'left', left + 'px')
-        this.$set(this.style, 'width', this.width + 'px')
+        if (this.width === 0) {
+          this.$set(this.style, 'width', reference.offsetWidth + 'px')
+        } else {
+          this.$set(this.style, 'width', this.width + 'px')
+        }
+        console.log(this.style)
 
         if (this.fullwidth) {
           this.$set(this.style, 'width', reference.offsetWidth + 'px')

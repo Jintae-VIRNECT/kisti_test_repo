@@ -2,11 +2,11 @@
   <popover
     trigger="click"
     placement="bottom-start"
-    width="14rem"
+    :width="0"
     popperClass="header-lnb-selector"
   >
     <vue2-scrollbar>
-      <ul>
+      <ul class="header-lnb-selector__layer">
         <li
           class="header-lnb-selector__button"
           v-for="work of workspaceList"
@@ -44,7 +44,9 @@ export default {
     Popover,
   },
   data() {
-    return {}
+    return {
+      popoverWidth: '14rem',
+    }
   },
   computed: {
     ...mapGetters(['workspaceList']),
@@ -56,6 +58,12 @@ export default {
       this.$push.changeSubscribe(workspace)
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
+        console.log(
+          this.$el.querySelector('.header-workspace-selector').offsetWidth,
+        )
+        this.popoverWidth = this.$el.querySelector(
+          '.header-workspace-selector',
+        ).offsetWidth
       })
     },
   },
