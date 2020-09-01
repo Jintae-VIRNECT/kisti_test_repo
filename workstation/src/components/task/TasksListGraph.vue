@@ -1,5 +1,5 @@
 <template>
-  <div id="tasks-list-graph" />
+  <div id="tasks-list-graph" :class="type" />
 </template>
 
 <script>
@@ -8,6 +8,7 @@ import SubTasksGraphTooltip from '@/components/task/SubTasksGraphTooltip'
 import StepsGraphTooltip from '@/components/task/StepsGraphTooltip'
 import { conditions } from '@/models/task/Task'
 import color from '@/models/color'
+import utils from '@/mixins/utils'
 
 // ssr error
 let bb = null
@@ -16,6 +17,7 @@ if (process.client) {
 }
 
 export default {
+  mixins: [utils],
   props: {
     data: Array,
     type: String,
@@ -34,6 +36,15 @@ export default {
       const heightSize = 200 + json.length * 60
       const self = this
       const graphData = json.map(j => j.progressRate)
+      const leftPadding = json.reduce((p, n) => {
+        return Math.max(
+          p,
+          this.measureText(n.name),
+          this.measureText(n.subTaskName),
+          this.measureText(n.workerName),
+        )
+      }, 120)
+
       this.barChart = bb.generate({
         data: {
           x: 'x',
@@ -124,7 +135,7 @@ export default {
         },
         padding: {
           top: 30,
-          left: 185,
+          left: Math.min(leftPadding + 60, 300),
           right: 60,
           bottom: 30,
         },
@@ -182,12 +193,15 @@ export default {
 <style lang="scss">
 #tasks-list-graph {
   .bb-axis.bb-axis-x g.tick text {
-    tspan:nth-child(1) {
+    tspan {
       font-weight: 600;
       font-size: 14px;
       fill: #0b1f48;
     }
-    tspan:nth-child(3) {
+  }
+  &:not(.step) .bb-axis.bb-axis-x g.tick text {
+    tspan:last-child {
+      font-weight: inherit;
       font-size: 13px;
       fill: #5e6b81;
     }

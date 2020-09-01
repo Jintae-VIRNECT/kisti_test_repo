@@ -31,5 +31,10 @@ export default {
       a.target = '_blank'
       a.dispatchEvent(new MouseEvent('click'))
     },
+    measureText(text, font = '15px NotoSansKR') {
+      const ctx = document.createElement('canvas').getContext('2d')
+      ctx.font = font
+      return ctx.measureText(text).width
+    },
   },
 }
