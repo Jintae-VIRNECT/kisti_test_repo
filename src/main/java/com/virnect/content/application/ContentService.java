@@ -104,7 +104,7 @@ public class ContentService {
 
     @Value("${file.url}")
     private String fileUploadUrl;
-    private String defaultVTarget = "virnect_target.jpg";
+    private String defaultVTarget = "virnect_target.png";
 
     /**
      * 콘텐츠 업로드

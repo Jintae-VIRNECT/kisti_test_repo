@@ -37,7 +37,7 @@ import java.util.Optional;
 public class S3UploadService implements FileUploadService {
     private static String CONTENT_DIRECTORY = "contents";
     private static String REPORT_DIRECTORY = "report";
-    private static String REPORT_FILE_EXTENSION = ".jpg";
+    private static String REPORT_FILE_EXTENSION = ".png";
 
 
     @Value("${cloud.aws.s3.bucket.name}")
