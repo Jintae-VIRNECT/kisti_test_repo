@@ -50,7 +50,8 @@
     "speaker": "스피커",
     "video": "영상",
     "expiration": "기간 만료",
-    "local_record_file": "로컬 녹화 파일"
+    "local_record_file": "로컬 녹화 파일",
+    "no_sharing_file": "공유된 파일이 없습니다."
   },
   "confirm": {
     "network_error": "서버와 통신이 원활하지 못하여​ 리스트를 가져 올 수 없습니다.",
