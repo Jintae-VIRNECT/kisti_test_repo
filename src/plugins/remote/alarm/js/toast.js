@@ -105,19 +105,6 @@ export const Toasted = function(_options) {
   }
 
   /**
-   * Show a Toast with Success Style
-   *
-   * @param message
-   * @param options
-   * @returns {*}
-   */
-  this.success = (message, options) => {
-    options = options || {}
-    options.type = 'success'
-    return _show(this, message, options)
-  }
-
-  /**
    * Show a Toast with Info Style
    *
    * @param message
