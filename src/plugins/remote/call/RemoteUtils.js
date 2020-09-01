@@ -72,29 +72,35 @@ export const addSessionEventListener = session => {
     _.clear()
     if (event.reason === 'sessionClosedByServer') {
       // TODO: MESSAGE
-      window.vue.$toasted.error('리더가 협업을 삭제했습니다.', {
-        position: 'bottom-center',
-        duration: 5000,
-        action: {
-          icon: 'close',
-          onClick: (e, toastObject) => {
-            toastObject.goAway(0)
+      window.vue.$toasted.error(
+        window.vue.$t('workspace.confirm_removed_room_leader'),
+        {
+          position: 'bottom-center',
+          duration: 5000,
+          action: {
+            icon: 'close',
+            onClick: (e, toastObject) => {
+              toastObject.goAway(0)
+            },
           },
         },
-      })
+      )
       window.vue.$router.push({ name: 'workspace' })
     } else if (event.reason === 'forceDisconnectByUser') {
       // TODO: MESSAGE
-      window.vue.$toasted.error('리더가 협업에서 내보냈습니다.', {
-        position: 'bottom-center',
-        duration: 5000,
-        action: {
-          icon: 'close',
-          onClick: (e, toastObject) => {
-            toastObject.goAway(0)
+      window.vue.$toasted.error(
+        window.vue.$t('workspace.confirm_kickout_leader'),
+        {
+          position: 'bottom-center',
+          duration: 5000,
+          action: {
+            icon: 'close',
+            onClick: (e, toastObject) => {
+              toastObject.goAway(0)
+            },
           },
         },
-      })
+      )
       window.vue.$router.push({ name: 'workspace' })
     }
   })

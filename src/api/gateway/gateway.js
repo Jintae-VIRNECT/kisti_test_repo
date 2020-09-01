@@ -112,19 +112,16 @@ const sender = async function(constant, params, headers = {}, custom) {
     if ('message' in err) {
       switch (err.message.toLowerCase()) {
         case 'network error':
-          window.vue.$toasted.error(
-            '서버와 통신이 원활하지 못하여​ 리스트를 가져 올 수 없습니다.',
-            {
-              position: 'bottom-center',
-              duration: 5000,
-              action: {
-                icon: 'close',
-                onClick: (e, toastObject) => {
-                  toastObject.goAway(0)
-                },
+          window.vue.$toasted.error(window.vue.$t('common.network_error'), {
+            position: 'bottom-center',
+            duration: 5000,
+            action: {
+              icon: 'close',
+              onClick: (e, toastObject) => {
+                toastObject.goAway(0)
               },
             },
-          )
+          })
           throw err.message
       }
     }
