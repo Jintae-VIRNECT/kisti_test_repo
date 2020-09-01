@@ -17,7 +17,7 @@ const push = {
   init: workspace => {
     return new Promise((resolve, reject) => {
       if (push._inited === true) {
-        reject()
+        resolve()
         return
       }
       push._inited = true
@@ -98,6 +98,7 @@ const push = {
   },
   addListener: (key, cb) => {
     if (typeof cb !== 'function') return
+    if (push._listeners.findIndex(listener => listener.key === key) > -1) return
     push._listeners.push({
       key,
       cb,
