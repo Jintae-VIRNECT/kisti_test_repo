@@ -58,3 +58,13 @@ cloud:
       bucket:
         name: "virnect-platform"
         resource: "workspace/"
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
