@@ -13,7 +13,7 @@
   },
   "console": {
     "local": "/account",
-    "develop": "/account",
+    "develop": "https://192.168.6.3:8883",
     "staging": "https://stgconsole.virnect.com",
     "production": "https://console.virnect.com"
   },
