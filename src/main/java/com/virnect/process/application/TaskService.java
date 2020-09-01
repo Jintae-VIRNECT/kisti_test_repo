@@ -1678,6 +1678,10 @@ public class TaskService {
 
     public TaskSecessionResponse deleteAllTaskInfo(String workspaceUUID) {
         //1. daily_total_workspace 삭제
+        List<DailyTotalWorkspace> dailyTotalWorkspaceList = this.dailyTotalWorkspaceRepository.findAllByWorkspaceUUID(workspaceUUID);
+        dailyTotalWorkspaceList.stream().forEach(dailyTotalWorkspace -> {
+            dailyTotalWorkspaceRepository.delete(dailyTotalWorkspace);
+        });
         this.dailyTotalWorkspaceRepository.deleteAllByWorkspaceUUIDEquals(workspaceUUID);
 
         List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
