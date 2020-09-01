@@ -1,4 +1,4 @@
-package com.virnect.content.dao;
+package com.virnect.content.dao.content;
 
 import com.querydsl.core.Tuple;
 import com.virnect.content.domain.Content;
@@ -28,4 +28,6 @@ public interface ContentCustomRepository {
     List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList);
 
     Long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
+
+    long deleteAllContentByWorkspaceUUID(String workspaceUUID);
 }

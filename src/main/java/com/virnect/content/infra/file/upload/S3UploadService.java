@@ -37,7 +37,7 @@ import java.util.Optional;
 public class S3UploadService implements FileUploadService {
     private static String CONTENT_DIRECTORY = "contents";
     private static String REPORT_DIRECTORY = "report";
-    private static String REPORT_FILE_EXTENSION = ".jpg";
+    private static String REPORT_FILE_EXTENSION = ".png";
 
 
     @Value("${cloud.aws.s3.bucket.name}")
@@ -89,6 +89,15 @@ public class S3UploadService implements FileUploadService {
 
     @Override
     public boolean delete(String url) {
+        if (url.equals("default")) {
+            log.info("기본 이미지는 삭제하지 않습니다.");
+        } else {
+            String resourceEndPoint = String.format("%s%s", bucketResource, CONTENT_DIRECTORY);
+//            String resourceEndPoint = String.format("%s/%s", bucketName, bucketResource);
+            String key = url.split(String.format("/%s/%s", bucketResource, CONTENT_DIRECTORY))[1];
+            amazonS3Client.deleteObject(resourceEndPoint, key);
+            log.info(key + " 파일이 AWS S3(" + resourceEndPoint + ")에서 삭제되었습니다.");
+        }
         return true;
     }
 

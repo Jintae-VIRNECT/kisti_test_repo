@@ -3,7 +3,6 @@ package com.virnect.content.application;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.querydsl.core.Tuple;
@@ -12,6 +11,10 @@ import com.virnect.content.application.process.ProcessRestService;
 import com.virnect.content.application.user.UserRestService;
 import com.virnect.content.application.workspace.WorkspaceRestService;
 import com.virnect.content.dao.*;
+import com.virnect.content.dao.content.ContentRepository;
+import com.virnect.content.dao.contentdonwloadlog.ContentDownloadLogRepository;
+import com.virnect.content.dao.scenegroup.SceneGroupRepository;
+import com.virnect.content.dao.target.TargetRepository;
 import com.virnect.content.domain.*;
 import com.virnect.content.dto.MetadataInfo;
 import com.virnect.content.dto.request.ContentDeleteRequest;
@@ -20,7 +23,6 @@ import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
 import com.virnect.content.dto.rest.*;
-import com.virnect.content.event.ContentDownloadHitEvent;
 import com.virnect.content.event.ContentUpdateFileRollbackEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
@@ -40,7 +42,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -103,7 +104,7 @@ public class ContentService {
 
     @Value("${file.url}")
     private String fileUploadUrl;
-    private String defaultVTarget = "virnect_target.jpg";
+    private String defaultVTarget = "virnect_target.png";
 
     /**
      * 콘텐츠 업로드
@@ -1069,5 +1070,42 @@ public class ContentService {
         return new ApiResponse<>(new ContentResourceUsageInfoResponse(workspaceId, storageUsage, downloadHit, LocalDateTime.now()));
     }
 
+    /**
+     * 워크스페이스에 올라간 모든 컨텐츠 정보 삭제 처리
+     * @param workspaceUUID - 워크스페이스 식별자
+     * @return
+     */
+    @Transactional
+    public ContentSecessionResponse deleteAllContentInfo(String workspaceUUID) {
+        List<Content> contentList = contentRepository.findByWorkspaceUUID(workspaceUUID);
 
+        // 1. Content download log 삭제
+        contentDownloadLogRepository.deleteAllContentDownloadLogByWorkspaceUUID(workspaceUUID);
+
+        // 2. Scene Group 삭제
+        sceneGroupRepository.deleteAllSceneGroupInfoByContent(contentList);
+
+        // 3. Target 삭제
+        targetRepository.deleteAllTargetInfoByContent(contentList);
+
+        // 4. Content File 삭제
+        contentList.parallelStream().forEach(content -> fileUploadService.delete(content.getPath()));
+
+        // 4. Content 삭제
+        contentRepository.deleteAllContentByWorkspaceUUID(workspaceUUID);
+
+        return new ContentSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+    }
+
+    @Transactional
+    public ApiResponse<ContentInfoResponse> setConverted(final String contentUUID, final YesOrNo converted) {
+        Content content = this.contentRepository.findByUuid(contentUUID)
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+
+        content.setConverted(converted);
+
+        this.contentRepository.save(content);
+
+        return getContentInfoResponseApiResponse(content);
+    }
 }
