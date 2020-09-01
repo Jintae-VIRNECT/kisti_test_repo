@@ -176,7 +176,7 @@ public class WorkspaceService {
             pageRequest.setSort(sort);
         }
 
-        Pageable pageable= pageRequest.of();
+        Pageable pageable = pageRequest.of();
         List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceList = new ArrayList<>();
 
         Page<WorkspaceUserPermission> workspaceUserPermissionPage = this.workspaceUserPermissionRepository.findByWorkspaceUser_UserId(userId, pageable);
@@ -451,27 +451,9 @@ public class WorkspaceService {
         if (workspaceLicensePlanInfoResponse.getMaxUserAmount() < workspaceUserAmount + workspaceInviteRequest.getUserInfoList().size()) {
             throw new WorkspaceException(ErrorCode.ERR_NOMORE_JOIN_WORKSPACE);
         }
-        //초대받는 사람에게 할당할 라이선스가 있는 지 체크.
-        long usefulRemote = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream()
-                .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals(LicenseProduct.REMOTE.toString()))
-                .map(licenseProductInfoResponse -> {
-                    return licenseProductInfoResponse.getLicenseInfoList().stream().filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equals("UNUSE"));
-                }).count();
 
-        long usefulMake = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream()
-                .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals(LicenseProduct.MAKE.toString()))
-                .map(licenseProductInfoResponse -> {
-                    return licenseProductInfoResponse.getLicenseInfoList().stream().filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equals("UNUSE"));
-                }).count();
-
-        long usefulView = workspaceLicensePlanInfoResponse.getLicenseProductInfoList().stream()
-                .filter(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals(LicenseProduct.VIEW.toString()))
-                .map(licenseProductInfoResponse -> {
-                    return licenseProductInfoResponse.getLicenseInfoList().stream().filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equals("UNUSE"));
-                }).count();
-
-        long requestRemote = 0, requestMake = 0, requestView = 0;
-
+        //초대요청 라이선스
+        int requestRemote = 0, requestMake = 0, requestView = 0;
         for (WorkspaceInviteRequest.UserInfo userInfo : workspaceInviteRequest.getUserInfoList()) {
             //초대받은 사람의 유저의 권한은 매니저 또는 멤버만 가능하도록 체크x
             if (userInfo.getRole().equals("MASTER")) {
@@ -490,8 +472,18 @@ public class WorkspaceService {
                 requestView = requestView + 1;
             }
         }
-        if (usefulRemote < requestRemote || usefulMake < requestMake || usefulView < requestView) {
-            throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+
+        //초대받는 사람에게 할당할 라이선스가 있는 지 체크.(useful license check)
+        for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfo : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
+            if (licenseProductInfo.getProductName().equals(LicenseProduct.REMOTE.toString()) && licenseProductInfo.getUnUseLicenseAmount() < requestRemote) {
+                throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+            }
+            if (licenseProductInfo.getProductName().equals(LicenseProduct.MAKE.toString()) && licenseProductInfo.getUnUseLicenseAmount() < requestMake) {
+                throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+            }
+            if (licenseProductInfo.getProductName().equals(LicenseProduct.VIEW.toString()) && licenseProductInfo.getUnUseLicenseAmount() < requestView) {
+                throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+            }
         }
 
         //라이선스 플랜 타입 구하기 -- basic, pro..(한 워크스페이스에서 다른 타입의 라이선스 플랜을 동시에 가지고 있을 수 없으므로, 아무 플랜이나 잡고 타입을 구함.)
