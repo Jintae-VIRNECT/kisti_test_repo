@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -250,4 +251,17 @@ public class TaskController {
         return ResponseEntity.ok(apiResponse);
     }
 
+    @ApiOperation(value = "작업 관련 정보 삭제 - 회원탈퇴", tags = "user server only")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "user-server")
+    })
+    @DeleteMapping("/secession/{workspaceUUID}")
+    public ResponseEntity<ApiResponse<TaskSecessionResponse>> taskSecessionRequest(@PathVariable("workspaceUUID") String workspaceUUID, @RequestHeader("serviceID") String requestServiceID) {
+        if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals("user-server")) {
+            throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        TaskSecessionResponse taskSecessionResponse = this.taskService.deleteAllTaskInfo(workspaceUUID);
+        return ResponseEntity.ok(new ApiResponse<>(taskSecessionResponse));
+    }
 }

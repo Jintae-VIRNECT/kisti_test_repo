@@ -1,5 +1,6 @@
 package com.virnect.process.dao;
 
+import com.virnect.process.domain.Job;
 import com.virnect.process.domain.Report;
 import com.virnect.process.dto.response.HourlyReportCountOfaDayResponse;
 import org.springframework.data.domain.Page;
@@ -62,4 +63,6 @@ public interface ReportRepository extends JpaRepository<Report, Long>, ReportCus
             , countQuery = "select count(*) from sub_process s join process p on s.process_id = p.process_id and ((:workspaceUUID is null) or (:workspaceUUID is not null and p.workspace_uuid like :workspaceUUID)) and ((:reported is null or :reported is not true) or (:reported is not null and :reported is true and s.reported_date is not null)) and ((:processId is null) or (:processId is not null and p.process_id = :processId and s.process_id = :processId)) join job j on j.sub_process_id = s.sub_process_id and ((:subProcessId is null) or (:subProcessId is not null and j.sub_process_id = :subProcessId and s.sub_process_id = :subProcessId)) join report r on r.job_id = j.job_id"
             , nativeQuery = true)
     Page<Report> getReports(String workspaceUUID, Long processId, Long subProcessId/*, @Param("search") String search*/, Boolean reported, Pageable pageable);
+
+    void deleteAllByJob(Job job);
 }

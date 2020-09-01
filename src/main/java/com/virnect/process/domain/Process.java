@@ -67,11 +67,9 @@ public class Process extends BaseTimeEntity {
     @Column(name = "workspace_uuid")
     private String workspaceUUID;
 
-    //@OneToMany(mappedBy = "process", cascade = CascadeType.REMOVE)
     @OneToMany(mappedBy = "process")
     private List<Target> targetList = new ArrayList<>();
 
-    //@OneToMany(mappedBy = "process", cascade = CascadeType.REMOVE)
     @OneToMany(mappedBy = "process")
     private List<SubProcess> subProcessList = new ArrayList<>();
 

@@ -56,11 +56,9 @@ public class Job extends BaseTimeEntity {
     @JoinColumn(name = "sub_process_id")
     private SubProcess subProcess;
 
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "job")
     private List<Report> reportList = new ArrayList<>();
 
-    //@OneToMany(fetch = FetchType.LAZY, mappedBy = "job", cascade = CascadeType.REMOVE)
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "job")
     private List<Issue> issueList = new ArrayList<>();
 

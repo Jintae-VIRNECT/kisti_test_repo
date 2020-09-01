@@ -67,7 +67,7 @@ public class TaskService {
     private final ReportRepository reportRepository;
     private final ItemRepository itemRepository;
     private final JobRepository jobRepository;
-
+    private final DailyTotalWorkspaceRepository dailyTotalWorkspaceRepository;
     private final ContentRestService contentRestService;
     private final UserRestService userRestService;
     private final WorkspaceRestService workspaceRestService;
@@ -494,8 +494,10 @@ public class TaskService {
                                     .path("")
                                     .priority(reportObjectItem.getPriority())
                                     .result(INIT_RESULT)
+                                    .report(report)
                                     .build();
-                            report.addItem(item);
+                            //report.addItem(item);
+                            this.itemRepository.save(item);
                         });
 
                         this.reportRepository.save(report);
@@ -1674,4 +1676,43 @@ public class TaskService {
                 .build();
     }
 
+    public TaskSecessionResponse deleteAllTaskInfo(String workspaceUUID) {
+        //1. daily_total_workspace 삭제
+        this.dailyTotalWorkspaceRepository.deleteAllByWorkspaceUUIDEquals(workspaceUUID);
+
+        List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
+        processList.stream().forEach(process -> {
+            process.getSubProcessList().stream().forEach(subProcess -> {
+                subProcess.getJobList().stream().forEach(job -> {
+                    job.getReportList().stream().forEach(report -> {
+                        report.getItemList().stream().forEach(item -> {
+                            //2. item 삭제
+                            this.itemRepository.delete(item);
+                        });
+                        //3. report 삭제
+                        this.reportRepository.delete(report);
+                    });
+                    job.getIssueList().stream().forEach(issue -> {
+                        //4. issue 삭제
+                        this.issueRepository.delete(issue);
+                    });
+                    //5. job 삭제
+                    this.jobRepository.delete(job);
+                });
+                //6. sub process 삭제
+                this.subProcessRepository.delete(subProcess);
+            });
+
+            process.getTargetList().stream().forEach(target -> {
+                //7. target 삭제
+                this.targetRepository.delete(target);
+            });
+
+            //8. process 삭제
+            this.processRepository.delete(process);
+
+        });
+        return new TaskSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+
+    }
 }
