@@ -8,6 +8,7 @@
 import { mapGetters } from 'vuex'
 import { fabric } from 'plugins/remote/fabric.custom'
 import { ROLE, DRAWING } from 'configs/remote.config'
+import { ACTION } from 'configs/view.config'
 
 import { getCanvasSize, getSignalParams, getChunk } from 'utils/drawing'
 import DrawingWatch from './DrawingWatch'
@@ -161,12 +162,23 @@ export default {
         this.canvas.dispose()
         this.canvas = null
       }
+      this.editingMode = false
 
       const canvas = new fabric.Canvas('drawingCanvas', {
         backgroundColor: '#000000',
         isDrawingMode:
-          !!this.viewAction && this.account.roleType === ROLE.LEADER,
-        freeDrawingCursor: 'default',
+          this.viewAction === ACTION.DRAWING_LINE &&
+          this.account.roleType === ROLE.LEADER,
+        freeDrawingCursor:
+          this.account.roleType === ROLE.LEADER &&
+          this.viewAction === ACTION.DRAWING_TEXT
+            ? 'text'
+            : 'default',
+        defaultCursor:
+          this.account.roleType === ROLE.LEADER &&
+          this.viewAction === ACTION.DRAWING_TEXT
+            ? 'text'
+            : 'default',
       })
 
       this.canvas = canvas

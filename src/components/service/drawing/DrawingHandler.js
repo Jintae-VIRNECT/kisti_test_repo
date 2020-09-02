@@ -1,6 +1,6 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { DRAWING } from 'configs/remote.config'
-import { VIEW } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
   data() {
@@ -176,7 +176,7 @@ export default {
       canvas.on('mouse:move', event => {
         const mouse = canvas.getPointer(event.e)
 
-        if (this.viewAction === 'text') {
+        if (this.viewAction === ACTION.DRAWING_TEXT) {
           canvas.defaultCursor = 'text'
         }
 
@@ -230,7 +230,7 @@ export default {
 
         // 텍스트 삽입
         if (
-          this.viewAction === 'text' &&
+          this.viewAction === ACTION.DRAWING_TEXT &&
           this.editingMode === false &&
           !(canvas.getActiveObject() instanceof fabric.IText)
         ) {
