@@ -584,13 +584,17 @@ var Session = /** @class */ (function(_super) {
       prodLogger('signal', 'send::', signal.type)
       var signalMessage = {}
       if (signal.to && signal.to.length > 0) {
-        var connectionIds_1 = []
-        signal.to.forEach(function(connection) {
-          if (connection.connectionId) {
-            connectionIds_1.push(connection.connectionId)
-          }
-        })
-        signalMessage['to'] = connectionIds_1
+        if (typeof signal.to[0] === 'string') {
+          signalMessage['to'] = signal.to
+        } else {
+          var connectionIds_1 = []
+          signal.to.forEach(function(connection) {
+            if (connection.connectionId) {
+              connectionIds_1.push(connection.connectionId)
+            }
+          })
+          signalMessage['to'] = connectionIds_1
+        }
       } else {
         signalMessage['to'] = []
       }

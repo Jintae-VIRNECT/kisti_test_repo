@@ -136,7 +136,7 @@ export default {
         this.toastDefault(this.$t('service.camera_permission'))
         return
       }
-      this.$call.zoom(level, this.mainView.id)
+      this.$call.zoom(level, [this.mainView.connectionId])
     },
     cameraListener(status) {
       // 응답

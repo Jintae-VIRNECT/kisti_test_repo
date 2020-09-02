@@ -199,29 +199,9 @@ export default {
               imgName: this.file.oriName
                 ? this.file.oriName
                 : this.file.fileName,
-              width: bgImage.width,
-              height: bgImage.height,
+              image: this.file.img,
             }
-
-            const chunk = getChunk(this.file.img)
-
-            let type
-
-            for (let i = 0; i < chunk.length; i++) {
-              if (i === 0) {
-                type = DRAWING.FIRST_FRAME
-                if (chunk.length === 1) {
-                  type = DRAWING.LAST_FRAME
-                }
-              } else if (i === chunk.length - 1) {
-                type = DRAWING.LAST_FRAME
-              } else {
-                type = DRAWING.FRAME
-              }
-              params.chunk = chunk[i]
-
-              this.$call.drawing(type, params)
-            }
+            this.sendImage(params)
           }
 
           this.isInit = true
@@ -234,6 +214,38 @@ export default {
       bgImage.src = this.file.img
 
       return this.canvas
+    },
+
+    /**
+     * chunk 이미지 전송
+     * @param {String} imgId
+     * @param {String} imgName
+     * @param {String} image 이미지 dataURL
+     */
+    sendImage(params, target = null) {
+      const chunk = getChunk(params['image'])
+      delete params['image']
+
+      params.width = this.img.width
+      params.height = this.img.height
+
+      let type
+
+      for (let i = 0; i < chunk.length; i++) {
+        if (i === 0) {
+          type = DRAWING.FIRST_FRAME
+          if (chunk.length === 1) {
+            type = DRAWING.LAST_FRAME
+          }
+        } else if (i === chunk.length - 1) {
+          type = DRAWING.LAST_FRAME
+        } else {
+          type = DRAWING.FRAME
+        }
+        params.chunk = chunk[i]
+
+        this.$call.drawing(type, params, target)
+      }
     },
 
     /**

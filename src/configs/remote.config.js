@@ -80,9 +80,8 @@ export const AR_DRAWING = {
   START_DRAWING: 'startArDrawing',
   END_DRAWING: 'endArDrawing',
 
-  LINE_DOWN: 'arDrawLineDown',
-  LINE_MOVE: 'arDrawLineMove',
-  LINE_UP: 'arDrawLineUp',
+  AR_DRAWING: 'AR_DRAWING',
+
   UNDO: 'undo',
   REDO: 'redo',
   CLEAR: 'clear',
@@ -90,6 +89,12 @@ export const AR_DRAWING = {
   UNDO_ABLE: 'undoAble',
   REDO_ABLE: 'redoAble',
   CLEAR_ABLE: 'clearAble',
+}
+
+export const AR_DRAWING_ACTION = {
+  LINE_DOWN: 'arDrawLineDown',
+  LINE_MOVE: 'arDrawLineMove',
+  LINE_UP: 'arDrawLineUp',
 }
 
 export const CAPTURE_PERMISSION = {

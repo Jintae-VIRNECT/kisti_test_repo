@@ -140,11 +140,9 @@ export default {
   methods: {
     ...mapActions(['showArImage', 'setAction']),
     setArArea() {
-      this.$call.arDrawing(
-        AR_DRAWING.FRAME_REQUEST,
-        {},
+      this.$call.arDrawing(AR_DRAWING.FRAME_REQUEST, {}, [
         this.mainView.connectionId,
-      )
+      ])
     },
     mediaPlay() {
       this.$nextTick(() => {

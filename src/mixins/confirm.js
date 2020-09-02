@@ -14,7 +14,7 @@ export default {
       options = {},
     ) {
       Alert.fire({
-        text: text,
+        html: text,
         confirmButtonText: confirm.text || this.$t('button.confirm'),
         ...options,
       }).then(result => {

@@ -68,7 +68,7 @@ export default {
         return
       }
       const toStatus = !this.status
-      this.$call.flash(toStatus, this.mainView.id)
+      this.$call.flash(toStatus, [this.mainView.connectionId])
     },
     flashListener(status) {
       // 응답

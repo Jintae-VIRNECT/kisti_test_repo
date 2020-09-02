@@ -165,7 +165,7 @@ const _ = {
     if (text.trim().length === 0) return
     _.session.signal({
       data: text.trim(),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.CHAT,
     })
   },
@@ -180,7 +180,7 @@ const _ = {
     //파일 관련 정보 전송하기
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.FILE,
     })
   },
@@ -233,13 +233,13 @@ const _ = {
    * @BROADCATE
    * pointing
    * @param {Object} params
-   *  = {to, from, color, opacity, width, posX, posY}
+   *  = {color, opacity, width, posX, posY}
    */
   pointing: params => {
     if (!_.session) return
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.POINTING,
     })
   },
@@ -249,13 +249,11 @@ const _ = {
    * @param {String} type = remote.config.DRAWING
    * @param {Object} params
    */
-  drawing: (type, params = {}) => {
+  drawing: (type, params = {}, target = null) => {
     params.type = type
-    params['from'] = _.account.uuid
-    params['to'] = []
     _.session.signal({
       type: SIGNAL.DRAWING,
-      to: _.session.connection,
+      to: target,
       data: JSON.stringify(params),
     })
   },
@@ -288,7 +286,7 @@ const _ = {
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.AR_FEATURE,
     })
   },
@@ -303,19 +301,9 @@ const _ = {
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.AR_FEATURE,
     })
-  },
-  getTarget: connectionId => {
-    const connections = []
-    for (let subscriber of _.subscribers) {
-      if (subscriber.stream.connection.connectionId === connectionId) {
-        connections.push(subscriber.stream.connection)
-      }
-    }
-    if (connections.length > 0) return connections
-    return null
   },
   /**
    * @TARGET
@@ -324,9 +312,6 @@ const _ = {
    * @param {Object} params (문서참조)
    */
   arPointing: (type, params = {}, target = null) => {
-    if (typeof target === 'string') {
-      target = _.getTarget(target)
-    }
     params.type = type
     _.session.signal({
       data: JSON.stringify(params),
@@ -339,12 +324,10 @@ const _ = {
    * request screen capture permission
    * @param {Object} params
    */
-  permission: (params = {}, target = null) => {
-    if (typeof target === 'string') {
-      target = _.getTarget(target)
+  permission: (target = null) => {
+    const params = {
+      type: 'response',
     }
-    params['from'] = _.account.uuid
-    if (params.type !== 'response') params['type'] = 'request'
     _.session.signal({
       type: SIGNAL.CAPTURE_PERMISSION,
       to: target,
@@ -359,11 +342,7 @@ const _ = {
    */
   arDrawing: (type, params = {}, target = null) => {
     if (!_.session) return
-    if (typeof target === 'string') {
-      target = _.getTarget(target)
-    }
     params.type = type
-    params['from'] = _.account.uuid
     _.session.signal({
       type: SIGNAL.AR_DRAWING,
       to: target,
@@ -409,6 +388,16 @@ const _ = {
     const params = {
       isOn: active,
     }
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', target)
+    // let custom = []
+    // for (let a of target) {
+    //   custom.push({
+    //     connectionId: a.connectionId,
+    //     // creationTime: a.creationTime,
+    //     // data: a.data,
+    //   })
+    // }
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', custom)
     try {
       _.session.signal({
         data: JSON.stringify(params),
@@ -451,7 +440,6 @@ const _ = {
   flashStatus: (status = FLASH_STATUE.FLASH_NONE, target = null) => {
     const params = {
       status: status,
-      from: _.account.uuid,
       type: FLASH.STATUS,
     }
     _.session.signal({
@@ -467,16 +455,14 @@ const _ = {
    * @param {Boolean} active
    * @param {String} id : target id
    */
-  flash: (active, id) => {
+  flash: (active, connectionId) => {
     const params = {
       enable: active,
-      from: _.account.uuid,
       type: FLASH.FLASH,
-      to: [id],
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: [connectionId],
       type: SIGNAL.FLASH,
     })
   },
@@ -486,16 +472,14 @@ const _ = {
    * other user's camera control
    * @param {Boolean} active
    */
-  zoom: (level, id) => {
+  zoom: (level, target) => {
     const params = {
-      from: _.account.uuid,
       type: CAMERA.ZOOM,
       level: level,
-      to: [id],
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.CAMERA,
     })
   },

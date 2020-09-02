@@ -3,10 +3,11 @@
     <ul class="flex">
       <lnb-button
         v-for="menu of menus"
-        :key="menu.text"
+        :key="menu.key"
         :text="menu.text"
         :active="view === menu.key"
         :image="menu.icon"
+        :notice="menu.notice"
         @click="goTab(menu.key)"
       ></lnb-button>
     </ul>
@@ -35,23 +36,26 @@ export default {
   },
   data() {
     return {
-      drawingNotice: false,
-      arNotice: false,
+      drawingNotice: 1,
+      arNotice: 2,
       menus: [
         {
           text: this.$t('service.stream'),
           key: VIEW.STREAM,
           icon: require('assets/image/call/gnb_ic_shareframe.svg'),
+          notice: false,
         },
         {
           text: this.$t('service.drawing'),
           key: VIEW.DRAWING,
           icon: require('assets/image/call/gnb_ic_creat_basic.svg'),
+          notice: false,
         },
         {
           text: this.$t('service.ar'),
           key: VIEW.AR,
           icon: require('assets/image/call/gnb_ic_creat_ar.svg'),
+          notice: false,
         },
       ],
     }
@@ -88,7 +92,8 @@ export default {
           type: 'system',
         })
         if (this.view !== VIEW.DRAWING) {
-          this.drawingNotice = true
+          // this.drawingNotice = true
+          this.menus[this.drawingNotice].notice = true
         }
       }
     },
@@ -172,7 +177,8 @@ export default {
         }
         if (type === 'drawing') {
           if (this.shareFile && this.shareFile.id) {
-            this.drawingNotice = false
+            // this.drawingNotice = false
+            this.menus[this.drawingNotice].notice = false
             this.setView(VIEW.DRAWING)
           } else {
             this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
@@ -256,12 +262,7 @@ export default {
         this.toastDefault(this.$t('service.toast_refused_ar'))
         return
       }
-      this.$call.permission(
-        {
-          to: [this.mainView.id],
-        },
-        this.mainView.connectionId,
-      )
+      this.$call.permission(this.mainView.connectionId)
       this.toastDefault(this.$t('service.toast_request_permission'))
     },
 

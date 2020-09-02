@@ -1,5 +1,5 @@
 import { hexToAHEX } from './color'
-import { DRAWING, AR_DRAWING } from 'configs/remote.config'
+import { DRAWING, AR_DRAWING, AR_DRAWING_ACTION } from 'configs/remote.config'
 import {
   normalizedPosX,
   normalizedPosY,
@@ -169,7 +169,7 @@ export const getSignalParams = function getSignalParams(
       }
       break */
     case DRAWING.LINE_DOWN:
-    case AR_DRAWING.LINE_DOWN:
+    case AR_DRAWING_ACTION.LINE_DOWN:
       posX = normalizedPosX(left, status.imgWidth)
       posY = normalizedPosY(top, status.imgHeight)
       if (posX > 1) posX = 1
@@ -183,7 +183,7 @@ export const getSignalParams = function getSignalParams(
       }
       break
     case DRAWING.LINE_MOVE:
-    case AR_DRAWING.LINE_MOVE:
+    case AR_DRAWING_ACTION.LINE_MOVE:
       posX = normalizedPosX(left, status.imgWidth)
       posY = normalizedPosY(top, status.imgHeight)
       if (posX > 1) posX = 1
@@ -197,7 +197,7 @@ export const getSignalParams = function getSignalParams(
       }
       break
     case DRAWING.LINE_UP:
-    case AR_DRAWING.LINE_UP:
+    case AR_DRAWING_ACTION.LINE_UP:
       posX = normalizedPosX(left, status.imgWidth)
       posY = normalizedPosY(top, status.imgHeight)
       if (posX > 1) posX = 1

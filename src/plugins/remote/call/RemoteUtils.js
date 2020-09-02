@@ -32,22 +32,34 @@ export const addSessionEventListener = session => {
           : event.stream.hasVideo,
       })
       addSubscriber(subscriber)
-      _.sendResolution(null, [event.stream.connection])
-      _.video(Store.getters['video'].isOn, [event.stream.connection])
-      _.mic(Store.getters['mic'].isOn, [event.stream.connection])
-      _.speaker(Store.getters['speaker'].isOn, [event.stream.connection])
-      _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.stream.connection])
+      _.sendResolution(null, [event.stream.connection.connectionId])
+      _.video(Store.getters['video'].isOn, [
+        event.stream.connection.connectionId,
+      ])
+      _.mic(Store.getters['mic'].isOn, [event.stream.connection.connectionId])
+      _.speaker(Store.getters['speaker'].isOn, [
+        event.stream.connection.connectionId,
+      ])
+      _.flashStatus(FLASH_STATUE.FLASH_NONE, [
+        event.stream.connection.connectionId,
+      ])
       if (_.account.roleType === ROLE.LEADER) {
         _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
-          event.stream.connection,
+          event.stream.connection.connectionId,
         ])
         _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
-          event.stream.connection,
+          event.stream.connection.connectionId,
         ])
         if (Store.getters['viewForce'] === true) {
           _.mainview(Store.getters['mainView'].id, true, [
-            event.stream.connection,
+            event.stream.connection.connectionId,
           ])
+        }
+        if (Store.getters['view'] === 'drawing') {
+          window.vue.$eventBus.$emit(
+            'participantChange',
+            event.stream.connection.connectionId,
+          )
         }
       }
     })
