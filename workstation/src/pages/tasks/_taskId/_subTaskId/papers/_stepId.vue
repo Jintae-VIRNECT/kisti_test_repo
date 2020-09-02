@@ -34,6 +34,7 @@
                   v-if="action.photoFilePath"
                   class="el-button"
                   :href="action.photoFilePath"
+                  download
                   target="_blank"
                 >
                   <img src="~assets/images/icon/ic-download.svg" />

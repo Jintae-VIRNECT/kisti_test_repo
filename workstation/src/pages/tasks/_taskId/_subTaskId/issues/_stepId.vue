@@ -40,7 +40,14 @@
           <dt>{{ $t('results.issueDetail.reportedDate') }}</dt>
           <dd>{{ issue.reportedDate | localTimeFormat }}</dd>
           <dt>{{ $t('results.issueDetail.content') }}</dt>
-          <dd>{{ issue.caption }}</dd>
+          <dd>
+            <span>{{ issue.caption }}</span>
+            <img
+              v-if="issue.photoFilePath"
+              src="~assets/images/icon/ic-file-download.svg"
+              @click="download(issue.photoFilePath, issue.caption)"
+            />
+          </dd>
         </dl>
       </el-collapse-item>
     </el-collapse>
@@ -50,9 +57,10 @@
 <script>
 import resultService from '@/services/result'
 import filters from '@/mixins/filters'
+import utils from '@/mixins/utils'
 
 export default {
-  mixins: [filters],
+  mixins: [filters, utils],
   async asyncData({ params }) {
     const { list } = await resultService.searchIssues({
       stepId: params.stepId,
