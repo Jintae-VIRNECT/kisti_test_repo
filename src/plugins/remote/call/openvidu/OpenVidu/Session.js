@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 'use strict'
 /*
  * (C) Copyright 2017-2020 OpenVidu (https://openvidu.io)
@@ -635,8 +636,8 @@ var Session = /** @class */ (function(_super) {
     if (type === 'publisherStartSpeaking') {
       this.startSpeakingEventsEnabled = true
       // If there are already available remote streams, enable hark 'speaking' event in all of them
-      for (var connectionId in this.remoteConnections) {
-        var str = this.remoteConnections[connectionId].stream
+      for (let connectionId in this.remoteConnections) {
+        let str = this.remoteConnections[connectionId].stream
         if (!!str && str.hasAudio) {
           str.enableStartSpeakingEvent()
         }
@@ -645,8 +646,8 @@ var Session = /** @class */ (function(_super) {
     if (type === 'publisherStopSpeaking') {
       this.stopSpeakingEventsEnabled = true
       // If there are already available remote streams, enable hark 'stopped_speaking' event in all of them
-      for (var connectionId in this.remoteConnections) {
-        var str = this.remoteConnections[connectionId].stream
+      for (let connectionId in this.remoteConnections) {
+        let str = this.remoteConnections[connectionId].stream
         if (!!str && str.hasAudio) {
           str.enableStopSpeakingEvent()
         }
@@ -667,8 +668,8 @@ var Session = /** @class */ (function(_super) {
     if (type === 'publisherStartSpeaking') {
       this.startSpeakingEventsEnabledOnce = true
       // If there are already available remote streams, enable hark 'speaking' event in all of them once
-      for (var connectionId in this.remoteConnections) {
-        var str = this.remoteConnections[connectionId].stream
+      for (let connectionId in this.remoteConnections) {
+        let str = this.remoteConnections[connectionId].stream
         if (!!str && str.hasAudio) {
           str.enableOnceStartSpeakingEvent()
         }
@@ -677,8 +678,8 @@ var Session = /** @class */ (function(_super) {
     if (type === 'publisherStopSpeaking') {
       this.stopSpeakingEventsEnabledOnce = true
       // If there are already available remote streams, enable hark 'stopped_speaking' event in all of them once
-      for (var connectionId in this.remoteConnections) {
-        var str = this.remoteConnections[connectionId].stream
+      for (let connectionId in this.remoteConnections) {
+        let str = this.remoteConnections[connectionId].stream
         if (!!str && str.hasAudio) {
           str.enableOnceStopSpeakingEvent()
         }
@@ -692,12 +693,12 @@ var Session = /** @class */ (function(_super) {
   Session.prototype.off = function(type, handler) {
     _super.prototype.off.call(this, type, handler)
     if (type === 'publisherStartSpeaking') {
-      var remainingStartSpeakingListeners = this.ee.getListeners(type).length
+      let remainingStartSpeakingListeners = this.ee.getListeners(type).length
       if (remainingStartSpeakingListeners === 0) {
         this.startSpeakingEventsEnabled = false
         // If there are already available remote streams, disable hark in all of them
-        for (var connectionId in this.remoteConnections) {
-          var str = this.remoteConnections[connectionId].stream
+        for (let connectionId in this.remoteConnections) {
+          let str = this.remoteConnections[connectionId].stream
           if (str) {
             str.disableStartSpeakingEvent(false)
           }
@@ -705,12 +706,12 @@ var Session = /** @class */ (function(_super) {
       }
     }
     if (type === 'publisherStopSpeaking') {
-      var remainingStopSpeakingListeners = this.ee.getListeners(type).length
+      let remainingStopSpeakingListeners = this.ee.getListeners(type).length
       if (remainingStopSpeakingListeners === 0) {
         this.stopSpeakingEventsEnabled = false
         // If there are already available remote streams, disable hark in all of them
-        for (var connectionId in this.remoteConnections) {
-          var str = this.remoteConnections[connectionId].stream
+        for (let connectionId in this.remoteConnections) {
+          let str = this.remoteConnections[connectionId].stream
           if (str) {
             str.disableStopSpeakingEvent(false)
           }

@@ -533,14 +533,9 @@ const _ = {
    * leave session
    */
   leave: () => {
-    try {
-      if (!_.session) return
-      _.session.disconnect()
-      _.clear()
-      // 필요여부 체크할 것
-    } catch (err) {
-      throw err
-    }
+    if (!_.session) return
+    _.session.disconnect()
+    _.clear()
   },
   /**
    * leave session
