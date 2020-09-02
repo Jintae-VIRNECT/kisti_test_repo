@@ -7,7 +7,7 @@ module.exports = {
       template: 'public/dashboard.html',
       filename: 'dashboard.html',
       title: 'dashboard',
-      chunks: ['chunk-vendors', 'chunk-common', 'index'],
+      chunks: ['chunk-vendors', 'chunk-common', 'dashboard'],
     },
     index: {
       entry: 'src/pages/index/remote.js',
