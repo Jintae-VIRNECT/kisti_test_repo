@@ -161,7 +161,7 @@ export default {
           text: this.$t('button.confirm'),
           action: () => {
             this.$emit('kickout')
-            this.kickout(participant.name, idx)
+            this.kickout(participant.uuid, idx)
           },
         },
         {

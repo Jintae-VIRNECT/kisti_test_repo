@@ -139,5 +139,8 @@ export default {
         }
       })
     },
+    confirmClose() {
+      return Alert.close()
+    },
   },
 }

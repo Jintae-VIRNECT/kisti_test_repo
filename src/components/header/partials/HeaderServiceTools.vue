@@ -78,6 +78,11 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  created() {
+    this.$eventBus.$on('call:logout', this.leave)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('call:logout', this.leave)
+  },
 }
 </script>

@@ -91,6 +91,18 @@ export default {
     },
   },
   methods: {
+    unsupport() {
+      this.$toasted.show(this.$t('confirm.unsupport_feature'), {
+        position: 'bottom-center',
+        duration: 5000,
+        action: {
+          icon: 'close',
+          onClick: (e, toastObject) => {
+            toastObject.goAway(0)
+          },
+        },
+      })
+    },
     setTimeZone(time) {
       // return this.$moment(time).add(this.timeZoneOffset * -1, 'hours')
     },
