@@ -26,5 +26,5 @@ public interface LicensePlanRepository extends JpaRepository<LicensePlan, Long>,
 
 	Optional<LicensePlan> findByUserIdAndPaymentId(String userId, String paymentId);
 
-	LicensePlan findByUserIdAndPlanStatus(String userUUID, PlanStatus status);
+	Optional<LicensePlan> findByUserIdAndPlanStatus(String userUUID, PlanStatus status);
 }
