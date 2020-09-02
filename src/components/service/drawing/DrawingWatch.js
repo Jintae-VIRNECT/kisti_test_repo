@@ -77,6 +77,9 @@ export default {
       //   this.cursor.setRadius(this.scaleWidth / 2)
       // }
     },
+    'tools.fontSize'(size) {
+      this.scaleFont = size / this.origin.scale
+    },
     undoList() {
       this.toolAble()
     },

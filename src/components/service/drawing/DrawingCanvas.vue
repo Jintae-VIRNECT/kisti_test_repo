@@ -67,6 +67,7 @@ export default {
         height: 0,
       },
       scaleWidth: 0,
+      scaleFont: 0,
     }
   },
   computed: {
@@ -74,9 +75,6 @@ export default {
     uuid() {
       return this.account.uuid
     },
-    // scaleWidth() {
-    //   return this.tools.lineWidth / this.origin.scale
-    // },
   },
   methods: {
     /* initialize */
@@ -108,6 +106,7 @@ export default {
           this.origin.width = canvasSize.width
           this.origin.height = canvasSize.height
           this.scaleWidth = this.tools.lineWidth
+          this.scaleFont = this.tools.fontSize
           this.origin.scale = 1
           canvas.renderAll.bind(canvas)()
           canvas.renderAll()
@@ -259,7 +258,7 @@ export default {
         color: this.tools.color,
         opacity: this.tools.opacity,
         width: this.scaleWidth,
-        size: this.tools.fontSize,
+        size: this.scaleFont,
         scale: 1 / this.canvas.backgroundImage.scaleX,
         imgWidth: this.canvas.getWidth(),
         imgHeight: this.canvas.getHeight(),
@@ -317,6 +316,7 @@ export default {
 
       this.origin.scale = scale
       this.scaleWidth = this.tools.lineWidth / scale
+      this.scaleFont = this.tools.fontSize / scale
 
       canvas.setZoom(scale)
       cursor.setZoom(scale)
@@ -342,16 +342,21 @@ export default {
       }
       this.receivedList = []
     },
+    windowResize() {
+      setTimeout(() => {
+        this.optimizeCanvasSize()
+      }, 100)
+    },
   },
   /* Lifecycles */
   beforeDestroy() {
-    window.removeEventListener('resize', this.optimizeCanvasSize)
+    window.removeEventListener('resize', this.windowResize)
   },
   beforeCreate() {
     this.$emit('loadingStart')
   },
   created() {
-    window.addEventListener('resize', this.optimizeCanvasSize)
+    window.addEventListener('resize', this.windowResize)
     if (this.file && this.file.id) {
       setTimeout(() => {
         this.initCanvas()
