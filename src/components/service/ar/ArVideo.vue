@@ -185,11 +185,16 @@ export default {
       this.videoSize.height = video.offsetHeight
       this.debug('calc size: ', this.videoSize.width, this.videoSize.height)
     },
+    windowResize() {
+      setTimeout(() => {
+        this.optimizeVideoSize()
+      }, 100)
+    },
   },
 
   /* Lifecycles */
   created() {
-    window.addEventListener('resize', this.optimizeVideoSize)
+    window.addEventListener('resize', this.windowResize)
   },
   mounted() {
     if (this.resolution && this.resolution.width > 0) {
@@ -197,7 +202,7 @@ export default {
     }
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.optimizeVideoSize)
+    window.removeEventListener('resize', this.windowResize)
   },
 }
 </script>
