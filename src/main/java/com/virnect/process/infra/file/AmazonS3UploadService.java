@@ -65,9 +65,9 @@ public class AmazonS3UploadService implements FileUploadService {
 
 	@Override
 	public boolean delete(String url) {
-		String key = "/" + bucketResource + REPORT_DIRECTORY + FilenameUtils.getName(url);
+		String key = bucketResource + REPORT_DIRECTORY + "/" + FilenameUtils.getName(url);
 		amazonS3Client.deleteObject(bucketName, key);
-		log.info(FilenameUtils.getName(url) + " 파일이 AWS S3(" + bucketName + key + ")에서 삭제되었습니다.");
+		log.info(FilenameUtils.getName(url) + " 파일이 AWS S3(" + bucketName + "/" + key + ")에서 삭제되었습니다.");
 		return true;
 	}
 
