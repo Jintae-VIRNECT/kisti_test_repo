@@ -1792,8 +1792,8 @@ public class TaskService {
 		List<DailyTotalWorkspace> dailyTotalWorkspaceList = this.dailyTotalWorkspaceRepository.findAllByWorkspaceUUID(
 			workspaceUUID);
 		dailyTotalWorkspaceList.forEach(dailyTotalWorkspace -> {
-			dailyTotalRepository.delete(dailyTotalWorkspace.getDailyTotal());
 			dailyTotalWorkspaceRepository.delete(dailyTotalWorkspace);
+			dailyTotalRepository.delete(dailyTotalWorkspace.getDailyTotal());
 		});
 
 		List<Process> processList = processRepository.findByWorkspaceUUID(workspaceUUID);
