@@ -480,7 +480,7 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
       }
     })
 
-    if (orientation === 'landscape') {
+    if (orientation === 'landscape' || orientation === undefined) {
       if (fullcanvas) {
         canvas.width = fullcanvas.stream.width
         canvas.height = fullcanvas.stream.height
@@ -529,7 +529,7 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
     let width = null
     let height = null
 
-    if (orientation === 'landscape') {
+    if (orientation === 'landscape' || orientation === undefined) {
       width = video.width
       height = video.height
     } else {
