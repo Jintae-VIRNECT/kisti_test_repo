@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -1803,6 +1804,7 @@ public class TaskService {
 					job.getReportList().forEach(report -> {
 						report.getItemList().forEach(item -> {
 							//2. item 삭제
+							fileUploadService.delete(item.getPath());
 							itemRepository.delete(item);
 						});
 						//3. report 삭제
@@ -1810,6 +1812,7 @@ public class TaskService {
 					});
 					job.getIssueList().forEach(issue -> {
 						//4. issue 삭제
+						fileUploadService.delete(issue.getPath());
 						issueRepository.delete(issue);
 						List<Issue> issueList = issueRepository.findAllByWorkerUUID(userUUID);
 						issueList.forEach(issueRepository::delete);
@@ -1823,6 +1826,9 @@ public class TaskService {
 
 			process.getTargetList().forEach(target -> {
 				//7. target 삭제
+				if (!FilenameUtils.getBaseName(target.getImgPath()).equals("virnect_target")) {
+					fileUploadService.delete(target.getImgPath());
+				}
 				targetRepository.delete(target);
 			});
 
