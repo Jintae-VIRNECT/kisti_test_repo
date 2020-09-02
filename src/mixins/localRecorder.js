@@ -76,7 +76,7 @@ export default {
             return participant.video === true
           })
 
-          if (!anyStreamAlive && this.participant.length > 0) {
+          if (!anyStreamAlive && this.participants.length > 0) {
             this.$eventBus.$emit('localRecord', {
               isStart: false,
               stopType: 'nostream',
