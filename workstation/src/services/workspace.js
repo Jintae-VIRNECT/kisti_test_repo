@@ -154,6 +154,7 @@ export default {
         requestUserId: myProfileGetter().uuid,
       },
     })
+    store.dispatch('plan/getPlansInfo')
   },
   /**
    * 멤버 추방
@@ -168,6 +169,7 @@ export default {
       route: { workspaceId: activeWorkspaceGetter().uuid },
       params: formData,
     })
+    store.dispatch('plan/getPlansInfo')
   },
   /**
    * 멤버 초대
@@ -181,6 +183,7 @@ export default {
         userInfoList,
       },
     })
+    store.dispatch('plan/getPlansInfo')
   },
   /**
    * 멤버 활동 조회

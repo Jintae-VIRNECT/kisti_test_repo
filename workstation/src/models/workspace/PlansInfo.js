@@ -41,5 +41,14 @@ export default class PlansInfo extends Model {
       percent: rate(json.currentUsageCallTime, json.maxCallTime),
     }
     this.planStatus = json.planStatus
+    this.remote = json.licenseProductInfoList.find(
+      license => license.productId === 1001,
+    )
+    this.make = json.licenseProductInfoList.find(
+      license => license.productId === 1002,
+    )
+    this.view = json.licenseProductInfoList.find(
+      license => license.productId === 1003,
+    )
   }
 }

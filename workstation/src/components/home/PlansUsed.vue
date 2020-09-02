@@ -7,7 +7,11 @@
           <img src="~assets/images/icon/ic-error.svg" />
         </el-tooltip>
       </h3>
-      <a :href="$url.pay" target="_blank">
+      <a
+        v-if="activeWorkspace.role === 'MASTER'"
+        :href="$url.pay"
+        target="_blank"
+      >
         {{ $t('home.plansInfo.buy') }}
       </a>
     </div>
@@ -39,10 +43,17 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   props: {
     i18nGroup: String,
     info: Object,
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+    }),
   },
 }
 </script>

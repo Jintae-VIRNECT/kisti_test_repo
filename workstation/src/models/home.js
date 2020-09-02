@@ -42,6 +42,14 @@ export const guide = [
     path: 'guide.workstationGuide.url',
   },
   {
+    label: 'guide.taskManageGuide.label',
+    path: 'guide.taskManageGuide.url',
+  },
+  {
+    label: 'guide.taskStatusGuide.label',
+    path: 'guide.taskStatusGuide.url',
+  },
+  {
     label: 'guide.purchaseGuide.label',
     path: 'guide.purchaseGuide.url',
   },

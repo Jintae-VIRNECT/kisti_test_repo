@@ -15,7 +15,7 @@
               <workspace-info />
             </el-card>
           </el-row>
-          <el-row v-if="activeWorkspace.role === 'MASTER'">
+          <el-row>
             <plans-used
               i18nGroup="home.plansInfo.arStorage"
               :info="plansInfo.storage"
@@ -24,10 +24,10 @@
               i18nGroup="home.plansInfo.arContent"
               :info="plansInfo.viewCount"
             />
-            <plans-used
+            <!-- <plans-used
               i18nGroup="home.plansInfo.call"
               :info="plansInfo.callTime"
-            />
+            /> -->
           </el-row>
         </el-col>
         <!-- 가운데 -->
@@ -86,24 +86,16 @@ export default {
     DownloadCenter,
     GuideList,
   },
-  data() {
-    return {
-      plansInfo: {
-        storage: {},
-        viewCount: {},
-        callTime: {},
-      },
-    }
-  },
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
+      plansInfo: 'plan/plansInfo',
     }),
   },
   methods: {
     async getWorkspacePlansInfo() {
-      if (this.activeWorkspace.role !== 'MASTER') return false
-      this.plansInfo = await workspaceService.getWorkspacePlansInfo()
+      await this.$store.dispatch('plan/getPlansInfo')
+      if (this.plansInfo.storage.remain < 0) alert('사야됨')
     },
   },
   async beforeMount() {

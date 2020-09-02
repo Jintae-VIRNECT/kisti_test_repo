@@ -72,7 +72,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.remote.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.remote.label"
+                  :disabled="!plansInfo.remote.unUseLicenseAmount"
+                >
+                  <span>{{ plans.remote.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.remote.unUseLicenseAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -83,7 +92,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.make.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.make.label"
+                  :disabled="!plansInfo.make.unUseLicenseAmount"
+                >
+                  <span>{{ plans.make.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.make.unUseLicenseAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -94,7 +112,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.view.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.view.label"
+                  :disabled="!plansInfo.view.unUseLicenseAmount"
+                >
+                  <span>{{ plans.view.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.view.unUseLicenseAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -136,6 +163,7 @@ export default {
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
+      plansInfo: 'plan/plansInfo',
     }),
     canChangeRole() {
       return (
@@ -153,6 +181,9 @@ export default {
   methods: {
     opened() {
       this.form = new EditMember(this.data)
+      if (!this.plansInfo.planStatus) {
+        this.$store.dispatch('plan/getPlansInfo')
+      }
     },
     async submit() {
       try {
