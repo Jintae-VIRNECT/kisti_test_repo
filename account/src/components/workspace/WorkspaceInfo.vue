@@ -3,7 +3,9 @@
     <div class="avatar">
       <div
         class="image"
-        :style="`background-image: url('${workspace.profile}')`"
+        :style="
+          `background-image: url('${workspace.profile}'), url(${$defaultWorkspaceProfile})`
+        "
       />
     </div>
     <dl>
@@ -18,7 +20,9 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url('${workspace.masterProfile}')`"
+            :style="
+              `background-image: url('${workspace.masterProfile}'), url(${$defaultUserProfile})`
+            "
           />
         </div>
         <span>{{ workspace.masterNickName }}</span>

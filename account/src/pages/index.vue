@@ -5,7 +5,12 @@
       <el-row>
         <section class="page-description">
           <div class="avatar">
-            <div class="image" :style="`background-image: url(${me.image})`" />
+            <div
+              class="image"
+              :style="
+                `background-image: url(${me.image}), url(${$defaultUserProfile})`
+              "
+            />
           </div>
           <h2>{{ $t('home.title.welcome', { username: me.nickname }) }}</h2>
           <p v-html="$t('home.title.description')"></p>

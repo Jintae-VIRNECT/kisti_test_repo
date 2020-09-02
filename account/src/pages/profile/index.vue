@@ -28,7 +28,9 @@
             <div class="avatar" @click="visible.imageChangeModal = true">
               <div
                 class="image"
-                :style="`background-image: url('${profileImg}')`"
+                :style="
+                  `background-image: url('${profileImg}'), url(${$defaultUserProfile})`
+                "
               />
               <i>
                 <img src="~assets/images/icon/ic-camera-alt.svg" />

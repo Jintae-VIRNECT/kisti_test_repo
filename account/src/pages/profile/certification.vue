@@ -7,7 +7,9 @@
           <div
             class="image"
             v-if="me.image"
-            :style="`background-image: url('${me.image}')`"
+            :style="
+              `background-image: url('${me.image}'), url(${$defaultUserProfile})`
+            "
           />
         </div>
         <span class="name">{{ me.nickname }}</span>
