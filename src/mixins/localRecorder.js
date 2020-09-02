@@ -76,7 +76,7 @@ export default {
             return participant.video === true
           })
 
-          if (!anyStreamAlive) {
+          if (!anyStreamAlive && this.participant.length > 0) {
             this.$eventBus.$emit('localRecord', {
               isStart: false,
               stopType: 'nostream',
@@ -207,6 +207,7 @@ export default {
       } catch (e) {
         console.error(e)
       } finally {
+        this.recorder = null
         await this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
       }
     },
