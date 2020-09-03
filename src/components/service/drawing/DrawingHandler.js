@@ -235,7 +235,8 @@ export default {
           !(canvas.getActiveObject() instanceof fabric.IText)
         ) {
           event.e.preventDefault()
-          this.addTextObject(mouse.x, mouse.y)
+          // this.addTextObject(mouse.x, mouse.y)
+          this.addTextObject(mouse.x, mouse.y - this.scaleFont / 2)
         }
       })
 

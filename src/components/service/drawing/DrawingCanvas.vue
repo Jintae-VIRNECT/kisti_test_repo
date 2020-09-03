@@ -279,8 +279,6 @@ export default {
         posScale: this.canvas.getWidth() / this.origin.width,
         widthScale: this.origin.width / this.img.width,
       }
-      // console.log(state.imgWidth, state.imgHeight)
-      // console.log(this.canvas.getWidth(), this.origin.width)
       const param = getSignalParams(type, aId, object, state)
       param.imgId = this.file.id
 
@@ -355,9 +353,11 @@ export default {
       this.receivedList = []
     },
     windowResize() {
-      setTimeout(() => {
-        this.optimizeCanvasSize()
-      }, 100)
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.optimizeCanvasSize()
+        }, 100)
+      })
     },
   },
   /* Lifecycles */
