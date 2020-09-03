@@ -59,6 +59,7 @@
     p {
         position: relative;
         padding-left: 8px;
+        word-break: break-word;
 
         &:before {
             position: absolute;

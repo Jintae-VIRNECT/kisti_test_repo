@@ -550,6 +550,8 @@ export default {
 }
 .el-radio {
 	margin-top: 36px;
+	margin-right: 0;
+	white-space: inherit;
 }
 .find-body {
 	padding-top: 44px;
