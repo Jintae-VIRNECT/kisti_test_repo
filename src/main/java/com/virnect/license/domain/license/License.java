@@ -62,4 +62,14 @@ public class License extends BaseTimeEntity {
 		this.status = status;
 		this.licenseProduct = licenseProduct;
 	}
+
+	@Override
+	public String toString() {
+		return "License{" +
+			"id=" + id +
+			", serialKey='" + serialKey + '\'' +
+			", userId='" + userId + '\'' +
+			", status=" + status +
+			'}';
+	}
 }

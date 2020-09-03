@@ -53,3 +53,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+infra:
+  billing:
+    api: "https://devpayapi.virnect.com"
