@@ -130,6 +130,23 @@
     padding-bottom: 0;
   }
 }
+.chat-list__empty {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+.chat-list__empty-inner {
+  margin: auto;
+  text-align: center;
+  > img {
+    width: 7.143em;
+    height: 7.143em;
+  }
+  > p {
+    color: #a7a7a7;
+    font-size: 1.143em;
+  }
+}
 
 .chat-msglist {
   position: relative;

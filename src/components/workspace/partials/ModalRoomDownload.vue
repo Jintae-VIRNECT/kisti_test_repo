@@ -16,7 +16,7 @@
           </div>
           <div class="download-table__column"></div>
         </div>
-        <vue2-scrollbar ref="downloadScrollbar">
+        <vue2-scrollbar ref="downloadScrollbar" v-if="files.length > 0">
           <div>
             <div
               class="download-table__row"
@@ -44,6 +44,12 @@
             </div>
           </div>
         </vue2-scrollbar>
+        <div v-else class="download-table__body">
+          <div class="download-table__empty">
+            <img src="~assets/image/img_nofile.svg" />
+            <p>{{ $t('common.no_sharing_file') }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -51,29 +57,29 @@
 
 <script>
 import { getFileList, downloadFile } from 'api/workspace/call'
-import { downloadByDataURL } from 'utils/file'
+import { downloadByURL } from 'utils/file'
 export default {
   name: 'ModalParticipantsInfo',
   data() {
     return {
       files: [
-        {
-          name: '긴제목_짱긴제목_말줄임_처리_해야하는데_귀찮_매우_귀찮.pdf',
-          // name: '중진공_설계도면.pdf',
-          time: '1일 남음',
-          link: 'https://virnect.com',
-        },
-        {
-          name: '중진공_설계도면.pdf',
-          time: '1일 남음',
-          link: 'https://virnect.com',
-        },
-        {
-          name: '기획_v0.1_2020.10.22.pptx',
-          time: '기간 만료',
-          link: 'https://virnect.com',
-          expire: true,
-        },
+        // {
+        //   name: '긴제목_짱긴제목_말줄임_처리_해야하는데_귀찮_매우_귀찮.pdf',
+        //   // name: '중진공_설계도면.pdf',
+        //   time: '1일 남음',
+        //   link: 'https://virnect.com',
+        // },
+        // {
+        //   name: '중진공_설계도면.pdf',
+        //   time: '1일 남음',
+        //   link: 'https://virnect.com',
+        // },
+        // {
+        //   name: '기획_v0.1_2020.10.22.pptx',
+        //   time: '기간 만료',
+        //   link: 'https://virnect.com',
+        //   expire: true,
+        // },
       ],
     }
   },
@@ -104,13 +110,13 @@ export default {
     },
     async download(file) {
       const res = await downloadFile({
-        filePath: file.path,
+        objectName: file.objectName,
         sessionId: this.sessionId,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
       })
 
-      downloadByDataURL(res, file.name)
+      downloadByURL(res)
     },
   },
   mounted() {

@@ -39,3 +39,29 @@ export const downloadByDataURL = async (url, fileName) => {
   a.click()
   window.URL.revokeObjectURL(dataUrl)
 }
+
+export const downloadByURL = async file => {
+  // let a = document.createElement('a')
+  // document.body.appendChild(a)
+  // a.style = 'display: none'
+  // a.href = file.url
+  // a.download = file.name
+  // a.target = '_blank'
+  // a.click()
+  // window.URL.revokeObjectURL(file.url)
+  let filename = file.name
+  let xhr = new XMLHttpRequest()
+  xhr.responseType = 'blob'
+  xhr.onload = () => {
+    console.log(xhr.response)
+    let a = document.createElement('a')
+    a.href = window.URL.createObjectURL(xhr.response)
+    a.download = filename
+    a.style.display = 'none'
+    document.body.appendChild(a)
+    a.click()
+    window.URL.revokeObjectURL(xhr.response)
+  }
+  xhr.open('GET', file.url)
+  xhr.send()
+}

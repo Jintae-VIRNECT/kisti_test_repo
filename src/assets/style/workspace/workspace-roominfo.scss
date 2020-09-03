@@ -180,16 +180,11 @@
 .download-table {
   height: 100%;
   margin-bottom: 2px;
-  -moz-border-radius: 26px;
-  -webkit-border-radius: 26px;
   border-radius: 2px;
   > .vue-scrollbar__wrapper {
     flex: 1;
-    // width: 100%;
     width: calc(100% + 10px);
-    height: calc(100% - 52px);
-    // margin-right: 0;
-    // padding-right: 0;
+    height: calc(100% - 3.714em);
   }
 }
 
@@ -203,15 +198,38 @@
   }
 }
 
+.download-table__body {
+  display: flex;
+  flex: 1;
+  height: calc(100% - 3.714em);
+  background-color: #29292c;
+  border: solid 1px #3d3d3d;
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+}
+
+.download-table__empty {
+  margin: auto;
+  text-align: center;
+  > img {
+    width: 7.143em;
+    height: 7.143em;
+  }
+  > p {
+    color: #a7a7a7;
+    font-size: 1.143em;
+  }
+}
+
 .download-table__row {
   display: flex;
-  height: 64px;
+  height: 4.571em;
   background-color: #29292c;
   // border-top: solid 1px #3d3d3d;
   border: solid 1px #3d3d3d;
   border-top: none;
   > div {
-    height: 64px;
+    height: 4.571em;
     color: rgba(#fff, 0.9);
   }
   &:last-child {
@@ -222,7 +240,7 @@
 .download-table__column {
   display: flex;
   flex: 0 0 auto;
-  padding: 15px;
+  padding: 1.071em;
   color: rgba(#fff, 0.9);
   > span {
     display: block;
@@ -231,8 +249,8 @@
     @include ellipsis();
   }
   &:last-child {
-    width: 130px;
-    padding-right: 22px;
+    width: 9.286em;
+    padding-right: 1.571em;
     text-align: right;
   }
 
@@ -240,14 +258,14 @@
     flex: 1;
     flex-basis: 40%;
     width: 40%;
-    padding-left: 30px;
+    padding-left: 2.143em;
     text-align: left;
     > span {
       align-self: center;
     }
   }
   &.duration {
-    width: 150px;
+    width: 10.714em;
     &.expire {
       color: rgba(#fff, 0.4);
     }
@@ -261,9 +279,9 @@
 .download-table__button.btn {
   min-width: auto;
   margin-left: auto;
-  padding: 8px 17px;
+  padding: 0.571em 1.214em;
   font-weight: normal;
-  font-size: 12px;
+  font-size: 0.857em;
   background-color: $color_primary_700;
   &.expire {
     color: rgba(#fff, 0.5);

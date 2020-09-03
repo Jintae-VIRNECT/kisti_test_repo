@@ -1,6 +1,6 @@
 <template>
   <div class="chat-list">
-    <vue2-scrollbar ref="chatFileListScrollbar">
+    <vue2-scrollbar ref="chatFileListScrollbar" v-if="fileList.length > 0">
       <div>
         <chat-file-item
           v-for="(file, idx) in fileList"
@@ -11,6 +11,12 @@
         ></chat-file-item>
       </div>
     </vue2-scrollbar>
+    <div v-else class="chat-list__empty">
+      <div class="chat-list__empty-inner">
+        <img src="~assets/image/img_nofile.svg" />
+        <p>{{ $t('common.no_sharing_file') }}</p>
+      </div>
+    </div>
     <chat-file-down :fileList="selectedList" @clear="clear"></chat-file-down>
   </div>
 </template>
