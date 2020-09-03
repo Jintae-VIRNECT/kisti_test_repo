@@ -24,23 +24,19 @@
 	</div>
 </template>
 <script>
-import { Url } from 'WC-Modules/javascript/api/virnectPlatform/urls'
 export default {
 	data() {
-		const env = process.env.TARGET_ENV
-		return {
-			urls: new Url(env),
-		}
+		return {}
 	},
 	methods: {
 		goWorkstation() {
-			location.replace(this.urls.workstation)
+			location.replace(this.$urls['workstation'])
 		},
 		trialCoupon() {
-			location.replace(`${this.urls.www}/coupon`)
+			location.replace(`${this.$url['www']}/coupon`)
 		},
 		payment() {
-			location.replace(`${this.urls.pay}`)
+			location.replace(`${this.$urls['pay']}`)
 		},
 	},
 }

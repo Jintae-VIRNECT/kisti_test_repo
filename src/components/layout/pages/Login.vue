@@ -76,7 +76,6 @@ import mixin from 'mixins/mixin'
 
 import footerSection from '../common/Footer'
 import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
 	name: 'login',
@@ -129,7 +128,7 @@ export default {
 					? redirectTarget
 					: `//${redirectTarget}`
 			} else if (this.login.autoLogin) {
-				location.href = urls.workstation[process.env.TARGET_ENV]
+				location.href = this.$urls['workstation']
 			}
 		},
 		emailRemember(email, check) {
@@ -175,14 +174,14 @@ export default {
 			if (this.login.email && this.login.password) {
 				new Login(this.login.email, this.login.password)
 				try {
-					const res = await AuthService.login(this.login)
+					await AuthService.login(this.login)
 					let redirectTarget = this.$route.query.continue
 					if (redirectTarget) {
 						location.href = /^https?:/.test(redirectTarget)
 							? redirectTarget
 							: `//${redirectTarget}`
 					} else {
-						location.href = urls.workstation[process.env.TARGET_ENV]
+						location.href = this.$urls['workstation']
 					}
 				} catch (e) {
 					if (e.code === 2000) {

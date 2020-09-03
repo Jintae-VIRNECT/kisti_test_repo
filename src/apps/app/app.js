@@ -14,6 +14,7 @@ import elementLocale from 'element-ui/lib/locale'
 elementLocale.use(locale)
 
 import VueQrcodeReader from 'vue-qrcode-reader'
+import { Url } from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 import 'element/row.css'
 import 'element/input.css'
@@ -51,6 +52,10 @@ const i18n = new VueI18n({
 
 const environmentCss = 'font-size: 1.2rem;'
 console.log('%cprocess env: %s', environmentCss, process.env.TARGET_ENV)
+
+window.urls = new Url(process.env.TARGET_ENV)
+Vue.prototype.$urls = new Url(process.env.TARGET_ENV)
+
 const versionCss = 'font-size: 2rem; color: #297af3;'
 console.log('%cVIRNECT Console %s', versionCss, version)
 

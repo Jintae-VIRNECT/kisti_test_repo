@@ -30,6 +30,9 @@ pipeline {
           when {
             branch 'develop'
           }
+          environment {
+              NODE_ENV = 'develop'
+          }
           steps {
             sh 'yarn build'
             sh 'docker build -t pf-login .'
@@ -39,6 +42,9 @@ pipeline {
         stage('Staging Branch') {
           when {
             branch 'staging'
+          }
+          environment {
+              NODE_ENV = 'staging'
           }
           steps {
             sh 'git checkout ${GIT_TAG}'
@@ -50,6 +56,9 @@ pipeline {
         stage('Master Branch') {
           when {
             branch 'master'
+          }
+          environment {
+              NODE_ENV = 'production'
           }
           steps {
             sh 'git checkout ${GIT_TAG}'
