@@ -8,7 +8,7 @@ ADD ./ $APP_HOME
 ADD ./WC-Modules $APP_HOME/WC-Modules
 ADD ./package.json $APP_HOME/package.json
 
-RUN yarn install --production
+RUN yarn install
 
 EXPOSE 8883
 
