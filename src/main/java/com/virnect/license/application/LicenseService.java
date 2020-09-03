@@ -299,7 +299,7 @@ public class LicenseService {
 			}
 			//부여 가능한 라이선스 찾기
 			List<License> licenseList = this.licenseRepository.findAllByLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_LicensePlan_PlanStatusAndLicenseProduct_ProductAndStatus(
-				workspaceId, PlanStatus.ACTIVE, product, LicenseStatus.UNUSE);
+				workspaceId, PlanStatus.ACTIVE, product, LicenseStatus.UNUSED);
 			if (licenseList.isEmpty()) {
 				throw new LicenseServiceException(ErrorCode.ERR_USEFUL_LICENSE_NOT_FOUND);
 			}
@@ -316,7 +316,7 @@ public class LicenseService {
 			return new ApiResponse<>(myLicenseInfoResponse);
 		} else {
 			oldLicense.setUserId(null);
-			oldLicense.setStatus(LicenseStatus.UNUSE);
+			oldLicense.setStatus(LicenseStatus.UNUSED);
 			this.licenseRepository.save(oldLicense);
 
 			return new ApiResponse<>(true);

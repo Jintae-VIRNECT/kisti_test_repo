@@ -461,7 +461,7 @@ public class BillingService {
 	public void licenseGenerateAndRegisterByLicenseProduct(LicenseProduct licenseProduct) {
 		for (int i = 0; i < licenseProduct.getQuantity(); i++) {
 			License license = License.builder()
-				.status(LicenseStatus.UNUSE)
+				.status(LicenseStatus.UNUSED)
 				.serialKey(UUID.randomUUID().toString().toUpperCase())
 				.licenseProduct(licenseProduct)
 				.build();

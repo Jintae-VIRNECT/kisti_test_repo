@@ -60,7 +60,7 @@ public class CustomLicenseRepositoryImpl extends QuerydslRepositorySupport imple
 	) {
 		QLicense qLicense = QLicense.license;
 		return update(qLicense)
-			.set(qLicense.status, LicenseStatus.UNUSE)
+			.set(qLicense.status, LicenseStatus.UNUSED)
 			.setNull(qLicense.userId)
 			.where(qLicense.licenseProduct.in(licenseProductSet))
 			.execute();
