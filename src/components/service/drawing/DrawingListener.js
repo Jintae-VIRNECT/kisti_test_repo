@@ -95,6 +95,7 @@ export default {
           scale: 1 / this.canvas.backgroundImage.scaleX,
           imgWidth: this.canvas.getWidth(),
           imgHeight: this.canvas.getHeight(),
+          sizeScale: this.origin.width / this.img.width,
         },
         this.origin.scale,
       )

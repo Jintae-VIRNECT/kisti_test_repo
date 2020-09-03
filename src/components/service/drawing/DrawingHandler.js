@@ -236,7 +236,7 @@ export default {
         ) {
           event.e.preventDefault()
           // this.addTextObject(mouse.x, mouse.y)
-          this.addTextObject(mouse.x, mouse.y - this.scaleFont / 2)
+          this.addTextObject(mouse.x, mouse.y - this.scaleFont / 2 - 1)
         }
       })
 

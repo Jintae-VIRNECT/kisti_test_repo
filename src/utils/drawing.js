@@ -212,7 +212,7 @@ export const getSignalParams = function getSignalParams(
       break
     case DRAWING.TEXT_ADD:
       posX = normalizedPosX(left, status.imgWidth)
-      posY = normalizedPosY(top, status.imgHeight)
+      posY = normalizedPosY(top + 2, status.imgHeight)
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
       params = {
@@ -283,7 +283,8 @@ export const getReceiveParams = function getReceiveParams(type, params, scale) {
     //   params[key] = parseFloat(params[key]) / params.scale
     // }
     if (key === 'size') {
-      params[key] = params[key] / 1.25
+      // params[key] = params[key] / 1.25
+      params[key] = params[key] * params.sizeScale
     }
   }
   switch (type) {
@@ -302,6 +303,7 @@ export const getReceiveParams = function getReceiveParams(type, params, scale) {
     //     left: params.posX,
     //   }
     case DRAWING.TEXT_ADD:
+      params['posY'] -= 2
       return params
     default:
       return []
