@@ -111,12 +111,7 @@ export default {
       if (plansInfo.storage.remain < 0) {
         this.showAlertStorageOverflow = true
       }
-      if (
-        true ||
-        plansInfo.remote.quantity < plansInfo.remote.usedAmount ||
-        plansInfo.make.quantity < plansInfo.make.usedAmount ||
-        plansInfo.view.quantity < plansInfo.view.usedAmount
-      ) {
+      if (plansInfo.products.some(p => p.usedAmount > p.amount)) {
         this.showAlertLicenseOverflow = true
       }
     },
