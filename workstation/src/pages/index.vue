@@ -58,6 +58,9 @@
         </el-col>
       </el-row>
     </div>
+
+    <alert-storage-overflow :visible.sync="showAlertStorageOverflow" />
+    <alert-license-overflow :visible.sync="showAlertLicenseOverflow" />
   </div>
 </template>
 
@@ -72,6 +75,8 @@ import CurrentResultList from '@/components/home/CurrentResultList'
 import UserProfileCard from '@/components/home/UserProfileCard'
 import DownloadCenter from '@/components/home/DownloadCenter'
 import GuideList from '@/components/home/GuideList'
+import AlertStorageOverflow from '@/components/home/AlertStorageOverflow'
+import AlertLicenseOverflow from '@/components/home/AlertLicenseOverflow'
 
 import workspaceService from '@/services/workspace'
 
@@ -85,6 +90,14 @@ export default {
     UserProfileCard,
     DownloadCenter,
     GuideList,
+    AlertStorageOverflow,
+    AlertLicenseOverflow,
+  },
+  data() {
+    return {
+      showAlertStorageOverflow: false,
+      showAlertLicenseOverflow: false,
+    }
   },
   computed: {
     ...mapGetters({
@@ -94,8 +107,18 @@ export default {
   },
   methods: {
     async getWorkspacePlansInfo() {
-      await this.$store.dispatch('plan/getPlansInfo')
-      if (this.plansInfo.storage.remain < 0) alert('사야됨')
+      const plansInfo = await this.$store.dispatch('plan/getPlansInfo')
+      if (plansInfo.storage.remain < 0) {
+        this.showAlertStorageOverflow = true
+      }
+      if (
+        true ||
+        plansInfo.remote.quantity < plansInfo.remote.usedAmount ||
+        plansInfo.make.quantity < plansInfo.make.usedAmount ||
+        plansInfo.view.quantity < plansInfo.view.usedAmount
+      ) {
+        this.showAlertLicenseOverflow = true
+      }
     },
   },
   async beforeMount() {

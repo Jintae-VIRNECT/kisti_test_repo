@@ -92,11 +92,11 @@
                 <el-option
                   :value="true"
                   :label="plans.remote.label"
-                  :disabled="!plansInfo.remote.unUseLicenseAmount"
+                  :disabled="!plansInfo.remote.unUsedAmount"
                 >
                   <span>{{ plans.remote.label }}</span>
                   <span class="right">
-                    {{ plansInfo.remote.unUseLicenseAmount }}
+                    {{ plansInfo.remote.unUsedAmount }}
                   </span>
                 </el-option>
               </el-select>
@@ -112,11 +112,11 @@
                 <el-option
                   :value="true"
                   :label="plans.make.label"
-                  :disabled="!plansInfo.make.unUseLicenseAmount"
+                  :disabled="!plansInfo.make.unUsedAmount"
                 >
                   <span>{{ plans.make.label }}</span>
                   <span class="right">
-                    {{ plansInfo.make.unUseLicenseAmount }}
+                    {{ plansInfo.make.unUsedAmount }}
                   </span>
                 </el-option>
               </el-select>
@@ -132,11 +132,11 @@
                 <el-option
                   :value="true"
                   :label="plans.view.label"
-                  :disabled="!plansInfo.view.unUseLicenseAmount"
+                  :disabled="!plansInfo.view.unUsedAmount"
                 >
                   <span>{{ plans.view.label }}</span>
                   <span class="right">
-                    {{ plansInfo.view.unUseLicenseAmount }}
+                    {{ plansInfo.view.unUsedAmount }}
                   </span>
                 </el-option>
               </el-select>

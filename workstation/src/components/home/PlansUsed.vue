@@ -29,7 +29,7 @@
         />
         <div class="used">
           <span class="count">
-            {{ info.used }} {{ $t(`${i18nGroup}.unit`) }}
+            {{ info.current }} {{ $t(`${i18nGroup}.unit`) }}
           </span>
           <span>{{ $t('home.plansInfo.used') }}</span>
         </div>
