@@ -596,8 +596,10 @@ var Session = /** @class */ (function(_super) {
           })
           signalMessage['to'] = connectionIds_1
         }
+        prodLogger('signal', 'send to::', signalMessage['to'])
       } else {
         signalMessage['to'] = []
+        prodLogger('signal', 'send to::', 'all')
       }
       signalMessage['data'] = signal.data ? signal.data : ''
       var typeAux = signal.type ? signal.type : 'signal'

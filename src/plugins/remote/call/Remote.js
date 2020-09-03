@@ -326,7 +326,7 @@ const _ = {
    */
   permission: (target = null) => {
     const params = {
-      type: 'response',
+      type: 'request',
     }
     _.session.signal({
       type: SIGNAL.CAPTURE_PERMISSION,
