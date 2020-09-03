@@ -221,7 +221,7 @@ export const getSignalParams = function getSignalParams(
         color: hexToAHEX(status.color, status.opacity),
         // color: status.color,
         //TODO:: dp변환 필요
-        size: status.size,
+        size: status.size / status.widthScale,
         posX,
         posY,
         width: object.width,
@@ -240,7 +240,7 @@ export const getSignalParams = function getSignalParams(
         color: hexToAHEX(status.color, status.opacity),
         // color: status.color,
         //TODO:: dp변환 필요
-        size: status.size,
+        size: status.size / status.widthScale,
         posX,
         posY,
         width: object.width,
