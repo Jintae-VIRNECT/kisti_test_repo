@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express()
-const server = require('http').Server(app)
+const server = require('https').Server(app)
 const path = require('path')
 const route = require('./route')
 
