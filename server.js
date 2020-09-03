@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
-const server = require('https').Server(app)
+// const server = require('http').Server(app)
+const https = require('https');
+const fs = require('fs');
 const path = require('path')
 const route = require('./route')
 
@@ -12,4 +14,10 @@ app.get('/', function(req, res) {
 })
 
 const port = process.env.PORT || 8883
-server.listen(port || 8883)
+// server.listen(port || 8883)
+
+var options = {
+  key: fs.readFileSync('./cert/key.pem'),
+  cert: fs.readFileSync('./cert/cert.pem')
+};
+https.createServer(options, app).listen(port)
