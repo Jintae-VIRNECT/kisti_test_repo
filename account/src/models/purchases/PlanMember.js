@@ -17,6 +17,6 @@ export default class PlanMember extends Model {
         : json.profile
     this.productName =
       json.productName && products[json.productName.toLowerCase()].label
-    this.licenseType = json.licenseType && json.licenseType.replace(' PLAN', '')
+    this.licenseType = 'PUBLIC'
   }
 }

@@ -72,12 +72,12 @@
           <el-divider />
           <dt class="default">{{ $t(`${usedI18n}.default`) }}</dt>
           <dd>
-            {{ paymentInfo.basisAvailable[activeTab].toLocaleString() }}
+            {{ plansInfo[activeTab].default.toLocaleString() }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <dt class="extend">{{ $t(`${usedI18n}.extend`) }}</dt>
           <dd>
-            {{ paymentInfo.extendAvailable[activeTab].toLocaleString() }}
+            {{ plansInfo[activeTab].add.toLocaleString() }}
             {{ $t(`${usedI18n}.unit`) }}
           </dd>
           <a :href="$url.pay">
@@ -117,14 +117,10 @@ export default {
   props: {
     plansInfo: {
       type: Object,
-      default: () => ({}),
-    },
-    paymentInfo: {
-      type: Object,
       default: () => ({
-        maxAvailable: {},
-        basisAvailable: {},
-        extendAvailable: {},
+        storage: {},
+        viewCount: {},
+        callTime: {},
       }),
     },
   },
@@ -135,27 +131,21 @@ export default {
         storage: {
           label: 'purchases.info.arStorageCapacity',
           i18nGroup: 'purchases.arStorage',
-          ...calc(
-            this.plansInfo.storage,
-            this.paymentInfo.maxAvailable.storage,
-          ),
+          ...calc(this.plansInfo.storage.current, this.plansInfo.storage.max),
         },
         viewCount: {
           label: 'purchases.info.arContentsViewCount',
           i18nGroup: 'purchases.arContent',
           ...calc(
-            this.plansInfo.viewCount,
-            this.paymentInfo.maxAvailable.viewCount,
+            this.plansInfo.viewCount.current,
+            this.plansInfo.viewCount.max,
           ),
         },
-        callTime: {
-          label: 'purchases.info.callTime',
-          i18nGroup: 'purchases.call',
-          ...calc(
-            this.plansInfo.callTime,
-            this.paymentInfo.maxAvailable.callTime,
-          ),
-        },
+        // callTime: {
+        //   label: 'purchases.info.callTime',
+        //   i18nGroup: 'purchases.call',
+        //   ...calc(this.plansInfo.callTime.current, this.plansInfo.callTime.max),
+        // },
       },
     }
   },
@@ -164,8 +154,8 @@ export default {
       return this.tabs[this.activeTab].i18nGroup
     },
     basisRate() {
-      const basis = this.paymentInfo.basisAvailable[this.activeTab]
-      const extend = this.paymentInfo.extendAvailable[this.activeTab]
+      const basis = this.plansInfo[this.activeTab].default
+      const extend = this.plansInfo[this.activeTab].add
       return rate(basis, basis + extend)
     },
   },

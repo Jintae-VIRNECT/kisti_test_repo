@@ -11,11 +11,13 @@
         class="virnect-login-form"
         ref="form"
         :model="form"
+        :rules="rules"
         @submit.native.prevent="submit"
       >
         <el-form-item
           class="horizon"
           :label="$t('profile.contactChangeModal.contact')"
+          prop="phone"
         >
           <el-select class="country-code" v-model="form.code">
             <el-option
@@ -28,6 +30,7 @@
           <el-input
             v-model="form.phone"
             :placeholder="$t('profile.contactChangeModal.contactPlaceholder')"
+            :maxlength="13"
           />
         </el-form-item>
       </el-form>
@@ -58,6 +61,22 @@ export default {
         code: '+82',
         phone: '',
       },
+      rules: {
+        phone: [
+          {
+            trigger: 'blur',
+            validator: (rule, value, callback) => {
+              const e = new Error(
+                this.$t('profile.contactChangeModal.message.wrong'),
+              )
+              if (value === '') callback(e)
+              else if (value.length < 10) callback(e)
+              else if (!/^[0-9-]+[0-9]$/.test(value)) callback(e)
+              else callback()
+            },
+          },
+        ],
+      },
     }
   },
   watch: {
@@ -69,9 +88,18 @@ export default {
   },
   methods: {
     async submit() {
-      const form = {
-        mobile: this.form.phone ? `${this.form.code}-${this.form.phone}` : '',
+      // 유효성 검사
+      try {
+        await this.$refs.form.validate()
+      } catch (e) {
+        return false
       }
+      const form = {
+        mobile: this.form.phone
+          ? `${this.form.code}-${this.form.phone.replace(/-/g, '')}`
+          : '',
+      }
+      console.log(form)
       try {
         await profileService.updateMyProfile(form)
         this.$notify.success({

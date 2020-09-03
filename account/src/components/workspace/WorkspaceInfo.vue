@@ -3,7 +3,9 @@
     <div class="avatar">
       <div
         class="image"
-        :style="`background-image: url('${workspace.profile}')`"
+        :style="
+          `background-image: url('${workspace.profile}'), url(${$defaultWorkspaceProfile})`
+        "
       />
     </div>
     <dl>
@@ -18,7 +20,9 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url('${workspace.masterProfile}')`"
+            :style="
+              `background-image: url('${workspace.masterProfile}'), url(${$defaultUserProfile})`
+            "
           />
         </div>
         <span>{{ workspace.masterNickName }}</span>
@@ -41,7 +45,7 @@ export default {
       workspace: {},
     }
   },
-  async beforeMount() {
+  mounted() {
     this.workspace = workspaceService.getMasterWorkspaceInfo()
   },
 }
@@ -66,6 +70,13 @@ export default {
   dd.workspace-name {
     margin-top: 4px;
     font-size: 20px;
+  }
+  .column-user > span {
+    display: inline-block;
+    max-width: 80%;
+    overflow: hidden;
+    white-space: pre;
+    text-overflow: ellipsis;
   }
   .el-button {
     width: 100%;

@@ -13,7 +13,9 @@
           <div class="avatar">
             <div
               class="image"
-              :style="`background-image: url(${scope.row[imageProp]})`"
+              :style="
+                `background-image: url(${scope.row[imageProp]}), url(${$defaultUserProfile})`
+              "
             />
           </div>
         </el-tooltip>
@@ -23,7 +25,9 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url(${scope.row[imageProp]})`"
+            :style="
+              `background-image: url(${scope.row[imageProp]}), url(${$defaultUserProfile})`
+            "
           />
         </div>
         <span>{{ scope.row[nameProp] }}</span>

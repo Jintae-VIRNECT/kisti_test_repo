@@ -12,9 +12,13 @@
         class="virnect-login-form"
         ref="form"
         :model="form"
+        :rules="rules"
         @submit.native.prevent="submit"
       >
-        <el-form-item :label="$t('profile.nicknameChangeModal.nickname')">
+        <el-form-item
+          :label="$t('profile.nicknameChangeModal.nickname')"
+          prop="nickname"
+        >
           <el-input v-model="form.nickname" />
         </el-form-item>
       </el-form>
@@ -42,6 +46,9 @@ export default {
       form: {
         nickname: '',
       },
+      rules: {
+        nickname: [{ max: 20 }],
+      },
     }
   },
   watch: {
@@ -51,6 +58,13 @@ export default {
   },
   methods: {
     async submit() {
+      // 유효성 검사
+      try {
+        await this.$refs.form.validate()
+      } catch (e) {
+        return false
+      }
+
       try {
         await profileService.updateMyProfile(this.form)
         this.$notify.success({

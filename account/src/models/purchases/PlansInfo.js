@@ -11,7 +11,7 @@ export class Plan {
     this.value = value
     this.label = label
     this.logo = logo
-    this.licenseType = 'BASIC'
+    this.licenseType = 'PUBLIC'
     this.amount = 0
     this.usedAmount = 0
   }
@@ -24,12 +24,24 @@ export default class PlansInfo extends Model {
    */
   constructor(json) {
     super()
-    this.storage = mb2gb(json.currentUsageStorage)
-    this.viewCount = json.currentUsageDownloadHit
-    this.callTime = json.currentUsageCallTime
-    this.maxStorage = mb2gb(json.maxStorageSize)
-    this.maxViewCount = json.maxDownloadHit
-    this.maxCallTime = json.maxCallTime
+    this.storage = {
+      current: mb2gb(json.currentUsageStorage),
+      default: mb2gb(json.defaultStorageSize),
+      add: mb2gb(json.addStorageSize),
+      max: mb2gb(json.maxStorageSize),
+    }
+    this.viewCount = {
+      current: json.currentUsageDownloadHit,
+      default: json.defaultDownloadHit,
+      add: json.addDownloadHit,
+      max: json.maxDownloadHit,
+    }
+    this.callTime = {
+      current: json.currentUsageCallTime,
+      default: json.defaultCallTime,
+      add: json.addCallTime,
+      max: json.maxCallTime,
+    }
     this.endDate = json.endDate
     this.planStatus = json.planStatus
     this.products = [

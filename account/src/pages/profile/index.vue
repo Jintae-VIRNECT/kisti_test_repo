@@ -28,7 +28,9 @@
             <div class="avatar" @click="visible.imageChangeModal = true">
               <div
                 class="image"
-                :style="`background-image: url('${profileImg}')`"
+                :style="
+                  `background-image: url('${profileImg}'), url(${$defaultUserProfile})`
+                "
               />
               <i>
                 <img src="~assets/images/icon/ic-camera-alt.svg" />
@@ -123,14 +125,14 @@
               {{ $t('profile.account.marketingChange') }}
             </el-button>
           </div>
-          <!-- <div class="profile__info">
+          <div class="profile__info">
             <h4>{{ $t('profile.account.secession') }}</h4>
             <div class="content">
               <el-button type="info" @click="visible.SecessionModal = true">
                 {{ $t('profile.account.secession') }}
               </el-button>
             </div>
-          </div> -->
+          </div>
         </div>
       </el-card>
       <!-- 사용자 추가 정보 -->
@@ -391,9 +393,12 @@ export default {
   }
   .content {
     flex-grow: 1;
+    overflow: hidden;
     & > span {
       display: block;
       margin: 8px 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .value {
       color: $font-color-content;
