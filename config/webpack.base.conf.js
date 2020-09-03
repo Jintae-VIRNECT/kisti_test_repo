@@ -3,11 +3,11 @@
 const { join, resolve, posix } = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
+const MODE = process.env.NODE_ENV
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const Dotenv = require('dotenv-webpack')
 
 const extractCSS = new ExtractTextPlugin({
@@ -32,11 +32,9 @@ glob.sync('./src/apps/**/app.js').forEach(path => {
 	entries[chunk] = path
 	chunks.push(chunk)
 
+	const filename = chunk + '.html'
 	const htmlConf = {
-		filename: resolve(
-			__dirname,
-			'../../src/main/resources/templates/index.html',
-		),
+		filename: filename,
 		template: path.replace(/.js/g, '.html'),
 		inject: 'body',
 		favicon: './src/assets/favicon.ico',
@@ -66,15 +64,16 @@ const sassOptions = [
 
 const config = {
 	entry: entries,
+	mode: MODE,
 	output: {
-		path: resolve(__dirname, '../../src/main/resources/static'),
+		path: resolve(__dirname, '../dist'),
 		filename: posix.join('js/[name].js'),
 		publicPath: '/',
 	},
 	resolve: {
 		extensions: ['.js', '.vue'],
 		alias: {
-			'WC-Modules': resolve(__dirname, '../../WC-Modules/src'),
+			'WC-Modules': resolve(__dirname, '../WC-Modules/src'),
 			'@': resolve(__dirname, '../src'),
 			root: resolve(__dirname, '../'),
 			api: join(__dirname, '../src/api'),
@@ -86,7 +85,7 @@ const config = {
 			mixins: join(__dirname, '../src/mixins'),
 			languages: join(__dirname, '../src/languages'),
 			// config: join(__dirname, '../src/config'),
-			routers: join(__dirname, '../src/routers'),
+			router: join(__dirname, '../src/router'),
 			stores: join(__dirname, '../src/stores'),
 			element: join(__dirname, '../theme/'),
 		},
@@ -204,7 +203,6 @@ const config = {
 				ignore: ['*.gitkeep'],
 			},
 		),
-		new OptimizeCSSPlugin(),
 		new Dotenv({
 			path: `.env.${process.env.NODE_ENV.trim()}`,
 		}),
@@ -216,8 +214,6 @@ const config = {
 		dgram: 'empty',
 		fs: 'empty',
 	},
-	devtool: '#source-map',
 }
 config.plugins = [...config.plugins, ...htmlWebpackPluginArray]
-
 module.exports = config

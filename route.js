@@ -8,9 +8,7 @@ const path = require('path')
  */
 
 router.get('/**', function(req, res) {
-	res.sendFile(
-		path.join(__dirname, '../src/main/resources/templates/index.html'),
-	)
+	res.sendFile(path.join(__dirname, '/dist/app.html'))
 })
 
 router.get('/healthcheck', (req, res) => {

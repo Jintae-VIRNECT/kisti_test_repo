@@ -5,6 +5,7 @@
 				<h2>{{ $t('login.title') }}</h2>
 				<p class="input-title">{{ $t('login.email') }}</p>
 				<el-input
+					ref="focusOut"
 					:placeholder="$t('login.emailPlaceholder')"
 					v-model="login.email"
 					name="email"
@@ -166,6 +167,7 @@ export default {
 		async handleLogin() {
 			this.loading = true
 			this.$validator.validateAll()
+			this.$refs.focusOut.focus()
 			if (this.errors.any()) {
 				this.loading = false
 				return
