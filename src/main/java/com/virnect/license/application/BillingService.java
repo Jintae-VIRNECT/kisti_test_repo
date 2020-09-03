@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.license.application.rest.user.UserRestService;
 import com.virnect.license.application.rest.workspace.WorkspaceRestService;
-import com.virnect.license.dao.LicenseAssignAuthInfoRepository;
+import com.virnect.license.dao.billing.LicenseAssignAuthInfoRepository;
 import com.virnect.license.dao.license.LicenseRepository;
 import com.virnect.license.dao.licenseplan.LicensePlanRepository;
 import com.virnect.license.dao.product.LicenseProductRepository;
