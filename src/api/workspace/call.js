@@ -57,16 +57,16 @@ export const uploadFile = async ({ file, sessionId, workspaceId, userId }) => {
  * @param {Path} sessionId
  * @param {Path} workspaceId
  * @param {String} userId
- * @param {String} filePath
+ * @param {String} objectName
  */
 export const downloadFile = async ({
-  filePath,
+  objectName,
   sessionId,
   workspaceId,
   userId,
 }) => {
   const returnVal = await http('FILE_DOWNLOAD', {
-    filePath,
+    objectName,
     sessionId,
     workspaceId,
     userId,
