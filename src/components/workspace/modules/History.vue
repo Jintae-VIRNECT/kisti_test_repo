@@ -42,6 +42,7 @@
         trigger="click"
         placement="bottom-start"
         popperClass="custom-popover"
+        width="auto"
       >
         <button slot="reference" class="widecard-tools__menu-button"></button>
         <ul class="groupcard-popover">

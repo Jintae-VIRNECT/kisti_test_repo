@@ -51,11 +51,12 @@ export default {
     { type: 'form' },
   ],
   FILE_UPLOAD: ['POST', '/remote/file/upload', { type: 'form' }],
-  FILE_DOWNLOAD: [
-    'GET',
-    '/remote/file/download/{workspaceId}/{sessionId}',
-    { response: 'direct', type: 'blob' },
-  ],
+  // FILE_DOWNLOAD: [
+  //   'GET',
+  //   '/remote/file/download/{workspaceId}/{sessionId}',
+  //   { response: 'direct', type: 'blob' },
+  // ],
+  FILE_DOWNLOAD: ['GET', '/remote/file/download/url/{workspaceId}/{sessionId}'],
   FILE_LIST: ['GET', '/remote/file'],
 
   /* SERVER RECORD */

@@ -2,9 +2,9 @@
   <modal
     :visible.sync="visibleFlag"
     :showClose="true"
-    :width="'40.5714rem'"
+    width="auto"
     :beforeClose="beforeClose"
-    :class="'local-recsetting-modal'"
+    class="local-recsetting-modal"
   >
     <div class="rec-setting">
       <template v-if="isLeader">
@@ -196,7 +196,7 @@ export default {
       const options = localRecTime.map(time => {
         return {
           value: time,
-          text: time + this.$t('date.minute'),
+          text: `${time} ${this.$t('date.minute')}`,
         }
       })
       return options
@@ -205,7 +205,7 @@ export default {
       const options = localRecInterval.map(interval => {
         return {
           value: interval,
-          text: interval + this.$t('date.minute'),
+          text: `${interval} ${this.$t('date.minute')}`,
         }
       })
       return options

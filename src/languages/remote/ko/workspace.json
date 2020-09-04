@@ -4,14 +4,14 @@
     "search_member": "멤버 검색",
     "tab_empty_description": "원격 협업을 시작해보세요.",
     "create_room": "원격 협업 생성",
-    "expire_license": "라이선스 만료",
-    "welcome": "&nbsp님, 반갑습니다.",
-    "welcome_license": "&nbsp님, <br> 할당된 라이선스가 없습니다.",
-    "welcome_expire": "&nbsp님, <br> 라이선스가 만료되었습니다.",
+    "expire_license": "플랜 만료",
+    "welcome": "{name} 님, 반갑습니다.",
+    "welcome_license": "{name} 님, <br> 할당된 플랜이 없습니다.",
+    "welcome_expire": "{name} 님, <br> 플랜이 만료되었습니다.",
     "search_empty": "검색된 내용이 없습니다.",
-
+    
     "select_workspace": "워크스페이스를 선택해 주세요.",
-
+    
     "confirm_remove_room": "협업을 삭제 하시겠습니까?",
     "confirm_removed_room": "협업을 삭제하였습니다.​",
     "confirm_removed_room_leader": "리더가 협업을 삭제하였습니다.",
@@ -22,17 +22,17 @@
     "confirm_already_invite_remove": "동일 계정으로 협업을 진행 중입니다. 협업을 삭제할 수 없습니다.",
     "confirm_already_invite_leave": "동일 계정으로 협업을 진행 중입니다. 협업을 나갈 수 없습니다.",
     "confirm_remote_leader_leave": "리더는 협업을 나갈 수 없습니다.",
-
+    
     "history": "최근 기록",
     "remote": "원격 협업",
     "user": "멤버",
     "setting": "환경 설정",
-
-    "history_title": "최근 통화 목록",
-    "history_description": "최근 통화 목록은 30일 동안 보관됩니다.",
-    "history_empty": "최근 통화 목록이 없습니다.",
-    "history_member_length": "참석자 {length}명",
-    "history_call_time": "총 이용시간: {time}",
+    
+    "history_title": "최근 기록 목록",
+    "history_description": "최근 기록 목록은 30일 동안 보관됩니다.",
+    "history_empty": "최근 기록 목록이 없습니다.",
+    "history_member_length": "참가자 {length}명",
+    "history_call_time": "총 통화 시간: {time}",
     
     "remote_title": "진행중인 원격협업",
     "remote_list_description": "진행중인 협업참여 요청 대기 목록을 보여줍니다.",
@@ -44,12 +44,12 @@
     "remote_invite_impossible": "협업에 참가가 불가능합니다.",
     "remote_already_invite": "동일 계정으로 협업을 진행 중입니다. 협업을 참가할 수 없습니다.",
     "remote_access_removed": "리더에 의해 참가 권한이 삭제되었습니다.",
-
+    
     "user_title": "협업 가능 멤버",
     "user_description": "협업 가능한 회원을 선택하고 메세지를 보내보세요.",
     "user_empty": "협업 가능 멤버가 없습니다.",
-    "user_empty_description": "협업 멤버를 추가해주세요.",
-
+    "user_empty_description": "협업에 초대할 멤버를 추가해 주세요.",
+    
     "setting_audio": "오디오 설정",
     "setting_record": "녹화 설정",
     "setting_language": "언어 설정",
@@ -66,18 +66,18 @@
     "setting_record_resolution": "녹화 영상 해상도",
     "setting_record_resolution_tooltip": "720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가<br>원활하지 않을 수 있습니다.",
     "setting_video": "영상 설정",
-    "setting_video_choice": "영상 장치 선택",
-    "setting_video_resolution": "입력 해상도",
+    "setting_video_choice": "카메라",
+    "setting_video_resolution": "카메라와 마이크 접근이 차단되었습니다.",
     "setting_video_preview": "영상 미리보기",
     "setting_camera": "카메라",
     "access_deny": "카메라와 마이크 접근이 차단되었습니다.",
-    "access_deny_description": "브라우저 주소창의 <span class='device-denied__content--emphasize'>아이콘</span>을 클릭하여<br /> 접근을 허용 후 새로고침 해주세요.",
-
+    "access_deny_description": "브라우저 주소창의 <span class='device-denied__content--emphasize'>아이콘</span>을 클릭하여<br /> 접근을 허용 후 새로고침해 주세요.",
+    
     "remote_name": "협업 이름",
     "remote_description": "협업 설명",
-    "remote_name_valid1": "협업 이름은 2자 이상 입력해주세요.",
+    "remote_name_valid1": "협업 이름은 2자 이상 입력해 주세요.",
     "remote_name_valid2": "특수 문자는 협업 이름에서 제외시켜주세요.",
-
+    
     "create_remote": "원격 협업 생성하기",
     "create_remote_profile_regist": "협업 프로필 등록",
     "create_remote_name_input": "그룹 이름을 입력해 주세요.",
@@ -87,11 +87,11 @@
     "create_remote_selected_empty": "선택한 멤버가 없습니다.\n1명 이상의 협업 멤버를 선택해 주세요.",
     "create_select_member_list": "선택 가능한 멤버 리스트",
     "create_select_empty_title": "협업 가능한 멤버가 없습니다.",
-    "create_select_empty_description": "협업 멤버를 추가해주세요.",
+    "create_select_empty_description": "협업에 초대할 멤버를 추가해 주세요.",
     "create_max_member": "선택 가능 멤버 수를 초과하였습니다.",
     "create_remote_fail": "협업 생성을 실패하였습니다.",
-
-    "info_remote_detail": "원격협업 상세보기",
+    
+    "info_remote_detail": "원격협업 상세 보기",
     "info_remote": "협업 정보",
     "info_remote_member": "참가자 정보",
     "info_remote_date": "협업 진행일",
@@ -100,7 +100,7 @@
     "info_remote_duration": "진행 시간",
     "info_name": "이름",
     "info_dutation": "기간",
-
+    
     "record_file": "로컬 녹화 파일",
     "record_file_title": "로컬 녹화 파일 리스트",
     "record_filename": "파일명",
@@ -113,15 +113,15 @@
     "record_nofile": "녹화 파일이 없습니다.",
     "record_download": "선택 다운로드",
     "record_remove": "선택 삭제",
-
-    "license_expire_title": "VIRNECT Remote2.0을 사용할 수 있는<br> 라이선스가 만료되었습니다.",
-    "license_expire_description": "다음 라이선스 적용 전에 남은 기간 동안 Remote2.0을 사용하시려면<br> 추가 라이선스를 구매하여 이용해 주세요.",
-    "license_no_title": "VIRNECT Remote2.0을 사용할 수 있는<br> 워크스페이스가 없습니다.",
-    "license_no_description": "워크스페이스 마스터에게 문의해주세요.",
-
+    
+    "license_expire_title": "VIRNECT Remote2.0을 사용할 수 있는<br> 플랜이 만료되었습니다.",
+    "license_expire_description": "Remote2.0을 사용하시려면 워크스테이션에서<br> 플랜을 추가/갱신하여 이용해 주세요.",
+    "license_no_title": "VIRNECT Remote2.0을 사용할 수 있는<br> 플랜이 없습니다.",
+    "license_no_description": "VIRNECT Remote2.0을 사용할 수 있는 워크스페이스가 없습니다. 워크스페이스 마스터에게 Remote 플랜 할당을 요청해 주세요.",
+    
     "error_no_connected_device": "연결된 디바이스를 찾을 수 없습니다.",
     "error_no_device": "디바이스를 찾을 수 없습니다.",
-
+    
     "cookie": "버넥트는 버넥트의 서비스를 운영하고 고객 경험을 개선하기 위해 쿠키를 사용합니다. 자세한 내용을 알아보려면<br>당사의 <a href='/policy/cookie' target='_blank'>쿠키 취급 방침</a>을 확인하세요. ‘확인’을 클릭하거나 사이트 사용을 계속하는 것은 이러한 쿠키 설정에 동의하는 것입니다."
   }
 }

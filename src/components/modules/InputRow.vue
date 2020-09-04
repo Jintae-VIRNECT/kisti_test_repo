@@ -1,9 +1,11 @@
 <template>
   <figure class="inputrow">
-    <p class="inputrow-title valid" v-if="valid" :class="{ required }">
+    <!-- <p class="inputrow-title valid" v-if="valid" :class="{ required }">
       {{ validMessage }}
-    </p>
-    <p class="inputrow-title" v-else :class="{ required }">
+    </p> -->
+    <p class="inputrow-title" :class="{ required, valid }">
+      <span v-if="valid"> {{ validMessage }} </span>
+      <!-- <span v-else> {{ validMessage }} </span> -->
       {{ title ? title : $t('workspace.remote_name') }}
     </p>
     <input
@@ -141,10 +143,18 @@ export default {
     content: '';
   }
   &.valid {
-    color: #ff757b;
+    color: transparent;
     &.required::after {
       display: none;
     }
+  }
+  > span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: #ff757b;
+    white-space: nowrap;
+    // background: ;
   }
 }
 

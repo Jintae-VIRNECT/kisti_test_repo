@@ -1,0 +1,9 @@
+{
+  "support": {
+    "header_title": "Our service is not compatible with the browser you are connected with.",
+    "header_description": "Please use the shortcut below to connect to Remote Service.<br class=\"noM\">For more inquiries, contact <a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>customer services</u></a>.",
+    "header_description_mobile": "For more details, please contact <a href=\"https://virnect.com/contact/inquiry\" target=\"_blank\"><u>customer services</u></a>.",
+    "pc_web": "VIRNECT Remote Web can be accessed via the Chrome browser.",
+    "pc_web_button": "Download Chrome PC"
+  }
+}

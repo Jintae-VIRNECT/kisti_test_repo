@@ -1,5 +1,6 @@
 /** custom mdoal */
 .modal.local-recsetting-modal .modal--inner {
+  min-width: 40.5714rem;
   background-color: $color_darkgray_500;
   border-radius: 4px;
   box-shadow: none;
@@ -15,7 +16,6 @@
 }
 
 .rec-setting--header {
-  width: 12.8571rem;
   margin-bottom: 1.2857rem;
   color: $color_white;
   font-size: 1.2857rem;
@@ -39,8 +39,8 @@
 
   &.underbar {
     position: relative;
-    margin-bottom: 30px;
-    padding-bottom: 36px;
+    margin-bottom: 2.143em;
+    padding-bottom: 2.571em;
     &:after {
       position: absolute;
       bottom: 0;
@@ -62,7 +62,8 @@
 }
 
 .rec-setting__text {
-  width: 12.8571rem;
+  width: 12.857rem;
+  margin-left: 0.571em;
   color: $color_text_main;
   font-size: 1rem;
 
@@ -72,8 +73,7 @@
   }
 
   > p {
-    margin: 0px 0.2857rem 0px 0px;
-    margin-right: 8px;
+    margin-right: 0.286rem;
     color: $color_text_main;
     font-size: 1rem;
   }
@@ -85,13 +85,13 @@
 .rec-setting__selector {
   flex: 1;
   align-items: flex-start;
-  .radio-group {
-    height: 2.4286rem;
+  > .radio-group {
+    height: 2.429rem;
   }
 }
 .rec-setting--tooltip-icon {
-  width: 24px;
-  height: 24px;
+  width: 1.714em;
+  height: 1.714em;
   opacity: 0.6;
   transition: opacity 0.2;
   &:hover {
@@ -122,12 +122,12 @@
   }
 }
 .modal.local-recsetting-modal .modal--inner .modal--body {
-  padding: 50px 40px 36px;
+  padding: 3.571em 2.857em 2.571em;
 }
 
 .popover.rec-setting__custom-popover {
   box-shadow: none;
   > .popover--body {
-    padding-left: 10px;
+    padding-left: 0.714em;
   }
 }

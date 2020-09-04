@@ -105,7 +105,9 @@ export default {
       })
       this.files = res.fileInfoList
       this.$nextTick(() => {
-        this.$refs['downloadScrollbar'].calculateSize()
+        if (this.$refs['downloadScrollbar']) {
+          this.$refs['downloadScrollbar'].calculateSize()
+        }
       })
     },
     async download(file) {

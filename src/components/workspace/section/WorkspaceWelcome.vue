@@ -16,7 +16,7 @@
         ></role>
       </div>
       <div class="workspace-welcome__name">
-        <span class="workspace-welcome__nickname">{{ account.nickname }}</span>
+        <!-- <span class="workspace-welcome__nickname">{{ account.nickname }}</span> -->
         <span class="workspace-welcome__text" v-html="welcomeText"></span>
       </div>
       <button

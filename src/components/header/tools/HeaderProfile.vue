@@ -80,6 +80,7 @@ export default {
 </script>
 <style lang="scss">
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .popover-profile {
   background-color: $color_bg_sub;
@@ -113,7 +114,8 @@ export default {
     background: transparent;
     &:hover,
     &:active {
-      font-weight: 500;
+      @include font-bold($color_text);
+      // font-weight: 500;
     }
   }
 }

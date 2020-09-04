@@ -32,12 +32,12 @@ export default {
       let langCode = localStorage.getItem('language')
 
       if (!langCode) {
-        langCode = 'ko'
-        // langCode =
-        //   navigator.language ||
-        //   navigator.userLanguage || //for IE
-        //   navigator.systemLanguage || //for IE
-        //   'en'
+        // langCode = 'ko'
+        langCode =
+          navigator.language ||
+          navigator.userLanguage || //for IE
+          navigator.systemLanguage || //for IE
+          'en'
       }
 
       return shortLang.get(langCode.toLowerCase())
@@ -58,6 +58,7 @@ export default {
 
       this.$i18n.locale = locale
       document.documentElement.lang = locale
+      this.$dayjs.locale(locale)
 
       if (!this.account || !this.account.sId) {
         return

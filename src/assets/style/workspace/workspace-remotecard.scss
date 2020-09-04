@@ -68,9 +68,11 @@
   position: relative;
   display: inline-block;
   width: fit-content;
+  max-width: 100%;
   margin: 0.357rem auto 1rem;
   margin-bottom: 0.643rem;
   color: $color_text_sub;
+  @include ellipsis();
   &:before {
     right: -0.5rem;
     display: inline-block;
