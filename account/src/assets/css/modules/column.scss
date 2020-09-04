@@ -5,9 +5,13 @@
     height: 28px;
     vertical-align: middle;
   }
-  & > span {
+  span {
     margin-left: 6px;
     vertical-align: middle;
+  }
+  .el-tooltip {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 

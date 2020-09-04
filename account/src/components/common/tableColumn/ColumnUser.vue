@@ -20,8 +20,8 @@
           </div>
         </el-tooltip>
       </div>
-      <!-- 일반 -->
-      <div v-else class="column-user">
+      <!-- 툴팁없음 -->
+      <div v-else-if="type === 'no-tooltip'" class="column-user">
         <div class="avatar">
           <div
             class="image"
@@ -31,6 +31,22 @@
           />
         </div>
         <span>{{ scope.row[nameProp] }}</span>
+      </div>
+      <!-- 일반 -->
+      <div v-else class="column-user">
+        <el-tooltip :content="scope.row[nameProp]">
+          <div>
+            <div class="avatar">
+              <div
+                class="image"
+                :style="
+                  `background-image: url('${scope.row[imageProp]}'), url('${$defaultUserProfile}')`
+                "
+              />
+            </div>
+            <span>{{ scope.row[nameProp] }}</span>
+          </div>
+        </el-tooltip>
       </div>
     </template>
   </el-table-column>

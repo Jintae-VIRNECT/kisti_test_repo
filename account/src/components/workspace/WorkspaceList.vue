@@ -2,6 +2,7 @@
   <div>
     <el-table ref="table" :data="workspaces">
       <column-user
+        type="no-tooltip"
         :label="$t('workspace.list.column.name')"
         prop="name"
         nameProp="name"

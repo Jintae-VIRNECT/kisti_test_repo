@@ -48,12 +48,6 @@
         {{ plansInfo.viewCount.add.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
-      <dt>{{ $t('purchases.info.callTime') }}</dt>
-      <dd>
-        <!-- {{ plansInfo.callTime.add.toLocaleString() }}
-        {{ $t('purchases.hoursUnit') }} -->
-        {{ $t('purchases.infinity') }}
-      </dd>
     </dl>
     <el-divider />
     <h6>
