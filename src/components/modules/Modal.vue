@@ -187,7 +187,7 @@ export default {
   .modal--inner {
     position: relative;
     min-width: 25.714em;
-    overflow: hidden;
+    // overflow: hidden;
     background-color: #242427;
     border: 1px solid rgba(#a9a9a9, 0.08);
     border-radius: 0.714em;
@@ -232,7 +232,7 @@ export default {
     height: calc(100% - 5em);
     // max-height: 80vh;
     padding: 1.714em 2em;
-    overflow: hidden;
+    // overflow: hidden;
   }
 
   .modal--footer {
@@ -242,6 +242,7 @@ export default {
     padding: 1.357em 2.5em;
     background-color: #313135;
     border-top: solid 1px rgba(#7f7f7f, 0.27);
+    border-radius: 0 0 0.714em 0.714em;
     // border-top: 1px solid #7f7f7f;
   }
 }

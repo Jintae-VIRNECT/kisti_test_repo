@@ -321,6 +321,7 @@ export default {
         this.origin.width = canvasSize.width
         this.origin.height = canvasSize.height
       }
+      if (canvasSize.width === 0) return
 
       const scale = canvasSize.width / this.origin.width
 

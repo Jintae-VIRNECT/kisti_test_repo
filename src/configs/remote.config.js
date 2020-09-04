@@ -80,7 +80,7 @@ export const AR_DRAWING = {
   START_DRAWING: 'startArDrawing',
   END_DRAWING: 'endArDrawing',
 
-  AR_DRAWING: 'AR_DRAWING',
+  AR_DRAWING: 'arDrawing',
 
   UNDO: 'undo',
   REDO: 'redo',

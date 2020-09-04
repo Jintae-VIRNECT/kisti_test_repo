@@ -74,19 +74,6 @@
       border-radius: 2px;
     }
   }
-  .header-tools__notice {
-    position: relative;
-    &.active::after {
-      position: absolute;
-      top: 0.286rem;
-      right: 0.286rem;
-      width: 0.429rem;
-      height: 0.429rem;
-      background-color: $color_red;
-      border-radius: 50%;
-      content: "";
-    }
-  }
 
   .header-tools__calltime {
     min-width: 5.429rem;
@@ -109,5 +96,19 @@
       $color_red;
     border-radius: 1.214rem;
     @include ir();
+  }
+}
+
+.header-tools__notice {
+  position: relative;
+  &.active::after {
+    position: absolute;
+    top: 0.286rem;
+    right: 0.286rem;
+    width: 0.429rem;
+    height: 0.429rem;
+    background-color: $color_red;
+    border-radius: 50%;
+    content: "";
   }
 }

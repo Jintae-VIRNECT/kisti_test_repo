@@ -9,7 +9,10 @@ import {
   ROLE,
   VIDEO,
 } from 'configs/remote.config'
-import { FLASH as FLASH_STATUE } from 'configs/device.config'
+import {
+  FLASH as FLASH_STATUE,
+  CAMERA as CAMERA_STATUS,
+} from 'configs/device.config'
 
 import { getUserInfo } from 'api/common'
 import { logger, debug } from 'utils/logger'
@@ -63,20 +66,6 @@ export const addSessionEventListener = session => {
         }
       }
     })
-  })
-  session.on('streamPropertyChanged', event => {
-    if (event.changedProperty === 'audioActive') {
-      // audio 조절 :::: SIGNAL.MIC로 대체
-      // Store.commit('updateParticipant', {
-      //   connectionId: event.stream.connection.connectionId,
-      //   audio: event.newValue,
-      // })
-    } else if (event.changedProperty === 'videoActive') {
-      Store.commit('updateParticipant', {
-        connectionId: event.stream.connection.connectionId,
-        video: event.newValue,
-      })
-    }
   })
   /** session closed */
   session.on('sessionDisconnected', event => {
@@ -191,6 +180,7 @@ export const addSessionEventListener = session => {
         zoomLevel: parseFloat(data.currentZoomLevel),
         zoomMax: parseInt(data.maxZoomLevel),
         cameraStatus: parseInt(data.status),
+        video: data.status === CAMERA_STATUS.CAMERA_ON,
       })
     }
   })

@@ -267,30 +267,6 @@ export default {
         }
       }
     },
-    cameraStatus(status, oldStatus) {
-      if (status === -1 || oldStatus === -1) return
-      if (status.id !== oldStatus.id || status.state === oldStatus.state) return
-      if (status.state === 'off') {
-        if (oldStatus.state === 'background') return
-        this.addChat({
-          name: this.mainView.nickname,
-          status: 'stream-stop',
-          type: 'system',
-        })
-      } else if (status.state === 'background') {
-        this.addChat({
-          name: this.mainView.nickname,
-          status: 'stream-background',
-          type: 'system',
-        })
-      } else if (status.state === 'on') {
-        this.addChat({
-          name: this.mainView.nickname,
-          status: 'stream-start',
-          type: 'system',
-        })
-      }
-    },
   },
   methods: {
     ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),

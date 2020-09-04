@@ -164,7 +164,9 @@ export default {
         return fileInfo
       })
       this.$nextTick(() => {
-        this.$refs['chatFileListScrollbar'].calculateSize()
+        if (this.$refs['chatFileListScrollbar']) {
+          this.$refs['chatFileListScrollbar'].calculateSize()
+        }
       })
     },
     selectFile(file, idx) {

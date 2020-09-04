@@ -14,15 +14,7 @@
           :muted="isMe"
         ></video>
       </div>
-      <audio
-        v-else-if="!participant.me"
-        :srcObject.prop="participant.stream"
-        autoplay
-        playsinline
-        loop
-        :muted="isMe || mainView.id === participant.id"
-      ></audio>
-      <div class="participant-video__profile" v-if="showProfile">
+      <div class="participant-video__profile" v-else>
         <img
           v-if="participant.path && participant.path !== 'default'"
           class="participant-video__profile-background"
@@ -38,6 +30,14 @@
           }"
           :image="participant.path"
         ></profile>
+        <audio
+          v-if="!participant.me"
+          :srcObject.prop="participant.stream"
+          autoplay
+          playsinline
+          loop
+          :muted="isMe || mainView.id === participant.id"
+        ></audio>
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
       <div class="participant-video__status">
@@ -104,7 +104,11 @@
           <ul class="video-popover">
             <li>
               <button class="video-pop__button" @click="mute">
-                {{ $t('service.participant_mute') }}
+                {{
+                  participant.mute
+                    ? $t('service.participant_mute_cancel')
+                    : $t('service.participant_mute')
+                }}
               </button>
             </li>
             <li v-if="iamLeader">
@@ -123,6 +127,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
+import { CAMERA } from 'configs/device.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 
@@ -181,6 +186,18 @@ export default {
         return false
       }
     },
+    cameraStatus() {
+      if (this.participant.hasVideo) {
+        if (this.participant.cameraStatus === CAMERA.CAMERA_OFF) {
+          return 'off'
+        } else if (this.participant.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
+          return 'background'
+        }
+        return 'on'
+      } else {
+        return -1
+      }
+    },
   },
   watch: {
     speaker(val) {
@@ -193,6 +210,30 @@ export default {
       }
     },
     participant() {},
+    cameraStatus(status, oldStatus) {
+      if (status === -1 || oldStatus === -1) return
+      if (status === oldStatus) return
+      if (status === 'off') {
+        if (oldStatus === 'background') return
+        this.addChat({
+          name: this.participant.nickname,
+          status: 'stream-stop',
+          type: 'system',
+        })
+      } else if (status === 'background') {
+        this.addChat({
+          name: this.participant.nickname,
+          status: 'stream-background',
+          type: 'system',
+        })
+      } else if (status === 'on') {
+        this.addChat({
+          name: this.participant.nickname,
+          status: 'stream-start',
+          type: 'system',
+        })
+      }
+    },
   },
   methods: {
     ...mapActions(['setMainView', 'addChat']),

@@ -11,7 +11,7 @@
       :description="$t('common.notice')"
       size="2.429rem"
       :toggle="false"
-      :active="false"
+      :active="active"
       :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
       @action="notice"
     ></toggle-button>
@@ -137,6 +137,7 @@ export default {
     return {
       onPush: true,
       key: '',
+      active: false,
       // alarmList: [],
     }
   },
@@ -160,8 +161,9 @@ export default {
   methods: {
     ...mapActions(['addAlarm', 'removeAlarm', 'updateAlarm']),
     notice() {
+      this.active = false
       if (this.onPush) return
-      console.log('notice list refresh logic')
+      // console.log('notice list refresh logic')
     },
     async alarmListener(listen) {
       // if (!this.onPush) return
@@ -230,7 +232,10 @@ export default {
             this.$router.push({ name: 'workspace' })
           }, 60000)
           break
+        default:
+          return
       }
+      this.active = true
     },
     remove(alarm) {
       this.removeAlarm(alarm.id)
