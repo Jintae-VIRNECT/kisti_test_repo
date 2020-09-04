@@ -7,6 +7,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.license.domain.product.LicenseProduct;
+import com.virnect.license.domain.product.LicenseProductStatus;
+
 @Getter
 @Setter
 @ApiModel
@@ -23,6 +26,8 @@ public class LicenseProductInfoResponse {
 	private int unUseLicenseAmount;
 	@ApiModelProperty(value = "현재 할당 된 라이선스 수량", position = 5, example = "1")
 	private int useLicenseAmount;
-	@ApiModelProperty(value = "라이선스 정보", position = 6)
+	@ApiModelProperty(value = "제품 라이선스 플랜 상태(ACTIVE,INACTIVE,EXCEEDED)", position = 6, example = "ACTIVE")
+	private LicenseProductStatus productStatus;
+	@ApiModelProperty(value = "라이선스 정보", position = 7)
 	private List<LicenseInfoResponse> licenseInfoList;
 }

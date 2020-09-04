@@ -26,7 +26,6 @@ import lombok.Setter;
 
 import com.virnect.license.domain.BaseTimeEntity;
 import com.virnect.license.domain.product.LicenseProduct;
-import com.virnect.license.domain.product.ServiceProduct;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -93,9 +92,6 @@ public class LicensePlan extends BaseTimeEntity {
 	@OneToMany(mappedBy = "licensePlan", fetch = FetchType.LAZY)
 	private Set<LicenseProduct> licenseProductList;
 
-	@OneToMany(mappedBy = "licensePlan", fetch = FetchType.LAZY)
-	private Set<ServiceProduct> serviceProductList;
-
 	@Builder
 	public LicensePlan(
 		String userId, String workspaceId, LocalDateTime startDate, LocalDateTime endDate, PlanStatus planStatus,
@@ -115,5 +111,25 @@ public class LicensePlan extends BaseTimeEntity {
 		this.maxUserAmount = maxUserAmount;
 		this.countryCode = countryCode;
 		this.isEventPlan = isEventPlan;
+	}
+
+	@Override
+	public String toString() {
+		return "LicensePlan{" +
+			"id=" + id +
+			", startDate=" + startDate +
+			", expiredDate=" + endDate +
+			", userId='" + userId + '\'' +
+			", maxUserAmount=" + maxUserAmount +
+			", maxStorageSize=" + maxStorageSize +
+			", maxDownloadHit=" + maxDownloadHit +
+			", maxCallTime=" + maxCallTime +
+			", workspaceId='" + workspaceId + '\'' +
+			", modifiedUser='" + modifiedUser + '\'' +
+			", planStatus=" + planStatus +
+			", countryCode='" + countryCode + '\'' +
+			", paymentId='" + paymentId + '\'' +
+			", isEventPlan=" + isEventPlan +
+			'}';
 	}
 }

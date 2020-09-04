@@ -59,9 +59,8 @@ public class LicenseController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceLicensePlanInfoResponse> responseMessage = licenseService.getWorkspaceLicensePlanInfo(
-			workspaceId);
-		return ResponseEntity.ok(responseMessage);
+		WorkspaceLicensePlanInfoResponse responseMessage = licenseService.getWorkspaceLicensePlanInfo(workspaceId);
+		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
 	@ApiOperation(value = "워크스페이스에서 할당받은 내 라이선스 정보 조회")

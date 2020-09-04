@@ -25,6 +25,8 @@ public class MyLicenseInfoResponse {
 	private long id;
 	@ApiModelProperty(value = "라이선스 시리얼 키", example = "29923633-47D7-439C-B515-94FF4A9B5BB0")
 	private String serialKey;
+	@ApiModelProperty(value = "라이선스 제품 플랜 상태 (ACTIVE, INACTIVE, EXCEEDED)", example = "ACTIVE")
+	private String productPlanStatus;
 	@ApiModelProperty(value = "라이선스 상태")
 	private LicenseStatus status;
 	@ApiModelProperty(value = "라이선스 할당 제품명", example = "MAKE")

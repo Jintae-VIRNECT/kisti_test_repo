@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiModelProperty;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@ApiModel
 public enum ErrorCode {
 	// 쿠폰 생성
 	ERR_CREATE_COUPON(1000, "Coupon Generate fail."),
@@ -32,7 +31,10 @@ public enum ErrorCode {
 		4001,
 		"Product license assignment authentication code invalid."
 	),
-	ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_ROLLBACK_FROM_PAYMENT(4100, "Product license deallocate failed."),
+	ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_ROLLBACK_FROM_PAYMENT(
+		4100,
+		"Product license deallocate failed."
+	),
 	//    ERR_BILLING_LICENSE_DEALLOCATE_USER_NOT_FOUND(4200, "license deallocate fail cause by user info not found."),
 	ERR_BILLING_LICENSE_DEALLOCATE_PLAN_NOT_FOUND(
 		4201,
@@ -67,10 +69,8 @@ public enum ErrorCode {
 
 	ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
 
-	@ApiModelProperty(name = "code")
-	private int code;
-	@ApiModelProperty(name = "message")
-	private String message;
+	private final int code;
+	private final String message;
 
 	ErrorCode(final int code, final String message) {
 		this.code = code;

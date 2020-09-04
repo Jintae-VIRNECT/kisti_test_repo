@@ -39,9 +39,9 @@ public class LicenseProductAllocateRequest {
 	@ApiModelProperty(value = "결제 상품 정보", position = 6)
 	@NotNull(message = "상품 정보는 반드시 값이 있어야 합니다.")
 	@Size(min = 1, message = "상품 정보는 반드시 하나 이상 있어야 합니다.")
-	private List<LicenseAllocateProductInfoResponse> productList;
+	private List<AllocateProductInfoResponse> productList;
 	@ApiModelProperty(value = "결제에 사용된 쿠폰 정보", position = 7)
-	private List<LicenseAllocateCouponInfoResponse> couponList;
+	private List<AllocateCouponInfoResponse> couponList;
 
 	@Override
 	public String toString() {

@@ -25,6 +25,7 @@ import com.virnect.license.application.rest.content.ContentRestService;
 import com.virnect.license.application.rest.workspace.WorkspaceRestService;
 import com.virnect.license.dao.license.LicenseRepository;
 import com.virnect.license.dao.licenseplan.LicensePlanRepository;
+import com.virnect.license.dao.licenseproduct.LicenseProductRepository;
 import com.virnect.license.domain.license.License;
 import com.virnect.license.domain.license.LicenseStatus;
 import com.virnect.license.domain.licenseplan.LicensePlan;
@@ -32,7 +33,6 @@ import com.virnect.license.domain.licenseplan.PlanStatus;
 import com.virnect.license.domain.product.LicenseProduct;
 import com.virnect.license.domain.product.Product;
 import com.virnect.license.domain.product.ProductType;
-import com.virnect.license.domain.product.ServiceProduct;
 import com.virnect.license.dto.ResourceCalculate;
 import com.virnect.license.dto.UserLicenseDetailsInfo;
 import com.virnect.license.dto.response.LicenseInfoResponse;
@@ -66,6 +66,7 @@ public class LicenseService {
 	private final LicenseRepository licenseRepository;
 	private final ContentRestService contentRestService;
 	private final WorkspaceRestService workspaceRestService;
+	private final LicenseProductRepository licenseProductRepository;
 	private final ModelMapper modelMapper;
 
 	/**
@@ -75,21 +76,22 @@ public class LicenseService {
 	 * @return - 워크스페이스의 라이선스 플랜 정보
 	 */
 	@Transactional(readOnly = true)
-	public ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspaceLicensePlanInfo(String workspaceId) {
-		Optional<LicensePlan> licensePlan = this.licensePlanRepository.findByWorkspaceIdAndPlanStatus(
+	public WorkspaceLicensePlanInfoResponse getWorkspaceLicensePlanInfo(String workspaceId) {
+		Optional<LicensePlan> licensePlanInfo = licensePlanRepository.findByWorkspaceIdAndPlanStatus(
 			workspaceId, PlanStatus.ACTIVE
 		);
 
-		if (!licensePlan.isPresent()) {
-			WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = new WorkspaceLicensePlanInfoResponse();
-			return new ApiResponse<>(workspaceLicensePlanInfoResponse);
+		if (!licensePlanInfo.isPresent()) {
+			return new WorkspaceLicensePlanInfoResponse();
 		}
 
-		LicensePlan licensePlanInfo = licensePlan.get();
-		Set<LicenseProduct> licenseProductList = licensePlanInfo.getLicenseProductList();
-		Set<ServiceProduct> serviceProductList = licensePlanInfo.getServiceProductList();
+		LicensePlan licensePlan = licensePlanInfo.get();
+		List<LicenseProduct> licenseProductList = licenseProductRepository.findAllProductLicenseInfoByLicensePlan(licensePlan);
+		List<LicenseProduct> serviceProductList = licenseProductRepository.findAllServiceLicenseInfoByLicensePlan(licensePlan);
+		ResourceCalculate serviceProductResource = serviceProductResourceCalculate(serviceProductList);
 		Map<Long, LicenseProductInfoResponse> licenseProductInfoMap = new HashMap<>();
 
+		// TODO: 2020-09-04 리팩토링 필요
 		licenseProductList.forEach(licenseProduct -> {
 			Product product = licenseProduct.getProduct();
 			if (licenseProductInfoMap.containsKey(product.getId())) {
@@ -107,6 +109,7 @@ public class LicenseService {
 				);
 				licenseProductInfo.getLicenseInfoList().addAll(licenseInfoList);
 				licenseProductInfo.setQuantity(licenseProductInfo.getLicenseInfoList().size());
+				licenseProductInfo.setProductStatus(licenseProduct.getStatus());
 			} else {
 				LicenseProductInfoResponse licenseProductInfo = new LicenseProductInfoResponse();
 				AtomicInteger unUsedLicenseAmount = new AtomicInteger();
@@ -125,20 +128,19 @@ public class LicenseService {
 				licenseProductInfo.setQuantity(licenseInfoList.size());
 				licenseProductInfo.setUnUseLicenseAmount(unUsedLicenseAmount.get());
 				licenseProductInfo.setUseLicenseAmount(usedLicenseAmount.get());
+				licenseProductInfo.setProductStatus(licenseProduct.getStatus());
 				licenseProductInfoMap.put(product.getId(), licenseProductInfo);
 			}
 		});
 
-		ResourceCalculate serviceProductResource = serviceProductResourceCalculate(serviceProductList);
-
 		ContentResourceUsageInfoResponse workspaceCurrentResourceUsageInfo = getContentResourceUsageInfoFromContentService(
-			workspaceId, licensePlanInfo.getStartDate(), licensePlanInfo.getEndDate());
+			workspaceId, licensePlan.getStartDate(), licensePlan.getEndDate());
 		log.info("[WORKSPACE_USAGE_RESOURCE_REPORT] -> {}", workspaceCurrentResourceUsageInfo.toString());
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = modelMapper.map(
-			licensePlan.get(),
+			licensePlanInfo.get(),
 			WorkspaceLicensePlanInfoResponse.class
 		);
-		workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlan.get().getUserId());
+		workspaceLicensePlanInfoResponse.setMasterUserUUID(licensePlanInfo.get().getUserId());
 		workspaceLicensePlanInfoResponse.setLicenseProductInfoList(new ArrayList<>(licenseProductInfoMap.values()));
 		// current used resource
 		workspaceLicensePlanInfoResponse.setCurrentUsageDownloadHit(workspaceCurrentResourceUsageInfo.getTotalHit());
@@ -149,16 +151,16 @@ public class LicenseService {
 		workspaceLicensePlanInfoResponse.setAddDownloadHit(serviceProductResource.getTotalDownloadHit());
 		// default resource amount (maxResource - addResource)
 		workspaceLicensePlanInfoResponse.setDefaultCallTime(
-			licensePlanInfo.getMaxCallTime() - serviceProductResource.getTotalCallTime()
+			licensePlan.getMaxCallTime() - serviceProductResource.getTotalCallTime()
 		);
 		workspaceLicensePlanInfoResponse.setDefaultStorageSize(
-			licensePlanInfo.getMaxStorageSize() - serviceProductResource.getTotalStorageSize()
+			licensePlan.getMaxStorageSize() - serviceProductResource.getTotalStorageSize()
 		);
 		workspaceLicensePlanInfoResponse.setDefaultDownloadHit(
-			licensePlanInfo.getMaxDownloadHit() - serviceProductResource.getTotalDownloadHit()
+			licensePlan.getMaxDownloadHit() - serviceProductResource.getTotalDownloadHit()
 		);
 
-		return new ApiResponse<>(workspaceLicensePlanInfoResponse);
+		return workspaceLicensePlanInfoResponse;
 	}
 
 	/**
@@ -167,14 +169,14 @@ public class LicenseService {
 	 * @param serviceProductList - 추가 서비스 상품 서비스 이용량 정보
 	 * @return - 추가 서비스 상품, 서비스 이용 정보 총 사용량 정보
 	 */
-	private ResourceCalculate serviceProductResourceCalculate(Set<ServiceProduct> serviceProductList) {
+	private ResourceCalculate serviceProductResourceCalculate(List<LicenseProduct> serviceProductList) {
 		long addCallTime = 0;
 		long addStorage = 0;
 		long addDownloadHit = 0;
-		for (ServiceProduct serviceProduct : serviceProductList) {
-			addCallTime += serviceProduct.getTotalCallTime();
-			addStorage += serviceProduct.getTotalStorageSize();
-			addDownloadHit += serviceProduct.getTotalDownloadHit();
+		for (LicenseProduct serviceProduct : serviceProductList) {
+			addCallTime += serviceProduct.getCallTime();
+			addStorage += serviceProduct.getStorageSize();
+			addDownloadHit += serviceProduct.getDownloadHit();
 		}
 		return new ResourceCalculate(addCallTime, addStorage, addDownloadHit);
 	}
@@ -252,6 +254,7 @@ public class LicenseService {
 						licenseInfo.setUpdatedDate(license.getUpdatedDate());
 						licenseInfo.setLicenseType(productType.getName());
 						licenseInfo.setStatus(license.getStatus());
+						licenseInfo.setProductPlanStatus(licenseProduct.getStatus().toString());
 						myLicenseInfoResponseList.add(licenseInfo);
 					});
 			}
@@ -402,17 +405,14 @@ public class LicenseService {
 	 */
 	@Transactional
 	public LicenseSecessionResponse deleteAllLicenseInfo(String workspaceUUID, String userUUID) {
-		Optional<LicensePlan> licensePlanInfo = this.licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(
+		LicensePlan licensePlan = licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(
 			userUUID, workspaceUUID, PlanStatus.ACTIVE
 		);
 
 		// 라이선스 플랜 정보가 없는 경우
-		if (!licensePlanInfo.isPresent()) {
+		if (licensePlan == null) {
 			return new LicenseSecessionResponse(workspaceUUID, true, LocalDateTime.now());
 		}
-
-		// license plan 정보 조회
-		LicensePlan licensePlan = licensePlanInfo.get();
 
 		// license product 정보 조회
 		Set<LicenseProduct> licenseProductSet = licensePlan.getLicenseProductList();
@@ -423,7 +423,7 @@ public class LicenseService {
 		}
 
 		// license plan 상태 비활성화 및 탈퇴 데이터 표시
-		licensePlan.setPlanStatus(PlanStatus.INACTIVE);
+		licensePlan.setPlanStatus(PlanStatus.TERMINATE);
 		licensePlan.setModifiedUser(userUUID + "-" + "secession");
 		licensePlanRepository.save(licensePlan);
 
