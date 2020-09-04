@@ -3,8 +3,10 @@
 </template>
 
 <script>
+import langMixin from 'mixins/language'
 export default {
   name: 'container',
+  mixins: [langMixin],
   methods: {
     windowResizeHandler(e) {
       const html = document.querySelector('html')
@@ -35,6 +37,7 @@ export default {
     this.$store.dispatch('setDeviceType', type)
     html.setAttribute('data-screen', type)
     window.addEventListener('resize', this.windowResizeHandler)
+    this.mx_initLang()
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.windowResizeHandler)

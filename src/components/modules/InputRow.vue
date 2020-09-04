@@ -144,6 +144,7 @@ export default {
   }
   &.valid {
     color: transparent;
+    text-indent: -99px;
     &.required::after {
       display: none;
     }
@@ -154,6 +155,7 @@ export default {
     left: 0;
     color: #ff757b;
     white-space: nowrap;
+    text-indent: 0;
     // background: ;
   }
 }
