@@ -48,6 +48,7 @@
     "stylelint-order": "^4.1.0",
     "stylelint-prettier": "^1.1.2",
     "stylelint-scss": "^3.18.0",
+    "vue-chartjs": "^3.5.1",
     "vue-router": "^3.4.2",
     "vue-template-compiler": "^2.6.11",
     "vue2-scrollbar": "0.0.3",
