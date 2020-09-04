@@ -12,13 +12,13 @@
           :src="products[scope.row[productProp].toLowerCase()].logo"
         />
         <span>{{ scope.row[prop] }}</span>
-        <el-tag
+        <!-- <el-tag
           v-if="scope.row[gradeProp]"
           :class="scope.row[gradeProp]"
           effect="plain"
         >
           {{ scope.row[gradeProp] }}
-        </el-tag>
+        </el-tag> -->
       </div>
     </template>
   </el-table-column>

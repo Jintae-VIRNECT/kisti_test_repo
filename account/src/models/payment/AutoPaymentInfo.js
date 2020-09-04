@@ -1,6 +1,5 @@
 import Model from '@/models/Model'
 import Ticket from './Ticket'
-import filters from '@/mixins/filters'
 
 export default class AutoPaymentInfo extends Model {
   constructor(json) {

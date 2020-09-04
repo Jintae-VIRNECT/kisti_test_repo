@@ -15,9 +15,6 @@
         <div class="column-plan">
           <img :src="product.logo" />
           <span>{{ product.label }}</span>
-          <el-tag :class="product.licenseType" effect="plain">
-            {{ product.licenseType }}
-          </el-tag>
         </div>
         <div class="count">
           <span>{{ product.usedAmount }}</span>
