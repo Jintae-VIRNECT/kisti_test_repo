@@ -5,7 +5,7 @@
     <div class="table__column">
       <div
         class="table__column--toggle"
-        v-if="showToggleHeader && datas.length > 0"
+        v-show="showToggleHeader && datas.length > 0"
       >
         <toggle-button
           slot="body"
@@ -207,6 +207,7 @@ export default {
 .table__column--cell:nth-child(2) {
   flex-grow: 2;
   text-align: left;
+  text-indent: 0.714rem;
 }
 
 .table__body {

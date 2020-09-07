@@ -89,6 +89,9 @@
   margin-bottom: 1.071rem;
   color: $color_text;
   font-size: 1.286rem;
+  &::first-letter {
+    text-transform: capitalize;
+  }
 }
 .setting__figure--wrapper {
   display: flex;

@@ -35,9 +35,9 @@
     "progress": "Progress"
   },
   "date": {
-    "lastday": "Yesterday",
-    "nextday": "Tomorrow",
-    "time": "min sec",
+    "lastday": "[Yesterday]",
+    "nextday": "[Tomorrow]",
+    "time": "m[min] s[sec]",
     "hour": "Hour",
     "minute": "Minute",
     "second": "Second"
