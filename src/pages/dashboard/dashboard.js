@@ -4,8 +4,10 @@ import Vue from 'vue'
 import Router from '../../routers/dashboard'
 import App from './App.vue'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
+import DayJS from 'plugins/remote/dayjs'
 
 Vue.use(Vue2Scrollbar)
+Vue.use(DayJS)
 
 Vue.config.productionTip = false
 

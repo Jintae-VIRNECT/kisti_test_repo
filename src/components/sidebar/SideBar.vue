@@ -27,11 +27,11 @@ export default {
           path: '/filemanage',
           ic: require('@/assets/img/ic_chat_file_w.svg'),
         },
-        {
-          name: '녹화파일보기',
-          path: '/recordfiles',
-          ic: require('@/assets/img/ic_chat_video_w.svg'),
-        },
+        // {
+        //   name: '녹화파일보기',
+        //   path: '/recordfiles',
+        //   ic: require('@/assets/img/ic_chat_video_w.svg'),
+        // },
       ],
     }
   },
