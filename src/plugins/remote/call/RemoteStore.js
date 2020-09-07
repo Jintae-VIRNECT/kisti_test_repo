@@ -1,6 +1,9 @@
+import { ROLE } from 'configs/remote.config'
+
 const getDefaultState = () => {
   return {
     initing: true,
+    viewForce: false,
     mainView: {},
     participants: [
       // id: uuid,
@@ -10,11 +13,17 @@ const getDefaultState = () => {
       // path: path,
       // audio: stream.audioActive,
       // video: stream.videoActive,
+      // hasVideo: hasVideo,
       // status: 'good',
-      // resolution: { width, height }
       // roleType: 'LEADER' / 'EXPERT'
+      // deviceType: configs/device.config.DEVICE
       // permission: 'default' / 'noAR' / false / true
       // hasArFeature
+      // cameraStatus: 'default', // 'default': 초기세팅
+      // zoomLevel: 1, // zoom 레벨
+      // zoomMax: 5, // zoom 최대 레벨
+      // cameraStatus: 'default', // 'default': 초기세팅
+      // flash: 'default', // flash 제어
     ],
     chatList: [
       // {
@@ -122,16 +131,6 @@ const getDefaultState = () => {
       //   height: 600
       // }
     ],
-    isBackground: false,
-    zoomLevel: 1, // zoom 레벨
-    zoomMax: 5, // zoom 최대 레벨
-    cameraStatus: 'default', // 'default': 초기세팅
-    flash: false, // flash 제어
-    flashStatus: 'default', // 'default': 초기세팅
-
-    // user option
-    allowLocalRecord: true,
-    allowPointing: true,
   }
 }
 
@@ -139,46 +138,26 @@ const state = getDefaultState()
 
 const mutations = {
   // stream
-  setMainView(state, participantId) {
-    const idx = state.participants.findIndex(obj => obj.id === participantId)
+  setMainView(state, id) {
+    const idx = state.participants.findIndex(obj => obj.id === id)
     if (idx < 0) return
     state.mainView = state.participants[idx]
+  },
+  setMainViewForce(state, force) {
+    // if (!state.mainView || !state.mainView.id) return
+    state.viewForce = force
   },
   addStream(state, payload) {
     if (payload.me) {
       state.participants.splice(0, 0, payload)
-      if (payload.video) {
-        state.mainView = payload
-      }
-      state.initing = false
     } else {
       state.participants.push(payload)
-    }
-    if ((!state.mainView || !state.mainView.stream) && payload.video) {
-      state.mainView = payload
     }
   },
   setStream(state, payload) {
     const idx = state.participants.findIndex(obj => obj.id === payload.id)
     if (idx < 0) return
     state.participants[idx].stream = payload.stream
-  },
-  updateStreamInfo(state, payload) {
-    const idx = state.participants.findIndex(obj => obj.id === payload.id)
-    if (idx < 0) return
-
-    let updateSession = state.participants[idx]
-
-    for (let key in payload) {
-      if (
-        key in updateSession &&
-        payload[key] !== null &&
-        payload[key] !== 'id'
-      ) {
-        updateSession[key] = payload[key]
-      }
-    }
-    state.participants.splice(idx, 1, updateSession)
   },
   removeStream(state, connectionId) {
     const idx = state.participants.findIndex(
@@ -196,14 +175,10 @@ const mutations = {
         )
         if (pIdx > -1) {
           state.mainView = state.participants[pIdx]
+          state.viewForce = false
         } else {
           state.mainView = {}
-          state.isBackground = false
-          state.zoomLevel = 1 // zoom 레벨
-          state.zoomMax = 5 // zoom 최대 레벨
-          state.cameraStatus = 'default' // 'default': 초기세팅
-          state.flash = false // flash 제어
-          state.flashStatus = 'default' // 'default': 초기세팅
+          state.viewForce = false
         }
       }
       let participant = state.participants.splice(idx, 1)
@@ -213,6 +188,9 @@ const mutations = {
         date: new Date(),
         type: 'system',
       })
+      if (participant[0].roleType === ROLE.LEADER) {
+        state.viewForce = false
+      }
     }
     // resolution 데이터 제거
     const rIdx = state.resolutions.findIndex(
@@ -224,9 +202,15 @@ const mutations = {
 
   // device control
   deviceControl(state, params) {
+    const idx = state.participants.findIndex(
+      user => user.connectionId === params.connectionId,
+    )
+    if (idx < 0) return
     for (let key in params) {
-      if (key in state && params[key] !== null) {
-        state[key] = params[key]
+      if (key === 'connectionId') continue
+      state.participants[idx][key] = params[key]
+      if (state.participants[idx].id === state.mainView.id) {
+        state.mainView[key] = params[key]
       }
     }
   },
@@ -244,6 +228,15 @@ const mutations = {
         if (state.participants[idx].id === state.mainView.id) {
           state.mainView[key] = param[key]
         }
+      }
+    }
+    if (state.participants[idx].me === true && param['hasVideo'] === true) {
+      state.initing = false
+      if (
+        param['hasVideo'] === true &&
+        (!state.mainView || !state.mainView.id)
+      ) {
+        state.mainView = state.participants[idx]
       }
     }
   },
@@ -285,29 +278,25 @@ const actions = {
   addChat({ commit }, payload) {
     commit('addChat', payload)
   },
+  setMainView({ commit }, payload) {
+    if ('id' in payload) {
+      commit('setMainView', payload.id)
+    }
+    if ('force' in payload) {
+      commit('setMainViewForce', payload.force)
+    } else {
+      commit('setMainViewForce', false)
+    }
+  },
 }
 
 const getters = {
+  viewForce: state => state.viewForce,
   mainView: state => state.mainView,
   participants: state => state.participants,
   chatList: state => state.chatList,
   resolutions: state => state.resolutions,
   initing: state => state.initing,
-  deviceInfo: state => {
-    return {
-      zoomLevel: state.zoomLevel,
-      zoomMax: state.zoomMax,
-      cameraStatus: state.cameraStatus,
-      flash: state.flash,
-      flashStatus: state.flashStatus,
-    }
-  },
-  control: state => {
-    return {
-      localRecord: state.allowLocalRecord,
-      pointing: state.allowPointing,
-    }
-  },
 }
 
 export default {

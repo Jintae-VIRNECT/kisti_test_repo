@@ -45,7 +45,6 @@ import WorkspaceSetting from '../tab/WorkspaceSetting'
 import WorkspaceLicense from '../tab/WorkspaceLicense'
 import WorkspaceExpire from '../tab/WorkspaceExpire'
 import WorkspaceSelect from '../tab/WorkspaceSelect'
-import ListBadge from 'ListBadge'
 import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceTab',
@@ -55,7 +54,6 @@ export default {
     remote: WorkspaceRemote,
     user: WorkspaceUser,
     setting: WorkspaceSetting,
-    ListBadge,
     WorkspaceLicense,
     WorkspaceExpire,
     WorkspaceSelect,

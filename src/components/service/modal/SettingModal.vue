@@ -2,9 +2,9 @@
   <modal
     :visible.sync="visibleFlag"
     :showClose="true"
-    :width="'40.5714rem'"
+    width="auto"
     :beforeClose="beforeClose"
-    :class="'local-recsetting-modal'"
+    class="local-recsetting-modal"
   >
     <div class="rec-setting">
       <template v-if="isLeader">
@@ -196,7 +196,7 @@ export default {
       const options = localRecTime.map(time => {
         return {
           value: time,
-          text: time + this.$t('date.minute'),
+          text: `${time} ${this.$t('date.minute')}`,
         }
       })
       return options
@@ -205,7 +205,7 @@ export default {
       const options = localRecInterval.map(interval => {
         return {
           value: interval,
-          text: interval + this.$t('date.minute'),
+          text: `${interval} ${this.$t('date.minute')}`,
         }
       })
       return options
@@ -244,30 +244,44 @@ export default {
     },
     localRecording(flag) {
       if (!this.isCurrentView) return
-      this.setAllow({
-        localRecording: !!flag,
-      })
-      this.$localStorage.setAllow('localRecording', !!flag)
+      this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
+      this.$localStorage.setAllow('localRecord', !!flag)
     },
     pointing(flag) {
       if (!this.isCurrentView) return
-      this.setAllow({
-        pointing: !!flag,
-      })
+      this.$call.control(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
     },
     allowLocalRecord(val, bVal) {
       if (!this.isCurrentView) return
       if (val !== bVal) {
-        this.$call.control(CONTROL.LOCAL_RECORD, !!val)
-        this.showToast()
+        if (val === true) {
+          this.addChat({
+            status: 'record-allow',
+            type: 'system',
+          })
+        } else {
+          this.addChat({
+            status: 'record-not-allow',
+            type: 'system',
+          })
+        }
       }
     },
     allowPointing(val, bVal) {
       if (!this.isCurrentView) return
       if (val !== bVal) {
-        this.$call.control(CONTROL.POINTING, !!val)
-        this.showToast()
+        if (val === true) {
+          this.addChat({
+            status: 'pointing-allow',
+            type: 'system',
+          })
+        } else {
+          this.addChat({
+            status: 'pointing-not-allow',
+            type: 'system',
+          })
+        }
       }
     },
 
@@ -292,9 +306,9 @@ export default {
   methods: {
     ...mapActions([
       'setRecord',
-      'setAllow',
       'setScreenStream',
       'setLocalRecordTarget',
+      'addChat',
     ]),
     changeSetting(item, setting) {
       const param = {}
@@ -314,6 +328,7 @@ export default {
   },
 
   created() {
+    if (this.account.roleType !== ROLE.LEADER) return
     this.localRecording = this.allowLocalRecord
     this.pointing = this.allowPointing
   },

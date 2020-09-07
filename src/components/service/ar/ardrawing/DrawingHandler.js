@@ -1,4 +1,4 @@
-import { SIGNAL, AR_DRAWING } from 'configs/remote.config'
+import { SIGNAL, AR_DRAWING, AR_DRAWING_ACTION } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
 
 export default {
@@ -43,7 +43,7 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction(AR_DRAWING.LINE_DOWN, object)
+          this._sendAction(AR_DRAWING_ACTION.LINE_DOWN, object)
         }
       })
 
@@ -66,7 +66,7 @@ export default {
               left: mouse.x,
               top: mouse.y,
             }
-            this._sendAction(AR_DRAWING.LINE_MOVE, object)
+            this._sendAction(AR_DRAWING_ACTION.LINE_MOVE, object)
           }
 
           if (cursor) {
@@ -95,7 +95,7 @@ export default {
             left: mouse.x,
             top: mouse.y,
           }
-          this._sendAction(AR_DRAWING.LINE_UP, object)
+          this._sendAction(AR_DRAWING_ACTION.LINE_UP, object)
         }
       })
 

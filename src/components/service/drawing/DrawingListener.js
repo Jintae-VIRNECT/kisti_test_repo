@@ -1,7 +1,7 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { ahexToRGBA } from 'utils/color'
 import { getReceiveParams, calcPosition } from 'utils/drawing'
-import { SIGNAL, DRAWING } from 'configs/remote.config'
+import { SIGNAL, DRAWING, ROLE } from 'configs/remote.config'
 
 export default {
   data() {
@@ -13,7 +13,7 @@ export default {
   methods: {
     drawingListener(receive) {
       const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
+      if (this.account.roleType === ROLE.LEADER) return
       if (this.drawingView) {
         this.addReceiveObject(data)
       } else {
@@ -95,6 +95,7 @@ export default {
           scale: 1 / this.canvas.backgroundImage.scaleX,
           imgWidth: this.canvas.getWidth(),
           imgHeight: this.canvas.getHeight(),
+          sizeScale: this.origin.width / this.img.width,
         },
         this.origin.scale,
       )

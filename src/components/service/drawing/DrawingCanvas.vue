@@ -8,6 +8,7 @@
 import { mapGetters } from 'vuex'
 import { fabric } from 'plugins/remote/fabric.custom'
 import { ROLE, DRAWING } from 'configs/remote.config'
+import { ACTION } from 'configs/view.config'
 
 import { getCanvasSize, getSignalParams, getChunk } from 'utils/drawing'
 import DrawingWatch from './DrawingWatch'
@@ -67,6 +68,7 @@ export default {
         height: 0,
       },
       scaleWidth: 0,
+      scaleFont: 0,
     }
   },
   computed: {
@@ -74,9 +76,6 @@ export default {
     uuid() {
       return this.account.uuid
     },
-    // scaleWidth() {
-    //   return this.tools.lineWidth / this.origin.scale
-    // },
   },
   methods: {
     /* initialize */
@@ -108,6 +107,7 @@ export default {
           this.origin.width = canvasSize.width
           this.origin.height = canvasSize.height
           this.scaleWidth = this.tools.lineWidth
+          this.scaleFont = this.tools.fontSize
           this.origin.scale = 1
           canvas.renderAll.bind(canvas)()
           canvas.renderAll()
@@ -162,12 +162,23 @@ export default {
         this.canvas.dispose()
         this.canvas = null
       }
+      this.editingMode = false
 
       const canvas = new fabric.Canvas('drawingCanvas', {
         backgroundColor: '#000000',
         isDrawingMode:
-          !!this.viewAction && this.account.roleType === ROLE.LEADER,
-        freeDrawingCursor: 'default',
+          this.viewAction === ACTION.DRAWING_LINE &&
+          this.account.roleType === ROLE.LEADER,
+        freeDrawingCursor:
+          this.account.roleType === ROLE.LEADER &&
+          this.viewAction === ACTION.DRAWING_TEXT
+            ? 'text'
+            : 'default',
+        defaultCursor:
+          this.account.roleType === ROLE.LEADER &&
+          this.viewAction === ACTION.DRAWING_TEXT
+            ? 'text'
+            : 'default',
       })
 
       this.canvas = canvas
@@ -199,29 +210,9 @@ export default {
               imgName: this.file.oriName
                 ? this.file.oriName
                 : this.file.fileName,
-              width: bgImage.width,
-              height: bgImage.height,
+              image: this.file.img,
             }
-
-            const chunk = getChunk(this.file.img)
-
-            let type
-
-            for (let i = 0; i < chunk.length; i++) {
-              if (i === 0) {
-                type = DRAWING.FIRST_FRAME
-                if (chunk.length === 1) {
-                  type = DRAWING.LAST_FRAME
-                }
-              } else if (i === chunk.length - 1) {
-                type = DRAWING.LAST_FRAME
-              } else {
-                type = DRAWING.FRAME
-              }
-              params.chunk = chunk[i]
-
-              this.$call.drawing(type, params)
-            }
+            this.sendImage(params)
           }
 
           this.isInit = true
@@ -237,6 +228,38 @@ export default {
     },
 
     /**
+     * chunk 이미지 전송
+     * @param {String} imgId
+     * @param {String} imgName
+     * @param {String} image 이미지 dataURL
+     */
+    sendImage(params, target = null) {
+      const chunk = getChunk(params['image'])
+      delete params['image']
+
+      params.width = this.img.width
+      params.height = this.img.height
+
+      let type
+
+      for (let i = 0; i < chunk.length; i++) {
+        if (i === 0) {
+          type = DRAWING.FIRST_FRAME
+          if (chunk.length === 1) {
+            type = DRAWING.LAST_FRAME
+          }
+        } else if (i === chunk.length - 1) {
+          type = DRAWING.LAST_FRAME
+        } else {
+          type = DRAWING.FRAME
+        }
+        params.chunk = chunk[i]
+
+        this.$call.drawing(type, params, target)
+      }
+    },
+
+    /**
      * 드로잉 액션 상대기기 전송 내부 메소드
      * @param {String} type   ::액션 종류( getSignalParams 참고 )
      * @param {Object} object ::변화대상 드로잉객체
@@ -247,7 +270,7 @@ export default {
         color: this.tools.color,
         opacity: this.tools.opacity,
         width: this.scaleWidth,
-        size: this.tools.fontSize,
+        size: this.scaleFont,
         scale: 1 / this.canvas.backgroundImage.scaleX,
         imgWidth: this.canvas.getWidth(),
         imgHeight: this.canvas.getHeight(),
@@ -256,8 +279,6 @@ export default {
         posScale: this.canvas.getWidth() / this.origin.width,
         widthScale: this.origin.width / this.img.width,
       }
-      // console.log(state.imgWidth, state.imgHeight)
-      // console.log(this.canvas.getWidth(), this.origin.width)
       const param = getSignalParams(type, aId, object, state)
       param.imgId = this.file.id
 
@@ -300,11 +321,13 @@ export default {
         this.origin.width = canvasSize.width
         this.origin.height = canvasSize.height
       }
+      if (canvasSize.width === 0) return
 
       const scale = canvasSize.width / this.origin.width
 
       this.origin.scale = scale
       this.scaleWidth = this.tools.lineWidth / scale
+      this.scaleFont = this.tools.fontSize / scale
 
       canvas.setZoom(scale)
       cursor.setZoom(scale)
@@ -330,16 +353,23 @@ export default {
       }
       this.receivedList = []
     },
+    windowResize() {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.optimizeCanvasSize()
+        }, 100)
+      })
+    },
   },
   /* Lifecycles */
   beforeDestroy() {
-    window.removeEventListener('resize', this.optimizeCanvasSize)
+    window.removeEventListener('resize', this.windowResize)
   },
   beforeCreate() {
     this.$emit('loadingStart')
   },
   created() {
-    window.addEventListener('resize', this.optimizeCanvasSize)
+    window.addEventListener('resize', this.windowResize)
     if (this.file && this.file.id) {
       setTimeout(() => {
         this.initCanvas()

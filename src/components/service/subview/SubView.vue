@@ -18,9 +18,6 @@ export default {
     SubVideo,
     Chat,
   },
-  data() {
-    return {}
-  },
   computed: {
     ...mapGetters(['view', 'viewAction']),
     subView() {
@@ -31,11 +28,6 @@ export default {
       }
     },
   },
-  watch: {},
-  methods: {},
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 <style>

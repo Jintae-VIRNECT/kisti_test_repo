@@ -1,6 +1,6 @@
 <template>
   <section class="setting-section">
-    <div class="setting__title">
+    <div class="setting-section__title">
       {{ $t('workspace.setting_language_choice') }}
     </div>
     <div class="radio-custom">

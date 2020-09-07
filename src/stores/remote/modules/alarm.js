@@ -10,7 +10,7 @@ const mutations = {
     if (state.alarmList.length > 0) {
       id = state.alarmList[state.alarmList.length - 1].id
     }
-    state.alarmList.push({
+    state.alarmList.splice(0, 0, {
       ...alarm,
       id: id + 1,
     })

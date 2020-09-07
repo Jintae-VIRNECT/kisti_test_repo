@@ -35,7 +35,10 @@ import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import PDFJS from 'pdfjs-dist'
-PDFJS.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
+// PDFJS.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
+// PDFJS.GlobalWorkerOptions.workerSrc =
+//   'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.4.456/build/pdf.worker.js'
+PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker'
 export default {
   name: 'SharingPdf',
   mixins: [toastMixin, confirmMixin],
@@ -89,7 +92,9 @@ export default {
             this.thumbnail = e.target.result
           }
           this.$nextTick(() => {
-            fileReader.readAsDataURL(this.docPages[0].filedata)
+            if (this.docPages[0] && this.docPages[0].pageNum) {
+              fileReader.readAsDataURL(this.docPages[0].filedata)
+            }
           })
         }
       },
@@ -105,14 +110,11 @@ export default {
         return
       this.removePdfPage(this.fileInfo.id)
       PDFJS.getDocument(URL.createObjectURL(this.fileData))
-        .then(async pdfDocument => {
-          const updateData = Object.assign({}, this.fileInfo)
-          updateData.pages = new Array(pdfDocument.numPages)
-
+        .promise.then(async pdfDocument => {
           this.document = pdfDocument
           // 페이지 별 로드처리
           for (let index = 1; index <= pdfDocument.numPages; index++) {
-            await this.getPage(index, pdfDocument)
+            await this.getPage(index, pdfDocument.numPages)
           }
         })
         .catch(err => {
@@ -128,10 +130,10 @@ export default {
           }, 3000)
         })
     },
-    async getPage(index) {
+    async getPage(index, numPages) {
       const fileReader = await this.document.getPage(index)
       const canvas = document.createElement('canvas')
-      const viewport = fileReader.getViewport(1)
+      const viewport = fileReader.getViewport({ scale: 1.5 })
       const renderTask = fileReader.render({
         canvasContext: canvas.getContext('2d'),
         viewport,
@@ -143,10 +145,11 @@ export default {
       blobData.name = fileReader.pageNumber
       const docPage = {
         id: this.fileInfo.id,
+        total: numPages,
         pageNum: fileReader.pageNumber,
         filedata: blobData,
       }
-      await this.addPdfPage(docPage)
+      this.addPdfPage(docPage)
     },
     getCanvasBlob(canvas) {
       return new Promise(resolve => {

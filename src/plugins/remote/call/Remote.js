@@ -1,10 +1,22 @@
 import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
-import { SIGNAL, ROLE, CAMERA, FLASH } from 'configs/remote.config'
-import { DEVICE } from 'configs/device.config'
+import {
+  SIGNAL,
+  ROLE,
+  CAMERA,
+  FLASH,
+  VIDEO,
+  AR_FEATURE,
+} from 'configs/remote.config'
+import {
+  DEVICE,
+  FLASH as FLASH_STATUE,
+  CAMERA as CAMERA_STATUE,
+} from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
+import { getPermission, getUserMedia } from 'utils/deviceCheck'
 
 let OV
 
@@ -15,14 +27,45 @@ const _ = {
   subscribers: [],
   // 필요여부 체크할 것
   resolution: null,
+  currentZoomLevel: 1,
+  maxZoomLevel: 1,
   /**
    * join session
    * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
    */
   connect: async (configs, role) => {
+    // const publishVideo = role !== ROLE.LEADER
+    const devices = await navigator.mediaDevices.enumerateDevices()
+    const hasVideo =
+      devices.findIndex(device => device.kind.toLowerCase() === 'videoinput') >
+      -1
+    const hasAudio =
+      devices.findIndex(device => device.kind.toLowerCase() === 'audioinput') >
+      -1
+
+    if (!hasAudio && !hasVideo) {
+      throw 'nodevice'
+    }
     _.account = Store.getters['account']
     const settingInfo = Store.getters['settingInfo']
+    let audioSource =
+      devices.findIndex(device => device.deviceId === settingInfo.mic) > -1
+        ? settingInfo.mic
+        : undefined
+    let videoSource = hasVideo
+      ? devices.findIndex(device => device.deviceId === settingInfo.video) > -1
+        ? settingInfo.video
+        : undefined
+      : false
+
+    const permission = await getPermission()
+    if (permission === 'prompt') {
+      await getUserMedia(true, hasVideo)
+    } else if (permission !== true) {
+      throw permission
+    }
+
     try {
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -56,44 +99,56 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
-      const publishVideo = role === ROLE.WORKER
+      _.account.roleType = role
 
       const publishOptions = {
-        audioSource: settingInfo.mic ? settingInfo.mic : undefined, // TODO: setting value
-        videoSource: publishVideo
-          ? settingInfo.video
-            ? settingInfo.video
-            : undefined
-          : false, //screen ? 'screen' : undefined,  // TODO: setting value
+        audioSource: audioSource,
+        videoSource: videoSource,
         publishAudio: settingInfo.micOn,
-        publishVideo: publishVideo,
-        resolution: '1280x720', // TODO: setting value
+        publishVideo: settingInfo.videoOn,
+        resolution: settingInfo.quality,
+        // resolution: '1920x1080', // FHD
+        // resolution: '3840x2160', // 4K
         frameRate: 30,
         insertMode: 'PREPEND',
         mirror: false,
       }
       debug('call::publish::', publishOptions)
 
-      const publisher = OV.initPublisher('', publishOptions)
-      publisher.on('streamCreated', () => {
+      _.publisher = OV.initPublisher('', publishOptions)
+      _.publisher.on('streamCreated', () => {
         logger('room', 'publish success')
-        _.publisher = publisher
-        const mediaStream = publisher.stream.mediaStream
+        const mediaStream = _.publisher.stream.mediaStream
         Store.commit('updateParticipant', {
-          connectionId: publisher.stream.connection.connectionId,
+          connectionId: _.publisher.stream.connection.connectionId,
           stream: mediaStream,
+          hasVideo: _.publisher.stream.hasVideo,
+          video: _.publisher.stream.videoActive,
+          audio: _.publisher.stream.audioActive,
         })
-        if (publisher.properties.publishVideo) {
-          const streamSize = mediaStream.getVideoTracks()[0].getSettings()
+        if (_.publisher.stream.hasVideo) {
+          const track = mediaStream.getVideoTracks()[0]
+          const settings = track.getSettings()
+          const capability = track.getCapabilities()
+          logger('call', `resolution::${settings.width}X${settings.height}`)
+          debug('call::setting::', settings)
+          debug('call::capability::', capability)
+          if ('zoom' in capability) {
+            track.applyConstraints({
+              advanced: [{ zoom: 100 }],
+            })
+            _.maxZoomLevel = parseInt(capability.zoom.max / 100)
+          }
+          _.video(_.publisher.stream.videoActive)
           _.sendResolution({
-            width: streamSize.width,
-            height: streamSize.height,
+            width: settings.width,
+            height: settings.height,
             orientation: '',
           })
         }
       })
 
-      _.session.publish(publisher)
+      _.session.publish(_.publisher)
       return true
     } catch (err) {
       console.error(err)
@@ -101,33 +156,7 @@ const _ = {
     }
   },
   /**
-   * leave session
-   */
-  leave: () => {
-    try {
-      if (!_.session) return
-      _.session.disconnect()
-      _.account = null
-      _.session = null
-      _.publisher = null
-      _.subscribers = []
-      _.resolution = null
-      // 필요여부 체크할 것
-    } catch (err) {
-      throw err
-    }
-  },
-  /**
-   * leave session
-   */
-  clear: () => {
-    _.account = null
-    _.session = null
-    _.publisher = null
-    _.subscribers = []
-    _.resolution = null
-  },
-  /**
+   * @BROADCATE
    * chatting
    * @param {String} text
    */
@@ -136,12 +165,13 @@ const _ = {
     if (text.trim().length === 0) return
     _.session.signal({
       data: text.trim(),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.CHAT,
     })
   },
 
   /**
+   * @BROADCATE
    * chatting-file
    */
   sendFile: params => {
@@ -150,16 +180,17 @@ const _ = {
     //파일 관련 정보 전송하기
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.FILE,
     })
   },
 
   /**
+   * @TARGET
    * resolution
    * @param {Object} resolution = {width, height, orientation}
    */
-  sendResolution: resolution => {
+  sendResolution: (resolution, target = null) => {
     if (!_.session) return
     if (resolution) {
       _.resolution = resolution
@@ -175,130 +206,202 @@ const _ = {
     if (!resolution || !resolution.width) return
     _.session.signal({
       data: JSON.stringify(resolution),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.RESOLUTION,
     })
   },
   /**
+   * @BROADCATE
+   * main view change (only leader)
+   * @param {String} uuid
+   * @param {Boolean} force true / false
+   */
+  mainview: (uuid, force = false, target = null) => {
+    if (_.account.roleType !== ROLE.LEADER) return
+    if (!uuid) uuid = _.account.uuid
+    const params = {
+      id: uuid,
+      type: force ? VIDEO.SHARE : VIDEO.NORMAL,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.VIDEO,
+    })
+  },
+  /**
+   * @BROADCATE
    * pointing
    * @param {Object} params
-   *  = {to, from, color, opacity, width, posX, posY}
+   *  = {color, opacity, width, posX, posY}
    */
   pointing: params => {
     if (!_.session) return
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.POINTING,
     })
   },
   /**
+   * @BROADCATE
    * sharing drawing
    * @param {String} type = remote.config.DRAWING
    * @param {Object} params
    */
-  drawing: (type, params = {}) => {
+  drawing: (type, params = {}, target = null) => {
     params.type = type
-    params['from'] = _.account.uuid
-    params['to'] = []
     _.session.signal({
       type: SIGNAL.DRAWING,
-      to: _.session.connection,
+      to: target,
       data: JSON.stringify(params),
     })
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
-  control: (type, enable) => {
+  control: (type, enable, target = null) => {
     const params = {
       type,
       enable,
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.CONTROL,
     })
   },
   /**
+   * @BROADCATE
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  arFeature: type => {
+  startArFeature: targetId => {
     const params = {
-      type: type,
+      type: AR_FEATURE.START_AR_FEATURE,
+      targetUserId: targetId,
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: null,
       type: SIGNAL.AR_FEATURE,
     })
   },
   /**
+   * @BROADCATE
+   * AR feature status
+   * @param {String} type = remote.config.AR_FEATURE
+   */
+  stopArFeature: () => {
+    const params = {
+      type: AR_FEATURE.STOP_AR_FEATURE,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: null,
+      type: SIGNAL.AR_FEATURE,
+    })
+  },
+  /**
+   * @TARGET
    * AR pointing
    * @param {String} type = remote.config.AR_POINTING
    * @param {Object} params (문서참조)
    */
-  arPointing: (type, params = {}) => {
+  arPointing: (type, params = {}, target = null) => {
     params.type = type
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.AR_POINTING,
     })
   },
   /**
+   * @TARGET
    * request screen capture permission
    * @param {Object} params
    */
-  permission: (params = {}) => {
-    params['from'] = _.account.uuid
-    if (params.type !== 'response') params['type'] = 'request'
+  permission: (target = null) => {
+    const params = {
+      type: 'request',
+    }
     _.session.signal({
       type: SIGNAL.CAPTURE_PERMISSION,
-      to: _.session.connection,
+      to: target,
       data: JSON.stringify(params),
     })
   },
   /**
+   * @TARGET
    * AR drawing
    * @param {String} type = remote.config.AR_DRAWING
    * @param {Object} params (문서참조)
    */
-  arDrawing: (type, params = {}) => {
+  arDrawing: (type, params = {}, target = null) => {
     if (!_.session) return
     params.type = type
-    params['from'] = _.account.uuid
     _.session.signal({
       type: SIGNAL.AR_DRAWING,
-      to: _.session.connection,
+      to: target,
       data: JSON.stringify(params),
     })
   },
   /**
-   * @WORNNING no used
+   * @BROADCATE
+   * @TARGET
    * my video stream control
    */
-  streamOnOff: active => {
+  video: (active, target = null) => {
+    if (!_.publisher) return
+    if (!_.publisher.stream.hasVideo) return
     _.publisher.publishVideo(active)
-  },
-  /**
-   * my mic control
-   * @param {Boolean} active
-   */
-  mic: active => {
-    if (_.publisher) {
-      _.publisher.publishAudio(active)
-    }
+
     const params = {
-      isOn: active,
+      type: CAMERA.STATUS,
+      status: active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF,
+      currentZoomLevel: _.currentZoomLevel,
+      maxZoomLevel: _.maxZoomLevel,
     }
     try {
       _.session.signal({
         data: JSON.stringify(params),
-        to: _.session.connection,
+        to: target,
+        type: SIGNAL.CAMERA,
+      })
+    } catch (err) {
+      return false
+    }
+  },
+  /**
+   * @BROADCATE
+   * @TARGET
+   * my mic control
+   * @param {Boolean} active
+   */
+  mic: (active, target = null) => {
+    if (!_.publisher) return
+    _.publisher.publishAudio(active)
+
+    const params = {
+      isOn: active,
+    }
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', target)
+    // let custom = []
+    // for (let a of target) {
+    //   custom.push({
+    //     connectionId: a.connectionId,
+    //     // creationTime: a.creationTime,
+    //     // data: a.data,
+    //   })
+    // }
+    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', custom)
+    try {
+      _.session.signal({
+        data: JSON.stringify(params),
+        to: target,
         type: SIGNAL.MIC,
       })
     } catch (err) {
@@ -306,10 +409,12 @@ const _ = {
     }
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * my speaker control
    * @param {Boolean} active
    */
-  speaker: active => {
+  speaker: (active, target = null) => {
     for (let subscriber of _.subscribers) {
       subscriber.subscribeToAudio(active)
     }
@@ -319,7 +424,7 @@ const _ = {
     try {
       _.session.signal({
         data: JSON.stringify(params),
-        to: _.session.connection,
+        to: target,
         type: SIGNAL.SPEAKER,
       })
     } catch (err) {
@@ -327,38 +432,60 @@ const _ = {
     }
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * other user's flash control
    * @param {Boolean} active
    */
-  flash: active => {
+  flashStatus: (status = FLASH_STATUE.FLASH_NONE, target = null) => {
     const params = {
-      enable: active,
-      from: _.account.uuid,
-      type: FLASH.FLASH,
+      status: status,
+      type: FLASH.STATUS,
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.FLASH,
     })
   },
   /**
+   * @BROADCATE
+   * @TARGET
+   * other user's flash control
+   * @param {Boolean} active
+   * @param {String} id : target id
+   */
+  flash: (active, connectionId) => {
+    const params = {
+      enable: active,
+      type: FLASH.FLASH,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: [connectionId],
+      type: SIGNAL.FLASH,
+    })
+  },
+  /**
+   * @BROADCATE
+   * @TARGET
    * other user's camera control
    * @param {Boolean} active
    */
-  zoom: level => {
+  zoom: (level, target) => {
     const params = {
-      from: _.account.uuid,
       type: CAMERA.ZOOM,
       level: level,
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: _.session.connection,
+      to: target,
       type: SIGNAL.CAMERA,
     })
   },
   /**
+   * @BROADCATE
+   * @TARGET
    * user's speaker mute
    * @param {String} connectionId
    * @param {Boolean} mute
@@ -401,6 +528,26 @@ const _ = {
     } else {
       return {}
     }
+  },
+  /**
+   * leave session
+   */
+  leave: () => {
+    if (!_.session) return
+    _.session.disconnect()
+    _.clear()
+  },
+  /**
+   * leave session
+   */
+  clear: () => {
+    _.account = null
+    _.session = null
+    _.publisher = null
+    _.subscribers = []
+    _.resolution = null
+    _.currentZoomLevel = 1
+    _.maxZoomLevel = 1
   },
   /**
    * append session signal listener

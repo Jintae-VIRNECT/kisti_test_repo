@@ -66,17 +66,20 @@
 }
 .profile__leader {
   position: relative;
+  display: inline-block;
   width: fit-content;
-  margin: 0.357em auto 1rem;
+  max-width: 100%;
+  margin: 0.357rem auto 1rem;
   margin-bottom: 0.643rem;
   color: $color_text_sub;
+  @include ellipsis();
   &:before {
-    position: absolute;
-    top: 2px;
-    right: 105%;
+    right: -0.5rem;
+    display: inline-block;
     width: 1.429rem;
     height: 1.429rem;
     background: url(~assets/image/ic_leader.svg) 50%/1.429rem no-repeat;
+    transform: translateY(0.357rem);
     content: "";
   }
 }

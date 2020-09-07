@@ -1,5 +1,6 @@
 import { Toasted as T } from './js/toast'
 import ToastComponent from './toast.vue'
+import './sass/toast.scss'
 
 const Toasted = {
   install(Vue, options) {

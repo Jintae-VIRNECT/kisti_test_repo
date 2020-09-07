@@ -5,19 +5,19 @@ import http from 'api/gateway'
  * @query {String} sessionId
  * @query {String} workspaceId
  * @param {String} leaderId
- * @param {Array[Object]} participants { id, email }
+ * @param {Array[String]} participantIds
  */
 export const inviteRoom = async ({
   sessionId,
   workspaceId,
   leaderId,
-  participants,
+  participantIds = [],
 }) => {
   const returnVal = await http('INVITE_ROOM', {
     sessionId,
     workspaceId,
     leaderId,
-    participants,
+    participantIds,
   })
 
   return returnVal
@@ -37,6 +37,7 @@ export const getMember = async function({
   size = 10,
   sort = 'email,desc',
   workspaceId,
+  userId,
 }) {
   const returnVal = await http('MEMBER_LIST', {
     filter,
@@ -44,12 +45,13 @@ export const getMember = async function({
     size,
     sort,
     workspaceId,
+    userId,
   })
   return returnVal
 }
 
 /**
- * 멤버 리스트 조회
+ * 멤버 내보내기
  * @query {String} sessionId
  * @query {String} workspaceId
  * @param {String} leaderId
@@ -66,6 +68,55 @@ export const kickMember = async function({
     workspaceId,
     leaderId,
     participantId,
+  })
+  return returnVal
+}
+
+/**
+ * 통화중 신호 전송
+ * @query {String} workspaceId
+ * @param {String} sessionId
+ * @param {Array[String]} to
+ * @param {String} type
+ * @param {String} data
+ */
+export const sendSignal = async function({ sessionId, to, type, data }) {
+  const returnVal = await http('SEND_SIGNAL', {
+    sessionId,
+    to,
+    type,
+    data: JSON.stringify(data),
+  })
+  return returnVal
+}
+
+/**
+ * 초대 가능 멤버 리스트
+ * @param {String} workspaceId
+ * @param {String} sessionId
+ * @param {String} userId
+ * @param {String} filter
+ * @param {String} page
+ * @param {String} size
+ * @param {String} sort
+ */
+export const invitableList = async function({
+  filter = '',
+  page = 0,
+  size = 50,
+  sort = 'role,desc',
+  workspaceId,
+  sessionId,
+  userId,
+}) {
+  const returnVal = await http('INVITABLE_MEMBER_LIST', {
+    filter,
+    page,
+    size,
+    sort,
+    workspaceId,
+    sessionId,
+    userId,
   })
   return returnVal
 }

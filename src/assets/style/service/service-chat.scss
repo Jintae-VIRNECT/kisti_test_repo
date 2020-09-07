@@ -130,6 +130,23 @@
     padding-bottom: 0;
   }
 }
+.chat-list__empty {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+.chat-list__empty-inner {
+  margin: auto;
+  text-align: center;
+  > img {
+    width: 7.143em;
+    height: 7.143em;
+  }
+  > p {
+    color: #a7a7a7;
+    font-size: 1.143em;
+  }
+}
 
 .chat-msglist {
   position: relative;
@@ -225,6 +242,8 @@
     }
     .chat-item__body--chatbox {
       position: relative;
+      width: fit-content;
+      max-width: 100%;
       padding: 0.5rem 0.929rem;
       line-height: 1.57;
       word-break: break-word;
@@ -238,6 +257,7 @@
   &.me {
     .chat-item__body--chatbox {
       width: fit-content;
+      max-width: 100%;
       margin-left: auto;
       padding: 0.786rem 0.929rem;
       line-height: 1.57;
@@ -271,6 +291,9 @@
   &.alarm::before {
     background-image: url(~assets/image/call/ic_chat_alarm.svg);
   }
+  &.sharing::before {
+    background-image: url(~assets/image/call/ic_chat_sharing.svg);
+  }
   &.people::before {
     background-image: url(~assets/image/call/ic_chat_ppl.svg);
   }
@@ -283,8 +306,14 @@
   &.cancel::before {
     background-image: url(~assets/image/call/ic_chat_filecancel.svg);
   }
+  &.pointing::before {
+    background-image: url(~assets/image/call/ic_chat_pointing.svg);
+  }
+  &.record::before {
+    background-image: url(~assets/image/call/ic_chat_local_record.svg);
+  }
 
-  .emphasize {
+  > em {
     display: inline-block;
     max-width: calc(100% - 1.429rem);
     overflow: hidden;
@@ -359,14 +388,42 @@
 }
 
 .chat-item__file--name {
-  width: 9.7143rem;
+  position: relative;
+  width: 9.714rem;
   overflow: hidden;
   color: rgba($color_darkgray_1000, 0.78);
   font-weight: 500;
   font-size: 1.0714rem;
   white-space: nowrap;
+  text-indent: 2.071rem;
   text-overflow: ellipsis;
-  background: url() center/100% no-repeat;
+  &:before {
+    position: absolute;
+    left: 0;
+    width: 1.7143rem;
+    height: 1.7143rem;
+    margin-right: 0.4286rem;
+    background: center/100% no-repeat;
+    content: "";
+  }
+  &.pdf:before {
+    background-image: url(~assets/image/call/chat_ic_pdf_b.svg);
+  }
+  &.txt:before {
+    background-image: url(~assets/image/call/chat_ic_file_b.svg);
+  }
+  &.jpg:before {
+    background-image: url(~assets/image/call/chat_ic_jpgpng_b.svg);
+  }
+  &.png:before {
+    background-image: url(~assets/image/call/chat_ic_jpgpng_b.svg);
+  }
+  &.mp3:before {
+    background-image: url(~assets/image/call/chat_ic_mp3_b.svg);
+  }
+  &.video:before {
+    background-image: url(~assets/image/call/chat_ic_video_b.svg);
+  }
 }
 
 .chat-item__file--size {
@@ -487,18 +544,17 @@
   right: 1.286rem;
   padding: 0.214rem 0.857rem;
   color: $color_text_sub;
-  font-size: 1.071rem;
   background-color: $color_primary;
   border-radius: 2px;
   transition: background-color 0.2s;
 
+  &:focus {
+    background-color: $color_primary;
+  }
   &:hover {
     background-color: $color_primary_700;
   }
   &:active {
-    background-color: $color_primary_dark;
-  }
-  &:focus {
     background-color: $color_primary_dark;
   }
 }
@@ -511,37 +567,59 @@
   width: 100%;
   height: 5.5714rem;
   padding: 1.1429rem 1.4286rem 1.1429rem 1.7857rem;
+  border-top: solid 1px transparent;
 
   &:hover {
     background: rgba(#555559, 0.2);
   }
+  &:after {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.4286rem;
+    height: 1.4286rem;
+    border: 1px solid #979797;
+    border-radius: 50%;
+    content: "";
+  }
   &.active {
     background: rgba(#555559, 0.5);
+    border-color: rgba($color_chat_bg_default, 0.3);
+    &:after {
+      background: url(~assets/image/call/chat/ic_chat_check.svg) center/70%
+        no-repeat;
+      background-color: $color_primary;
+      border: none;
+    }
   }
   &.invalid {
     pointer-events: none;
+    &:after {
+      display: none;
+    }
     // &:hover {
     //   background-color: unset;
     // }
   }
 }
-.chat-file-item--wrapper {
+.chat-file-item__wrapper {
   display: flex;
 }
 
-.chat-file-item--icon {
+.chat-file-item__icon {
   width: 1.7143rem;
   height: 1.7143rem;
-  margin: auto 0.8571rem auto 0;
+  margin: 0 0.8571rem auto 0;
 }
 
-.chat-file-item__center--file-name {
+.chat-file-item__name {
   width: 16.4286rem;
-  height: 1.5rem;
+  height: 1.7rem;
   overflow: hidden;
   color: rgba(#ffffff, 0.78);
   font-weight: 500;
   font-size: 1.1429rem;
+  line-height: 1.5rem;
   white-space: nowrap;
   text-align: left;
   text-overflow: ellipsis;
@@ -553,36 +631,20 @@
   text-align: left;
 }
 
-.chat-file-item__sub--valid-text {
-  margin: 0px 0.2857rem 0px 0px;
+.chat-file-item__valid {
   color: $color_primary_500;
-  font-size: 0.9286rem;
+  font-size: 0.929rem;
   text-align: left;
 
   &.invalid {
     color: #e34850;
   }
 
-  & > span {
+  & > em {
+    margin-left: 0.429rem;
     color: rgba(#ffffff, 0.78);
-    font-size: 0.9286rem;
+    font-size: 0.929rem;
     opacity: 0.6;
-  }
-}
-
-.chat-file-item--check-outer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.4286rem;
-  height: 1.4286rem;
-  border: 1px solid #979797;
-  border-radius: 50%;
-  &.active {
-    background: url(~assets/image/call/chat/ic_chat_check.svg) center/100%
-      no-repeat;
-    background-color: $color_primary;
-    border: none;
   }
 }
 
@@ -598,7 +660,7 @@
 .chat-down__bar {
   display: flex;
   height: 4.286rem;
-  padding: 1.071rem 1.286rem 1.071rem 0.857rem;
+  padding: 1.071rem 1.286rem 1.071rem 1.429rem;
   border-top: solid 1px $color_chat_bg_default;
 }
 
@@ -622,20 +684,19 @@
 .chat-down__bar--button {
   position: absolute;
   right: 1.286rem;
-  padding: 0.357rem 0.857rem;
+  padding: 0.214rem 0.857rem;
   color: $color_text_sub;
-  font-size: 1.071rem;
   background-color: $color_primary;
   border-radius: 2px;
   transition: background-color 0.2s;
 
+  &:focus {
+    background-color: $color_primary;
+  }
   &:hover {
     background-color: $color_primary_700;
   }
   &:active {
-    background-color: $color_primary_dark;
-  }
-  &:focus {
     background-color: $color_primary_dark;
   }
 }

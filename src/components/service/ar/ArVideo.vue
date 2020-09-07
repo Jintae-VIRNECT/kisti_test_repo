@@ -5,7 +5,8 @@
         class="ar-video__stream"
         ref="arVideo"
         :srcObject.prop="mainView.stream"
-        @play="optimizeVideoSize"
+        @play="mediaPlay"
+        @loadeddata="optimizeVideoSize"
         :muted="!speaker"
         playsinline
         loop
@@ -62,6 +63,7 @@ export default {
         width: 0,
         height: 0,
       },
+      loaded: false,
     }
   },
   computed: {
@@ -92,6 +94,25 @@ export default {
     },
   },
   watch: {
+    mainView: {
+      deep: true,
+      handler(view, oldView) {
+        if (!view.id) {
+          this.loaded = false
+          const videoBox = this.$el.querySelector('.main-video__box')
+          if (videoBox) {
+            videoBox.style.height = '100%'
+            videoBox.style.width = '100%'
+          }
+        }
+        if (view.id && oldView.id && view.id !== oldView.id) {
+          this.$refs['arVideo'].pause()
+          this.$nextTick(() => {
+            this.$refs['arVideo'].play()
+          })
+        }
+      },
+    },
     view(val) {
       if (val === VIEW.AR) {
         this.$refs['arVideo'].play()
@@ -119,7 +140,15 @@ export default {
   methods: {
     ...mapActions(['showArImage', 'setAction']),
     setArArea() {
-      this.$call.arDrawing(AR_DRAWING.FRAME_REQUEST)
+      this.$call.arDrawing(AR_DRAWING.FRAME_REQUEST, {}, [
+        this.mainView.connectionId,
+      ])
+    },
+    mediaPlay() {
+      this.$nextTick(() => {
+        this.optimizeVideoSize()
+        this.loaded = false
+      })
     },
     optimizeVideoSize() {
       if (this.view !== VIEW.AR) return
@@ -127,6 +156,11 @@ export default {
       const videoBox = this.$el.querySelector('.ar-video__box')
       const video = this.$refs['arVideo']
       if (this.resolution.width === 0 || this.resolution.height === 0) return
+      this.debug(
+        'current resolution: ',
+        this.resolution.width,
+        this.resolution.height,
+      )
 
       let maxWidth = mainWrapper.offsetWidth
       let maxHeight = mainWrapper.offsetHeight
@@ -138,23 +172,29 @@ export default {
         // height에 맞춤
         videoBox.style.height = maxHeight + 'px'
         videoBox.style.width = maxHeight * scale + 'px'
-        video.style.height = maxHeight + 'px'
-        video.style.width = maxHeight * scale + 'px'
+        // video.style.height = maxHeight + 'px'
+        // video.style.width = maxHeight * scale + 'px'
       } else {
         // width에 맞춤
         videoBox.style.height = maxWidth / scale + 'px'
         videoBox.style.width = maxWidth + 'px'
-        video.style.height = maxWidth / scale + 'px'
-        video.style.width = maxWidth + 'px'
+        // video.style.height = maxWidth / scale + 'px'
+        // video.style.width = maxWidth + 'px'
       }
       this.videoSize.width = video.offsetWidth
       this.videoSize.height = video.offsetHeight
+      this.debug('calc size: ', this.videoSize.width, this.videoSize.height)
+    },
+    windowResize() {
+      setTimeout(() => {
+        this.optimizeVideoSize()
+      }, 100)
     },
   },
 
   /* Lifecycles */
   created() {
-    window.addEventListener('resize', this.optimizeVideoSize)
+    window.addEventListener('resize', this.windowResize)
   },
   mounted() {
     if (this.resolution && this.resolution.width > 0) {
@@ -162,7 +202,7 @@ export default {
     }
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.optimizeVideoSize)
+    window.removeEventListener('resize', this.windowResize)
   },
 }
 </script>

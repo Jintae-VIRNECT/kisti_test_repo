@@ -5,7 +5,7 @@
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
     >
-      <!-- <div class="participant-video__stream" v-if="participant.video">
+      <div class="participant-video__stream" v-if="participant.hasVideo">
         <video
           :srcObject.prop="participant.stream"
           autoplay
@@ -13,16 +13,8 @@
           loop
           :muted="isMe"
         ></video>
-      </div> -->
-      <div class="participant-video__profile">
-        <audio
-          v-if="!participant.me"
-          :srcObject.prop="participant.stream"
-          autoplay
-          playsinline
-          loop
-          :muted="isMe && mainView.uuid === participant.uuid"
-        ></audio>
+      </div>
+      <div class="participant-video__profile" v-else>
         <img
           v-if="participant.path && participant.path !== 'default'"
           class="participant-video__profile-background"
@@ -38,42 +30,54 @@
           }"
           :image="participant.path"
         ></profile>
+        <audio
+          v-if="!participant.me"
+          :srcObject.prop="participant.stream"
+          autoplay
+          playsinline
+          loop
+          :muted="isMe || mainView.id === participant.id"
+        ></audio>
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
       <div class="participant-video__status">
-        <!--
-          TODO: beta check
         <div class="participant-video__network" :class="participant.status">
-          <div
+          <!-- <div
             class="participant-video__network-hover"
             :class="{ hover: hover }"
             :style="statusHover"
           >
             <span :class="participant.status"
-              >신호 세기 : {{ participant.status | networkStatus }}</span
+              >{{ $t('service.participant_network') }} :
+              {{ participant.status | networkStatus }}</span
             >
-          </div>
+          </div> -->
         </div>
-        -->
         <span class="participant-video__leader" v-if="isLeader">
           Leader
         </span>
       </div>
-      <div class="participant-video__device" v-if="!isMe">
+      <div class="participant-video__device">
         <img
-          :src="
-            participant.audio
-              ? require('assets/image/ic_mic_on.svg')
-              : require('assets/image/ic_mic_off.svg')
-          "
+          v-if="participant.hasVideo && !participant.video"
+          src="~assets/image/call/ic_video_off.svg"
         />
-        <img
-          :src="
-            participant.speaker
-              ? require('assets/image/ic_volume_on.svg')
-              : require('assets/image/ic_volume_off.svg')
-          "
-        />
+        <template v-if="!isMe">
+          <img
+            :src="
+              participant.audio
+                ? require('assets/image/ic_mic_on.svg')
+                : require('assets/image/ic_mic_off.svg')
+            "
+          />
+          <img
+            :src="
+              participant.speaker
+                ? require('assets/image/ic_volume_on.svg')
+                : require('assets/image/ic_volume_off.svg')
+            "
+          />
+        </template>
       </div>
       <div class="participant-video__name" :class="{ mine: isMe }">
         <div class="participant-video__name-text">
@@ -100,14 +104,15 @@
           <ul class="video-popover">
             <li>
               <button class="video-pop__button" @click="mute">
-                {{ $t('service.participant_mute') }}
+                {{
+                  participant.mute
+                    ? $t('service.participant_mute_cancel')
+                    : $t('service.participant_mute')
+                }}
               </button>
             </li>
             <li v-if="iamLeader">
-              <button
-                class="video-pop__button"
-                @click="disconnectUser(account.nickname)"
-              >
+              <button class="video-pop__button" @click="kickout">
                 {{ $t('service.participant_kick') }}
               </button>
             </li>
@@ -119,16 +124,19 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
+import { CAMERA } from 'configs/device.config'
+import toastMixin from 'mixins/toast'
+import confirmMixin from 'mixins/confirm'
+
 import Profile from 'Profile'
 import Popover from 'Popover'
-import confirmMixin from 'mixins/confirm'
-import { kickMember } from 'api/service'
 
 export default {
   name: 'ParticipantVideo',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, toastMixin],
   components: {
     Profile,
     Popover,
@@ -144,7 +152,16 @@ export default {
     participant: Object,
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker', 'roomInfo']),
+    ...mapGetters(['mainView', 'speaker', 'roomInfo', 'viewForce', 'view']),
+    showProfile() {
+      if (!this.participant.hasVideo) {
+        return true
+      }
+      if (this.participant.hasVideo && !this.participant.video) {
+        return true
+      }
+      return false
+    },
     isMe() {
       if (this.participant.id === this.account.uuid) {
         return true
@@ -169,6 +186,18 @@ export default {
         return false
       }
     },
+    cameraStatus() {
+      if (this.participant.hasVideo) {
+        if (this.participant.cameraStatus === CAMERA.CAMERA_OFF) {
+          return 'off'
+        } else if (this.participant.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
+          return 'background'
+        }
+        return 'on'
+      } else {
+        return -1
+      }
+    },
   },
   watch: {
     speaker(val) {
@@ -181,9 +210,33 @@ export default {
       }
     },
     participant() {},
+    cameraStatus(status, oldStatus) {
+      if (status === -1 || oldStatus === -1) return
+      if (status === oldStatus) return
+      if (status === 'off') {
+        if (oldStatus === 'background') return
+        this.addChat({
+          name: this.participant.nickname,
+          status: 'stream-stop',
+          type: 'system',
+        })
+      } else if (status === 'background') {
+        this.addChat({
+          name: this.participant.nickname,
+          status: 'stream-background',
+          type: 'system',
+        })
+      } else if (status === 'on') {
+        this.addChat({
+          name: this.participant.nickname,
+          status: 'stream-start',
+          type: 'system',
+        })
+      }
+    },
   },
   methods: {
-    ...mapMutations(['setMainView']),
+    ...mapActions(['setMainView', 'addChat']),
     hoverContents() {
       const status = this.$el.querySelector('.participant-video__network')
       if (!status) return
@@ -208,8 +261,82 @@ export default {
       this.btnActive = val
     },
     changeMain() {
-      if (!this.participant.video) return
-      this.setMainView(this.participant.id)
+      if (!this.participant.hasVideo) return
+      if (this.account.roleType === ROLE.LEADER) {
+        if (this.view === VIEW.AR) {
+          if (this.participant.hasArFeature === false) {
+            this.toastDefault(this.$t('service.chat_ar_unsupport'))
+            return
+          }
+          this.toastDefault(this.$t('service.participant_ar_cannot_change'))
+          return
+          // this.confirmCancel(
+          //  this.$t('service.participant_ar_change_alarm'),
+          //   { text: this.$t('button.confirm'), action: this.changeAr },
+          //   {
+          //     text: this.$t('button.cancel'),
+          //   },
+          // )
+          // return
+        }
+        this.$emit('selectMain')
+        // this.confirmCancel(
+        //   this.$t('service.participant_sharing'),
+        //   { text: this.$t('button.stream_sharing'), action: this.forceMain },
+        //   {
+        //     text: this.$t('button.stream_normal'),
+        //     action: this.normalMain,
+        //     backdrop: true,
+        //   },
+        // )
+      } else {
+        if (this.view === VIEW.AR) {
+          this.toastDefault(this.$t('service.participant_ar_cannot_change'))
+          return
+        }
+        if (this.viewForce === true) {
+          this.toastDefault(
+            this.$t('service.participant_sharing_cannot_change'),
+          )
+          return
+        }
+        this.setMainView({ id: this.participant.id })
+      }
+    },
+    changeAr() {
+      // 참가자 ar 가능 여부 체크
+      // 가능하면 퍼미션 체크
+      // 퍼미션 허용이면 전체 사용자 메인뷰 변경
+      // 신규 ar 공유 진행
+      if (this.participant.permission === true) {
+        // 메인뷰 변경
+
+        this.forceMain()
+      } else {
+        // 퍼미션 요청
+        this.$eventBus.$on('startAr', this.getPermission)
+        this.$call.permission([this.participant.connectionId])
+        // 리턴받는 퍼미션은 HeaderServiceLnb에서 처리
+      }
+    },
+    getPermission(permission) {
+      if (permission === true) {
+        // this.forceMain()
+        // this.$call.stopArFeature()
+        this.$nextTick(() => {
+          this.forceMain()
+          // this.$call.startArFeature(this.participant.id)
+        })
+      } else {
+        this.toastDefault(this.$t('service.toast_refused_ar'))
+        this.addChat({
+          status: 'ar-deny',
+          type: 'system',
+        })
+      }
+      this.$nextTick(() => {
+        this.$eventBus.$off('startAr', this.getPermission)
+      })
     },
     profileImageError(event) {
       event.target.style.display = 'none'
@@ -221,28 +348,22 @@ export default {
         this.$eventBus.$emit('popover:close')
       })
     },
-    disconnectUser(nickName) {
+    kickout() {
       this.$eventBus.$emit('popover:close')
       this.serviceConfirmCancel(
-        this.$t('service.participant_kick_confirm', { name: nickName }),
+        this.$t('service.participant_kick_confirm', {
+          name: this.participant.nickname,
+        }),
         {
           text: this.$t('button.confirm'),
-          action: this.kick,
+          action: () => {
+            this.$emit('kickout')
+          },
         },
         {
           text: this.$t('button.cancel'),
         },
       )
-    },
-    async kick() {
-      const params = {
-        sessionId: this.roomInfo.sessionId,
-        workspaceId: this.workspace.uuid,
-        leaderId: this.account.uuid,
-        participantId: this.participant.id,
-      }
-      await kickMember(params)
-      // this.$call.disconnect(this.participant.connectionId)
     },
   },
 }

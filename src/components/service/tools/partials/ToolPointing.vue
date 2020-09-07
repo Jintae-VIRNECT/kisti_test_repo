@@ -23,15 +23,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['control']),
+    ...mapGetters(['allowPointing', 'viewForce']),
     canPointing() {
       if (this.disabled) {
+        return false
+      }
+      if (!this.viewForce) {
         return false
       }
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
-      if (this.control.pointing) {
+      if (this.allowPointing) {
         return true
       } else {
         return false
@@ -40,6 +43,10 @@ export default {
   },
   methods: {
     pointing() {
+      if (!this.viewForce) {
+        this.toastDefault(this.$t('service.toast_no_sharing'))
+        return
+      }
       if (!this.canPointing) {
         // TODO: MESSAGE
         this.toastDefault(this.$t('service.tool_pointing_block'))

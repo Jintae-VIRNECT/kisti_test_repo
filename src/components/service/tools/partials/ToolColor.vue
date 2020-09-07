@@ -15,7 +15,7 @@
       <div v-if="status" class="picker--container" @click.stop>
         <tool-picker
           type="list"
-          :title="$t('service.controller_linecolor_label')"
+          :title="$t('service.tool_color')"
           :list="colorchip"
           :current="pick"
           class="line_color"
@@ -33,7 +33,7 @@
         <tool-picker
           v-if="useOpacity"
           type="range"
-          :title="$t('service.controller_opacity_label')"
+          :title="$t('service.tool_opacity')"
           :step="20"
           :current="opacity * 100"
           :text="opacity * 100 + '%'"

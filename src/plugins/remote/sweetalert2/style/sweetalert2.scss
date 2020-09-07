@@ -267,6 +267,7 @@ body {
   // font-size: $swal2-font-size;
   background: $swal2-background;
   border-radius: $swal2-border-radius;
+  box-shadow: 2px 2px 5px 2px rgba(#101011, 0.25);
 
   &:focus {
     outline: none;
@@ -288,13 +289,13 @@ body {
     width: 100%;
     max-width: 100%;
     margin: $swal2-title-margin;
-    padding: 24px 28px;
+    padding: 1.714rem 2rem;
     color: $swal2-title-color;
     font-weight: 600;
     font-size: $swal2-title-font-size;
     text-transform: none;
     word-wrap: break-word;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #454548;
   }
 
   .swal2-actions {
@@ -516,6 +517,9 @@ body {
       font-size: 1.286em;
       white-space: pre-line;
       text-align: center;
+      > em {
+        color: #6bb4f9;
+      }
     }
   }
 
@@ -761,6 +765,9 @@ body {
 }
 
 .swal2-modal.service-confirm {
+  > .swal2-header .swal2-title {
+    color: #fff;
+  }
   > .swal2-content {
     padding: 2em;
     > div {

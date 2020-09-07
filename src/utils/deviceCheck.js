@@ -12,14 +12,25 @@ export const getPermission = async () => {
     }
 
     if (cameraState.state === 'prompt' || micState.state === 'prompt') {
-      await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: true,
-      })
+      return 'prompt'
     }
     return true
   } catch (err) {
+    if (typeof err === 'object') {
+      return err.message
+    }
+    return err
+  }
+}
+
+export const getUserMedia = async (audio, video) => {
+  try {
+    return await navigator.mediaDevices.getUserMedia({ audio, video })
+  } catch (err) {
     console.error(err)
-    return false
+    if (typeof err === 'object') {
+      return err.name
+    }
+    return err
   }
 }

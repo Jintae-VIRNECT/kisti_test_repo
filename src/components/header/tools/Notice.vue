@@ -11,10 +11,9 @@
       :description="$t('common.notice')"
       size="2.429rem"
       :toggle="false"
-      :active="false"
+      :active="active"
       :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
       @action="notice"
-      @click.native.stop="clickNotice"
     ></toggle-button>
 
     <div>
@@ -101,15 +100,16 @@
         <span>{{ $t('alarm.saved_duration') }}</span>
       </div>
     </div>
-    <!-- <audio preload="auto" ref="noticeAudio">
+    <audio preload="auto" ref="noticeAudio">
       <source src="~assets/media/end.mp3" />
-    </audio> -->
+    </audio>
   </popover>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { EVENT } from 'configs/push.config'
+import { ROLE } from 'configs/remote.config'
 import { sendPush } from 'api/common/message'
 import { getRoomInfo } from 'api/workspace'
 
@@ -137,6 +137,7 @@ export default {
     return {
       onPush: true,
       key: '',
+      active: false,
       // alarmList: [],
     }
   },
@@ -144,22 +145,25 @@ export default {
     ...mapGetters(['alarmList']),
   },
   watch: {
-    onPush(push) {
-      if (push) {
-        this.$localStorage.setItem('push', 'true')
-      } else {
-        this.$localStorage.setItem('push', 'false')
+    // onPush(push) {
+    //   if (push) {
+    //     this.$localStorage.setItem('push', 'true')
+    //   } else {
+    //     this.$localStorage.setItem('push', 'false')
+    //   }
+    // },
+    workspace(val, oldVal) {
+      if (val.uuid && !oldVal.uuid) {
+        this.pushInit()
       }
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo', 'addAlarm', 'removeAlarm', 'updateAlarm']),
-    clickNotice() {
-      this.checkBeta()
-    },
+    ...mapActions(['addAlarm', 'removeAlarm', 'updateAlarm']),
     notice() {
+      this.active = false
       if (this.onPush) return
-      console.log('notice list refresh logic')
+      // console.log('notice list refresh logic')
     },
     async alarmListener(listen) {
       // if (!this.onPush) return
@@ -179,15 +183,16 @@ export default {
             }),
             image: body.contents.profile,
             description: this.$t('alarm.invite_request'),
-            roomSessionId: body.contents.roomSessionId,
+            sessionId: body.contents.sessionId,
             userId: body.userId,
             accept: 'none',
             date: new Date(),
           })
           if (!this.onPush) return
+          this.$refs['noticeAudio'].play()
           this.alarmInvite(
             body.contents,
-            () => this.acceptInvite(body.contents.roomSessionId, body.userId),
+            () => this.acceptInvite(body.contents.sessionId, body.userId),
             () => this.inviteDenied(body.userId),
           )
           break
@@ -227,7 +232,10 @@ export default {
             this.$router.push({ name: 'workspace' })
           }, 60000)
           break
+        default:
+          return
       }
+      this.active = true
     },
     remove(alarm) {
       this.removeAlarm(alarm.id)
@@ -251,9 +259,9 @@ export default {
         id: alarm.id,
         accept: 'accept',
       })
-      this.acceptInvite(alarm.roomSessionId, alarm.userId)
+      this.acceptInvite(alarm.sessionId, alarm.userId)
     },
-    async acceptInvite(roomSessionId, userId) {
+    async acceptInvite(sessionId, userId) {
       if (this.$call.session !== null) {
         // TODO: MESSAGE
         this.toastError(this.$t('alarm.notice_already_call'))
@@ -261,11 +269,17 @@ export default {
       }
       const params = {
         workspaceId: this.workspace.uuid,
-        sessionId: roomSessionId,
+        sessionId: sessionId,
       }
       try {
         const room = await getRoomInfo(params)
-        this.join(room)
+        const user = room.memberList.find(
+          member => member.memberType === ROLE.LEADER,
+        )
+        this.join({
+          ...room,
+          leaderId: user ? user.uuid : null,
+        })
         const contents = {
           nickName: this.account.nickname,
         }
@@ -278,19 +292,18 @@ export default {
         this.toastError(this.$t('workspace.remote_invite_impossible'))
       }
     },
-    pushInit() {
+    async pushInit() {
       if (!this.hasLicense) return
-      const push = this.$localStorage.getItem('push')
+      // const push = this.$localStorage.getItem('push')
       this.key = this.$route.name
-      if (push === 'true') {
-        this.onPush = true
-      } else if (push === 'false') {
-        this.onPush = false
-      }
-      this.$nextTick(async () => {
-        await this.$push.init(this.workspace)
-        this.$push.addListener(this.key, this.alarmListener)
-      })
+      // if (push === 'true') {
+      //   this.onPush = true
+      // } else if (push === 'false') {
+      //   this.onPush = false
+      // }
+      if (!this.workspace.uuid) return
+      await this.$push.init(this.workspace)
+      this.$push.addListener(this.key, this.alarmListener)
     },
   },
 

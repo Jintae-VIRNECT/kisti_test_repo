@@ -2,10 +2,9 @@
   <section class="tab-view" :class="[customClass]">
     <div class="tab-view__header offsetwidth">
       <span class="tab-view__title">{{ title }}</span>
-      <list-badge
-        v-if="!(listCount === null)"
-        :listCount="listCount"
-      ></list-badge>
+      <span class="tab-view__count" v-if="!(listCount === null)">
+        {{ listCount }}
+      </span>
     </div>
     <div class="tab-view__sub-header offsetwidth" v-if="!hideTitle">
       <span class="tab-view__description" v-if="description.length > 0">{{
@@ -56,14 +55,12 @@
 <script>
 import ShowEmpty from 'ShowEmpty'
 import Search from 'Search'
-import ListBadge from 'ListBadge'
 import IconButton from 'IconButton'
 export default {
   name: 'WorkspaceTabView',
   components: {
     Search,
     ShowEmpty,
-    ListBadge,
     IconButton,
   },
   props: {

@@ -17,27 +17,29 @@
             :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
           ></profile>
         </div>
-        <button
-          class="roominfo-nav__menu"
-          :class="{ active: tabview === 'group' }"
-          @click="tabChange('group')"
-        >
-          {{ $t('workspace.info_remote') }}
-        </button>
-        <button
-          class="roominfo-nav__menu"
-          :class="{ active: tabview === 'user' }"
-          @click="tabChange('user')"
-        >
-          {{ $t('workspace.info_remote_member') }}
-        </button>
-        <button
-          class="roominfo-nav__menu"
-          :class="{ active: tabview === 'download' }"
-          @click="tabChange('download')"
-        >
-          {{ '다운로드' }}
-        </button>
+        <div class="roominfo-nav__menus">
+          <button
+            class="roominfo-nav__menu"
+            :class="{ active: tabview === 'group' }"
+            @click="tabChange('group')"
+          >
+            {{ $t('workspace.info_remote') }}
+          </button>
+          <button
+            class="roominfo-nav__menu"
+            :class="{ active: tabview === 'user' }"
+            @click="tabChange('user')"
+          >
+            {{ $t('workspace.info_remote_member') }}
+          </button>
+          <button
+            class="roominfo-nav__menu"
+            :class="{ active: tabview === 'download' }"
+            @click="tabChange('download')"
+          >
+            {{ $t('button.download') }}
+          </button>
+        </div>
       </section>
       <room-info
         v-if="tabview === 'group'"
@@ -54,12 +56,7 @@
         :sessionId="sessionId"
       ></participants-info>
 
-      <room-download
-        v-else
-        :participants="participants"
-        :leader="leader"
-        :sessionId="sessionId"
-      ></room-download>
+      <room-download v-else :sessionId="sessionId"></room-download>
     </div>
   </modal>
 </template>

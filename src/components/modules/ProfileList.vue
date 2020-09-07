@@ -6,7 +6,7 @@
       v-for="user of showUsers"
       :key="user.uuid"
     >
-      <tooltip :content="user.nickname || user.nickName">
+      <tooltip :content="user.nickName">
         <div class="profilelist-user__image" slot="body">
           <profile
             :image="user.profile"
@@ -19,7 +19,7 @@
           :src="user.profile"
           slot="body"
         /> -->
-        <span>{{ user.nickname || user.nickName }}</span>
+        <span>{{ user.nickName }}</span>
       </tooltip>
     </figure>
     <br />
@@ -46,9 +46,7 @@
             :src="user.profile"
             @error="onImageError"
           /> -->
-          <span class="profilelist-user__name ">{{
-            user.nickname || user.nickName
-          }}</span>
+          <span class="profilelist-user__name ">{{ user.nickName }}</span>
         </figure>
       </div>
       <p slot="reference" class="profilelist-user__expend" :style="customStyle">

@@ -4,6 +4,7 @@
       v-if="height < 100"
       class="vue-scrollbar__scrollbar-vertical"
       ref="container"
+      :class="{ hover: hover }"
       @click="jump"
     >
       <div
@@ -26,6 +27,7 @@
 <script>
 export default {
   props: {
+    hover: Boolean,
     draggingFromParent: Boolean,
     scrolling: Number,
     wrapper: Object,
@@ -66,6 +68,7 @@ export default {
 
     onDrag(e) {
       if (this.dragging) {
+        console.log(this.dragging)
         // Make The Parent being in the Dragging State
         this.onDragging()
 

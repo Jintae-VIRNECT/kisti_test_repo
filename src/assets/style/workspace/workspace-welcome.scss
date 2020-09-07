@@ -34,10 +34,20 @@
 }
 
 .workspace-welcome__name {
-  margin: 1.071rem 0 1.643rem;
+  display: flex;
+  margin: 0.429rem 0 1.643rem;
   color: $color_text;
   font-weight: 500;
   font-size: 1.857rem;
+}
+.workspace-welcome__nickname {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.workspace-welcome__text {
+  flex: 0 0 auto;
 }
 
 .workspace-welcome__button {

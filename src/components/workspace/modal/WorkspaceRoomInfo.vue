@@ -45,6 +45,7 @@
         :participants="memberList"
         :isLeader="isLeader"
         :sessionId="sessionId"
+        @kickout="kickout"
       ></participants-info>
     </div>
   </modal>
@@ -52,13 +53,20 @@
 
 <script>
 import Modal from 'Modal'
-import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
+import {
+  getRoomInfo,
+  updateRoomInfo,
+  updateRoomProfile,
+  kickoutMember,
+} from 'api/workspace'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import Profile from 'Profile'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'WorkspaceRoomInfo',
+  mixins: [confirmMixin],
   components: {
     Modal,
     Profile,
@@ -125,6 +133,15 @@ export default {
     },
     async update(params) {
       try {
+        if ('image' in params && params['image'] !== null) {
+          await updateRoomProfile({
+            profile: params.image,
+            sessionId: params.sessionId,
+            uuid: this.account.uuid,
+            workspaceId: this.workspace.uuid,
+          })
+          delete params['image']
+        }
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
           this.$emit('updatedInfo', params)
@@ -133,6 +150,40 @@ export default {
         }
       } catch (err) {
         // 에러처리
+        console.error(err)
+      }
+    },
+    kickoutConfirm(id) {
+      this.confirmCancel(
+        this.$t('confirm.access_remove'),
+        {
+          text: this.$t('button.confirm'),
+          action: () => {
+            this.kickout(id)
+          },
+        },
+        {
+          text: this.$t('button.cancel'),
+        },
+      )
+    },
+    async kickout(id) {
+      if (this.account.uuid === id) return
+      try {
+        const removeRtn = await kickoutMember({
+          sessionId: this.sessionId,
+          workspaceId: this.workspace.uuid,
+          leaderId: this.account.uuid,
+          participantId: id,
+        })
+        if (removeRtn) {
+          // participants 제거
+          const idx = this.memberList.findIndex(member => member.uuid === id)
+          if (idx < 0) return
+          this.memberList.splice(idx, 1)
+          this.$emit('updatedInfo', {})
+        }
+      } catch (err) {
         console.error(err)
       }
     },

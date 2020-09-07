@@ -1,6 +1,6 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { DRAWING } from 'configs/remote.config'
-import { VIEW } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
   data() {
@@ -176,7 +176,7 @@ export default {
       canvas.on('mouse:move', event => {
         const mouse = canvas.getPointer(event.e)
 
-        if (this.viewAction === 'text') {
+        if (this.viewAction === ACTION.DRAWING_TEXT) {
           canvas.defaultCursor = 'text'
         }
 
@@ -230,12 +230,13 @@ export default {
 
         // 텍스트 삽입
         if (
-          this.viewAction === 'text' &&
+          this.viewAction === ACTION.DRAWING_TEXT &&
           this.editingMode === false &&
           !(canvas.getActiveObject() instanceof fabric.IText)
         ) {
           event.e.preventDefault()
-          this.addTextObject(mouse.x, mouse.y)
+          // this.addTextObject(mouse.x, mouse.y)
+          this.addTextObject(mouse.x, mouse.y - this.scaleFont / 2 - 1)
         }
       })
 
@@ -258,6 +259,33 @@ export default {
           }
         }
       })
+      // canvas.on('mouse:wheel', function(opt) {
+      //   var delta = opt.e.deltaY
+      //   var zoom = canvas.getZoom()
+      //   zoom *= 0.999 ** delta
+      //   if (zoom > 20) zoom = 20
+      //   if (zoom < 0.01) zoom = 0.01
+      //   canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
+      //   opt.e.preventDefault()
+      //   opt.e.stopPropagation()
+      //   var vpt = canvas.viewportTransform
+      //   console.log(vpt)
+      //   if (zoom < 400 / 1000) {
+      //     vpt[4] = 200 - (1000 * zoom) / 2
+      //     vpt[5] = 200 - (1000 * zoom) / 2
+      //   } else {
+      //     if (vpt[4] >= 0) {
+      //       vpt[4] = 0
+      //     } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
+      //       vpt[4] = canvas.getWidth() - 1000 * zoom
+      //     }
+      //     if (vpt[5] >= 0) {
+      //       vpt[5] = 0
+      //     } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
+      //       vpt[5] = canvas.getHeight() - 1000 * zoom
+      //     }
+      //   }
+      // })
     },
 
     /**
