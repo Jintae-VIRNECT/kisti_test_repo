@@ -382,15 +382,15 @@ public class WorkspaceController {
 
 	@ApiOperation(value = "워크스페이스 관련 정보 삭제 - 회원탈퇴", tags = "user server only")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "userUUID", value = "삭제할 워크스페이스의 마스터 사용자 식별자", paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8"),
+		@ApiImplicitParam(name = "workspaceUUID", value = "삭제할 워크스페이스의 식별자", paramType = "path", example = "4d6eab0860969a50acbfa4599fbb5ae8"),
 		@ApiImplicitParam(name = "serviceID", value = "요청 서버 명", paramType = "header", example = "user-server")
 	})
-	@DeleteMapping("/secession/{userUUID}")
-	public ResponseEntity<ApiResponse<WorkspaceSecessionResponse>> workspaceSecessionRequest(@PathVariable("userUUID") String userUUID, @RequestHeader("serviceID") String requestServiceID) {
-		if (!StringUtils.hasText(userUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals("user-server")) {
+	@DeleteMapping("/secession/{workspaceUUID}")
+	public ResponseEntity<ApiResponse<WorkspaceSecessionResponse>> workspaceSecessionRequest(@PathVariable("workspaceUUID") String workspaceUUID, @RequestHeader("serviceID") String requestServiceID) {
+		if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals("user-server")) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		WorkspaceSecessionResponse responseMessage = workspaceService.deleteAllWorkspaceInfo(userUUID);
+		WorkspaceSecessionResponse responseMessage = workspaceService.deleteAllWorkspaceInfo(workspaceUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 }

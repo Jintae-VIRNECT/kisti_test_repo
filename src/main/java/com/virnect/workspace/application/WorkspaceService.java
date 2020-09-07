@@ -1497,16 +1497,16 @@ public class WorkspaceService {
 
     /***
      * 워크스페이스 정보 전체 삭제 처리
-     * @param userUUID - 삭제할 워크스페이스의 마스터 사용자 식별자
+     * @param workspaceUUID - 삭제할 워크스페이스의 마스터 사용자 식별자
      * @return - 삭제 처리 결과
      */
     @Transactional
-    public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String userUUID) {
-        Optional<Workspace> workspaceInfo = workspaceRepository.findByUserId(userUUID);
+    public WorkspaceSecessionResponse deleteAllWorkspaceInfo(String workspaceUUID) {
+        Optional<Workspace> workspaceInfo = workspaceRepository.findByUuid(workspaceUUID);
 
         // workspace 정보가 없는 경우
         if (!workspaceInfo.isPresent()) {
-            return new WorkspaceSecessionResponse(userUUID, true, LocalDateTime.now());
+            return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
         }
 
         Workspace workspace = workspaceInfo.get();
@@ -1530,6 +1530,6 @@ public class WorkspaceService {
         // workspace 삭제
         workspaceRepository.delete(workspace);
 
-        return new WorkspaceSecessionResponse(userUUID, true, LocalDateTime.now());
+        return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
     }
 }
