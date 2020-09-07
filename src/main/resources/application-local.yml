@@ -28,7 +28,7 @@ spring:
 
         - id: user-server
           uri: http://localhost:8081
-#          uri: lb:http://user-server
+          #          uri: lb:http://user-server
           predicates:
             - Path=/users/**
           filters:
@@ -47,11 +47,11 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
-#            - name: Logging
-#              args:
-#                messagePrefix: "WORKSPACE_SERVER"
-#                preLogger: true
-#                postLogger: true
+        #            - name: Logging
+        #              args:
+        #                messagePrefix: "WORKSPACE_SERVER"
+        #                preLogger: true
+        #                postLogger: true
 
         - id: remote-record-server
           uri: lb:http://remote-record-server
@@ -60,11 +60,11 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/media/v2/(?<segment>.+), /v2/$\{segment}/
-#            - name: Logging
-#              args:
-#                messagePrefix: "REMOTE_RECORD_SERVER_REST"
-#                preLogger: true
-#                postLogger: true
+      #            - name: Logging
+      #              args:
+      #                messagePrefix: "REMOTE_RECORD_SERVER_REST"
+      #                preLogger: true
+      #                postLogger: true
 
 
       globalcors:
