@@ -98,17 +98,6 @@
     opacity: 1;
   }
 }
-.rec-setting__tooltip--body {
-  width: 24.4286rem;
-  height: 4.8571rem;
-  padding: 1.1429rem 1.7143rem 1.1429rem 2rem;
-  background: url("~assets/image/img_tooltip_big.svg") center no-repeat;
-}
-
-.rec-setting__tooltip--text {
-  color: #ffffff;
-  font-size: 0.8571rem;
-}
 
 /*custom remote radio */
 .rec-setting {
@@ -123,11 +112,4 @@
 }
 .modal.local-recsetting-modal .modal--inner .modal--body {
   padding: 3.571em 2.857em 2.571em;
-}
-
-.popover.rec-setting__custom-popover {
-  box-shadow: none;
-  > .popover--body {
-    padding-left: 0.714em;
-  }
 }
