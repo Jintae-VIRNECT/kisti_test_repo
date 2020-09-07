@@ -46,7 +46,7 @@
     "remote_access_removed": "Leader has not allowed you to enter.",
 
     "user_title": "Available members to invite for Collabo",
-    "user_description": "Select and send a message to available member for Collabo.",
+    "user_description": "Check who you can Collabo with.",
     "user_empty": "There is no available member to Collabo.",
     "user_empty_description": "Please add members to invite to the Collabo.",
 
@@ -93,7 +93,7 @@
 
     "info_remote_detail": "Remote Collabo details.",
     "info_remote": "Collabo details",
-    "info_remote_member": "Particpant details'",
+    "info_remote_member": "Particpant details",
     "info_remote_date": "Collabo start date",
     "info_remote_start": "Start time",
     "info_remote_start_end": "Start / end time",
