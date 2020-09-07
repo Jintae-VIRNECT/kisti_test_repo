@@ -10,7 +10,7 @@
       <div
         class="tooltiptext"
         :class="[placement, effect]"
-        v-show="show"
+        v-show="show && active"
         :style="`width: ${width}`"
       >
         <p v-html="content"></p>
@@ -29,6 +29,11 @@ export default {
     }
   },
   props: {
+    active: {
+      // false 일때 hover 해도 툴팁 미표출
+      type: Boolean,
+      default: true,
+    },
     content: {
       type: String,
       require: true,
