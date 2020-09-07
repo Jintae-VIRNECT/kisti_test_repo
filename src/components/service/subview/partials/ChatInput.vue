@@ -115,6 +115,8 @@ export default {
       this.inputText = ''
     },
     clickUpload() {
+      this.unsupport()
+      return
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE
         this.toastDefault(this.$t('service.file_upload_maxnum'))
@@ -211,6 +213,8 @@ export default {
       // console.log(event);
     },
     dropHandler(event) {
+      this.unsupport()
+      return
       const file = event.dataTransfer.files[0]
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE
