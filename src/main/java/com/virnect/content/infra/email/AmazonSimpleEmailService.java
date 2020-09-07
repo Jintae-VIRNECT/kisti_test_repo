@@ -10,8 +10,8 @@ import org.thymeleaf.context.Context;
  * DESCRIPTION:
  */
 public class AmazonSimpleEmailService implements MailService {
-    @Override
-    public void sendTemplateMail(String sender, String to, String subject, String template, Context context) {
+	@Override
+	public void sendTemplateMail(String sender, String to, String subject, String template, Context context) {
 
-    }
+	}
 }

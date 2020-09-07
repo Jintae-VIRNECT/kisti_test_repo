@@ -1,19 +1,5 @@
 package com.virnect.content.infra.file.upload;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.google.common.io.Files;
-import com.virnect.content.exception.ContentServiceException;
-import com.virnect.content.global.error.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,6 +8,23 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.google.common.io.Files;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.content.exception.ContentServiceException;
+import com.virnect.content.global.error.ErrorCode;
 
 /**
  * Project: base
@@ -35,140 +38,140 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class S3UploadService implements FileUploadService {
-    private static String CONTENT_DIRECTORY = "contents";
-    private static String REPORT_DIRECTORY = "report";
-    private static String REPORT_FILE_EXTENSION = ".png";
+	private static String CONTENT_DIRECTORY = "contents";
+	private static String REPORT_DIRECTORY = "report";
+	private static String REPORT_FILE_EXTENSION = ".png";
+	private final AmazonS3 amazonS3Client;
+	@Value("${cloud.aws.s3.bucket.name}")
+	private String bucketName;
+	@Value("${cloud.aws.s3.bucket.resource}")
+	private String bucketResource;
+	@Value("#{'${upload.allowed-extension}'.split(',')}")
+	private List<String> allowedExtension;
 
+	@Override
+	public String upload(MultipartFile file) {
+		return null;
+	}
 
-    @Value("${cloud.aws.s3.bucket.name}")
-    private String bucketName;
+	@Override
+	public String upload(MultipartFile file, String fileName) throws IOException {
+		log.info("[AWS S3 UPLOADER] - UPLOAD BEGIN");
+		if (file.getSize() <= 0) {
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+		}
+		String fileExtension = String.format(
+			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
 
-    @Value("${cloud.aws.s3.bucket.resource}")
-    private String bucketResource;
+		if (!allowedExtension.contains(fileExtension)) {
+			log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
+			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
+		}
 
-    @Value("#{'${upload.allowed-extension}'.split(',')}")
-    private List<String> allowedExtension;
+		File uploadFile = convert(file)
+			.orElseThrow(() -> {
+				log.info("MultipartFile -> File 변환 실패");
+				return new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+			});
 
-    private final AmazonS3 amazonS3Client;
+		String saveFileName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
+		String uploadFileUrl = putS3(uploadFile, saveFileName);
 
-    @Override
-    public String upload(MultipartFile file) {
-        return null;
-    }
+		// S3에서 다운로드 받은 파일
+		File downlodedFile = new File("upload/" + uploadFile.getName());
 
-    @Override
-    public String upload(MultipartFile file, String fileName) throws IOException {
-        log.info("[AWS S3 UPLOADER] - UPLOAD BEGIN");
-        if (file.getSize() <= 0) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-        }
-        String fileExtension = String.format(".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
+		removeNewFile(uploadFile);
+		removeNewFile(downlodedFile);
 
-        if (!allowedExtension.contains(fileExtension)) {
-            log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
-            throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
-        }
+		return uploadFileUrl;
+	}
 
-        File uploadFile = convert(file)
-                .orElseThrow(() -> {
-                    log.info("MultipartFile -> File 변환 실패");
-                    return new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-                });
+	@Override
+	public boolean delete(String url) {
+		if (url.equals("default")) {
+			log.info("기본 이미지는 삭제하지 않습니다.");
+		} else {
+			String resourceEndPoint = String.format("%s%s", bucketResource, CONTENT_DIRECTORY);
+			//            String resourceEndPoint = String.format("%s/%s", bucketName, bucketResource);
+			String key = url.split(String.format("/%s/%s", bucketResource, CONTENT_DIRECTORY))[1];
+			amazonS3Client.deleteObject(resourceEndPoint, key);
+			log.info(key + " 파일이 AWS S3(" + resourceEndPoint + ")에서 삭제되었습니다.");
+		}
+		return true;
+	}
 
-        String saveFileName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
-        String uploadFileUrl = putS3(uploadFile, saveFileName);
+	@Override
+	public String getFileExtension(String originFileName) {
+		return null;
+	}
 
-        // S3에서 다운로드 받은 파일
-        File downlodedFile = new File("upload/" + uploadFile.getName());
+	@Override
+	public boolean isAllowFileExtension(String fileExtension) {
+		return false;
+	}
 
-        removeNewFile(uploadFile);
-        removeNewFile(downlodedFile);
+	@Override
+	public File getFile(String url) {
+		return null;
+	}
 
-        return uploadFileUrl;
-    }
+	@Override
+	public String base64ImageUpload(String base64Image) {
+		try {
+			byte[] image = Base64.getDecoder().decode(base64Image);
+			String randomFileName = String.format(
+				"%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+				REPORT_FILE_EXTENSION
+			);
+			File convertImage = new File(randomFileName);
+			FileOutputStream fos = new FileOutputStream(convertImage);
+			fos.write(image);
+			fos.close();
 
-    @Override
-    public boolean delete(String url) {
-        if (url.equals("default")) {
-            log.info("기본 이미지는 삭제하지 않습니다.");
-        } else {
-            String resourceEndPoint = String.format("%s%s", bucketResource, CONTENT_DIRECTORY);
-//            String resourceEndPoint = String.format("%s/%s", bucketName, bucketResource);
-            String key = url.split(String.format("/%s/%s", bucketResource, CONTENT_DIRECTORY))[1];
-            amazonS3Client.deleteObject(resourceEndPoint, key);
-            log.info(key + " 파일이 AWS S3(" + resourceEndPoint + ")에서 삭제되었습니다.");
-        }
-        return true;
-    }
+			String saveFileName = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
+			String uploadFileUrl = putS3(convertImage, saveFileName);
 
-    @Override
-    public String getFileExtension(String originFileName) {
-        return null;
-    }
+			removeNewFile(convertImage);
 
-    @Override
-    public boolean isAllowFileExtension(String fileExtension) {
-        return false;
-    }
+			return uploadFileUrl;
+		} catch (Exception e) {
+			log.error(e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+		}
+	}
 
-    @Override
-    public File getFile(String url) {
-        return null;
-    }
+	// 로컬 임시 파일 삭제
+	private void removeNewFile(File targetFile) {
+		if (targetFile.delete()) {
+			log.info("파일이 삭제되었습니다.");
+		} else {
+			log.info("파일이 삭제되지 못했습니다.");
+		}
+	}
 
-    @Override
-    public String base64ImageUpload(String base64Image) {
-        try {
-            byte[] image = Base64.getDecoder().decode(base64Image);
-            String randomFileName = String.format("%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(), REPORT_FILE_EXTENSION);
-            File convertImage = new File(randomFileName);
-            FileOutputStream fos = new FileOutputStream(convertImage);
-            fos.write(image);
-            fos.close();
+	// 이미지 전송 요청을 받아 로컬 파일로 변환
+	private Optional<File> convert(MultipartFile file) throws IOException {
+		File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
+		if (convertFile.createNewFile()) {
+			try (FileOutputStream fos = new FileOutputStream(convertFile)) {
+				fos.write(file.getBytes());
+			}
+			return Optional.of(convertFile);
+		}
 
-            String saveFileName = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
-            String uploadFileUrl = putS3(convertImage, saveFileName);
+		return Optional.empty();
+	}
 
-            removeNewFile(convertImage);
-
-            return uploadFileUrl;
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-        }
-    }
-
-    // 로컬 임시 파일 삭제
-    private void removeNewFile(File targetFile) {
-        if (targetFile.delete()) {
-            log.info("파일이 삭제되었습니다.");
-        } else {
-            log.info("파일이 삭제되지 못했습니다.");
-        }
-    }
-
-    // 이미지 전송 요청을 받아 로컬 파일로 변환
-    private Optional<File> convert(MultipartFile file) throws IOException {
-        File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
-        if (convertFile.createNewFile()) {
-            try (FileOutputStream fos = new FileOutputStream(convertFile)) {
-                fos.write(file.getBytes());
-            }
-            return Optional.of(convertFile);
-        }
-
-        return Optional.empty();
-    }
-
-    /**
-     * AWS S3 이미지 업로드 요청 전송
-     *
-     * @param uploadFile - 업로드 대상 파일
-     * @param fileName   - 파일 이름
-     * @return 이미지 URL
-     */
-    private String putS3(File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
-        return amazonS3Client.getUrl(bucketName, fileName).toString();
-    }
+	/**
+	 * AWS S3 이미지 업로드 요청 전송
+	 *
+	 * @param uploadFile - 업로드 대상 파일
+	 * @param fileName   - 파일 이름
+	 * @return 이미지 URL
+	 */
+	private String putS3(File uploadFile, String fileName) {
+		amazonS3Client.putObject(
+			new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+		return amazonS3Client.getUrl(bucketName, fileName).toString();
+	}
 }

@@ -1,6 +1,5 @@
 package com.virnect.content.infra.file.download;
 
-
 import org.springframework.http.ResponseEntity;
 
 /**
@@ -11,7 +10,7 @@ import org.springframework.http.ResponseEntity;
  * @since 2020.05.10
  */
 public interface FileDownloadService {
-    ResponseEntity<byte[]> fileDownload(final String fileName);
+	ResponseEntity<byte[]> fileDownload(final String fileName);
 
-    void copyFileS3ToLocal(String fileName);
+	void copyFileS3ToLocal(String fileName);
 }

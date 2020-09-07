@@ -1,6 +1,9 @@
 package com.virnect.content.api;
 
-import com.virnect.content.exception.ContentServiceException;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -12,9 +15,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import com.virnect.content.exception.ContentServiceException;
 
 /**
  * @author jiyong.heo
@@ -26,37 +27,39 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @SpringBootTest
 @ActiveProfiles("test")
 @SqlGroup({
-        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:schema.sql"),
-        @Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:data.sql")
+	@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:schema.sql"),
+	@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, scripts = "classpath:data.sql")
 })
 @AutoConfigureMockMvc
 public class ContentDownloadFromUUIDTest {
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Test
-    @Transactional
-    public void contentDownload_contentNotFound_ContentServiceException() throws Exception {
+	@Test
+	@Transactional
+	public void contentDownload_contentNotFound_ContentServiceException() throws Exception {
 
-        RequestBuilder request = get("/contents/download/contentUUID/{contentUUID}", "ad4e200d-85ec-44ae-bf5e-be9135")
-                .param("memberUUID", "12345");
+		RequestBuilder request = get("/contents/download/contentUUID/{contentUUID}", "ad4e200d-85ec-44ae-bf5e-be9135")
+			.param("memberUUID", "12345");
 
-        this.mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("4003")))
-                .andExpect(result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ContentServiceException.class)));
-    }
+		this.mockMvc.perform(request)
+			.andDo(print())
+			.andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("4003")))
+			.andExpect(result -> assertTrue(
+				result.getResolvedException().getClass().isAssignableFrom(ContentServiceException.class)));
+	}
 
-//    @Test
-//    @Transactional
-    public void contentDownload_contentUUIDIsNull_ContentServiceException() throws Exception {
+	//    @Test
+	//    @Transactional
+	public void contentDownload_contentUUIDIsNull_ContentServiceException() throws Exception {
 
-        RequestBuilder request = get("/contents/download/contentUUID/{contentUUID}")
-                .param("memberUUID", "12345");
+		RequestBuilder request = get("/contents/download/contentUUID/{contentUUID}")
+			.param("memberUUID", "12345");
 
-        this.mockMvc.perform(request)
-                .andDo(print())
-                .andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("4003")))
-                .andExpect(result -> assertTrue(result.getResolvedException().getClass().isAssignableFrom(ContentServiceException.class)));
-    }
+		this.mockMvc.perform(request)
+			.andDo(print())
+			.andExpect(result -> assertTrue(result.getResponse().getContentAsString().contains("4003")))
+			.andExpect(result -> assertTrue(
+				result.getResolvedException().getClass().isAssignableFrom(ContentServiceException.class)));
+	}
 }

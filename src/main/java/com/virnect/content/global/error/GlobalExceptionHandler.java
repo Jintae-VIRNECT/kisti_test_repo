@@ -1,10 +1,12 @@
 package com.virnect.content.global.error;
 
-import com.virnect.content.exception.ContentServiceException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.content.exception.ContentServiceException;
 
 /**
  * Project: PF-ContentManagement
@@ -17,9 +19,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ContentServiceException.class)
-    public ResponseEntity<ErrorResponseMessage> contentServiceExceptionHandler(ContentServiceException e) {
-        log.error("[CONTENT_SERVICE] - MESSAGE: [{}] , DATA: [{}]", e.getMessage(), e.getError().toString());
-        return ResponseEntity.ok(new ErrorResponseMessage(e.getError()));
-    }
+	@ExceptionHandler(ContentServiceException.class)
+	public ResponseEntity<ErrorResponseMessage> contentServiceExceptionHandler(ContentServiceException e) {
+		log.error("[CONTENT_SERVICE] - MESSAGE: [{}] , DATA: [{}]", e.getMessage(), e.getError().toString());
+		return ResponseEntity.ok(new ErrorResponseMessage(e.getError()));
+	}
 }

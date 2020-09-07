@@ -11,14 +11,14 @@ import com.virnect.content.global.error.exception.BusinessException;
  * DESCRIPTION: Content Service Exception Class
  */
 public class ContentServiceException extends BusinessException {
-    ErrorCode error;
+	ErrorCode error;
 
-    public ContentServiceException(ErrorCode error) {
-        super(error);
-        this.error = error;
-    }
+	public ContentServiceException(ErrorCode error) {
+		super(error);
+		this.error = error;
+	}
 
-    public ErrorCode getError() {
-        return error;
-    }
+	public ErrorCode getError() {
+		return error;
+	}
 }

@@ -10,5 +10,5 @@ import org.thymeleaf.context.Context;
  * DESCRIPTION:
  */
 public interface MailService {
-    void sendTemplateMail(String sender, String to, String subject, String template, Context context);
+	void sendTemplateMail(String sender, String to, String subject, String template, Context context);
 }

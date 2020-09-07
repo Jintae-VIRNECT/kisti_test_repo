@@ -1,6 +1,7 @@
 package com.virnect.content;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
@@ -8,7 +9,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Project: PF-ContentManagement
@@ -21,13 +22,13 @@ import java.io.File;
 @Slf4j
 @Service
 public class ApplicationRunnerHandler implements ApplicationRunner {
-    @Value("${upload.dir}")
-    private String uploadDirectoryPath;
+	@Value("${upload.dir}")
+	private String uploadDirectoryPath;
 
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        File file = new File(uploadDirectoryPath);
-        FileUtils.forceMkdir(file);
-        log.info("FILE UPLOAD DIRECTORY CREATE: [{}]", file.getAbsolutePath());
-    }
+	@Override
+	public void run(ApplicationArguments args) throws Exception {
+		File file = new File(uploadDirectoryPath);
+		FileUtils.forceMkdir(file);
+		log.info("FILE UPLOAD DIRECTORY CREATE: [{}]", file.getAbsolutePath());
+	}
 }
