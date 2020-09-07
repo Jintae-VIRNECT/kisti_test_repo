@@ -34,7 +34,6 @@ import com.virnect.license.domain.licenseplan.PlanStatus;
 import com.virnect.license.domain.product.LicenseProduct;
 import com.virnect.license.domain.product.LicenseProductStatus;
 import com.virnect.license.domain.product.Product;
-import com.virnect.license.domain.product.ProductType;
 import com.virnect.license.dto.ResourceCalculate;
 import com.virnect.license.dto.UserLicenseDetailsInfo;
 import com.virnect.license.dto.response.LicenseInfoResponse;
@@ -96,7 +95,10 @@ public class LicenseService {
 			licensePlan);
 		List<LicenseProduct> serviceProductList = licenseProductRepository.findAllServiceLicenseInfoByLicensePlan(
 			licensePlan);
-		ResourceCalculate serviceProductResource = serviceProductResourceCalculate(serviceProductList);
+
+		ResourceCalculate serviceProductResource = licenseProductResourceCalculate(serviceProductList);
+		ResourceCalculate defaultProductResource = licenseProductResourceCalculate(licenseProductList);
+
 		Map<Long, LicenseProductInfoResponse> licenseProductInfoMap = new HashMap<>();
 
 		// TODO: 2020-09-04 리팩토링 필요
@@ -125,7 +127,7 @@ public class LicenseService {
 				// Product Info
 				licenseProductInfo.setProductId(product.getId());
 				licenseProductInfo.setProductName(product.getName());
-				licenseProductInfo.setLicenseType(product.getProductType().getName());
+				// licenseProductInfo.setLicenseType(product.getProductType().getName());
 
 				// Get License Information from license product
 				List<LicenseInfoResponse> licenseInfoList = getLicenseInfoResponses(
@@ -157,34 +159,28 @@ public class LicenseService {
 		workspaceLicensePlanInfoResponse.setAddCallTime(serviceProductResource.getTotalCallTime());
 		workspaceLicensePlanInfoResponse.setAddStorageSize(serviceProductResource.getTotalStorageSize());
 		workspaceLicensePlanInfoResponse.setAddDownloadHit(serviceProductResource.getTotalDownloadHit());
-		// default resource amount (maxResource - addResource)
-		workspaceLicensePlanInfoResponse.setDefaultCallTime(
-			licensePlan.getMaxCallTime() - serviceProductResource.getTotalCallTime()
-		);
-		workspaceLicensePlanInfoResponse.setDefaultStorageSize(
-			licensePlan.getMaxStorageSize() - serviceProductResource.getTotalStorageSize()
-		);
-		workspaceLicensePlanInfoResponse.setDefaultDownloadHit(
-			licensePlan.getMaxDownloadHit() - serviceProductResource.getTotalDownloadHit()
-		);
+		// default resource amount
+		workspaceLicensePlanInfoResponse.setDefaultCallTime(defaultProductResource.getTotalCallTime());
+		workspaceLicensePlanInfoResponse.setDefaultStorageSize(defaultProductResource.getTotalStorageSize());
+		workspaceLicensePlanInfoResponse.setDefaultDownloadHit(defaultProductResource.getTotalDownloadHit());
 
 		return workspaceLicensePlanInfoResponse;
 	}
 
 	/**
-	 * 추가 서비스 상품, 서비스 이용 정보 총 사용량 계산
+	 * 상품별 서비스 이용 정보 총 사용량 계산
 	 *
-	 * @param serviceProductList - 추가 서비스 상품 서비스 이용량 정보
-	 * @return - 추가 서비스 상품, 서비스 이용 정보 총 사용량 정보
+	 * @param licenseProductList - 상품 별 서비스 이용량 정보
+	 * @return - 상품별 서비스 이용 정보 총 사용량 정보
 	 */
-	private ResourceCalculate serviceProductResourceCalculate(List<LicenseProduct> serviceProductList) {
+	private ResourceCalculate licenseProductResourceCalculate(List<LicenseProduct> licenseProductList) {
 		long addCallTime = 0;
 		long addStorage = 0;
 		long addDownloadHit = 0;
-		for (LicenseProduct serviceProduct : serviceProductList) {
-			addCallTime += serviceProduct.getCallTime();
-			addStorage += serviceProduct.getStorageSize();
-			addDownloadHit += serviceProduct.getDownloadHit();
+		for (LicenseProduct licenseProd : licenseProductList) {
+			addCallTime += licenseProd.getCallTime();
+			addStorage += licenseProd.getStorageSize();
+			addDownloadHit += licenseProd.getDownloadHit();
 		}
 		return new ResourceCalculate(addCallTime, addStorage, addDownloadHit);
 	}
@@ -247,7 +243,7 @@ public class LicenseService {
 		List<MyLicenseInfoResponse> myLicenseInfoResponseList = new ArrayList<>();
 		for (LicenseProduct licenseProduct : licensePlan.getLicenseProductList()) {
 			Product product = licenseProduct.getProduct();
-			ProductType productType = product.getProductType();
+			// ProductType productType = product.getProductType();
 			if (licenseProduct.getLicenseList() != null && !licenseProduct.getLicenseList().isEmpty()) {
 				log.info(licenseProduct.getLicenseList().toString());
 				licenseProduct.getLicenseList()
@@ -260,7 +256,7 @@ public class LicenseService {
 						licenseInfo.setCreatedDate(license.getCreatedDate());
 						licenseInfo.setProductName(product.getName());
 						licenseInfo.setUpdatedDate(license.getUpdatedDate());
-						licenseInfo.setLicenseType(productType.getName());
+						// licenseInfo.setLicenseType(productType.getName());
 						licenseInfo.setStatus(license.getStatus());
 						licenseInfo.setProductPlanStatus(licenseProduct.getStatus().toString());
 						myLicenseInfoResponseList.add(licenseInfo);
@@ -450,7 +446,12 @@ public class LicenseService {
 		return new LicenseSecessionResponse(workspaceUUID, true, LocalDateTime.now());
 	}
 
+	/**
+	 * 정기 결제 취소 처리
+	 * @param userNumber - 정기 결제 진행중인 사용자 식별자
+	 */
 	private void billingCancelProcess(long userNumber) {
+		// 사용자의 정기 결제 내역 정보 조회
 		BillingRestResponse<MonthlyBillingInfo> userMonthlyBillingInfo = billingRestService.getMonthlyBillingInfo(
 			1,
 			userNumber

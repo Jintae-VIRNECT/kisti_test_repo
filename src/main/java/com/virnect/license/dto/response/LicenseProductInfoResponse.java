@@ -17,8 +17,8 @@ public class LicenseProductInfoResponse {
 	private long productId;
 	@ApiModelProperty(value = "제품명", position = 1, example = "MAKE")
 	private String productName;
-	@ApiModelProperty(value = "제품 라이선스 타입", position = 2, example = "BASIC")
-	private String licenseType;
+	// @ApiModelProperty(value = "제품 라이선스 타입", position = 2, example = "BASIC")
+	// private String licenseType;
 	@ApiModelProperty(value = "재품 라이선스 수량", position = 3, example = "4")
 	private int quantity;
 	@ApiModelProperty(value = "현재 할당 가능한 라이선스 수량", position = 4, example = "1")
