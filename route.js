@@ -82,6 +82,10 @@ router.get('/urls', function(req, res) {
   res.send(JSON.stringify(config.getUrls()))
 })
 
+router.get('/pdf.worker', function(req, res) {
+  res.sendFile(path.join(__dirname, '/static/js/pdf.worker.js'))
+})
+
 router.get('/record', function(req, res) {
   const parsedURL = url.parse(req.url, true)
   const query = parsedURL.query

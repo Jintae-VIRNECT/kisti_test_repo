@@ -6,8 +6,8 @@ export default {
      */
     updateHistory() {
       const json = this.canvas.toJSON().objects
-      const thumbnail = this.canvas.lowerCanvasEl.toDataURL()
-      // const thumbnail = this.resizeCanvas(this.canvas.lowerCanvasEl);
+      // const thumbnail = this.canvas.lowerCanvasEl.toDataURL()
+      const thumbnail = this.fullQulityCanvas(this.canvas.lowerCanvasEl)
       const params = {
         id: this.file.id,
         img: thumbnail,
@@ -15,6 +15,17 @@ export default {
       }
 
       this.$store.dispatch('updateHistory', params)
+    },
+    fullQulityCanvas(canvas) {
+      const dataUrl = canvas.toDataURL({
+        format: 'png',
+        // multiplier: 1,
+        // left: 0,
+        // top: 0,
+        // width: this.img.width,
+        // height: this.img.height,
+      })
+      return dataUrl
     },
 
     /**
