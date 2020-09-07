@@ -30,5 +30,6 @@ public interface LicensePlanRepository extends JpaRepository<LicensePlan, Long>,
 	Optional<LicensePlan> findByUserIdAndPlanStatus(String userUUID, PlanStatus status);
 
 	boolean existsByUserId(String userUUID);
+
 	List<LicensePlan> findAllByPlanStatus(PlanStatus planStatus);
 }

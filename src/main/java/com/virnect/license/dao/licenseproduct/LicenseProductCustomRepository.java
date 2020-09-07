@@ -7,5 +7,6 @@ import com.virnect.license.domain.product.LicenseProduct;
 
 public interface LicenseProductCustomRepository {
 	List<LicenseProduct> findAllProductLicenseInfoByLicensePlan(LicensePlan licensePlan);
+
 	List<LicenseProduct> findAllServiceLicenseInfoByLicensePlan(LicensePlan licensePlan);
 }

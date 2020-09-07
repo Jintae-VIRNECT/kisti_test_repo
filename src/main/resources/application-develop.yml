@@ -63,3 +63,7 @@ management:
 infra:
   billing:
     api: "https://devpayapi.virnect.com"
+
+logging:
+  level:
+    com.virnect.license.application.rest.BillingRestService: trace

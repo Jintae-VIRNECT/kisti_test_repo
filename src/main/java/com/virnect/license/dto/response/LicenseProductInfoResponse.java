@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.license.domain.product.LicenseProduct;
 import com.virnect.license.domain.product.LicenseProductStatus;
 
 @Getter

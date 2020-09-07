@@ -50,7 +50,7 @@ public class License extends BaseTimeEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "license_status")
-	private LicenseStatus status = LicenseStatus.UNUSED;
+	private LicenseStatus status = LicenseStatus.UNUSE;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "license_product_id")

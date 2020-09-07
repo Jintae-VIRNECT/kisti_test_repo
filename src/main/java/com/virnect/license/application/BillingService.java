@@ -41,9 +41,9 @@ import com.virnect.license.dto.request.billing.ProductTypeRequest;
 import com.virnect.license.dto.response.LicenseProductAllocateCheckResponse;
 import com.virnect.license.dto.response.LicenseProductDeallocateResponse;
 import com.virnect.license.dto.response.biling.LicenseProductAllocateResponse;
-import com.virnect.license.dto.rest.UserInfoRestResponse;
-import com.virnect.license.dto.rest.WorkspaceInfoListResponse;
-import com.virnect.license.dto.rest.WorkspaceInfoResponse;
+import com.virnect.license.dto.rest.user.UserInfoRestResponse;
+import com.virnect.license.dto.rest.user.WorkspaceInfoListResponse;
+import com.virnect.license.dto.rest.user.WorkspaceInfoResponse;
 import com.virnect.license.exception.BillingServiceException;
 import com.virnect.license.exception.LicenseAllocateDeniedException;
 import com.virnect.license.global.common.ApiResponse;
@@ -354,7 +354,7 @@ public class BillingService {
 
 						// TODO: 2020-09-04 기 할당 라이선스 초과 상황에서, 기존 제품 라이선스 중 미 사용중인 라이선스 제거 로직 추가
 					}
-						// TODO: 2020-09-04 기 할당 라이선스 축소 상황에서, 축소범위에 맞춰 미 사용중인 라이선스 제거 로직 추가
+					// TODO: 2020-09-04 기 할당 라이선스 축소 상황에서, 축소범위에 맞춰 미 사용중인 라이선스 제거 로직 추가
 
 					licenseProductRepository.save(originLicenseProduct);
 				}
@@ -614,7 +614,7 @@ public class BillingService {
 	private void licenseGenerateAndRegisterByLicenseProduct(LicenseProduct licenseProduct, int quantity) {
 		for (int i = 0; i < quantity; i++) {
 			License license = License.builder()
-				.status(LicenseStatus.UNUSED)
+				.status(LicenseStatus.UNUSE)
 				.serialKey(UUID.randomUUID().toString().toUpperCase())
 				.licenseProduct(licenseProduct)
 				.build();

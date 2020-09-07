@@ -26,6 +26,8 @@ spring:
     loadbalancer:
       ribbon:
         enabled: false
+  zipkin:
+    enabled: false
 eureka:
   instance:
     prefer-ip-address: true
@@ -41,8 +43,9 @@ server:
 user:
   serverUrl: "http://localhost:8081/users"
 
-#logging:
-#  level:
+logging:
+  level:
+    com.virnect.license.application.rest.BillingRestService: trace
 #    org.hibernate.type.descriptor.sql: trace
 
 

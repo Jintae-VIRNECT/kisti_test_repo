@@ -151,14 +151,18 @@ public class LicenseController {
 	})
 	@DeleteMapping("/secession/{workspaceUUID}")
 	public ResponseEntity<ApiResponse<LicenseSecessionResponse>> licenseSecessionRequest(
-		@PathVariable("workspaceUUID") String workspaceUUID, @RequestParam("userUUID") String userUUID,
+		@PathVariable("workspaceUUID") String workspaceUUID,
+		@RequestParam("userUUID") String userUUID,
+		@RequestParam("userNumber") long userNumber,
 		@RequestHeader("serviceID") String requestServiceID
 	) {
 		if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(userUUID) || !StringUtils.hasText(
 			requestServiceID) || !requestServiceID.equals("user-server")) {
 			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		LicenseSecessionResponse responseMessage = licenseService.deleteAllLicenseInfo(workspaceUUID, userUUID);
+		LicenseSecessionResponse responseMessage = licenseService.deleteAllLicenseInfo(
+			workspaceUUID, userUUID, userNumber
+		);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 }

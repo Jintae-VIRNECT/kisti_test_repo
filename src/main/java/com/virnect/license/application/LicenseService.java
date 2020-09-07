@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.license.application.rest.billing.BillingRestService;
 import com.virnect.license.application.rest.content.ContentRestService;
 import com.virnect.license.application.rest.workspace.WorkspaceRestService;
 import com.virnect.license.dao.license.LicenseRepository;
@@ -31,6 +32,7 @@ import com.virnect.license.domain.license.LicenseStatus;
 import com.virnect.license.domain.licenseplan.LicensePlan;
 import com.virnect.license.domain.licenseplan.PlanStatus;
 import com.virnect.license.domain.product.LicenseProduct;
+import com.virnect.license.domain.product.LicenseProductStatus;
 import com.virnect.license.domain.product.Product;
 import com.virnect.license.domain.product.ProductType;
 import com.virnect.license.dto.ResourceCalculate;
@@ -43,8 +45,11 @@ import com.virnect.license.dto.response.MyLicenseInfoResponse;
 import com.virnect.license.dto.response.MyLicensePlanInfoListResponse;
 import com.virnect.license.dto.response.MyLicensePlanInfoResponse;
 import com.virnect.license.dto.response.WorkspaceLicensePlanInfoResponse;
-import com.virnect.license.dto.rest.ContentResourceUsageInfoResponse;
-import com.virnect.license.dto.rest.WorkspaceInfoResponse;
+import com.virnect.license.dto.rest.billing.BillingRestResponse;
+import com.virnect.license.dto.rest.billing.MonthlyBillingCancelRequest;
+import com.virnect.license.dto.rest.billing.MonthlyBillingInfo;
+import com.virnect.license.dto.rest.content.ContentResourceUsageInfoResponse;
+import com.virnect.license.dto.rest.user.WorkspaceInfoResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.common.PageMetadataResponse;
@@ -67,6 +72,7 @@ public class LicenseService {
 	private final ContentRestService contentRestService;
 	private final WorkspaceRestService workspaceRestService;
 	private final LicenseProductRepository licenseProductRepository;
+	private final BillingRestService billingRestService;
 	private final ModelMapper modelMapper;
 
 	/**
@@ -86,8 +92,10 @@ public class LicenseService {
 		}
 
 		LicensePlan licensePlan = licensePlanInfo.get();
-		List<LicenseProduct> licenseProductList = licenseProductRepository.findAllProductLicenseInfoByLicensePlan(licensePlan);
-		List<LicenseProduct> serviceProductList = licenseProductRepository.findAllServiceLicenseInfoByLicensePlan(licensePlan);
+		List<LicenseProduct> licenseProductList = licenseProductRepository.findAllProductLicenseInfoByLicensePlan(
+			licensePlan);
+		List<LicenseProduct> serviceProductList = licenseProductRepository.findAllServiceLicenseInfoByLicensePlan(
+			licensePlan);
 		ResourceCalculate serviceProductResource = serviceProductResourceCalculate(serviceProductList);
 		Map<Long, LicenseProductInfoResponse> licenseProductInfoMap = new HashMap<>();
 
@@ -302,7 +310,7 @@ public class LicenseService {
 			}
 			//부여 가능한 라이선스 찾기
 			List<License> licenseList = this.licenseRepository.findAllByLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_LicensePlan_PlanStatusAndLicenseProduct_ProductAndStatus(
-				workspaceId, PlanStatus.ACTIVE, product, LicenseStatus.UNUSED);
+				workspaceId, PlanStatus.ACTIVE, product, LicenseStatus.UNUSE);
 			if (licenseList.isEmpty()) {
 				throw new LicenseServiceException(ErrorCode.ERR_USEFUL_LICENSE_NOT_FOUND);
 			}
@@ -319,7 +327,7 @@ public class LicenseService {
 			return new ApiResponse<>(myLicenseInfoResponse);
 		} else {
 			oldLicense.setUserId(null);
-			oldLicense.setStatus(LicenseStatus.UNUSED);
+			oldLicense.setStatus(LicenseStatus.UNUSE);
 			this.licenseRepository.save(oldLicense);
 
 			return new ApiResponse<>(true);
@@ -401,10 +409,11 @@ public class LicenseService {
 	 *
 	 * @param workspaceUUID - 워크스페이스 식별자
 	 * @param userUUID      - 사용자 식별자
+	 * @param userNumber - 사용자 고유 식별자
 	 * @return - 비활성화 및 삭제 결과
 	 */
 	@Transactional
-	public LicenseSecessionResponse deleteAllLicenseInfo(String workspaceUUID, String userUUID) {
+	public LicenseSecessionResponse deleteAllLicenseInfo(String workspaceUUID, String userUUID, long userNumber) {
 		LicensePlan licensePlan = licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(
 			userUUID, workspaceUUID, PlanStatus.ACTIVE
 		);
@@ -414,12 +423,18 @@ public class LicenseService {
 			return new LicenseSecessionResponse(workspaceUUID, true, LocalDateTime.now());
 		}
 
+		// 정기 결제 내역 조회 및 취소
+		billingCancelProcess(userNumber);
+
 		// license product 정보 조회
 		Set<LicenseProduct> licenseProductSet = licensePlan.getLicenseProductList();
 
-		// license 할당 해제
 		if (!licenseProductSet.isEmpty()) {
-			licenseRepository.updateAllLicenseInfoInactiveByLicenseProduct(licenseProductSet);
+			// // license product 상태 inactive 로 변경
+			licenseProductSet.forEach(lp -> lp.setStatus(LicenseProductStatus.INACTIVE));
+			licenseProductRepository.saveAll(licenseProductSet);
+			// // license 할당 해제
+			// 	licenseRepository.updateAllLicenseInfoInactiveByLicenseProduct(licenseProductSet);
 		}
 
 		// license plan 상태 비활성화 및 탈퇴 데이터 표시
@@ -433,5 +448,42 @@ public class LicenseService {
 		);
 
 		return new LicenseSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+	}
+
+	private void billingCancelProcess(long userNumber) {
+		BillingRestResponse<MonthlyBillingInfo> userMonthlyBillingInfo = billingRestService.getMonthlyBillingInfo(
+			1,
+			userNumber
+		);
+
+		// 정기 결제 내역 조회 시, 페이레터 서버 에러인 경우
+		if (userMonthlyBillingInfo == null || userMonthlyBillingInfo.getData() == null
+			|| userMonthlyBillingInfo.getResult().getCode() != 0
+		) {
+			log.error("[BILLING_PAYLETTER] => Paylleter Server Error!");
+			log.error("[BILLLING_MONTHLY_BILLING_INFO] -> [{}]", userNumber);
+			throw new LicenseServiceException(ErrorCode.ERR_BILLING_MONTHLY_BILLING_INFO);
+		}
+
+		MonthlyBillingInfo monthlyBillingInfo = userMonthlyBillingInfo.getData();
+
+		log.info("[BILLING_USER_MOHTLY_BILLING_INFO] -> [{}]", monthlyBillingInfo.toString());
+
+		// 정기 결제 취소
+		MonthlyBillingCancelRequest cancelRequest = new MonthlyBillingCancelRequest();
+		cancelRequest.setSiteCode(1);
+		cancelRequest.setUserMonthlyBillingNumber(monthlyBillingInfo.getMonthlyBillingNumber());
+		cancelRequest.setUserNumber(userNumber);
+
+		BillingRestResponse<Map<String, Object>> billingCancelResult = billingRestService.monthlyBillingCancel(
+			cancelRequest
+		);
+
+		// 정기 결제 취소 시, 페이레터 서버 에러인 경우
+		if (billingCancelResult == null || billingCancelResult.getResult().getCode() != 0) {
+			log.error("[BILLING_PAYLETTER] => Paylleter Server Error!");
+			log.error("[BILLLING_MONTHLY_BILLING_CANCEL] -> [{}]", cancelRequest.toString());
+			throw new LicenseServiceException(ErrorCode.ERR_BILLING_MONTHLY_BILLING_CANCEL);
+		}
 	}
 }

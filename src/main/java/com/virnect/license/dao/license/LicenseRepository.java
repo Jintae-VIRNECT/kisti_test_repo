@@ -25,5 +25,6 @@ public interface LicenseRepository extends JpaRepository<License, Long>, CustomL
 	License findByUserIdAndLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_ProductAndStatus(
 		String userId, String workspaceId, Product product, LicenseStatus status
 	);
+
 	long countByLicenseProductAndStatus(LicenseProduct licenseProduct, LicenseStatus status);
 }

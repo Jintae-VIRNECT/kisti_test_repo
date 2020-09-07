@@ -1,8 +1,5 @@
 package com.virnect.license.global.error;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-
 /**
  * Project: base
  * DATE: 2020-01-07
@@ -56,6 +53,10 @@ public enum ErrorCode {
 	// 라이선스 할당 관련
 	ERR_LICENSE_ALREADY_GRANTED(5000, "License is already granted"),
 	ERR_USEFUL_LICENSE_NOT_FOUND(5001, "Useful License not found"),
+
+	// 탈퇴 관련 에러
+	ERR_BILLING_MONTHLY_BILLING_INFO(6000, "Monthly Billing Info retrieve fail."),
+	ERR_BILLING_MONTHLY_BILLING_CANCEL(6001, "Monthly Billing cancel fail."),
 
 	// 페이레터
 	ERR_BILLING_LICENSE_SERVER_ERROR(7777, "License Server error rollback process begin."),
