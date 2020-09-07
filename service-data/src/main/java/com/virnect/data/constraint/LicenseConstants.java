@@ -1,5 +1,8 @@
 package com.virnect.data.constraint;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  *
  */
@@ -7,7 +10,11 @@ public class LicenseConstants {
     public static final String PRODUCT_NAME = "REMOTE";
     public static final String STATUS_USE = "USE";
     public static final String STATUS_UN_USE = "UNUSE";
+    public static final String LICENSE_PRODUCT = "product";
+    @Deprecated
     public static final String LICENSE_BASIC = "BASIC";
+    @Deprecated
     public static final String LICENSE_BUSINESS = "BUSINESS";
+    @Deprecated
     public static final String LICENSE_PERMANENT = "PERMANENT";
 }

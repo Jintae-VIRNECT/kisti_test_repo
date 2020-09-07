@@ -104,29 +104,14 @@ public class DataRepository {
 
             @Override
             DataProcess<LicenseItem> invokeDataProcess() {
-                LicenseItem licenseItem = null;
+                LicenseItem licenseItem = LicenseItem.ITEM_PRODUCT;
                 LicenseInfoResponse currentLicense = loadFromDatabase().getData();
-                if(currentLicense != null) {
-                    if (currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
-                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BASIC)) {
-                            licenseItem = LicenseItem.ITEM_BASIC;
-                        }
-                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BUSINESS)) {
-                            licenseItem = LicenseItem.ITEM_BUSINESS;
-                        }
-                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_PERMANENT)) {
-                            licenseItem = LicenseItem.ITEM_PERMANENT;
-                        }
-                    } else {
+                if(currentLicense == null) {
+                    return new DataProcess<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY);
+                } else {
+                    if (!currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
                         return new DataProcess<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY);
                     }
-                } else {
-                    return new DataProcess<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY);
-                }
-
-                if(licenseItem == null) {
-                    return new DataProcess<>(ErrorCode.ERR_LICENSE_TYPE_VALIDITY);
-                } else {
                     return new DataProcess<>(licenseItem);
                 }
             }

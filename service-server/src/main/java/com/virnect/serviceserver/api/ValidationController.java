@@ -58,34 +58,19 @@ public class ValidationController implements IValidationRestAPI {
             }
         }
 
-        LicenseItem licenseItem = null;
-        if (currentLicense != null) {
-            if (currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
-                if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BASIC)) {
-                    licenseItem = LicenseItem.ITEM_BASIC;
-                }
-                if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BUSINESS)) {
-                    licenseItem = LicenseItem.ITEM_BUSINESS;
-                }
-                if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_PERMANENT)) {
-                    licenseItem = LicenseItem.ITEM_PERMANENT;
-                }
-            } else {
-                return ResponseEntity.ok(new ApiResponse<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY));
-            }
-        } else {
+        LicenseItem licenseItem = LicenseItem.ITEM_PRODUCT;
+        if (currentLicense == null) {
             return ResponseEntity.ok(new ApiResponse<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY));
+        } else {
+            if (!currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
+                return ResponseEntity.ok(new ApiResponse<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY));
+            } else {
+                LicenseItemResponse licenseItemResponse = new LicenseItemResponse();
+                licenseItemResponse.setItemName(licenseItem.getItemName());
+                licenseItemResponse.setUserCapacity(licenseItem.getUserCapacity());
+                return ResponseEntity.ok(new ApiResponse<>(licenseItemResponse));
+            }
         }
-
-        if (licenseItem == null) {
-            return ResponseEntity.ok(new ApiResponse<>(ErrorCode.ERR_LICENSE_TYPE_VALIDITY));
-        }
-
-
-        LicenseItemResponse licenseItemResponse = new LicenseItemResponse();
-        licenseItemResponse.setItemName(licenseItem.getItemName());
-        licenseItemResponse.setUserCapacity(licenseItem.getUserCapacity());
-        return ResponseEntity.ok(new ApiResponse<>(licenseItemResponse));
     }
 
     /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
