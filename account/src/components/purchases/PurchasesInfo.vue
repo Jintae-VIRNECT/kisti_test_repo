@@ -1,5 +1,50 @@
 <template>
-  <div class="purchase-info">
+  <!-- simple -->
+  <div v-if="simple" class="purchase-info simple">
+    <h5>{{ $t('purchases.info.proudctPlan') }}</h5>
+    <dl>
+      <dd
+        class="plans"
+        v-for="product in plansInfo.products"
+        :key="product.value"
+      >
+        <div class="column-plan">
+          <img :src="product.logo" />
+          <span>{{ product.label }}</span>
+        </div>
+        <div class="count">
+          <span>{{ product.amount }}</span>
+        </div>
+      </dd>
+    </dl>
+    <el-divider />
+    <h5>{{ $t('home.payment.extend') }}</h5>
+    <dl>
+      <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
+      <dd>{{ plansInfo.storage.max.toLocaleString() }} GB</dd>
+      <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
+      <dd>
+        {{ plansInfo.viewCount.max.toLocaleString() }}
+        {{ $t('purchases.countsUnit') }}
+      </dd>
+    </dl>
+    <el-divider />
+    <h6>
+      <span>{{ $t('purchases.info.nextPaymentDate') }}</span>
+    </h6>
+    <span class="value">{{ paymentInfo.nextPayDate | dateFormat }}</span>
+    <el-divider />
+    <h6>{{ $t('purchases.info.way') }}</h6>
+    <span class="value">{{ way }}</span>
+    <a :href="$url.pay" target="_blank">
+      <el-button type="simple">
+        {{ $t('common.payCenter') }}
+      </el-button>
+    </a>
+  </div>
+
+  <!-- full info -->
+  <div v-else class="purchase-info">
     <h5>{{ $t('purchases.info.productPurchasesInfo') }}</h5>
     <dl>
       <dt>{{ $t('purchases.info.proudctPlan') }}</dt>
@@ -71,7 +116,7 @@
     <h6>{{ $t('purchases.info.way') }}</h6>
     <span class="value">{{ way }}</span>
     <el-divider />
-    <a :href="$url.pay">
+    <a :href="$url.pay" target="_blank">
       <el-button type="simple">
         {{ $t('purchases.info.changePlans') }}
       </el-button>
@@ -85,6 +130,7 @@ import filters from '@/mixins/filters'
 export default {
   mixins: [filters],
   props: {
+    simple: Boolean,
     plansInfo: {
       type: Object,
       default: () => ({}),
@@ -171,6 +217,18 @@ export default {
         letter-spacing: 0.1em;
       }
     }
+  }
+}
+
+.purchase-info.simple {
+  .plans:first-of-type {
+    padding-top: 0;
+  }
+  .plans {
+    margin-bottom: 16px;
+  }
+  .plans .count > span:first-child {
+    color: $font-color-desc;
   }
 }
 </style>

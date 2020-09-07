@@ -30,7 +30,11 @@
               <h3>{{ $t('home.payment.title') }}</h3>
               <router-link to="/purchases">{{ $t('common.link') }}</router-link>
             </div>
-            <purchases-info :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
+            <purchases-info
+              simple
+              :plansInfo="plansInfo"
+              :paymentInfo="paymentInfo"
+            />
           </el-card>
         </el-col>
         <el-col class="container__right">

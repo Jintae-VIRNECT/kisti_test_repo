@@ -60,6 +60,9 @@ export default {
     }
   },
   methods: {
+    opened() {
+      this.agree = false
+    },
     async autoPaymentCacnel() {
       try {
         await paymentService.cancelAutoPayments(this.autoPaymentId)
