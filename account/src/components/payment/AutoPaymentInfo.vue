@@ -28,7 +28,7 @@
       <dt>{{ $t('payment.info.totalAmount') }}</dt>
       <dd class="blue">{{ totalProductsAmount }}</dd>
       <div class="plans">
-        <dd v-for="product in plansInfo.products" :key="product.value">
+        <dd v-for="product in autoPayments.products" :key="product.value">
           <div class="column-plan">
             <img :src="product.logo" />
             <span>{{ product.label }}</span>
@@ -39,10 +39,10 @@
         </dd>
       </div>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ plansInfo.storage.default.toLocaleString() }} GB</dd>
+      <dd>{{ autoPayments.storage.default.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ plansInfo.viewCount.default.toLocaleString() }}
+        {{ autoPayments.viewCount.default.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
@@ -54,10 +54,10 @@
     <h5>{{ $t('payment.info.extend') }}</h5>
     <dl class="info horizon">
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd class="blue">{{ plansInfo.storage.add.toLocaleString() }} GB</dd>
+      <dd class="blue">{{ autoPayments.storage.add.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd class="blue">
-        {{ plansInfo.viewCount.add.toLocaleString() }}
+        {{ autoPayments.viewCount.add.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
     </dl>
@@ -112,17 +112,18 @@ export default {
   data() {
     return {
       showAutoPaymentCancelModal: false,
-      plansInfo: {
+      autoPayments: {
+        price: '',
+        items: [],
         products: [],
         storage: { default: '', add: '' },
         viewCount: { default: '', add: '' },
       },
-      autoPayments: { price: '', items: [] },
     }
   },
   computed: {
     totalProductsAmount() {
-      return this.plansInfo.products.reduce((p, n) => p + n.amount, 0)
+      return this.autoPayments.products.reduce((p, n) => p + n.amount, 0)
     },
   },
   methods: {
