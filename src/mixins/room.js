@@ -56,6 +56,9 @@ export default {
         }
         this.roomClear()
         console.error(err)
+        if (this['init'] && typeof this['init'] === 'function') {
+          this.init()
+        }
       }
     },
   },

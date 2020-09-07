@@ -34,8 +34,8 @@
             :filelink="alarm.filelink"
             :image="alarm.image"
             :accept="alarm.accept"
-            @accept="accept(alarm)"
-            @refuse="refuse(alarm)"
+            @accept="acceptInvite(alarm.sessionId, alarm.userId)"
+            @refuse="inviteDenied(alarm.sessionId, alarm.userId)"
             @remove="remove(alarm)"
           ></notice-item>
           <!-- <notice-item
@@ -96,9 +96,9 @@
           </div>
         </div>
       </div>
-      <div class="popover-notice__footer">
+      <!-- <div class="popover-notice__footer">
         <span>{{ $t('alarm.saved_duration') }}</span>
-      </div>
+      </div> -->
     </div>
     <audio preload="auto" ref="noticeAudio">
       <source src="~assets/media/end.mp3" />
@@ -159,7 +159,12 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addAlarm', 'removeAlarm', 'updateAlarm']),
+    ...mapActions([
+      'addAlarm',
+      'removeAlarm',
+      'updateAlarm',
+      'inviteResponseAlarm',
+    ]),
     notice() {
       this.active = false
       if (this.onPush) return
@@ -193,7 +198,7 @@ export default {
           this.alarmInvite(
             body.contents,
             () => this.acceptInvite(body.contents.sessionId, body.userId),
-            () => this.inviteDenied(body.userId),
+            () => this.inviteDenied(body.contents.sessionId, body.userId),
           )
           break
         case EVENT.INVITE_ACCEPTED:
@@ -240,30 +245,24 @@ export default {
     remove(alarm) {
       this.removeAlarm(alarm.id)
     },
-    refuse(alarm) {
-      this.updateAlarm({
-        id: alarm.id,
-        accept: 'refuse',
-      })
-      this.inviteDenied(alarm.userId)
-    },
-    async inviteDenied(userId) {
+    // 초대 거절
+    async inviteDenied(sessionId, userId) {
       const contents = {
         nickName: this.account.nickname,
       }
 
-      await sendPush(EVENT.INVITE_DENIED, [userId], contents)
-    },
-    accept(alarm) {
-      this.updateAlarm({
-        id: alarm.id,
-        accept: 'accept',
+      sendPush(EVENT.INVITE_DENIED, [userId], contents)
+
+      // 알람 리스트 업데이트
+      this.inviteResponseAlarm({
+        sessionId: sessionId,
+        accept: 'refuse',
       })
-      this.acceptInvite(alarm.sessionId, alarm.userId)
+      this.clearAlarm()
     },
+    // 초대 수락
     async acceptInvite(sessionId, userId) {
       if (this.$call.session !== null) {
-        // TODO: MESSAGE
         this.toastError(this.$t('alarm.notice_already_call'))
         return
       }
@@ -284,6 +283,13 @@ export default {
           nickName: this.account.nickname,
         }
         sendPush(EVENT.INVITE_ACCEPTED, [userId], contents)
+
+        // 알람 리스트 업데이트
+        this.inviteResponseAlarm({
+          sessionId: sessionId,
+          accept: 'accept',
+        })
+        this.clearAlarm()
       } catch (err) {
         if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))
@@ -352,7 +358,7 @@ export default {
 .popover-notice__body {
   height: 28.571rem;
   padding-right: 0.714rem;
-  border-bottom: solid 1px rgba($color_white, 0.09);
+  // border-bottom: solid 1px rgba($color_white, 0.09);
   > .vue-scrollbar__wrapper.popover-notice__scroller {
     height: 28.571rem;
   }
