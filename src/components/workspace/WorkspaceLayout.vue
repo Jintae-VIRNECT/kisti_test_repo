@@ -150,10 +150,7 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
-    const lang = localStorage.getItem('language')
-    if (lang) {
-      this.mx_changeLang(lang)
-    }
+    this.mx_changeLang()
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
