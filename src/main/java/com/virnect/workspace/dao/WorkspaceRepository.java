@@ -14,6 +14,6 @@ import java.util.Optional;
  */
 public interface WorkspaceRepository extends JpaRepository<Workspace, Long>, WorkspaceRepositoryCustom {
     Optional<Workspace> findByUuid(String workspaceId);
-
+	Optional<Workspace> findByUserId(String userUUID);
     boolean existsByUserId(String userId);
 }
