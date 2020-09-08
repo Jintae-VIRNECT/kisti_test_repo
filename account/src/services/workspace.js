@@ -24,7 +24,14 @@ export default {
    * 워크스페이스 목록 검색
    * @param {Object} searchParams
    */
-  async searchWorkspaces(searchParams) {
+  async searchWorkspaces(searchParams = {}) {
+    if (searchParams.sort) {
+      let [column, order] = searchParams.sort.split(',')
+      if (column === 'name') column = 'workspaceUser.workspace.name'
+      else if (column === 'joinDate') column = 'workspaceUser.createdDate'
+      searchParams.sort = `${column},${order}`
+    }
+
     const { workspaceList, pageMeta } = await api('GET_WORKSPACES', {
       params: {
         userId: profileServices.getMyProfile().uuid,
