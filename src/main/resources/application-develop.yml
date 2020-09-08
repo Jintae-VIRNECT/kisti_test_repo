@@ -62,7 +62,7 @@ management:
 
 infra:
   billing:
-    api: "https://devpayapi.virnect.com"
+    api: "https://stgapi.virnect.com" # disable on develop env
 
 logging:
   level:
