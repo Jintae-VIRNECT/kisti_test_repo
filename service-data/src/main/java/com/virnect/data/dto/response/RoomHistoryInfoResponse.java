@@ -12,30 +12,30 @@ import java.util.List;
 @Setter
 @ApiModel
 public class RoomHistoryInfoResponse {
-    @ApiModelProperty(value = "원격협업 방 식별자", example = "ses_NxKh1OiT2S")
+    @ApiModelProperty(value = "Remote Session Identifier", example = "ses_NxKh1OiT2S")
     private String sessionId;
 
-    @ApiModelProperty(value = "협업 방 이름", position = 1, example = "Remote")
+    @ApiModelProperty(value = "Remote Session Title", position = 1, example = "Remote")
     private String title;
 
-    @ApiModelProperty(value = "협업 방 소개", position = 2, example = "This is Remote Collaborate, or.. Conference Room(Session)!!")
+    @ApiModelProperty(value = "Remote Session Description", position = 2, example = "This is Remote Collaborate, or.. Conference Room(Session)!!")
     private String description;
 
-    @ApiModelProperty(value = "협업 방 프로필 주소", position = 3, example = "default")
+    @ApiModelProperty(value = "Remote Session Profile Image URL", position = 3, example = "default")
     private String profile;
 
-    @ApiModelProperty(value = "협업방 최대 참여인원 수", position = 4, example = "3")
+    @ApiModelProperty(value = "Remote Session Maximum User Capacity", position = 4, example = "3")
     private int maxUserCount;
 
-    @ApiModelProperty(value = "협업방 시작 일자", position = 5, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "Remote Session Activation Date", position = 5, example = "2020-01-20T14:05:30")
     private LocalDateTime activeDate;
 
-    @ApiModelProperty(value = "협업방 종료 일자", position = 6, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "Remote Session UnActivation Date", position = 6, example = "2020-01-20T14:05:30")
     private LocalDateTime unactiveDate;
 
-    @ApiModelProperty(value = "협업 진행 시간", position = 7, example = "3600")
+    @ApiModelProperty(value = "Remote Session Duration time", position = 7, example = "3600")
     private Long durationSec;
 
-    @ApiModelProperty(value = "협업방 접속 멤버 정보", position = 8)
+    @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 8)
     private List<MemberInfoResponse> memberList;
 }

@@ -9,10 +9,10 @@ import lombok.Setter;
 @Setter
 @ApiModel
 public class LicenseItemResponse {
-    @ApiModelProperty(value = "라이선스 타입", example = "BASIC PLAN")
+    @ApiModelProperty(value = "Licence Type", example = "product")
     private String itemName;
 
-    @ApiModelProperty(value = "원격협업 할당 가능 인원 수", position = 1, example = "3")
+    @ApiModelProperty(value = "Remote Session User Capacity", position = 1, example = "3")
     private int userCapacity;
 
 }

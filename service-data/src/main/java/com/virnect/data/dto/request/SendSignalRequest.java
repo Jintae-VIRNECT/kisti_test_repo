@@ -16,7 +16,7 @@ import java.util.List;
 @ApiModel
 public class SendSignalRequest {
     @NotBlank
-    @ApiModelProperty(value = "Session Id")
+    @ApiModelProperty(value = "Remote Session Identifier")
     private String sessionId;
 
     @ApiModelProperty(position = 1)

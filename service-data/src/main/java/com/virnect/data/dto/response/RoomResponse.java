@@ -15,19 +15,16 @@ import java.util.List;
 @ApiModel
 @NoArgsConstructor
 public class RoomResponse {
-    ///@ApiModelProperty(value = "원격협업 룸 ID", example = "1212")
-    //private String roomId;
-
-    @ApiModelProperty(value = "token", example = "wss://localhost:5000?sessionId=ses_JIiIVBMNKW&token=tok_VNZEjukc3gDJpEej&role=PUBLISHER&version=0.1.0")
+    @ApiModelProperty(value = "Remote Session token", example = "wss://localhost:5000?sessionId=ses_JIiIVBMNKW&token=tok_VNZEjukc3gDJpEej&role=PUBLISHER&version=0.1.0")
     private String token;
 
-    @ApiModelProperty(value = "원격협업 Session ID", position = 1, example = "ses_NxKh1OiT2S")
+    @ApiModelProperty(value = "Remote Session Identifier", position = 1, example = "ses_NxKh1OiT2S")
     private String sessionId;
 
-    @ApiModelProperty(value = "원격협업 Coturn", position = 2)
+    @ApiModelProperty(value = "Coturn Server IP Address", position = 2)
     private List<CoturnResponse> coturn = new ArrayList<>();
 
-    @ApiModelProperty(value = "원격협업 웹 소켓 주소", position = 3, example = "wss://")
+    @ApiModelProperty(value = "Remote Server Websocket Address", position = 3, example = "wss://")
     private String wss;
 
 

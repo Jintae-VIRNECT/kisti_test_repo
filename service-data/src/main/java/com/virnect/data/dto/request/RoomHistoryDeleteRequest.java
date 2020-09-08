@@ -15,10 +15,10 @@ import java.util.List;
 @ApiModel
 public class RoomHistoryDeleteRequest {
     @NotBlank
-    @ApiModelProperty(value = "사용자 식별자")
+    @ApiModelProperty(value = "User Unique Identifier")
     private String uuid;
 
-    @ApiModelProperty(value = "삭제할 세션 리스트", position = 1)
+    @ApiModelProperty(value = "To delete Remote Session Identifier List", position = 1)
     @NotNull
     private List<String> sessionIdList = new ArrayList<>();
 

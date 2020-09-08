@@ -19,7 +19,7 @@ public class InviteRoomResponse {
     @ApiModelProperty(value = "Remote Session Identifier", position = 1, example = "ses_NxKh1OiT2S")
     private String sessionId;
 
-    @ApiModelProperty(value = "Leader User Identifier ", position = 2, example = "410df50ca6e32db0b6acba09bcb457ff")
+    @ApiModelProperty(value = "Leader User Unique Identifier", position = 2, example = "410df50ca6e32db0b6acba09bcb457ff")
     private String leaderId;
 
     @ApiModelProperty(

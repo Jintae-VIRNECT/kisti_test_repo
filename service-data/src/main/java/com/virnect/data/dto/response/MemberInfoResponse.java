@@ -12,31 +12,34 @@ import lombok.Setter;
 @Setter
 @ApiModel
 public class MemberInfoResponse {
-    @ApiModelProperty(value = "사용자 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608")
+    @ApiModelProperty(value = "User Unique Identifier", example = "498b1839dc29ed7bb2ee90ad6985c608")
     private String uuid;
 
-    @ApiModelProperty(value = "사용자 이메일", position = 2, example = "example@remote.com")
+    @ApiModelProperty(value = "User e-mail", position = 2, example = "example@remote.com")
     private String email;
 
-    @ApiModelProperty(value = "사용자 이름", position = 3, example = "홍길동")
+    @ApiModelProperty(value = "User name", position = 3, example = "홍길동")
     private String name;
 
-    @ApiModelProperty(value = "사용자 닉네임", position = 4, example = "리모트 데모")
+    @ApiModelProperty(value = "User Nick Name", position = 4, example = "리모트 데모")
     private String nickName;
 
-    @ApiModelProperty(value = "사용자 프로필 이미지 URL", position = 5, example = "url")
+    @ApiModelProperty(value = "User Profile image URL", position = 5, example = "url")
     private String profile;
 
     @ApiModelProperty(
-            value = "멤버 타입 " +
-                    "( UNKNOWN(알 수 없음), LEADER(방장), EXPERT(전문가), WORKER(작업자) )",
+            value = "Member Type ( UNKNOWN, LEADER, EXPERT )",
             position = 6)
     private MemberType memberType = MemberType.UNKNOWN;
 
-    @ApiModelProperty(value = "사용자 등급 ( MASTER(마스터), MANAGER(매니저), MEMBER(멤버) )", position = 7)
+    @ApiModelProperty(
+            value = "User Permission ( MASTER, MANAGER, MEMBER )",
+            position = 7)
     private String role;
 
-    @ApiModelProperty(value = "사용자 등급 아이디 ( MASTER(1), MANAGER(2), MEMBER(3) )", position = 8)
+    @ApiModelProperty(
+            value = "User Permission Id ( MASTER(1), MANAGER(2), MEMBER(3) )",
+            position = 8)
     private Long roleId = 0L;
 
     @ApiModelProperty(
@@ -46,8 +49,7 @@ public class MemberInfoResponse {
     private DeviceType deviceType = DeviceType.UNKNOWN;
 
     @ApiModelProperty(
-            value = "멤버 상태 타입 " +
-                    "( ONLINE(로그인), OFFLINE(로그아웃), LOAD(참여 중), UNLOAD(미 참여 중), LOADING(접속 중) )",
+            value = "Member Status ( LOAD(참여 중), UNLOAD(미 참여 중), EVICTED(퇴출 됨) )",
             position = 10)
     private MemberStatus memberStatus = MemberStatus.UNLOAD;
 
