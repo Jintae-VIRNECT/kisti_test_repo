@@ -27,7 +27,7 @@ export default class AutoPaymentInfo extends Model {
       add: 0,
     }
     this.viewCount = {
-      default: 0,
+      default: 100000,
       add: 0,
     }
 
@@ -36,6 +36,7 @@ export default class AutoPaymentInfo extends Model {
       this.price = 0
       this.nextPayDate = null
       this.items = []
+      this.viewCount.default = 0
     }
 
     this.items.forEach(item => {
