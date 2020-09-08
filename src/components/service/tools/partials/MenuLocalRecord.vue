@@ -43,7 +43,14 @@ export default {
       }
     },
   },
-  watch: {},
+  watch: {
+    allowLocalRecord(allow) {
+      if (allow === false && this.isRecording === true) {
+        this.toastDefault(this.$t('service.record_blocked'))
+        this.$eventBus.$emit('localRecord', { isStart: false })
+      }
+    },
+  },
 
   methods: {
     ...mapActions(['setLocalRecordStatus']),

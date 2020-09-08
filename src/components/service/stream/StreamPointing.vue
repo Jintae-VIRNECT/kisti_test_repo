@@ -60,7 +60,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'mainView', 'viewAction', 'roomInfo']),
+    ...mapGetters([
+      'tools',
+      'mainView',
+      'viewAction',
+      'roomInfo',
+      'allowPointing',
+    ]),
     pointingColor() {
       return this.tools ? this.tools.color : reset.color
     },
@@ -75,6 +81,7 @@ export default {
     },
     doPointing(event) {
       if (this.viewAction !== ACTION.STREAM_POINTING) return
+      if (this.allowPointing !== true) return
       let posX = normalizedPosX(event.offsetX, this.videoSize.width)
       let posY = normalizedPosY(event.offsetY, this.videoSize.height)
       if (posX > 1) posX = 1
