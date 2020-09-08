@@ -11,10 +11,10 @@ import lombok.Setter;
 public class ProductInfoResponse {
 	@ApiModelProperty(value = "상품 고유 식별자")
 	private long productId;
-	@ApiModelProperty(value = "상품명", position = 1)
+	@ApiModelProperty(value = "빌링 시스템 상품 고유 식별자", position = 1)
+	private long billProductId;
+	@ApiModelProperty(value = "상품명", position = 2)
 	private String name;
-	@ApiModelProperty(value = "상품 가격", position = 2)
-	private long price;
 	@ApiModelProperty(value = "상품 기본 최대 용량", position = 3)
 	private long maxStorageSize;
 	@ApiModelProperty(value = "상품 기본 최대 다운로드 횟수", position = 4)
@@ -30,8 +30,8 @@ public class ProductInfoResponse {
 	public String toString() {
 		return "ProductInfoResponse{" +
 			"productId=" + productId +
+			", billProductId=" + billProductId +
 			", name='" + name + '\'' +
-			", price=" + price +
 			", maxStorageSize=" + maxStorageSize +
 			", maxDownloadHit=" + maxDownloadHit +
 			", maxCallTime=" + maxCallTime +

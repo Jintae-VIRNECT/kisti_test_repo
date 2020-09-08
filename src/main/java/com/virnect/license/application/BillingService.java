@@ -302,7 +302,7 @@ public class BillingService {
 	) {
 		List<AllocateProductInfoResponse> allocateProductInfoList = licenseAllocateRequest.getProductList();
 		for (AllocateProductInfoResponse allocateProduct : allocateProductInfoList) {
-			Product product = productRepository.findById(allocateProduct.getProductId())
+			Product product = productRepository.findByBillProductId(allocateProduct.getProductId())
 				.orElseThrow(
 					() -> {
 						log.error(
@@ -400,7 +400,7 @@ public class BillingService {
 	private void assignLicenseProductLessThanOriginLicensePlan(
 		AllocateProductInfoResponse decreaseLicenseProductInfo, LicensePlan licensePlan
 	) {
-		Product product = productRepository.findById(decreaseLicenseProductInfo.getProductId())
+		Product product = productRepository.findByBillProductId(decreaseLicenseProductInfo.getProductId())
 			.orElseThrow(
 				() -> {
 					log.error(
@@ -552,7 +552,7 @@ public class BillingService {
 			throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
 		}
 		allocateProductList.forEach(productInfo -> {
-			Product product = productRepository.findById(productInfo.getProductId())
+			Product product = productRepository.findByBillProductId(productInfo.getProductId())
 				.orElseThrow(() -> {
 					log.error("ASSIGN REQUEST PRODUCT NOT FOUND -> [{}] ", productInfo.toString());
 					return new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
