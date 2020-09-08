@@ -1,10 +1,11 @@
 package com.virnect.download.dao;
 
-import com.virnect.download.domain.Product;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.Optional;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.virnect.download.domain.Product;
+
 public interface ProductRepository extends JpaRepository<Product, Long> {
-    Optional<Product> findByName(String productName);
+	Optional<Product> findByName(String productName);
 }

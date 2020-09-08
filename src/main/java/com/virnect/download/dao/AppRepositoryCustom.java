@@ -1,10 +1,10 @@
 package com.virnect.download.dao;
 
-import com.virnect.download.domain.App;
-import com.virnect.download.domain.Product;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.virnect.download.domain.App;
+import com.virnect.download.domain.Product;
 
 /**
  * Project: PF-Download
@@ -14,14 +14,14 @@ import java.util.Optional;
  * DESCRIPTION:
  */
 public interface AppRepositoryCustom {
-    List<App> getAppList(Product product);
+	List<App> getAppList(Product product);
 
-    Long getLatestVersionCodeByPackageName(String packageName);
+	Long getLatestVersionCodeByPackageName(String packageName);
 
-    Optional<App> getLatestVersionAppInfoByPackageName(String packageName);
+	Optional<App> getLatestVersionAppInfoByPackageName(String packageName);
 
-    long registerSigningKeyByPackageName(String packageName, String signingKey);
+	long registerSigningKeyByPackageName(String packageName, String signingKey);
 
-    List<App> findByPackageNameAndSignature(String packageName, String signature);
+	List<App> findByPackageNameAndSignature(String packageName, String signature);
 
 }

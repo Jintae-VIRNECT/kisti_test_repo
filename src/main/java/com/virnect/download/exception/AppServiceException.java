@@ -11,13 +11,13 @@ import com.virnect.download.global.error.ErrorCode;
  */
 public class AppServiceException extends RuntimeException {
 
-    private ErrorCode errorCode;
+	private ErrorCode errorCode;
 
-    public AppServiceException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
-    }
+	public AppServiceException(ErrorCode errorCode) {
+		this.errorCode = errorCode;
+	}
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
+	public ErrorCode getErrorCode() {
+		return errorCode;
+	}
 }

@@ -11,14 +11,14 @@ import com.virnect.download.global.error.ErrorCode;
  */
 public class DownloadException extends RuntimeException {
 
-    private ErrorCode errorCode;
+	private ErrorCode errorCode;
 
-    public DownloadException(ErrorCode errorCode) {
-        this.errorCode = errorCode;
-    }
+	public DownloadException(ErrorCode errorCode) {
+		this.errorCode = errorCode;
+	}
 
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
+	public ErrorCode getErrorCode() {
+		return errorCode;
+	}
 
 }
