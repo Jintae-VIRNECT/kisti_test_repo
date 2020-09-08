@@ -25,6 +25,7 @@ public class MemberRestController implements IMemberRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(String workspaceId, String filter, int page, int size) {
+        //log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
         log.info("REST API: GET {}/{}",
                 REST_PATH,
                 workspaceId != null ? workspaceId: "{}");

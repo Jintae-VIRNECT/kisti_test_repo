@@ -41,10 +41,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.*;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -68,6 +65,7 @@ import java.util.concurrent.Semaphore;
 @ComponentScan(value = {"com.virnect.data", "com.virnect.serviceserver"})
 @EntityScan(value = {"com.virnect.data.dao"})
 @EnableJpaRepositories(value = {"com.virnect.data.repository"})
+//@PropertySource(value = {"classpath:feign-application.properties", "classpath:application.properties"})
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 

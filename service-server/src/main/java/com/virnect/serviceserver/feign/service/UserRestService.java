@@ -1,17 +1,16 @@
-package com.virnect.data.feign.service;
+package com.virnect.serviceserver.feign.service;
 
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.feign.UserInfoListResponse;
 import com.virnect.data.dto.feign.UserInfoResponse;
-import com.virnect.data.feign.UserRestFallbackFactory;
+import com.virnect.serviceserver.feign.UserRestFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-//url = "http://192.168.6.3:8081",
-@FeignClient(name = "user-server", fallbackFactory = UserRestFallbackFactory.class)
+@FeignClient(name = "${feign.user-prefix}", url = "${feign.user-url}", fallbackFactory = UserRestFallbackFactory.class)
 public interface UserRestService {
     //@ApiIgnore PageRequest pageRequest
     /**

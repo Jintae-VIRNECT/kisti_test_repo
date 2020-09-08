@@ -1,10 +1,10 @@
-package com.virnect.data.feign;
+package com.virnect.serviceserver.feign;
 
 
 import com.virnect.data.ApiResponse;
-import com.virnect.data.dto.request.PushSendRequest;
 import com.virnect.data.dto.feign.PushResponse;
-import com.virnect.data.feign.service.MessageRestService;
+import com.virnect.data.dto.request.PushSendRequest;
+import com.virnect.serviceserver.feign.service.MessageRestService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

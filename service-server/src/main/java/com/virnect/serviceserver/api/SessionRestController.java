@@ -8,18 +8,16 @@ import com.virnect.data.ApiResponse;
 import com.virnect.data.api.ISessionRestAPI;
 import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.constraint.PushConstants;
-import com.virnect.data.constraint.ServiceConstants;
 import com.virnect.data.dto.feign.PushResponse;
 import com.virnect.data.dto.feign.UserInfoResponse;
 import com.virnect.data.dto.push.InviteRoomContents;
 import com.virnect.data.dto.request.*;
 import com.virnect.data.dto.response.*;
-import com.virnect.data.dto.rpc.RpcParamsRequest;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.feign.service.MessageRestService;
 import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
+import com.virnect.serviceserver.feign.service.MessageRestService;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -377,7 +377,7 @@ public class SessionRestController implements ISessionRestAPI {
                 log.info("push response: [code] {}", pushResponse.getCode());
                 log.info("push response: [message] {}", pushResponse.getMessage());
             }
-            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>();
+            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>(new ResultResponse());
             resultResponse.getData().setResult(true);
             return ResponseEntity.ok(resultResponse);
         } else {

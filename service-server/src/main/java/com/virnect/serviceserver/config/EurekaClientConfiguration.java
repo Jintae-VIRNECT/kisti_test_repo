@@ -1,4 +1,4 @@
-package com.virnect.data.config;
+package com.virnect.serviceserver.config;
 
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.context.annotation.Configuration;

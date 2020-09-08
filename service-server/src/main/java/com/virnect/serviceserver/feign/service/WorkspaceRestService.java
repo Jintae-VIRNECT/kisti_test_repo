@@ -1,18 +1,18 @@
-package com.virnect.data.feign.service;
+package com.virnect.serviceserver.feign.service;
 
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoResponse;
-import com.virnect.data.feign.WorkspaceRestFallbackFactory;
+import com.virnect.serviceserver.feign.WorkspaceRestFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-//url = "http://192.168.6.3:8082"
-@FeignClient(name = "workspace-server", fallbackFactory = WorkspaceRestFallbackFactory.class)
+@FeignClient(name = "${feign.workspace-prefix}", url = "${feign.workspace-url}", fallbackFactory = WorkspaceRestFallbackFactory.class)
 public interface WorkspaceRestService {
+
     @GetMapping("/workspaces/{workspaceId}/members")
     ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
             @PathVariable("workspaceId") String workspaceId,
