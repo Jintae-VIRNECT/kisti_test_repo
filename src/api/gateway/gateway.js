@@ -112,7 +112,7 @@ const sender = async function(constant, params, headers = {}, custom) {
     if ('message' in err) {
       switch (err.message.toLowerCase()) {
         case 'network error':
-          window.vue.$toasted.error(window.vue.$t('common.network_error'), {
+          window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
             position: 'bottom-center',
             duration: 5000,
             action: {
