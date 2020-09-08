@@ -28,6 +28,16 @@ const mutations = {
       state.alarmList[idx][key] = info[key]
     }
   },
+  ['INVITE_RESPONSE_ALARM'](state, info) {
+    const idx = state.alarmList.findIndex(
+      alarm => alarm.type === 'invite' && alarm.sessionId === info.sessionId,
+    )
+    if (idx < 0) return
+    for (let key in info) {
+      if (key === 'sessionId') continue
+      state.alarmList[idx][key] = info[key]
+    }
+  },
 }
 
 const getters = {
@@ -43,6 +53,9 @@ const actions = {
   },
   updateAlarm({ commit }, payload) {
     commit(UPDATE_ALARM, payload)
+  },
+  inviteResponseAlarm({ commit }, payload) {
+    commit('INVITE_RESPONSE_ALARM', payload)
   },
 }
 

@@ -100,7 +100,7 @@
     "setting_local_record_warning": "*Cannot change settings during local recording.",
     "setting_record_target": "Recording target",
     "setting_record_max_time": "Max. recording time",
-    "setting_record_interval": "Min. recording time",
+    "setting_record_interval": "Max. recording interval",
     "setting_record_time_tooltip": "When you create local recording files for a long time, your PC may experience a heavy load.<br> We recommed you to set recording time intervals.",
     "setting_record_resolution": "Recording resolution",
     "setting_record_resolution_tooltip": "When setting the resolution of 720p (HD) or higher, <br>please be aware that the service depends on the PC's performance.",

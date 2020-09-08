@@ -5,6 +5,8 @@
       :active="picker"
       :src="require('assets/image/ic_zoom.svg')"
       :activeSrc="require('assets/image/ic_zoom.svg')"
+      :disableActive="true"
+      placement="top"
       @click.stop="clickHandler()"
     ></tool-button>
 

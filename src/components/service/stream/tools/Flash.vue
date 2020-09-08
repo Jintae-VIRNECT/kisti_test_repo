@@ -5,6 +5,7 @@
     :icActive="status"
     :src="require('assets/image/ic_flash_off.svg')"
     :activeSrc="require('assets/image/ic_flash_on.svg')"
+    placement="top"
     @click="clickHandler()"
   ></tool-button>
 </template>

@@ -32,13 +32,13 @@
           >
             {{ $t('workspace.info_remote_member') }}
           </button>
-          <button
+          <!-- <button
             class="roominfo-nav__menu"
             :class="{ active: tabview === 'download' }"
             @click="tabChange('download')"
           >
             {{ $t('button.download') }}
-          </button>
+          </button> -->
         </div>
       </section>
       <room-info
@@ -56,7 +56,7 @@
         :sessionId="sessionId"
       ></participants-info>
 
-      <room-download v-else :sessionId="sessionId"></room-download>
+      <!-- <room-download v-else :sessionId="sessionId"></room-download> -->
     </div>
   </modal>
 </template>

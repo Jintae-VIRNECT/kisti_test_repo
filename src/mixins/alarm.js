@@ -211,5 +211,8 @@ export default {
         ...payload.options,
       })
     },
+    clearAlarm() {
+      this.$alarm.clear()
+    },
   },
 }
