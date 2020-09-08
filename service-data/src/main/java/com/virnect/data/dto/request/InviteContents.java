@@ -20,12 +20,11 @@ public class InviteContents implements Serializable {
     @NotBlank
     private String profile;
 
-    @ApiModelProperty(value = "Remote Session Title", example = "ROOM_INVITE", required = true, position = 4)
+    @ApiModelProperty(value = "Remote Session Title", example = "ROOM_INVITE", required = true, position = 2)
     @NotBlank
     private String title;
 
-    @ApiModelProperty(value = "Invitee Nickname", example = "4ff0606102fbe", required = true, position = 2)
+    @ApiModelProperty(value = "Invitee Nickname", example = "4ff0606102fbe", required = true, position = 3)
     @NotBlank
     private String nickName;
-
 }

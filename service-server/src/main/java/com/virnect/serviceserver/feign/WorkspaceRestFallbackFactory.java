@@ -1,11 +1,10 @@
-package com.virnect.data.feign;
+package com.virnect.serviceserver.feign;
 
 
 import com.virnect.data.ApiResponse;
-import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoResponse;
-import com.virnect.data.feign.service.WorkspaceRestService;
+import com.virnect.serviceserver.feign.service.WorkspaceRestService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

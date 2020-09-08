@@ -14,27 +14,35 @@ import java.util.Map;
 @Setter
 @ApiModel
 public class PushSendRequest {
-    @ApiModelProperty(value = "푸시 발송 서비스 명", example = "rm-service", required = true, position = 0)
+    @ApiModelProperty(value = "Push Service Name", example = "remote", required = true)
     @NotBlank
     private String service;
 
-    @ApiModelProperty(value = "워크스페이스 식별자", example = "4ff0606102fbe", required = true, position = 1)
+    @ApiModelProperty(value = "Workspace Identifier", example = "40f9bbee9d85dca7a34a0dd205aae718", required = true, position = 1)
     @NotBlank
     private String workspaceId;
 
-    @ApiModelProperty(value = "메세지 발행 유저 식별자", example = "4ff0606102fbe", required = true, position = 2)
+    @ApiModelProperty(value = "Sender User Unique Identifier", example = "410df50ca6e32db0b6acba09bcb457ff", required = true, position = 2)
     @NotBlank
     private String userId;
 
-    @ApiModelProperty(value = "메세지 수신 대상 식별자", example = "[\"4ff0606102fbe\"]", required = true, position = 3)
+    @ApiModelProperty(
+            value = "Receiver Target User Unique Identifier",
+            example = "[\n" +
+                    " \"4705cf50e6d02c59b0eef9591666e2a3\",\n" +
+                    " \"473b12854daa6afeb9e505551d1b2743\",\n" +
+                    "\n" +
+                    "]",
+            required = true,
+            position = 3)
     @NotNull
     private List<String> targetUserIds;
 
-    @ApiModelProperty(value = "이벤트 이름", example = "invite", required = true, position = 4)
+    @ApiModelProperty(value = "Push Event Name", example = "invite", required = true, position = 4)
     @NotBlank
     private String event;
 
-    @ApiModelProperty(value = "메세지 내용", example = "{\n" +
+    @ApiModelProperty(value = "Push Contents", example = "{\n" +
             "  \"custom1\": \"string\",\n" +
             "  \"custom2\": \"string\"\n" +
             "}", required = true, position = 5)

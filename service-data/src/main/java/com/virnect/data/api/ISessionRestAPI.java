@@ -35,7 +35,25 @@ public interface ISessionRestAPI {
      * 6. register other users as a worker(participant), if the request contains other user information.
      * 7. return session id and token
      */
-    @ApiOperation(value = "Initialize a Remote Room ", notes = "원격협업 방을 생성 합니다.")
+    @ApiOperation(value = "Initialize a Remote Room for Realwear", notes = "Generate Remote Session")
+    @PostMapping(value = "room/{userId}")
+    ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
+            @RequestHeader(name = "client", required = false) String client,
+            @PathVariable(name = "userId") String userId,
+            @RequestBody @Valid RoomRequest roomRequest,
+            BindingResult result);
+
+
+    /**
+     * 1. check room request handler
+     * 2. check user license type using user uuid
+     * 3. generate session id and token
+     * 4. create room
+     * 5. register user as a leader who creates the room
+     * 6. register other users as a worker(participant), if the request contains other user information.
+     * 7. return session id and token
+     */
+    @ApiOperation(value = "Initialize a Remote Room", notes = "Generate Remote Session for Smart Glasses")
     @PostMapping(value = "room")
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestBody @Valid RoomRequest roomRequest,

@@ -45,10 +45,6 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     // ModelMapper
     implementation(group = "org.modelmapper", name = "modelmapper", version = "2.3.0")
-    // Eureka
-    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
-    // Netflex Feign Client
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     // Swagger
     api("io.springfox:springfox-swagger2:2.9.2")
     implementation("io.springfox:springfox-swagger-ui:2.9.2")

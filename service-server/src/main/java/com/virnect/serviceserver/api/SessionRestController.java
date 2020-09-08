@@ -8,18 +8,16 @@ import com.virnect.data.ApiResponse;
 import com.virnect.data.api.ISessionRestAPI;
 import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.constraint.PushConstants;
-import com.virnect.data.constraint.ServiceConstants;
 import com.virnect.data.dto.feign.PushResponse;
 import com.virnect.data.dto.feign.UserInfoResponse;
 import com.virnect.data.dto.push.InviteRoomContents;
 import com.virnect.data.dto.request.*;
 import com.virnect.data.dto.response.*;
-import com.virnect.data.dto.rpc.RpcParamsRequest;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.feign.service.MessageRestService;
 import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
+import com.virnect.serviceserver.feign.service.MessageRestService;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -58,17 +58,22 @@ public class SessionRestController implements ISessionRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
-            @RequestBody @Valid RoomRequest roomRequest,
+            String client,
+            String userId,
+            @Valid RoomRequest roomRequest,
             BindingResult result) {
         log.info("REST API: POST {}/{}", REST_PATH, roomRequest != null ? roomRequest.toString() : "{}");
+        log.info("REST API: POST {}, Request UserId::{}", REST_PATH, userId != null ? userId : "null userId");
+        log.info("REST API: POST Header {}, Request Header::{}", REST_PATH, client != null ? client : "null client header");
 
-        // 1. check room request handler
+        // check room request handler
         if(result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+
         // check user is valid
-        DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(roomRequest.getLeaderId());
+        DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(userId);
 
         // check user license type using user id
         DataProcess<LicenseItem> licenseItem = this.dataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
@@ -81,7 +86,7 @@ public class SessionRestController implements ISessionRestAPI {
             return ResponseEntity.ok(apiResponse);
         }
 
-        // 2. check room request member count is over
+        // check room request member count is over
         if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getData().getUserCapacity()) {
             ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
                     new RoomResponse(),
@@ -118,11 +123,83 @@ public class SessionRestController implements ISessionRestAPI {
         }*/
 
 
-        // 4. generate session id and token
+        // generate session id and token
         JsonObject sessionJson = serviceSessionManager.generateSession();
         JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
-        // 5. create room
+        // create room
+        ApiResponse<RoomResponse> apiResponse = this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
+        if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
+            //send push message invite
+            PushSendRequest pushSendRequest = new PushSendRequest();
+            pushSendRequest.setService(PushConstants.PUSH_EVENT_REMOTE);
+            pushSendRequest.setEvent(PushConstants.SEND_PUSH_ROOM_INVITE);
+            pushSendRequest.setWorkspaceId(roomRequest.getWorkspaceId());
+            pushSendRequest.setUserId(userId);
+            pushSendRequest.setTargetUserIds(Arrays.asList(roomRequest.getLeaderId()));
+            //set push message invite room contents
+            InviteRoomContents inviteRoomContents = new InviteRoomContents();
+            inviteRoomContents.setSessionId(apiResponse.getData().getSessionId());
+            inviteRoomContents.setTitle(roomRequest.getTitle());
+            inviteRoomContents.setNickName(userInfo.getData().getNickname());
+            inviteRoomContents.setProfile(userInfo.getData().getProfile());
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                String jsonString = mapper.writeValueAsString(inviteRoomContents);
+                pushSendRequest.setContents(mapper.readValue(jsonString, new TypeReference<Map<Object, Object>>() {}));
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+
+            ApiResponse<PushResponse> pushResponse = this.messageRestService.sendPush(pushSendRequest);
+            if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+                log.info("push send message executed but not success");
+                log.info("push response: [code] {}", pushResponse.getCode());
+                log.info("push response: [message] {}", pushResponse.getMessage());
+            }
+        }
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
+            @Valid RoomRequest roomRequest,
+            BindingResult result) {
+        log.info("REST API: POST {}/{}", REST_PATH, roomRequest != null ? roomRequest.toString() : "{}");
+
+        // check room request handler
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        // check user is valid
+        DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(roomRequest.getLeaderId());
+
+        // check user license type using user id
+        DataProcess<LicenseItem> licenseItem = this.dataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
+        if (licenseItem.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+            ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
+                    new RoomResponse(),
+                    licenseItem.getCode(),
+                    licenseItem.getMessage()
+            );
+            return ResponseEntity.ok(apiResponse);
+        }
+
+        // check room request member count is over
+        if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getData().getUserCapacity()) {
+            ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
+                    new RoomResponse(),
+                    ErrorCode.ERR_ROOM_MEMBER_IS_OVER
+            );
+            return ResponseEntity.ok(apiResponse);
+        }
+
+        // generate session id and token
+        JsonObject sessionJson = serviceSessionManager.generateSession();
+        JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+
+        // create room
         ApiResponse<RoomResponse> apiResponse = this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
         if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
             //send push message invite
@@ -377,7 +454,7 @@ public class SessionRestController implements ISessionRestAPI {
                 log.info("push response: [code] {}", pushResponse.getCode());
                 log.info("push response: [message] {}", pushResponse.getMessage());
             }
-            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>();
+            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>(new ResultResponse());
             resultResponse.getData().setResult(true);
             return ResponseEntity.ok(resultResponse);
         } else {
