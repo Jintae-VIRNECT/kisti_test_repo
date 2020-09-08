@@ -45,7 +45,7 @@ public class ProductService {
 	public ApiResponse<ProductInfoResponse> createNewProductHandler(
 		CreateNewProductRequest createNewProductRequest
 	) {
-		ProductType productType = this.productTypeRepository.findById(createNewProductRequest.getProductTypeId())
+		ProductType productType = productTypeRepository.findById(createNewProductRequest.getProductTypeId())
 			.orElseThrow(() -> new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_CREATE));
 		Product newProduct = Product.builder()
 			.name(createNewProductRequest.getProductName())
@@ -58,7 +58,6 @@ public class ProductService {
 		productRepository.save(newProduct);
 
 		ProductInfoResponse productInfoResponse = modelMapper.map(newProduct, ProductInfoResponse.class);
-		productInfoResponse.setProductId(newProduct.getId());
 		return new ApiResponse<>(productInfoResponse);
 	}
 
@@ -125,7 +124,6 @@ public class ProductService {
 		List<ProductInfoResponse> productInfoList = new ArrayList<>();
 		productList.forEach(product -> {
 			ProductInfoResponse productInfo = modelMapper.map(product, ProductInfoResponse.class);
-			productInfo.setProductId(product.getId());
 			productInfoList.add(productInfo);
 		});
 		return new ApiResponse<>(new ProductInfoListResponse(productInfoList));
@@ -188,7 +186,6 @@ public class ProductService {
 		productRepository.save(product);
 
 		ProductInfoResponse productInfoResponse = modelMapper.map(product, ProductInfoResponse.class);
-		productInfoResponse.setProductId(product.getId());
 		return new ApiResponse<>(productInfoResponse);
 	}
 }
