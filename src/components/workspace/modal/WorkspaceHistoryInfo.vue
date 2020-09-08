@@ -21,6 +21,7 @@
           <button
             class="roominfo-nav__menu"
             :class="{ active: tabview === 'group' }"
+            :data-text="$t('workspace.info_remote')"
             @click="tabChange('group')"
           >
             {{ $t('workspace.info_remote') }}
@@ -28,6 +29,7 @@
           <button
             class="roominfo-nav__menu"
             :class="{ active: tabview === 'user' }"
+            :data-text="$t('workspace.info_remote_member')"
             @click="tabChange('user')"
           >
             {{ $t('workspace.info_remote_member') }}
@@ -35,6 +37,7 @@
           <!-- <button
             class="roominfo-nav__menu"
             :class="{ active: tabview === 'download' }"
+            :data-text="$t('button.download')"
             @click="tabChange('download')"
           >
             {{ $t('button.download') }}

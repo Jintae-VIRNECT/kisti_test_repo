@@ -114,8 +114,7 @@ export default {
     background: transparent;
     &:hover,
     &:active {
-      @include font-bold($color_text);
-      // font-weight: 500;
+      font-weight: 500;
     }
   }
 }

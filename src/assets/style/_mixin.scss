@@ -71,10 +71,6 @@
   border-image: gradient($start_color, $end_color);
 }
 
-@mixin font-bold($text_color) {
-  text-shadow: 0 0.65px $text_color, 0 0.65px $text_color;
-}
-
 @mixin ir {
   overflow: hidden;
   text-indent: -999px;
