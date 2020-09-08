@@ -159,7 +159,7 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.CAMERA, event => {
     const data = JSON.parse(event.data)
     if (data.type === CAMERA.ZOOM) {
-      if (data.to.findIndex(id => id === _.account.uuid) > -1) {
+      if (event.from.connectionId === session.connection.connectionId) {
         const track = _.publisher.stream.mediaStream.getVideoTracks()[0]
         track.applyConstraints({
           advanced: [{ zoom: parseFloat(data.level) * 100 }],
