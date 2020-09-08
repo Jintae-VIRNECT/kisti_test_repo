@@ -10,6 +10,10 @@ import lombok.RequiredArgsConstructor;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.AppStatus;
 import com.virnect.download.domain.Product;
+import com.virnect.download.domain.QApp;
+import com.virnect.download.domain.QDevice;
+import com.virnect.download.domain.QOS;
+import com.virnect.download.domain.QProduct;
 
 /**
  * Project: PF-Download
