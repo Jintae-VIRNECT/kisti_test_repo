@@ -97,13 +97,23 @@ export default {
       this.agree = false
     },
     async submit() {
-      const form = { ...this.form }
-      if (form.secessionReason === 'etc') form.secessionReason = form.etcReason
+      const form = {
+        email: this.form.email,
+        policyAssigned: this.agree,
+        password: this.form.password,
+        reason:
+          this.form.secessionReason === 'etc'
+            ? this.form.etcReason
+            : this.form.secessionReason,
+      }
       try {
-        throw new Error()
+        await profileService.secession(form)
       } catch (e) {
+        const message = /^Error: (5001)/.test(e)
+          ? this.$t('profile.secession.message.fail')
+          : e
         this.$notify.error({
-          message: this.$t('profile.secession.message.fail'),
+          message,
           position: 'bottom-left',
           duration: 2000,
         })
