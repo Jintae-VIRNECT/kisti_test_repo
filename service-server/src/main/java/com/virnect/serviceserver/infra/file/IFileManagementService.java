@@ -16,15 +16,13 @@ import java.util.List;
 public interface IFileManagementService {
 
     String LOG_MESSAGE_TAG = "[FILE MANAGEMENT SERVICE]::";
-    //String PROFILE_DIRECTORY = "profile";
-    //String FILE_DIRECTORY = "files";
-
 
     int EXPIRE_DAY = 7; // 7 days expire time
     List<String> FILE_IMAGE_ALLOW_EXTENSION = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");
     List<String> FILE_DOCUMENT_ALLOW_EXTENSION = Arrays.asList("doc", "ppt", "xls", "dot", "docx", "xlsx", "pptx", "pdf");
     List<String> FILE_VIDEO_ALLOW_EXTENSION = Arrays.asList("mp4", "webm");
-    List<String> FILE_ALLOW_EXTENSION = new ArrayList<>();
+
+
     /**
      * 파일 업로드 처리
      * @param file - 파일 업로드 요청
@@ -48,11 +46,19 @@ public interface IFileManagementService {
 
     String uploadPolicyFile(MultipartFile file, String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
+    boolean removeObject(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+
     /**
      * 업로드 된 파일 삭제 요청
      * @param url - 업로드된 파일 url
      */
     boolean delete(final String url);
+
+    /**
+     * 업로드 된 프로필 파일 삭제 요청
+     * @param url - 업로드된 파일 url
+     */
+    boolean deleteProfile(final String url);
 
     /**
      * 업로드 요청 파일 확장자 추출
@@ -86,7 +92,9 @@ public interface IFileManagementService {
      */
     String base64ImageUpload(final String base64Image);
 
-    byte[] fileDownload(final String filePath) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+    byte[] fileDownload(final String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+
+    String filePreSignedUrl(final String objectPathToName, int expiry) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     void copyFileS3ToLocal(String fileName);
 }

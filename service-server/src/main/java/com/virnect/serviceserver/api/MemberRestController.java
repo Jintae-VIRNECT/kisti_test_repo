@@ -5,6 +5,7 @@ import com.virnect.data.ApiResponse;
 import com.virnect.data.api.IMemberRestAPI;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.response.MemberInfoListResponse;
+import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.service.MemberService;
 import com.virnect.serviceserver.data.DataRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,5 +56,10 @@ public class MemberRestController implements IMemberRestAPI {
         //increase page number + 1, cause page index starts 0
         ApiResponse<MemberInfoListResponse> apiResponse = this.dataRepository.loadMemberList(workspaceId, sessionId, userId, filter, page + 1, size);
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @Override
+    public ApiResponse<ResultResponse> deleteMembersByWithdrawal(String userId) {
+        return null;
     }
 }

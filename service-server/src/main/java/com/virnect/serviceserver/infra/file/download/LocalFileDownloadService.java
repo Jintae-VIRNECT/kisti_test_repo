@@ -28,6 +28,7 @@ import java.security.NoSuchAlgorithmException;
 @Profile({"develop", "local", "test"})
 @Slf4j
 @Component
+@Deprecated
 public class LocalFileDownloadService implements IFileDownload {
 
     @Value("${cms.bucket-file-name}")

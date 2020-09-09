@@ -31,7 +31,7 @@ public class HistoryRestController implements IHistoryRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(String workspaceId, String userId, boolean paging, PageRequest pageable) {
-        log.info("REST API: GET {}/{}{}", REST_PATH, workspaceId != null ? workspaceId : "{}", userId != null ? userId : "{}");
+        log.info("REST API: GET {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId : "{}", userId != null ? userId : "{}");
         return ResponseEntity.ok(
                 this.dataRepository.loadRoomHistoryInfoList(workspaceId, userId, paging, pageable.of())
         );
