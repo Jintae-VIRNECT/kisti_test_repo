@@ -16,6 +16,8 @@ class AuthService {
 				const { data } = response
 				if (data.accessToken) {
 					const cookieOption = {
+						secure: true,
+						sameSite: 'None',
 						expires: data.expireIn / 3600000,
 						domain:
 							location.hostname.split('.').length === 3
