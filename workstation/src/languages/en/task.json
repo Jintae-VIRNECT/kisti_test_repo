@@ -1,37 +1,37 @@
 {
   "list": {
-    "title": "Task Overview",
-    "newTask": "Add new tasks",
-    "allTasksList": "Overall task list",
-    "allTasks": "All tasks",
-    "waitTasks": "Pending tasks",
-    "startedTasks": "Started tasks",
-    "endTasks": "Ended tasks",
-    "taskCount": "Registered Tasks",
+    "title": "Task overview",
+    "newTask": "Add tasks",
+    "allTasksList": "Task list",
+    "allTasks": "All",
+    "waitTasks": "Pending",
+    "startedTasks": "Started",
+    "endTasks": "Ended",
+    "taskCount": "Registered",
     "myTasks": "My tasks",
-    "dailyRateGraph": "Daily task progress graph",
+    "dailyRateGraph": "Daily task progress rate graph",
     "dailyRateGraphDesc": "Review progress of daily tasks. The daily task progress rate is average progress rate of started tasks per each day.",
     "rate": "Progress rate",
     "close": "End",
-    "empty": "There is no tasks registered.",
+    "empty": "There is no task registered.",
     "dashboard": {
-      "title": "Real-time progress of task",
+      "title": "Real-time progress",
       "titleDesc": "The task progress status is shown based on the time of your access to this page.",
-      "allProgress": "Task progress overview",
-      "countOfConditions": "Task counts per progress status",
-      "countOfConditionsDesc": "Progress status of task/subtask/step in \"Task management\" depends on the \"schedule\" and \"progress rate\"",
+      "allProgress": "Overall progress rate",
+      "countOfConditions": "Progress status overview",
+      "countOfConditionsDesc": "Progress status of task / subtask / step in \"Task management\" depends on the \"Schedule\" and \"Progress rate\"",
       "graphOn": "Unfold",
       "graphOff": "Fold"
     },
     "column": {
-      "id": "Task ID",
-      "name": "Task title",
-      "endedSubTasks": "Completed Subtasks",
-      "endedSubTasksTooltip": "Completed subtasks / Total subtasks",
+      "id": "ID",
+      "name": "Name",
+      "endedSubTasks": "Completed subtasks",
+      "endedSubTasksTooltip": "Completed subtasks / total subtasks",
       "schedule": "Schedule",
       "progressRate": "Progress rate",
-      "status": "Progress status",
-      "reportedDate": "Report time",
+      "status": "Status",
+      "reportedDate": "Reported on",
       "issue": "Issue",
       "endStatus": "Ended status"
     },
@@ -59,9 +59,9 @@
   "detail": {
     "title": "Selected task details",
     "taskPosition": "Task location",
-    "subTaskList": "subtask list",
+    "subTaskList": "Subtask list",
     "allSubTasks": "All subtasks",
-    "waitSubTasks": "Pending Subtasks",
+    "waitSubTasks": "Pending subtasks",
     "startedSubTasks": "Started subtask",
     "endSubTasks": "Ended subtask",
     "subTaskCount": "Total subtasks",
@@ -74,7 +74,7 @@
       "id": "Subtask ID",
       "name": "Subtask title",
       "endedSteps": "Step completed",
-      "endedStepsTooltip": "Completed steps / Total steps",
+      "endedStepsTooltip": "Completed steps / total steps",
       "schedule": "Subtask schedule",
       "progressRate": "Progress rate",
       "status": "Progress status",
@@ -121,10 +121,10 @@
     }
   },
   "new": {
-    "title": "Add New Tasks",
+    "title": "Add new tasks",
     "contentsInfo": "New task's content detail",
     "sceneGroupInfo": "Task components",
-    "sceneGroupInfoDesc": "The selected \"Content\" is added as a \"Task\". The \"Scene group\" within the Content is turned into \"Subtask\" and you can set up assignee and schedule.",
+    "sceneGroupInfoDesc": "The selected \"Content\" is added as a \"Task\". The \"Scene group\" within the content is turned into \"Subtask\" and you can set up assignee and schedule.",
     "moveContentInfo": "Go to content details"
   },
   "manage": {
@@ -146,7 +146,7 @@
     "taskPosition": "Task location",
     "taskPositionPlaceholder": "Please enter task location",
     "taskPositionDesc": "Notify the task location to task assignee",
-    "subTaskCount": "Subtask Counts",
+    "subTaskCount": "Subtask counts",
     "subTaskSetting": "Subtask settings",
     "subTaskName": "Subtask title",
     "subTaskSchedule": "Subtask schedule",
@@ -160,25 +160,25 @@
     "subTaskWorkerChangeDesc": "Receive subtask reports with updated information",
     "message": {
       "taskUpdateSuccess": "Task details updated",
-      "taskUpdateFail": "Failed to edit the Task please try again later",
+      "taskUpdateFail": "Failed to edit the task please try again later",
       "subTaskUpdateSuccess": "Subtask details are updated",
-      "subTaskUpdateFail": "Failed to edit the Subtask please try again later."
+      "subTaskUpdateFail": "Failed to edit the subtask please try again later."
     }
   },
   "newTarget": {
     "targetSetting": "Target settings",
     "beforeTarget": "Target content",
     "afterTarget": "Target task",
-    "duplicate": "Duplicate content and register it as a Task",
+    "duplicate": "Duplicate content and register it as a task",
     "duplicateDesc": "Duplicate the \"Content\" and place it into \"Task Management\". Issue new \"Task target\" to the duplicated content and manage it as a \"Task\".",
-    "transform": "Turn Content into a Task and then update.",
+    "transform": "Turn tontent into a task and then update.",
     "transformDesc": "Use existing \"Content targets\" as the \"Task targets\". Since a \"Content\" is turned into a \"Task\" it is moved to \"Task Management\" and can no longer be managed from \"Content list\"",
     "register": "New task",
     "registerComment": "Updating a new task with the information you entered.",
     "message": {
       "registerSuccess": "New task is added",
       "registerFail": "Failed to update the task please try again later",
-      "registerStroageFail": "Updating task failed due to the insuffient storage capacity. Please purchase more storage."
+      "registerStroageFail": "Updating task failed due to the insuffient storage capacity."
     }
   },
   "addTarget": {
@@ -186,15 +186,15 @@
     "beforeTarget": "Target task",
     "afterTarget": "Add task target",
     "duplicate": "Issue new task target",
-    "duplicateDesc": "Duplicate content used in an \"existing task\" into the \"new task content\". Issue new task targets for the composition details of duplicated content.",
+    "duplicateDesc": "Duplicate content used in an existing \"Task\" into the \"Task content\". Issue new task targets for the composition details of duplicated content.",
     "transform": "Use existing target task",
-    "transformDesc": "Ending the exisiting task and no further reporting will be made. You will be receiving Task report from the newly updated task and the same target of existing task will be used.",
-    "register": "Generate",
+    "transformDesc": "Ending the exisiting task and no further reporting will be made. You will be receiving task report from the newly updated task and the same target of existing task will be used.",
+    "register": "Create new",
     "registerComment": "Create additional task with the information you entered.",
     "message": {
       "registerSuccess": "Creating additional task completed",
       "registerFail": "Failed to create additional task please try again later",
-      "registerStroageFail": "Failed to create additional task due to insuffient storage capacity please purchase more storage."
+      "registerStroageFail": "Failed to create additional task due to insuffient storage capacity."
     }
   },
   "targetInfo": {

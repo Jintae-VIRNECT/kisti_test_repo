@@ -63,7 +63,7 @@
       <column-closed
         :label="$t('task.list.column.endStatus')"
         prop="state"
-        :width="90"
+        :width="110"
         :sortable="sortable"
       />
       <column-dropdown :width="60" v-slot:default="{ row }">

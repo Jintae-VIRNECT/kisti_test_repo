@@ -1,29 +1,29 @@
 {
   "allContents": {
     "title": "Overall content list",
-    "myContents": "My contents",
+    "myContents": "My content",
     "delete": "Delete",
     "workspaceContentsList": "Workspace content list",
     "column": {
       "id": "Content ID",
-      "name": "Content title",
-      "targetType": "Target type",
-      "uploader": "Uploader",
-      "createdDate": "Upload date",
-      "sharedStatus": "Sharing status"
+      "name": "Content",
+      "targetType": "Target",
+      "uploader": "Person",
+      "createdDate": "Date",
+      "sharedStatus": "Sharing"
     },
     "empty": "There is no uploaded content"
   },
   "sharedStatus": {
-    "shared": "Activate",
-    "noShared": "Deactivate"
+    "shared": "On",
+    "noShared": "Off"
   },
   "targetTypes": {
-    "qr": "QR Target",
-    "vtarget": "V Target"
+    "qr": "QR target",
+    "vtarget": "V target"
   },
   "info": {
-    "title": "Content Details",
+    "title": "Content details",
     "id": "Content ID",
     "name": "Content title",
     "uploader": "Uploader",
@@ -36,14 +36,14 @@
     "properties": "Content components",
     "delete": "Delete",
     "update": "Edit",
-    "register": "Register Tasks",
+    "register": "Register tasks",
     "message": {
       "delete": "Delete selected content",
       "deleteSure": "Are you sure you want to delete the selected content?",
       "deleteSuccess": "Selected content is deleted",
       "deleteFail": "Failed to delete selected content please try again later",
-      "deleteNotExist": "The selected content does not exist in the workspace. Please check again.",
-      "deleteShared": "It is impossible to delete when the content sharing is in activation.",
+      "deleteNotExist": "The selected content does not exist in the Workspace. Please check again.",
+      "deleteShared": "It is impossible to delete when the content sharing is on.",
       "updateSuccess": "The selected content sharing settings have been updated.",
       "updateFail": "Failed to update content sharing settings please try again later",
       "updateNotExist": "The selected content does not exist in the workspace. Please check again."

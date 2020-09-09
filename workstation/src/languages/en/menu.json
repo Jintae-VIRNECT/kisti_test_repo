@@ -1,8 +1,8 @@
 {
   "home": "Home",
-  "members": "Manage Members",
-  "contents": "Manage Contents",
-  "tasks": "Manage Tasks",
+  "members": "Members",
+  "contents": "Content",
+  "tasks": "Tasks",
   "workspaceSetting": "Settings",
   "collapse": {
     "workspace": {
@@ -12,15 +12,15 @@
       "member": "Member"
     },
     "members": {
-      "list": "Member Overview",
-      "activity": "Member Activity"
+      "list": "Overview",
+      "activity": "Activity"
     },
     "contents": {
-      "list": "Contents overview"
+      "list": "Overview"
     },
     "tasks": {
-      "list": "Task Overview",
-      "results": "Manage Reports",
+      "list": "Overview",
+      "results": "Manage reports",
       "troubles": "Trouble memo (TM)"
     }
   }

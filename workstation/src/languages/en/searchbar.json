@@ -11,13 +11,13 @@
   },
   "sort": {
     "title": "Sort by",
-    "role": "Role level",
+    "role": "Role",
     "alphabetAsc": "A to Z",
     "alphabetDesc": "Z to A",
-    "createdAsc": "Old to New creation",
-    "createdDesc": "New to Old creation",
-    "updatedAsc": "Old to New update",
-    "updatedDesc": "New to Old update"
+    "createdAsc": "Old to New update",
+    "createdDesc": "New to Old update",
+    "updatedAsc": "Old to New report",
+    "updatedDesc": "New to Old report"
   },
   "keyword": {
     "title": "Search"

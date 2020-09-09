@@ -150,7 +150,7 @@ export default {
   }
   .faq-banner {
     position: relative;
-    height: 116px;
+    min-height: 116px;
     color: #fff;
     background: url('~assets/images/img-faq.jpg');
     background-size: cover;

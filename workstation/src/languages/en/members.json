@@ -7,15 +7,15 @@
   "card": {
     "profile": "Profile",
     "setting": "Member settings",
-    "usingPlans": "Plans in use",
-    "links": "Shortcuts",
+    "usingPlans": "Plans",
+    "links": "Favicons",
     "contents": "Content",
     "work": "Task",
     "paper": "Paper"
   },
   "allMembers": {
-    "title": "Workspace member overview",
-    "addMember": "Add Members"
+    "title": "Member overview",
+    "addMember": "Add members"
   },
   "setting": {
     "title": "Workspace member settings",
@@ -23,7 +23,7 @@
     "nickname": "Member's Workspace nickname",
     "email": "Member's Workspace account",
     "setting": "Member settings",
-    "role": "Role Level",
+    "role": "Role",
     "roleDesc": "Promoting to Manager means that this member can invite other members create groups etc. However only Masters have access to edit payment and Workspace profile settings.",
     "givePlans": "Plan allocation",
     "givePlansDesc": "Allocate plans for your new Workspace members.",
@@ -38,7 +38,7 @@
   "kick": {
     "title": "Remove member from Workspace",
     "desc": "The selected members are removed from your workspace. They are no longer be able to use Workspace-related products and services. Removed members can be invited again.",
-    "back": "Go back",
+    "back": "Previous",
     "submit": "Remove",
     "message": {
       "kickFail": "Failed to remove Workspace member please try again later",
@@ -46,13 +46,13 @@
     }
   },
   "add": {
-    "title": "Add Workspace member",
+    "title": "Invite members",
     "desc": "Would you like other users to use VIRNECT products and services together?",
     "desc2": "Invite VIRNECT users to your Workspace",
     "desc3": "You can Invite VIRNECT users as Workspace members. Purchase plans in advance from \"Payment Center\" and allocate them to your new members.",
     "addUser": "Add user",
-    "email": "Invitee's email address",
-    "emailDesc": "Please enter the email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use VIRNECT Products together.",
+    "email": "Email",
+    "emailDesc": "Please enter the email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use VIRNECT products together.",
     "emailPlaceholder": "Enter email address of invitee",
     "addMember": "Add another",
     "submit": "Send invitation email",
@@ -70,13 +70,13 @@
   "activity": {
     "title": "Member activity in Workspace",
     "column": {
-      "member": "Workspace member",
-      "contentsCount": "Number of uploaded content",
+      "member": "Members",
+      "contentsCount": "Uploaded content",
       "subTasks": "Subtasks",
-      "subTasksTooltip": "In progress / Assigned",
+      "subTasksTooltip": "In progress / assigned",
       "progress": "Progress rate",
-      "reportedDate": "Recent report time",
-      "link": "Shortcuts"
+      "reportedDate": "Reported on",
+      "link": "Favicons"
     }
   }
 }
