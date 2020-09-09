@@ -173,6 +173,9 @@ export default {
     window.addEventListener('orientationchange', this.changeOrientation)
   },
   beforeDestroy() {
+    if (this.callTimeout) {
+      clearTimeout(this.callTimeout)
+    }
     window.onbeforeunload = () => {}
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.removeEventListener('orientationchange', this.changeOrientation)
