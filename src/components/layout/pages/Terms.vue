@@ -13,90 +13,20 @@
 						$t('terms.page.termsContents')
 					}}</el-checkbox>
 					<div class="terms-contents terms-wraper">
-						<h3>{{ $t('terms.h2') }}</h3>
-
-						<div class="policy-body">
-							<ul>
-								<li v-for="(list, idx) of $t('terms.lists')" :key="idx">
-									<h4>
-										{{ list.title }}
-									</h4>
-									<p v-if="list.contents">{{ list.contents }}</p>
-									<ul class="depth">
-										<li v-for="(word, i) of list.wordArray" :key="i">
-											<p>
-												<span>{{ word.word }}</span>
-												<i
-													v-html="word.wordContents"
-													v-if="word.wordContents"
-												></i>
-											</p>
-											<ul class="depth-inner" v-if="word.wordList">
-												<li v-for="(hi, val) of word.wordList.array" :key="val">
-													<p>{{ hi.text }}</p>
-													<ul class="dot-list" v-if="hi.depthArray">
-														<li v-for="(l, val) of hi.depthArray" :key="val">
-															<p>{{ l }}</p>
-														</li>
-													</ul>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</div>
+						<vue-markdown
+							class="policy-body"
+							:source="$t('terms.md')"
+						></vue-markdown>
 					</div>
 
 					<el-checkbox v-model="privacyAgree" class="must-check">{{
 						$t('terms.page.privacyPolicyContents')
 					}}</el-checkbox>
 					<div class="policy-contents terms-wraper">
-						<h3>{{ $t('policy.h2') }}</h3>
-						<p>{{ $t('policy.h2Contents') }}</p>
-						<div class="policy-head">
-							<p>{{ $t('policy.infoList.contents') }}</p>
-							<ul>
-								<li
-									v-for="(list, idx) of $t('policy.infoList.array')"
-									:key="idx"
-								>
-									{{ idx + 1 }}. {{ list }}
-								</li>
-							</ul>
-						</div>
-
-						<div class="policy-body">
-							<ul>
-								<li v-for="(list, idx) of $t('policy.lists')" :key="idx">
-									<h4>
-										<span>{{ idx + 1 }}.</span> {{ list.title }}
-									</h4>
-									<p v-if="list.contents">{{ list.contents }}</p>
-									<ul class="depth">
-										<li v-for="(word, i) of list.wordArray" :key="i">
-											<p>
-												<span>{{ word.word }}</span>
-												<i
-													v-html="word.wordContents"
-													v-if="word.wordContents"
-												></i>
-											</p>
-											<ul class="depth-inner" v-if="word.wordList">
-												<li v-for="(hi, val) of word.wordList.array" :key="val">
-													<p>{{ hi.text }}</p>
-													<ul class="dot-list" v-if="hi.depthArray">
-														<li v-for="(l, val) of hi.depthArray" :key="val">
-															<p>{{ l }}</p>
-														</li>
-													</ul>
-												</li>
-											</ul>
-										</li>
-									</ul>
-								</li>
-							</ul>
-						</div>
+						<vue-markdown
+							class="policy-body policy"
+							:source="$t('policy.md')"
+						></vue-markdown>
 					</div>
 					<el-checkbox v-model="marketingAgree">{{
 						$t('terms.page.marketingReceive')
@@ -124,7 +54,12 @@
 </template>
 
 <script>
+import VueMarkdown from 'vue-markdown'
+
 export default {
+	components: {
+		VueMarkdown,
+	},
 	data() {
 		return {
 			allTerms: null,
