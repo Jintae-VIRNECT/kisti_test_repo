@@ -48,8 +48,8 @@
   "add": {
     "title": "Add Workspace member",
     "desc": "Would you like other users to use VIRNECT products and services together?",
-    "desc2": "Invite them to your Workspace",
-    "desc3": "Purchase plans in advance from \"Purchase plans\" and allocate them to your new members. You may purchase plans later after they have joined your Workspace.",
+    "desc2": "Invite VIRNECT users to your Workspace",
+    "desc3": "You can Invite VIRNECT users as Workspace members. Purchase plans in advance from \"Payment Center\" and allocate them to your new members.",
     "addUser": "Add user",
     "email": "Invitee's email address",
     "emailDesc": "Please enter the email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use VIRNECT Products together.",
