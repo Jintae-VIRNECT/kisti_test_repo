@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import api from 'api/axios'
 
 Vue.use(Router)
 
@@ -9,7 +10,7 @@ import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
 import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'
 import HealthCheck from 'components/layout/common/HealthCheck'
 
-export default new Router({
+const router = new Router({
 	name: 'router',
 	mode: 'history',
 	routes: [
@@ -38,3 +39,15 @@ export default new Router({
 		},
 	],
 })
+
+router.beforeEach((to, from, next) => {
+	if (from.name == null) {
+		;(async () => {
+			const res = await api.getUrls()
+			Vue.prototype.$urls = res
+			next()
+		})()
+	} else next()
+})
+
+export default router

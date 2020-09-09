@@ -5,6 +5,7 @@ const fs = require('fs')
 const dotenv = require('dotenv')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
+const configService = require('../configs/runtime')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
 	mode: process.env.NODE_ENV === 'local' ? 'development' : 'production',
@@ -26,6 +27,19 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 		},
 		open: true,
 		openPage: '',
+		before: function(app) {
+			let bodyParser = require('body-parser')
+			app.use(
+				bodyParser.json({
+					limit: '50mb',
+				}),
+			)
+
+			app.get('/urls', bodyParser.json(), function(req, res) {
+				const a = configService.getUrls()
+				res.json(a)
+			})
+		},
 	},
 })
 module.exports = devWebpackConfig

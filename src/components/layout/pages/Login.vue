@@ -70,7 +70,6 @@
 
 <script>
 import Cookies from 'js-cookie'
-import Login from 'model/login'
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 
@@ -101,6 +100,12 @@ export default {
 			token: Cookies.get('accessToken'),
 			rememberEmail: Cookies.get('email'),
 			rememberLogin: Cookies.get('auto'),
+			cookieOption: {
+				domain:
+					location.hostname.split('.').length === 3
+						? location.hostname.replace(/.*?\./, '')
+						: location.hostname,
+			},
 		}
 	},
 	beforeMount() {
@@ -128,21 +133,15 @@ export default {
 					? redirectTarget
 					: `//${redirectTarget}`
 			} else if (this.login.autoLogin) {
-				location.href = this.$urls['workstation']
+				location.href = window.urls['workstation']
 			}
 		},
 		emailRemember(email, check) {
-			const cookieOption = {
-				domain:
-					location.hostname.split('.').length === 3
-						? location.hostname.replace(/.*?\./, '')
-						: location.hostname,
-			}
 			if (check == true) {
 				this.rememberEmail = true
-				Cookies.set('email', email, cookieOption)
+				Cookies.set('email', email, this.cookieOption)
 			} else {
-				Cookies.remove('email', cookieOption)
+				Cookies.remove('email', this.cookieOption)
 			}
 		},
 		autoLogin(check) {
@@ -171,32 +170,39 @@ export default {
 				this.loading = false
 				return
 			}
-			if (this.login.email && this.login.password) {
-				new Login(this.login.email, this.login.password)
-				try {
-					await AuthService.login(this.login)
-					let redirectTarget = this.$route.query.continue
+			try {
+				let res = await AuthService.login({ params: this.login })
+				let redirectTarget = this.$route.query.continue
+				if (res.code === 200) {
+					const cookieOption = {
+						expires: res.data.expireIn / 3600000,
+						domain:
+							location.hostname.split('.').length === 3
+								? location.hostname.replace(/.*?\./, '')
+								: location.hostname,
+					}
+					Cookies.set('accessToken', res.data.accessToken, cookieOption)
+					Cookies.set('refreshToken', res.data.refreshToken, cookieOption)
 					if (redirectTarget) {
 						location.href = /^https?:/.test(redirectTarget)
 							? redirectTarget
 							: `//${redirectTarget}`
 					} else {
-						location.href = this.$urls['workstation']
+						location.href = window.urls['workstation']
 					}
-				} catch (e) {
-					if (e.code === 2000) {
-						console.error(e)
-						this.loading = false
-						this.message = this.$t('login.accountError.contents')
-					} else {
-						this.alertMessage(
-							this.$t('login.networkError.title'),
-							this.$t('login.networkError.contents'),
-							'error',
-						)
-						this.message = e.message
-						this.loading = false
-					}
+				} else throw res
+			} catch (e) {
+				if (e.code === 2000) {
+					this.loading = false
+					this.message = this.$t('login.accountError.contents')
+				} else {
+					this.alertMessage(
+						this.$t('login.networkError.title'),
+						this.$t('login.networkError.contents'),
+						'error',
+					)
+					this.message = e.message
+					this.loading = false
 				}
 			}
 		},

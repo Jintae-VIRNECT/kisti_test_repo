@@ -1,81 +1,57 @@
-import axios from '../api/axios'
-import authHeader from './auth-header'
-import API from '../api/url'
+import { api } from 'api/axios'
 
-class UserService {
-	getUserContent() {
-		return axios.get(API.user.userInfo, {
-			headers: authHeader(),
-		})
-	}
-
+export default {
 	//유저 상세정보
-	async userDetail(user = {}) {
+	async userDetail(params) {
 		try {
-			const response = await axios.post(API.user.registerDetail, user, {
+			const response = await api('GET_USER_INFO', params, {
 				headers: {
 					'Content-Type': 'multipart/form-data',
 				},
 			})
-			return response.data
+			return response
 		} catch (e) {
 			console.error(e)
 		}
-	}
+	},
 
-	// 이메일로 찾기
-	async userFindEmail(user = {}) {
+	async userFindEmail(params) {
+		// 이메일로 찾기
 		try {
-			const response = await axios.post(API.user.findEmail, {
-				firstName: user.firstName,
-				lastName: user.lastName,
-				mobile: user.mobile,
-				recoveryEmail: user.recoveryEmail,
-			})
-			return response.data
+			const response = await api('POST_FIND_EMAIL', params)
+			return response
 		} catch (e) {
 			console.error(e)
 		}
-	}
+	},
 
 	//비밀번호 재설정 - 이메일 코드 발송
-	async userPass(user = {}) {
+	async userPass(params) {
 		try {
-			const response = await axios.post(API.user.findPass, {
-				email: user.email,
-			})
-			return response.data
+			const response = await api('POST_FIND_PASS', params)
+			return response
 		} catch (e) {
 			console.error(e)
 		}
-	}
+	},
 
 	//비밀번호 재설정 - 코드 체크
-	async userCodeCheck(user = {}) {
+	async userCodeCheck(params) {
 		try {
-			const response = await axios.post(API.user.passCodeCheck, {
-				code: user.code,
-				email: user.email,
-			})
-			return response.data
+			const response = await api('POST_CODE_CHECK', params)
+			return response
 		} catch (e) {
 			console.error(e)
 		}
-	}
+	},
 
 	//비밀번호 재설정 - 비번 재설정
-	async userPassChange(user = {}) {
+	async userPassChange(params) {
 		try {
-			const response = await axios.put(API.user.changePass, {
-				uuid: user.uuid,
-				email: user.email,
-				password: user.password,
-			})
-			return response.data
+			const response = await api('PUT_PASS', params)
+			return response
 		} catch (e) {
 			console.error(e)
 		}
-	}
+	},
 }
-
-export default new UserService()
