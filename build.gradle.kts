@@ -7,7 +7,8 @@ buildscript {
 }
 
 plugins {
-    id("org.springframework.boot") version "2.2.5.RELEASE" apply false
+    //id("org.springframework.boot") version "2.2.5.RELEASE" apply false
+    id("org.springframework.boot") version "2.2.6.RELEASE" apply false
     id("io.spring.dependency-management") version "1.0.9.RELEASE" apply false
     kotlin("jvm") version "1.3.72" apply false
     kotlin("plugin.spring") version "1.3.72" apply false
@@ -30,6 +31,7 @@ allprojects {
             jvmTarget = "1.8"
         }
     }
+
 }
 
 subprojects {
@@ -40,15 +42,27 @@ subprojects {
     /*configure<JavaPluginConvention> {
         sourceCompatibility = JavaVersion.VERSION_1_8
     }*/
+    dependencies {
+        //todo:
+    }
+
 
     repositories {
         mavenCentral()
     }
 }
 project(":service-server") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+
     dependencies {
+        //implementation(project(":service-kms"))
         implementation(project(":service-client"))
         implementation(project(":service-java-client"))
+        implementation(project(":service-data"))
     }
     /*val jar: Jar by tasks
     val bootJar: BootJar by tasks
@@ -57,11 +71,23 @@ project(":service-server") {
     jar.enabled = true*/
 
 }
+project(":service-data") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+}
+
 project(":service-common") {
 
 }
-project(":service-core") {
-
+project(":service-kms") {
+    dependencies {
+        //implementation(project(":service-kms"))
+        implementation(project(":service-client"))
+        implementation(project(":service-java-client"))
+    }
 }
 project(":service-client") {
 
