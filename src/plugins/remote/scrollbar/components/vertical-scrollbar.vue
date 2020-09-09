@@ -68,7 +68,6 @@ export default {
 
     onDrag(e) {
       if (this.dragging) {
-        console.log(this.dragging)
         // Make The Parent being in the Dragging State
         this.onDragging()
 

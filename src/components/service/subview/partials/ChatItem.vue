@@ -40,7 +40,7 @@ import Profile from 'Profile'
 import FileSaver from 'file-saver'
 import linkifyHtml from 'linkifyjs/html'
 import { systemClass, systemText } from './chatUtils'
-import { downloadFile } from 'api/workspace/call'
+import { downloadFile } from 'api/http/file'
 import { mapGetters } from 'vuex'
 export default {
   name: 'ChatItem',
@@ -169,7 +169,6 @@ export default {
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
       })
-      console.log(res)
       // FileSaver.saveAs(file.fileUrl, file.fileName)
     },
   },

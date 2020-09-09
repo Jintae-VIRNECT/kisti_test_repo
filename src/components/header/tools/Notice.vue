@@ -110,8 +110,8 @@
 import { mapActions, mapGetters } from 'vuex'
 import { EVENT } from 'configs/push.config'
 import { ROLE } from 'configs/remote.config'
-import { sendPush } from 'api/common/message'
-import { getRoomInfo } from 'api/workspace'
+import { sendPush } from 'api/http/message'
+import { getRoomInfo } from 'api/http/room'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'

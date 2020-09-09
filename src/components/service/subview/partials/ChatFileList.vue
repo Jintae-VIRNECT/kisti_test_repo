@@ -25,7 +25,7 @@
 import { mapGetters } from 'vuex'
 import ChatFileItem from './ChatFileItem'
 import ChatFileDown from './ChatFileDownload'
-import { getFileList } from 'api/workspace/call'
+import { getFileList } from 'api/http/file'
 export default {
   name: 'ChatFileList',
   components: {

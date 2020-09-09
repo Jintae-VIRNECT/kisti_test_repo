@@ -1,5 +1,3 @@
-// import { localStorage } from 'utils/storage'
-// import $http from 'api/service/gateway'
 import Cookies from 'js-cookie'
 
 const order = ['en', 'ko']

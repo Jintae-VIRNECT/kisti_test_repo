@@ -58,9 +58,6 @@ export default {
       this.$push.changeSubscribe(workspace)
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
-        console.log(
-          this.$el.querySelector('.header-workspace-selector').offsetWidth,
-        )
         this.popoverWidth = this.$el.querySelector(
           '.header-workspace-selector',
         ).offsetWidth

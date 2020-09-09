@@ -29,7 +29,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { kickMember } from 'api/service'
+import { kickoutMember } from 'api/http/member'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
@@ -134,7 +134,7 @@ export default {
         leaderId: this.account.uuid,
         participantId: participantId,
       }
-      const rtn = await kickMember(params)
+      const rtn = await kickoutMember(params)
       if (rtn.result === true) {
         this.removeMember(participantId)
       }

@@ -30,7 +30,7 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import MemberCard from 'MemberCard'
-import { getMemberList } from 'api/workspace/member'
+import { getMemberList } from 'api/http/member'
 import searchMixin from 'mixins/filter'
 
 export default {

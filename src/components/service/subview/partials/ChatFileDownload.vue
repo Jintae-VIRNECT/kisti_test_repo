@@ -14,7 +14,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { downloadFile } from 'api/workspace/call'
+import { downloadFile } from 'api/http/file'
 import { downloadByDataURL } from 'utils/file'
 export default {
   name: 'ChatFileDownload',

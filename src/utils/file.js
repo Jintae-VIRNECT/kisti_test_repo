@@ -53,7 +53,7 @@ export const downloadByURL = async file => {
   let xhr = new XMLHttpRequest()
   xhr.responseType = 'blob'
   xhr.onload = () => {
-    console.log(xhr.response)
+    // console.log(xhr.response)
     let a = document.createElement('a')
     a.href = window.URL.createObjectURL(xhr.response)
     a.download = filename

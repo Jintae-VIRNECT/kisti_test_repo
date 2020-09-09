@@ -57,12 +57,8 @@
 
 <script>
 import Modal from 'Modal'
-import {
-  getRoomInfo,
-  updateRoomInfo,
-  updateRoomProfile,
-  kickoutMember,
-} from 'api/workspace'
+import { getRoomInfo, updateRoomInfo, updateRoomProfile } from 'api/http/room'
+import { kickoutMember } from 'api/http/member'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import Profile from 'Profile'

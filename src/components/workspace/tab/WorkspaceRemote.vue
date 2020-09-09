@@ -29,7 +29,7 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
-import { getRoomList, deleteRoom, leaveRoom } from 'api/workspace'
+import { getRoomList, deleteRoom, leaveRoom } from 'api/http/room'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
 import roomMixin from 'mixins/room'

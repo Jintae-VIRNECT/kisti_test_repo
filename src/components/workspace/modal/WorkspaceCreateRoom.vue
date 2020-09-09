@@ -32,18 +32,12 @@ import { mapActions } from 'vuex'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
-import {
-  getHistorySingleItem,
-  createRoom,
-  updateRoomProfile,
-  getRoomInfo,
-} from 'api/workspace'
-import { sendPush } from 'api/common'
+import { getHistorySingleItem } from 'api/http/history'
+import { createRoom, updateRoomProfile, getRoomInfo } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { EVENT } from 'configs/push.config'
-import { getMember } from 'api/service'
+import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 
 export default {
@@ -123,7 +117,7 @@ export default {
     },
     async inviteRefresh() {
       this.loading = true
-      const inviteList = await getMember({
+      const inviteList = await getMemberList({
         size: 50,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,

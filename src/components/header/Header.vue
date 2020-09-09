@@ -23,9 +23,7 @@ export default {
   methods: {},
 
   /* Lifecycles */
-  mounted() {
-    // console.log(this.$route)
-  },
+  mounted() {},
 }
 </script>
 <style lang="scss" src="assets/style/header.scss"></style>

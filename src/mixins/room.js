@@ -1,4 +1,4 @@
-import { joinRoom } from 'api/workspace'
+import { joinRoom } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import toastMixin from 'mixins/toast'

@@ -89,7 +89,7 @@ import Tooltip from 'Tooltip'
 import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { inviteRoom, kickMember, invitableList } from 'api/service'
+import { inviteRoom, kickoutMember, invitableList } from 'api/http/member'
 export default {
   name: 'InviteModal',
   mixins: [toastMixin, confirmMixin],
@@ -127,7 +127,7 @@ export default {
       })
     },
     maxSelect() {
-      return this.roomInfo.maxUserCount - 1
+      return this.roomInfo.maxUserCount - this.roomInfo.memberList.length
     },
   },
   watch: {
@@ -176,7 +176,7 @@ export default {
         leaderId: this.account.uuid,
         participantId,
       }
-      const res = await kickMember(params)
+      const res = await kickoutMember(params)
       if (res.result === true) {
         this.toastNotify(this.$t('confirm.access_removed'))
 

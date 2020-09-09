@@ -55,7 +55,7 @@ import {
   getHistoryList,
   deleteAllHistory,
   deleteHistorySingleItem,
-} from 'api/workspace'
+} from 'api/http/history'
 
 export default {
   name: 'WorkspaceHistory',

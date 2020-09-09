@@ -52,7 +52,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { uploadFile } from 'api/workspace/call'
+import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
 export default {
   name: 'ChatInput',

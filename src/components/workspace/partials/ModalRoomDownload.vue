@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { getFileList, downloadFile } from 'api/workspace/call'
+import { getFileList, downloadFile } from 'api/http/file'
 import { downloadByURL } from 'utils/file'
 export default {
   name: 'ModalParticipantsInfo',

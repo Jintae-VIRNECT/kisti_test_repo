@@ -1,4 +1,4 @@
-import { startServerRecord, stopServerRecord } from 'api/workspace/record'
+import { startServerRecord, stopServerRecord } from 'api/http/record'
 import { mapGetters } from 'vuex'
 
 export default {

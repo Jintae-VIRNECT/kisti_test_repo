@@ -14,7 +14,7 @@ import {
   CAMERA as CAMERA_STATUS,
 } from 'configs/device.config'
 
-import { getUserInfo } from 'api/common'
+import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
 
 export const addSessionEventListener = session => {

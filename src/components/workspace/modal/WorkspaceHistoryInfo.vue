@@ -66,7 +66,7 @@
 
 <script>
 import Modal from 'Modal'
-import { getHistorySingleItem } from 'api/workspace/history'
+import { getHistorySingleItem } from 'api/http/history'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import RoomDownload from '../partials/ModalRoomDownload'
