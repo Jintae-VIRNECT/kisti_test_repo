@@ -358,9 +358,9 @@ export default {
       if (this.canvas) {
         const keycode = parseInt(event.keyCode)
         if (keycode === 32) {
-          this.canvas.defaultCursor = 'grab'
+          // this.canvas.defaultCursor = 'grab'
           // this.canvas.setCursor('grab')
-          this.cursor.canvas.renderAll()
+          // this.cursor.canvas.renderAll()
           this.zoom = true
           this.canvas.isDrawingMode = false
         }
