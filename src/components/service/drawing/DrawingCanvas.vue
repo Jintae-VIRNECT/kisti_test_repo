@@ -2,6 +2,11 @@
   <div class="drawing-canvas">
     <canvas id="drawingCanvas" ref="drawingCanvas"></canvas>
     <canvas id="cursorCanvas"></canvas>
+    <div
+      style=" position: absolute; top: 0; left: 0; width: 100%; height: 100%;visibility: hidden"
+    >
+      <canvas id="backCanvas" ref="backCanvas"></canvas>
+    </div>
   </div>
 </template>
 <script>
@@ -44,6 +49,7 @@ export default {
       fileReader: null,
       isInit: false,
       canvas: null,
+      backCanvas: null,
       cursor: null,
       // viewAction: 'line', // ('line' / 'text' / false)
       editingMode: false, // check text in editing (true / false)
@@ -69,6 +75,7 @@ export default {
       },
       scaleWidth: 0,
       scaleFont: 0,
+      zoom: false,
     }
   },
   computed: {
@@ -84,25 +91,30 @@ export default {
      * @param {Object}   canvas   ::대상 캔버스 객체
      * @param {Function} callback ::배경 생성 후 콜백함수
      */
-    setBG(image) {
+    setBG(img, bgImage) {
       const canvas = this.canvas
       canvas.setBackgroundColor('#000000')
 
       return new Promise(resolve => {
-        canvas.setBackgroundImage(image, image => {
-          const parent = this.$el.parentNode
-          const canvasSize = getCanvasSize(
-            parent.offsetWidth,
-            parent.offsetHeight,
-            image.width,
-            image.height,
-          )
+        const parent = this.$el.parentNode
 
+        const canvasSize = getCanvasSize(
+          parent.offsetWidth,
+          parent.offsetHeight,
+          bgImage.width,
+          bgImage.height,
+        )
+        img.set({
+          originX: 'left',
+          originY: 'top',
+          scaleX: canvasSize.width / this.img.width,
+          scaleY: canvasSize.width / this.img.width,
+        })
+        canvas.setBackgroundImage(img, () => {
           canvas.setWidth(canvasSize.width)
           canvas.setHeight(canvasSize.height)
           canvas.backgroundImage.set({
-            scaleX: canvasSize.scale,
-            scaleY: canvasSize.scale,
+            stretch: true,
           })
           this.origin.width = canvasSize.width
           this.origin.height = canvasSize.height
@@ -111,6 +123,17 @@ export default {
           this.origin.scale = 1
           canvas.renderAll.bind(canvas)()
           canvas.renderAll()
+          img.clone(cbImg => {
+            this.backCanvas.setBackgroundImage(cbImg, () => {
+              this.backCanvas.setWidth(canvasSize.width)
+              this.backCanvas.setHeight(canvasSize.height)
+              this.backCanvas.backgroundImage.set({
+                scaleX: canvasSize.scale,
+                scaleY: canvasSize.scale,
+              })
+              this.backCanvas.renderAll()
+            })
+          })
 
           resolve(canvas)
         })
@@ -181,7 +204,12 @@ export default {
             : 'default',
       })
 
+      const backCanvas = new fabric.Canvas('backCanvas', {
+        backgroundColor: '#000000',
+      })
+
       this.canvas = canvas
+      this.backCanvas = backCanvas
 
       // 커서 설정
       this.cursor = this.createCursor(this.canvas)
@@ -191,15 +219,15 @@ export default {
       // 배경이미지 설정
       const bgImage = new Image()
       bgImage.onload = () => {
+        this.img.width = bgImage.width
+        this.img.height = bgImage.height
         const fabricImage = new fabric.Image(bgImage)
-        this.setBG(fabricImage).then(canvas => {
+        this.setBG(fabricImage, bgImage).then(canvas => {
           // console.log(canvas.getWidth(), canvas.getHeight())
           this.cursor.canvas.setWidth(canvas.getWidth())
           this.cursor.canvas.setHeight(canvas.getHeight())
           this.origin.width = canvas.getWidth()
           this.origin.height = canvas.getHeight()
-          this.img.width = bgImage.width
-          this.img.height = bgImage.height
 
           // 히스토리 초기화
           this.stackClear()

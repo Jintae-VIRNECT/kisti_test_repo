@@ -47,6 +47,7 @@ export default {
           })
           this.receiveStackAdd('add', object.id, object.owner)
         } else {
+          this.backCanvas.add(object)
           object.set({
             id: objID,
             tId: this.undoList.length,
@@ -175,6 +176,10 @@ export default {
 
       canvas.on('mouse:move', event => {
         const mouse = canvas.getPointer(event.e)
+        if (this.zoom === true) {
+          canvas.defaultCursor = 'grab'
+          return
+        }
 
         if (this.viewAction === ACTION.DRAWING_TEXT) {
           canvas.defaultCursor = 'text'
@@ -259,101 +264,109 @@ export default {
           }
         }
       })
-      // canvas.on('mouse:wheel', function(opt) {
+      // canvas.on('mouse:wheel', opt => {
       //   var delta = opt.e.deltaY
       //   var zoom = canvas.getZoom()
       //   zoom *= 0.999 ** delta
-      //   if (zoom > 20) zoom = 20
-      //   if (zoom < 0.01) zoom = 0.01
+      //   if (zoom > 5) zoom = 5
+      //   if (zoom < 1) zoom = 1
       //   canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
+      //   this.cursor.canvas.zoomToPoint(
+      //     { x: opt.e.offsetX, y: opt.e.offsetY },
+      //     zoom,
+      //   )
       //   opt.e.preventDefault()
       //   opt.e.stopPropagation()
       //   var vpt = canvas.viewportTransform
-      //   console.log(vpt)
+      //   var cursorVpt = this.cursor.canvas.viewportTransform
       //   if (zoom < 400 / 1000) {
       //     vpt[4] = 200 - (1000 * zoom) / 2
       //     vpt[5] = 200 - (1000 * zoom) / 2
+      //     cursorVpt[4] = 200 - (1000 * zoom) / 2
+      //     cursorVpt[5] = 200 - (1000 * zoom) / 2
       //   } else {
       //     if (vpt[4] >= 0) {
       //       vpt[4] = 0
+      //       cursorVpt[4] = 0
       //     } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
       //       vpt[4] = canvas.getWidth() - 1000 * zoom
+      //       cursorVpt[4] = canvas.getWidth() - 1000 * zoom
       //     }
       //     if (vpt[5] >= 0) {
       //       vpt[5] = 0
+      //       cursorVpt[5] = 0
       //     } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
       //       vpt[5] = canvas.getHeight() - 1000 * zoom
+      //       cursorVpt[5] = canvas.getHeight() - 1000 * zoom
       //     }
       //   }
+      //   this.keepPositionInBounds(canvas)
       // })
     },
+    // keepPositionInBounds(canvas) {
+    //   var zoom = canvas.getZoom()
+    //   var xMin = ((2 - zoom) * canvas.getWidth()) / 2
+    //   var xMax = (zoom * canvas.getWidth()) / 2
+    //   var yMin = ((2 - zoom) * canvas.getHeight()) / 2
+    //   var yMax = (zoom * canvas.getHeight()) / 2
+
+    //   var point = new fabric.Point(
+    //     canvas.getWidth() / 2,
+    //     canvas.getHeight() / 2,
+    //   )
+    //   var center = fabric.util.transformPoint(point, canvas.viewportTransform)
+
+    //   var clampedCenterX = this.clamp(center.x, xMin, xMax)
+    //   var clampedCenterY = this.clamp(center.y, yMin, yMax)
+
+    //   var diffX = clampedCenterX - center.x
+    //   var diffY = clampedCenterY - center.y
+
+    //   if (diffX != 0 || diffY != 0) {
+    //     canvas.relativePan(new fabric.Point(diffX, diffY))
+    //     this.cursor.canvas.relativePan(new fabric.Point(diffX, diffY))
+    //   }
+    // },
+
+    // clamp(value, min, max) {
+    //   return Math.max(min, Math.min(value, max))
+    // },
 
     /**
      * 키보드 입력 핸들러
      * @param {Event} event ::입력 이벤트 객체
      */
-    // keyEventHandler(event) {
-    //   // For window event
-    //   if (this.canvas) {
-    //     const keycode = parseInt(event.keyCode)
-    //     const deleteCode = [8, 46]
-
-    //     if (this.viewAction === 'zoom') {
-    //       // Shift Key
-    //       if (keycode === 16) {
-    //         this.canvas.defaultCursor = 'zoom-out'
-    //         this.canvas.setCursor('zoom-out')
-    //         this.cursor.canvas.renderAll()
-    //         // space bar
-    //       } else if (keycode === 32) {
-    //         this.canvas.defaultCursor = 'grab'
-    //         this.canvas.setCursor('grab')
-    //         this.cursor.canvas.renderAll()
-    //       }
-    //     }
-
-    //     if (event.ctrlKey === true && keycode === 90) {
-    //       // Ctrl + Z
-    //       this.stackUndo()
-    //     } else if (event.ctrlKey === true && keycode === 82) {
-    //       // Ctrl + R
-    //       this.stackRedo()
-    //     } else if (deleteCode.indexOf(keycode) >= 0) {
-    //       const activeObject = this.canvas.getActiveObject()
-    //       if (activeObject) {
-    //         // exception for text object
-    //         if (
-    //           !('isEditing' in activeObject) ||
-    //           activeObject.isEditing === false
-    //         ) {
-    //           this.removeObject(activeObject)
-    //         }
-    //       }
-    //     }
-    //   }
-    // },
+    keyEventHandler(event) {
+      // For window event
+      if (this.canvas) {
+        const keycode = parseInt(event.keyCode)
+        if (keycode === 32) {
+          this.canvas.defaultCursor = 'grab'
+          // this.canvas.setCursor('grab')
+          this.cursor.canvas.renderAll()
+          this.zoom = true
+          this.canvas.isDrawingMode = false
+        }
+      }
+    },
     /**
      * 키보드 입력 핸들러 (keyboard up)
      * @param {Event} event ::입력 이벤트 객체
      */
-    // keyUpEventHandler(event) {
-    //   if (this.canvas) {
-    //     const keycode = parseInt(event.keyCode)
+    keyUpEventHandler(event) {
+      if (this.canvas) {
+        const keycode = parseInt(event.keyCode)
+        if (this.zoom === false) return
 
-    //     if (this.viewAction === 'zoom') {
-    //       // Shift Key
-    //       if (keycode === 16) {
-    //         this.canvas.defaultCursor = 'zoom-in'
-    //         this.canvas.setCursor('zoom-in')
-    //         this.cursor.canvas.renderAll()
-    //       } else if (keycode === 32) {
-    //         this.canvas.defaultCursor = 'zoom-in'
-    //         this.canvas.setCursor('zoom-in')
-    //         this.cursor.canvas.renderAll()
-    //       }
-    //     }
-    //   }
-    // },
+        if (keycode === 32) {
+          this.canvas.defaultCursor =
+            this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default'
+          this.cursor.canvas.renderAll()
+          this.zoom = false
+          this.canvas.isDrawingMode = this.viewAction === ACTION.DRAWING_LINE
+        }
+      }
+    },
   },
 
   /* Lifecycles */
