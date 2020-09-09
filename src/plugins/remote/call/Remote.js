@@ -455,14 +455,14 @@ const _ = {
    * @param {Boolean} active
    * @param {String} id : target id
    */
-  flash: (active, connectionId) => {
+  flash: (active, target) => {
     const params = {
       enable: active,
       type: FLASH.FLASH,
     }
     _.session.signal({
       data: JSON.stringify(params),
-      to: [connectionId],
+      to: target,
       type: SIGNAL.FLASH,
     })
   },
