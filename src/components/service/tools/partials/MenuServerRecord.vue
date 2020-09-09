@@ -3,9 +3,9 @@
     :text="$t('service.record_server')"
     :active="isRecording"
     :disabled="!canRecord"
-    :src="require('assets/image/ic_record_off.svg')"
+    :src="require('assets/image/call/ic_record_off.svg')"
     :icActive="isRecording"
-    :activeSrc="require('assets/image/ic_record_ing.svg')"
+    :activeSrc="require('assets/image/call/ic_record_ing.svg')"
     @click="recording"
   ></menu-button>
 </template>

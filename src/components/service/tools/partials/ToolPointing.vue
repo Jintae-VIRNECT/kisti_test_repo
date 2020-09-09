@@ -3,7 +3,7 @@
     :text="$t('service.tool_pointing')"
     :active="viewAction === STREAM_POINTING"
     :disabled="!canPointing"
-    :src="require('assets/image/ic_pointing.svg')"
+    :src="require('assets/image/call/ic_pointing.svg')"
     @click="pointing"
   ></tool-button>
 </template>

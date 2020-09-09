@@ -24,7 +24,7 @@
         ></icon-button>
         <icon-button
           v-if="showRefreshButton"
-          :imgSrc="require('assets/image/ic_renew.svg')"
+          :imgSrc="require('assets/image/workspace/ic_renew.svg')"
           animation="rotate360"
           :text="$t('button.refresh')"
           @click="$emit('refresh')"

@@ -56,13 +56,13 @@ export default {
     deviceImg() {
       switch (this.user.deviceType) {
         case DEVICE.WEB:
-          return require('assets/image/ic_monitor.svg')
+          return require('assets/image/workspace/ic_monitor.svg')
         case DEVICE.MOBILE:
-          return require('assets/image/ic_mobile.svg')
+          return require('assets/image/workspace/ic_mobile.svg')
         case DEVICE.GLASSES:
         case DEVICE.HOLOLENS1:
         case DEVICE.HOLOLENS2:
-          return require('assets/image/ic_hololens.svg')
+          return require('assets/image/workspace/ic_hololens.svg')
       }
       return ''
     },

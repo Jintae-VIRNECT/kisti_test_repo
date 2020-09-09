@@ -45,7 +45,7 @@
             loop
           ></video>
           <div v-else class="setting-video__empty">
-            <img src="~assets/image/ic_nocamera.svg" />
+            <img src="~assets/image/workspace/ic_nocamera.svg" />
           </div>
         </div>
       </figure>

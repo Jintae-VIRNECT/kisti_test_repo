@@ -110,9 +110,9 @@ export default {
         this.type === 'info' ||
         this.type === 'license'
       ) {
-        return require('assets/image/ic_system.svg')
+        return require('assets/image/header/ic_system.svg')
       } else if (this.type === 'fail') {
-        return require('assets/image/ic_notice.svg')
+        return require('assets/image/header/ic_notice.svg')
       } else {
         return this.image
       }

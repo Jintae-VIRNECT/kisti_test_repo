@@ -115,10 +115,10 @@
     text-align: center;
     background: 0 center/1.2857rem no-repeat;
     &.server {
-      background-image: url(~assets/image/ic_record_ing.svg);
+      background-image: url(~assets/image/call/ic_record_ing.svg);
     }
     &.local {
-      background-image: url(~assets/image/ic_local_record_on.svg);
+      background-image: url(~assets/image/call/ic_local_record_on.svg);
     }
   }
 }
