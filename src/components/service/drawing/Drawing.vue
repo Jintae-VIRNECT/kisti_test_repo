@@ -138,7 +138,6 @@ export default {
     },
     getImage(receive) {
       const data = JSON.parse(receive.data)
-      if (this.account.roleType === ROLE.LEADER) return
 
       if (
         ![DRAWING.FIRST_FRAME, DRAWING.FRAME, DRAWING.LAST_FRAME].includes(
@@ -178,7 +177,9 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.DRAWING, this.getImage)
+    if (this.account.roleType !== ROLE.LEADER) {
+      this.$call.addListener(SIGNAL.DRAWING, this.getImage)
+    }
     this.$eventBus.$on('participantChange', this.participantChange)
   },
   beforeDestroy() {

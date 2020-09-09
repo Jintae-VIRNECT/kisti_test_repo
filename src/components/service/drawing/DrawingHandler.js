@@ -1,5 +1,5 @@
 import { fabric } from 'plugins/remote/fabric.custom'
-import { DRAWING } from 'configs/remote.config'
+import { DRAWING, ROLE } from 'configs/remote.config'
 import { VIEW, ACTION } from 'configs/view.config'
 
 export default {
@@ -114,7 +114,6 @@ export default {
       // canvas.on('object:moved', event => {
       //   console.log('[Fabric] Object moved')
       //   const object = event.target
-      //   console.log(object)
 
       //   // this.$remoteSDK.message('drawMove', getParam('move', object));
       //   this._sendAction('drawMove', object)
@@ -147,7 +146,7 @@ export default {
       //   console.log(event)
       // })
       canvas.on('after:render', () => {
-        if (this.isInit === true) {
+        if (this.isInit === true && this.account.roleType === ROLE.LEADER) {
           this.updateHistory()
         }
       })
@@ -161,6 +160,10 @@ export default {
       // })
       canvas.on('mouse:down', event => {
         const mouse = canvas.getPointer(event.e)
+        if (this.zoom === true) {
+          canvas.panning = true
+          return
+        }
 
         if (canvas.isDrawingMode) {
           canvas.onDrag = true
@@ -177,7 +180,15 @@ export default {
       canvas.on('mouse:move', event => {
         const mouse = canvas.getPointer(event.e)
         if (this.zoom === true) {
-          canvas.defaultCursor = 'grab'
+          if (canvas.panning === true) {
+            canvas.defaultCursor = 'grabbing'
+            var delta = new fabric.Point(event.e.movementX, event.e.movementY)
+            canvas.relativePan(delta)
+            this.cursor.canvas.relativePan(delta)
+            this.keepPositionInBounds(canvas)
+          } else {
+            canvas.defaultCursor = 'grab'
+          }
           return
         }
 
@@ -215,6 +226,10 @@ export default {
 
       canvas.on('mouse:up', event => {
         const mouse = canvas.getPointer(event.e)
+        if (this.zoom === true) {
+          canvas.panning = false
+          return
+        }
 
         // 드로우 객체 삭제 버튼 이벤트
         if (event.transform && event.transform.corner === 'mt') {
@@ -264,79 +279,81 @@ export default {
           }
         }
       })
-      // canvas.on('mouse:wheel', opt => {
-      //   var delta = opt.e.deltaY
-      //   var zoom = canvas.getZoom()
-      //   zoom *= 0.999 ** delta
-      //   if (zoom > 5) zoom = 5
-      //   if (zoom < 1) zoom = 1
-      //   canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
-      //   this.cursor.canvas.zoomToPoint(
-      //     { x: opt.e.offsetX, y: opt.e.offsetY },
-      //     zoom,
-      //   )
-      //   opt.e.preventDefault()
-      //   opt.e.stopPropagation()
-      //   var vpt = canvas.viewportTransform
-      //   var cursorVpt = this.cursor.canvas.viewportTransform
-      //   if (zoom < 400 / 1000) {
-      //     vpt[4] = 200 - (1000 * zoom) / 2
-      //     vpt[5] = 200 - (1000 * zoom) / 2
-      //     cursorVpt[4] = 200 - (1000 * zoom) / 2
-      //     cursorVpt[5] = 200 - (1000 * zoom) / 2
-      //   } else {
-      //     if (vpt[4] >= 0) {
-      //       vpt[4] = 0
-      //       cursorVpt[4] = 0
-      //     } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
-      //       vpt[4] = canvas.getWidth() - 1000 * zoom
-      //       cursorVpt[4] = canvas.getWidth() - 1000 * zoom
-      //     }
-      //     if (vpt[5] >= 0) {
-      //       vpt[5] = 0
-      //       cursorVpt[5] = 0
-      //     } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
-      //       vpt[5] = canvas.getHeight() - 1000 * zoom
-      //       cursorVpt[5] = canvas.getHeight() - 1000 * zoom
-      //     }
-      //   }
-      //   this.keepPositionInBounds(canvas)
-      // })
+      canvas.on('mouse:wheel', opt => {
+        if (canvas.onDrag === true) return
+        const delta = opt.e.deltaY
+        let zoom = canvas.getZoom()
+        zoom *= 0.999 ** delta
+        if (zoom > 5) zoom = 5
+        if (zoom < 1) zoom = 1
+        canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
+        this.cursor.canvas.zoomToPoint(
+          { x: opt.e.offsetX, y: opt.e.offsetY },
+          zoom,
+        )
+        opt.e.preventDefault()
+        opt.e.stopPropagation()
+        const vpt = canvas.viewportTransform
+        const cursorVpt = this.cursor.canvas.viewportTransform
+        if (zoom < 400 / 1000) {
+          vpt[4] = 200 - (1000 * zoom) / 2
+          vpt[5] = 200 - (1000 * zoom) / 2
+          cursorVpt[4] = 200 - (1000 * zoom) / 2
+          cursorVpt[5] = 200 - (1000 * zoom) / 2
+        } else {
+          if (vpt[4] >= 0) {
+            vpt[4] = 0
+            cursorVpt[4] = 0
+          } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
+            vpt[4] = canvas.getWidth() - 1000 * zoom
+            cursorVpt[4] = canvas.getWidth() - 1000 * zoom
+          }
+          if (vpt[5] >= 0) {
+            vpt[5] = 0
+            cursorVpt[5] = 0
+          } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
+            vpt[5] = canvas.getHeight() - 1000 * zoom
+            cursorVpt[5] = canvas.getHeight() - 1000 * zoom
+          }
+        }
+        this.keepPositionInBounds(canvas)
+      })
     },
-    // keepPositionInBounds(canvas) {
-    //   var zoom = canvas.getZoom()
-    //   var xMin = ((2 - zoom) * canvas.getWidth()) / 2
-    //   var xMax = (zoom * canvas.getWidth()) / 2
-    //   var yMin = ((2 - zoom) * canvas.getHeight()) / 2
-    //   var yMax = (zoom * canvas.getHeight()) / 2
+    keepPositionInBounds(canvas) {
+      const zoom = canvas.getZoom()
+      const xMin = ((2 - zoom) * canvas.getWidth()) / 2
+      const xMax = (zoom * canvas.getWidth()) / 2
+      const yMin = ((2 - zoom) * canvas.getHeight()) / 2
+      const yMax = (zoom * canvas.getHeight()) / 2
 
-    //   var point = new fabric.Point(
-    //     canvas.getWidth() / 2,
-    //     canvas.getHeight() / 2,
-    //   )
-    //   var center = fabric.util.transformPoint(point, canvas.viewportTransform)
+      const point = new fabric.Point(
+        canvas.getWidth() / 2,
+        canvas.getHeight() / 2,
+      )
+      const center = fabric.util.transformPoint(point, canvas.viewportTransform)
 
-    //   var clampedCenterX = this.clamp(center.x, xMin, xMax)
-    //   var clampedCenterY = this.clamp(center.y, yMin, yMax)
+      const clampedCenterX = this.clamp(center.x, xMin, xMax)
+      const clampedCenterY = this.clamp(center.y, yMin, yMax)
 
-    //   var diffX = clampedCenterX - center.x
-    //   var diffY = clampedCenterY - center.y
+      const diffX = clampedCenterX - center.x
+      const diffY = clampedCenterY - center.y
 
-    //   if (diffX != 0 || diffY != 0) {
-    //     canvas.relativePan(new fabric.Point(diffX, diffY))
-    //     this.cursor.canvas.relativePan(new fabric.Point(diffX, diffY))
-    //   }
-    // },
+      if (diffX != 0 || diffY != 0) {
+        canvas.relativePan(new fabric.Point(diffX, diffY))
+        this.cursor.canvas.relativePan(new fabric.Point(diffX, diffY))
+      }
+    },
 
-    // clamp(value, min, max) {
-    //   return Math.max(min, Math.min(value, max))
-    // },
+    clamp(value, min, max) {
+      return Math.max(min, Math.min(value, max))
+    },
 
     /**
      * 키보드 입력 핸들러
      * @param {Event} event ::입력 이벤트 객체
      */
     keyEventHandler(event) {
+      if (this.canvas.onDrag === true) return
       // For window event
       if (this.canvas) {
         const keycode = parseInt(event.keyCode)
@@ -354,16 +371,22 @@ export default {
      * @param {Event} event ::입력 이벤트 객체
      */
     keyUpEventHandler(event) {
+      if (this.canvas.onDrag === true) return
       if (this.canvas) {
         const keycode = parseInt(event.keyCode)
         if (this.zoom === false) return
 
         if (keycode === 32) {
           this.canvas.defaultCursor =
-            this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default'
+            (this.viewAction === this.account.roleType) === ROLE.LEADER &&
+            ACTION.DRAWING_TEXT
+              ? 'text'
+              : 'default'
           this.cursor.canvas.renderAll()
           this.zoom = false
-          this.canvas.isDrawingMode = this.viewAction === ACTION.DRAWING_LINE
+          this.canvas.isDrawingMode =
+            this.account.roleType === ROLE.LEADER &&
+            this.viewAction === ACTION.DRAWING_LINE
         }
       }
     },
@@ -377,8 +400,8 @@ export default {
     // this.$eventBus.$on(`control:${this.mode}:focus`, this.focusCanvas)
   },
   mounted() {
-    // window.addEventListener('keydown', this.keyEventHandler)
-    // window.addEventListener('keyup', this.keyUpEventHandler)
+    window.addEventListener('keydown', this.keyEventHandler)
+    window.addEventListener('keyup', this.keyUpEventHandler)
     // window.addEventListener('resize', this.resizeEventHandler)
   },
   beforeDestroy() {
@@ -386,8 +409,8 @@ export default {
     this.$eventBus.$off(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
     this.$eventBus.$off(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
     // this.$eventBus.$off(`control:${this.mode}:focus`, this.focusCanvas)
-    // window.removeEventListener('keydown', this.keyEventHandler)
-    // window.removeEventListener('keyup', this.keyUpEventHandler)
+    window.removeEventListener('keydown', this.keyEventHandler)
+    window.removeEventListener('keyup', this.keyUpEventHandler)
     // window.removeEventListener('resize', this.resizeEventHandler)
   },
 }

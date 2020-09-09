@@ -107,15 +107,12 @@ export default {
         img.set({
           originX: 'left',
           originY: 'top',
-          scaleX: canvasSize.width / this.img.width,
-          scaleY: canvasSize.width / this.img.width,
+          scaleX: canvasSize.width < 10 ? 1 : canvasSize.width / this.img.width,
+          scaleY: canvasSize.width < 10 ? 1 : canvasSize.width / this.img.width,
         })
         canvas.setBackgroundImage(img, () => {
           canvas.setWidth(canvasSize.width)
           canvas.setHeight(canvasSize.height)
-          canvas.backgroundImage.set({
-            stretch: true,
-          })
           this.origin.width = canvasSize.width
           this.origin.height = canvasSize.height
           this.scaleWidth = this.tools.lineWidth
@@ -223,7 +220,6 @@ export default {
         this.img.height = bgImage.height
         const fabricImage = new fabric.Image(bgImage)
         this.setBG(fabricImage, bgImage).then(canvas => {
-          // console.log(canvas.getWidth(), canvas.getHeight())
           this.cursor.canvas.setWidth(canvas.getWidth())
           this.cursor.canvas.setHeight(canvas.getHeight())
           this.origin.width = canvas.getWidth()
