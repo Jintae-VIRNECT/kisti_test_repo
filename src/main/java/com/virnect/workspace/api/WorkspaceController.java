@@ -1,22 +1,11 @@
 package com.virnect.workspace.api;
 
-import com.virnect.workspace.application.WorkspaceService;
-import com.virnect.workspace.dto.UserInfoDTO;
-import com.virnect.workspace.dto.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
-import com.virnect.workspace.dto.request.*;
-import com.virnect.workspace.dto.response.*;
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.PageRequest;
-import com.virnect.workspace.global.error.ErrorCode;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
+
+import javax.validation.Valid;
+
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,14 +13,48 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
+import com.virnect.workspace.application.WorkspaceService;
+import com.virnect.workspace.dto.UserInfoDTO;
+import com.virnect.workspace.dto.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
+import com.virnect.workspace.dto.request.MemberKickOutRequest;
+import com.virnect.workspace.dto.request.MemberUpdateRequest;
+import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
+import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
+import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
+import com.virnect.workspace.dto.response.MemberListResponse;
+import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.common.PageRequest;
+import com.virnect.workspace.global.error.ErrorCode;
 
 /**
  * Project: PF-Workspace
@@ -254,11 +277,11 @@ public class WorkspaceController {
     @GetMapping("/{workspaceId}/invite/accept")
     public RedirectView inviteWorkspaceAccept(@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId,
                                               @RequestParam("accept") Boolean accept,
-                                              @ApiIgnore Locale locale) {
+        @RequestParam("lang") String lang) {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        RedirectView redirectView = this.workspaceService.inviteWorkspaceResult(workspaceId, userId, accept, locale);
+        RedirectView redirectView = this.workspaceService.inviteWorkspaceResult(workspaceId, userId, accept, lang);
         return redirectView;
     }
 
