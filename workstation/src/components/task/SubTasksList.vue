@@ -44,7 +44,7 @@
         :label="$t('task.detail.subTaskColumn.status')"
         prop="conditions"
         :statusList="taskConditions"
-        :width="100"
+        :width="120"
       />
       <column-date
         :label="$t('task.detail.subTaskColumn.reportedDate')"

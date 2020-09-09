@@ -86,7 +86,7 @@
         :label="$t('task.list.column.status')"
         prop="conditions"
         :statusList="taskConditions"
-        :width="90"
+        :width="120"
       />
       <column-boolean
         :label="$t('task.list.column.issue')"
