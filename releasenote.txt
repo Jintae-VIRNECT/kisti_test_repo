@@ -2,8 +2,8 @@
 RELEASE
 
 New Features
-eng 업데이트
-서브모듈 링크 target _blank 적용
+약관 md로 교체
+runtime적용
 
 Bug Fixes
 -

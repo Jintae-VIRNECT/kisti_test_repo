@@ -4,10 +4,10 @@
 			<h2>footer</h2>
 			<div class="privacy-wrap">
 				<a href="https://virnect.com/terms" target="_blank">{{
-					$t('terms.h2')
+					$t('terms.terms')
 				}}</a>
 				<a href="https://virnect.com/policy" target="_blank">{{
-					$t('policy.privacyPolicy')
+					$t('terms.privacy')
 				}}</a>
 				<!-- <router-link to="/register">도움말</router-link> -->
 			</div>

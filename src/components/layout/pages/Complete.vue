@@ -30,13 +30,13 @@ export default {
 	},
 	methods: {
 		goWorkstation() {
-			location.replace(this.$urls['workstation'])
+			location.replace(window.urls['workstation'])
 		},
 		trialCoupon() {
-			location.replace(`${this.$url['www']}/coupon`)
+			location.replace(`${window.urls['www']}/coupon`)
 		},
 		payment() {
-			location.replace(`${this.$urls['pay']}`)
+			location.replace(`${window.urls['pay']}`)
 		},
 	},
 }

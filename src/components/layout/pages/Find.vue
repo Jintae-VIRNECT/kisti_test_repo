@@ -254,7 +254,7 @@ export default {
 				lastName: '',
 			},
 			findEmail: {
-				countryCode: '',
+				countryCode: '+82',
 				phoneNumber: '',
 				recoveryEmail: '',
 			},
@@ -273,38 +273,34 @@ export default {
 		}
 	},
 	mounted() {
-		// console.log(this.$route.params.findCategory)
 		if (this.$props.findCategory === 'email') return (this.tab = 'email')
 		else return (this.tab = 'reset_password')
 	},
 	watch: {
 		tabCategory() {
-			// console.log(this.tabCategory)
 			this.findEmail.phoneNumber = ''
 			this.findEmail.recoveryEmail = ''
 		},
 	},
 	computed: {
 		emailFindActive() {
-			let val
 			if (this.tabCategory == 1) {
 				if (
 					this.fullName.firstName == '' ||
 					this.fullName.lastName == '' ||
 					this.findEmail.phoneNumber == ''
 				)
-					return (val = true)
-				else return (val = false)
+					return true
+				else return false
 			} else {
 				if (
 					this.fullName.firstName == '' ||
 					this.fullName.lastName == '' ||
 					this.findEmail.recoveryEmail == ''
 				)
-					return (val = true)
-				else return (val = false)
+					return true
+				else return false
 			}
-			return val
 		},
 		emailValid() {
 			const checkEmail = /^[A-Za-z0-9_\.\-]+@[A-Za-z0-9\-]+\.[A-Za-z0-9\-]+/
@@ -329,7 +325,10 @@ export default {
 				this.findEmail.phoneNumber === ''
 			)
 				return ''
-			else return `${this.findEmail.countryCode}-${this.findEmail.phoneNumber}`
+			else
+				return `${
+					this.findEmail.countryCode
+				}-${this.findEmail.phoneNumber.replace(/[^0-9+]/g, '')}`
 		},
 	},
 	methods: {
@@ -340,10 +339,12 @@ export default {
 		async mailAccountFind() {
 			try {
 				const res = await UserService.userFindEmail({
-					firstName: this.fullName.firstName,
-					lastName: this.fullName.lastName,
-					mobile: this.mobileSet,
-					recoveryEmail: this.findEmail.recoveryEmail,
+					params: {
+						firstName: this.fullName.firstName,
+						lastName: this.fullName.lastName,
+						mobile: this.mobileSet,
+						recoveryEmail: this.findEmail.recoveryEmail,
+					},
 				})
 				if (res.code === 200) {
 					this.isFindEmail = true
@@ -367,13 +368,13 @@ export default {
 			}
 		},
 		async changePass() {
-			const userInfo = {
+			const params = {
 				uuid: this.userId,
 				email: this.userEmail,
 				password: this.resetPass.password,
 			}
 			try {
-				const res = await UserService.userPassChange(userInfo)
+				const res = await UserService.userPassChange({ params: params })
 				// console.log(res)
 				if (res.code === 200)
 					return this.confirmWindow(
@@ -398,8 +399,11 @@ export default {
 			}
 		},
 		async emailPassCode() {
+			// 비밀번호 재설정 이메일 확인
 			try {
-				let res = await UserService.userPass({ email: this.resetPass.email })
+				let res = await UserService.userPass({
+					params: { email: this.resetPass.email },
+				})
 				if (res.code === 200) {
 					this.alertMessage(
 						this.$t('find.authCode.done.send.title'), // 보안코드 전송
@@ -436,8 +440,10 @@ export default {
 		async authCodeCheck() {
 			try {
 				let res = await UserService.userCodeCheck({
-					code: this.resetPass.authCode,
-					email: this.resetPass.email,
+					params: {
+						code: this.resetPass.authCode,
+						email: this.resetPass.email,
+					},
 				})
 				if (res.code === 200) {
 					this.userId = res.data.uuid

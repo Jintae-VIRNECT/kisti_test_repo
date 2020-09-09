@@ -52,9 +52,13 @@
 						</div>
 					</div>
 					<span slot="footer" class="dialog-footer">
-						<el-button type="info" @click.native="uploadBtn" class="left-btn">{{
-							$t('user.profileImage.upload')
-						}}</el-button>
+						<el-button
+							type="info"
+							@click.native="uploadBtn"
+							class="left-btn"
+							:disabled="thumbnail !== null"
+							>{{ $t('user.profileImage.upload') }}</el-button
+						>
 						<el-button @click="deleteImage">{{
 							$t('user.profileImage.delete')
 						}}</el-button>
@@ -186,7 +190,11 @@ export default {
 		},
 		mobileSet() {
 			if (this.user.countryCode === null || this.user.mobile === null) return ''
-			else return `${this.user.countryCode}-${this.user.mobile}`
+			else
+				return `${this.user.countryCode}-${this.user.mobile.replace(
+					/[^0-9+]/g,
+					'',
+				)}`
 		},
 	},
 	mounted() {
@@ -228,7 +236,7 @@ export default {
 
 			// 회원가입
 			try {
-				registerData = await AuthService.signUp(this.formData)
+				registerData = await AuthService.signUp({ params: this.formData })
 				if (registerData.code === 200) {
 					setTimeout(() => {
 						window.scrollTo({
@@ -242,8 +250,8 @@ export default {
 				} else throw registerData
 			} catch (error) {
 				this.alertMessage(
-					this.$t('user.etc.error.title'), // 기타 오류
-					this.$t('user.etc.error.message'), // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
+					this.$t('user.error.etc.title'), // 기타 오류
+					this.$t('user.error.etc.message'), // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
 					'error',
 				)
 			}
@@ -264,7 +272,7 @@ export default {
 				this.formData.append('serviceInfo', this.$props.signup.serviceInfo)
 				this.formData.append('sessionCode', this.$props.signup.sessionCode)
 
-				let res = await AuthService.signUp(this.formData)
+				let res = await AuthService.signUp({ params: this.formData })
 				// console.log(res)
 				if (res.code === 200) {
 					this.$router.push({

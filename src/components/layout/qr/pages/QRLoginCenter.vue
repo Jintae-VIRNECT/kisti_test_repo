@@ -67,7 +67,6 @@ export default {
 				.add(3, 'minute')
 				.unix(),
 			remainTime: 0,
-			otpInfo: null,
 			qrImage: null,
 			isExpire: false,
 		}
@@ -87,12 +86,12 @@ export default {
 	},
 	methods: {
 		async reset() {
-			this.otpInfo = {
+			const params = {
 				email: this.$props.myInfo.email,
 				userId: this.$props.myInfo.uuid,
 			}
 			try {
-				let otp = await AuthService.qrOtp(this.otpInfo)
+				let otp = await AuthService.qrOtp({ params: params })
 				if (otp.code == 200) {
 					this.timeRunner()
 					this.deadline = dayjs()
@@ -104,7 +103,7 @@ export default {
 					throw otp.data
 				}
 			} catch (e) {
-				location.replace(`${this.$urls['console']}/?continue=${location.href}`)
+				location.replace(`${window.urls['console']}/?continue=${location.href}`)
 			}
 		},
 		timeRunner() {

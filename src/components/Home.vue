@@ -14,7 +14,7 @@
 			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
-			<TheHeader :showSection="showSection" :logoUrl="logoUrl">
+			<TheHeader :showSection="showSection">
 				<template slot="subTitle">{{ $t('login.subTitle') }}</template>
 			</TheHeader>
 			<transition name="app-fade" mode="out-in">
@@ -34,7 +34,6 @@ export default {
 				login: false,
 				language: true,
 			},
-			logoUrl: this.$urls['www'],
 		}
 	},
 	components: {
@@ -44,12 +43,11 @@ export default {
 		loginService() {
 			setTimeout(() => {
 				this.show = false
-			}, 2500)
+			}, 2000)
 		},
 	},
 	mounted() {
 		const redirectTarget = this.$route.query.continue
-
 		// 자신으로 리다이렉트 제외
 		if (
 			redirectTarget === location.origin ||
@@ -61,7 +59,7 @@ export default {
 
 		// 로그인 필요 다이얼로그
 		const needNotLogin =
-			redirectTarget && redirectTarget.match(this.$urls['www'])
+			redirectTarget && redirectTarget.match(window.urls['www'] !== null)
 		if (redirectTarget && !needNotLogin) {
 			this.show = true
 			this.loginService()

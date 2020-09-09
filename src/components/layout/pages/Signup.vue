@@ -389,10 +389,12 @@ export default {
 			try {
 				// const validEmail = await this.$validator.validate('email')
 
-				const email = this.signup.email
-				const mailAuth = await AuthService.emailAuth(email)
+				const params = {
+					email: this.signup.email,
+				}
+				const mailAuth = await AuthService.emailAuth(params)
 
-				// console.log(mailAuth)
+				console.log(mailAuth)
 				if (mailAuth.code == 200) {
 					this.authLoading = true
 					this.isVeritication = true
@@ -430,7 +432,7 @@ export default {
 					email: this.signup.email,
 				}
 				try {
-					const res = await AuthService.verification(code)
+					const res = await AuthService.verification({ params: code })
 					if (res.code === 200) {
 						// console.log(res)
 						this.signup.sessionCode = res.data.sessionCode
@@ -456,7 +458,7 @@ export default {
 					else
 						return this.alertMessage(
 							this.$t('signup.authentication.message.errors.fail'), // 이메일 인증 실패
-							this.$t('signup.authentication.message.errors.failContents'), // 이메일 인증에 실패하였습니다. 잠시 후 다시 시도해 주세요.
+							this.$t('signup.authentication.message.errors.failContent'), // 이메일 인증에 실패하였습니다. 잠시 후 다시 시도해 주세요.
 							'error',
 						)
 				}
