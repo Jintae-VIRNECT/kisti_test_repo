@@ -279,6 +279,8 @@ export default {
 						name: 'complete',
 					})
 					const cookieOption = {
+						secure: true,
+						sameSite: 'None',
 						expires: res.data.expireIn / 3600000,
 						domain:
 							location.hostname.split('.').length === 3

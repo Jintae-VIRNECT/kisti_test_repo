@@ -175,6 +175,8 @@ export default {
 				let redirectTarget = this.$route.query.continue
 				if (res.code === 200) {
 					const cookieOption = {
+						secure: true,
+						sameSite: 'None',
 						expires: res.data.expireIn / 3600000,
 						domain:
 							location.hostname.split('.').length === 3

@@ -2,127 +2,135 @@
 @import "../mixin.scss";
 
 /* privacyPolicy */
-
-#policyViewSection,
-#serviceTermsSection {
-    text-align: left;
-    background-color: #202937;
-}
-
-/* serviceTerms */
-
-.policy-style {
-    @include area-flex(1200px);
-    padding: 150px 0;
-    color: #fff;
-    font-family: $noto;
-}
-
-h3 {
-    font-weight: bold;
-    font-size: 14px;
-    font-family: $noto;
-    & + p {
-        margin-top: 8px;
-        font-size: 13px;
-        font-family: $noto;
-    }
-}
-
-.policy-head {
-    margin-top: 20px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    p {
-        font-size: 13px;
-    }
-    ul {
-        padding: 20px;
-    }
-    li {
-        margin-bottom: 4px;
-        font-size: 13px;
-    }
-}
+$policy-primary: #0d2a58;
 
 .policy-body {
-    margin-top: 8px;
-    font-size: 13px;
-    h4 {
-        margin-top: 8px;
+    font-size: 12px;
+}
+.policy-body /deep/ {
+    h1 {
+        margin-bottom: 8px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    h2 {
+        margin-bottom: 4px;
         font-weight: bold;
         font-size: 12px;
-        & + p {
-            margin-top: 4px;
-            margin-bottom: 8px;
+    }
+    h3 {
+        margin-bottom: 1.5em;
+    }
+    h2 + p {
+        font-weight: inherit;
+        font-size: inherit;
+    }
+    // 여백
+    ol,
+    ul,
+    li,
+    p {
+        & + h2,
+        & + h3 {
+            margin-top: 1.5em;
         }
     }
     p {
-        font-size: 12px;
+        margin-top: 1.5em;
     }
-    .depth {
-        padding: 4px 0;
-        p {
-            position: relative;
-            margin-top: 8px;
-            margin-bottom: 4px;
-            padding-left: 16px;
+    li {
+        margin-top: 0.7em;
+        & > p {
+            margin: 0;
         }
-        span {
-            position: absolute;
-            top: 0;
-            left: 0;
+    }
+    ol,
+    ul {
+        ul li,
+        ol li {
+            margin-top: 4px;
+        }
+    }
+    // 리스트
+    ol,
+    ul {
+        & > li {
+            margin-left: 1em;
+            text-indent: -1em;
+        }
+        & > li:before {
+            display: inline;
+            margin-right: 4px;
+            content: "- ";
+        }
+        p {
+            display: inline;
+        }
+    }
+    ol {
+        counter-reset: unit;
+        & > li {
+            margin-left: 1.4em;
+            text-indent: -1.4em;
+        }
+        & > li:before {
+            content: counter(unit, decimal) ". ";
+            counter-increment: unit;
+        }
+    }
+    ol ol > li:before {
+        content: counter(unit, decimal) ") ";
+    }
+    ul ul ul {
+        li:before {
+            content: "\2022";
         }
     }
 
-    .depth-inner {
-        padding-left: 20px;
-        p {
-            margin: 0;
-            padding: 0;
-        }
-        li {
-            position: relative;
-            padding-left: 12px;
-        }
-        > li:before {
-            position: absolute;
-            top: 0;
-            left: 0;
-            content: "-";
-        }
-    }
-    .dot-list {
-        position: relative;
-        padding-top: 8px;
-        &:before {
-            position: absolute;
-            top: 6px;
-            left: 0;
-            content: "•";
-        }
-        li:before {
-            display: none;
-        }
+    hr {
+        margin: 2em 0;
+        background-color: $policy-primary;
+        opacity: 0.2;
     }
 }
 
-@media (max-width: $mobile) {
-    h3 {
-        // font-size: 40px;
-        & + p {
-            font-size: 15px;
+// policy
+.policy-body.policy /deep/ {
+    & > ol > li {
+        margin-top: 0.2em;
+    }
+    ol li {
+        padding-left: 1.5em;
+        &:first-child {
+            margin-top: 1em;
+        }
+        &:lang(en) {
+            padding-left: 0;
         }
     }
-    .policy-head {
-        p {
-            font-size: 16px;
+    ol ul li:first-child {
+        margin-top: 0.2em;
+    }
+    ul li {
+        margin-left: 1.4em;
+        text-indent: -1.4em;
+        &:lang(ko):before {
+            display: none;
         }
-        li {
-            font-size: 14px;
+        &:lang(en) {
+            margin-left: 1em;
+            text-indent: -1em;
         }
     }
-    .policy-body {
-        font-size: 14px;
+    ul ul li {
+        margin-left: 1em;
+        text-indent: -1em;
+        &:lang(ko):before {
+            display: inline;
+        }
+        &:lang(en) {
+            margin-left: 1.5em;
+            text-indent: -1em;
+        }
     }
 }

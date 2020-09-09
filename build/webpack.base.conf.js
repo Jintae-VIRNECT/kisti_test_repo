@@ -171,6 +171,10 @@ const config = {
 					},
 				],
 			},
+			{
+				test: /\.(md)(\?.+)?$/,
+				use: 'raw-loader',
+			},
 		],
 	},
 	optimization: {
