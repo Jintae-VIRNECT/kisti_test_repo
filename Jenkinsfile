@@ -9,8 +9,9 @@ pipeline {
       steps {
         echo 'Pre-Build Stage'
         catchError() {
-          sh 'chmod +x ./gradlew'
-          sh './gradlew clean'
+          sh 'yarn cache clean'
+          sh 'rm -f yarn.lock'
+          sh 'yarn install'
           sh 'cp docker/Dockerfile ./'
         }
 
@@ -29,8 +30,11 @@ pipeline {
           when {
             branch 'develop'
           }
+          environment {
+              NODE_ENV = 'develop'
+          }
           steps {
-            sh './gradlew build -x test -Pprofile=develop'
+            sh 'yarn build'
             sh 'docker build -t pf-login .'
           }
         }
@@ -39,9 +43,12 @@ pipeline {
           when {
             branch 'staging'
           }
+          environment {
+              NODE_ENV = 'staging'
+          }
           steps {
             sh 'git checkout ${GIT_TAG}'
-            sh './gradlew build -x test -Pprofile=staging'
+            sh 'yarn build'
             sh 'docker build -t pf-login:${GIT_TAG} .'
           }
         }
@@ -50,9 +57,12 @@ pipeline {
           when {
             branch 'master'
           }
+          environment {
+              NODE_ENV = 'production'
+          }
           steps {
             sh 'git checkout ${GIT_TAG}'
-            sh './gradlew build -x test -Pprofile=production'
+            sh 'yarn build'
             sh 'docker build -t pf-login:${GIT_TAG} .'
           }
         }

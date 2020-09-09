@@ -1,0 +1,12 @@
+{
+  "terms": {
+    "page": {
+      "title": "Terms & Contions",
+      "pageInfo": "Sign up begins if you agree to the Terms & Conditions",
+      "entire": "Agree to all the terms",
+      "termsContents": "[Contents of agreement to the Terms of Service]",
+      "privacyPolicyContents": "[Contents of consent of the personal information processing policy]",
+      "marketingReceive": "[Content of consent to receiving promotional marketing material (optional)]"
+    }
+  }
+}
