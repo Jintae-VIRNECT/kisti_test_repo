@@ -210,6 +210,7 @@ export default {
     position: relative;
     color: #fff;
     background: url('~assets/images/bg_banner.jpg');
+    background-size: cover;
     cursor: pointer;
 
     & > span {

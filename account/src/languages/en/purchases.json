@@ -1,7 +1,8 @@
 {
   "desc": "Manage plans and services purchased from the workspace where you are given with the master authority",
-  "countsUnit": "Count",
+  "countsUnit": "Times",
   "hoursUnit": "Hour",
+  "infinity": "Unlimited",
   "info": {
     "title": "Purchase detail",
     "productPurchasesInfo": "Product plan purchasement detail",
@@ -11,7 +12,7 @@
     "callTime": "Call duration",
     "extendPurchasesInfo": "Purchase details of additional services",
     "licenseExpireDate": "License expiry date",
-    "licenseExpireDateDesc": "This is not a automatic payment but a license expiry date information when using the services.",
+    "licenseExpireDateDesc": "This is not an automatic payment but a license expiry date information when using the services.",
     "nextPaymentDate": "Next payment date",
     "nextPaymentDateDesc": "This is the next payment date information when using the automatic payment service.",
     "way": "Payment method",
@@ -33,8 +34,8 @@
     "usedDesc": "It may differ from the actual remaining capacity so please use it as a reference.",
     "capacity": "AR storage capacity",
     "capacityDesc": "Uploading is not possible if the capacity is exceeded and the remaining AR storage capacity will not be rolled over to the next month.",
-    "max": "Overall storage capacity",
-    "maxShort": "Overall storage capacity",
+    "max": "Overall AR storage capacity",
+    "maxShort": "Overall AR storage capacity",
     "default": "Default storage allotment",
     "extend": "Purchase additional storage",
     "unit": "GB"
@@ -48,7 +49,7 @@
     "maxShort": "Overall view counts",
     "default": "Default view count allotment",
     "extend": "Additional purchasement of view counts",
-    "unit": "Count"
+    "unit": "Times"
   },
   "call": {
     "used": "Talk minutes used",

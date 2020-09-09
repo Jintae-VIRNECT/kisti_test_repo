@@ -1,8 +1,8 @@
 {
   "desc": "Register and manage the coupons issued from both online or offline.",
   "banner": {
-    "subTitle": "Free Trial",
-    "mainTitle": "One month of time to experience AR innovation.",
+    "subTitle": "Inquire for a trial",
+    "mainTitle": "Time to experience the AR innovations",
     "link": "Shortcut"
   },
   "addCouponCode": {
@@ -50,7 +50,7 @@
     "couponName": "Coupon name",
     "couponNo": "Coupon number",
     "couponType": "Coupon type",
-    "registerDate": "Coupon register ddate",
+    "registerDate": "Coupon register date",
     "usedDate": "Coupon used date",
     "usedDateDesc": "Coupon can be applied when used during the valid date mentioned on the coupon.",
     "expireDate": "Coupon expiry date",
