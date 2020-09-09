@@ -47,11 +47,11 @@ export default {
           })
           this.receiveStackAdd('add', object.id, object.owner)
         } else {
-          this.backCanvas.add(object)
           object.set({
             id: objID,
             tId: this.undoList.length,
           })
+          this.backCanvas.add(fabric.util.object.clone(object))
           if (object instanceof fabric.IText) {
             // this.$remoteSDK.message('drawText', getParam('text', object));
             // this._sendAction('drawText', object);
