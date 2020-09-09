@@ -101,7 +101,16 @@ export default {
     mainView: {
       handler(current) {
         if (this.recorder !== null && this.screenStream === null) {
-          this.changeVideoStream(current.stream)
+          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+
+          this.changeVideoStream(
+            current.stream,
+            getWH(
+              this.localRecord.resolution,
+              this.resolution.width,
+              this.resolution.height,
+            ),
+          )
         }
       },
     },
@@ -129,12 +138,28 @@ export default {
     async initRecorder() {
       const config = {}
       config.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
-      config.options = {
-        video: getWH(
-          this.localRecord.resolution,
-          this.resolution.width,
-          this.resolution.height,
-        ),
+
+      switch (this.localRecordTarget) {
+        case RECORD_TARGET.WORKER:
+          config.options = {
+            video: getWH(
+              this.localRecord.resolution,
+              this.resolution.width,
+              this.resolution.height,
+            ),
+          }
+          break
+        case RECORD_TARGET.SCREEN:
+          config.options = {
+            video: getWH(this.localRecord.resolution),
+          }
+          break
+        default:
+          console.error(
+            'Unknown local record target ::',
+            this.localRecordTarget,
+          )
+          return false
       }
 
       try {
@@ -254,9 +279,9 @@ export default {
       this.setScreenStream(displayStream)
     },
 
-    changeVideoStream(videoStream) {
+    changeVideoStream(videoStream, resolution) {
       if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
-        this.recorder.changeVideoStream(videoStream)
+        this.recorder.changeVideoStream(videoStream, resolution)
       }
     },
 

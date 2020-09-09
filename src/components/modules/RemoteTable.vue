@@ -72,15 +72,7 @@ export default {
         this.$eventBus.$emit('table:selectedarray', ary)
 
         if (ary.length > 0) {
-          const allSelected = ary.every(select => {
-            return select === true
-          })
-
-          if (allSelected) {
-            this.toggleAllFlag = true
-          } else {
-            this.toggleAllFlag = false
-          }
+          this.toggleAllFlag = ary.every(select => select === true)
         }
       },
       deep: true,
@@ -145,8 +137,6 @@ export default {
      * copy datas with specific columns and execute render func
      */
     setRenderArray() {
-      this.renderArray = []
-
       this.renderArray = this.datas.map(data => {
         const newData = {}
 

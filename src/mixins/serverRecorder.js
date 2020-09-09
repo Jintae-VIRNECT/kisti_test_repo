@@ -47,8 +47,8 @@ export default {
       }
     },
     async stopServerRecord() {
-      this.logger('SERVER RECORD', 'stop')
       if (this.recordingId) {
+        this.logger('SERVER RECORD', 'stop')
         await stopServerRecord({ id: this.recordingId })
         this.recordingId = null
       }

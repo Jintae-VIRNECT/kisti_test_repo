@@ -36,7 +36,7 @@
         </p>
         <div class="rec-setting__selector">
           <r-radio
-            :options="localRecordTarget"
+            :options="localRecordTargetOpt"
             :value="'value'"
             :text="'text'"
             :selectedOption.sync="recordTarget"
@@ -167,7 +167,7 @@ export default {
 
       visibleFlag: false,
 
-      recordTarget: RECORD_TARGET.WORKER,
+      recordTarget: this.$store.state.settings.localRecordTarget,
 
       localRecResOpt: localRecResOpt,
     }
@@ -185,13 +185,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters([
-      'view',
-      'localRecord',
-      'allowLocalRecord',
-      'allowPointing',
-      'screenStream',
-    ]),
+    ...mapGetters(['view', 'localRecord', 'allowLocalRecord', 'allowPointing']),
     localRecTimeOpt() {
       const options = localRecTime.map(time => {
         return {
@@ -210,7 +204,7 @@ export default {
       })
       return options
     },
-    localRecordTarget() {
+    localRecordTargetOpt() {
       return [
         {
           text: this.$t('service.setting_record_stream'),
