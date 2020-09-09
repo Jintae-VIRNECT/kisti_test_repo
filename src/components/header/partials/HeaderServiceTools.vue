@@ -59,14 +59,6 @@ export default {
   methods: {
     leave() {
       try {
-        if (this.account.roleType === ROLE.LEADER) {
-          if (this.view === VIEW.DRAWING) {
-            this.$call.drawing(DRAWING.END_DRAWING)
-          }
-          if (this.view === VIEW.AR) {
-            this.$call.arDrawing(AR_DRAWING.END_DRAWING)
-          }
-        }
         this.$nextTick(() => {
           this.$call.leave()
           this.$router.push({ name: 'workspace' })
