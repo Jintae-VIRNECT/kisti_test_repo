@@ -416,6 +416,8 @@ public class LicenseService {
 
 		// 라이선스 플랜 정보가 없는 경우
 		if (licensePlan == null) {
+			log.info("workspaceUUID: {} , userUUID: {} ,  userNumber: {} ", workspaceUUID, userUUID, userNumber);
+			log.info("No LicensePlan");
 			return new LicenseSecessionResponse(workspaceUUID, true, LocalDateTime.now());
 		}
 
