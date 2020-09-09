@@ -353,7 +353,8 @@ export default {
      * @param {Event} event ::입력 이벤트 객체
      */
     keyEventHandler(event) {
-      if (this.canvas.onDrag === true) return
+      if (!this.drawingView) return
+      if (!this.canvas || this.canvas.onDrag === true) return
       // For window event
       if (this.canvas) {
         const keycode = parseInt(event.keyCode)
@@ -371,7 +372,8 @@ export default {
      * @param {Event} event ::입력 이벤트 객체
      */
     keyUpEventHandler(event) {
-      if (this.canvas.onDrag === true) return
+      if (!this.drawingView) return
+      if (!this.canvas || this.canvas.onDrag === true) return
       if (this.canvas) {
         const keycode = parseInt(event.keyCode)
         if (this.zoom === false) return
