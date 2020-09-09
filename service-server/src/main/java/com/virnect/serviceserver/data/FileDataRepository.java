@@ -12,8 +12,8 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.service.FileService;
 import com.virnect.data.service.SessionService;
 import com.virnect.serviceserver.infra.file.Default;
+import com.virnect.serviceserver.infra.file.IFileManagementService;
 import com.virnect.serviceserver.infra.file.LocalFileManagementService;
-import com.virnect.serviceserver.infra.file.download.LocalFileDownloadService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,8 +39,8 @@ public class FileDataRepository {
 
     private final SessionService sessionService;
     private final FileService fileService;
-    private final LocalFileManagementService localFileManagementService;
-    private final LocalFileDownloadService localFileDownloadService;
+    //private final LocalFileManagementService localFileManagementService;
+    private final IFileManagementService fileManagementService;
 
     private final ModelMapper modelMapper;
 
@@ -59,7 +59,7 @@ public class FileDataRepository {
 
                 String objectName;
                 try {
-                    objectName = localFileManagementService.upload(fileUploadRequest.getFile(), stringBuilder.toString());
+                    objectName = fileManagementService.upload(fileUploadRequest.getFile(), stringBuilder.toString());
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     log.info("{}", exception.getMessage());
                     return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
@@ -106,7 +106,8 @@ public class FileDataRepository {
                     if(room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
                         if (roomProfileUpdateRequest.getProfile() != null) {
                             try {
-                                profileUrl = localFileManagementService.uploadProfile(roomProfileUpdateRequest.getProfile(), stringBuilder.toString());
+                                profileUrl = fileManagementService.uploadProfile(roomProfileUpdateRequest.getProfile(), stringBuilder.toString());
+                                fileManagementService.delete(room.getProfile());
                             } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                                 log.info("{}", exception.getMessage());
                                 return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
@@ -151,7 +152,8 @@ public class FileDataRepository {
                     stringBuilder.append(workspaceId).append("/")
                             .append(sessionId).append("/")
                             .append(file.getObjectName());
-                    byte[] byteArray = localFileDownloadService.fileDownload(stringBuilder.toString());
+                    //byte[] byteArray = localFileDownloadService.fileDownload(stringBuilder.toString());
+                    byte[] byteArray = fileManagementService.fileDownload(stringBuilder.toString());
                     //String[] resources = file.getPath().split("/");
                     HttpHeaders httpHeaders = new HttpHeaders();
                     httpHeaders.setContentLength(byteArray.length);
@@ -203,7 +205,8 @@ public class FileDataRepository {
                             .append(sessionId).append("/")
                             .append(file.getObjectName());
                     int expiry = 60 * 60 *24; //one day
-                    String url = localFileDownloadService.filePreSignedUrl(stringBuilder.toString(), expiry);
+                    //String url = localFileDownloadService.filePreSignedUrl(stringBuilder.toString(), expiry);
+                    String url = fileManagementService.filePreSignedUrl(stringBuilder.toString(), expiry);
                     FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
                     filePreSignedResponse.setWorkspaceId(file.getWorkspaceId());
                     filePreSignedResponse.setSessionId(file.getSessionId());
@@ -285,7 +288,7 @@ public class FileDataRepository {
                     stringBuilder.append(workspaceId).append("/")
                             .append(sessionId).append("/")
                             .append(file.getObjectName());
-                    result = localFileManagementService.removeObject(stringBuilder.toString());
+                    result = fileManagementService.removeObject(stringBuilder.toString());
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     exception.printStackTrace();
                     log.info("{}", exception.getMessage());

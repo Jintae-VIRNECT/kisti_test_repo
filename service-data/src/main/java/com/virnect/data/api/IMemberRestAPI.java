@@ -3,15 +3,13 @@ package com.virnect.data.api;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.response.MemberInfoListResponse;
+import com.virnect.data.dto.response.ResultResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/remote")
 public interface IMemberRestAPI {
@@ -63,4 +61,12 @@ public interface IMemberRestAPI {
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size
     );
+
+    @ApiOperation(value = "Member Account Withdrawal", notes = "")
+    @DeleteMapping(value = "members/account/{userId}")
+    ApiResponse<ResultResponse> deleteMembersByWithdrawal(
+            @PathVariable(name = "userId") String userId
+    );
+
+
 }

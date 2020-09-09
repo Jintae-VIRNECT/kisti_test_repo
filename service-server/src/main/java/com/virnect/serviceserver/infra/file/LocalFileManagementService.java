@@ -28,6 +28,7 @@ import java.util.*;
  *
  */
 @Profile({"develop", "local", "test"})
+//@Profile({"test"})
 @Slf4j
 @Component
 public class LocalFileManagementService implements IFileManagementService {
@@ -45,28 +46,23 @@ public class LocalFileManagementService implements IFileManagementService {
     @Value("${upload.dir}")
     private String rootDirPath;
 
+
+    private List<String> fileAllowExtensionList = new ArrayList<>();
+
     private MinioClient minioClient = null;
 
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/remote/";
     final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
 
-    private void makeProfileDir() {
-
-    }
-
-    private void makeFileDir() {
-
-    }
-
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
         try {
-            FILE_ALLOW_EXTENSION.addAll(FILE_IMAGE_ALLOW_EXTENSION);
-            FILE_ALLOW_EXTENSION.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
-            FILE_ALLOW_EXTENSION.addAll(FILE_VIDEO_ALLOW_EXTENSION);
+            fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
+            fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
+            fileAllowExtensionList.addAll(FILE_VIDEO_ALLOW_EXTENSION);
 
             log.info(LOG_MESSAGE_TAG + "{}" , "LocalFileUploadService initialised");
-            log.info(LOG_MESSAGE_TAG + "LocalFileUploadService allow extension {}", FILE_ALLOW_EXTENSION);
+            log.info(LOG_MESSAGE_TAG + "LocalFileUploadService allow extension {}", fileAllowExtensionList);
             minioClient = MinioClient.builder()
                     .endpoint(serverUrl)
                     .credentials(accessKey, secretKey)
@@ -117,7 +113,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
         // 2. 확장자 검사
         String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
-        if (!FILE_ALLOW_EXTENSION.contains(fileExtension)) {
+        if (!fileAllowExtensionList.contains(fileExtension)) {
             log.error(LOG_MESSAGE_TAG + "[UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
             throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
@@ -175,7 +171,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
         // 2. check file extension
         String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
-        if (!FILE_ALLOW_EXTENSION.contains(fileExtension)) {
+        if (!fileAllowExtensionList.contains(fileExtension)) {
             log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
             throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
@@ -273,7 +269,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
         // 2. 확장자 검사
         String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
-        if (!FILE_ALLOW_EXTENSION.contains(fileExtension)) {
+        if (!fileAllowExtensionList.contains(fileExtension)) {
             log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
             throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
@@ -345,6 +341,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
     }
 
+    @Override
     public boolean removeObject(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
             minioClient.removeObject(RemoveObjectArgs.builder()
@@ -370,6 +367,11 @@ public class LocalFileManagementService implements IFileManagementService {
             log.info("{} 파일을 삭제하지 못했습니다.", file.getName());
             return false;
         }
+    }
+
+    @Override
+    public boolean deleteProfile(String url) {
+        return false;
     }
 
     @Override
@@ -422,6 +424,24 @@ public class LocalFileManagementService implements IFileManagementService {
         } catch (MinioException e) {
             log.info("Download error occurred:: {}", e.getMessage());
             throw new RestServiceException(ErrorCode.ERR_FILE_DOWNLOAD_FAILED);
+        }
+    }
+
+    @Override
+    public String filePreSignedUrl(String objectPathToName, int expiry) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        try {
+            String url = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(fileBucketName)
+                            .object(objectPathToName)
+                            .expiry(expiry)
+                            .build());
+            log.info("filePreSignedUrl:: {}", url);
+            return url;
+        } catch (MinioException e) {
+            log.info("Download error occurred:: {}", e.getMessage());
+            return null;
         }
     }
 

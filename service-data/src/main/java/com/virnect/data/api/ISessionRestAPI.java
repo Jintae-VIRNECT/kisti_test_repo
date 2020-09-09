@@ -35,7 +35,7 @@ public interface ISessionRestAPI {
      * 6. register other users as a worker(participant), if the request contains other user information.
      * 7. return session id and token
      */
-    @ApiOperation(value = "Initialize a Remote Room for Realwear", notes = "Generate Remote Session")
+    @ApiOperation(value = "Initialize a Remote Room for Realwear", notes = "Generate Remote Session  for Smart Glasses")
     @PostMapping(value = "room/{userId}")
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestHeader(name = "client", required = false) String client,
@@ -53,7 +53,7 @@ public interface ISessionRestAPI {
      * 6. register other users as a worker(participant), if the request contains other user information.
      * 7. return session id and token
      */
-    @ApiOperation(value = "Initialize a Remote Room", notes = "Generate Remote Session for Smart Glasses")
+    @ApiOperation(value = "Initialize a Remote Room", notes = "Generate Remote Session")
     @PostMapping(value = "room")
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestBody @Valid RoomRequest roomRequest,
@@ -94,16 +94,17 @@ public interface ISessionRestAPI {
             @PathVariable("userId") String userId);
 
 
-    @ApiOperation(value = "Update a Remote Room profile", notes = "원격협업 방 프로필을 업데이트 합니다.")
+    /*@ApiOperation(value = "Update a Remote Room profile", notes = "원격협업 방 프로필을 업데이트 합니다.")
     @PostMapping(value = "room/{workspaceId}/{sessionId}/profile")
     @ApiImplicitParams({
             @ApiImplicitParam(value = "변경할 프로필 이미지", name = "profile", paramType = "form", dataType = "__file")
     })
+    @Deprecated
     ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> updateRoomProfile(
             @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
-            BindingResult result);
+            BindingResult result);*/
 
     @ApiOperation(value = "Update Room Information", notes = "특정 원격협업 방 상세 정보를 수정하는 API 입니다.")
     @PostMapping(value = "room/{workspaceId}/{sessionId}/info")

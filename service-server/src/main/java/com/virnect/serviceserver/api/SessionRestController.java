@@ -310,7 +310,7 @@ public class SessionRestController implements ISessionRestAPI {
         }*/
     }
 
-    @Override
+    /*@Override
     public ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> updateRoomProfile(
             @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
             @PathVariable("workspaceId") String workspaceId,
@@ -328,7 +328,7 @@ public class SessionRestController implements ISessionRestAPI {
         return ResponseEntity.ok(
                 this.dataRepository.updateRoom(workspaceId, sessionId, roomProfileUpdateRequest)
         );
-    }
+    }*/
 
     @Override
     public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> updateRoomById(

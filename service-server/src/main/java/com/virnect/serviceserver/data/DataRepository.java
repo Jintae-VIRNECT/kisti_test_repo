@@ -57,7 +57,7 @@ public class DataRepository {
     private final LicenseRestService licenseRestService;
     private final ModelMapper modelMapper;
     //
-    private final LocalFileManagementService localFileManagementService;
+    //private final LocalFileManagementService localFileManagementService;
 
     //private final ImplementationTest implementationTest;
     @Autowired(required = true)
@@ -428,7 +428,7 @@ public class DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<RoomProfileUpdateResponse> updateRoom(
+    /*public ApiResponse<RoomProfileUpdateResponse> updateRoom(
             String workspaceId,
             String sessionId,
             RoomProfileUpdateRequest roomProfileUpdateRequest) {
@@ -470,7 +470,7 @@ public class DataRepository {
                 }
             }
         }.asApiResponse();
-    }
+    }*/
 
     public ApiResponse<RoomDetailInfoResponse> updateRoom(
             String workspaceId,

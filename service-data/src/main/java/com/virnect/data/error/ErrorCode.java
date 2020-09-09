@@ -3,15 +3,22 @@ package com.virnect.data.error;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+/**
+ * @project: PF-Auth
+ * @author: jeonghyeon.chang (johnmark)
+ * @email: practice1356@gmail.com
+ * @since: 2020.03.09
+ * @description: Auth Service Error Messages
+ */
 @ApiModel
 public enum  ErrorCode {
-    //
+
     ERR_SUCCESS(200, "anyway ok"),
 
-    //원격협업 서버 에러
+    // error code for server process
     ERR_SERVICE_PROCESS(3001, "Service Server Process error"),
 
-    //원격협업 정보 관련 에러
+    // error code for remote session
     ERR_ROOM_INFO(4000, "Room Info Error"),
     ERR_ROOM_INFO_ACCESS(4001, "Room info access fail"),
     ERR_ROOM_NOT_FOUND(4002, "Room Not found maybe session is not active"),
@@ -35,13 +42,13 @@ public enum  ErrorCode {
     ERR_ROOM_PROCESS_FAIL(4020, "Current Room request is failed"),
     ERR_ROOM_MEMBER_MAX_COUNT(4021, "Current Room member is over the limit"),
 
-    //원격협업 유효성 정보 관련 에러
+    // error code for service validation
     ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
     ERR_LICENSE_TYPE_VALIDITY(5002, "License is not the license type"),
     ERR_LICENSE_PRODUCT_VALIDITY(5003, "License has no product"),
     ERR_LICENSE_UNEXPECTED_TYPE(5004, "This license is not unexpected type"),
 
-    //원격협업 최근기록 관련 에러
+    // error code for remote session history
     //ERR_HISTORY_NOT_VALIDITY(6001, "License has no validity"),
     ERR_HISTORY_ROOM_NOT_FOUND(6001, "Room History can not found"),
     ERR_HISTORY_ROOM_MEMBER_NOT_FOUND(6002, "Room History member not found"),
@@ -49,7 +56,7 @@ public enum  ErrorCode {
     ERR_HISTORY_PRODUCT_VALIDITY(6004, "License has no product"),
     ERR_HISTORY_UNEXPECTED_TYPE(6005, "This license is not unexpected type"),
 
-    //원격협업 파일 업로드/다운로드 관련 에러
+    // error code for file upload and download
     ERR_FILE_UPLOAD_FAILED(7001, "File upload has failed"),
     ERR_FILE_ASSUME_DUMMY(7002, "File is assumed to dummy"),
     ERR_FILE_UNSUPPORTED_EXTENSION(7003, "This file extension is not supported"),
@@ -60,13 +67,14 @@ public enum  ErrorCode {
     ERR_FILE_UPLOAD_EXCEPTION(7008, "File upload has an exception"),
     ERR_FILE_GET_SIGNED_EXCEPTION(7009, "Get Pre signed url has an exception"),
     ERR_FILE_DOWNLOAD_EXCEPTION(7010, "File download has an exception"),
+    ERR_FILE_COVERT_FAILED(7011, "File converting is failed"),
 
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),
     ERR_USER_PASSWORD_CHANGE_DUPLICATE(4009, "Password is duplicated with previous password"),
     ERR_USER_LEAVE_SERVICE(4008, "User Info Not Matched"),*/
 
-    // 공통 에러
+    // common error code
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004, "Invalid Value"),
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),

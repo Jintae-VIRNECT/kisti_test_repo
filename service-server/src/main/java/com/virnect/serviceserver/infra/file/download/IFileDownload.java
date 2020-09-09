@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
+@Deprecated
 public interface IFileDownload {
     //ResponseEntity<byte[]> fileDownload(final String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
     byte[] fileDownload(final String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
