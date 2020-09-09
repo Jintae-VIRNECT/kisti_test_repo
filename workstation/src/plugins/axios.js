@@ -80,6 +80,7 @@ export default function({ $config, $axios }, inject) {
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,
     }),
+    withCredentials: /(staging|production)/.test($config.TARGET_ENV),
   })
 
   /**
