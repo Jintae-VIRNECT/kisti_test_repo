@@ -426,11 +426,11 @@ public class LicenseService {
 		Set<LicenseProduct> licenseProductSet = licensePlan.getLicenseProductList();
 
 		if (!licenseProductSet.isEmpty()) {
-			// // license product 상태 inactive 로 변경
+			// license product 상태 inactive 로 변경
 			licenseProductSet.forEach(lp -> lp.setStatus(LicenseProductStatus.INACTIVE));
 			licenseProductRepository.saveAll(licenseProductSet);
-			// // license 할당 해제
-			// 	licenseRepository.updateAllLicenseInfoInactiveByLicenseProduct(licenseProductSet);
+			// license 할당 해제
+			licenseRepository.updateAllLicenseInfoInactiveByLicenseProduct(licenseProductSet);
 		}
 
 		// license plan 상태 비활성화 및 탈퇴 데이터 표시
