@@ -70,7 +70,8 @@ export default {
       if (ids.length > 0) {
         this.canvas.getObjects().forEach(object => {
           if (!('owner' in object)) {
-            object.canvas.remove(object)
+            this.canvas.remove(object)
+            this.backCanvas.remove(object)
           }
           // object.visible = false;
         })
