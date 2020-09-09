@@ -470,21 +470,24 @@ public class LicenseService {
 
 		log.info("[BILLING_USER_MOHTLY_BILLING_INFO] -> [{}]", monthlyBillingInfo.toString());
 
-		// 정기 결제 취소
-		MonthlyBillingCancelRequest cancelRequest = new MonthlyBillingCancelRequest();
-		cancelRequest.setSiteCode(1);
-		cancelRequest.setUserMonthlyBillingNumber(monthlyBillingInfo.getMonthlyBillingNumber());
-		cancelRequest.setUserNumber(userNumber);
+		// payment flag Y= 정기결제 이용중, N: 해지 상태, D: 등록된 정기 결제 내용 없음
+		if (monthlyBillingInfo.getPaymentFlag().equals("Y")) {
+			// 정기 결제 취소
+			MonthlyBillingCancelRequest cancelRequest = new MonthlyBillingCancelRequest();
+			cancelRequest.setSiteCode(1);
+			cancelRequest.setUserMonthlyBillingNumber(monthlyBillingInfo.getMonthlyBillingNumber());
+			cancelRequest.setUserNumber(userNumber);
 
-		BillingRestResponse<Map<String, Object>> billingCancelResult = billingRestService.monthlyBillingCancel(
-			cancelRequest
-		);
+			BillingRestResponse<Map<String, Object>> billingCancelResult = billingRestService.monthlyBillingCancel(
+				cancelRequest
+			);
 
-		// 정기 결제 취소 시, 페이레터 서버 에러인 경우
-		if (billingCancelResult == null || billingCancelResult.getResult().getCode() != 0) {
-			log.error("[BILLING_PAYLETTER] => Paylleter Server Error!");
-			log.error("[BILLLING_MONTHLY_BILLING_CANCEL] -> [{}]", cancelRequest.toString());
-			throw new LicenseServiceException(ErrorCode.ERR_BILLING_MONTHLY_BILLING_CANCEL);
+			// 정기 결제 취소 시, 페이레터 서버 에러인 경우
+			if (billingCancelResult == null || billingCancelResult.getResult().getCode() != 0) {
+				log.error("[BILLING_PAYLETTER] => Paylleter Server Error!");
+				log.error("[BILLLING_MONTHLY_BILLING_CANCEL] -> [{}]", cancelRequest.toString());
+				throw new LicenseServiceException(ErrorCode.ERR_BILLING_MONTHLY_BILLING_CANCEL);
+			}
 		}
 	}
 }
