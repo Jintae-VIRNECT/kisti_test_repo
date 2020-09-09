@@ -96,12 +96,20 @@ $policy-primary: #0d2a58;
 
 // policy
 .policy-body.policy /deep/ {
-    ol li {
+    & > ol > li {
         margin-top: 0.2em;
+    }
+    ol li {
         padding-left: 1.5em;
         &:first-child {
             margin-top: 1em;
         }
+        &:lang(en) {
+            padding-left: 0;
+        }
+    }
+    ol ul li:first-child {
+        margin-top: 0.2em;
     }
     ul li {
         margin-left: 1.4em;
@@ -109,12 +117,20 @@ $policy-primary: #0d2a58;
         &:lang(ko):before {
             display: none;
         }
+        &:lang(en) {
+            margin-left: 1em;
+            text-indent: -1em;
+        }
     }
     ul ul li {
         margin-left: 1em;
         text-indent: -1em;
         &:lang(ko):before {
             display: inline;
+        }
+        &:lang(en) {
+            margin-left: 1.5em;
+            text-indent: -1em;
         }
     }
 }
