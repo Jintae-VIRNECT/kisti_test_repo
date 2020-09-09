@@ -10,7 +10,7 @@
       <div
         class="tooltiptext"
         :class="[placement, effect]"
-        v-show="show"
+        v-show="show && active"
         :style="`width: ${width}`"
       >
         <p v-html="content"></p>
@@ -29,6 +29,11 @@ export default {
     }
   },
   props: {
+    active: {
+      // false 일때 hover 해도 툴팁 미표출
+      type: Boolean,
+      default: true,
+    },
     content: {
       type: String,
       require: true,
@@ -165,7 +170,7 @@ export default {
 
 .tooltip .tooltiptext {
   &.black {
-    --tooltip-bg-color: #121517;
+    --tooltip-bg-color: #4f515a;
     --tooltip-text-color: #{$color_text_sub};
   }
   &.blue {
@@ -174,10 +179,10 @@ export default {
   }
 
   position: absolute;
-  z-index: 3;
+  z-index: 99;
   // display: none;
   width: max-content;
-  padding: 1em 1.429em;
+  padding: 0.571em 0.929em;
   color: var(--tooltip-text-color);
   font-size: 0.929em;
   background-color: var(--tooltip-bg-color);

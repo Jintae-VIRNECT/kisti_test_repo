@@ -80,6 +80,7 @@ export default {
 </script>
 <style lang="scss">
 @import '~assets/style/vars';
+@import '~assets/style/mixin';
 
 .popover-profile {
   background-color: $color_bg_sub;

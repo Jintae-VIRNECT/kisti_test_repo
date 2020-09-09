@@ -32,16 +32,13 @@ import { mapActions } from 'vuex'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
-import { createRoom } from 'api/workspace/room'
-import { sendPush } from 'api/common/message'
+import { getHistorySingleItem } from 'api/http/history'
+import { createRoom, updateRoomProfile, getRoomInfo } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
-import { getHistorySingleItem } from 'api/workspace/history'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { EVENT } from 'configs/push.config'
-import { getMember } from 'api/service'
-
-import { getPermission } from 'utils/deviceCheck'
+import { getMemberList } from 'api/http/member'
+import { maxParticipants } from 'utils/callOptions'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -56,7 +53,7 @@ export default {
       selection: [],
       visibleFlag: false,
       users: [],
-      maxSelect: 2,
+      maxSelect: maxParticipants - 1,
       roomInfo: {},
       loading: false,
     }
@@ -120,35 +117,26 @@ export default {
     },
     async inviteRefresh() {
       this.loading = true
-      const inviteList = await getMember({
-        size: 100,
+      const inviteList = await getMemberList({
+        size: 50,
         workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
       })
-      this.users = inviteList.memberInfoList
-        .filter(member => member.uuid !== this.account.uuid)
-        .sort((a, b) => {
-          var nameA = a.name.toUpperCase()
-          var nameB = b.name.toUpperCase()
-          if (nameA < nameB) {
-            return -1
-          }
-          if (nameA > nameB) {
-            return 1
-          }
-
-          // 이름이 같을 경우
+      this.users = inviteList.memberList
+      this.users.sort((A, B) => {
+        if (A.role === 'MASTER') {
+          return -1
+        } else if (B.role === 'MASTER') {
+          return 1
+        } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
+          return -1
+        } else {
           return 0
-        })
+        }
+      })
       this.loading = false
     },
     async startRemote(info) {
-      const permission = await getPermission()
-
-      if (!permission) {
-        this.$eventBus.$emit('devicedenied:show')
-        return
-      }
-
       try {
         const selectedUser = []
         const selectedUserIds = []
@@ -163,26 +151,31 @@ export default {
         }
 
         const createdRes = await createRoom({
-          file: info.imageFile,
           title: info.title,
           description: info.description,
           leaderId: this.account.uuid,
-          leaderEmail: this.account.email,
-          participants: selectedUser,
+          participantIds: selectedUserIds,
           workspaceId: this.workspace.uuid,
         })
+        if (info.imageFile) {
+          updateRoomProfile({
+            profile: info.imageFile,
+            sessionId: createdRes.sessionId,
+            uuid: this.account.uuid,
+            workspaceId: this.workspace.uuid,
+          })
+        }
         const connRes = await this.$call.connect(createdRes, ROLE.LEADER)
 
-        const roomInfo = {
+        const roomInfo = await getRoomInfo({
           sessionId: createdRes.sessionId,
-          title: info.title,
-          description: info.description,
-          leaderId: this.account.uuid,
-          participantsCount: selectedUser.length + 1,
-          maxParticipantCount: 3,
-          memberList: [...selectedUser, this.account],
-        }
+          workspaceId: this.workspace.uuid,
+        })
 
+        this.setRoomInfo({
+          ...roomInfo,
+          leaderId: this.account.uuid,
+        })
         window.urls['token'] = createdRes.token
         window.urls['coturn'] = createdRes.coturn
         window.urls['wss'] = createdRes.wss
@@ -190,15 +183,6 @@ export default {
         this.setRoomInfo(roomInfo)
         if (connRes) {
           this.$eventBus.$emit('popover:close')
-
-          const contents = {
-            roomSessionId: createdRes.sessionId,
-            title: info.title,
-            nickName: this.account.nickname,
-            profile: this.account.profile,
-          }
-
-          await sendPush(EVENT.INVITE, selectedUserIds, contents)
 
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
@@ -208,6 +192,15 @@ export default {
           console.error('join room fail')
         }
       } catch (err) {
+        if (typeof err === 'string') {
+          if (err === 'nodevice') {
+            this.toastError(this.$t('workspace.error_no_connected_device'))
+          } else if (err.toLowerCase() === 'requested device not found') {
+            this.toastError(this.$t('workspace.error_no_device'))
+          } else if (err.toLowerCase() === 'device access deined') {
+            this.$eventBus.$emit('devicedenied:show')
+          }
+        }
         this.roomClear()
         console.error(err)
       }

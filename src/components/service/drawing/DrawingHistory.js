@@ -6,11 +6,14 @@ export default {
      */
     updateHistory() {
       const json = this.canvas.toJSON().objects
-      const thumbnail = this.canvas.lowerCanvasEl.toDataURL()
-      // const thumbnail = this.resizeCanvas(this.canvas.lowerCanvasEl);
+      const url = this.backCanvas.toDataURL({
+        multiplier: this.img.width / this.canvas.getWidth(),
+        left: 0,
+        top: 0,
+      })
       const params = {
         id: this.file.id,
-        img: thumbnail,
+        img: url,
         json: json,
       }
 

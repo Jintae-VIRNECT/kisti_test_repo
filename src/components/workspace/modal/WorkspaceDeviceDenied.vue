@@ -15,7 +15,7 @@
       </div>
       <div class="device-denied__content">
         <div class="device-denieds__content--icon">
-          <img src="~assets/image/call/gnb_ic_video_on.svg" />
+          <img src="~assets/image/call/ic_video_on.svg" />
         </div>
         <div class="device-denied__content--vbar"></div>
         <div

@@ -31,7 +31,7 @@ import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 import auth from 'utils/auth'
-import { getLicense } from 'api/workspace/license'
+import { getLicense } from 'api/http/account'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
@@ -101,11 +101,10 @@ export default {
           const info = authInfo.workspace.find(
             work => work.uuid === workspace.workspaceId,
           )
+          if (!info || !info.workspaceId) continue
           workspace['role'] = info.role
         }
         this.initWorkspace(workspaces)
-        // BETA: 1hour logout setting
-        this.$parent.init()
       }
     },
     handleMaxScroll(event) {
@@ -152,10 +151,7 @@ export default {
     this.savedStorageDatas()
   },
   mounted() {
-    const lang = localStorage.getItem('language')
-    if (lang) {
-      this.mx_changeLang(lang)
-    }
+    this.mx_changeLang()
     this.tabTop = this.$refs['tabSection'].$el.offsetTop
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)

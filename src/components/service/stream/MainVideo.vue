@@ -2,8 +2,8 @@
   <div class="main-video">
     <div
       class="main-video__box"
-      @mouseenter="showTools = true"
-      @mouseleave="showTools = false"
+      @mouseenter="hoverTools = true"
+      @mouseleave="hoverTools = false"
       :class="{ shutter: showShutter }"
     >
       <!-- 메인 비디오 뷰 -->
@@ -19,6 +19,22 @@
         loop
       ></video>
       <template v-if="loaded">
+        <!-- 전체공유 표출 -->
+        <transition name="opacity">
+          <div class="main-video__sharing" v-if="viewForce">
+            <button
+              v-if="isLeader"
+              class="btn small main-video__sharing-button active"
+              @click="cancelSharing"
+            >
+              {{ $t('button.stream_sharing_cancel') }}
+            </button>
+            <button v-else class="btn small main-video__sharing-button">
+              {{ $t('button.stream_sharing') }}
+            </button>
+          </div>
+        </transition>
+
         <!-- 녹화 시간 정보 -->
         <div class="main-video__recording">
           <div class="main-video__recording--time" v-if="serverTimer">
@@ -33,13 +49,14 @@
 
         <!-- 포인팅 -->
         <pointing
+          v-if="viewForce"
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
-            <video-tools v-if="showTools"></video-tools>
+            <video-tools v-if="hoverTools"></video-tools>
           </transition>
         </template>
       </template>
@@ -47,17 +64,21 @@
     <div class="main-video__empty" v-if="!loaded">
       <transition name="opacity">
         <!-- 영상 연결중 -->
-        <div class="main-video__empty-inner" v-if="resolutions.length > 0">
+        <!-- <div class="main-video__empty-inner" v-if="resolutions.length > 0">
           <img src="~assets/image/img_video_connecting.svg" />
           <p>{{ $t('service.stream_connecting') }}</p>
-        </div>
+        </div> -->
         <!-- 영상이 없을 경우 -->
-        <div class="main-video__empty-inner" v-else>
+        <div class="main-video__empty-inner" v-if="resolutions.length === 0">
           <img src="~assets/image/img_novideo.svg" />
           <p>{{ $t('service.stream_no_video') }}</p>
           <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
           </p>
+        </div>
+        <div class="main-video__empty-inner" v-else>
+          <img src="~assets/image/call/img_select_video.svg" />
+          <p v-html="$t('service.stream_choice')"></p>
         </div>
       </transition>
       <!-- 영상 초기화 로딩 -->
@@ -71,22 +92,28 @@
       <div
         class="main-video__empty"
         v-if="
-          (loaded && cameraStatus === 'off') || cameraStatus === 'background'
+          cameraStatus !== -1 &&
+            ((loaded && cameraStatus.state === 'off') ||
+              cameraStatus.state === 'background')
         "
       >
         <transition name="opacity">
           <!-- 영상 백그라운드 및 정지 표출 -->
-          <div class="main-video__empty-inner">
+          <div class="main-video__empty-inner" v-if="mainView.me !== true">
             <img src="~assets/image/img_video_stop.svg" />
             <p>{{ $t('service.stream_stop') }}</p>
             <p
               class="inner-discription"
-              v-if="cameraStatus === 'background'"
+              v-if="cameraStatus !== -1 && cameraStatus.state === 'background'"
               v-html="$t('service.stream_background')"
             ></p>
             <p class="inner-discription" v-else>
               {{ $t('service.stream_stoped') }}
             </p>
+          </div>
+          <div class="main-video__empty-inner" v-else>
+            <img src="~assets/image/img_novideo.svg" />
+            <p>{{ $t('service.stream_off') }}</p>
           </div>
         </transition>
       </div>
@@ -98,14 +125,15 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
-import { CAMERA } from 'configs/device.config'
+import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
 import shutterMixin from 'mixins/shutter'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'MainVideo',
-  mixins: [shutterMixin],
+  mixins: [shutterMixin, toastMixin],
   components: {
     Pointing,
     VideoTools,
@@ -113,7 +141,7 @@ export default {
   data() {
     return {
       status: 'good', // good, normal, bad
-      showTools: false,
+      hoverTools: false,
       loaded: false,
       videoSize: {
         width: 0,
@@ -135,8 +163,15 @@ export default {
       viewAction: 'viewAction',
       resolutions: 'resolutions',
       initing: 'initing',
-      deviceInfo: 'deviceInfo',
+      viewForce: 'viewForce',
     }),
+    isLeader() {
+      if (this.account.roleType === ROLE.LEADER) {
+        return true
+      } else {
+        return false
+      }
+    },
     resolution() {
       const idx = this.resolutions.findIndex(
         data => data.connectionId === this.mainView.connectionId,
@@ -154,21 +189,37 @@ export default {
     },
     cameraStatus() {
       if (this.mainView && this.mainView.id) {
-        if (this.deviceInfo.cameraStatus === CAMERA.CAMERA_OFF) {
-          return 'off'
-        } else if (this.deviceInfo.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
-          return 'background'
+        if (this.mainView.cameraStatus === CAMERA.CAMERA_OFF) {
+          return {
+            state: 'off',
+            id: this.mainView.id,
+          }
+        } else if (this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
+          return {
+            state: 'background',
+            id: this.mainView.id,
+          }
         }
-        return 'on'
+        return {
+          state: 'on',
+          id: this.mainView.id,
+        }
       } else {
         return -1
       }
     },
     allowTools() {
       if (
+        this.viewForce === true &&
         this.account.roleType === ROLE.LEADER &&
         this.viewAction !== ACTION.STREAM_POINTING
       ) {
+        if (
+          this.mainView.flash === FLASH.FLASH_NONE &&
+          this.mainView.zoomMax === 1
+        ) {
+          return false
+        }
         return true
       } else {
         return false
@@ -196,38 +247,48 @@ export default {
         }
       },
     },
-    cameraStatus(status, oldStatus) {
-      if (status === oldStatus || oldStatus === -1) return
-      if (!this.mainView || !this.mainView.id) return
-      if (status === 'off') {
-        if (oldStatus === 'background') return
-        this.addChat({
-          name: this.mainView.nickname,
-          status: 'stream-stop',
-          type: 'system',
-        })
-      } else if (status === 'background') {
-        this.addChat({
-          name: this.mainView.nickname,
-          status: 'stream-background',
-          type: 'system',
-        })
-      } else if (status === 'on') {
-        this.addChat({
-          name: this.mainView.nickname,
-          status: 'stream-start',
-          type: 'system',
-        })
+    viewForce(flag, oldFlag) {
+      if (!this.isLeader) {
+        if (flag === false && oldFlag === true) {
+          this.addChat({
+            name: this.mainView.nickname,
+            status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
+            type: 'system',
+          })
+        }
+        if (flag === true && oldFlag === false) {
+          this.$nextTick(() => {
+            this.addChat({
+              name: this.mainView.nickname,
+              status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
+              type: 'system',
+            })
+          })
+        }
       }
     },
   },
   methods: {
-    ...mapActions(['updateAccount', 'setCapture', 'addChat']),
+    ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
+    cancelSharing() {
+      this.addChat({
+        name: this.mainView.nickname,
+        status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
+        type: 'system',
+      })
+      this.setMainView({ force: false })
+      this.$call.mainview(this.mainView.id, false)
+    },
     mediaPlay() {
       this.$nextTick(() => {
         this.optimizeVideoSize()
         this.loaded = true
       })
+    },
+    nextOptimize() {
+      setTimeout(() => {
+        this.optimizeVideoSize()
+      }, 1000)
     },
     optimizeVideoSize() {
       const mainWrapper = this.$el
@@ -334,13 +395,13 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('localRecord', this.localRecord)
     this.$eventBus.$off('serverRecord', this.serverRecord)
-    window.removeEventListener('resize', this.optimizeVideoSize)
+    window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('localRecord', this.localRecord)
     this.$eventBus.$on('serverRecord', this.serverRecord)
-    window.addEventListener('resize', this.optimizeVideoSize)
+    window.addEventListener('resize', this.nextOptimize)
   },
 }
 </script>

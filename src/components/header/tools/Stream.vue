@@ -2,11 +2,12 @@
   <tooltip :content="`${$t('common.video')} on/off`">
     <toggle-button
       slot="body"
+      customClass="toggle-header"
       :description="`${$t('common.video')} on/off`"
       size="2.429rem"
-      :active="stream"
-      :activeSrc="require('assets/image/call/gnb_ic_video_on.svg')"
-      :inactiveSrc="require('assets/image/call/gnb_ic_video_off.png')"
+      :active="video.isOn"
+      :activeSrc="require('assets/image/call/ic_video_on.svg')"
+      :inactiveSrc="require('assets/image/call/ic_video_off.png')"
       @action="streamOnOff"
     ></toggle-button>
   </tooltip>
@@ -27,19 +28,19 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['stream']),
-  },
-  watch: {
-    stream() {},
+    ...mapGetters(['video']),
   },
   methods: {
-    ...mapActions(['callStream']),
+    ...mapActions(['setDevices']),
     streamOnOff() {
-      console.log(this.stream)
-      let stream = !this.stream
+      let video = !this.video.isOn
 
-      this.callStream(stream)
-      this.$call.streamOnOff(stream)
+      this.setDevices({
+        video: {
+          isOn: video,
+        },
+      })
+      this.$call.video(video)
     },
   },
 

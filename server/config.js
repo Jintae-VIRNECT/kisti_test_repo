@@ -18,6 +18,9 @@ module.exports = {
   getEnv() {
     return process.env.NODE_ENV.trim()
   },
+  getTargetEnv() {
+    return String(envConfig['TARGET_ENV'])
+  },
   getPort() {
     return String(envConfig['PORT'])
   },
@@ -26,7 +29,7 @@ module.exports = {
   },
   getUrls() {
     const urls = {}
-    const env = this.getEnv()
+    const env = this.getTargetEnv()
     Object.keys(urlsConfig).forEach(key => {
       urls[key] = urlsConfig[key][env]
     })

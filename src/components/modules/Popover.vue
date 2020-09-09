@@ -155,7 +155,8 @@ export default {
       //Popover 이동
       if (this.$refs['popover']) {
         //this.$root.$el.append(this.$refs['popover'])
-        document.body.append(this.$refs['popover'])
+        // document.body.append(this.$refs['popover'])
+        document.querySelector('.remote-layout').append(this.$refs['popover'])
       }
       this.visible = true
 
@@ -208,7 +209,11 @@ export default {
         }
         this.$set(this.style, 'top', top + 'px')
         this.$set(this.style, 'left', left + 'px')
-        this.$set(this.style, 'width', this.width + 'px')
+        if (this.width === 0) {
+          this.$set(this.style, 'width', reference.offsetWidth + 'px')
+        } else {
+          this.$set(this.style, 'width', this.width + 'px')
+        }
 
         if (this.fullwidth) {
           this.$set(this.style, 'width', reference.offsetWidth + 'px')

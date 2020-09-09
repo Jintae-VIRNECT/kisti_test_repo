@@ -284,7 +284,7 @@ function MultiStreamRecorder(arrayOfMediaStreams, options) {
     mixer.appendStreams(streams)
   }
 
-  this.resetVideoStreams = function(streams) {
+  this.resetVideoStreams = function(streams, resolution) {
     if (!mixer) {
       return
     }
@@ -293,7 +293,7 @@ function MultiStreamRecorder(arrayOfMediaStreams, options) {
       streams = [streams]
     }
 
-    mixer.resetVideoStreams(streams)
+    mixer.resetVideoStreams(streams, resolution)
   }
 
   this.ondataavailable = function(blob) {
@@ -468,6 +468,7 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
 
     var fullcanvas = false
     var remaining = []
+
     videos.forEach(function(video) {
       if (!video.stream) {
         video.stream = {}
@@ -480,7 +481,7 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
       }
     })
 
-    if (orientation === 'landscape') {
+    if (orientation === 'landscape' || orientation === undefined) {
       if (fullcanvas) {
         canvas.width = fullcanvas.stream.width
         canvas.height = fullcanvas.stream.height
@@ -529,7 +530,7 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
     let width = null
     let height = null
 
-    if (orientation === 'landscape') {
+    if (orientation === 'landscape' || orientation === undefined) {
       width = video.width
       height = video.height
     } else {
@@ -741,9 +742,14 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
     }
   }
 
-  this.resetVideoStreams = function(streams) {
+  this.resetVideoStreams = function(streams, resolution) {
     if (streams && !(streams instanceof Array)) {
       streams = [streams]
+    }
+
+    if (resolution) {
+      self.width = resolution.width
+      self.height = resolution.height
     }
 
     resetVideoStreams(streams)

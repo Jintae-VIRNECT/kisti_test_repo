@@ -7,7 +7,7 @@
       </p>
       <icon-button
         :text="$t('button.refresh')"
-        :imgSrc="require('assets/image/ic_renew.svg')"
+        :imgSrc="require('assets/image/workspace/ic_renew.svg')"
         animation="rotate360"
         @click="refresh"
       ></icon-button>

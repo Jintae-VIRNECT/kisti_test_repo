@@ -1,5 +1,5 @@
 @import "~assets/style/mixin";
-@import "~vue2-scrollbar/dist/style/vue2-scrollbar.css";
+@import "./vue2-scrollbar.css";
 
 .vue-scrollbar__scrollbar-vertical,
 .vue-scrollbar__scrollbar-horizontal {
@@ -10,6 +10,9 @@
     height: 7px;
     background: #98a0a6;
     border-radius: 4px;
+  }
+  &.hover {
+    opacity: 0.5;
   }
 }
 

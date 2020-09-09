@@ -1,4 +1,4 @@
-import { startServerRecord, stopServerRecord } from 'api/workspace/record'
+import { startServerRecord, stopServerRecord } from 'api/http/record'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -47,8 +47,8 @@ export default {
       }
     },
     async stopServerRecord() {
-      this.logger('SERVER RECORD', 'stop')
       if (this.recordingId) {
+        this.logger('SERVER RECORD', 'stop')
         await stopServerRecord({ id: this.recordingId })
         this.recordingId = null
       }

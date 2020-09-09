@@ -1,11 +1,21 @@
 import Store from 'stores/remote/store'
 import _, { addSubscriber, removeSubscriber } from './Remote'
 
-import { SIGNAL, CONTROL, CAMERA, FLASH, ROLE } from 'configs/remote.config'
+import {
+  SIGNAL,
+  CONTROL,
+  CAMERA,
+  FLASH,
+  ROLE,
+  VIDEO,
+} from 'configs/remote.config'
+import {
+  FLASH as FLASH_STATUE,
+  CAMERA as CAMERA_STATUS,
+} from 'configs/device.config'
 
-import { getUserInfo } from 'api/common'
-import vue from 'apps/remote/app'
-import { logger } from 'utils/logger'
+import { getUserInfo } from 'api/http/account'
+import { logger, debug } from 'utils/logger'
 
 export const addSessionEventListener = session => {
   session.on('connectionCreated', event => {
@@ -15,34 +25,47 @@ export const addSessionEventListener = session => {
   session.on('streamCreated', event => {
     const subscriber = session.subscribe(event.stream, '', () => {
       logger('room', 'participant subscribe successed')
+      debug('room::', 'participant::', subscriber)
       Store.commit('updateParticipant', {
         connectionId: event.stream.connection.connectionId,
         stream: event.stream.mediaStream,
-        video: event.stream.hasVideo,
+        hasVideo: event.stream.hasVideo,
+        video: event.stream.hasVideo
+          ? event.stream.videoActive
+          : event.stream.hasVideo,
       })
-      _.sendResolution()
-      _.mic(Store.getters['mic'].isOn)
-      _.speaker(Store.getters['speaker'].isOn)
+      addSubscriber(subscriber)
+      _.sendResolution(null, [event.stream.connection.connectionId])
+      _.video(Store.getters['video'].isOn, [
+        event.stream.connection.connectionId,
+      ])
+      _.mic(Store.getters['mic'].isOn, [event.stream.connection.connectionId])
+      _.speaker(Store.getters['speaker'].isOn, [
+        event.stream.connection.connectionId,
+      ])
+      _.flashStatus(FLASH_STATUE.FLASH_NONE, [
+        event.stream.connection.connectionId,
+      ])
       if (_.account.roleType === ROLE.LEADER) {
-        _.control(CONTROL.POINTING, Store.getters['allowPointing'])
-        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'])
+        _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
+          event.stream.connection.connectionId,
+        ])
+        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
+          event.stream.connection.connectionId,
+        ])
+        if (Store.getters['viewForce'] === true) {
+          _.mainview(Store.getters['mainView'].id, true, [
+            event.stream.connection.connectionId,
+          ])
+        }
+        if (Store.getters['view'] === 'drawing') {
+          window.vue.$eventBus.$emit(
+            'participantChange',
+            event.stream.connection.connectionId,
+          )
+        }
       }
     })
-    addSubscriber(subscriber)
-  })
-  session.on('streamPropertyChanged', event => {
-    if (event.changedProperty === 'audioActive') {
-      // audio 조절 :::: SIGNAL.MIC로 대체
-      // Store.commit('updateParticipant', {
-      //   connectionId: event.stream.connection.connectionId,
-      //   audio: event.newValue,
-      // })
-    } else if (event.changedProperty === 'videoActive') {
-      Store.commit('updateParticipant', {
-        connectionId: event.stream.connection.connectionId,
-        video: event.newValue,
-      })
-    }
   })
   /** session closed */
   session.on('sessionDisconnected', event => {
@@ -50,17 +73,36 @@ export const addSessionEventListener = session => {
     _.clear()
     if (event.reason === 'sessionClosedByServer') {
       // TODO: MESSAGE
-      vue.$toasted.error('리더가 협업을 삭제했습니다.', {
-        position: 'bottom-center',
-        duration: 5000,
-        action: {
-          icon: 'close',
-          onClick: (e, toastObject) => {
-            toastObject.goAway(0)
+      window.vue.$toasted.error(
+        window.vue.$t('workspace.confirm_removed_room_leader'),
+        {
+          position: 'bottom-center',
+          duration: 5000,
+          action: {
+            icon: 'close',
+            onClick: (e, toastObject) => {
+              toastObject.goAway(0)
+            },
           },
         },
-      })
-      vue.$router.push({ name: 'workspace' })
+      )
+      window.vue.$router.push({ name: 'workspace' })
+    } else if (event.reason === 'forceDisconnectByUser') {
+      // TODO: MESSAGE
+      window.vue.$toasted.error(
+        window.vue.$t('workspace.confirm_kickout_leader'),
+        {
+          position: 'bottom-center',
+          duration: 5000,
+          action: {
+            icon: 'close',
+            onClick: (e, toastObject) => {
+              toastObject.goAway(0)
+            },
+          },
+        },
+      )
+      window.vue.$router.push({ name: 'workspace' })
     }
   })
   // user leave
@@ -70,7 +112,21 @@ export const addSessionEventListener = session => {
     Store.commit('removeStream', connectionId)
     removeSubscriber(event.stream.streamId)
   })
+  // user leave
+  session.on(SIGNAL.SYSTEM, () => {
+    logger('room', 'evict by system')
+  })
 
+  /** 메인뷰 변경 */
+  session.on(SIGNAL.VIDEO, event => {
+    if (session.connection.connectionId === event.from.connectionId) return
+    const data = JSON.parse(event.data)
+    if (data.type === VIDEO.SHARE) {
+      Store.dispatch('setMainView', { id: data.id, force: true })
+    } else {
+      Store.dispatch('setMainView', { force: false })
+    }
+  })
   /** 상대방 마이크 활성 정보 수신 */
   session.on(SIGNAL.MIC, event => {
     if (session.connection.connectionId === event.from.connectionId) return
@@ -91,23 +147,42 @@ export const addSessionEventListener = session => {
   })
   /** 플래시 컨트롤 */
   session.on(SIGNAL.FLASH, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
+    // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type !== FLASH.STATUS) return
     Store.commit('deviceControl', {
+      connectionId: event.from.connectionId,
       flash: data.status,
     })
   })
   /** 카메라 컨트롤(zoom) */
   session.on(SIGNAL.CAMERA, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
-    if (data.type !== CAMERA.STATUS) return
-    Store.commit('deviceControl', {
-      zoomLevel: parseFloat(data.currentZoomLevel),
-      zoomMax: parseInt(data.maxZoomLevel),
-      cameraStatus: parseInt(data.status),
-    })
+    if (data.type === CAMERA.ZOOM) {
+      if (event.from.connectionId === session.connection.connectionId) {
+        const track = _.publisher.stream.mediaStream.getVideoTracks()[0]
+        track.applyConstraints({
+          advanced: [{ zoom: parseFloat(data.level) * 100 }],
+        })
+      }
+      Store.commit('deviceControl', {
+        connectionId: event.from.connectionId,
+        zoomLevel: parseFloat(data.level),
+      })
+      return
+    }
+    if (data.type === CAMERA.STATUS) {
+      if (session.connection.connectionId === event.from.connectionId) {
+        _.currentZoomLevel = parseFloat(data.currentZoomLevel)
+      }
+      Store.commit('deviceControl', {
+        connectionId: event.from.connectionId,
+        zoomLevel: parseFloat(data.currentZoomLevel),
+        zoomMax: parseInt(data.maxZoomLevel),
+        cameraStatus: parseInt(data.status),
+        video: data.status === CAMERA_STATUS.CAMERA_ON,
+      })
+    }
   })
   /** 화면 해상도 설정 */
   session.on(SIGNAL.RESOLUTION, event => {
@@ -119,15 +194,15 @@ export const addSessionEventListener = session => {
   })
   /** 리더 컨트롤(pointing, local record) */
   session.on(SIGNAL.CONTROL, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
+    // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type === CONTROL.POINTING) {
-      Store.commit('deviceControl', {
-        allowPointing: data.enable,
+      Store.dispatch('setAllow', {
+        pointing: data.enable,
       })
     } else if (data.type === CONTROL.LOCAL_RECORD) {
-      Store.commit('deviceControl', {
-        allowLocalRecord: data.enable,
+      Store.dispatch('setAllow', {
+        localRecord: data.enable,
       })
     }
   })
@@ -180,7 +255,7 @@ export const addSessionEventListener = session => {
       name: participants[idx].nickname,
       profile: participants[idx].path,
       uuid: event.from.connectionId,
-      text: data,
+      file: data,
     })
   })
 }
@@ -195,9 +270,6 @@ const setUserObject = event => {
   let roleType = metaData.roleType
   let deviceType = metaData.deviceType
 
-  const publishVideo = roleType === ROLE.WORKER
-  // const publishVideo = connection.stream.hasVideo
-
   userObj = {
     id: uuid,
     // stream: stream.mediaStream,
@@ -207,8 +279,9 @@ const setUserObject = event => {
     // path: participant.profile,
     nickname: null,
     path: null,
-    video: publishVideo,
+    video: false,
     audio: true,
+    hasVideo: false,
     speaker: true,
     mute: false,
     status: 'good',
@@ -216,6 +289,10 @@ const setUserObject = event => {
     deviceType: deviceType,
     permission: 'default',
     hasArFeature: false,
+    cameraStatus: 'default',
+    zoomLevel: 1, // zoom 레벨
+    zoomMax: 1, // zoom 최대 레벨
+    flash: 'default', // flash 제어
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {

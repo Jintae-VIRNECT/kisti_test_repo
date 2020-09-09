@@ -1,8 +1,10 @@
 @import "~assets/style/vars";
+@import "~assets/style/mixin";
 
 .roominfo {
   position: relative;
   display: flex;
+  width: 100%;
   height: 100%;
 }
 
@@ -14,8 +16,10 @@
   width: 15.714em;
   min-width: 15.714em;
   // height: 100%;
-  padding: 3em;
+  padding: 3em 2em;
   background-color: $color_darkgray_600;
+  border-right: solid 1px rgba(#7f7f7f, 0.2);
+  border-bottom-left-radius: 0.714em;
 }
 
 .roominfo-nav__image {
@@ -24,12 +28,28 @@
   margin: 0 auto 2.5em;
   border-radius: 50%;
 }
+.roominfo-nav__menus {
+  display: inline-flex;
+  flex-direction: column;
+  width: fit-content;
+  margin: 0 auto;
+}
 .roominfo-nav__menu {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: fit-content;
   margin-bottom: 1.143em;
-  margin-left: 2.143em;
+  // margin-left: 2.143em;
   color: rgba($color_text_main, 0.5);
   font-size: 1.143em;
   text-align: left;
+  text-decoration: none;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -webkit-box-align: center;
+  -webkit-box-pack: justify;
   &:focus {
     color: rgba($color_text_main, 0.5);
   }
@@ -43,12 +63,24 @@
     color: $color_text;
     font-weight: 500;
   }
+  &:after {
+    height: 0;
+    overflow: hidden;
+    font-weight: 500;
+    visibility: hidden;
+    content: attr(data-text);
+    content: attr(data-text) / "";
+    user-select: none;
+    pointer-events: none;
+  }
 }
 
 .roominfo-view {
+  // position: relative;
   display: flex;
-  flex: 1;
+  // flex: 1 0 auto;
   flex-direction: column;
+  width: calc(100% - 15.714em);
   padding: 2.857em;
 }
 .roominfo-view__title {
@@ -56,8 +88,15 @@
   font-size: 1.714em;
 }
 .roominfo-view__body {
-  flex: 1;
+  // position: relative;
+  flex: 0;
+  width: 100%;
+  height: fit-content;
   margin-top: 1.071em;
+  &.table {
+    flex: 1 1 auto;
+    height: 0;
+  }
 }
 .remoteinfo-usercard {
   &.offline {
@@ -115,7 +154,8 @@
 }
 .data-title {
   display: inline-block;
-  width: 8em;
+  width: 9em;
+  margin-right: 0.571em;
   color: rgba($color_text_main, 0.5);
   font-size: 0.929em;
 }
@@ -163,4 +203,123 @@
 }
 .roominfo-figure__text {
   margin-top: 0.5em;
+}
+
+.download-table {
+  height: 100%;
+  margin-bottom: 2px;
+  border-radius: 2px;
+  > .vue-scrollbar__wrapper {
+    flex: 1;
+    width: calc(100% + 10px);
+    height: calc(100% - 3.714em);
+  }
+}
+
+.download-table__header {
+  display: flex;
+  background-color: #313135;
+  border: solid 1px #3d3d3d;
+  border-radius: 2px 2px 0 0;
+  > .download-table__column {
+    height: auto;
+  }
+}
+
+.download-table__body {
+  display: flex;
+  flex: 1;
+  height: calc(100% - 3.714em);
+  background-color: #29292c;
+  border: solid 1px #3d3d3d;
+  border-top: none;
+  border-radius: 0 0 2px 2px;
+}
+
+.download-table__empty {
+  margin: auto;
+  text-align: center;
+  > img {
+    width: 7.143em;
+    height: 7.143em;
+  }
+  > p {
+    color: #a7a7a7;
+    font-size: 1.143em;
+  }
+}
+
+.download-table__row {
+  display: flex;
+  height: 4.571em;
+  background-color: #29292c;
+  // border-top: solid 1px #3d3d3d;
+  border: solid 1px #3d3d3d;
+  border-top: none;
+  > div {
+    height: 4.571em;
+    color: rgba(#fff, 0.9);
+  }
+  &:last-child {
+    border-radius: 0 0 2px 2px;
+  }
+}
+
+.download-table__column {
+  display: flex;
+  flex: 0 0 auto;
+  padding: 1.071em;
+  color: rgba(#fff, 0.9);
+  > span {
+    display: block;
+    align-items: center;
+    width: 100%;
+    @include ellipsis();
+  }
+  &:last-child {
+    width: 9.286em;
+    padding-right: 1.571em;
+    text-align: right;
+  }
+
+  &.name {
+    flex: 1;
+    flex-basis: 40%;
+    width: 40%;
+    padding-left: 2.143em;
+    text-align: left;
+    > span {
+      align-self: center;
+    }
+  }
+  &.duration {
+    width: 10.714em;
+    &.expire {
+      color: rgba(#fff, 0.4);
+    }
+    > span {
+      align-self: center;
+      text-align: center;
+    }
+  }
+}
+
+.download-table__button.btn {
+  min-width: auto;
+  margin-left: auto;
+  padding: 0.571em 1.214em;
+  font-weight: normal;
+  font-size: 0.857em;
+  background-color: $color_primary_700;
+  &.expire {
+    color: rgba(#fff, 0.5);
+    background-color: #1d1d1d;
+    pointer-events: none;
+  }
+  &:hover {
+    background-color: $color_primary;
+  }
+  &:active {
+    background-color: $color_primary_dark;
+  }
 }

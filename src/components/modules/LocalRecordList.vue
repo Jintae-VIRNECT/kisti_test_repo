@@ -42,6 +42,7 @@
               <icon-button
                 :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"
+                :highlight="hasSelect"
                 @click="download"
               ></icon-button>
               <icon-button
@@ -83,6 +84,9 @@ export default {
         this.$t('workspace.record_size'),
         this.$t('workspace.record_remote'),
       ]
+    },
+    hasSelect() {
+      return this.selectedArray.some(select => select)
     },
   },
   components: {
@@ -147,9 +151,7 @@ export default {
         }
       })
 
-      this.datas = this.datas.filter(obj => {
-        return obj !== null
-      })
+      this.datas = this.datas.filter(obj => obj !== null)
 
       IDBHelper.deleteMediaChunk(uuids)
     },
@@ -210,12 +212,19 @@ export default {
           }
         }
 
-        return hours + hText + minutes + mText + seconds + sText
+        return `${hours}${hText} ${minutes}${mText} ${seconds}${sText}`
       }
 
-      const fileSizeRender = fileSize => {
-        const fileSizeMB = (fileSize / 1024 / 1024).toFixed(1)
-        return `${fileSizeMB}MB`
+      const fileSizeRender = size => {
+        const mb = 1048576
+
+        if (size >= mb) {
+          size = size / 1024 / 1024
+          return `${size.toFixed(1)}MB`
+        } else {
+          size = size / 1024
+          return `${size.toFixed(1)}KB`
+        }
       }
 
       renderOpts.push(

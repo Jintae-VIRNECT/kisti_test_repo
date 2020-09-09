@@ -28,7 +28,7 @@
   color: $color_text_main;
   font-size: 0.929em;
   line-height: 1.357em;
-  background-color: rgba($color_darkgray_1000, 0.8);
+  background-color: #4d4d4d;
   border-radius: 0.857em;
 }
 .createroom-user__button {
@@ -44,7 +44,7 @@
     left: -1.571em;
     width: 1.571em;
     height: 1.571em;
-    background: url(~assets/image/ic_renew.svg) 50% no-repeat;
+    background: url(~assets/image/workspace/ic_renew.svg) 50% no-repeat;
     content: "";
   }
 

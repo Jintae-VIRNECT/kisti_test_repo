@@ -9,7 +9,7 @@
   border-radius: 1.714em;
 }
 .toasted .primary,
-.toasted.toasted-primary {
+.toasted.toasted-primary.remote-toast {
   min-height: 2.714rem;
   padding: 0.214rem 1.429rem;
   color: #fff;
@@ -19,17 +19,20 @@
   background-color: #353535;
   border-radius: 2px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  > em {
+    color: $color_primary_500;
+  }
 }
 .toasted .primary.success,
-.toasted.toasted-primary.success {
+.toasted.toasted-primary.remote-toast.success {
   background: #4caf50;
 }
 .toasted .primary.error,
-.toasted.toasted-primary.error {
+.toasted.toasted-primary.remote-toast.error {
   background: #f44336;
 }
 .toasted .primary.notice,
-.toasted.toasted-primary.notice {
+.toasted.toasted-primary.remote-toast.notice {
   background-color: #2f343d;
   border: solid 1px #3d4147;
   border-radius: 4px;
@@ -37,7 +40,7 @@
     0 1px 3px 0 rgba(16, 16, 17, 0.14);
 }
 .toasted .primary.info,
-.toasted.toasted-primary.info {
+.toasted.toasted-primary.remote-toast.info {
   padding: 0.714rem 2.143rem;
   line-height: 1.429rem;
   // border: solid 1px #3d4147;
@@ -47,7 +50,7 @@
     0 1px 3px 0 rgba(16, 16, 17, 0.14);
 }
 .toasted .primary.notice,
-.toasted.toasted-primary.notify {
+.toasted.toasted-primary.remote-toast.notify {
   width: 26.786rem;
   margin-right: 1.143rem;
   padding: 1.143rem 1.286rem;
@@ -191,7 +194,7 @@
 }
 
 .toasted .primary .action,
-.toasted.toasted-primary .action {
+.toasted.toasted-primary.remote-toast .action {
   color: #fff;
 }
 .toasted.bubble {

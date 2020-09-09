@@ -1,4 +1,4 @@
-import { getAccount, tokenRequest } from 'api/common'
+import { getAccount, tokenRequest } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
@@ -124,7 +124,6 @@ class Auth {
         isLogin = true
         tokenRenewal()
       } catch (e) {
-        console.log(e)
         console.error('Token is expired')
         isLogin = false
       }

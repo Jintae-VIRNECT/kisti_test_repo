@@ -26,7 +26,7 @@ export default {
       'screenStream',
       'localRecord',
       'resolutions',
-      'control',
+      'allowLocalRecord',
       'localRecordStatus',
       'roomInfo',
     ]),
@@ -55,7 +55,7 @@ export default {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
-      if (this.control.localRecord) {
+      if (this.allowLocalRecord) {
         return true
       } else {
         return false
@@ -76,7 +76,7 @@ export default {
             return participant.video === true
           })
 
-          if (!anyStreamAlive) {
+          if (!anyStreamAlive && this.participants.length > 0) {
             this.$eventBus.$emit('localRecord', {
               isStart: false,
               stopType: 'nostream',
@@ -101,7 +101,16 @@ export default {
     mainView: {
       handler(current) {
         if (this.recorder !== null && this.screenStream === null) {
-          this.changeVideoStream(current.stream)
+          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+
+          this.changeVideoStream(
+            current.stream,
+            getWH(
+              this.localRecord.resolution,
+              this.resolution.width,
+              this.resolution.height,
+            ),
+          )
         }
       },
     },
@@ -129,12 +138,28 @@ export default {
     async initRecorder() {
       const config = {}
       config.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
-      config.options = {
-        video: getWH(
-          this.localRecord.resolution,
-          this.resolution.width,
-          this.resolution.height,
-        ),
+
+      switch (this.localRecordTarget) {
+        case RECORD_TARGET.WORKER:
+          config.options = {
+            video: getWH(
+              this.localRecord.resolution,
+              this.resolution.width,
+              this.resolution.height,
+            ),
+          }
+          break
+        case RECORD_TARGET.SCREEN:
+          config.options = {
+            video: getWH(this.localRecord.resolution),
+          }
+          break
+        default:
+          console.error(
+            'Unknown local record target ::',
+            this.localRecordTarget,
+          )
+          return false
       }
 
       try {
@@ -207,6 +232,7 @@ export default {
       } catch (e) {
         console.error(e)
       } finally {
+        this.recorder = null
         await this.setLocalRecordStatus(LCOAL_RECORD_STAUTS.STOP)
       }
     },
@@ -253,9 +279,9 @@ export default {
       this.setScreenStream(displayStream)
     },
 
-    changeVideoStream(videoStream) {
+    changeVideoStream(videoStream, resolution) {
       if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
-        this.recorder.changeVideoStream(videoStream)
+        this.recorder.changeVideoStream(videoStream, resolution)
       }
     },
 

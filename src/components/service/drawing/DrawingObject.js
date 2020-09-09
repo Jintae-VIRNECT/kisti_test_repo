@@ -20,13 +20,12 @@ export default {
     addTextObject(left, top) {
       const object = new fabric.IText('', {
         left: left,
-        // top: top - (this.tools.fontSize / 2),
         top: top,
         fill: this.tools.color,
         fontFamily: this.fontFamily,
         fontStyle: this.fontStyle,
         fontWeight: this.fontWeight,
-        fontSize: this.tools.fontSize,
+        fontSize: this.scaleFont,
         lineHeight: this.lineHeight,
         hasControls: false,
       })
@@ -55,43 +54,7 @@ export default {
           this.editingMode = false
         }, 100)
       })
-      // object.on('changed', (event, b) => {
-      //   // 실시간 텍스트 변경 시
-      //   // this._sendAction('updateText', object);
-      // })
     },
-
-    /**
-     * 드로잉 객체 삭제 메소드
-     * @param {Object} target ::삭제 대상 드로잉 객체
-     */
-    // removeObject(target) {
-    //   const ids = []
-
-    //   this.canvas.discardActiveObject()
-
-    //   if (target._objects) {
-    //     target._objects.forEach(function(object) {
-    //       ids.push(object.id)
-    //       target._objects.forEach(obj => {
-    //         obj.visible = false
-    //       })
-    //     })
-    //   } else {
-    //     ids.push(target.id)
-    //     target.visible = false
-    //   }
-    //   this.canvas.renderAll()
-    //   this.stackAdd('remove', [...ids])
-
-    //   if (this.$call) {
-    //     this.$call.drawing('clear', {
-    //       aId: this.undoList.length,
-    //       oId: target.id,
-    //       tId: target.tId,
-    //     })
-    //   }
-    // },
 
     /**
      * 드로잉 초기화 객체 메소드
@@ -107,7 +70,8 @@ export default {
       if (ids.length > 0) {
         this.canvas.getObjects().forEach(object => {
           if (!('owner' in object)) {
-            object.canvas.remove(object)
+            this.canvas.remove(object)
+            this.backCanvas.remove(object)
           }
           // object.visible = false;
         })

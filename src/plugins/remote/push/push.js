@@ -30,9 +30,9 @@ const push = {
           login: 'guest',
           passcode: 'guest',
         },
-        debug: str => {
-          debug('::message::', str)
-        },
+        // debug: str => {
+        //   debug('::message::', str)
+        // },
         reconnectDelay: 3 * 1000,
         heartbeatIncoming: 10 * 1000,
         heartbeatOutgoing: 10 * 1000,
@@ -98,6 +98,7 @@ const push = {
   },
   addListener: (key, cb) => {
     if (typeof cb !== 'function') return
+    if (push._listeners.findIndex(listener => listener.key === key) > -1) return
     push._listeners.push({
       key,
       cb,

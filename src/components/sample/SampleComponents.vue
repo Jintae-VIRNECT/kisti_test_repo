@@ -27,7 +27,7 @@
               :text="'삭제하기'"
             ></icon-button>
             <icon-button
-              :imgSrc="require('assets/image/ic_renew.svg')"
+              :imgSrc="require('assets/image/workspace/ic_renew.svg')"
               :text="'새로고침'"
             ></icon-button>
             <button class="btn normal">협업 프로필 등록</button>

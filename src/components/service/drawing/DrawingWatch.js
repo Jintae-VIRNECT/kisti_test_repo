@@ -1,6 +1,6 @@
 // import { getCanvasSize } from 'utils/drawing'
 import { hexToRGBA } from 'utils/color'
-import { VIEW } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 import { ROLE } from 'configs/remote.config'
 
 export default {
@@ -27,9 +27,11 @@ export default {
     viewAction(value) {
       if (this.view !== VIEW.DRAWING) return
       if (this.canvas && this.account.roleType === ROLE.LEADER) {
-        this.canvas.isDrawingMode = value === 'line'
-        this.canvas.freeDrawingCursor = value === 'text' ? 'text' : 'default'
-        this.canvas.defaultCursor = value === 'text' ? 'text' : 'default'
+        this.canvas.isDrawingMode = value === ACTION.DRAWING_LINE
+        this.canvas.freeDrawingCursor =
+          value === ACTION.DRAWING_TEXT ? 'text' : 'default'
+        this.canvas.defaultCursor =
+          value === ACTION.DRAWING_TEXT ? 'text' : 'default'
         // let cursor
         // if (value === 'text') {
         //   cursor = 'text'
@@ -76,6 +78,9 @@ export default {
       // if (this.cursor) {
       //   this.cursor.setRadius(this.scaleWidth / 2)
       // }
+    },
+    'tools.fontSize'(size) {
+      this.scaleFont = size / this.origin.scale
     },
     undoList() {
       this.toolAble()

@@ -1,9 +1,9 @@
 <template>
   <section class="setting-section">
-    <div class="setting__title">
+    <div class="setting-section__title">
       {{ $t('workspace.setting_record_choice') }}
     </div>
-    <div class="setting-horizon-wrapper">
+    <div class="setting-section__body horizon first">
       <figure class="setting__figure">
         <p class="setting__label">
           {{ $t('workspace.setting_record_maxtime') }}
@@ -12,8 +12,8 @@
           class="setting__r-selecter"
           @changeValue="setRecLength"
           :options="localRecTimeOpt"
-          :value="'value'"
-          :text="'text'"
+          value="value"
+          text="text"
           :defaultValue="localRecord.time"
         >
         </r-select>
@@ -41,8 +41,8 @@
           class="setting__r-selecter"
           @changeValue="setRecInterval"
           :options="localRecIntervalOpt"
-          :value="'value'"
-          :text="'text'"
+          value="value"
+          text="text"
           :defaultValue="localRecord.interval"
         >
         </r-select>
@@ -69,7 +69,7 @@ export default {
       const options = localRecTime.map(time => {
         return {
           value: time,
-          text: time + this.$t('date.minute'),
+          text: `${time} ${this.$t('date.minute')}`,
         }
       })
       return options
@@ -78,7 +78,7 @@ export default {
       const options = localRecInterval.map(interval => {
         return {
           value: interval,
-          text: interval + this.$t('date.minute'),
+          text: `${interval} ${this.$t('date.minute')}`,
         }
       })
       return options

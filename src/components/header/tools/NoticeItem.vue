@@ -57,7 +57,7 @@ export default {
   props: {
     // 구분 status, detail, section, 분류 상태 종류 정보
     accept: {
-      type: Boolean,
+      type: [Boolean, String],
       default: false,
     },
     info: {
@@ -110,9 +110,9 @@ export default {
         this.type === 'info' ||
         this.type === 'license'
       ) {
-        return require('assets/image/ic_system.svg')
+        return require('assets/image/header/ic_system.svg')
       } else if (this.type === 'fail') {
-        return require('assets/image/ic_notice.svg')
+        return require('assets/image/header/ic_notice.svg')
       } else {
         return this.image
       }

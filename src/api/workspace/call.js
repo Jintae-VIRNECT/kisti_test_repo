@@ -34,3 +34,57 @@ export const sendFile = async ({ file, sessionId, workspaceId }) => {
   const returnVal = await http('SEND_FILE', { file, sessionId, workspaceId })
   return returnVal
 }
+/**
+ * 파일 업로드
+ *
+ * @param {File}   file
+ * @param {String} sessionId
+ * @param {String} workspaceId
+ * @param {String} userId
+ */
+export const uploadFile = async ({ file, sessionId, workspaceId, userId }) => {
+  const returnVal = await http('FILE_UPLOAD', {
+    file,
+    sessionId,
+    workspaceId,
+    userId,
+  })
+  return returnVal
+}
+/**
+ * 파일 다운로드
+ *
+ * @param {Path} sessionId
+ * @param {Path} workspaceId
+ * @param {String} userId
+ * @param {String} objectName
+ */
+export const downloadFile = async ({
+  objectName,
+  sessionId,
+  workspaceId,
+  userId,
+}) => {
+  const returnVal = await http('FILE_DOWNLOAD', {
+    objectName,
+    sessionId,
+    workspaceId,
+    userId,
+  })
+  return returnVal
+}
+/**
+ * 파일 목록
+ *
+ * @param {Query} workspaceId
+ * @param {Query} userId
+ * @param {Query} fileName
+ */
+export const getFileList = async ({ sessionId, workspaceId, userId }) => {
+  const returnVal = await http('FILE_LIST', {
+    sessionId,
+    workspaceId,
+    userId,
+  })
+  return returnVal
+}

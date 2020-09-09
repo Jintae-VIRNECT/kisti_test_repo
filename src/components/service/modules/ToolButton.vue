@@ -1,5 +1,9 @@
 <template>
-  <tooltip :content="text" placement="bottom">
+  <tooltip
+    :content="text"
+    :placement="placement"
+    :active="disableActive ? !active : true"
+  >
     <button
       slot="body"
       class="tool"
@@ -25,6 +29,14 @@ export default {
   },
   props: {
     text: String,
+    placement: {
+      type: String,
+      default: 'bottom',
+    },
+    disableActive: {
+      type: Boolean,
+      default: false,
+    },
     active: {
       type: Boolean,
       default: false,

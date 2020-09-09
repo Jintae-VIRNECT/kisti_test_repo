@@ -197,8 +197,8 @@ export default class LocalRecorder {
     }
   }
 
-  changeVideoStream(videoStream) {
-    this.recorder.resetVideoStreams(videoStream)
+  changeVideoStream(videoStream, resolution) {
+    this.recorder.resetVideoStreams(videoStream, resolution)
   }
 
   changeCanvasOrientation(orientation) {
