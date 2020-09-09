@@ -101,6 +101,7 @@ export default {
           const info = authInfo.workspace.find(
             work => work.uuid === workspace.workspaceId,
           )
+          if (!info || !info.workspaceId) continue
           workspace['role'] = info.role
         }
         this.initWorkspace(workspaces)
