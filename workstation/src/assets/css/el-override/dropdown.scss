@@ -16,6 +16,11 @@ body .el-popper {
   .el-select-dropdown__item {
     font-size: 13px;
     line-height: 32px;
+
+    .right {
+      float: right;
+      font-size: 0.9em;
+    }
   }
   .el-select-dropdown__item.hover,
   .el-select-dropdown__item:hover,

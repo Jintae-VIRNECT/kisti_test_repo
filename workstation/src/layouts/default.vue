@@ -32,6 +32,8 @@ import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import { sideMenus, sideBottomMenus } from '@/models/layout'
 import { mapGetters } from 'vuex'
 
+import Cookies from 'js-cookie'
+
 export default {
   middleware: 'default',
   components: {
@@ -41,6 +43,9 @@ export default {
   head() {
     return {
       title: `VIRNECT | ${this.$t('common.workstation')}`,
+      htmlAttrs: {
+        lang: this.$i18n.locale,
+      },
     }
   },
   data() {
@@ -59,6 +64,24 @@ export default {
     }),
   },
   mounted() {
+    // 콘솔 표시
+    console.log(
+      `%cVirnect Workstation v${this.$config.VERSION}`,
+      'font-size: 20px; color: #1468e2',
+    )
+    console.log(`env: ${this.$config.TARGET_ENV}`)
+    console.log(`timeout: ${this.$config.API_TIMEOUT}`)
+
+    // 기본 언어 쿠키
+    if (!Cookies.get('lang')) {
+      Cookies.set('lang', this.$i18n.locale, {
+        domain:
+          location.hostname.split('.').length === 3
+            ? location.hostname.replace(/.*?\./, '')
+            : location.hostname,
+      })
+    }
+
     // 서버 메세지 푸시
     const message = this.$route.query.message
     if (message) {

@@ -49,8 +49,8 @@
             <el-input v-model="shared" disabled />
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
-          <dd v-for="target in content.targets" :key="target.id">
-            <span>{{ target.type }}</span>
+          <dd>
+            <span>{{ targetType2label(content.targetType) }}</span>
           </dd>
         </dl>
       </el-col>

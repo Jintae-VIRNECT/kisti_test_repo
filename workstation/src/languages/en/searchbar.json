@@ -4,20 +4,20 @@
   "filter": {
     "title": "Filter",
     "all": "All",
-    "processPublished": "Add a process",
-    "processUnpublished": "Process not added",
+    "processPublished": "Add Task",
+    "processUnpublished": "Remove Task",
     "globalIssue": "Issues",
-    "workIssue": "Task issues"
+    "workIssue": "Issues"
   },
   "sort": {
-    "title": "Sort by",
-    "role": "By authority",
-    "alphabetAsc": "Ascending alphabetical order",
-    "alphabetDesc": "Descending alphabetical order",
-    "createdAsc": "Sort oldest to newest creation",
-    "createdDesc": "Sort newest to oldest creation",
-    "updatedAsc": "Sort oldest to newest reports",
-    "updatedDesc": "Sort newest to oldest reports"
+    "title": "Sort",
+    "role": "Role",
+    "alphabetAsc": "A to Z",
+    "alphabetDesc": "Z to A",
+    "createdAsc": "Old to New Update",
+    "createdDesc": "New to Old Update",
+    "updatedAsc": "Old to New Report",
+    "updatedDesc": "New to Old Report"
   },
   "keyword": {
     "title": "Search"

@@ -34,7 +34,7 @@
         :label="$t('results.column.status')"
         prop="conditions"
         :statusList="taskConditions"
-        :width="100"
+        :width="120"
       />
       <column-user
         :label="$t('results.column.reporter')"

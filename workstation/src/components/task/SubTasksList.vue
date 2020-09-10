@@ -26,7 +26,7 @@
         :tooltip="$t('task.detail.subTaskColumn.endedStepsTooltip')"
         prop="doneCount"
         maxProp="stepTotal"
-        :width="120"
+        :width="130"
       />
       <column-date
         :label="$t('task.detail.subTaskColumn.schedule')"
@@ -44,7 +44,7 @@
         :label="$t('task.detail.subTaskColumn.status')"
         prop="conditions"
         :statusList="taskConditions"
-        :width="100"
+        :width="120"
       />
       <column-date
         :label="$t('task.detail.subTaskColumn.reportedDate')"

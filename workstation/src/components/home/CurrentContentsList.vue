@@ -28,6 +28,7 @@
       <column-default
         :label="$t('contents.allContents.column.targetType')"
         prop="targetType"
+        customFilter="targetType2label"
         :width="90"
       />
       <column-user
@@ -85,7 +86,7 @@
         :label="$t('task.list.column.status')"
         prop="conditions"
         :statusList="taskConditions"
-        :width="90"
+        :width="120"
       />
       <column-boolean
         :label="$t('task.list.column.issue')"

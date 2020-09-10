@@ -34,15 +34,15 @@
       </dd>
       <dt>{{ $t('members.card.links') }}</dt>
       <dd class="column-links">
-        <router-link :to="`/contents?search=${myInfo.uuid}`">
+        <router-link :to="`/contents?search=${myInfo.email}`">
           <img src="~assets/images/icon/ic-contents.svg" />
           <span>{{ $t('members.card.contents') }}</span>
         </router-link>
-        <router-link :to="`/tasks?search=${myInfo.uuid}`">
+        <router-link :to="`/tasks?search=${myInfo.email}`">
           <img src="~assets/images/icon/ic-work.svg" />
           <span>{{ $t('members.card.work') }}</span>
         </router-link>
-        <router-link :to="`/tasks/results/papers?search=${myInfo.uuid}`">
+        <router-link :to="`/tasks/results/papers?search=${myInfo.email}`">
           <img src="~assets/images/icon/ic-report.svg" />
           <span>{{ $t('members.card.paper') }}</span>
         </router-link>
@@ -113,14 +113,15 @@ export default {
         form.licenseView && plans.view.value,
       ].filter(_ => _)
       this.showMemberSettingModal = false
+      this.$emit('refresh')
     },
     kicked() {
       this.showMemberKickModal = false
       this.showMemberSettingModal = false
+      this.$emit('refresh')
     },
     kick() {
       this.showMemberKickModal = true
-      // this.showMemberSettingModal = false
     },
     back() {
       this.showMemberSettingModal = true

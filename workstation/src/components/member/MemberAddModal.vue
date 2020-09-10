@@ -27,6 +27,9 @@
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
+          <button @click.prevent="clearMember(index)">
+            <i class="el-icon-close" />
+          </button>
         </h6>
         <el-form-item class="horizon" prop="email" required>
           <template slot="label">
@@ -86,7 +89,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.remote.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.remote.label"
+                  :disabled="!plansInfo.remote.unUsedAmount"
+                >
+                  <span>{{ plans.remote.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.remote.unUsedAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -97,7 +109,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.make.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.make.label"
+                  :disabled="!plansInfo.make.unUsedAmount"
+                >
+                  <span>{{ plans.make.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.make.unUsedAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -108,7 +129,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.view.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.view.label"
+                  :disabled="!plansInfo.view.unUsedAmount"
+                >
+                  <span>{{ plans.view.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.view.unUsedAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -119,7 +149,11 @@
       <el-button @click="addMember">
         {{ $t('members.add.addMember') }}
       </el-button>
-      <el-button type="primary" @click="submit">
+      <el-button
+        type="primary"
+        @click="submit"
+        :disabled="!userInfoList.length"
+      >
         {{ $t('members.add.submit') }}
         <span class="number">{{ userInfoList.length }}</span>
       </el-button>
@@ -134,6 +168,7 @@ import InviteMember from '@/models/workspace/InviteMember'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [modalMixin],
@@ -147,13 +182,25 @@ export default {
       },
     }
   },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+      plansInfo: 'plan/plansInfo',
+    }),
+  },
   methods: {
     opened() {
       this.userInfoList = [new InviteMember()]
       this.$refs.form.forEach(form => form.resetFields())
+      if (!this.plansInfo.planStatus) {
+        this.$store.dispatch('plan/getPlansInfo')
+      }
     },
     addMember() {
       this.userInfoList.push(new InviteMember())
+    },
+    clearMember(index) {
+      this.userInfoList.splice(index, 1)
     },
     async submit() {
       // 유효성 검사
@@ -241,6 +288,10 @@ export default {
       & > span,
       & > img {
         vertical-align: middle;
+      }
+      & > button {
+        float: right;
+        font-size: 1.1em;
       }
     }
     .el-form-item {

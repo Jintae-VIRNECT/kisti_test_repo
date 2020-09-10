@@ -58,6 +58,7 @@
             <column-default
               :label="$t('contents.allContents.column.targetType')"
               prop="targetType"
+              customFilter="targetType2label"
               sortable="custom"
               :width="120"
             />
@@ -80,7 +81,7 @@
               :trueText="$t('contents.sharedStatus.shared')"
               :falseText="$t('contents.sharedStatus.noShared')"
               sortable="custom"
-              :width="120"
+              :width="130"
             />
             <template slot="empty">
               <img src="~assets/images/empty/img-content-empty.jpg" />

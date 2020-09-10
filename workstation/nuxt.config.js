@@ -14,7 +14,7 @@ module.exports = {
     htmlAttrs: {
       lang: 'ko',
     },
-    title: 'Workstation',
+    title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -54,6 +54,7 @@ module.exports = {
     NODE_ENV: process.env.NODE_ENV,
   },
   publicRuntimeConfig: {
+    VERSION: process.env.npm_package_version || '',
     TARGET_ENV: env.TARGET_ENV,
     API_GATEWAY_URL: env.API_GATEWAY_URL,
     API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),

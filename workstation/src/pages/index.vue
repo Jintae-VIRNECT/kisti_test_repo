@@ -15,7 +15,7 @@
               <workspace-info />
             </el-card>
           </el-row>
-          <el-row v-if="activeWorkspace.role === 'MASTER'">
+          <el-row>
             <plans-used
               i18nGroup="home.plansInfo.arStorage"
               :info="plansInfo.storage"
@@ -24,10 +24,10 @@
               i18nGroup="home.plansInfo.arContent"
               :info="plansInfo.viewCount"
             />
-            <plans-used
+            <!-- <plans-used
               i18nGroup="home.plansInfo.call"
               :info="plansInfo.callTime"
-            />
+            /> -->
           </el-row>
         </el-col>
         <!-- 가운데 -->
@@ -44,16 +44,8 @@
         <!-- 오른쪽 -->
         <el-col class="container__right">
           <user-profile-card />
-          <link-list-card
-            :icon="require('assets/images/icon/ic-phonelink.svg')"
-            :title="$t('home.install.title')"
-            :links="install"
-          />
-          <link-list-card
-            :icon="require('assets/images/icon/ic-local-library.svg')"
-            :title="$t('guide.title')"
-            :links="guide"
-          />
+          <download-center />
+          <guide-list />
           <a :href="`${$url.www}/support/faq`" target="_blank">
             <el-card class="faq-banner">
               <h6>
@@ -66,6 +58,9 @@
         </el-col>
       </el-row>
     </div>
+
+    <alert-storage-overflow :visible.sync="showAlertStorageOverflow" />
+    <alert-license-overflow :visible.sync="showAlertLicenseOverflow" />
   </div>
 </template>
 
@@ -78,9 +73,11 @@ import CurrentMemberList from '@/components/home/CurrentMemberList'
 import CurrentContentsList from '@/components/home/CurrentContentsList'
 import CurrentResultList from '@/components/home/CurrentResultList'
 import UserProfileCard from '@/components/home/UserProfileCard'
-import LinkListCard from '@/components/home/LinkListCard'
+import DownloadCenter from '@/components/home/DownloadCenter'
+import GuideList from '@/components/home/GuideList'
+import AlertStorageOverflow from '@/components/home/AlertStorageOverflow'
+import AlertLicenseOverflow from '@/components/home/AlertLicenseOverflow'
 
-import { install, guide } from '@/models/home'
 import workspaceService from '@/services/workspace'
 
 export default {
@@ -91,28 +88,32 @@ export default {
     CurrentContentsList,
     CurrentResultList,
     UserProfileCard,
-    LinkListCard,
+    DownloadCenter,
+    GuideList,
+    AlertStorageOverflow,
+    AlertLicenseOverflow,
   },
   data() {
     return {
-      install: install(this),
-      guide: guide(this),
-      plansInfo: {
-        storage: {},
-        viewCount: {},
-        callTime: {},
-      },
+      showAlertStorageOverflow: false,
+      showAlertLicenseOverflow: false,
     }
   },
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
+      plansInfo: 'plan/plansInfo',
     }),
   },
   methods: {
     async getWorkspacePlansInfo() {
-      if (this.activeWorkspace.role !== 'MASTER') return false
-      this.plansInfo = await workspaceService.getWorkspacePlansInfo()
+      const plansInfo = await this.$store.dispatch('plan/getPlansInfo')
+      if (plansInfo.storage.remain < 0) {
+        this.showAlertStorageOverflow = true
+      }
+      if (plansInfo.products.some(p => p.usedAmount > p.amount)) {
+        this.showAlertLicenseOverflow = true
+      }
     },
   },
   async beforeMount() {
@@ -126,7 +127,7 @@ export default {
 #home .container {
   .main-banner {
     height: 190px;
-    padding: 20px;
+    padding: 12px 8px;
     color: #fff;
     background: url('~assets/images/img-home-banner.jpg');
     background-size: cover;
@@ -137,6 +138,10 @@ export default {
       font-size: 20px;
       font-family: $poppins;
     }
+    & h5 {
+      font-size: 28px;
+      font-family: $poppins;
+    }
     & p {
       margin-top: 20px;
       font-size: 20px;
@@ -145,7 +150,7 @@ export default {
   }
   .faq-banner {
     position: relative;
-    height: 116px;
+    min-height: 116px;
     color: #fff;
     background: url('~assets/images/img-faq.jpg');
     background-size: cover;
@@ -185,6 +190,35 @@ export default {
   .el-card--table .el-table__body-wrapper,
   .el-card--table .el-table__empty-block {
     min-height: 256px;
+  }
+
+  .link-list-card {
+    .el-card__body {
+      padding: 8px 0;
+    }
+    a {
+      position: relative;
+      display: flex;
+      align-items: center;
+      height: 44px;
+      padding: 0 24px;
+      transition: background-color 0.25s ease;
+      &:hover {
+        background-color: #f5f7fa;
+      }
+
+      & > img:first-child {
+        margin-right: 4px;
+        margin-left: -8px;
+      }
+      & > span {
+        color: $font-color-content;
+      }
+      & > img:last-child {
+        position: absolute;
+        right: 24px;
+      }
+    }
   }
 }
 </style>

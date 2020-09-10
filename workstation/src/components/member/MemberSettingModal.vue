@@ -72,7 +72,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.remote.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.remote.label"
+                  :disabled="!plansInfo.remote.unUsedAmount"
+                >
+                  <span>{{ plans.remote.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.remote.unUsedAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -83,7 +92,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.make.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.make.label"
+                  :disabled="!plansInfo.make.unUsedAmount"
+                >
+                  <span>{{ plans.make.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.make.unUsedAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -94,7 +112,16 @@
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
-                <el-option :value="true" :label="plans.view.label" />
+                <el-option
+                  :value="true"
+                  :label="plans.view.label"
+                  :disabled="!plansInfo.view.unUsedAmount"
+                >
+                  <span>{{ plans.view.label }}</span>
+                  <span class="right">
+                    {{ plansInfo.view.unUsedAmount }}
+                  </span>
+                </el-option>
               </el-select>
             </el-form-item>
           </el-col>
@@ -136,6 +163,7 @@ export default {
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
+      plansInfo: 'plan/plansInfo',
     }),
     canChangeRole() {
       return (
@@ -153,6 +181,9 @@ export default {
   methods: {
     opened() {
       this.form = new EditMember(this.data)
+      if (!this.plansInfo.planStatus) {
+        this.$store.dispatch('plan/getPlansInfo')
+      }
     },
     async submit() {
       try {
@@ -173,7 +204,7 @@ export default {
           })
         } else {
           this.$message.error({
-            message: this.$t('members.add.message.updateFail') + `\n(${e})`,
+            message: this.$t('members.setting.message.updateFail') + `\n(${e})`,
             duration: 2000,
             showClose: true,
           })

@@ -5,25 +5,36 @@
     height: 28px;
     vertical-align: middle;
   }
-  & > span {
+  span {
     margin-left: 6px;
     vertical-align: middle;
+  }
+  .el-tooltip {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 
 .column-plan {
+  & > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  & > img {
+    box-sizing: border-box;
+    margin-top: 1px;
+    margin-right: 4px;
+    border: solid 1px #dde1ea;
+    border-radius: 100px;
+  }
   & > .el-tag {
     height: auto;
-    margin: 0 6px;
+    margin: 1px 6px 0;
     padding: 4px 6px;
     font-size: 11px;
     line-height: 11px;
 
-    &.PRO {
-      color: #0b5bd8;
-      border-color: #0b5bd8;
-    }
-    &.BASIC {
+    &.PUBLIC {
       color: #828a97;
       border-color: #828a97;
     }

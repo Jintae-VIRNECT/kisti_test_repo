@@ -9,8 +9,6 @@
         >
           <img src="~assets/images/icon/ic-error.svg" />
         </el-tooltip>
-      </h3>
-      <div class="right">
         <el-button @click="graphToggle">
           <img src="~assets/images/icon/ic-timeline.svg" />
           <span v-if="!isGraph">
@@ -20,6 +18,11 @@
             {{ $t('task.list.dashboard.graphOff') }}
           </span>
         </el-button>
+      </h3>
+      <div class="right">
+        <a :href="$t('guide.taskStatusGuide.url')" target="_blank">
+          {{ $t('guide.taskStatusGuide.label') }}
+        </a>
       </div>
     </div>
     <el-row>
@@ -167,8 +170,15 @@ export default {
 #task-dashboard .el-card__header {
   .el-button {
     height: 28px;
-    margin: 14px 24px;
+    margin: -6px 0;
     padding: 0 10px;
+  }
+  .right > a {
+    margin-right: 28px;
+    color: $font-color-desc;
+    font-size: 13px;
+    line-height: 56px;
+    text-decoration: underline;
   }
 }
 #task-dashboard .el-card__body {

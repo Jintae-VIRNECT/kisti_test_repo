@@ -1,65 +1,84 @@
 {
-  "storage": {
-    "title": "Storage details",
-    "link": "Purchase",
-    "unit": "GB",
-    "allStorageVolume": "Overall storage capacity",
-    "storageVolume": "Storage capacity",
-    "used": "Used",
-    "available": "Usable"
-  },
-  "download": {
-    "title": "Content download details",
-    "link": "Purchase",
-    "unit": "Count",
-    "allDownloadedVolume": "Total download counts",
-    "downloadedVolume": "Download counts",
-    "downloaded": "Downloaded",
-    "available": "Downloadable"
-  },
   "banner": {
-    "sub": "",
+    "sub": "Connect Work Space and People",
     "main": "VIRNECT Workstation",
-    "desc": "Experience systematic member management"
+    "desc": "Experience true systematic management through VIRNECT products"
   },
   "memberList": {
-    "title": "Newly participated member",
+    "title": "New Members",
     "column": {
-      "nickname": "User nickname",
-      "email": "Member's account",
-      "role": "Workstation authority",
-      "joinDate": "Participation date"
+      "nickname": "Nickname",
+      "email": "Account",
+      "role": "Role",
+      "joinDate": "Date"
     },
-    "empty": "Add members to your Workstation"
+    "empty": "Invite members to your Workstation"
   },
   "contentsList": {
-    "title": "Recently updated content and tasks",
-    "contents": "Recently updated content",
-    "task": "Recently updated tasks",
-    "empty": "No contents are updated recently"
+    "title": "Recent Contents & Tasks",
+    "contents": "Recent Contents",
+    "task": "Recent Tasks",
+    "empty": "No content updated recently",
+    "taskEmpty": "No tasks updated recently"
   },
   "reportList": {
-    "title": "Recent task report",
-    "task": "Tasks",
+    "title": "Recent Task Report",
+    "task": "Task",
     "paper": "Paper",
-    "issue": "Issues",
-    "empty": "There are no reports made"
+    "issue": "Issue",
+    "empty": "There is no report made"
   },
   "profile": {
-    "title": "My profile",
-    "link": "Update profile",
-    "usingNickname": "Your current nickname",
-    "workspaceRole": "Workspace level",
-    "usingPlans": "Your current plan"
+    "title": "My Profile",
+    "link": "Profile Settings",
+    "usingNickname": "Nickname",
+    "workspaceRole": "Role",
+    "usingPlans": "Plans in Use"
   },
   "install": {
-    "title": "Install VIRNECT product"
-  },
-  "guide": {
-    "title": "User's guide"
+    "title": "Download Center",
+    "remote": "Install VIRNECT Remote",
+    "make": "Install VIRNECT Make",
+    "view": "Install VIRNECT View"
   },
   "faq": {
-    "title": "FAQ on Product and Services",
-    "desc": "Are you having difficulty using our products and services?<br>Check out our frequently asked questions."
+    "title": "FAQ",
+    "desc": "Are you having difficulty using our products and services?<br>Check out our FAQ."
+  },
+  "plansInfo": {
+    "used": "Used",
+    "remain": "Remaining",
+    "buy": "Purchase",
+    "arStorage": {
+      "title": "AR Storage Capacity",
+      "desc": "It may differ from the actual remaining storage so please use it as a reference.",
+      "max": "Total",
+      "used": "Used",
+      "unit": "GB"
+    },
+    "arContent": {
+      "title": "Online AR Views",
+      "desc": "It may differ from the actual view counts so please use it as a reference.",
+      "max": "Total",
+      "used": "Used",
+      "unit": "Views"
+    },
+    "call": {
+      "title": "Talk minutes",
+      "desc": "It may differ from the actual remaining Talk minutes so please use it as a reference.",
+      "max": "Overall Talk minutes",
+      "used": "Talk minutes used",
+      "unit": "Minutes"
+    }
+  },
+  "storageOverflow": {
+    "title": "AR storage needs to be managed in the Workspace. Please delete some of your content according to purchased storage.",
+    "desc": "The content is saved for 14 days from the date of purchase and it will be deleted in the order of oldest to newest.",
+    "submit": "Content Management"
+  },
+  "licenseOverflow": {
+    "title": "The service is limited due to the exceeding number of plans allotted to users compared with the plans you have. Inquire your Master admin for the plan management.",
+    "desc": "If you are the Master admin please go to member settings and check plan allotment state.",
+    "submit": "Member Management"
   }
 }

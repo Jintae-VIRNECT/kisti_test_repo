@@ -1,4 +1,6 @@
 import { filters as dayjsFilters } from '@/plugins/dayjs'
+import { targetTypes } from '@/models/content/Content'
+import { app } from '@/plugins/context'
 
 export default {
   filters: {
@@ -24,6 +26,11 @@ export default {
         numbers &&
         `${numbers.toLocaleString()} ${this.$t('common.numbersUnit')}`
       )
+    },
+    targetType2label(targetType) {
+      if (!targetType) return '-'
+      const targetInfo = targetTypes.find(({ value }) => value === targetType)
+      return app.i18n.t(targetInfo.label)
     },
   },
 }

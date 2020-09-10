@@ -13,20 +13,28 @@
           <div class="avatar">
             <div
               class="image"
-              :style="`background-image: url(${scope.row[imageProp]})`"
+              :style="
+                `background-image: url(${scope.row[imageProp]}), url(${$defaultUserProfile})`
+              "
             />
           </div>
         </el-tooltip>
       </div>
       <!-- 일반 -->
       <div v-else class="column-user">
-        <div class="avatar">
-          <div
-            class="image"
-            :style="`background-image: url(${scope.row[imageProp]})`"
-          />
-        </div>
-        <span>{{ scope.row[nameProp] }}</span>
+        <el-tooltip :content="scope.row[nameProp]">
+          <div>
+            <div class="avatar">
+              <div
+                class="image"
+                :style="
+                  `background-image: url('${scope.row[imageProp]}'), url('${$defaultUserProfile}')`
+                "
+              />
+            </div>
+            <span>{{ scope.row[nameProp] }}</span>
+          </div>
+        </el-tooltip>
       </div>
     </template>
   </el-table-column>

@@ -5,9 +5,11 @@
   "next": "Next",
   "yes": "Yes",
   "no": "No",
+  "confirm": "Confirm",
   "download": "Download",
   "delete": "Delete",
   "graph": "Graph",
   "list": "List",
-  "numbersUnit": "Count"
+  "numbersUnit": "Amount",
+  "paymentCenter": "Payment Center"
 }

@@ -57,16 +57,19 @@
           </dd>
           <dt>{{ $t('contents.info.target') }}</dt>
           <dd v-if="content.target">
-            <span>{{ content.target.type }}</span>
+            <span>{{ targetType2label(content.targetType) }}</span>
+            <el-tag class="content-size">
+              {{ content.targetSize }}x{{ content.targetSize }}
+            </el-tag>
             <img
               v-if="content.target.imgPath"
               src="~assets/images/icon/ic-print.svg"
-              @click="print(content.target.imgPath)"
+              @click="print(content.target.imgPath, content.targetSize)"
             />
             <img
               v-if="content.target.imgPath"
               src="~assets/images/icon/ic-file-download.svg"
-              @click="download(content.target.imgPath)"
+              @click="download(content.target.imgPath, content.contentName)"
             />
           </dd>
         </dl>
@@ -104,9 +107,10 @@
 import contentService from '@/services/content'
 import { sharedStatus } from '@/models/content/Content'
 import filters from '@/mixins/filters'
+import utils from '@/mixins/utils'
 
 export default {
-  mixins: [filters],
+  mixins: [filters, utils],
   async asyncData({ params, store }) {
     const promise = {
       content: contentService.getContentInfo(params.contentId),
@@ -142,15 +146,6 @@ export default {
     closed() {
       this.showMe = false
       this.$router.push('/contents')
-    },
-    download(url) {
-      window.open(url)
-    },
-    print(url) {
-      const popup = window.open('', '_blank')
-      popup.document.write(`<img src="${url}" />`)
-      popup.document.close()
-      setTimeout(() => popup.print(), 1)
     },
     registerTask() {
       this.$router.replace(`/tasks/new?contentId=${this.content.contentUUID}`)
@@ -217,6 +212,14 @@ export default {
   .register {
     float: right;
     padding: 8px 13px;
+  }
+  .content-size {
+    height: 24px;
+    margin-left: 4px;
+    color: $font-color-desc;
+    line-height: 22px;
+    background: transparent;
+    border-color: $font-color-desc;
   }
 }
 </style>

@@ -1,79 +1,82 @@
 {
   "role": {
-    "master": "Master",
-    "manager": "Manager",
-    "member": "Member's account"
+    "master": "MASTER",
+    "manager": "MANAGER",
+    "member": "MEMBER"
   },
   "card": {
     "profile": "Profile",
-    "setting": "Member settings",
-    "usingPlans": "Your plan details",
-    "links": "Go to XXX",
-    "contents": "Contents",
+    "setting": "Member Settings",
+    "usingPlans": "Plans",
+    "links": "Shorcuts",
+    "contents": "Content",
     "work": "Task",
     "paper": "Paper"
   },
   "allMembers": {
-    "title": "All of Workspace members",
-    "addMember": "Add member to Workspace"
+    "title": "All Members",
+    "addMember": "Add Member"
   },
   "setting": {
-    "title": "Workspace member settings",
-    "info": "Member details",
-    "nickname": "Member's Workspace nickname",
-    "email": "Member's Workspace account",
-    "setting": "Member settings",
-    "role": "Workspace authority",
-    "roleDesc": "If you promote a member as a manager",
-    "givePlans": "Plan allocation",
-    "givePlansDesc": "Select and allocate product plan for the users to use in the Workspace",
-    "givePlansEmpty": "No allocation",
+    "title": "Worksapce Member Settings",
+    "info": "Member Details",
+    "nickname": "Member Nickname",
+    "email": "Member Account",
+    "setting": "Member Settings",
+    "role": "Role",
+    "roleDesc": "Promoting to Manager means that this member can invite other members create groups etc. However only Masters have access to edit payment and Workspace profile settings.",
+    "givePlans": "Plan Allocation",
+    "givePlansDesc": "Allocate plans for your new Workspace members.",
+    "givePlansEmpty": "No Allocation",
     "kick": "Remove",
     "submit": "Edit",
     "message": {
-      "updateFail": "Failed to update member details from the Workspace",
+      "updateFail": "Failed to update member details from the Workspace please try again later",
       "updateSuccess": "Succesfully updated selected member details"
     }
   },
   "kick": {
     "title": "Remove member from Workspace",
-    "desc": "The selected members are removed from your workspace. They are no longer be able to use Workspace-related products and services. Removed members can be invited again.",
-    "back": "Go back",
+    "desc": "The selected members are removed from your Workspace. They are no longer be able to use Workspace-related products and services. Removed members can be invited again.",
+    "back": "Previous",
     "submit": "Remove",
     "message": {
-      "kickFail": "Failed to remove Workspace member",
+      "kickFail": "Failed to remove Workspace member please try again later",
       "kickSuccess": "Succesfully removed selected member."
     }
   },
   "add": {
-    "title": "Add member to Workspace",
+    "title": "Add Member",
     "desc": "Would you like other users to use VIRNECT products and services together?",
-    "desc2": "Invite them to your Workspace",
-    "desc3": "You can purchase the plans in advance from the \"Purchase plans\" and easily provide the purhcased plans to the members who are going to join your Workspace. You may buy and assign the plans later when your invited member has joined your Workspace.",
-    "addUser": "Add user",
-    "email": "Invitee's email address",
-    "emailDesc": "Please enter the email address of the person you want to invite. An invitation email for workspace will be sent to the email you entered. If the user who received the invitation email accepts the invitation",
+    "desc2": "Invite VIRNECT users to your Workspace",
+    "desc3": "You can Invite VIRNECT users as Workspace members. Purchase plans in advance from \"Payment Center\" and allocate them to your new members.",
+    "addUser": "Add Workspace Members",
+    "email": "VIRNECT User Email",
+    "emailDesc": "Please enter the VIRNECT member's email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use products together.",
     "emailPlaceholder": "Enter email address of invitee",
-    "addMember": "Add member",
-    "submit": "Send invitation email",
+    "addMember": "Add Member",
+    "submit": "Send Invitation",
     "message": {
-      "inviteFail": "Failed to invite a member to Workspace",
+      "inviteFail": "Failed to invite a member to Workspace please try again later",
       "inviteSuccess": "Successfuly sent the invitation email",
-      "enoughPlan": "No plans available to assign to Workspace members",
-      "memberOverflow": "Please note that total of 9 users including the \"Master\" member may participate the \"Public service\" with the Basic plan. Please change your plans if you need more members to use our products and services.",
-      "workspaceOverflow": "In Public Service"
+      "notHaveAnyPlan": "At least one plan must be allocated when inviting new Workspace members.",
+      "enoughPlan": "No plans available to assign to Workspace members please purchase plans and invite them again.",
+      "memberOverflow": "Please note that total of 49 users including the \"Master\" member may participate the \"Public service\". Please change your plans if you need more members to use our products and services.",
+      "workspaceOverflow": "In Public Service one user can participate in up to 9 Workspaces. To join the selected Workspace please make yourself available first by leaving one of the Workspace you are in and request an invitation email to the Workspace master member.",
+      "memberAlready": "This member is already being participated in your Workspace.",
+      "noHavePlans": "There are no remaining plans available. Please go to the payment center and purchase the plans."
     }
   },
   "activity": {
-    "title": "Workspace member activity",
+    "title": "Recent Activity",
     "column": {
-      "member": "Workspace member",
-      "contentsCount": "Uploaded content count",
-      "subTasks": "Responsible subtasks",
-      "subTasksTooltip": "Subtasks in progress / assigned subtasks",
+      "member": "Member",
+      "contentsCount": "Uploaded Content",
+      "subTasks": "Subtasks",
+      "subTasksTooltip": "In progress / Assigned",
       "progress": "Progress",
-      "reportedDate": "Time the recent report was made",
-      "link": "Go to Memeber's Activity"
+      "reportedDate": "Reported on",
+      "link": "Shortcuts"
     }
   }
 }

@@ -15,7 +15,7 @@
       <el-row type="flex">
         <el-col>
           <dt>{{ $t('task.targetInfo.capacity') }}</dt>
-          <dd></dd>
+          <dd>{{ taskInfo.contentSize | byte2mb }}</dd>
         </el-col>
         <el-col>
           <dt>{{ $t('task.targetInfo.createdDate') }}</dt>
@@ -25,21 +25,29 @@
       <el-divider />
       <dt>{{ $t('task.targetInfo.targetType') }}</dt>
       <dd>
-        <span>{{ taskInfo.targets[0].type }}</span>
+        <span>{{ targetType2label(taskInfo.targetType) }}</span>
+        <el-tag class="content-size">
+          {{ taskInfo.targetSize }}x{{ taskInfo.targetSize }}
+        </el-tag>
         <img
-          v-if="taskInfo.targets[0].imgPath"
+          v-if="taskInfo.target.imgPath"
           src="~assets/images/icon/ic-print.svg"
-          @click="print(taskInfo.targets[0].imgPath)"
+          @click="print(taskInfo.target.imgPath, taskInfo.targetSize)"
         />
         <img
-          v-if="taskInfo.targets[0].imgPath"
+          v-if="taskInfo.target.imgPath"
           src="~assets/images/icon/ic-file-download.svg"
-          @click="download(taskInfo.targets[0].imgPath)"
+          @click="
+            download(
+              taskInfo.target.imgPath,
+              `task_${taskInfo.id}_${taskInfo.name}`,
+            )
+          "
         />
       </dd>
     </dl>
     <div class="qr">
-      <img :src="taskInfo.targets[0].imgPath" />
+      <img :src="taskInfo.target.imgPath" />
     </div>
   </el-dialog>
 </template>
@@ -47,31 +55,23 @@
 <script>
 import modalMixin from '@/mixins/modal'
 import filters from '@/mixins/filters'
+import utils from '@/mixins/utils'
 
 export default {
-  mixins: [modalMixin, filters],
+  mixins: [modalMixin, filters, utils],
   props: {
     task: Object,
   },
   data() {
     return {
       taskInfo: {
-        targets: [{}],
+        target: {},
       },
     }
   },
   methods: {
     opened() {
       this.taskInfo = this.task
-    },
-    download(url) {
-      window.open(url)
-    },
-    print(url) {
-      const popup = window.open('', '_blank')
-      popup.document.write(`<img src="${url}" />`)
-      popup.document.close()
-      setTimeout(() => popup.print(), 1)
     },
   },
 }
@@ -87,6 +87,14 @@ export default {
   }
   .qr img {
     width: 100%;
+  }
+  .content-size {
+    height: 24px;
+    margin-left: 4px;
+    color: $font-color-desc;
+    line-height: 22px;
+    background: transparent;
+    border-color: $font-color-desc;
   }
 }
 </style>

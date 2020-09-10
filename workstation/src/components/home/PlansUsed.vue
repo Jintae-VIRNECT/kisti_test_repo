@@ -7,7 +7,11 @@
           <img src="~assets/images/icon/ic-error.svg" />
         </el-tooltip>
       </h3>
-      <a :href="$url.pay" target="_blank">
+      <a
+        v-if="activeWorkspace.role === 'MASTER'"
+        :href="$url.pay"
+        target="_blank"
+      >
         {{ $t('home.plansInfo.buy') }}
       </a>
     </div>
@@ -25,7 +29,7 @@
         />
         <div class="used">
           <span class="count">
-            {{ info.used }} {{ $t(`${i18nGroup}.unit`) }}
+            {{ info.current }} {{ $t(`${i18nGroup}.unit`) }}
           </span>
           <span>{{ $t('home.plansInfo.used') }}</span>
         </div>
@@ -39,10 +43,17 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   props: {
     i18nGroup: String,
     info: Object,
+  },
+  computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+    }),
   },
 }
 </script>

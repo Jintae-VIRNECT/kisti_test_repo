@@ -132,7 +132,7 @@
               :label="$t('task.subTaskDetail.stepsColumn.status')"
               prop="conditions"
               :statusList="taskConditions"
-              :width="100"
+              :width="120"
             />
             <column-date
               :label="$t('task.subTaskDetail.stepsColumn.reportedDate')"
@@ -162,8 +162,8 @@
             >
               <template slot-scope="scope">
                 <el-button
-                  v-if="scope.row.paper"
-                  @click="moveToPaper(scope.row.paper.id)"
+                  v-if="scope.row.hasPaper"
+                  @click="moveToPaper(scope.row.id)"
                 >
                   {{ $t('task.subTaskDetail.showPaper') }}
                 </el-button>

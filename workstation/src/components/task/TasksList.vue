@@ -42,7 +42,7 @@
         :label="$t('task.list.column.status')"
         prop="conditions"
         :statusList="taskConditions"
-        :width="100"
+        :width="120"
         :sortable="sortable"
       />
       <column-date
@@ -63,7 +63,7 @@
       <column-closed
         :label="$t('task.list.column.endStatus')"
         prop="state"
-        :width="90"
+        :width="110"
         :sortable="sortable"
       />
       <column-dropdown :width="60" v-slot:default="{ row }">
