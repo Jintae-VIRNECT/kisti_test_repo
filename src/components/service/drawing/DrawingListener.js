@@ -77,7 +77,7 @@ export default {
           owner: 'export',
           hasControls: false,
           selectable: false,
-          hoverCursor: 'default',
+          hoverCursor: 'auto',
         })
         // path.set()
         this.canvas.add(path)
