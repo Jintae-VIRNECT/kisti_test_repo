@@ -3,8 +3,8 @@ RELEASE
 New Features
 
 Bug Fixes
+- 컨텐츠 수정 api 에서 컨텐츠 파일 삭제시 에러 발생하는 것 해결
 
 Limitation
-- 회원 탈퇴 시 컨텐츠 삭제 로직 보완
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
