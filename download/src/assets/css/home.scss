@@ -130,36 +130,48 @@
    * 모바일
    */
   @media screen and (max-width: $tablet) {
+    .el-tabs.sticky .el-tabs__header,
+    .el-tabs__header .el-tabs__nav-wrap {
+      z-index: 1;
+    }
     .el-tabs.sticky .el-tabs__header {
       top: 65px;
       background: #fff;
     }
     .el-tabs__content {
       min-height: 0;
-      padding: 100px 0;
+      padding: 60px 0 100px;
+    }
+    .el-tabs__content .el-card {
+      margin: 18px 18px 0 18px;
     }
   }
   @media screen and (max-width: $short) {
     .visual {
       height: auto;
-      padding: 40px 20px;
+      padding: 90px 20px;
       h3 {
-        font-size: 20px;
+        font-size: 24px;
       }
       p {
-        font-size: 12px;
+        font-weight: normal;
+        font-size: 14px;
       }
     }
     .el-tabs__nav-scroll {
-      width: 90%;
+      width: 100%;
       margin: 0 auto;
+      overflow: auto;
     }
     .el-tabs [role="tab"] {
+      height: 56px;
       padding: 0 20px;
+      font-size: 15px;
+      line-height: 56px;
     }
     .el-tabs__nav-next,
     .el-tabs__nav-prev {
-      line-height: 65px;
+      display: none;
     }
   }
 }
