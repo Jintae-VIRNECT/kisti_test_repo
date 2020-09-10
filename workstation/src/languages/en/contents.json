@@ -1,52 +1,52 @@
 {
   "allContents": {
-    "title": "Overall content list",
-    "myContents": "My content",
+    "title": "Contents",
+    "myContents": "My Contents",
     "delete": "Delete",
-    "workspaceContentsList": "Workspace content list",
+    "workspaceContentsList": "All Contents",
     "column": {
       "id": "Content ID",
-      "name": "Content",
-      "targetType": "Target",
-      "uploader": "Person",
-      "createdDate": "Date",
-      "sharedStatus": "Sharing"
+      "name": "Name",
+      "targetType": "Target Type",
+      "uploader": "Member",
+      "createdDate": "Update",
+      "sharedStatus": "Share Status"
     },
     "empty": "There is no uploaded content"
   },
   "sharedStatus": {
-    "shared": "On",
-    "noShared": "Off"
+    "shared": "Activate",
+    "noShared": "Deactivate"
   },
   "targetTypes": {
-    "qr": "QR target",
-    "vtarget": "V target"
+    "qr": "QR Target",
+    "vtarget": "V Target"
   },
   "info": {
-    "title": "Content details",
+    "title": "Content Details",
     "id": "Content ID",
-    "name": "Content title",
-    "uploader": "Uploader",
+    "name": "Content Name",
+    "uploader": "Member",
     "volume": "Size",
-    "createdDate": "Upload date",
-    "type": "Content type",
-    "device": "Compatible device",
-    "sharedStatus": "Sharing status",
-    "target": "Target type",
-    "properties": "Content components",
+    "createdDate": "Update",
+    "type": "Content Type",
+    "device": "Compatible Device",
+    "sharedStatus": "Sharing Status",
+    "target": "Target Type",
+    "properties": "Content Components",
     "delete": "Delete",
     "update": "Edit",
-    "register": "Register tasks",
+    "register": "Register Task",
     "message": {
       "delete": "Delete selected content",
       "deleteSure": "Are you sure you want to delete the selected content?",
       "deleteSuccess": "Selected content is deleted",
       "deleteFail": "Failed to delete selected content please try again later",
       "deleteNotExist": "The selected content does not exist in the Workspace. Please check again.",
-      "deleteShared": "It is impossible to delete when the content sharing is on.",
+      "deleteShared": "It is impossible to delete when the content sharing status is activation.",
       "updateSuccess": "The selected content sharing settings have been updated.",
       "updateFail": "Failed to update content sharing settings please try again later",
-      "updateNotExist": "The selected content does not exist in the workspace. Please check again."
+      "updateNotExist": "The selected content does not exist in the Workspace. Please check again."
     }
   }
 }

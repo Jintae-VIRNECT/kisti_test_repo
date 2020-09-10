@@ -13,15 +13,15 @@
     },
     "members": {
       "list": "Overview",
-      "activity": "Activity"
+      "activity": "Recent Activity"
     },
     "contents": {
-      "list": "Overview"
+      "list": "All Contents"
     },
     "tasks": {
-      "list": "Overview",
-      "results": "Manage reports",
-      "troubles": "Trouble memo (TM)"
+      "list": "All Tasks",
+      "results": "Reports",
+      "troubles": "Trouble Memo (TM)"
     }
   }
 }

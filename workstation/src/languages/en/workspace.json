@@ -6,26 +6,26 @@
   "create": "Create Workspace",
   "started": {
     "title": "Finish setting up Workspace details",
-    "desc": "The workspace information set up is completed. Invite members to start using VIRNECT products at Workspace."
+    "desc": "The Workspace information set up is completed. Invite members to start using VIRNECT products at Workspace."
   },
   "info": {
     "title": "Workspace details",
     "descriptionEmpty": "There is no Workspace description",
     "planMemberCount": "Members per plans",
-    "planPurchase": "Purchase plans",
-    "addMember": "Add member"
+    "planPurchase": "Purchase Plans",
+    "addMember": "Add Member"
   },
   "setting": {
-    "title": "Profile settings",
-    "createdDate": "Created on",
-    "name": "Workspace name",
+    "title": "Profile Settings",
+    "createdDate": "Created",
+    "name": "Workspace Name",
     "namePlaceholder": "John's Workspace",
     "nameComment": "Enter less than 30 characters for your Workspace name",
     "desc": "Description",
-    "descPlaceholder": "Enter your workspace description",
+    "descPlaceholder": "Enter your Workspace description",
     "descComment": "Enter less than 40 characters for the description.",
-    "image": "Profile picture",
-    "imageComment": "Please update your workspace profile picture. This profile picture is displayed on the sidebar and notifications.",
+    "image": "Profile Image",
+    "imageComment": "Update your Workspace profile image. This profile picture is displayed on the sidebar and notifications.",
     "start": "Begin Workspace",
     "update": "Edit",
     "leave": "Leave Workspace",

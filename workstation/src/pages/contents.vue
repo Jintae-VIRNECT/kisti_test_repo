@@ -81,7 +81,7 @@
               :trueText="$t('contents.sharedStatus.shared')"
               :falseText="$t('contents.sharedStatus.noShared')"
               sortable="custom"
-              :width="120"
+              :width="130"
             />
             <template slot="empty">
               <img src="~assets/images/empty/img-content-empty.jpg" />
