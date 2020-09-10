@@ -1,17 +1,17 @@
 {
   "user": {
-    "title": "Enter addtional information",
+    "title": "Enter Addtional Information",
     "pageInfo": "Entering additional information allows you to use VIRNECT products to be more utilizable",
     "profileImage": {
-      "title": "Profile image",
+      "title": "Profile Image",
       "subTitle": "Register your profile image",
       "contents": "Your profile image is shared to other members",
-      "imageSet": "Profile image settings",
+      "imageSet": "Profile Image Settings",
       "visible": "Your profile image is shared to all the members using VIRNECT product users",
       "limit": "Up to 5Mb of Jpg or Png files can be uploaded",
-      "upload": "Image upload",
+      "upload": "Upload",
       "delete": "Delete",
-      "submit": "Register image files"
+      "submit": "Register Image"
     },
     "nickName": {
       "title": "Nickname",
@@ -22,15 +22,15 @@
       "placeHolder": "In case you forget account information please enter the verification information."
     },
     "phoneNumber": {
-      "title": "Contact detail",
+      "title": "Contact Detail",
       "contents": "Enter your phone number"
     },
     "recoveryEmail": {
-      "title": "Verification email address",
+      "title": "Verification Email Address",
       "placeHolder": "Enter your verification eamil address"
     },
     "confirm": "Confirm",
-    "later": "Next time",
+    "later": "Next Time",
     "error": {
       "etc": {
         "title": "Error",
@@ -38,7 +38,7 @@
       },
       "nickName": {
         "title": "Nickname settup error",
-        "message": "Please enter a nickname of 20 characters or less. You may use Kor"
+        "message": "Please enter a nickname of 20 characters or less. You can use Korean English special characters and spaces."
       }
     }
   }

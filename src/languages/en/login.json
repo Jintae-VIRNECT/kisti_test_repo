@@ -1,16 +1,16 @@
 {
   "login": {
+    "title": "Login",
     "subTitle": "Login Center",
-    "title": "Log in",
-    "email": "Email address",
-    "emailPlaceholder": "Please enter your email address",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email address",
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
-    "remember": "Remember me",
-    "autoLogin": "Enable auto login",
-    "findAccount": "Find your email account",
+    "remember": "Remember email",
+    "autoLogin": "Remember me",
+    "findAccount": "Find email",
     "resetPassword": "Reset password",
-    "signUp": "This service requires login.",
+    "signUp": "Sign up",
     "needTo": {
       "title": "Moving to the login page.",
       "contents": "You have entered incorrect login information."
@@ -18,7 +18,7 @@
     "accountError": {
       "title": "You have entered incorrect login information.",
       "contents": "Unauthorized. Please check the email address and password and try again.",
-      "btn": "Confirmed"
+      "btn": "Confirm"
     },
     "next": "Next",
     "networkError": {

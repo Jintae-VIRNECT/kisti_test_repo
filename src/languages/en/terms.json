@@ -1,14 +1,14 @@
 {
   "terms": {
     "terms": "Terms of Service",
-    "privacy": "Privacy Policy",
+    "privacy": "Privacy policy",
     "page": {
-      "title": "Terms & Contions",
+      "title": "Terms & Conditions",
       "pageInfo": "Sign up begins if you agree to the Terms & Conditions",
       "entire": "Agree to all the terms",
-      "termsContents": "[Contents of agreement to the Terms of Service]",
-      "privacyPolicyContents": "[Contents of consent of the personal information processing policy]",
-      "marketingReceive": "[Content of consent to receiving promotional marketing material (optional)]"
+      "termsContents": "[Agree to the Terms of Service]",
+      "privacyPolicyContents": "[Agreet to the Privacy Policy]",
+      "marketingReceive": "[Agree to receiving promotional marketing material (Optional)]"
     }
   }
 }

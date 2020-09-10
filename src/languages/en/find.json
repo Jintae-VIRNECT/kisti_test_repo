@@ -2,7 +2,7 @@
   "find": {
     "title": "Account Recovery",
     "pageInfo": "Use a recovery information saved in account details to recover your account.",
-    "findEmail": "Find your email address",
+    "findEmail": "Find Email",
     "EmailFindText": {
       "after": "We found the following address. We only show first 4 letters due to privacy concerns",
       "before": "You can find out your email address. But first verify using one of the below methods."
@@ -10,8 +10,8 @@
     "resetPassword": {
       "title": "Reset Password",
       "done": {
-        "title": "Password Changed",
-        "message": "You will be logged out from your devices. Log in again using your new password."
+        "title": "Password changed",
+        "message": "Password Changed. Log in again using your new password."
       },
       "error": {
         "title": "Failed to reset password",
@@ -19,33 +19,33 @@
         "etc": "Failed to reset password. Please try again later."
       }
     },
-    "findBtn": "Find email address",
+    "findBtn": "Find Email Address",
     "number": "Use registered phone number to find out the email you reigstered with.",
     "name": {
-      "title": "First name",
+      "title": "Name",
       "lastName": "Last name",
       "firstName": "First name"
     },
     "mobile": {
-      "title": "Mobile number",
+      "title": "Mobile Number",
       "placeHolder": "Type in your mobile number."
     },
-    "recoveryMail": "Verify using your recovery email",
+    "recoveryMail": "Verify Using Your Recovery Email",
     "signupDate": "Sign up date",
     "feedbackInfo": "Verification code is sent to an email address you used to register.",
     "authText": {
-      "after": "Resetting your password. Now you are signed out from all of your devices.",
+      "after": "Resetting your password. Log in again using your new password.",
       "before": "Enter 6 digit verification code"
     },
     "authInput": {
       "placeholder": "Enter verification code that is sent to your email.",
-      "newPass": "Enter new password",
-      "newPassConfirm": "Re-enter new password",
+      "newPass": "Enter New Password",
+      "newPassConfirm": "Re-enter New Password",
       "rule": "Enter a password between 8 and 20 characters by combining uppercase/lowercase letters numbers and special characters (.!@#$%).",
-      "code": "Verification code",
-      "change": "Reset password"
+      "code": "Verification Code",
+      "change": "Reset Password"
     },
-    "inquiry": "Make an inquiry",
+    "inquiry": "Contact",
     "accountError": {
       "notSync": {
         "title": "Entered detail does not appear to be valid",
@@ -75,7 +75,7 @@
         "authMessage": "Failed to verify please try again later",
         "nobody": "The information you entered does not match our records",
         "rulePass": "Wrong password",
-        "rulePassMessage": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters.",
+        "rulePassMessage": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 4 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters.",
         "timeOut": "Due to security reasons the verification code can only be sent again after 1 minute has passed. Check you email or try again some time later.",
         "etc": "Failed to send a verification code to your email please try again later."
       }
