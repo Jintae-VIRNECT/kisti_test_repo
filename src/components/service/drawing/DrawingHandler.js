@@ -51,100 +51,22 @@ export default {
             id: objID,
             tId: this.undoList.length,
           })
-          this.backCanvas.add(fabric.util.object.clone(object))
           if (object instanceof fabric.IText) {
             // this.$remoteSDK.message('drawText', getParam('text', object));
             // this._sendAction('drawText', object);
             return
           }
+          this.backCanvas.add(fabric.util.object.clone(object))
           this.stackAdd('add', object.id)
         }
       })
 
-      /* Object - move */
-      // canvas.on('object:moving', event => {
-      //   // console.log('[Fabric] Object moving');
-      //   const object = event.target
-
-      //   // if object is too big ignore
-      //   if (
-      //     object.currentHeight > object.canvas.height ||
-      //     object.currentWidth > object.canvas.width
-      //   ) {
-      //     return
-      //   }
-      //   object.setCoords()
-      //   // top-left  corner
-      //   if (
-      //     object.getBoundingRect().top < 0 ||
-      //     object.getBoundingRect().left < 0
-      //   ) {
-      //     object.top = Math.max(
-      //       object.top,
-      //       object.top - object.getBoundingRect().top,
-      //     )
-      //     object.left = Math.max(
-      //       object.left,
-      //       object.left - object.getBoundingRect().left,
-      //     )
-      //   }
-      //   // bot-right corner
-      //   if (
-      //     object.getBoundingRect().top + object.getBoundingRect().height >
-      //       object.canvas.height ||
-      //     object.getBoundingRect().left + object.getBoundingRect().width >
-      //       object.canvas.width
-      //   ) {
-      //     object.top = Math.min(
-      //       object.top,
-      //       object.canvas.height -
-      //         object.getBoundingRect().height +
-      //         object.top -
-      //         object.getBoundingRect().top,
-      //     )
-      //     object.left = Math.min(
-      //       object.left,
-      //       object.canvas.width -
-      //         object.getBoundingRect().width +
-      //         object.left -
-      //         object.getBoundingRect().left,
-      //     )
-      //   }
-      // })
-      // canvas.on('object:moved', event => {
-      //   console.log('[Fabric] Object moved')
-      //   const object = event.target
-
-      //   // this.$remoteSDK.message('drawMove', getParam('move', object));
-      //   this._sendAction('drawMove', object)
-      //   this.stackAdd('move', object.id)
-      // })
-      /* Object - scale */
-      //   canvas.on('object:scaling', event => {
-      //     // console.log('[Fabric] Object scaling');
-      //     // const object = event.target
-      //   })
-      //   canvas.on('object:scaled', event => {
-      //     console.log('[Fabric] Object scaled')
-      //     const object = event.target
-      //     const option = {
-      //       direction: event.transform.corner,
-      //     }
-
-      //     // this.$remoteSDK.message('drawScale', getParam('scale', object));
-      //     this._sendAction('drawScale', object, option)
-      //     this.stackAdd('scale', [object.id])
-      //   })
-
-      //   /* TEXT */
+      /* TEXT */
       canvas.on('text:editing:entered', () => {
         this.editingMode = true
       })
 
       /* CANVAS */
-      // canvas.on('event:changed', event => {
-      //   console.log(event)
-      // })
       canvas.on('after:render', () => {
         if (this.isInit === true && this.account.roleType === ROLE.LEADER) {
           this.updateHistory()

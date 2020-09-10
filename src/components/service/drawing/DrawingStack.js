@@ -10,45 +10,6 @@ import { DRAWING } from 'configs/remote.config'
  */
 export default {
   methods: {
-    /**
-     * 드로잉 히스토리 추가 메소드
-     * @param {String} ::변화 종류(add/remove/scale/move)
-     * @param {Number[,Array]} ::변화 대상 타겟 드로잉 객체ID (현재 다중처리 지원 X)
-     * @param {Array} ::현 상태 드로잉 객체목록
-     */
-    // stackAddFirst() {
-    //   const objects = this.canvas.getObjects()
-
-    //   this.$set(this, 'redoList', [])
-    //   objects.map(_ => {
-    //     const stack = {
-    //       type: 'first',
-    //       ids: [_.id],
-    //       objects: [],
-    //     }
-
-    //     stack.objects.push(fabric.util.object.clone(_, true))
-    //     this.undoList.push(stack)
-
-    //     if (_.text && _.text.length > 0) {
-    //       // _.initialized = false;
-
-    //       _.on('editing:exited', () => {
-    //         if (_.text.trim() === '') {
-    //           _.canvas.remove(_)
-    //         } else {
-    //           this._sendAction(DRAWING.TEXT_UPDATE, _)
-    //           this.stackAdd('text', [_.id])
-    //         }
-
-    //         setTimeout(() => {
-    //           this.editingMode = false
-    //         }, 100)
-    //       })
-    //     }
-    //   })
-    // },
-
     stackAdd(type, id) {
       const stack = {
         type,
@@ -97,7 +58,9 @@ export default {
 
       this.redoList.unshift(objHist)
       this.canvas.setActiveObject(tempActiveObj)
+
       this.canvas.renderAll()
+      this.backCanvas.renderAll()
       this._sendAction(DRAWING.UNDO)
 
       return this.undoList.length
@@ -124,6 +87,7 @@ export default {
       this.receiveRedoList[owner].unshift(objHist)
       this.canvas.setActiveObject(tempActiveObj)
       this.canvas.renderAll()
+      this.backCanvas.renderAll()
 
       return this.receiveUndoList[owner].length
     },
@@ -145,6 +109,7 @@ export default {
       this.undoList.push(objHist)
       this.canvas.setActiveObject(tempActiveObj)
       this.canvas.renderAll()
+      this.backCanvas.renderAll()
       this._sendAction(DRAWING.REDO)
 
       return this.redoList.length
@@ -169,6 +134,7 @@ export default {
       this.receiveUndoList[owner].push(objHist)
       this.canvas.setActiveObject(tempActiveObj)
       this.canvas.renderAll()
+      this.backCanvas.renderAll()
 
       return this.receiveRedoList[owner].length
     },
@@ -183,8 +149,10 @@ export default {
 
     updateObjTarget(_do, objHist, owner) {
       const objTarget = this.canvas.getObjects()
+      const backObjTarget = this.backCanvas.getObjects()
       const id = objHist.id
       const obj = objTarget.find(_ => _.id === id)
+      const backObj = backObjTarget.find(_ => _.id === id)
       if (objHist.type === 'add') {
         if (obj) {
           if (_do === 'undo') {
@@ -193,8 +161,16 @@ export default {
             obj.visible = true
           }
         }
+        if (backObj) {
+          if (_do === 'undo') {
+            backObj.visible = false
+          } else {
+            backObj.visible = true
+          }
+        }
       } else if (objHist.type === 'text') {
         const idx = objTarget.findIndex(_ => _.id === id)
+        const backIdx = backObjTarget.find(_ => _.id === id)
         if (_do === 'undo') {
           let beforeObj, list
           if (owner) {
@@ -211,10 +187,20 @@ export default {
           objTarget[idx].set({
             text: beforeObj.text,
           })
+          if (backIdx > -1) {
+            backObjTarget[backIdx].set({
+              text: beforeObj.text,
+            })
+          }
         } else {
           objTarget[idx].set({
             text: objHist.object.text,
           })
+          if (backIdx > -1) {
+            backObjTarget[backIdx].set({
+              text: objHist.text,
+            })
+          }
         }
       }
     },

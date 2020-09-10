@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 import { DRAWING } from 'configs/remote.config'
+import { fabric } from 'plugins/remote/fabric.custom'
 export default {
   data() {
     return {
@@ -48,6 +49,21 @@ export default {
             this.stackAdd('add', object.id)
           }
           object.initialized = true
+          const cloneObj = new fabric.IText('', {
+            left: left,
+            top: top,
+            fill: this.tools.color,
+            fontFamily: this.fontFamily,
+            fontStyle: this.fontStyle,
+            fontWeight: this.fontWeight,
+            fontSize: this.scaleFont,
+            lineHeight: this.lineHeight,
+            hasControls: false,
+            text: object.text,
+            id: object.id,
+            tId: object.tId,
+          })
+          this.backCanvas.add(cloneObj)
         }
 
         setTimeout(() => {
@@ -71,11 +87,15 @@ export default {
         this.canvas.getObjects().forEach(object => {
           if (!('owner' in object)) {
             this.canvas.remove(object)
+          }
+        })
+        this.backCanvas.getObjects().forEach(object => {
+          if (!('owner' in object)) {
             this.backCanvas.remove(object)
           }
-          // object.visible = false;
         })
         this.canvas.renderAll()
+        this.backCanvas.renderAll()
         // this.stackAdd('remove', [...ids]); //삭제 히스토리 쌓기
         this.stackClear() // 전체 삭제
 
