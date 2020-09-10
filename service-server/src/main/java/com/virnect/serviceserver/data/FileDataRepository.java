@@ -107,7 +107,7 @@ public class FileDataRepository {
                         if (roomProfileUpdateRequest.getProfile() != null) {
                             try {
                                 profileUrl = fileManagementService.uploadProfile(roomProfileUpdateRequest.getProfile(), stringBuilder.toString());
-                                fileManagementService.delete(room.getProfile());
+                                fileManagementService.deleteProfile(room.getProfile());
                             } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                                 log.info("{}", exception.getMessage());
                                 return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
