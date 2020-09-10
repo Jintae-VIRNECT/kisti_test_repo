@@ -6,9 +6,10 @@
         class="workspace-license__description--title"
         v-html="$t('workspace.license_no_title')"
       ></p>
-      <p class="workspace-license__description--sub-title">
-        {{ $t('workspace.license_no_description') }}
-      </p>
+      <p
+        class="workspace-license__description--sub-title"
+        v-html="$t('workspace.license_no_description')"
+      ></p>
     </div>
   </section>
 </template>
