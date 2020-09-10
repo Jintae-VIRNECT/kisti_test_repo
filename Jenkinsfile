@@ -1,7 +1,7 @@
 pipeline {
   agent any
     environment {
-      GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+      GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
       REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
     }
   stages {
@@ -99,7 +99,7 @@ pipeline {
           steps {
             catchError() {
               sh 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 8078:8078 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement pf-contentsmanagement'
+              sh 'docker run -p 8078:8078 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -v /data/content/contentsmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-contentsmanagement pf-contentsmanagement'
               sh 'docker image prune -a -f'
             }
 
@@ -136,7 +136,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8078:8078 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8078:8078 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'`  -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -162,6 +162,7 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-contentsmanagement:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-contentsmanagement:${GIT_TAG}").push("latest")
                 }
               }
 
@@ -183,7 +184,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8078:8078 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8078:8078 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'`  -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'

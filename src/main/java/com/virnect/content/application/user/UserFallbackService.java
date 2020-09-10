@@ -1,9 +1,11 @@
 package com.virnect.content.application.user;
 
-import com.virnect.content.global.common.ResponseMessage;
+import org.springframework.stereotype.Service;
+
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+
+import com.virnect.content.global.common.ResponseMessage;
 
 /**
  * Project: PF-ContentManagement
@@ -15,9 +17,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class UserFallbackService implements FallbackFactory<ResponseMessage> {
-    @Override
-    public ResponseMessage create(Throwable cause) {
-        log.error("USER SERVER FEIGN ERROR: {}", cause.getMessage());
-        return new ResponseMessage();
-    }
+	@Override
+	public ResponseMessage create(Throwable cause) {
+		log.error("USER SERVER FEIGN ERROR: {}", cause.getMessage());
+		return new ResponseMessage();
+	}
 }

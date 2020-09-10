@@ -1,10 +1,11 @@
 package com.virnect.content.application.process;
 
-import com.virnect.content.dto.rest.ProcessInfoResponse;
-import com.virnect.content.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import com.virnect.content.dto.rest.ProcessInfoResponse;
+import com.virnect.content.global.common.ApiResponse;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -17,6 +18,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "process-server")
 public interface ProcessRestService {
 
-    @GetMapping("/processes/target/{targetId}")
-    ApiResponse<ProcessInfoResponse> getProcessInfo(@PathVariable("taskId") Long taskId);
+	@GetMapping("/processes/target/{targetId}")
+	ApiResponse<ProcessInfoResponse> getProcessInfo(@PathVariable("taskId") Long taskId);
 }

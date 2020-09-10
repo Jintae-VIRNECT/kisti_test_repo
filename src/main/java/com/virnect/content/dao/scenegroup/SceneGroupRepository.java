@@ -1,7 +1,8 @@
-package com.virnect.content.dao;
+package com.virnect.content.dao.scenegroup;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.virnect.content.domain.SceneGroup;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
  * Project: PF-ContentManagement

@@ -8,7 +8,7 @@ package com.virnect.content.domain;
  * @since 2020.04.10
  */
 public enum Devices {
-    SMARTPHONE_ANDROID,
-    TABLET_ANDROID,
-    REALWARE_HMT;
+	SMARTPHONE_ANDROID,
+	TABLET_ANDROID,
+	REALWARE_HMT;
 }

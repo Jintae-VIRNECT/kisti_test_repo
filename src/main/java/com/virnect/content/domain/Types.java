@@ -8,18 +8,18 @@ package com.virnect.content.domain;
  * @since 2020.04.10
  */
 public enum Types {
-    AUGMENTED_REALITY("증강현실"),
-    ASSISTED_REALITY("보조현실"),
-    CROCESS_PLATFORM("크로스플랫폼"),
-    MIXED_REALITY("혼합현실");
+	AUGMENTED_REALITY("증강현실"),
+	ASSISTED_REALITY("보조현실"),
+	CROCESS_PLATFORM("크로스플랫폼"),
+	MIXED_REALITY("혼합현실");
 
-    private String message;
+	private String message;
 
-    Types(String message) {
-        this.message = message;
-    }
+	Types(String message) {
+		this.message = message;
+	}
 
-    public String getMessage() {
-        return message;
-    }
+	public String getMessage() {
+		return message;
+	}
 }
