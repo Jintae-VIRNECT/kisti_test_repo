@@ -91,7 +91,8 @@ dependencies {
     implementation(group = "org.apache.commons", name= "commons-lang3", version = "3.10")
     implementation(group = "org.apache.httpcomponents", name = "httpclient", version = "4.5.9")
     // aws s3
-    implementation(group = "com.amazonaws", name = "aws-java-sdk-s3", version = "1.11.415") // AWS Storage Service
+    //implementation(group = "com.amazonaws", name = "aws-java-sdk-s3", version = "1.11.415") // AWS Storage Service
+    implementation(group = "com.amazonaws", name = "aws-java-sdk-s3") // AWS Storage Service
     // minio
     //implementation(group = "io.minio", name = "minio", version = "7.1.0") // minio Storage Service
     implementation("io.minio:minio:7.1.0")
