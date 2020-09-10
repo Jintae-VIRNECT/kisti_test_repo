@@ -7,13 +7,13 @@
           <img src="~assets/images/icon/ic-error.svg" />
         </el-tooltip>
       </h3>
-      <a
+      <!-- <a
         v-if="activeWorkspace.role === 'MASTER'"
         :href="$url.pay"
         target="_blank"
       >
         {{ $t('home.plansInfo.buy') }}
-      </a>
+      </a> -->
     </div>
     <div>
       <div class="max">

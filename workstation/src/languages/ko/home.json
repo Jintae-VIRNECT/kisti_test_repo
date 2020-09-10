@@ -32,7 +32,7 @@
     "title": "내 프로필",
     "link": "프로필 변경",
     "usingNickname": "사용 중인 닉네임",
-    "workspaceRole": "워크스페이스 등급",
+    "workspaceRole": "워크스페이스 권한",
     "usingPlans": "사용 중인 플랜"
   },
   "install": {

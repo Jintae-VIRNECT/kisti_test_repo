@@ -1,7 +1,7 @@
 {
   "home": "Home",
   "members": "Members",
-  "contents": "Content",
+  "contents": "Contents",
   "tasks": "Tasks",
   "workspaceSetting": "Settings",
   "collapse": {
@@ -12,7 +12,7 @@
       "member": "Member"
     },
     "members": {
-      "list": "Overview",
+      "list": "All Members",
       "activity": "Recent Activity"
     },
     "contents": {
