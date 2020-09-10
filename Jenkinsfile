@@ -14,10 +14,8 @@ pipeline {
           sh 'yarn install'
           sh 'cp docker/Dockerfile ./'
         }
-
       }
     }
-
     stage('Build') {
       parallel {
         stage('Build') {
@@ -25,20 +23,37 @@ pipeline {
             echo 'Build Stage'
           }
         }
-
         stage('Develop Branch') {
           when {
             branch 'develop'
+          }
+          environment {
+              NODE_ENV = 'develop'
           }
           steps {
             sh 'yarn build'
             sh 'docker build -t pf-login .'
           }
         }
-
         stage('Staging Branch') {
           when {
             branch 'staging'
+          }
+          environment {
+              NODE_ENV = 'staging'
+          }
+          steps {
+            sh 'git checkout ${GIT_TAG}'
+            sh 'yarn build'
+            sh 'docker build -t pf-login:${GIT_TAG} .'
+          }
+        }
+        stage('Master Branch') {
+          when {
+            branch 'master'
+          }
+          environment {
+              NODE_ENV = 'production'
           }
           steps {
             sh 'git checkout ${GIT_TAG}'
@@ -48,7 +63,6 @@ pipeline {
         }
       }
     }
-
     stage('Test') {
       steps {
         echo 'Test Stage'
@@ -62,7 +76,6 @@ pipeline {
             echo 'Deploy Stage'
           }
         }
-
         stage('Develop Branch') {
           when {
             branch 'develop'
@@ -73,7 +86,6 @@ pipeline {
             sh 'docker image prune -a -f'
           }
         }
-
         stage('Staging Branch') {
           when {
             branch 'staging'
@@ -83,10 +95,8 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-login:${GIT_TAG}").push("latest")
                 }
               }
-
               script {
                 sshPublisher(
                   continueOnError: false, failOnError: true,
@@ -115,18 +125,21 @@ pipeline {
                   ]
                 )
               }
-
             }
-
           }
         }
-
         stage('Master Branch') {
           when {
             branch 'master'
           }
           steps {
             catchError() {
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-login:${GIT_TAG}").push("latest")
+                }
+              }
               script {
                 sshPublisher(
                   continueOnError: false, failOnError: true,
@@ -160,23 +173,18 @@ pipeline {
                  def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
                 """                             
-
                 sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                }
             }
-
           }
         }
       }
     }
-
   }
-
   post {
     always {
       emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
       office365ConnectorSend 'https://outlook.office.com/webhook/41e17451-4a57-4a25-b280-60d2d81e3dc9@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/JenkinsCI/e79d56c16a7944329557e6cb29184b32/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'
     }
   }
-
 }
