@@ -7,7 +7,7 @@
     "stream_connecting": "Connecting video...",
     "stream_no_video": "No video to output.",
     "stream_no_worker": "No participants connected.",
-    "stream_stop": "Livestreaming stopped",
+    "stream_stop": "Livestreaming stopped.",
     "stream_background": "The worker's Remote APP is <br />running in background.",
     "stream_stoped": "The participant's livestreaming is on hold.",
     "stream_off": "Camera is off",

@@ -119,7 +119,7 @@ export default {
   width: 100%;
   // min-height: 180px;
   margin-bottom: 0.571rem;
-  padding-bottom: 20px;
+  padding-bottom: 1.429rem;
   > .role {
     position: absolute;
     bottom: 0;
