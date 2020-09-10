@@ -3,9 +3,9 @@ RELEASE
 New Features
 
 Bug Fixes
-- v 타겟 추가
 
 Limitation
-- 이력 테이블에 TimeEntity 값 추가
+- 코드 개선
+- 회원 탈퇴 시 작업관련데이터 삭제 로직 추가
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

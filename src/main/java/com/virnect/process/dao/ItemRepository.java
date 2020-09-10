@@ -15,4 +15,5 @@ import java.util.List;
  */
 public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByReport(Report report);
+    void deleteAllByReport(Report report);
 }

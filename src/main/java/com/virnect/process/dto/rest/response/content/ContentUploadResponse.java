@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -40,4 +41,6 @@ public class ContentUploadResponse {
     private String workspaceUUID;
     @ApiModelProperty(value = "컨텐츠 고유 식별자", notes = "해당 식별자를 통해 컨텐츠를 구별합니다.", position = 12, example = "061cc38d-6c45-445b-bf56-4d164fcb5d29")
     private String contentUUID;
+    @ApiModelProperty(value = "타겟", notes = "컨텐츠의 타겟", position = 13)
+    private List<ContentTargetResponse> targets;
 }

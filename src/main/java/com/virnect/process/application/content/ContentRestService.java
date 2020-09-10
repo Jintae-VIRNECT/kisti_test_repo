@@ -19,14 +19,9 @@ public interface ContentRestService {
     @PutMapping("/contents/convert/{contentUUID}")
     ApiResponse<ContentInfoResponse> contentConvertHandler(@PathVariable("contentUUID") String contentUUID, @RequestParam("converted") YesOrNo converted);
 
-    @GetMapping("/contents/convertTask/{taskId}")
-    ApiResponse<ContentUploadResponse> taskToContentConvertHandler(@PathVariable("taskId") Long taskId, @RequestParam(value = "userUUID") String userUUID);
 
     @DeleteMapping("/contents")
     ApiResponse<ContentDeleteListResponse> contentDeleteRequestHandler(ContentDeleteRequest contentDeleteRequest);
-
-    @PostMapping("/contents/status")
-    ApiResponse<ContentStatusInfoResponse> changeContentStatus(ContentStatusChangeRequest contentStatusChangeRequest);
 
     @PostMapping("/contents/duplicate/{contentUUID}")
     ApiResponse<ContentUploadResponse> contentDuplicate(

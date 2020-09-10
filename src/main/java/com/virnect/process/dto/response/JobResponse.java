@@ -32,21 +32,26 @@ public class JobResponse {
     @ApiModelProperty(value = "진행상태", notes = "작업의 진행상태", position = 5, example = "progress")
     private Conditions conditions;
 
+    /*
+    report도 issue 처럼 job 하위에 여러개 생성할 수 있으므로 report도 리스트로 리턴하는 것으로 수정함.(VECHOSYS-1287)
     @ApiModelProperty(value = "페이퍼", notes = "현재 작업의 페이퍼", position = 6, example = "2")
-    private Paper paper;
+    private Paper paper;*/
+
+    @ApiModelProperty(value = "페이퍼", notes = "현재 작업의 페이퍼", position = 6, example = "2")
+    private List<Paper> paperList;
 
     @ApiModelProperty(value = "이슈", notes = "현재 작업의 이슈", position = 7, example = "1")
     private List<Issue> issueList;
 
     @Builder
-    public JobResponse(long id, String name, int priority, LocalDateTime reportedDate, int progressRate, Conditions conditions, Paper paper, List<Issue> issueList) {
+    public JobResponse(long id, String name, int priority, LocalDateTime reportedDate, int progressRate, Conditions conditions, List<Paper> paperList, List<Issue> issueList) {
         this.id = id;
         this.name = name;
         this.priority = priority;
         this.reportedDate = reportedDate;
         this.progressRate = progressRate;
         this.conditions = conditions;
-        this.paper = paper;
+        this.paperList = paperList;
         this.issueList = issueList;
     }
 
@@ -78,7 +83,7 @@ public class JobResponse {
 
         @ApiModelProperty(value = "작업자 식별자", notes = "현재 작업의 작업자 식별자", example = "498b1839dc29ed7bb2ee90ad6985c608")
         private String workerUUID;
-        
+
         @Builder
         public Issue(long issueId, String caption, String photoFilePath, String workerUUID) {
             this.issueId = issueId;

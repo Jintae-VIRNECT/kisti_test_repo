@@ -1,4 +1,4 @@
-package com.virnect.process.model;
+package com.virnect.process.domain;
 
 import lombok.Getter;
 import org.hibernate.envers.Audited;

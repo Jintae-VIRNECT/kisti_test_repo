@@ -9,7 +9,6 @@ import lombok.ToString;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: Details Process Conditions Enumerated Class
  */
-@ToString
 public enum Conditions {
     /*
     공정 하위의 세부공정 / 작업의 상태와 일정을 고려한 공정의 상태.

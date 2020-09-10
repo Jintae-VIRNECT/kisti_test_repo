@@ -39,10 +39,10 @@ public class ProcessDuplicateRequest {
 
     @ApiModelProperty(value = "작업 위치", notes = "작업 위치 정보", position = 5, example = "A 라인 2번 3번째 기계")
     private String position = "미 입력";
-
+/* 타겟 타입을 contents 서버에서 가져오는 것으로 변경.
     @NotNull
     @ApiModelProperty(value = "타겟 종류", notes = "작업 타겟의 종류(QR)", required = true, position = 6, example = "QR")
-    private TargetType targetType;
+    private TargetType targetType;*/
 
     @NotBlank
     @ApiModelProperty(value = "워크스페이스 식별자", notes = "작업의 워크스페이스 식별자", required = true, position = 7, example = "48254844-235e-4421-b713-4ea682994a98")

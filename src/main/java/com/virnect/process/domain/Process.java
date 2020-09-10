@@ -1,6 +1,6 @@
 package com.virnect.process.domain;
 
-import com.virnect.process.model.BaseTimeEntity;
+import com.virnect.process.application.ProgressManager;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.Audited;
@@ -67,10 +67,10 @@ public class Process extends BaseTimeEntity {
     @Column(name = "workspace_uuid")
     private String workspaceUUID;
 
-    @OneToMany(mappedBy = "process", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "process")
     private List<Target> targetList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "process", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "process")
     private List<SubProcess> subProcessList = new ArrayList<>();
 
     public void addTarget(Target target) {

@@ -1,6 +1,5 @@
 package com.virnect.process.domain;
 
-import com.virnect.process.model.BaseTimeEntity;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.Audited;
@@ -37,16 +36,20 @@ public class Target extends BaseTimeEntity {
     @Column(name = "img_path")
     private String imgPath;
 
+    @Column(name = "size")
+    private Float size;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "process_id")
     private Process process;
 
     @Builder
-    public Target(TargetType type, String data, Process process, String imgPath) {
+    public Target(TargetType type, String data, Process process, String imgPath, Float size) {
         this.type = type;
         this.data = data;
         this.imgPath = imgPath;
         this.process = process;
+        this.size =size;
     }
 
     @Override

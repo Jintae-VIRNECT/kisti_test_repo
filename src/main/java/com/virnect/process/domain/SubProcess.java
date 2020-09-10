@@ -1,6 +1,6 @@
 package com.virnect.process.domain;
 
-import com.virnect.process.model.BaseTimeEntity;
+import com.virnect.process.application.ProgressManager;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.envers.Audited;
@@ -65,7 +65,7 @@ public class SubProcess extends BaseTimeEntity {
     @JoinColumn(name = "process_id")
     private Process process;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subProcess", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "subProcess")
     private List<Job> jobList = new ArrayList<>();
 
     public void addJob(Job job) {

@@ -22,4 +22,5 @@ public class ContentTargetResponse {
     private TargetType type;
     private String data;
     private String imgPath;
+    private Float size;
 }

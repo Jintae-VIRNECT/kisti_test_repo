@@ -17,4 +17,9 @@ import java.util.List;
 public interface DailyTotalWorkspaceRepository extends JpaRepository<DailyTotalWorkspace, Long> {
     @Query(value = "select * from daily_total_workspace where date_format(date_add(updated_at, interval 9 HOUR), '%Y-%m') = :month and workspace_uuid = :workspaceUUID", nativeQuery = true)
     List<DailyTotalWorkspace> getDailyTotalRateAtMonthWithWorkspace(@Param("workspaceUUID") String workspaceUUID, @Param("month") String month);
+
+
+    List<DailyTotalWorkspace> findAllByWorkspaceUUID(String workspaceUUID);
+
+    void deleteAllByWorkspaceUUIDEquals(String workspaceUUID);
 }
