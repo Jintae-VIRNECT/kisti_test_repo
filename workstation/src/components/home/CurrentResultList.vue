@@ -42,7 +42,7 @@
         nameProp="workerName"
         imageProp="workerProfile"
         type="tooltip"
-        :width="70"
+        :width="80"
       />
       <column-date
         :label="$t('results.column.reportedDate')"
@@ -79,7 +79,7 @@
         nameProp="workerName"
         imageProp="workerProfile"
         type="tooltip"
-        :width="70"
+        :width="80"
       />
       <column-date
         :label="$t('results.column.reportedDate')"
@@ -121,7 +121,7 @@
         nameProp="workerName"
         imageProp="workerProfile"
         type="tooltip"
-        :width="70"
+        :width="80"
       />
       <column-date
         :label="$t('results.column.reportedDate')"
