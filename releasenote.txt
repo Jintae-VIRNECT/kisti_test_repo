@@ -2,8 +2,8 @@
 RELEASE
 
 New Features
-로그인이 필요한 서비스입니다 모달
-이미지추가
+약관 md로 교체
+runtime적용
 
 Bug Fixes
 -

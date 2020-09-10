@@ -1,0 +1,29 @@
+{
+  "login": {
+    "title": "Login",
+    "subTitle": "Login Center",
+    "email": "Email",
+    "emailPlaceholder": "Enter your email address",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "remember": "Remember email",
+    "autoLogin": "Remember me",
+    "findAccount": "Find email",
+    "resetPassword": "Reset password",
+    "signUp": "Sign up",
+    "needTo": {
+      "title": "Moving to the login page.",
+      "contents": "You have entered incorrect login information."
+    },
+    "accountError": {
+      "title": "You have entered incorrect login information.",
+      "contents": "Unauthorized. Please check the email address and password and try again.",
+      "btn": "Confirm"
+    },
+    "next": "Next",
+    "networkError": {
+      "title": "Login error",
+      "contents": "Please try again later"
+    }
+  }
+}

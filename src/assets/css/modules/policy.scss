@@ -1,0 +1,136 @@
+@charset "utf-8";
+@import "../mixin.scss";
+
+/* privacyPolicy */
+$policy-primary: #0d2a58;
+
+.policy-body {
+    font-size: 12px;
+}
+.policy-body /deep/ {
+    h1 {
+        margin-bottom: 8px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+    h2 {
+        margin-bottom: 4px;
+        font-weight: bold;
+        font-size: 12px;
+    }
+    h3 {
+        margin-bottom: 1.5em;
+    }
+    h2 + p {
+        font-weight: inherit;
+        font-size: inherit;
+    }
+    // 여백
+    ol,
+    ul,
+    li,
+    p {
+        & + h2,
+        & + h3 {
+            margin-top: 1.5em;
+        }
+    }
+    p {
+        margin-top: 1.5em;
+    }
+    li {
+        margin-top: 0.7em;
+        & > p {
+            margin: 0;
+        }
+    }
+    ol,
+    ul {
+        ul li,
+        ol li {
+            margin-top: 4px;
+        }
+    }
+    // 리스트
+    ol,
+    ul {
+        & > li {
+            margin-left: 1em;
+            text-indent: -1em;
+        }
+        & > li:before {
+            display: inline;
+            margin-right: 4px;
+            content: "- ";
+        }
+        p {
+            display: inline;
+        }
+    }
+    ol {
+        counter-reset: unit;
+        & > li {
+            margin-left: 1.4em;
+            text-indent: -1.4em;
+        }
+        & > li:before {
+            content: counter(unit, decimal) ". ";
+            counter-increment: unit;
+        }
+    }
+    ol ol > li:before {
+        content: counter(unit, decimal) ") ";
+    }
+    ul ul ul {
+        li:before {
+            content: "\2022";
+        }
+    }
+
+    hr {
+        margin: 2em 0;
+        background-color: $policy-primary;
+        opacity: 0.2;
+    }
+}
+
+// policy
+.policy-body.policy /deep/ {
+    & > ol > li {
+        margin-top: 0.2em;
+    }
+    ol li {
+        padding-left: 1.5em;
+        &:first-child {
+            margin-top: 1em;
+        }
+        &:lang(en) {
+            padding-left: 0;
+        }
+    }
+    ol ul li:first-child {
+        margin-top: 0.2em;
+    }
+    ul li {
+        margin-left: 1.4em;
+        text-indent: -1.4em;
+        &:lang(ko):before {
+            display: none;
+        }
+        &:lang(en) {
+            margin-left: 1em;
+            text-indent: -1em;
+        }
+    }
+    ul ul li {
+        margin-left: 1em;
+        text-indent: -1em;
+        &:lang(ko):before {
+            display: inline;
+        }
+        &:lang(en) {
+            margin-left: 1.5em;
+            text-indent: -1em;
+        }
+    }
+}

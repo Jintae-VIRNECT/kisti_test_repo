@@ -1,7 +1,7 @@
 pipeline {
   agent any
     environment {
-    GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+    GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
     REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
   }
   stages {
@@ -9,8 +9,9 @@ pipeline {
       steps {
         echo 'Pre-Build Stage'
         catchError() {
-          sh 'chmod +x ./gradlew'
-          sh './gradlew clean'
+          sh 'yarn cache clean'
+          sh 'rm -f yarn.lock'
+          sh 'yarn install'
           sh 'cp docker/Dockerfile ./'
         }
 
@@ -29,8 +30,11 @@ pipeline {
           when {
             branch 'develop'
           }
+          environment {
+              NODE_ENV = 'develop'
+          }
           steps {
-            sh './gradlew build -x test -Pprofile=develop'
+            sh 'yarn build'
             sh 'docker build -t pf-login .'
           }
         }
@@ -39,9 +43,12 @@ pipeline {
           when {
             branch 'staging'
           }
+          environment {
+              NODE_ENV = 'staging'
+          }
           steps {
             sh 'git checkout ${GIT_TAG}'
-            sh './gradlew build -x test -Pprofile=staging'
+            sh 'yarn build'
             sh 'docker build -t pf-login:${GIT_TAG} .'
           }
         }
@@ -50,9 +57,12 @@ pipeline {
           when {
             branch 'master'
           }
+          environment {
+              NODE_ENV = 'production'
+          }
           steps {
             sh 'git checkout ${GIT_TAG}'
-            sh './gradlew build -x test -Pprofile=production'
+            sh 'yarn build'
             sh 'docker build -t pf-login:${GIT_TAG} .'
           }
         }
@@ -90,7 +100,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps -a | grep pf-login | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e "NODE_ENV=develop" -d --name=pf-login pf-login'
+            sh 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e "NODE_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login pf-login'
             sh 'docker image prune -a -f'
           }
         }
@@ -125,7 +135,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e 'NODE_ENV=staging' -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e 'NODE_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk \'{print \$1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -150,6 +160,7 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-login:${GIT_TAG}").push("latest")
                 }
               }
 
@@ -171,7 +182,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e 'NODE_ENV=production' -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8883:8883 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e 'NODE_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk \'{print \$1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
