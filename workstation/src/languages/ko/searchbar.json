@@ -5,10 +5,10 @@
   "filter": {
     "title": "필터",
     "all": "전체",
-    "processPublished": "공정 등록",
-    "processUnpublished": "공정 미등록",
+    "processPublished": "작업 등록",
+    "processUnpublished": "작업 미등록",
     "globalIssue": "이슈",
-    "workIssue": "작업 이슈"
+    "workIssue": "이슈"
   },
   "sort": {
     "title": "정렬",

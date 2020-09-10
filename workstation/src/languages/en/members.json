@@ -71,11 +71,11 @@
     "title": "Recent Activity",
     "column": {
       "member": "Member",
-      "contentsCount": "Uploaded Content",
+      "contentsCount": "Uploaded Contents",
       "subTasks": "Subtasks",
       "subTasksTooltip": "In progress / Assigned",
       "progress": "Progress",
-      "reportedDate": "Reported on",
+      "reportedDate": "Report",
       "link": "Shortcuts"
     }
   }
