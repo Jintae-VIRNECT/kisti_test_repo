@@ -1,6 +1,7 @@
 {
   "complete": {
-    "welcome": "Thank you for becoming a VIRNECT member",
+    "title": "Registration completed",
+    "welcome": "Thank you for becoming a VIRNECT User",
     "trial": "Free trial coupon is issued for you to use VIRNECT products.",
     "payment": "Plan Purchase",
     "info": "VIRNECT products are serviced at VIRNECT Workstation"

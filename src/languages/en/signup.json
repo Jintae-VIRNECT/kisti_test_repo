@@ -1,15 +1,15 @@
 {
   "signup": {
-    "signupTitle": "Join us",
+    "signupTitle": "Registration",
     "signupDesk": "You can use the entire VIRNECT product using just one account.",
-    "account": "Account email address",
-    "mailPlaceholder": "Please enter your email address",
+    "account": "Account Email Address",
+    "mailPlaceholder": "Enter your email address",
     "authentication": {
       "mail": "Send Verification Code",
       "number": "Enter 6 digit verification code",
-      "reSubmit": "Re-sending verification code",
-      "verification": "Confirm verification",
-      "done": "Verification complete",
+      "reSubmit": "Re-sending Verification Code",
+      "verification": "Confirm Verification",
+      "done": "Verification Complete",
       "message": {
         "done": {
           "title": "Email verification",
@@ -25,17 +25,17 @@
     },
     "password": {
       "pass": "Password",
-      "comfirm": "Please enter your password",
-      "reComfirm": "Please re-enter your password",
-      "notice": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % )."
+      "comfirm": "Enter your password",
+      "reComfirm": "Re-enter your password",
+      "notice": "Your password must be in English and needs to be between 8 and 20 characters long. Your password also needs to be made up of 4 or more of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). The password must not contain consecutive numbers or 4 identical letters."
     },
     "name": {
-      "name": "First name",
+      "name": "Name",
       "first": "First name",
       "last": "Last name"
     },
     "birth": {
-      "birth": "Date of birth",
+      "birth": "Date of Birth",
       "year": "Year",
       "month": "Month",
       "date": "Day"
@@ -43,37 +43,37 @@
     "route": {
       "title": "How did you hear about us?",
       "select": "Select options",
-      "placeholder": "Please tell us where you heard about us",
-      "other": "Please specify"
+      "placeholder": "Tell us where you heard about us",
+      "other": "Type Here"
     },
     "subscriptionPathLists": [
-      "Web Search",
+      "Web search",
       "Exhibition and Seminar",
-      "VIRENCT Official Blog",
+      "VIRENCT official blog",
       "Online advertisement",
       "SNS and Community",
       "Press news articles and magazines",
       "Newsletter and email promotion",
-      "Friends or Family",
-      "Please specify"
+      "Friends or family",
+      "Other"
     ],
     "serviceInfo": {
-      "title": "Industry Classification",
+      "title": "Industry classification",
       "select": "Select your Industry Classification",
-      "placeholder": "Tell us what type of Industry Classification you are from.",
+      "placeholder": "Tell us what type of industry classification you are from.",
       "other": "Other"
     },
     "serviceInfoLists": [
-      "Energy & Resources",
+      "Energy & resources",
       "EPC",
-      "Automotive & Parts",
-      "Aviation & Railway",
-      "Refinery & Petrochemical",
+      "Automotive & parts",
+      "Aviation & railway",
+      "Refinery & petrochemical",
       "Logistics",
-      "Government & State-owned Enterprise",
+      "Government & state-owned Enterprise",
       "Services",
-      "Education & Research",
-      "SW Development & Supply",
+      "Education & research",
+      "SW development & supply",
       "Military defence",
       "Other"
     ],
@@ -91,7 +91,7 @@
       },
       "password": {
         "title": "Wrong password",
-        "contents": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters."
+        "contents": "Your password must be in English and needs to be between 8 and 20 characters long. Your password also needs to be made up of 3 or more of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). The password must not contain consecutive numbers or 4 identical letters."
       },
       "duplicateEmail": {
         "title": "Failed to send verification email",
