@@ -2,13 +2,12 @@
 RELEASE
 
 New Features
-- API 메시지 암호화 및 복호화 기능 추가
-- eureka instance host ip 등록 설정 추가
+- eureka instance host ip 서버 로그 포맷에 추가
 
 Bug Fixes
-- 없음
+- API 메시지 암호화 및 복호화 필터 로직 수정
 
 Limitation
-- API 메시지 암복호화 기능은 메시지 헤더에 deviceAuthKey와 encrypt 필드 값을 바탕으로 동작하며, deviceAuthKey의 경우 앱 인증을 통해 키값을 얻을 수 있다 (앱 어플리케이션만 적용 대상).
+- JVM 모니터링 기능 추가 (내부 인프라에서만 가능)
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
