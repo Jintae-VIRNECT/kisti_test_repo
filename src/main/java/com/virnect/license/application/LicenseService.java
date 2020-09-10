@@ -18,7 +18,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -548,9 +551,20 @@ public class LicenseService {
 			cancelRequest.setUserMonthlyBillingNumber(monthlyBillingInfo.getMonthlyBillingNumber());
 			cancelRequest.setUserNumber(userNumber);
 
-			BillingRestResponse<Map<String, Object>> billingCancelResult = billingRestService.monthlyBillingCancel(
-				cancelRequest
-			);
+			HashMap<String, Object> billingCancelBody = new HashMap<>();
+			billingCancelBody.put("sitecode", 1);
+			billingCancelBody.put("mseqno", monthlyBillingInfo.getMonthlyBillingNumber());
+			billingCancelBody.put("userno", userNumber);
+
+			HttpHeaders headers = new HttpHeaders();
+			headers.setContentType(MediaType.APPLICATION_JSON);
+			HttpEntity<HashMap<String, Object>> entity = new HttpEntity<>(billingCancelBody, headers);
+
+			BillingRestResponse<HashMap<String, Object>> billingCancelResult = restTemplate.exchange(
+				billingApi + "/billing/user/monthpaycnl", HttpMethod.POST, entity,
+				new ParameterizedTypeReference<BillingRestResponse<HashMap<String, Object>>>() {
+				}
+			).getBody();
 
 			// 정기 결제 취소 시, 페이레터 서버 에러인 경우
 			if (billingCancelResult == null || billingCancelResult.getResult().getCode() != 0) {
