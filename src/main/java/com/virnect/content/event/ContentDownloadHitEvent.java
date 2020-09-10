@@ -1,8 +1,9 @@
 package com.virnect.content.event;
 
-import com.virnect.content.domain.Content;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+
+import com.virnect.content.domain.Content;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -14,6 +15,6 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class ContentDownloadHitEvent {
-    private final Content content;
-    private final String downloader;
+	private final Content content;
+	private final String downloader;
 }

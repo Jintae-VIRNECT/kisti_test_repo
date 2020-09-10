@@ -34,8 +34,10 @@ public class RequestTraceEnvironmentPostProcessor implements EnvironmentPostProc
 		addOrReplace(environment.getPropertySources(), map);
 	}
 
-	private void addOrReplace(MutablePropertySources propertySources,
-		Map<String, Object> map) {
+	private void addOrReplace(
+		MutablePropertySources propertySources,
+		Map<String, Object> map
+	) {
 		MapPropertySource target = null;
 		if (propertySources.contains(PROPERTY_SOURCE_NAME)) {
 			PropertySource<?> source = propertySources.get(PROPERTY_SOURCE_NAME);

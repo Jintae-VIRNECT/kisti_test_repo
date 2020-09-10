@@ -3,8 +3,8 @@ RELEASE
 New Features
 
 Bug Fixes
-- 컨텐츠 전환 api 복원
 
 Limitation
+- 회원 탈퇴 시 컨텐츠 삭제 로직 보완
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

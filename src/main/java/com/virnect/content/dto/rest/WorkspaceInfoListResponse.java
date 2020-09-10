@@ -1,11 +1,11 @@
 package com.virnect.content.dto.rest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -19,7 +19,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class WorkspaceInfoListResponse {
-    private List<WorkspaceInfoResponse> workspaceList;
-
-    public static List<WorkspaceInfoResponse> EMPTY = new ArrayList<>();
+	public static List<WorkspaceInfoResponse> EMPTY = new ArrayList<>();
+	private List<WorkspaceInfoResponse> workspaceList;
 }

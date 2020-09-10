@@ -8,6 +8,6 @@ package com.virnect.content.domain;
  * @since 2020.04.08
  */
 public enum YesOrNo {
-    YES,
-    NO;
+	YES,
+	NO;
 }

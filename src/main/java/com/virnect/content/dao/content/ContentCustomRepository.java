@@ -1,13 +1,13 @@
 package com.virnect.content.dao.content;
 
-import com.querydsl.core.Tuple;
-import com.virnect.content.domain.Content;
-import com.virnect.content.dto.response.ContentResourceUsageInfoResponse;
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Optional;
+import com.querydsl.core.Tuple;
+
+import com.virnect.content.domain.Content;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -17,17 +17,20 @@ import java.util.Optional;
  * @since 2020.03.13
  */
 public interface ContentCustomRepository {
-    Page<Content> getContent(String workspaceUUID, String userUUID, String search, String shareds, String converteds, List<String> userUUIDList, Pageable pageable);
+	Page<Content> getContent(
+		String workspaceUUID, String userUUID, String search, String shareds, String converteds,
+		List<String> userUUIDList, Pageable pageable
+	);
 
-    Content getContentOfTarget(String targetData);
+	Content getContentOfTarget(String targetData);
 
-    Long getWorkspaceStorageSize(String workspaceUUID);
- 
-    Long getWorkspaceDownload(String workspaceUUID);
+	Long getWorkspaceStorageSize(String workspaceUUID);
 
-    List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList);
+	Long getWorkspaceDownload(String workspaceUUID);
 
-    Long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
+	List<Tuple> countByUsers(String workspaceUUID, List<String> userUUIDList);
 
-    long deleteAllContentByWorkspaceUUID(String workspaceUUID);
+	Long calculateTotalStorageAmountByWorkspaceId(String workspaceId);
+
+	long deleteAllContentByWorkspaceUUID(String workspaceUUID);
 }

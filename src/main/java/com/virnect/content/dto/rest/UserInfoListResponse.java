@@ -1,10 +1,11 @@
 package com.virnect.content.dto.rest;
 
-import com.virnect.content.global.common.PageMetadataResponse;
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
+import com.virnect.content.global.common.PageMetadataResponse;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -16,6 +17,6 @@ import java.util.List;
 @Getter
 @Setter
 public class UserInfoListResponse {
-    private List<UserInfoResponse> userInfoList;
-    private PageMetadataResponse pageMeta;
+	private List<UserInfoResponse> userInfoList;
+	private PageMetadataResponse pageMeta;
 }

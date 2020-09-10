@@ -1,9 +1,9 @@
 package com.virnect.content.event;
 
+import java.io.File;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.io.File;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -16,5 +16,5 @@ import java.io.File;
 @RequiredArgsConstructor
 @Getter
 public class ContentUpdateFileRollbackEvent {
-    private final File contentFile;
+	private final File contentFile;
 }
