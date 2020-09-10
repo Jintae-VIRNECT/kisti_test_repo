@@ -7,11 +7,9 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
-import io.minio.PutObjectArgs;
-import io.minio.errors.MinioException;
+import com.virnect.data.model.UploadData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -19,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -91,22 +88,15 @@ public class S3FileManagementService implements IFileManagementService {
         log.info("BUCKET NAME:{}, {}, {}", publicBucketName, dirPath, fileExtension);
 
         // 4. file upload
-        // Create a InputStream for object upload.
-        File uploadFile = convert(file).orElseThrow(() -> {
-            log.info("MultipartFile -> File 변환 실패");
-            return new RestServiceException(ErrorCode.ERR_FILE_COVERT_FAILED);
-        });
-
         //String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
         String uniqueObjectName = String.format("%s_%s", LocalDate.now(), UUID.randomUUID().toString().replace("-", ""));
         String objectName = String.format("%s/%s%s", resourceProfile, uniqueObjectName, fileExtension);
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
+        objectMetadata.setContentLength(file.getSize());
 
-        String fileUrl = putS3(publicBucketName, uploadFile, objectName, objectMetadata);
-
-        removeNewFile(uploadFile);
+        String fileUrl = putObjectToAWSS3(publicBucketName, file, objectName, objectMetadata, CannedAccessControlList.BucketOwnerRead);
 
         return fileUrl;
     }
@@ -138,9 +128,14 @@ public class S3FileManagementService implements IFileManagementService {
             return false;
         } else {
             if(url != null) {
-                String resourceEndPoint = String.format("%s/%s", publicBucketName, resourceProfile);
+                /*String resourceEndPoint = String.format("%s/%s", publicBucketName, resourceProfile);
                 String key = url.split(String.format("/%s/", resourceProfile))[1];
-                amazonS3Client.deleteObject(resourceEndPoint, key);
+                amazonS3Client.deleteObject(resourceEndPoint, key);*/
+                String resourceEndPoint = String.format("%s/%s", publicBucketName, resourceProfile);
+                int index = url.indexOf(resourceProfile);
+                String key = url.substring(index);
+                log.info("DELETE OBJECT: ==> BUCKET NAME:[{}], KEY: [{}]", publicBucketName, key);
+                amazonS3Client.deleteObject(publicBucketName, key);
                 log.info(key + " 파일이 AWS S3(" + resourceEndPoint + ")에서 삭제되었습니다.");
             }
             return true;
@@ -182,7 +177,11 @@ public class S3FileManagementService implements IFileManagementService {
 
     }
 
-    // 로컬 임시 파일 삭제
+    /**
+     *
+     * @param targetFile
+     */
+    @Deprecated
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
             log.info("파일이 삭제되었습니다.");
@@ -191,8 +190,13 @@ public class S3FileManagementService implements IFileManagementService {
         }
     }
 
-
-    // 이미지 전송 요청을 받아 로컬 파일로 변환
+    /**
+     *
+     * @param file
+     * @return
+     * @throws IOException
+     */
+    @Deprecated
     private Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(Objects.requireNonNull(file.getOriginalFilename()));
 
@@ -213,15 +217,50 @@ public class S3FileManagementService implements IFileManagementService {
      * @param fileName   - 파일 이름
      * @return 이미지 URL
      */
+
+    /**
+     * Request upload object to aws s3
+     * @param bucketName
+     * @param file
+     *
+     * @param fileName
+     *              fileName is the The key under which to store the new object.
+     * @param objectMetadata
+     * @param cannedAcl
+     * @return Returns an URL for the object stored in the specified bucket and key.
+     */
+    private String putObjectToAWSS3(String bucketName, MultipartFile file, String fileName, ObjectMetadata objectMetadata, CannedAccessControlList cannedAcl) {
+        try {
+            amazonS3Client.putObject(new PutObjectRequest(
+                    bucketName,
+                    fileName,
+                    file.getInputStream(),
+                    objectMetadata).withCannedAcl(cannedAcl)
+            );
+        } catch (IOException exception) {
+            exception.printStackTrace();
+            log.info("Upload error occurred:: {}", exception.getMessage());
+        }
+        return amazonS3Client.getUrl(bucketName, fileName).toString();
+
+    }
+
+    private void deleteObjectToAWSS3(String bucketName, String fileName) {
+        //amazonS3Client.deleteObject();
+    }
+
+    @Deprecated
     private String putS3(String bucketName, File uploadFile, String fileName) {
         amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
+    @Deprecated
     private String putS3(String bucketName, File uploadFile, String fileName, ObjectMetadata objectMetadata) {
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.BucketOwnerRead);
         putObjectRequest.setMetadata(objectMetadata);
         amazonS3Client.putObject(putObjectRequest);
+
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
