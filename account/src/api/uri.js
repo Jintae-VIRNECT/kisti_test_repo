@@ -13,6 +13,8 @@ module.exports = {
   GET_AUTH_INFO: ['GET', '/users/info'],
   // 계정 접속 이력 정보 조회
   GET_ACCESS_LOGS: ['GET', '/users/access/{userId}'],
+  // 회원 탈퇴
+  SECESSION: ['POST', '/users/secession'],
   // 내가 속한 워크스페이스 목록 조회
   GET_WORKSPACES: ['GET', '/workspaces'],
   // 워크스페이스 플랜 사용자 조회
@@ -27,7 +29,7 @@ module.exports = {
   // 결제 이력
   GET_PAYMENT_LOGS: ['GET', '/billing/user/paymentlist'],
   // 정기결제 정보 조회
-  GET_AUTO_PAYMENTS: ['GET', '/billing/user/purchaseinfo'],
+  GET_AUTO_PAYMENTS: ['GET', '/billing/user/monthbillinfo'],
   // 정기결제 해지 신청
   CANCEL_AUTO_PAYMENTS: ['POST', '/billing/user/monthpaycnl'],
   // 정기결제 해지 신청 취소

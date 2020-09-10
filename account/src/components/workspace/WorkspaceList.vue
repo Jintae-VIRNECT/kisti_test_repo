@@ -2,6 +2,7 @@
   <div>
     <el-table ref="table" :data="workspaces">
       <column-user
+        type="no-tooltip"
         :label="$t('workspace.list.column.name')"
         prop="name"
         nameProp="name"
@@ -14,7 +15,6 @@
         nameProp="masterNickName"
         imageProp="masterProfile"
         :width="160"
-        sortable
       />
       <column-date
         :label="$t('workspace.list.column.joinDate')"

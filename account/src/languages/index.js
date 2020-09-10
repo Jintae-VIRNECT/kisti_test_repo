@@ -25,7 +25,11 @@ function loader(foldername) {
     })
   const json = {}
   files.forEach(file => {
-    json[file.key] = JSON.parse(file.val)
+    if (/\.md$/.test(file.key)) {
+      json[file.key] = file.val
+    } else {
+      json[file.key] = JSON.parse(file.val)
+    }
   })
 
   return json
@@ -35,7 +39,7 @@ function loader(foldername) {
  * i18n
  */
 module.exports = {
-  locales: ['ko', 'keyname'],
+  locales: ['ko', 'en', 'keyname'],
   defaultLocale: 'ko',
   strategy: 'no_prefix',
   detectBrowserLanguage: {
@@ -47,7 +51,7 @@ module.exports = {
     fallbackLocale: env.TARGET_ENV === 'production' ? 'ko' : null,
     messages: {
       ko: { ...elementKo, ...loader('/ko') },
-      // en: { ...elementEn, ...loader('/en') },
+      en: { ...elementEn, ...loader('/en') },
     },
   },
 }

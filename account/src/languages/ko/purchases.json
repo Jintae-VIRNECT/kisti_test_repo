@@ -1,7 +1,8 @@
 {
   "desc": "회원님이 마스터인 워크스페이스에서 구매한 플랜 및 서비스를 관리합니다  ",
-  "countsUnit": "회",
+  "countsUnit": "번",
   "hoursUnit": "시간",
+  "infinity": "무제한",
   "info": {
     "title": "구매 정보",
     "productPurchasesInfo": "제품 이용권 구매 정보",

@@ -1,5 +1,50 @@
 <template>
-  <div class="purchase-info">
+  <!-- simple -->
+  <div v-if="simple" class="purchase-info simple">
+    <h5>{{ $t('purchases.info.proudctPlan') }}</h5>
+    <dl>
+      <dd
+        class="plans"
+        v-for="product in plansInfo.products"
+        :key="product.value"
+      >
+        <div class="column-plan">
+          <img :src="product.logo" />
+          <span>{{ product.label }}</span>
+        </div>
+        <div class="count">
+          <span>{{ product.amount }}</span>
+        </div>
+      </dd>
+    </dl>
+    <el-divider />
+    <h5>{{ $t('home.payment.extend') }}</h5>
+    <dl>
+      <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
+      <dd>{{ plansInfo.storage.max.toLocaleString() }} GB</dd>
+      <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
+      <dd>
+        {{ plansInfo.viewCount.max.toLocaleString() }}
+        {{ $t('purchases.countsUnit') }}
+      </dd>
+    </dl>
+    <el-divider />
+    <h6>
+      <span>{{ $t('purchases.info.nextPaymentDate') }}</span>
+    </h6>
+    <span class="value">{{ paymentInfo.nextPayDate | dateFormat }}</span>
+    <el-divider />
+    <h6>{{ $t('purchases.info.way') }}</h6>
+    <span class="value">{{ way }}</span>
+    <a :href="$url.pay" target="_blank">
+      <el-button type="simple">
+        {{ $t('common.payCenter') }}
+      </el-button>
+    </a>
+  </div>
+
+  <!-- full info -->
+  <div v-else class="purchase-info">
     <h5>{{ $t('purchases.info.productPurchasesInfo') }}</h5>
     <dl>
       <dt>{{ $t('purchases.info.proudctPlan') }}</dt>
@@ -9,15 +54,12 @@
         :key="product.value"
       >
         <el-progress
-          :percentage="(product.usedAmount / product.amount) * 100"
+          :percentage="percent(product.usedAmount, product.amount)"
           :show-text="false"
         />
         <div class="column-plan">
           <img :src="product.logo" />
           <span>{{ product.label }}</span>
-          <el-tag :class="product.licenseType" effect="plain">
-            {{ product.licenseType }}
-          </el-tag>
         </div>
         <div class="count">
           <span>{{ product.usedAmount }}</span>
@@ -25,32 +67,28 @@
         </div>
       </dd>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ paymentInfo.basisAvailable.storage.toLocaleString() }} GB</dd>
+      <dd>{{ plansInfo.storage.default.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ paymentInfo.basisAvailable.viewCount.toLocaleString() }}
+        {{ plansInfo.viewCount.default.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
       </dd>
       <dt>{{ $t('purchases.info.callTime') }}</dt>
       <dd>
-        {{ paymentInfo.basisAvailable.callTime.toLocaleString() }}
-        {{ $t('purchases.hoursUnit') }}
+        <!-- {{ plansInfo.callTime.default.toLocaleString() }}
+        {{ $t('purchases.hoursUnit') }} -->
+        {{ $t('purchases.infinity') }}
       </dd>
     </dl>
     <el-divider />
     <h5>{{ $t('purchases.info.extendPurchasesInfo') }}</h5>
     <dl>
       <dt>{{ $t('purchases.info.arStorageCapacity') }}</dt>
-      <dd>{{ paymentInfo.extendAvailable.storage.toLocaleString() }} GB</dd>
+      <dd>{{ plansInfo.storage.add.toLocaleString() }} GB</dd>
       <dt>{{ $t('purchases.info.arContentsViewCount') }}</dt>
       <dd>
-        {{ paymentInfo.extendAvailable.viewCount.toLocaleString() }}
+        {{ plansInfo.viewCount.add.toLocaleString() }}
         {{ $t('purchases.countsUnit') }}
-      </dd>
-      <dt>{{ $t('purchases.info.callTime') }}</dt>
-      <dd>
-        {{ paymentInfo.extendAvailable.callTime.toLocaleString() }}
-        {{ $t('purchases.hoursUnit') }}
       </dd>
     </dl>
     <el-divider />
@@ -78,7 +116,7 @@
     <h6>{{ $t('purchases.info.way') }}</h6>
     <span class="value">{{ way }}</span>
     <el-divider />
-    <a :href="$url.pay">
+    <a :href="$url.pay" target="_blank">
       <el-button type="simple">
         {{ $t('purchases.info.changePlans') }}
       </el-button>
@@ -92,16 +130,14 @@ import filters from '@/mixins/filters'
 export default {
   mixins: [filters],
   props: {
+    simple: Boolean,
     plansInfo: {
       type: Object,
       default: () => ({}),
     },
     paymentInfo: {
       type: Object,
-      default: () => ({
-        basisAvailable: {},
-        extendAvailable: {},
-      }),
+      default: () => ({}),
     },
   },
   computed: {
@@ -115,6 +151,12 @@ export default {
       } else {
         return '-'
       }
+    },
+  },
+  methods: {
+    percent(child, parent) {
+      if (child === 0 && parent === 0) return 0
+      return (child / parent) * 100
     },
   },
 }
@@ -181,6 +223,18 @@ export default {
         letter-spacing: 0.1em;
       }
     }
+  }
+}
+
+.purchase-info.simple {
+  .plans:first-of-type {
+    padding-top: 0;
+  }
+  .plans {
+    margin-bottom: 16px;
+  }
+  .plans .count > span:first-child {
+    color: $font-color-desc;
   }
 }
 </style>

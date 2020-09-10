@@ -6,6 +6,7 @@ export default class Ticket extends Model {
     super()
     this.id = json.ItemID
     this.name = json.ItemName || json.ProductName
+    this.nameEng = json.ItemNameEng || json.ProductNameEng
     this.desc = json.ItemDesc
     this.count = json.ItemCnt || json.ProductCnt
     this.price = json.PayAmt

@@ -7,17 +7,19 @@
     "title": "My Workspace",
     "name": "Workspace Name",
     "desc": "Workspace Description",
+    "master": "Workspace Master",
     "descEmpty": "There is no description in the Workspace"
   },
   "payment": {
-    "title": "Subscription Payment Information"
+    "title": "Purchasement Details",
+    "extend": "Service Subscriptions"
   },
   "usingPlan": {
-    "title": "My Current Plan",
+    "title": "My Plans",
     "desc": "Your current plan details"
   },
   "workspacePlan": {
-    "title": "My Workspace plan",
+    "title": "My Workspace Plan",
     "desc": "Plans you purchased"
   },
   "LoggedInDevice": {

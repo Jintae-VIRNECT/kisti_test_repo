@@ -11,7 +11,8 @@
     "descEmpty": "워크스페이스 설명이 없습니다."
   },
   "payment": {
-    "title": "구독 결제 정보"
+    "title": "구매 정보",
+    "extend": "서비스 이용권"
   },
   "usingPlan": {
     "title": "사용 중인 플랜",

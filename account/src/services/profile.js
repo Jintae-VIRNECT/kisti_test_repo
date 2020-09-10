@@ -2,6 +2,7 @@ import Profile from '@/models/profile/Profile'
 import LoggedInDevice from '@/models/profile/LoggedInDevice'
 import { api } from '@/plugins/axios'
 import { store } from '@/plugins/context'
+import Cookies from 'js-cookie'
 
 function getMyProfile() {
   return { ...store.getters['auth/myProfile'] }
@@ -59,5 +60,21 @@ export default {
       list: accessInfoList.map(accessInfo => new LoggedInDevice(accessInfo)),
       total: pageMeta.totalElements,
     }
+  },
+  async secession(form) {
+    const { uuid, email } = getMyProfile()
+    form.uuid = uuid
+    form.email = email
+    const data = await api('SECESSION', { params: form })
+
+    if (/\.?virnect\.com/.test(location.href)) {
+      Cookies.remove('accessToken', { domain: '.virnect.com' })
+      Cookies.remove('refreshToken', { domain: '.virnect.com' })
+    } else {
+      Cookies.remove('accessToken')
+      Cookies.remove('refreshToken')
+    }
+    location.href = '/'
+    return data
   },
 }

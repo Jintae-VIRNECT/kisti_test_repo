@@ -1,10 +1,13 @@
 {
-  "link": "Weblink",
+  "link": "Shortcut",
   "confirm": "Confirm",
+  "cancel": "Cancel",
   "delete": "Delete",
   "more": "More info",
   "change": "Change",
   "price": "Price",
   "download": "Download",
-  "print": "Print"
+  "print": "Print",
+  "workstation": "Workstation",
+  "payCenter": "Payment Center"
 }

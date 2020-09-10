@@ -10,7 +10,7 @@ export default class Plan extends Model {
     super()
     this.product = json.planProduct
     this.planName = products[json.planProduct.toLowerCase()].label
-    this.grade = 'BASIC'
+    this.grade = 'PUBLIC'
     this.workspaceUUID = json.workspaceId
     this.workspaceName = json.workspaceName
     this.workspaceProfile = json.workspaceProfile

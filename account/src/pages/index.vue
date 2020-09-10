@@ -5,7 +5,12 @@
       <el-row>
         <section class="page-description">
           <div class="avatar">
-            <div class="image" :style="`background-image: url(${me.image})`" />
+            <div
+              class="image"
+              :style="
+                `background-image: url(${me.image}), url(${$defaultUserProfile})`
+              "
+            />
           </div>
           <h2>{{ $t('home.title.welcome', { username: me.nickname }) }}</h2>
           <p v-html="$t('home.title.description')"></p>
@@ -25,7 +30,11 @@
               <h3>{{ $t('home.payment.title') }}</h3>
               <router-link to="/purchases">{{ $t('common.link') }}</router-link>
             </div>
-            <purchases-info :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
+            <purchases-info
+              simple
+              :plansInfo="plansInfo"
+              :paymentInfo="paymentInfo"
+            />
           </el-card>
         </el-col>
         <el-col class="container__right">
@@ -82,17 +91,6 @@ export default {
       purchaseService.getWorkspacePlansInfo(),
       paymentService.getAutoPayments(),
     ])
-    // 1달 무료 페이레터 제공 데이터가 없는 문제 예외처리
-    if (!paymentInfo.items.length) {
-      const licenseAvailable = {
-        callTime: plansInfo.maxCallTime,
-        storage: plansInfo.maxStorage,
-        viewCount: plansInfo.maxViewCount,
-      }
-      paymentInfo.basisAvailable = licenseAvailable
-      paymentInfo.maxAvailable = licenseAvailable
-    }
-    // 예외처리 끝
 
     return { plansInfo, paymentInfo }
   },
@@ -126,7 +124,9 @@ export default {
 
   & > h2 {
     margin: 12px;
+    overflow: hidden;
     font-size: 28px;
+    text-overflow: ellipsis;
   }
   & > p {
     font-size: 15px;
