@@ -375,12 +375,14 @@ export default {
   margin: auto;
   > img {
     width: fit-content;
+    width: 6.857em;
+    height: 6.857em;
     margin: auto;
   }
   > span {
     color: #d2d2d2;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 1.143em;
   }
 }
 .popover-notice__footer {
