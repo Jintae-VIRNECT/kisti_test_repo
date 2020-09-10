@@ -1031,9 +1031,13 @@ public class DataRepository {
                                     !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME));
 
                     //remove member who has the same user id(::uuid)
+                    //do not remove member who has status evicted;
                     //workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
                     memberList.forEach(member -> {
-                        workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(member.getUuid()));
+                        workspaceMemberInfoList.removeIf(memberInfoResponses ->
+                                member.getMemberStatus() != MemberStatus.EVICTED &&
+                                memberInfoResponses.getUuid().equals(member.getUuid())
+                        );
                     });
 
 
