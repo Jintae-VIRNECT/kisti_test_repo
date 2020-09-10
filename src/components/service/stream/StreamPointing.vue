@@ -15,7 +15,7 @@ import * as animationData from 'assets/json/pointer.lottie.json'
 import { mapGetters } from 'vuex'
 import { reset } from 'utils/callOptions'
 import { hexToAHEX, ahexToHEX } from 'utils/color'
-import { SIGNAL } from 'configs/remote.config'
+import { SIGNAL, ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
 
 import {
@@ -81,7 +81,8 @@ export default {
     },
     doPointing(event) {
       if (this.viewAction !== ACTION.STREAM_POINTING) return
-      if (this.allowPointing !== true) return
+      if (this.account.roleType !== ROLE.LEADER && this.allowPointing !== true)
+        return
       let posX = normalizedPosX(event.offsetX, this.videoSize.width)
       let posY = normalizedPosY(event.offsetY, this.videoSize.height)
       if (posX > 1) posX = 1
