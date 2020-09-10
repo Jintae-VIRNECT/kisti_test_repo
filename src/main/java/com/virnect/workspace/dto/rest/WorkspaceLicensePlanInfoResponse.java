@@ -23,7 +23,7 @@ public class WorkspaceLicensePlanInfoResponse {
     private String workspaceId = "";
     @ApiModelProperty(value = "라이선스 플랜 마스터 사용자 식별자", position = 1, example = "498b1839dc29ed7bb2ee90ad6985c608")
     private String masterUserUUID = "";
-    @ApiModelProperty(value = "워크스페이스 이용 최대 사용자 수 ", notes = "마스터 계정 포함", position = 2, example = "9")
+    @ApiModelProperty(value = "워크스페이스 이용 최대 사용자 수 ", notes = "마스터 계정 포함", position = 2, example = "50")
     private Long maxUserAmount = 0L;
     @ApiModelProperty(value = "워크스페이스 최대 저장 용량(byte 단위)", notes = "byte 단위의 최대 용량", position = 3, example = "9663676416")
     private Long maxStorageSize = 0L;

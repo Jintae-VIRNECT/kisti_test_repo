@@ -1,6 +1,11 @@
 package com.virnect.workspace;
 
-import com.virnect.workspace.exception.WorkspaceException;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
+
+import java.util.Locale;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,11 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 
-import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import com.virnect.workspace.exception.WorkspaceException;
 
 /**
  * Project: PF-Workspace
@@ -47,7 +48,7 @@ public class CreateWorkspaceTest {
     }
     @Test
     public void creete(){
-        for(int temp=635;temp<695;temp++){
+    /*    for(int temp=635;temp<695;temp++){
 
             for (int a=1; a<7; a++){
                 System.out.println("INSERT INTO `license` (`created_at`, `updated_at`, `serial_key`, `license_status`, `user_id`, `workspace_id`, `license_product_id`) VALUES ('2020-07-30 21:54:26', '2020-07-30 21:54:26', '"+
@@ -55,6 +56,14 @@ public class CreateWorkspaceTest {
 
             }
         }
+*/
+        Locale indiaLocale = new Locale("en", "");
+
+        System.out.println(indiaLocale.getCountry());
+        System.out.println(indiaLocale.getLanguage());
+
 
     }
+
+
 }

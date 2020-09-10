@@ -2,6 +2,7 @@ package com.virnect.workspace.dao;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.virnect.workspace.domain.QWorkspaceUser;
+import com.virnect.workspace.domain.Workspace;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +21,12 @@ public class WorkspaceUserRepositoryImpl implements WorkspaceUserRepositoryCusto
     public long countWorkspaceUser(String workspaceId) {
         QWorkspaceUser qWorkspaceUser = QWorkspaceUser.workspaceUser;
         return jpaQueryFactory.select(qWorkspaceUser).from(qWorkspaceUser).where(qWorkspaceUser.workspace.uuid.eq(workspaceId)).fetchCount();
+    }
+
+    @Override
+    public long deleteAllWorkspaceUserByWorkspace(Workspace workspace) {
+        QWorkspaceUser qWorkspaceUser = QWorkspaceUser.workspaceUser;
+        return jpaQueryFactory.delete(qWorkspaceUser).where(qWorkspaceUser.workspace.eq(workspace)).execute();
     }
 
 
