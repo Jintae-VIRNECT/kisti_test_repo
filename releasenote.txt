@@ -13,4 +13,5 @@ Limitation
 - 최신 앱 정보 조회의 경우, 패키지명 기반으로 단일 앱 정보만 조회 가능
 - 앱 인증키 정보 등록의 경우, 인증키 정보가 등록되지 않은 앱 정보만 등록 가능
 
+
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

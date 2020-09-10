@@ -1,10 +1,10 @@
 package com.virnect.download.dao;
 
-import com.virnect.download.domain.App;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
-import java.util.Optional;
+import com.virnect.download.domain.App;
 
 /**
  * Project: PF-Download
@@ -14,9 +14,9 @@ import java.util.Optional;
  * DESCRIPTION:
  */
 public interface AppRepository extends JpaRepository<App, Long>, AppRepositoryCustom {
-    Optional<App> findByUuid(String uuid);
+	Optional<App> findByUuid(String uuid);
 
-    boolean existsByPackageNameAndVersionCode(String packageName, Long versionCode);
+	boolean existsByPackageNameAndVersionCode(String packageName, Long versionCode);
 
-    boolean existsByPackageNameAndSignatureIsNull(String packageName);
+	boolean existsByPackageNameAndSignatureIsNull(String packageName);
 }

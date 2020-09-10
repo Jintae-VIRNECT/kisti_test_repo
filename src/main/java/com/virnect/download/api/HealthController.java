@@ -1,11 +1,11 @@
 package com.virnect.download.api;
 
+import java.time.LocalDateTime;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDateTime;
 
 /**
  * Project: PF-Download
@@ -17,8 +17,8 @@ import java.time.LocalDateTime;
 @RestController
 @RequestMapping("/")
 public class HealthController {
-    @GetMapping("/healthCheck")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Download Server Health Check " + LocalDateTime.now());
-    }
+	@GetMapping("/healthCheck")
+	public ResponseEntity<String> healthCheck() {
+		return ResponseEntity.ok("Download Server Health Check " + LocalDateTime.now());
+	}
 }
