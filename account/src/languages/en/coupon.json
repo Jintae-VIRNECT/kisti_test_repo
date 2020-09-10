@@ -8,7 +8,7 @@
   "addCouponCode": {
     "title": "Register Coupon",
     "label": "Coupon Code",
-    "placeholder": "Enter your coupon codes",
+    "placeholder": "Enter your coupon code",
     "submit": "Submit",
     "cautionTitle": "Notes on coupon registration",
     "cautionContent": [

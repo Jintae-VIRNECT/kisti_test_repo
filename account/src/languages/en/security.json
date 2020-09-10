@@ -10,7 +10,7 @@
     "loginDate": "Last Connected"
   },
   "enhanceModal": {
-    "title": "Reinforce device security",
+    "title": "Reinforce Security",
     "desc": "If you have a device you don't know someone else might have stolen your account. Protect your account by changing your password.",
     "caution": "You will be logged out of all devices except the one you are currently using.",
     "changePassword": "Reset Password"
