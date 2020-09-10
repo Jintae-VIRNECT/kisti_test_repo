@@ -13,18 +13,32 @@ spring:
   cloud:
     gateway:
       routes:
+        - id: auth-server
+          uri: http://localhost:8321
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=0
+            - RewritePath=/auth/v2/(?<segment>.*), /v2/$\{segment}
+            - name: Logging
+              args:
+                messagePrefix: "AUTH_SERVER"
+                preLogger: true
+                postLogger: true
+
         - id: user-server
-          uri: lb:http://user-server
+          uri: http://localhost:8081
+          #          uri: lb:http://user-server
           predicates:
             - Path=/users/**
           filters:
             - StripPrefix=0
             - RewritePath=/users/v2/(?<segment>.*), /v2/$\{segment}
-#            - name: Logging
-#              args:
-#                messagePrefix: "USER_SERVER"
-#                preLogger: true
-#                postLogger: true
+            - name: Logging
+              args:
+                messagePrefix: "USER_SERVER"
+                preLogger: true
+                postLogger: true
 
         - id: workspace-server
           uri: lb:http://workspace-server
@@ -33,11 +47,11 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
-#            - name: Logging
-#              args:
-#                messagePrefix: "WORKSPACE_SERVER"
-#                preLogger: true
-#                postLogger: true
+        #            - name: Logging
+        #              args:
+        #                messagePrefix: "WORKSPACE_SERVER"
+        #                preLogger: true
+        #                postLogger: true
 
         - id: remote-record-server
           uri: lb:http://remote-record-server
@@ -46,11 +60,11 @@ spring:
           filters:
             - StripPrefix=0
             - RewritePath=/media/v2/(?<segment>.+), /v2/$\{segment}/
-#            - name: Logging
-#              args:
-#                messagePrefix: "REMOTE_RECORD_SERVER_REST"
-#                preLogger: true
-#                postLogger: true
+      #            - name: Logging
+      #              args:
+      #                messagePrefix: "REMOTE_RECORD_SERVER_REST"
+      #                preLogger: true
+      #                postLogger: true
 
 
       globalcors:
@@ -64,6 +78,7 @@ spring:
               - "*"
       default-filters:
         - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin Access-Control-Allow-Headers
+        - MessageEncryptDecryptFilter
       x-forwarded:
         prefix-enabled: false
       httpclient:
@@ -71,6 +86,11 @@ spring:
           use-insecure-trust-manager: true
   zipkin:
     enabled: false
+  redis:
+    host: 192.168.13.14
+    port: 6379
+  main:
+    allow-bean-definition-overriding: true
 
 eureka:
   instance:

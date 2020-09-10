@@ -46,7 +46,7 @@ spring:
                 postLogger: true
         #            - RewritePath=/workspaces/v2/(?<segment>.*), /v2/$\{segment}
 
-        - id: amdin-server
+        - id: admin-server
           uri: lb://admin-server
           predicates:
             - Path=/admin/**
@@ -213,6 +213,9 @@ spring:
   zipkin:
     base-url: http://stgzipkin.virnect.com
     discovery-client-enabled: false
+  redis:
+    host: virnect-qa-redis.b84gc2.0001.apn2.cache.amazonaws.com
+    port: 6379
 eureka:
   instance:
     prefer-ip-address: true
@@ -222,3 +225,4 @@ eureka:
 
 jwt:
   secret: 2020-tcenriv-platform-392
+
