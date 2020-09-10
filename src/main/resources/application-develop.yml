@@ -95,3 +95,13 @@ hystrix:
       metrics.rollingStats.timeInMilliseconds: 60000
       circuitBreaker.requestVolumeThreshold: 5
       circuitBreaker.errorThresholdPercentage: 50
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}

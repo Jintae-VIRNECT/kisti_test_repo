@@ -3,6 +3,7 @@ package com.virnect.workspace.dao;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.virnect.workspace.domain.QWorkspaceUserPermission;
 import com.virnect.workspace.domain.WorkspaceRole;
+import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.dto.MemberInfoDTO;
 import lombok.RequiredArgsConstructor;
 
@@ -56,5 +57,11 @@ public class WorkspaceUserPermissionRepositoryImpl implements WorkspaceUserPermi
 
         }
         return resultList;
+    }
+
+    @Override
+    public long deleteAllWorkspaceUserPermissionByWorkspaceUser(List<WorkspaceUser> workspaceUserList) {
+        QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
+        return jpaQueryFactory.delete(qWorkspaceUserPermission).where(qWorkspaceUserPermission.workspaceUser.in(workspaceUserList)).execute();
     }
 }

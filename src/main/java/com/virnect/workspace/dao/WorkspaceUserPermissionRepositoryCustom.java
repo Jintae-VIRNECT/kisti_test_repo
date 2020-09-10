@@ -1,6 +1,7 @@
 package com.virnect.workspace.dao;
 
 import com.virnect.workspace.domain.WorkspaceRole;
+import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.dto.MemberInfoDTO;
 
 import java.util.List;
@@ -17,4 +18,5 @@ public interface WorkspaceUserPermissionRepositoryCustom {
 
     List<MemberInfoDTO> findUserInfoListFilterd(List<MemberInfoDTO> memberListResponse, String workspaceId, String filter);
 
+    long deleteAllWorkspaceUserPermissionByWorkspaceUser(List<WorkspaceUser> workspaceUserList);
 }

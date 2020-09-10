@@ -26,7 +26,8 @@ spring:
       max-request-size: 400MB
   zipkin:
     base-url: http://zipkin.virnect.com
-
+    discovery-client-enabled: false
+    
 logging:
   level:
     com.virnect.workspace.application.*: DEBUG
@@ -73,3 +74,14 @@ supportUrl: "https://virnect.com/contact/inquiry"
 feign:
   hystrix:
     enabled: true
+
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
