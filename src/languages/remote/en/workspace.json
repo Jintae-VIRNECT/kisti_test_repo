@@ -1,9 +1,9 @@
 {
   "workspace": {
     "search_room": "Search Collabo/member",
-    "search_member": "Search members",
+    "search_member": "Search member",
     "tab_empty_description": "Start remote Collabo.",
-    "create_room": "Create remote Collabo.",
+    "create_room": "Create remote Collabo",
     "expire_license": "Plan expiration.",
     "welcome": "Hello {name}.",
     "welcome_license": "{name}, <br>you don't have any plan allotted.",
@@ -78,9 +78,9 @@
     "remote_name_valid1": "Type in more than 2 letters for Collabo name.",
     "remote_name_valid2": "Please don't add special letters for Collabo name.",
 
-    "create_remote": "Create Collabo.",
-    "create_remote_profile_regist": "Add profile image for the Collabo.",
-    "create_remote_name_input": "Enter the group name",
+    "create_remote": "Create Collabo",
+    "create_remote_profile_regist": "Add profile image for the Collabo",
+    "create_remote_name_input": "Enter the group name.",
     "create_remote_description_input": "Enter the group description.",
     "create_remote_selected": "Select a member",
     "create_remote_add_member": "Add a member",
@@ -91,7 +91,7 @@
     "create_max_member": "Exceeded selectable number of members.",
     "create_remote_fail": "Failed to create Collabo",
 
-    "info_remote_detail": "Remote Collabo details.",
+    "info_remote_detail": "Remote Collabo details",
     "info_remote": "Collabo details",
     "info_remote_member": "Particpant details",
     "info_remote_date": "Collabo start date",
@@ -108,7 +108,7 @@
     "record_size": "File size",
     "record_remote": "Collabo name",
     "record_description1": "The completed local recorded file belongs to the system of your PC.",
-    "record_description2": "Refer the browser settings for download location when downloading <strong>[Download]</strong>. ",
+    "record_description2": "Refer the browser settings for download location when downloading <strong>[Download]</strong>.",
     "record_description3": "If you perform local recording in incognito mode, your recording file gets deleted when you close the browser.",
     "record_nofile": "No recording files.",
     "record_download": "Download selected file",
