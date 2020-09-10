@@ -120,7 +120,7 @@ export default {
     TasksList,
   },
   async asyncData({ query }) {
-    const taskSearch = query.search || ''
+    const taskSearch = query.search || null
     const promise = {
       tasks: taskService.searchTasks({ search: taskSearch }),
       stat: taskService.getTaskStatistics(),

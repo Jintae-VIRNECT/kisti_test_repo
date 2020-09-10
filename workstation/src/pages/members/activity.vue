@@ -27,7 +27,7 @@
               nameProp="workerName"
               imageProp="workerProfile"
             />
-            <column-count
+            <column-default
               :label="$t('members.activity.column.contentsCount')"
               prop="countContent"
               :width="150"

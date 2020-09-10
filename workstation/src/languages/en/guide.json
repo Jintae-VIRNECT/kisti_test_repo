@@ -1,39 +1,39 @@
 {
-  "title": "User guide",
+  "title": "User Guide",
   "makeGuide": {
-    "label": "Make user manual",
+    "label": "Make User Manual",
     "url": "https://file.virnect.com/Guide/make_user_guide.pdf"
   },
   "makeDemoContetns": {
-    "label": "AR demo content for Make",
+    "label": "AR Demo Content for Make",
     "url": "https://file.virnect.com/Guide/make_demo_contents.zip"
   },
   "viewGuide": {
-    "label": "View user manual (mobile)",
+    "label": "View User Manual (Mobile)",
     "url": "https://file.virnect.com/Guide/view_mobile_user_guide.pdf"
   },
   "viewRealwearGuide": {
-    "label": "View user manual (RealWear)",
+    "label": "View User Manual (Realwear)",
     "url": "https://file.virnect.com/Guide/view_realwear_user_guide.pdf"
   },
   "remoteGuide": {
-    "label": "Remote user manual",
+    "label": "Remote User Manual",
     "url": "https://file.virnect.com/Guide/remote_user_guide.pdf"
   },
   "workstationGuide": {
-    "label": "Workstation user manual",
+    "label": "Workstation User Manual",
     "url": "https://file.virnect.com/Guide/workstation_user_guide.pdf"
   },
   "purchaseGuide": {
-    "label": "Guide to purchasement",
+    "label": "User Guide for Payment",
     "url": "https://file.virnect.com/Guide/purchase_user_guide.pdf"
   },
   "taskManageGuide": {
-    "label": "Guide to using the task services",
+    "label": "User Guide for Task Service",
     "url": "http://file.virnect.com/Guide/task_management_user_guide.pdf"
   },
   "taskStatusGuide": {
-    "label": "Guide to progress status",
+    "label": "User Guide for Task Status",
     "url": "http://file.virnect.com/Guide/task_status_user_guide.pdf"
   }
 }

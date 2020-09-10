@@ -1,8 +1,8 @@
 {
   "conditions": {
     "wait": "Pending",
-    "unprogressing": "Not started",
-    "progressing": "In progress",
+    "unprogressing": "Not Started",
+    "progressing": "In Progress",
     "incompleted": "Inadequate",
     "completed": "Completed",
     "failed": "Overdue",

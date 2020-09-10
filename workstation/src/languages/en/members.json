@@ -6,28 +6,28 @@
   },
   "card": {
     "profile": "Profile",
-    "setting": "Member settings",
+    "setting": "Member Settings",
     "usingPlans": "Plans",
-    "links": "Favicons",
+    "links": "Shorcuts",
     "contents": "Content",
     "work": "Task",
     "paper": "Paper"
   },
   "allMembers": {
-    "title": "Member overview",
-    "addMember": "Add members"
+    "title": "All Members",
+    "addMember": "Add Member"
   },
   "setting": {
-    "title": "Workspace member settings",
-    "info": "Member details",
-    "nickname": "Member's Workspace nickname",
-    "email": "Member's Workspace account",
-    "setting": "Member settings",
+    "title": "Worksapce Member Settings",
+    "info": "Member Details",
+    "nickname": "Member Nickname",
+    "email": "Member Account",
+    "setting": "Member Settings",
     "role": "Role",
     "roleDesc": "Promoting to Manager means that this member can invite other members create groups etc. However only Masters have access to edit payment and Workspace profile settings.",
-    "givePlans": "Plan allocation",
+    "givePlans": "Plan Allocation",
     "givePlansDesc": "Allocate plans for your new Workspace members.",
-    "givePlansEmpty": "No allocation",
+    "givePlansEmpty": "No Allocation",
     "kick": "Remove",
     "submit": "Edit",
     "message": {
@@ -37,7 +37,7 @@
   },
   "kick": {
     "title": "Remove member from Workspace",
-    "desc": "The selected members are removed from your workspace. They are no longer be able to use Workspace-related products and services. Removed members can be invited again.",
+    "desc": "The selected members are removed from your Workspace. They are no longer be able to use Workspace-related products and services. Removed members can be invited again.",
     "back": "Previous",
     "submit": "Remove",
     "message": {
@@ -46,37 +46,37 @@
     }
   },
   "add": {
-    "title": "Invite members",
+    "title": "Add Member",
     "desc": "Would you like other users to use VIRNECT products and services together?",
     "desc2": "Invite VIRNECT users to your Workspace",
     "desc3": "You can Invite VIRNECT users as Workspace members. Purchase plans in advance from \"Payment Center\" and allocate them to your new members.",
-    "addUser": "Add user",
-    "email": "Email",
-    "emailDesc": "Please enter the email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use VIRNECT products together.",
+    "addUser": "Add Workspace Members",
+    "email": "VIRNECT User Email",
+    "emailDesc": "Please enter the VIRNECT member's email address of the person you want to invite and send an invitation. By accepting your invitation the member can become one of your Workspace member and use products together.",
     "emailPlaceholder": "Enter email address of invitee",
-    "addMember": "Add another",
-    "submit": "Send invitation email",
+    "addMember": "Add Member",
+    "submit": "Send Invitation",
     "message": {
       "inviteFail": "Failed to invite a member to Workspace please try again later",
       "inviteSuccess": "Successfuly sent the invitation email",
-      "notHaveAnyPlan": "At least one plan must be allocated when inviting new workspace members.",
+      "notHaveAnyPlan": "At least one plan must be allocated when inviting new Workspace members.",
       "enoughPlan": "No plans available to assign to Workspace members please purchase plans and invite them again.",
       "memberOverflow": "Please note that total of 49 users including the \"Master\" member may participate the \"Public service\". Please change your plans if you need more members to use our products and services.",
       "workspaceOverflow": "In Public Service one user can participate in up to 9 Workspaces. To join the selected Workspace please make yourself available first by leaving one of the Workspace you are in and request an invitation email to the Workspace master member.",
-      "memberAlready": "This member is already being participated in your workspace.",
+      "memberAlready": "This member is already being participated in your Workspace.",
       "noHavePlans": "There are no remaining plans available. Please go to the payment center and purchase the plans."
     }
   },
   "activity": {
-    "title": "Member activity in Workspace",
+    "title": "Recent Activity",
     "column": {
-      "member": "Members",
-      "contentsCount": "Uploaded content",
+      "member": "Member",
+      "contentsCount": "Uploaded Content",
       "subTasks": "Subtasks",
-      "subTasksTooltip": "In progress / assigned",
-      "progress": "Progress rate",
+      "subTasksTooltip": "In progress / Assigned",
+      "progress": "Progress",
       "reportedDate": "Reported on",
-      "link": "Favicons"
+      "link": "Shortcuts"
     }
   }
 }

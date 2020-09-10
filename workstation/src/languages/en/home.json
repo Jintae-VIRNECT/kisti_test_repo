@@ -5,7 +5,7 @@
     "desc": "Experience true systematic management through VIRNECT products"
   },
   "memberList": {
-    "title": "New members",
+    "title": "New Members",
     "column": {
       "nickname": "Nickname",
       "email": "Account",
@@ -15,52 +15,52 @@
     "empty": "Invite members to your Workstation"
   },
   "contentsList": {
-    "title": "Recent content & task",
-    "contents": "Recent content",
-    "task": "Recent tasks",
+    "title": "Recent Contents & Tasks",
+    "contents": "Recent Contents",
+    "task": "Recent Tasks",
     "empty": "No content updated recently",
     "taskEmpty": "No tasks updated recently"
   },
   "reportList": {
-    "title": "Recent reports",
+    "title": "Recent Task Report",
     "task": "Task",
     "paper": "Paper",
     "issue": "Issue",
     "empty": "There is no report made"
   },
   "profile": {
-    "title": "My profile",
-    "link": "Update profile",
-    "usingNickname": "My nickname",
+    "title": "My Profile",
+    "link": "Profile Settings",
+    "usingNickname": "Nickname",
     "workspaceRole": "Role",
-    "usingPlans": "Plans in use"
+    "usingPlans": "Plans in Use"
   },
   "install": {
-    "title": "Download center",
+    "title": "Download Center",
     "remote": "Install VIRNECT Remote",
     "make": "Install VIRNECT Make",
     "view": "Install VIRNECT View"
   },
   "faq": {
-    "title": "FAQ on product and services",
-    "desc": "Are you having difficulty using our products and services?<br>Check out our frequently asked questions."
+    "title": "FAQ",
+    "desc": "Are you having difficulty using our products and services?<br>Check out our FAQ."
   },
   "plansInfo": {
     "used": "Used",
     "remain": "Remaining",
     "buy": "Purchase",
     "arStorage": {
-      "title": "AR storage capacity",
+      "title": "AR Storage Capacity",
       "desc": "It may differ from the actual remaining storage so please use it as a reference.",
-      "max": "Total AR storage",
-      "used": "Used AR storage",
+      "max": "Total",
+      "used": "Used",
       "unit": "GB"
     },
     "arContent": {
-      "title": "Online AR content views",
+      "title": "Online AR Views",
       "desc": "It may differ from the actual view counts so please use it as a reference.",
-      "max": "Total AR content views",
-      "used": "AR content views used",
+      "max": "Total",
+      "used": "Used",
       "unit": "Views"
     },
     "call": {
@@ -74,11 +74,11 @@
   "storageOverflow": {
     "title": "AR storage needs to be managed in the Workspace. Please delete some of your content according to purchased storage.",
     "desc": "The content is saved for 14 days from the date of purchase and it will be deleted in the order of oldest to newest.",
-    "submit": "Content management"
+    "submit": "Content Management"
   },
   "licenseOverflow": {
     "title": "The service is limited due to the exceeding number of plans allotted to users compared with the plans you have. Inquire your Master admin for the plan management.",
     "desc": "If you are the Master admin please go to member settings and check plan allotment state.",
-    "submit": "Member management"
+    "submit": "Member Management"
   }
 }

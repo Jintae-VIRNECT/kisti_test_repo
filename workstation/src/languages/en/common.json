@@ -10,6 +10,6 @@
   "delete": "Delete",
   "graph": "Graph",
   "list": "List",
-  "numbersUnit": "",
-  "paymentCenter": "Payment center"
+  "numbersUnit": "Amount",
+  "paymentCenter": "Payment Center"
 }
