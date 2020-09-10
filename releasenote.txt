@@ -1,7 +1,7 @@
 RELEASE
 
 New Features
-첨부파일 메일 전송
+- 젠킨스 업데이트 (오토스케일링 테스트)
 
 Bug Fixes
 
