@@ -1,5 +1,8 @@
 <template>
 	<div class="container">
+		<TheHeader :showSection="showSection">
+			<template slot="subTitle">{{ $t('login.subTitle') }}</template>
+		</TheHeader>
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
 				<h2>{{ $t('login.title') }}</h2>
@@ -69,18 +72,20 @@
 </template>
 
 <script>
+import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import Cookies from 'js-cookie'
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 
 import footerSection from '../common/Footer'
-import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
+import auth from 'api/virnectPlatformAuth'
 
 export default {
 	name: 'login',
 	mixins: [mixin],
 	components: {
 		footerSection,
+		TheHeader,
 	},
 	computed: {
 		loggedIn() {
@@ -89,6 +94,10 @@ export default {
 	},
 	data() {
 		return {
+			showSection: {
+				login: false,
+				language: true,
+			},
 			login: {
 				email: '',
 				password: '',

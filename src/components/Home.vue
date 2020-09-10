@@ -14,9 +14,6 @@
 			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
-			<TheHeader :showSection="showSection">
-				<template slot="subTitle">{{ $t('login.subTitle') }}</template>
-			</TheHeader>
 			<transition name="app-fade" mode="out-in">
 				<router-view />
 			</transition>
@@ -25,19 +22,11 @@
 </template>
 
 <script>
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
 	data() {
 		return {
 			show: false,
-			showSection: {
-				login: false,
-				language: true,
-			},
 		}
-	},
-	components: {
-		TheHeader,
 	},
 	methods: {
 		loginService() {
