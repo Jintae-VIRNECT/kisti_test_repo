@@ -4,7 +4,7 @@
     "search_member": "Search member",
     "tab_empty_description": "Start remote Collabo.",
     "create_room": "Create remote Collabo",
-    "expire_license": "Plan expiration.",
+    "expire_license": "Plan expiration",
     "welcome": "Hello {name}.",
     "welcome_license": "{name}, <br>you don't have any plan allotted.",
     "welcome_expire": "{name}, <br>your plan has been expired.",
@@ -117,7 +117,7 @@
     "license_expire_title": "Your plans are all expired <br>to use VIRNECT Remote 2.0.",
     "license_expire_description": "If you want to use Remote 2.0, <br>please add/update plans from your workstation.",
     "license_no_title": "No available plan <br>to use VIRNECT Remote 2.0.",
-    "license_no_description": "There is no Workspace to use the VIRNECT Remote 2.0. Please ask your Master for plans.",
+    "license_no_description": "There is no Workspace to use the VIRNECT Remote 2.0. <br>Please ask your Master for plans.",
 
     "error_no_connected_device": "Cannot find a connected device.",
     "error_no_device": "Cannot find a device.",

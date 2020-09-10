@@ -115,7 +115,11 @@ export default {
       deep: true,
       handler(val, oldVal) {
         // AR 기능 도중 메인뷰 참가자가 나갔을 경우
-        if (this.view === VIEW.AR && val.id !== oldVal.id) {
+        if (
+          this.view === VIEW.AR &&
+          val.id !== oldVal.id &&
+          this.account.roleType === ROLE.LEADER
+        ) {
           this.$call.stopArFeature()
           this.goTabConfirm(VIEW.STREAM)
         }

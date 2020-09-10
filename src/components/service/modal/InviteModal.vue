@@ -90,6 +90,7 @@ import { mapGetters, mapActions } from 'vuex'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { inviteRoom, kickoutMember, invitableList } from 'api/http/member'
+import { getRoomInfo as roomInfo } from 'api/http/room'
 export default {
   name: 'InviteModal',
   mixins: [toastMixin, confirmMixin],
@@ -107,6 +108,8 @@ export default {
       visibleFlag: false,
       users: [],
       loading: false,
+      currentUser: [],
+      currentLength: 0,
     }
   },
   props: {
@@ -117,17 +120,8 @@ export default {
   },
   computed: {
     ...mapGetters(['roomInfo', 'participants']),
-    currentUser() {
-      return this.roomInfo.memberList.filter(user => {
-        const idx = this.participants.findIndex(loaded => {
-          return user.uuid === loaded.id
-        })
-        if (idx < 0) return true
-        else return false
-      })
-    },
     maxSelect() {
-      return this.roomInfo.maxUserCount - this.roomInfo.memberList.length
+      return this.roomInfo.maxUserCount - this.currentLength
     },
   },
   watch: {
@@ -184,6 +178,7 @@ export default {
         this.init()
         this.removeMember(participantId)
       }
+      this.init()
     },
     selectUser(user) {
       const idx = this.selection.findIndex(select => user.uuid === select.uuid)
@@ -198,7 +193,11 @@ export default {
         this.selection.splice(idx, 1)
       }
     },
-    async init() {
+    init() {
+      this.getInviteList()
+      this.getRoomInfo()
+    },
+    async getInviteList() {
       this.loading = true
       const res = await invitableList({
         workspaceId: this.workspace.uuid,
@@ -208,6 +207,17 @@ export default {
       this.users = res.memberList
       this.loading = false
       this.selection = []
+    },
+    async getRoomInfo() {
+      const res = await roomInfo({
+        workspaceId: this.workspace.uuid,
+        sessionId: this.roomInfo.sessionId,
+      })
+      this.currentLength = res.memberList.length
+      const unloadUsers = res.memberList.filter(
+        member => member.memberStatus !== 'LOAD',
+      )
+      this.currentUser = unloadUsers
     },
     async invite() {
       const participantIds = []
