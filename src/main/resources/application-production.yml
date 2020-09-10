@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mysql://platform-prod-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/processes
     username: virnect-processes
-    password: qjsprxm2020!@#$
+    password: qjsprxm2020!#@$
   jpa:
     hibernate:
       ddl-auto: validate
