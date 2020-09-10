@@ -28,8 +28,8 @@ public class CDRLoggerWebhook implements CDRLogger {
 	private HttpWebhookSender webhookSender;
 
 	public CDRLoggerWebhook(RemoteServiceConfig remoteServiceConfig) {
-		this.webhookSender = new HttpWebhookSender(remoteServiceConfig.getRemoteServiceWebhookEndpoint(),
-				remoteServiceConfig.getRemoteServiceWebhookHeaders(), remoteServiceConfig.getRemoteServiceWebhookEvents());
+		this.webhookSender = new HttpWebhookSender(remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookEndpoint(),
+				remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookHeaders(), remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookEvents());
 	}
 
 	@Override

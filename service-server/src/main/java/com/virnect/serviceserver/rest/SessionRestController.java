@@ -24,7 +24,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.virnect.serviceserver.gateway.application.RemoteGatewayService;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,10 +71,10 @@ import com.virnect.serviceserver.utils.RecordingUtils;
  *
  * @author Pablo Fuente (pablofuenteperez@gmail.com)
  */
+/*
 @RestController
 @CrossOrigin
 @RequestMapping("/api")
-//@RequestMapping("/remote/service")
 public class SessionRestController {
 
 	private static final Logger log = LoggerFactory.getLogger(SessionRestController.class);
@@ -88,10 +87,6 @@ public class SessionRestController {
 
 	@Autowired
 	private RemoteServiceConfig remoteServiceConfig;
-
-	//todo: template autowired
-	@Autowired
-	private RemoteGatewayService remoteGatewayService;
 
 	@RequestMapping(value = "/sessions", method = RequestMethod.POST)
 	public ResponseEntity<?> getSessionId(@RequestBody(required = false) Map<?, ?> params) {
@@ -456,7 +451,7 @@ public class SessionRestController {
 
 		log.info("REST API: POST /api/recordings/start {}", params.toString());
 
-		if (!this.remoteServiceConfig.isRecordingModuleEnabled()) {
+		if (!this.remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
 			// OpenVidu Server configuration property "OPENVIDU_RECORDING" is set to false
 			return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
 		}
@@ -833,3 +828,4 @@ public class SessionRestController {
 		return responseHeaders;
 	}
 }
+*/

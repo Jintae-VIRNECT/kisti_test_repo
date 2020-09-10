@@ -75,7 +75,7 @@ public class ConfigRestController {
 
 		log.info("REST API: GET /config/remoteservice-recording");
 
-		return remoteServiceConfig.isRecordingModuleEnabled();
+		return remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled();
 	}
 
 	@RequestMapping(value = "/remoteservice-recording-path", method = RequestMethod.GET)
@@ -83,7 +83,7 @@ public class ConfigRestController {
 
 		log.info("REST API: GET /config/remoteservice-recording-path");
 
-		return remoteServiceConfig.getRemoteServiceRecordingPath();
+		return remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath();
 	}
 
 	@RequestMapping(value = "/remoteservice-cdr", method = RequestMethod.GET)
@@ -100,7 +100,7 @@ public class ConfigRestController {
 		log.info("REST API: GET /config");
 
 		JsonObject json = new JsonObject();
-		json.addProperty("version", remoteServiceBuildInfo.getVersion());
+		/*json.addProperty("version", remoteServiceBuildInfo.getVersion());
 		json.addProperty("domain_or_public_ip", remoteServiceConfig.getDomainOrPublicIp());
 		json.addProperty("https_port", remoteServiceConfig.getHttpsPort());
 		json.addProperty("remote_service_publicurl", remoteServiceConfig.getRemoteServicePublicUrl());
@@ -125,18 +125,18 @@ public class ConfigRestController {
 		}
 		json.addProperty("remote_service_webhook", remoteServiceConfig.isWebhookEnabled());
 		if (remoteServiceConfig.isWebhookEnabled()) {
-			json.addProperty("remote_service_webhook_endpoint", remoteServiceConfig.getRemoteServiceWebhookEndpoint());
+			json.addProperty("remote_service_webhook_endpoint", remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookEndpoint());
 			JsonArray webhookHeaders = new JsonArray();
-			for (Header header : remoteServiceConfig.getRemoteServiceWebhookHeaders()) {
+			for (Header header : remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookHeaders()) {
 				webhookHeaders.add(header.getName() + ": " + header.getValue());
 			}
 			json.add("remote_service_webhook_headers", webhookHeaders);
 			JsonArray webhookEvents = new JsonArray();
-			for (CDREventName eventName : remoteServiceConfig.getRemoteServiceWebhookEvents()) {
+			for (CDREventName eventName : remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookEvents()) {
 				webhookEvents.add(eventName.name());
 			}
 			json.add("remote_service_webhook_events", webhookEvents);
-		}
+		}*/
 
 		return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);
 	}

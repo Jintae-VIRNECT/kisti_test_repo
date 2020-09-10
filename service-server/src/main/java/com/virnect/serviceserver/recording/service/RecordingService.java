@@ -66,7 +66,7 @@ public abstract class RecordingService {
 	 * store Recording entity)
 	 */
 	protected void generateRecordingMetadataFile(Recording recording) {
-		String folder = this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId();
+		String folder = this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + recording.getId();
 		boolean newFolderCreated = this.fileWriter.createFolderIfNotExists(folder);
 
 		if (newFolderCreated) {
@@ -77,7 +77,7 @@ public abstract class RecordingService {
 			log.info("Folder {} already existed. Some publisher is already being recorded", folder);
 		}
 
-		String filePath = this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId() + "/"
+		String filePath = this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + recording.getId() + "/"
 				+ RecordingManager.RECORDING_ENTITY_FILE + recording.getId();
 		String text = recording.toJson().toString();
 		this.fileWriter.createAndWriteFile(filePath, text);
@@ -91,7 +91,7 @@ public abstract class RecordingService {
 	 * @return updated Recording object
 	 */
 	protected Recording sealRecordingMetadataFileAsStopped(Recording recording) {
-		final String entityFile = this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId() + "/"
+		final String entityFile = this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + recording.getId() + "/"
 				+ RecordingManager.RECORDING_ENTITY_FILE + recording.getId();
 		return this.sealRecordingMetadataFile(recording, 0, 0, com.virnect.java.client.Recording.Status.stopped,
 				entityFile);
@@ -112,7 +112,7 @@ public abstract class RecordingService {
 		// Status is now failed or ready. Url property must be defined
 		recording.setUrl(recordingManager.getRecordingUrl(recording));
 
-		final String entityFile = this.remoteServiceConfig.getRemoteServiceRecordingPath() + recording.getId() + "/"
+		final String entityFile = this.remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath() + recording.getId() + "/"
 				+ RecordingManager.RECORDING_ENTITY_FILE + recording.getId();
 		return this.sealRecordingMetadataFile(recording, size, duration, status, entityFile);
 	}

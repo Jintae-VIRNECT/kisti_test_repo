@@ -32,7 +32,7 @@ public class CDRHttpHandler implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		String cdrPath = remoteServiceConfig.getRemoteServiceCdrPath();
+		String cdrPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceCdrPath();
 		registry.addResourceHandler("/cdr/**.log").addResourceLocations("file:" + cdrPath);
 	}
 
