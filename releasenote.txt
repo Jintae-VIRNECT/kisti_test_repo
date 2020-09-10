@@ -2,8 +2,7 @@
 RELEASE
 
 New Features
-- self-preservation 기능 비활성화
-- Zipkin 추가
+- host ip
 
 Bug Fixes
 - Jenkinsfile Versioning
