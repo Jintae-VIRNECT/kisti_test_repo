@@ -189,11 +189,17 @@ export default {
           } else {
             canvas.defaultCursor = 'grab'
           }
+          if (event.target !== null) {
+            event.target.hoverCursor = canvas.defaultCursor
+          }
           return
         }
 
         if (this.viewAction === ACTION.DRAWING_TEXT) {
           canvas.defaultCursor = 'text'
+        }
+        if (event.target !== null) {
+          event.target.hoverCursor = canvas.defaultCursor
         }
 
         if (
