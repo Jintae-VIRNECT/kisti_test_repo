@@ -1,12 +1,10 @@
 package com.virnect.download.dto.response;
 
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Project: PF-Download
@@ -19,5 +17,5 @@ import java.util.List;
 @RequiredArgsConstructor
 @ApiModel
 public class AppInfoListResponse {
-    private final List<AppInfoResponse> appInfoList;
+	private final List<AppInfoResponse> appInfoList;
 }

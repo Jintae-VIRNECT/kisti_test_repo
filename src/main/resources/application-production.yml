@@ -7,17 +7,11 @@ spring:
     password: qjsprxm2020!#@$
   jpa:
     hibernate:
-      ddl-auto: none
-    show-sql: true
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    properties:
-      hibernate:
-        format_sql: true
   zipkin:
     base-url: http://zipkin.virnect.com
-logging:
-  level:
-    com.virnect.download.application.*: DEBUG
+    discovery-client-enabled: false
 
 ## Server Configuration
 server:
@@ -27,7 +21,7 @@ server:
 file:
   upload-path: "app/"
   url: "https://file.virnect.com"
-  allow-extension: "exe,apk,zip"
+  allow-extension: "apk"
 
 ## Eureka Server Configuration
 eureka:
@@ -48,3 +42,11 @@ cloud:
     s3:
       bucket:
         name: "virnect-download"
+    cdn: "https://file.virnect.com/"
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus

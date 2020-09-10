@@ -22,20 +22,14 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
-@Table(name = "device")
+@Table(name = "os")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Device extends TimeEntity {
+public class OS extends TimeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "device_id")
+	@Column(name = "os_id")
 	private Long id;
 
 	@Column(name = "name", nullable = false)
 	private String name;
-
-	@Column(name = "dispaly_title", nullable = false)
-	private String displayTitle;
-
-	@Column(name = "type")
-	private String type;
 }

@@ -7,7 +7,7 @@ spring:
     password: virnect1234
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     properties:
@@ -22,6 +22,7 @@ spring:
 logging:
   level:
     com.virnect.download.application.*: DEBUG
+    org.hibernate.type.descriptor.sql: trace
 
 ## Server Configuration
 server:
@@ -31,7 +32,7 @@ server:
 file:
   upload-path: "app/"
   url: "http://192.168.6.3:${server.port}/download/"
-  allow-extension: "exe,apk,zip"
+  allowed-extension: "apk"
 
 ## Eureka Server Configuration
 eureka:
@@ -52,3 +53,11 @@ cloud:
     s3:
       bucket:
         name: "virnect-download"
+    cdn: "https://file.virnect.com/"
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
