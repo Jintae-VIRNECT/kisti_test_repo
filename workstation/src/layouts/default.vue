@@ -74,7 +74,12 @@ export default {
 
     // 기본 언어 쿠키
     if (!Cookies.get('lang')) {
-      Cookies.set('lang', this.$i18n.locale)
+      Cookies.set('lang', this.$i18n.locale, {
+        domain:
+          location.hostname.split('.').length === 3
+            ? location.hostname.replace(/.*?\./, '')
+            : location.hostname,
+      })
     }
 
     // 서버 메세지 푸시
