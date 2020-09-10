@@ -54,7 +54,7 @@ public class StaticsController {
      *
      * @return
      */
-    @ApiOperation(value = "전체 작업 진행률 및 작업진행상태별 현황 조회", tags = "Statistics")
+    @ApiOperation(value = "전체 작업 진행률 및 작업진행상태별 현황 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query")
     })
@@ -72,7 +72,7 @@ public class StaticsController {
      * @param month
      * @return
      */
-    @ApiOperation(value = "해당월의 일별 통계 조회", tags = "Statistics")
+    @ApiOperation(value = "해당월의 일별 통계 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "month", value = "연월(YYYY-MM)", dataType = "string", paramType = "query", required = true, example = "2020-03")

@@ -45,7 +45,7 @@ public class IssueController {
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "이슈 목록 조회", tags = "Issues", notes = "searchType 없앰. 정렬 컬럼명은 updatedDate")
+    @ApiOperation(value = "이슈 목록 조회", notes = "searchType 없앰. 정렬 컬럼명은 updatedDate")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "search", value = "검색어(사용자 이메일, 닉네임, 작업명, 하위 작업명, 이슈 내용, 단계명)", dataType = "string", paramType = "query", defaultValue = ""),
@@ -107,7 +107,7 @@ public class IssueController {
      * @param issueId
      * @return
      */
-    @ApiOperation(value = "이슈상세조회", tags = "Issues")
+    @ApiOperation(value = "이슈상세조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "issueId", value = "issue 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
@@ -130,7 +130,7 @@ public class IssueController {
      * @param pageable
      * @return
      */
-    @ApiOperation(value = "트러블 메모 목록 조회", tags = "Issues", notes = "searchType을 최우선 확인함. searchType이 NONE인 경우 검색어는 무시됨.\n정렬 컬럼명은 updatedDate.\n 특정 작업 등에 얽매이지 않는다. 현재는 JOB_ID가 null인 것을 리턴.")
+    @ApiOperation(value = "트러블 메모 목록 조회", notes = "searchType을 최우선 확인함. searchType이 NONE인 경우 검색어는 무시됨.\n정렬 컬럼명은 updatedDate.\n 특정 작업 등에 얽매이지 않는다. 현재는 JOB_ID가 null인 것을 리턴.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "search", value = "검색어 - searchType이 NONE인 경우 검색어는 무시됨.", dataType = "string", paramType = "query", defaultValue = ""),
@@ -159,7 +159,7 @@ public class IssueController {
      * @param troubleMemoId
      * @return
      */
-    @ApiOperation(value = "트러블 메모 상세 조회", tags = "Issues")
+    @ApiOperation(value = "트러블 메모 상세 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "troubleMemoId", value = "troubleMemo 식별자", dataType = "string", paramType = "path", required = true, example = "1")
     })
@@ -173,7 +173,7 @@ public class IssueController {
         return ResponseEntity.ok(issueInfoResponseApiResponse);
     }
 
-    @ApiOperation(value = "트러블메모 업로드", tags = "Issues")
+    @ApiOperation(value = "트러블메모 업로드")
     @PostMapping("/troubleMemo/upload")
     public ResponseEntity<ApiResponse<TroubleMemoUploadResponse>> setTroubleMemo(
             @RequestBody @Valid TroubleMemoUploadRequest troubleMemoUploadRequest, BindingResult result

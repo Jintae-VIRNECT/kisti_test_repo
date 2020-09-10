@@ -6,10 +6,6 @@ Bug Fixes
 
 Limitation
 - 코드 개선
-- 워크스페이스 작업목록 응답 데이터가 작업자의 이메일 추가
-- 작업목록, 페이퍼목록 조회 api 에 email search값 추가
-- 페이퍼 목록 조회 시 step id 값 추가
-- 작업 수정 시 작업의 owner인지 확인하는 로직 제거
-- 단계 목록 조회시 페이퍼 요소를 리스트로 응답하는 것으로 변경
+- 회원 탈퇴 시 작업관련데이터 삭제 로직 추가
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

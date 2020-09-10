@@ -36,13 +36,14 @@ public class Report extends BaseTimeEntity {
     @JoinColumn(name = "job_id")
     private Job job;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report", cascade = CascadeType.REMOVE)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "report")
     private List<Item> itemList = new ArrayList<>();
-
+/*
     public void addItem(Item item) {
         item.setReport(this);
         itemList.add(item);
     }
+*/
 
     // 공정률 조회
     public Integer getProgressRate() {
