@@ -5,12 +5,6 @@
 				<h2>{{ $t('complete.title') }}</h2>
 				<p>{{ $t('complete.welcome') }}</p>
 
-				<el-button
-					class="next-btn block-btn"
-					@click="trialCoupon"
-					type="primary"
-					>{{ $t('complete.trial') }}</el-button
-				>
 				<el-button class="next-btn block-btn" @click="payment" type="info">{{
 					$t('complete.payment')
 				}}</el-button>
@@ -31,9 +25,6 @@ export default {
 	methods: {
 		goWorkstation() {
 			location.replace(window.urls['workstation'])
-		},
-		trialCoupon() {
-			location.replace(`${window.urls['www']}/coupon`)
 		},
 		payment() {
 			location.replace(`${window.urls['pay']}`)
