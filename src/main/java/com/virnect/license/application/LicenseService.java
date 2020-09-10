@@ -347,9 +347,25 @@ public class LicenseService {
 			);
 			return new ApiResponse<>(myLicenseInfoResponse);
 		} else {
+			// 라이선스 축소
 			oldLicense.setUserId(null);
 			oldLicense.setStatus(LicenseStatus.UNUSE);
 			this.licenseRepository.save(oldLicense);
+
+			// 해당 제품 라이선스 초과 상태 체크
+			if (licenseProduct.getStatus().equals(LicenseProductStatus.EXCEEDED)) {
+				// 현재 사용중인 라이선스 갯수 계산
+				long usedLicenseAmount = licenseProduct.getLicenseList()
+					.stream()
+					.filter(l -> l.getStatus().equals(LicenseStatus.USE))
+					.count();
+				// 제품 라이선스 갯수 범위 내에 들어온 경우 
+				if (usedLicenseAmount <= licenseProduct.getQuantity()) {
+					// 제품 라이선스 초과 상태에서 정상 상태로 변경
+					licenseProduct.setStatus(LicenseProductStatus.ACTIVE);
+					licenseProductRepository.save(licenseProduct);
+				}
+			}
 
 			return new ApiResponse<>(true);
 		}
