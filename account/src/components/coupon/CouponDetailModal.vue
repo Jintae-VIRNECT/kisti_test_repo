@@ -41,7 +41,7 @@
           <el-table :data="items" :show-header="false">
             <column-plan
               :label="$t('payment.autoPaymentCancelModal.column.product')"
-              prop="name"
+              :prop="$i18n.locale === 'ko' ? 'name' : 'nameEng'"
               productProp="product"
             />
           </el-table>

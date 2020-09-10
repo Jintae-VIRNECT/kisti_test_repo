@@ -65,7 +65,7 @@
   },
   "nicknameChangeModal": {
     "title": "닉네임 설정",
-    "desc": "닉네임을 변경하면 VIRNECT 제품과 서비스에 변경된 이름이 적용됩니다.",
+    "desc": "닉네임을 변경하면 VIRNECT 제품과 서비스에 변경된 닉네임이 적용됩니다.",
     "nickname": "닉네임",
     "submit": "변경",
     "message": {

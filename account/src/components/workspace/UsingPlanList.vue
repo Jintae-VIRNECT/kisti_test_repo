@@ -10,6 +10,7 @@
         sortable
       />
       <column-user
+        type="no-tooltip"
         :label="$t('workspace.usingPlanList.column.workspaceName')"
         prop="workspaceUUID"
         nameProp="workspaceName"

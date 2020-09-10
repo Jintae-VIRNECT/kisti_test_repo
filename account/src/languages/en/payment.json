@@ -6,38 +6,33 @@
     "price": "Upcoming payment",
     "dueDate": "Payment due date",
     "way": "Payment method",
-    "autoPaymentEveryMonth": "Authomatic monthly payment"
+    "autoPaymentEveryMonth": "Automatic monthly payment"
   },
-  "way": {
-    "change": "Notice of payment method change",
-    "changeDesc": "In order to change the payment method you must repurchase the product and service voucher at the payment center after automatic payment is canceled. Upon repurchase payment will be made with the changed payment method from the next payment date. After canceling the automatic payment proceed to purchase the voucher at the payment center.",
-    "cancel": "Notice on change of subscribed product and automatic payment cancellation.",
-    "cancelDesc": "When automatic payment is canceled or the subscribed product is changed the previously applied coupon will not be applied and cannot be reused. When automatic payment is canceled all users of the workspace will not be able to use VIRNECT products from the next payment date and product and service data will be kept for up to two weeks. If you pay again within 2 weeks of the scheduled payment date you can use the VIRNECT product with your existing information.",
-    "autoPayment": "Automatic Payment",
-    "autoPaymentNow": "Automatic payment is currentl",
-    "autoPaymentCancel": "Automaic payment method activated"
+  "info": {
+    "title": "Product subscription payment details",
+    "totalAmount": "Total amount of purchasing plans",
+    "extend": "Additional service subscription payment details"
   },
   "log": {
     "title": "Deactivate automatic payment method",
     "column": {
       "no": "Payment history",
-      "way": "Purchase numbers",
+      "way": "Purchase method",
       "price": "Payment method",
-      "paidDate": "Payment amount"
+      "paidDate": "Payment date"
     }
   },
-  "autoPaymentInfoModal": {
-    "desc": "Please check the payment information.",
-    "submit": "Change"
-  },
   "autoPaymentCancelModal": {
+    "title": "Cancel automatic payment",
     "desc": "Please double-check the product plan and subscription you want to cancel.",
     "column": {
       "product": "Product plans and additional services",
       "count": "Quantity",
-      "numbersUnit": "Count"
+      "numbersUnit": "Plans"
     },
-    "caution": "* If you cancel now you will be able to use the product and services until the remaining period. <br>* After 7 days of expiration data related to products and services will be deleted and cannot be recovered.",
+    "cautionTitle": "Notice on canceling automatic payment",
+    "caution": "* If you cancel now you will be able to use the product and services until the remaining period. When automatic payment is canceled all users of the workspace will not be able to use VIRNECT products from the next payment due date. Your product and service data will be kept for up to two weeks. If you pay again within 2 weeks of the scheduled payment date you can use the VIRNECT product with your existing information.",
+    "cautionAgree": "Agree to the notice on canceling automatic payment",
     "submit": "Cancel",
     "submitDone": "Cancelling automatic payment",
     "submitDoneDesc": "Automatic payment has been cancelled. If you want to maintain the automatic payment you can cancel the \"cancellation of the automatic payment\" from tomorrow to one day before the expiration date.",

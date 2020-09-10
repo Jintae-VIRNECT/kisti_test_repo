@@ -7,7 +7,7 @@
     :before-close="handleClose"
   >
     <div>
-      <p v-html="$t('profile.passwordChangeModal.desc')"></p>
+      <!-- <p v-html="$t('profile.passwordChangeModal.desc')"></p> -->
       <el-form
         class="virnect-login-form"
         ref="form"

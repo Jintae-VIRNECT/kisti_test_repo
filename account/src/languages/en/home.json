@@ -5,16 +5,17 @@
   },
   "workspace": {
     "title": "My Workspace",
-    "name": "Workspace Name",
-    "desc": "Workspace Description",
-    "master": "Workspace Master",
+    "name": "Workspace name",
+    "desc": "Workspace description",
+    "master": "Workspace master",
     "descEmpty": "There is no description in the Workspace"
   },
   "payment": {
-    "title": "Subscription Payment Information"
+    "title": "Purchasement details",
+    "extend": "Service subscription"
   },
   "usingPlan": {
-    "title": "My Current Plan",
+    "title": "My current plan",
     "desc": "Your current plan details"
   },
   "workspacePlan": {
