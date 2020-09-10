@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
@@ -91,11 +92,14 @@ public class S3UploadService implements FileUploadService {
 		if (url.equals("default")) {
 			log.info("기본 이미지는 삭제하지 않습니다.");
 		} else {
-			String resourceEndPoint = String.format("%s%s", bucketResource, CONTENT_DIRECTORY);
+			//String resourceEndPoint = String.format("%s%s", bucketResource, CONTENT_DIRECTORY);
 			//            String resourceEndPoint = String.format("%s/%s", bucketName, bucketResource);
-			String key = url.split(String.format("/%s/%s", bucketResource, CONTENT_DIRECTORY))[1];
-			amazonS3Client.deleteObject(resourceEndPoint, key);
-			log.info(key + " 파일이 AWS S3(" + resourceEndPoint + ")에서 삭제되었습니다.");
+			//String key = url.split(String.format("/%s/%s", bucketResource, CONTENT_DIRECTORY))[1];
+			String key = bucketResource + CONTENT_DIRECTORY + "/" + FilenameUtils.getName(url);
+			amazonS3Client.deleteObject(bucketName, key);
+			//amazonS3Client.deleteObject(resourceEndPoint, key);
+
+			log.info(FilenameUtils.getName(url) + " 파일이 AWS S3(" + bucketName + "/" + key + ")에서 삭제되었습니다.");
 		}
 		return true;
 	}
