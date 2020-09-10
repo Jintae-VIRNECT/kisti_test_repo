@@ -4,18 +4,18 @@
     "title": "Workspace information that you are participating",
     "empty": "No information of Workspace",
     "column": {
-      "name": "Workspace name",
+      "name": "Workspace Name",
       "master": "Master",
-      "joinDate": "Participation date",
-      "role": "Workstation authority level"
+      "joinDate": "Participation Date",
+      "role": "Role"
     }
   },
   "usingPlanList": {
-    "title": "Current plan on use.",
+    "title": "Plans on use",
     "column": {
-      "name": "Plan name",
-      "workspaceName": "Next",
-      "renewalDate": "Next update date"
+      "name": "Plan",
+      "workspaceName": "Workspace Name",
+      "renewalDate": "Renew Date"
     }
   }
 }

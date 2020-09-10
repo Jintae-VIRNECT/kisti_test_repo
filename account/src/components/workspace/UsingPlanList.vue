@@ -20,7 +20,7 @@
       <column-date
         :label="$t('workspace.usingPlanList.column.renewalDate')"
         prop="renewalDate"
-        :width="120"
+        :width="130"
         sortable
       />
     </el-table>

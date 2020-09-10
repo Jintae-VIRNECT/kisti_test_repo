@@ -6,8 +6,8 @@
     "link": "Shortcut"
   },
   "addCouponCode": {
-    "title": "Register new coupons",
-    "label": "Enter coupon codes",
+    "title": "Register Coupon",
+    "label": "Coupon Code",
     "placeholder": "Enter your coupon codes",
     "submit": "Submit",
     "cautionTitle": "Notes on coupon registration",
@@ -19,16 +19,16 @@
     ]
   },
   "couponList": {
-    "title": "Coupon list",
+    "title": "Coupon List",
     "desc": "Standby coupons can be used when purchasing product or service vouchers at the payment center.",
     "empty": "There is no registered coupon"
   },
   "column": {
-    "couponName": "Coupon name",
+    "couponName": "Coupon Name",
     "couponNo": "Number",
-    "registerDate": "Date of register",
-    "expireDate": "Valid date",
-    "usedDate": "Date when used",
+    "registerDate": "Register Date",
+    "expireDate": "Valid Date",
+    "usedDate": "Used Date",
     "status": "Validity"
   },
   "status": {
@@ -46,12 +46,12 @@
     "useExpired": "Cannot use this coupon since the validity date has expired"
   },
   "detailModal": {
-    "title": "Coupon information",
-    "couponName": "Coupon name",
-    "couponNo": "Coupon number",
-    "couponType": "Coupon type",
-    "registerDate": "Coupon register date",
-    "usedDate": "Coupon used date",
+    "title": "Coupon Information",
+    "couponName": "Coupon Name",
+    "couponNo": "Coupon Number",
+    "couponType": "Type",
+    "registerDate": "Register date",
+    "usedDate": "Used Date",
     "usedDateDesc": "Coupon can be applied when used during the valid date mentioned on the coupon.",
     "expireDate": "Coupon expiry date",
     "expireDateDesc": "Coupons cannot be used after expiry date.",

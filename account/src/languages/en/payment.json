@@ -2,28 +2,28 @@
   "desc": "Manage the payment details and payment history of the workspace where you are given with master authority.",
   "monetaryUnit": "Won",
   "will": {
-    "title": "Upcoming payment detail",
-    "price": "Upcoming payment",
-    "dueDate": "Payment due date",
-    "way": "Payment method",
-    "autoPaymentEveryMonth": "Automatic monthly payment"
+    "title": "Upcoming Payment Info",
+    "price": "Upcoming Payment",
+    "dueDate": "Payment Date",
+    "way": "Payment Method",
+    "autoPaymentEveryMonth": "Monthly Subscription"
   },
   "info": {
-    "title": "Product subscription payment details",
-    "totalAmount": "Total amount of purchasing plans",
-    "extend": "Additional service subscription payment details"
+    "title": "Plans Details",
+    "totalAmount": "Purchasing plans",
+    "extend": "Additional service"
   },
   "log": {
-    "title": "Deactivate automatic payment method",
+    "title": "Payment History",
     "column": {
-      "no": "Payment history",
-      "way": "Purchase method",
-      "price": "Payment method",
-      "paidDate": "Payment date"
+      "no": "Payment Code",
+      "way": "Purchase Method",
+      "price": "Amount of Payment",
+      "paidDate": "Payment Date"
     }
   },
   "autoPaymentCancelModal": {
-    "title": "Cancel automatic payment",
+    "title": "Cancel Subcriptions",
     "desc": "Please double-check the product plan and subscription you want to cancel.",
     "column": {
       "product": "Product plans and additional services",

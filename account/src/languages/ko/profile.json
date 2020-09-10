@@ -75,7 +75,7 @@
   },
   "passwordChangeModal": {
     "title": "비밀번호 변경",
-    "desc": "비밀번호 변경 시, 현재 이용 중인 기기를 제외한 기존 로그인된 기기에서 로그인이 해지됩니다.",
+    "desc": "비밀번호 변경 시, 변경된 비밀번호로 다시 로그인해 주세요.",
     "newPassword": "새 비밀번호",
     "newPasswordPlaceholder": "새 비밀번호 입력",
     "newPasswordRepeatPlaceholder": "새 비밀번호 재입력",
