@@ -180,6 +180,13 @@ export default {
           userId: this.account.uuid,
         })
         this.historyList = []
+        this.pageMeta = {
+          currentPage: 0,
+          currentSize: 0,
+          totalElements: 0,
+          totalPage: 0,
+          last: false,
+        }
       } catch (err) {
         console.error(err)
       }
