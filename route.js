@@ -9,12 +9,13 @@ function IsAllowBrowser(req) {
   const isChrome = userAgent.includes('Chrome')
   const isChromeMobile =
     userAgent.includes('CriOS') || userAgent.includes('mobileApp')
-  const isEdge = userAgent.includes('Edg')
+  const isEdge = userAgent.includes('Edg') || userAgent.includes('Edge')
+  const isSamsung = userAgent.includes('SamsungBrowser')
 
   const findSafari = userAgent.includes('Safari')
   const isSafari = !isChrome && !isChromeMobile && findSafari ? true : false
 
-  return (isChrome || isEdge || isChromeMobile) && !isSafari
+  return (isChrome || isEdge || isChromeMobile) && !isSafari && !isSamsung
 }
 
 function IsMobileBrowser(req) {
