@@ -30,7 +30,7 @@
   },
   "profile": {
     "title": "My Profile",
-    "link": "Profile Settings",
+    "link": "Settings",
     "usingNickname": "Nickname",
     "workspaceRole": "Role",
     "usingPlans": "Plans in Use"
@@ -43,7 +43,7 @@
   },
   "faq": {
     "title": "FAQ",
-    "desc": "Are you having difficulty using our products and services?<br>Check out our FAQ."
+    "desc": "Are you having difficulty using our products and services?"
   },
   "plansInfo": {
     "used": "Used",
