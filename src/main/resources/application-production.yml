@@ -12,7 +12,10 @@ spring:
   zipkin:
     base-url: http://zipkin.virnect.com
     discovery-client-enabled: false
-
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 600MB
 ## Server Configuration
 server:
   port: 8086

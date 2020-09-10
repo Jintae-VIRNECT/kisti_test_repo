@@ -15,6 +15,10 @@ spring:
         format_sql: true
   zipkin:
     base-url: http://stgzipkin.virnect.com
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 600MB
 logging:
   level:
     com.virnect.download.application.*: DEBUG
