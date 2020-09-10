@@ -30,9 +30,6 @@ pipeline {
           when {
             branch 'develop'
           }
-          environment {
-              NODE_ENV = 'develop'
-          }
           steps {
             sh 'yarn build'
             sh 'docker build -t pf-login .'
@@ -43,46 +40,18 @@ pipeline {
           when {
             branch 'staging'
           }
-          environment {
-              NODE_ENV = 'staging'
-          }
           steps {
             sh 'git checkout ${GIT_TAG}'
             sh 'yarn build'
             sh 'docker build -t pf-login:${GIT_TAG} .'
           }
         }
-
-        stage('Master Branch') {
-          when {
-            branch 'master'
-          }
-          environment {
-              NODE_ENV = 'production'
-          }
-          steps {
-            sh 'git checkout ${GIT_TAG}'
-            sh 'yarn build'
-            sh 'docker build -t pf-login:${GIT_TAG} .'
-          }
-        }
-
       }
     }
 
     stage('Test') {
       steps {
         echo 'Test Stage'
-      }
-    }
-
-    stage('Tunneling') {
-      steps {
-        echo 'SSH Check'
-        catchError() {
-          sh 'port=`netstat -lnp | grep 127.0.0.1:2122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Tunneling OK";else echo "SSH QA Tunneling Not OK";ssh -M -S Platform-QA -fnNT -L 2122:10.0.10.143:22 jenkins@13.125.24.98;fi'
-          sh 'port=`netstat -lnp | grep 127.0.0.1:3122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Tunneling OK";else echo "SSH Prod Tunneling Not OK";ssh -M -S Platform-Prod -fnNT -L 3122:10.0.20.170:22 jenkins@13.125.24.98;fi'
-        }
       }
     }
 
@@ -114,6 +83,7 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-login:${GIT_TAG}").push("latest")
                 }
               }
 
@@ -157,13 +127,6 @@ pipeline {
           }
           steps {
             catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-login:${GIT_TAG}").push("latest")
-                }
-              }
-
               script {
                 sshPublisher(
                   continueOnError: false, failOnError: true,
