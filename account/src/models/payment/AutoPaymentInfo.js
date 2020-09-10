@@ -31,8 +31,8 @@ export default class AutoPaymentInfo extends Model {
       add: 0,
     }
 
-    // 자동 결제 해지 신청중
-    if (json.PayFlag === 'N') {
+    // 현재 자동 결제 중일 때만
+    if (json.PayFlag !== 'Y') {
       this.price = 0
       this.nextPayDate = null
       this.items = []

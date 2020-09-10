@@ -54,7 +54,7 @@
         :key="product.value"
       >
         <el-progress
-          :percentage="(product.usedAmount / product.amount) * 100"
+          :percentage="percent(product.usedAmount, product.amount)"
           :show-text="false"
         />
         <div class="column-plan">
@@ -151,6 +151,12 @@ export default {
       } else {
         return '-'
       }
+    },
+  },
+  methods: {
+    percent(child, parent) {
+      if (child === 0 && parent === 0) return 0
+      return (child / parent) * 100
     },
   },
 }
