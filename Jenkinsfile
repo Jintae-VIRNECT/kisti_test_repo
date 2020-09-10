@@ -1,7 +1,7 @@
 pipeline {
   agent any
     environment {
-      GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+      GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
       REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
     }
   stages {
@@ -89,7 +89,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps -a | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8084:8084 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -d --name=pf-message pf-message'
+            sh 'docker run -p 8084:8084 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-message pf-message'
             sh 'docker image prune -a -f'
           }
         }
@@ -123,7 +123,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8084:8084 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8084:8084 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -148,6 +148,7 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-message:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-message:${GIT_TAG}").push("latest")
                 }
               }
               script {
@@ -168,7 +169,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8084:8084 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8084:8084 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
