@@ -21,7 +21,7 @@ server:
 file:
   upload-path: "app/"
   url: "https://file.virnect.com"
-  allow-extension: "apk"
+  allowed-extension: "apk"
 
 ## Eureka Server Configuration
 eureka:
