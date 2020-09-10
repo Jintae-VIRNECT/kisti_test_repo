@@ -131,6 +131,7 @@ export default {
         if (err.code === 4017) {
           this.toastError(this.$t('workspace.confirm_already_invite_remove'))
         }
+        this.refresh()
       }
     },
     async leaveoutRoom(sessionId) {
@@ -153,6 +154,7 @@ export default {
         } else if (err.code === 4017) {
           this.toastError(this.$t('workspace.confirm_already_invite_leave'))
         }
+        this.refresh()
       }
     },
   },
