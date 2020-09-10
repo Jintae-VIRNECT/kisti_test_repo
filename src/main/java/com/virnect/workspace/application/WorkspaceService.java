@@ -233,11 +233,11 @@ public class WorkspaceService {
 				workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
 			workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
 
-			//UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
-			//workspaceInfo.setMasterName(userInfoRestResponse.getName());
-			//workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
+			UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
+			workspaceInfo.setMasterName(userInfoRestResponse.getName());
+			workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
 			workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-			//workspaceInfo.setMasterNickName(userInfoRestResponse.getNickname());
+			workspaceInfo.setMasterNickName(userInfoRestResponse.getNickname());
 			workspaceInfo.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
 			workspaceList.add(workspaceInfo);
 		}
