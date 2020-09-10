@@ -1,23 +1,23 @@
 {
-  "welcome": "Hello John welcome to the Workspace",
+  "welcome": "Hello {nickname} welcome to the Workspace",
   "master": "Master",
   "manager": "Manager",
   "member": "Member",
   "create": "Create Workspace",
   "started": {
-    "title": "Finish setting up Workspace details.",
+    "title": "Finish setting up Workspace details",
     "desc": "The workspace information set up is completed. Invite members to start using VIRNECT products at Workspace."
   },
   "info": {
     "title": "Workspace details",
     "descriptionEmpty": "There is no Workspace description",
-    "planMemberCount": "User counts per plans",
+    "planMemberCount": "Members per plans",
     "planPurchase": "Purchase plans",
     "addMember": "Add member"
   },
   "setting": {
     "title": "Profile settings",
-    "createdDate": "Created date",
+    "createdDate": "Created on",
     "name": "Workspace name",
     "namePlaceholder": "John's Workspace",
     "nameComment": "Enter less than 30 characters for your Workspace name",
@@ -25,23 +25,23 @@
     "descPlaceholder": "Enter your workspace description",
     "descComment": "Enter less than 40 characters for the description.",
     "image": "Profile picture",
-    "imageComment": "Please update your workspace profile picture. This profile picture shall be displayed on the sidebar and notifications.",
+    "imageComment": "Please update your workspace profile picture. This profile picture is displayed on the sidebar and notifications.",
     "start": "Begin Workspace",
     "update": "Edit",
-    "leave": "Leave",
+    "leave": "Leave Workspace",
     "leaveInfo": {
-      "title": "Guide to leaving the Workspace",
+      "title": "Notice on leaving the Workspace",
       "list": [
         "You are no longer participating in this Workspace including the plans and products related to it.",
         "Data and records uploaded or shared by you will not be deleted. Leaving the Workspace is not canceled.",
-        "If you would like to rejoin the Workspace please request the Workspace master or manager to add you as the workspace member."
+        "If you would like to rejoin the Workspace contact the Workspace master or manager again."
       ],
       "agree": "I agree to above guidelines before leaving the Workspace.",
-      "success": "Succesfully left the Workspace.",
+      "success": "You have left the Workspace.",
       "fail": "Failed to leave the Workspace please try again later."
     },
     "message": {
-      "updateSuccess": "Workspace details updated.",
+      "updateSuccess": "The Workspace details are updated.",
       "updateFail": "Failed to setting up the Workspace details please try again later."
     }
   }

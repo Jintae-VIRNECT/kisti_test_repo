@@ -69,7 +69,7 @@
             <img
               v-if="content.target.imgPath"
               src="~assets/images/icon/ic-file-download.svg"
-              @click="download(content.target.imgPath)"
+              @click="download(content.target.imgPath, content.contentName)"
             />
           </dd>
         </dl>
@@ -146,9 +146,6 @@ export default {
     closed() {
       this.showMe = false
       this.$router.push('/contents')
-    },
-    download(url) {
-      window.open(url)
     },
     registerTask() {
       this.$router.replace(`/tasks/new?contentId=${this.content.contentUUID}`)

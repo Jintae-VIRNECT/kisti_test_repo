@@ -5,9 +5,6 @@ const fs = require('fs')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
 const path = require('path')
-const packageJson = JSON.parse(
-  fs.readFileSync(path.resolve(__dirname, 'package.json')),
-)
 
 module.exports = {
   /*
@@ -17,7 +14,7 @@ module.exports = {
     htmlAttrs: {
       lang: 'ko',
     },
-    title: 'Workstation',
+    title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -57,7 +54,7 @@ module.exports = {
     NODE_ENV: process.env.NODE_ENV,
   },
   publicRuntimeConfig: {
-    VERSION: packageJson.version,
+    VERSION: process.env.npm_package_version || '',
     TARGET_ENV: env.TARGET_ENV,
     API_GATEWAY_URL: env.API_GATEWAY_URL,
     API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),

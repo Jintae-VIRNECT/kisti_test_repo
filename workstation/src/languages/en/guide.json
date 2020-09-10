@@ -1,7 +1,7 @@
 {
-  "title": "User Guide",
+  "title": "User guide",
   "makeGuide": {
-    "label": "Make user manaul",
+    "label": "Make user manual",
     "url": "https://file.virnect.com/Guide/make_user_guide.pdf"
   },
   "makeDemoContetns": {
@@ -25,7 +25,15 @@
     "url": "https://file.virnect.com/Guide/workstation_user_guide.pdf"
   },
   "purchaseGuide": {
-    "label": "Purchasement instructions",
+    "label": "Guide to purchasement",
     "url": "https://file.virnect.com/Guide/purchase_user_guide.pdf"
+  },
+  "taskManageGuide": {
+    "label": "Guide to using the task services",
+    "url": "http://file.virnect.com/Guide/task_management_user_guide.pdf"
+  },
+  "taskStatusGuide": {
+    "label": "Guide to progress status",
+    "url": "http://file.virnect.com/Guide/task_status_user_guide.pdf"
   }
 }

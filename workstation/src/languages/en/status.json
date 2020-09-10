@@ -7,6 +7,6 @@
     "completed": "Completed",
     "failed": "Overdue",
     "success": "Accomplished",
-    "fault": "Incomplete"
+    "fault": "Incompleted"
   }
 }

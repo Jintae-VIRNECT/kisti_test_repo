@@ -6,10 +6,10 @@
   "yes": "Yes",
   "no": "No",
   "confirm": "Confirm",
-  "download": "Dowload",
+  "download": "Download",
   "delete": "Delete",
   "graph": "Graph",
   "list": "List",
-  "numbersUnit": "Count",
-  "paymentCenter": "Payment Center"
+  "numbersUnit": "",
+  "paymentCenter": "Payment center"
 }

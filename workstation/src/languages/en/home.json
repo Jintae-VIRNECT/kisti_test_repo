@@ -2,73 +2,83 @@
   "banner": {
     "sub": "Connect Work Space and People",
     "main": "VIRNECT Workstation",
-    "desc": "Experience systematic member management along with VIRNECT products and services."
+    "desc": "Experience true systematic management through VIRNECT products"
   },
   "memberList": {
     "title": "New members",
     "column": {
       "nickname": "Nickname",
       "email": "Account",
-      "role": "Participation date",
-      "joinDate": "Joined date"
+      "role": "Role",
+      "joinDate": "Date"
     },
-    "empty": "Add members to your Workstation"
+    "empty": "Invite members to your Workstation"
   },
   "contentsList": {
-    "title": "Recently updated contents and tasks",
-    "contents": "Recent contents",
+    "title": "Recent content & task",
+    "contents": "Recent content",
     "task": "Recent tasks",
-    "empty": "No recently updated content",
-    "taskEmpty": "No recently updated tasks"
+    "empty": "No content updated recently",
+    "taskEmpty": "No tasks updated recently"
   },
   "reportList": {
-    "title": "Recent task reports",
+    "title": "Recent reports",
     "task": "Task",
     "paper": "Paper",
     "issue": "Issue",
-    "empty": "There are no reports made"
+    "empty": "There is no report made"
   },
   "profile": {
     "title": "My profile",
     "link": "Update profile",
     "usingNickname": "My nickname",
-    "workspaceRole": "Workspace role level",
+    "workspaceRole": "Role",
     "usingPlans": "Plans in use"
   },
   "install": {
-    "title": "Download Center",
+    "title": "Download center",
     "remote": "Install VIRNECT Remote",
     "make": "Install VIRNECT Make",
     "view": "Install VIRNECT View"
   },
   "faq": {
-    "title": "FAQ on Product and Services",
+    "title": "FAQ on product and services",
     "desc": "Are you having difficulty using our products and services?<br>Check out our frequently asked questions."
   },
   "plansInfo": {
     "used": "Used",
-    "remain": "Usable",
+    "remain": "Remaining",
     "buy": "Purchase",
     "arStorage": {
       "title": "AR storage capacity",
-      "desc": "It may differ from the actual remaining capacity so please use it as a reference.",
-      "max": "Total AR storage content",
-      "used": "Used amount of AR storage",
+      "desc": "It may differ from the actual remaining storage so please use it as a reference.",
+      "max": "Total AR storage",
+      "used": "Used AR storage",
       "unit": "GB"
     },
     "arContent": {
-      "title": "Online AR content view count",
-      "desc": "It may differ from the actual view count so please use it as a reference.",
-      "max": "Total AR content view count",
-      "used": "Used view counts of AR content",
-      "unit": "Count"
+      "title": "Online AR content views",
+      "desc": "It may differ from the actual view counts so please use it as a reference.",
+      "max": "Total AR content views",
+      "used": "AR content views used",
+      "unit": "Views"
     },
     "call": {
-      "title": "Talk Time",
-      "desc": "It may differ from the actual remaining talk time so please use it as a reference.",
-      "max": "Overall talk time",
-      "used": "Used talk time",
-      "unit": "Time"
+      "title": "Talk minutes",
+      "desc": "It may differ from the actual remaining Talk minutes so please use it as a reference.",
+      "max": "Overall Talk minutes",
+      "used": "Talk minutes used",
+      "unit": "Minutes"
     }
+  },
+  "storageOverflow": {
+    "title": "AR storage needs to be managed in the Workspace. Please delete some of your content according to purchased storage.",
+    "desc": "The content is saved for 14 days from the date of purchase and it will be deleted in the order of oldest to newest.",
+    "submit": "Content management"
+  },
+  "licenseOverflow": {
+    "title": "The service is limited due to the exceeding number of plans allotted to users compared with the plans you have. Inquire your Master admin for the plan management.",
+    "desc": "If you are the Master admin please go to member settings and check plan allotment state.",
+    "submit": "Member management"
   }
 }
