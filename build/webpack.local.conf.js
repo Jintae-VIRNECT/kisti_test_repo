@@ -92,6 +92,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         const a = configService.getUrls()
         res.json(a)
       })
+
+      app.get('/pdf.worker', function(req, res) {
+        res.sendFile(path.join(__dirname, '../static/js/pdf.worker.js'))
+      })
     },
   },
 

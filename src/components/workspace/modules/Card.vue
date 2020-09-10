@@ -5,7 +5,7 @@
       trigger="click"
       placement="bottom-start"
       :popperClass="popoverClass"
-      :width="120"
+      width="auto"
       :scrollHide="true"
     >
       <button slot="reference" class="card__button"></button>

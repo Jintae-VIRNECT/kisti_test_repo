@@ -1,12 +1,12 @@
-const ALARM_DURATION = 3000
-const ALARM_DURATION_BUTTON = 30000
+const ALARM_DURATION = 3 * 1000
+const ALARM_DURATION_BUTTON = 60 * 1000
 
 const buildTemplate = payload => {
   let icon = payload.icon
   if (payload.type === 'info' || payload.type === 'license') {
-    icon = require('assets/image/ic_system.svg')
+    icon = require('assets/image/header/ic_system.svg')
   } else if (payload.type === 'fail') {
-    icon = require('assets/image/ic_notice.svg')
+    icon = require('assets/image/header/ic_notice.svg')
   } else if (!icon || icon.length === 0 || icon === 'default') {
     icon = false
   }
@@ -81,7 +81,7 @@ export default {
             },
           }),
         )
-        inviteNotify.goAway(3000)
+        inviteNotify.goAway(ALARM_DURATION)
       }
       const inviteNotify = this.callNotify({
         type: 'invite',
@@ -210,6 +210,9 @@ export default {
         type: 'notify',
         ...payload.options,
       })
+    },
+    clearAlarm() {
+      this.$alarm.clear()
     },
   },
 }

@@ -10,10 +10,9 @@ function getDefaultRoomInfo() {
     sessionId: null,
     title: null,
     description: null,
-    participantsCount: null,
-    path: null,
+    profile: null,
     leaderId: null,
-    maxParticipantCount: 0,
+    maxUserCount: 0,
     memberList: [],
   }
 }
@@ -24,10 +23,9 @@ const mutations = {
     state.sessionId = payload.sessionId
     state.title = payload.title
     state.description = payload.description
-    state.participantsCount = payload.participantsCount
-    state.path = payload.path
+    state.profile = payload.profile
     state.leaderId = payload.leaderId
-    state.maxParticipantCount = payload.maxParticipantCount
+    state.maxUserCount = payload.maxUserCount
     state.memberList = payload.memberList
   },
 
@@ -42,9 +40,9 @@ const mutations = {
     }
   },
 
-  [REMOVE_ROOM_MEMBER](state, payload) {
+  [REMOVE_ROOM_MEMBER](state, participantId) {
     const idx = state.memberList.findIndex(
-      member => member.uuid === payload.uuid,
+      member => member.uuid === participantId,
     )
     if (idx < 0) return
 
@@ -58,39 +56,45 @@ const mutations = {
   },
 }
 
-// const actions = {
-//   /**
-//    * set room info
-//    * @param {Object} payload // room info
-//    */
-//   // setRoomInfo({ commit }, payload) {
-//   //   commit(ROOM_SET, payload)
-//   // },
-//   /**
-//    * add room member
-//    * @param {Array[Object]} payload // member info
-//    */
-//   addMember({ commit }, payload) {
-//     commit(ADD_ROOM_MEMBER, payload)
-//   },
+const actions = {
+  /**
+   * set room info
+   * @param {Object} payload // room info
+   */
+  setRoomInfo({ commit }, payload) {
+    commit(ROOM_SET, payload)
+  },
+  /**
+   * add room member
+   * @param {Array[Object]} payload // member info
+   */
+  addMember({ commit }, payload) {
+    commit(ADD_ROOM_MEMBER, payload)
+  },
+  /**
+   * add room member
+   * @param {Array[Object]} payload // member info
+   */
+  removeMember({ commit }, participantId) {
+    commit(REMOVE_ROOM_MEMBER, participantId)
+  },
 
-//   /**
-//    * clear room info
-//    * @param {*} payload
-//    */
-//   roomClear({ commit }) {
-//     commit(ROOM_CLEAR)
-//   },
-// }
+  /**
+   * clear room info
+   * @param {*} payload
+   */
+  roomClear({ commit }) {
+    commit(ROOM_CLEAR)
+  },
+}
 
 const getters = {
   roomInfo: state => state,
-  roomMember: state => state.memberList,
 }
 
 export default {
   state,
-  // actions,
+  actions,
   getters,
   mutations,
 }

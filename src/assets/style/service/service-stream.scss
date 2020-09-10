@@ -57,11 +57,47 @@
   }
 }
 
+.main-video__sharing {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+.btn.main-video__sharing-button {
+  min-width: auto;
+  padding: 0.357rem 0.714rem 0.5rem;
+  font-size: 1rem;
+  background-color: #eb001d;
+  border-radius: 4px;
+  pointer-events: none;
+  &.active {
+    position: relative;
+    padding-left: 1.929rem;
+    pointer-events: auto;
+    &:focus {
+      background-color: #eb001d;
+    }
+    &:hover,
+    &:active {
+      background-color: #c40018;
+    }
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0.429rem;
+      width: 1.429rem;
+      height: 100%;
+      background: url("~assets/image/call/ic-close-w.svg") no-repeat center/100%;
+      content: "";
+    }
+  }
+}
+
 .main-video__recording {
   position: absolute;
   top: 1rem;
+  right: 1rem;
   display: flex;
-  margin-left: 0.4286rem;
 }
 
 .main-video__recording--time {
@@ -79,10 +115,10 @@
     text-align: center;
     background: 0 center/1.2857rem no-repeat;
     &.server {
-      background-image: url(~assets/image/ic_record_ing.svg);
+      background-image: url(~assets/image/call/ic_record_ing.svg);
     }
     &.local {
-      background-image: url(~assets/image/ic_local_record_on.svg);
+      background-image: url(~assets/image/call/ic_local_record_on.svg);
     }
   }
 }

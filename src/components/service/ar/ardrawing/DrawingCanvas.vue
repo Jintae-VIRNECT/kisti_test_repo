@@ -45,7 +45,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'view', 'viewAction']),
+    ...mapGetters(['tools', 'view', 'viewAction', 'mainView']),
     uuid() {
       return this.account.uuid
     },
@@ -162,7 +162,9 @@ export default {
 
           this.isInit = true
           this.$emit('loading')
-          this.$call.arDrawing(AR_DRAWING.START_DRAWING)
+          this.$call.arDrawing(AR_DRAWING.START_DRAWING, {}, [
+            this.mainView.connectionId,
+          ])
         })
       }
       bgImage.onerror = error => {
@@ -201,14 +203,14 @@ export default {
         state.vpad = this.videoVPad
       }
 
-      if (this.$call.session) {
-        if (
-          [AR_DRAWING.UNDO, AR_DRAWING.REDO, AR_DRAWING.CLEAR].includes(type)
-        ) {
-          this.$call.arDrawing(type, { ...param, ...custom })
-        } else {
-          this.$call.arDrawing('arDrawing', { ...param, ...custom })
-        }
+      if ([AR_DRAWING.UNDO, AR_DRAWING.REDO, AR_DRAWING.CLEAR].includes(type)) {
+        this.$call.arDrawing(type, { ...param, ...custom }, [
+          this.mainView.connectionId,
+        ])
+      } else {
+        this.$call.arDrawing(AR_DRAWING.AR_DRAWING, { ...param, ...custom }, [
+          this.mainView.connectionId,
+        ])
       }
 
       // tId 업데이트

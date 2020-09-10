@@ -9,7 +9,7 @@ export const KEY = {
 export const EVENT = {
   LICENSE_EXPIRATION: 'licenseExpiration',
   LICENSE_EXPIRED: 'licenseExpired',
-  INVITE: 'invitation',
+  INVITE: 'invite',
   INVITE_DENIED: 'invitationDenied',
   INVITE_ACCEPTED: 'invitationAccepted',
 }

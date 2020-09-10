@@ -8,6 +8,7 @@
   >
     <drawing-canvas
       v-show="show === 'file'"
+      ref="drawingLayout"
       :file="shareFile"
       @loadingSuccess="loadingFrame = false"
       @loadingStart="loadingFrame = true"
@@ -60,13 +61,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'fileList',
-      'shareFile',
-      'view',
-      'participants',
-      'historyList',
-    ]),
+    ...mapGetters(['fileList', 'shareFile', 'view', 'historyList']),
     show() {
       if (this.shareFile && this.shareFile.id) {
         return 'file'
@@ -82,20 +77,19 @@ export default {
       if (val !== VIEW.DRAWING) {
         // clear image
         // TODO: 협업보드 나갈 때 클리어 할지 선택해야함
-        if (this.account.roleType === ROLE.EXPERT_LEADER) {
+        if (this.account.roleType === ROLE.LEADER) {
           this.showImage({})
         }
       }
     },
-    'participants.length': 'participantChange',
   },
   methods: {
-    ...mapActions(['showImage']),
-    participantChange(length, oldLength) {
-      if (this.account.roleType !== ROLE.EXPERT_LEADER) return
-      if (length > oldLength && this.shareFile && this.shareFile.id) {
+    ...mapActions(['showImage', 'addHistory']),
+    participantChange(connectionId) {
+      if (this.account.roleType !== ROLE.LEADER) return
+      if (this.shareFile && this.shareFile.id) {
         if (!this.shareFile.json || this.shareFile.json.length === 0) {
-          this.refreshCanvas()
+          this.sendImage(connectionId)
           return
         }
         this.confirmDefault(this.$t('service.drawing_sync'), {
@@ -103,11 +97,28 @@ export default {
         })
       }
     },
+    sendImage(connectionId) {
+      const params = {
+        imgId: this.shareFile.id,
+        imgName: this.shareFile.oriName
+          ? this.shareFile.oriName
+          : this.shareFile.fileName,
+        image: this.shareFile.img,
+      }
+      this.$refs['drawingLayout'].sendImage(params, [connectionId])
+    },
     refreshCanvas() {
-      const currentHistory = this.historyList.find(
-        history => history.id === this.shareFile.id,
+      const imgId = parseInt(
+        Date.now()
+          .toString()
+          .substr(-9),
       )
-      this.showImage(currentHistory)
+      this.addHistory({
+        id: imgId,
+        fileName: this.shareFile.fileName,
+        oriName: this.shareFile.oriName,
+        img: this.shareFile.img,
+      })
     },
     addFile() {
       this.$eventBus.$emit('addFile')
@@ -127,7 +138,6 @@ export default {
     },
     getImage(receive) {
       const data = JSON.parse(receive.data)
-      if (data.from === this.account.uuid) return
 
       if (
         ![DRAWING.FIRST_FRAME, DRAWING.FRAME, DRAWING.LAST_FRAME].includes(
@@ -167,7 +177,13 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.DRAWING, this.getImage)
+    if (this.account.roleType !== ROLE.LEADER) {
+      this.$call.addListener(SIGNAL.DRAWING, this.getImage)
+    }
+    this.$eventBus.$on('participantChange', this.participantChange)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('participantChange', this.participantChange)
   },
 }
 </script>

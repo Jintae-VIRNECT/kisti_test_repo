@@ -1,6 +1,6 @@
 <template>
   <section class="setting-section">
-    <div class="setting-horizon-wrapper">
+    <div class="setting-section__body first">
       <figure class="setting__figure">
         <div class="setting__figure--wrapper">
           <p class="setting__label">

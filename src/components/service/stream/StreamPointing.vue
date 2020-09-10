@@ -15,8 +15,9 @@ import * as animationData from 'assets/json/pointer.lottie.json'
 import { mapGetters } from 'vuex'
 import { reset } from 'utils/callOptions'
 import { hexToAHEX, ahexToHEX } from 'utils/color'
-import { SIGNAL } from 'configs/remote.config'
+import { SIGNAL, ROLE } from 'configs/remote.config'
 import { ACTION } from 'configs/view.config'
+
 import {
   normalizedPosX,
   normalizedPosY,
@@ -59,7 +60,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'mainView', 'viewAction']),
+    ...mapGetters([
+      'tools',
+      'mainView',
+      'viewAction',
+      'roomInfo',
+      'allowPointing',
+    ]),
     pointingColor() {
       return this.tools ? this.tools.color : reset.color
     },
@@ -74,13 +81,16 @@ export default {
     },
     doPointing(event) {
       if (this.viewAction !== ACTION.STREAM_POINTING) return
+      if (this.account.roleType !== ROLE.LEADER && this.allowPointing !== true)
+        return
       let posX = normalizedPosX(event.offsetX, this.videoSize.width)
       let posY = normalizedPosY(event.offsetY, this.videoSize.height)
       if (posX > 1) posX = 1
       if (posY > 1) posY = 1
+      if (posX < -1) posX = -1
+      if (posY < -1) posY = -1
       this.$call.pointing({
-        to: this.mainView.id,
-        from: this.account.uuid,
+        targetUserId: this.mainView.id,
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,
         width: this.radius,
@@ -90,7 +100,7 @@ export default {
     },
     receivePointing(receive) {
       const data = JSON.parse(receive.data)
-      // if (data.to !== this.mainView.id) return
+      if (data.targetUserId !== this.mainView.id) return
       let color = ahexToHEX(data.color)
       this.pointList.push({
         coords: [

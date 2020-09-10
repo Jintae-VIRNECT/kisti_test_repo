@@ -62,7 +62,6 @@ export default {
   data() {
     return {
       show: 'chat',
-      participantsCount: 1,
     }
   },
   computed: {
@@ -107,10 +106,10 @@ export default {
   methods: {
     ...mapActions(['addChat']),
     toggleMenu(menu) {
-      if (this.checkBeta() && menu === 'file') {
-        return false
+      if (menu === 'file') {
+        this.unsupport()
+        return
       }
-
       this.show = menu
     },
   },

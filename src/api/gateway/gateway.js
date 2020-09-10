@@ -51,6 +51,7 @@ const sender = async function(constant, params, headers = {}, custom) {
     // Token
     const accessToken = Cookies.get('accessToken')
     axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+    axios.defaults.headers.common['Accept'] = `*/*`
 
     // URI 전환
     url = url.replace(/{(\w+)}/g, (match, $1) => {
@@ -78,9 +79,9 @@ const sender = async function(constant, params, headers = {}, custom) {
     }
   }
 
-  option = merge(option, {
-    ...custom,
-  })
+  // option = merge(option, {
+  //   ...custom,
+  // })
   option.headers = merge(option.headers, {
     ...headers,
   })
@@ -91,13 +92,41 @@ const sender = async function(constant, params, headers = {}, custom) {
     url: url,
     ...option,
   }
+  if (custom && custom.type === 'blob') {
+    // option.headers['Content-Type'] = 'image/jpeg'
+    request.responseType = 'blob'
+    // request.headers['Accept'] = 'image/jpeg'
+  }
   if (method === 'get') {
     request['params'] = parameter
   } else {
     request['data'] = parameter
   }
-  const response = await axios(request)
-  return receiver(response)
+  try {
+    const response = await axios(request)
+    if (custom && 'direct' === custom.response) {
+      return response.data
+    }
+    return receiver(response)
+  } catch (err) {
+    if ('message' in err) {
+      switch (err.message.toLowerCase()) {
+        case 'network error':
+          window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
+            position: 'bottom-center',
+            duration: 5000,
+            action: {
+              icon: 'close',
+              onClick: (e, toastObject) => {
+                toastObject.goAway(0)
+              },
+            },
+          })
+          throw err.message
+      }
+    }
+    throw err
+  }
 }
 
 /**
@@ -105,7 +134,6 @@ const sender = async function(constant, params, headers = {}, custom) {
  * @param {Object} res
  */
 const receiver = function(res) {
-  // console.log(res)
   if (res.data) {
     const code = res.data['code']
     if (code === 200) {

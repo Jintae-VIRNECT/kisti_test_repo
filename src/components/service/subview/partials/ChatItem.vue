@@ -12,9 +12,9 @@
         }}</span>
         <div v-if="isFile" class="chat-item__file">
           <div class="chat-item__file--wrapper">
-            <div class="chat-item__file--icon" :class="extension"></div>
-            <div class="chat-item__file--name">
-              {{ chat.file[0].fileName }}
+            <!-- <div class="chat-item__file--icon" :class="extension"></div> -->
+            <div class="chat-item__file--name" :class="extension">
+              {{ chat.file.fileName }}
             </div>
           </div>
           <p class="chat-item__file--size">{{ fileSize }}</p>
@@ -39,6 +39,9 @@
 import Profile from 'Profile'
 import FileSaver from 'file-saver'
 import linkifyHtml from 'linkifyjs/html'
+import { systemClass, systemText } from './chatUtils'
+import { downloadFile } from 'api/http/file'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ChatItem',
   components: {
@@ -53,8 +56,9 @@ export default {
     chat: Object,
   },
   computed: {
+    ...mapGetters(['roomInfo']),
     isFile() {
-      if (this.chat.file && this.chat.file.length > 0) {
+      if (this.chat.file) {
         return true
       } else {
         return false
@@ -109,8 +113,8 @@ export default {
     extension() {
       let ext = ''
       const file = this.chat.file
-      if (file && file.length > 0) {
-        ext = file[0].fileName.split('.').pop()
+      if (file) {
+        ext = file.fileName.split('.').pop()
       } else {
         return ''
       }
@@ -125,66 +129,18 @@ export default {
     },
     subClass() {
       if (this.chat.type === 'system') {
-        switch (this.chat.status) {
-          case 'create':
-            return 'init'
-          case 'invite':
-          case 'leave':
-            return 'people'
-          case 'stream-stop':
-            return 'cancel'
-          case 'stream-start':
-          case 'stream-background':
-            return 'alarm'
-          case 'drawing':
-            return 'board'
-          case 'ar-deny':
-          case 'ar-unsupport':
-          case 'ar-pointing':
-          case 'ar-area':
-            return 'ar'
-        }
+        return systemClass(this.chat.status)
       }
       return ''
     },
     chatText() {
       if (this.chat.type === 'system') {
-        switch (this.chat.status) {
-          case 'create':
-            return this.$t('service.chat_create')
-          case 'invite':
-            return this.$t('service.chat_invite', {
-              name: this.chat.name,
-            })
-          case 'leave':
-            return this.$t('service.chat_leave', {
-              name: this.chat.name,
-            })
-          case 'stream-stop':
-            return this.$t('service.chat_stream_stop', {
-              name: this.chat.name,
-            })
-          case 'stream-start':
-            return this.$t('service.chat_stream_start', {
-              name: this.chat.name,
-            })
-          case 'stream-background':
-            return this.$t('service.chat_stream_background', {
-              name: this.chat.name,
-            })
-          case 'drawing':
-            return this.$t('service.chat_drawing', { name: this.chat.name })
-          case 'ar-deny':
-            return this.$t('service.chat_ar_deny')
-          case 'ar-unsupport':
-            return this.$t('service.chat_ar_unsupport')
-          case 'ar-pointing':
-            return this.$t('service.chat_ar_pointing')
-          case 'ar-area':
-            return this.$t('service.chat_ar_area')
-        }
+        return systemText(this.chat.status, this.chat.name)
       }
       let chatText = this.chat.text ? this.chat.text : ''
+      if (typeof chatText === 'object') {
+        return ''
+      }
       chatText = linkifyHtml(chatText, {
         defaultProtocol: 'https',
         className: 'chat-url',
@@ -192,7 +148,7 @@ export default {
       return chatText ? chatText.replace(/\n/gi, '<br>') : ''
     },
     fileSize() {
-      let size = this.chat.file[0].fileSize
+      let size = this.chat.file.size
       const mb = 1048576
 
       if (size >= mb) {
@@ -206,9 +162,14 @@ export default {
   },
   watch: {},
   methods: {
-    download() {
-      const file = this.chat.file[0]
-      FileSaver.saveAs(file.fileUrl, file.fileName)
+    async download() {
+      const res = await downloadFile({
+        fileName: this.chat.file.fileName,
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+      })
+      // FileSaver.saveAs(file.fileUrl, file.fileName)
     },
   },
 

@@ -29,7 +29,7 @@
       <div class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
         <span class="text">{{
-          `${$t('common.leader')} : ${leader.nickname}`
+          `${$t('common.leader')} : ${leader.nickName}`
         }}</span>
       </div>
     </div>
@@ -42,6 +42,7 @@
         trigger="click"
         placement="bottom-start"
         popperClass="custom-popover"
+        width="auto"
       >
         <button slot="reference" class="widecard-tools__menu-button"></button>
         <ul class="groupcard-popover">

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { login } from 'api/common/account'
+import { login } from 'api/http/account'
 import Cookies from 'js-cookie'
 
 export default {

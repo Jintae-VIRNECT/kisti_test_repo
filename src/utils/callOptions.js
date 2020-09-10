@@ -1,5 +1,5 @@
 // Service Options
-export const maxParticipants = 3
+export const maxParticipants = 6
 
 // Tool Options
 export const color = [

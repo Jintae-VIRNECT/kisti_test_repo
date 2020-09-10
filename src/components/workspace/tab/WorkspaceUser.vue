@@ -21,7 +21,6 @@
         :imageUrl="userinfo.profile"
         :email="userinfo.email"
         :role="userinfo.role"
-        :license="userinfo.licenseProducts.length > 0"
       >
       </member-card>
     </div>
@@ -31,7 +30,7 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import MemberCard from 'MemberCard'
-import { getMemberList } from 'api/workspace/member'
+import { getMemberList } from 'api/http/member'
 import searchMixin from 'mixins/filter'
 
 export default {
@@ -76,23 +75,23 @@ export default {
       try {
         const params = {
           workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
         }
         this.loading = true
         const datas = await getMemberList(params)
+        this.memberList = datas.memberList
+        this.memberList.sort((A, B) => {
+          if (A.role === 'MASTER') {
+            return -1
+          } else if (B.role === 'MASTER') {
+            return 1
+          } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
+            return -1
+          } else {
+            return 0
+          }
+        })
         this.loading = false
-        this.memberList = datas.memberInfoList
-          .filter(member => member.uuid !== this.account.uuid)
-          .sort((A, B) => {
-            if (A.role === 'MASTER') {
-              return -1
-            } else if (B.role === 'MASTER') {
-              return 1
-            } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
-              return -1
-            } else {
-              return 0
-            }
-          })
       } catch (err) {
         console.error(err)
       }

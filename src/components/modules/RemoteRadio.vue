@@ -76,7 +76,8 @@ export default {
 .radio-option {
   position: relative;
   display: flex;
-  padding: 0.857rem 0;
+  // padding: 0.857rem 0;
+  margin: auto 0;
   color: rgba(#fff, 0.8);
   cursor: pointer;
   &.active,

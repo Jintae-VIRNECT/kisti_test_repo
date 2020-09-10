@@ -18,12 +18,7 @@
       </p>
       <p class="card-profile--email">{{ email }}</p>
 
-      <role v-if="showRole && license" :role="role" :opt="opt"></role>
-      <role
-        v-else-if="license === false"
-        :role="$t('workspace.expire_license')"
-        :opt="opt"
-      ></role>
+      <role v-if="showRole" :role="role"></role>
     </div>
     <!-- <div v-if="showMessageButton" class="card-bottom">
       <p>{{ $t('button.send_message') }}</p>
@@ -59,10 +54,6 @@ export default {
     role: {
       type: String,
       default: '',
-    },
-    license: {
-      type: Boolean,
-      default: true,
     },
     showSignal: {
       type: Boolean,
@@ -128,7 +119,7 @@ export default {
   width: 100%;
   // min-height: 180px;
   margin-bottom: 0.571rem;
-  padding-bottom: 20px;
+  padding-bottom: 1.429rem;
   > .role {
     position: absolute;
     bottom: 0;

@@ -140,26 +140,4 @@ export default {
   setLocalRecordStatus({ commit }, status) {
     commit(types.SETTINGS.SET_LCOAL_RECORD_STAUTS, status)
   },
-  /**
-   * set room info
-   * @param {Object} payload // room info
-   */
-  setRoomInfo({ commit }, payload) {
-    commit(types.ROOM_SET, payload)
-  },
-  /**
-   * add room member
-   * @param {Array[Object]} payload // member info
-   */
-  addMember({ commit }, payload) {
-    commit(types.ADD_ROOM_MEMBER, payload)
-  },
-
-  /**
-   * clear room info
-   * @param {*} payload
-   */
-  roomClear({ commit }) {
-    commit(types.ROOM_CLEAR)
-  },
 }

@@ -1,12 +1,14 @@
 <template>
   <section class="setting-section">
-    <div class="setting__title">{{ $t('workspace.setting_inout_device') }}</div>
-    <div class="setting-horizon-wrapper">
+    <div class="setting-section__title">
+      {{ $t('workspace.setting_inout_device') }}
+    </div>
+    <div class="setting-section__body horizon first">
       <figure class="setting__figure">
         <p class="setting__label">{{ $t('workspace.setting_input_device') }}</p>
         <r-select
           class="setting__r-selecter"
-          v-on:changeValue="setMic"
+          @changeValue="setMic"
           :options="micDevices"
           :value="'deviceId'"
           :text="'label'"
@@ -22,7 +24,7 @@
         <r-select
           ref="settingOutput"
           class="setting__r-selecter"
-          v-on:changeValue="setSpeaker"
+          @changeValue="setSpeaker"
           :options="speakerDevices"
           :value="'deviceId'"
           :text="'label'"
@@ -37,6 +39,12 @@
 import RSelect from 'RemoteSelect'
 import { mapGetters, mapActions } from 'vuex'
 export default {
+  components: {
+    RSelect,
+  },
+  data() {
+    return {}
+  },
   props: {
     micDevices: {
       type: Array,
@@ -46,9 +54,6 @@ export default {
       type: Array,
       default: () => [],
     },
-  },
-  components: {
-    RSelect,
   },
   computed: {
     ...mapGetters(['mic', 'speaker']),

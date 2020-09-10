@@ -1,12 +1,12 @@
 <template>
   <section class="setting-section">
-    <p class="setting__title">
+    <p class="setting-section__title">
       {{ $t('workspace.setting_mic_test') }}
     </p>
     <p class="setting__label label-margin">
       {{ $t('workspace.setting_mic_test_description') }}
     </p>
-    <div class="setting-horizon-wrapper">
+    <div class="setting-section__body horizon">
       <div class="mic-item">
         <button class="btn" @click="toggleMicTestMode">
           {{ $t('workspace.setting_mic_test') }}

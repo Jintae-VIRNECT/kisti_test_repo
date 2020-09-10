@@ -7,50 +7,54 @@
           v-for="participant of participants"
           :key="participant.id"
           :participant="participant"
+          @selectMain="selectMain(participant)"
+          @kickout="kickout(participant.id)"
         ></participant-video>
-        <article v-if="showInvite" key="append">
+        <article v-if="isLeader" key="append">
           <div class="participant-video more" @click="more">
             <p>{{ $t('service.participant_invite') }}</p>
           </div>
         </article>
       </transition-group>
     </vue2-scrollbar>
-    <invite-modal :visible.sync="invite" :maxSelect="max"></invite-modal>
+    <invite-modal :visible.sync="invite"></invite-modal>
+    <select-view
+      :visible.sync="selectview"
+      @share="share"
+      @normal="normal"
+    ></select-view>
   </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
-import { maxParticipants } from 'utils/callOptions'
+import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
+import { kickoutMember } from 'api/http/member'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
+import SelectView from '../modal/SelectView'
 export default {
   name: 'ParticipantList',
   components: {
     ParticipantVideo,
     InviteModal,
+    SelectView,
   },
   data() {
     return {
+      selectview: false,
       invite: false,
     }
   },
   computed: {
-    ...mapGetters(['participants', 'roomMember', 'mainView']),
-    showInvite() {
-      if (
-        this.account.roleType === ROLE.EXPERT_LEADER &&
-        this.roomMember.length < maxParticipants
-      ) {
+    ...mapGetters(['participants', 'mainView', 'viewForce', 'roomInfo']),
+    isLeader() {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
         return false
       }
-    },
-    max() {
-      return maxParticipants - this.roomMember.length
     },
   },
   watch: {
@@ -84,8 +88,57 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setMainView', 'addChat', 'removeMember']),
+    selectMain(participant) {
+      this.selectview = {
+        id: participant.id,
+        nickname: participant.nickname,
+      }
+    },
+    normal() {
+      this.changeMainView(this.selectview, false)
+    },
+    share() {
+      this.changeMainView(this.selectview, true)
+    },
+    changeMainView(select, force) {
+      this.selectview = false
+      if (this.account.roleType === ROLE.LEADER) {
+        if (select.id === this.mainView.id && this.viewForce === force) return
+        if (force) {
+          this.addChat({
+            name: select.nickname,
+            status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
+            type: 'system',
+          })
+        } else {
+          if (this.viewForce === true) {
+            this.addChat({
+              name: this.mainView.nickname,
+              status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
+              type: 'system',
+            })
+          }
+        }
+      }
+      this.$call.mainview(select.id, force)
+      this.setMainView({ id: select.id, force })
+    },
     more() {
       this.invite = !this.invite
+    },
+    async kickout(participantId) {
+      const params = {
+        sessionId: this.roomInfo.sessionId,
+        workspaceId: this.workspace.uuid,
+        leaderId: this.account.uuid,
+        participantId: participantId,
+      }
+      const rtn = await kickoutMember(params)
+      if (rtn.result === true) {
+        this.removeMember(participantId)
+      }
+      // this.$call.disconnect(this.participant.connectionId)
     },
   },
 

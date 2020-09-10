@@ -28,6 +28,7 @@ export default {
       this.$toasted.clear()
       this.$toasted.show(message, {
         position: 'top-center',
+        className: ['remote-toast'],
         type: 'info',
         duration: 2000,
         action: null,

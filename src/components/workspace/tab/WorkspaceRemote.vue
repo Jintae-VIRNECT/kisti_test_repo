@@ -20,6 +20,7 @@
         @join="join(room)"
         @leave="leave(room.sessionId)"
         @remove="remove(room.sessionId)"
+        @init="init"
       ></remote-card>
     </div>
   </tab-view>
@@ -28,12 +29,11 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
-import { getRoomList, deleteRoom, leaveRoom } from 'api/workspace'
+import { getRoomList, deleteRoom, leaveRoom } from 'api/http/room'
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
 import roomMixin from 'mixins/room'
 
-import { mapActions } from 'vuex'
 export default {
   name: 'WorkspaceRemote',
   mixins: [searchMixin, confirmMixin, roomMixin],
@@ -76,14 +76,12 @@ export default {
     'list.length': 'scrollReset',
   },
   methods: {
-    ...mapActions(['setRoomInfo']),
     async refresh() {
       this.loading = true
       await this.init()
       this.loading = false
     },
     leave(sessionId) {
-      // if (this.checkBeta()) return
       this.confirmCancel(
         this.$t('workspace.confirm_remote_leave'),
         {
@@ -96,7 +94,6 @@ export default {
       )
     },
     remove(sessionId) {
-      // if (this.checkBeta()) return
       this.confirmCancel(
         this.$t('workspace.confirm_remove_room'),
         {
@@ -131,10 +128,10 @@ export default {
           }
         })
       } catch (err) {
-        if (err.code === 4016) {
-          // TODO: MESSAGE
-          this.toastError(this.$t('workspace.confirm_remote_already'))
+        if (err.code === 4017) {
+          this.toastError(this.$t('workspace.confirm_already_invite_remove'))
         }
+        this.refresh()
       }
     },
     async leaveoutRoom(sessionId) {
@@ -153,12 +150,11 @@ export default {
         }
       } catch (err) {
         if (err.code === 4015) {
-          // TODO: MESSAGE
           this.toastError(this.$t('workspace.confirm_remote_leader_leave'))
-        } else if (err.code === 4016) {
-          // TODO: MESSAGE
-          this.toastError(this.$t('workspace.confirm_remote_already'))
+        } else if (err.code === 4017) {
+          this.toastError(this.$t('workspace.confirm_already_invite_leave'))
         }
+        this.refresh()
       }
     },
   },

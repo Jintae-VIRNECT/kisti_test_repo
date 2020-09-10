@@ -11,10 +11,9 @@
       :description="$t('common.notice')"
       size="2.429rem"
       :toggle="false"
-      :active="false"
+      :active="active"
       :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
       @action="notice"
-      @click.native.stop="clickNotice"
     ></toggle-button>
 
     <div>
@@ -25,6 +24,21 @@
       <div class="popover-notice__body">
         <scroller height="28.571rem" v-if="alarmList.length > 0">
           <notice-item
+            v-for="(alarm, idx) of alarmList"
+            :key="'alarm_' + idx"
+            :type="alarm.type"
+            :info="alarm.info"
+            :description="alarm.description"
+            :date="alarm.date"
+            :filename="alarm.filename"
+            :filelink="alarm.filelink"
+            :image="alarm.image"
+            :accept="alarm.accept"
+            @accept="acceptInvite(alarm.sessionId, alarm.userId)"
+            @refuse="inviteDenied(alarm.sessionId, alarm.userId)"
+            @remove="remove(alarm)"
+          ></notice-item>
+          <!-- <notice-item
             type="file"
             :info="'Harry Ha 님'"
             :description="'파일 링크 전달드립니다.'"
@@ -33,7 +47,7 @@
             :filelink="'https://virnect.com'"
             :image="'default'"
           ></notice-item>
-          <!-- <notice-item
+          <notice-item
             type="file"
             :info="'Harry Ha 님'"
             :description="'파일 링크 전달드립니다.'"
@@ -82,21 +96,22 @@
           </div>
         </div>
       </div>
-      <div class="popover-notice__footer">
+      <!-- <div class="popover-notice__footer">
         <span>{{ $t('alarm.saved_duration') }}</span>
-      </div>
+      </div> -->
     </div>
-    <!-- <audio preload="auto" ref="noticeAudio">
+    <audio preload="auto" ref="noticeAudio">
       <source src="~assets/media/end.mp3" />
-    </audio> -->
+    </audio>
   </popover>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { EVENT } from 'configs/push.config'
-import { sendPush } from 'api/common/message'
-import { getRoomInfo } from 'api/workspace'
+import { ROLE } from 'configs/remote.config'
+import { sendPush } from 'api/http/message'
+import { getRoomInfo } from 'api/http/room'
 
 import Switcher from 'Switcher'
 import Popover from 'Popover'
@@ -122,26 +137,38 @@ export default {
     return {
       onPush: true,
       key: '',
-      alarmList: [],
+      active: false,
+      // alarmList: [],
     }
   },
+  computed: {
+    ...mapGetters(['alarmList']),
+  },
   watch: {
-    onPush(push) {
-      if (push) {
-        this.$localStorage.setItem('push', 'true')
-      } else {
-        this.$localStorage.setItem('push', 'false')
+    // onPush(push) {
+    //   if (push) {
+    //     this.$localStorage.setItem('push', 'true')
+    //   } else {
+    //     this.$localStorage.setItem('push', 'false')
+    //   }
+    // },
+    workspace(val, oldVal) {
+      if (val.uuid && !oldVal.uuid) {
+        this.pushInit()
       }
     },
   },
   methods: {
-    ...mapActions(['setRoomInfo']),
-    clickNotice() {
-      this.checkBeta()
-    },
+    ...mapActions([
+      'addAlarm',
+      'removeAlarm',
+      'updateAlarm',
+      'inviteResponseAlarm',
+    ]),
     notice() {
+      this.active = false
       if (this.onPush) return
-      console.log('notice list refresh logic')
+      // console.log('notice list refresh logic')
     },
     async alarmListener(listen) {
       // if (!this.onPush) return
@@ -154,17 +181,50 @@ export default {
 
       switch (body.event) {
         case EVENT.INVITE:
-          // this.$refs['noticeAudio'].play()
+          this.addAlarm({
+            type: 'invite',
+            info: this.$t('alarm.member_name_from', {
+              name: body.contents.nickName,
+            }),
+            image: body.contents.profile,
+            description: this.$t('alarm.invite_request'),
+            sessionId: body.contents.sessionId,
+            userId: body.userId,
+            accept: 'none',
+            date: new Date(),
+          })
+          if (!this.onPush) return
+          this.$refs['noticeAudio'].play()
           this.alarmInvite(
             body.contents,
-            () => this.acceptInvite(body),
-            () => this.inviteDenied(body.userId),
+            () => this.acceptInvite(body.contents.sessionId, body.userId),
+            () => this.inviteDenied(body.contents.sessionId, body.userId),
           )
           break
         case EVENT.INVITE_ACCEPTED:
+          this.addAlarm({
+            type: 'info_user',
+            info: this.$t('alarm.member_name_from', {
+              name: body.contents.nickName,
+            }),
+            title: '',
+            description: this.$t('alarm.invite_accept'),
+            date: new Date(),
+          })
+          if (!this.onPush) return
           this.alarmInviteAccepted(body.contents.nickName)
           break
         case EVENT.INVITE_DENIED:
+          this.addAlarm({
+            type: 'info_user',
+            info: this.$t('alarm.member_name_from', {
+              name: body.contents.nickName,
+            }),
+            title: '',
+            description: this.$t('alarm.invite_refuse'),
+            date: new Date(),
+          })
+          if (!this.onPush) return
           this.alarmInviteDenied(body.contents.nickName)
           break
         case EVENT.LICENSE_EXPIRATION:
@@ -177,32 +237,59 @@ export default {
             this.$router.push({ name: 'workspace' })
           }, 60000)
           break
+        default:
+          return
       }
+      this.active = true
     },
-    async inviteDenied(userId) {
+    remove(alarm) {
+      this.removeAlarm(alarm.id)
+    },
+    // 초대 거절
+    async inviteDenied(sessionId, userId) {
       const contents = {
         nickName: this.account.nickname,
       }
 
-      await sendPush(EVENT.INVITE_DENIED, [userId], contents)
+      sendPush(EVENT.INVITE_DENIED, [userId], contents)
+
+      // 알람 리스트 업데이트
+      this.inviteResponseAlarm({
+        sessionId: sessionId,
+        accept: 'refuse',
+      })
+      this.clearAlarm()
     },
-    async acceptInvite(body) {
+    // 초대 수락
+    async acceptInvite(sessionId, userId) {
       if (this.$call.session !== null) {
-        // TODO: MESSAGE
         this.toastError(this.$t('alarm.notice_already_call'))
         return
       }
       const params = {
         workspaceId: this.workspace.uuid,
-        sessionId: body.contents.roomSessionId,
+        sessionId: sessionId,
       }
       try {
         const room = await getRoomInfo(params)
-        this.join(room)
+        const user = room.memberList.find(
+          member => member.memberType === ROLE.LEADER,
+        )
+        this.join({
+          ...room,
+          leaderId: user ? user.uuid : null,
+        })
         const contents = {
           nickName: this.account.nickname,
         }
-        sendPush(EVENT.INVITE_ACCEPTED, [body.userId], contents)
+        sendPush(EVENT.INVITE_ACCEPTED, [userId], contents)
+
+        // 알람 리스트 업데이트
+        this.inviteResponseAlarm({
+          sessionId: sessionId,
+          accept: 'accept',
+        })
+        this.clearAlarm()
       } catch (err) {
         if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))
@@ -211,19 +298,18 @@ export default {
         this.toastError(this.$t('workspace.remote_invite_impossible'))
       }
     },
-    pushInit() {
+    async pushInit() {
       if (!this.hasLicense) return
-      const push = this.$localStorage.getItem('push')
+      // const push = this.$localStorage.getItem('push')
       this.key = this.$route.name
-      if (push === 'true') {
-        this.onPush = true
-      } else if (push === 'false') {
-        this.onPush = false
-      }
-      this.$nextTick(async () => {
-        await this.$push.init(this.workspace)
-        this.$push.addListener(this.key, this.alarmListener)
-      })
+      // if (push === 'true') {
+      //   this.onPush = true
+      // } else if (push === 'false') {
+      //   this.onPush = false
+      // }
+      if (!this.workspace.uuid) return
+      await this.$push.init(this.workspace)
+      this.$push.addListener(this.key, this.alarmListener)
     },
   },
 
@@ -272,7 +358,7 @@ export default {
 .popover-notice__body {
   height: 28.571rem;
   padding-right: 0.714rem;
-  border-bottom: solid 1px rgba($color_white, 0.09);
+  // border-bottom: solid 1px rgba($color_white, 0.09);
   > .vue-scrollbar__wrapper.popover-notice__scroller {
     height: 28.571rem;
   }
@@ -289,12 +375,14 @@ export default {
   margin: auto;
   > img {
     width: fit-content;
+    width: 6.857em;
+    height: 6.857em;
     margin: auto;
   }
   > span {
     color: #d2d2d2;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 1.143em;
   }
 }
 .popover-notice__footer {

@@ -23,7 +23,14 @@
             :modalLess="true"
           ></device-denied>
 
-          <template v-if="menus[tabIdx].key === 'audio-video'">
+          <template v-if="menus[tabIdx].key === 'video'">
+            <set-video
+              :videoDevices="videoDevices"
+              ref="videoDevices"
+            ></set-video>
+          </template>
+
+          <template v-else-if="menus[tabIdx].key === 'audio'">
             <set-audio
               :micDevices="micDevices"
               :speakerDevices="speakerDevices"
@@ -32,9 +39,7 @@
             <mic-test> </mic-test>
           </template>
 
-          <template v-else-if="menus[tabIdx].key === 'video-record'">
-            <!-- <set-video :videos="videoDevices"></set-video> -->
-
+          <template v-else-if="menus[tabIdx].key === 'record'">
             <set-record></set-record>
             <set-resolution></set-resolution>
           </template>
@@ -47,23 +52,23 @@
   </div>
 </template>
 <script>
+import SetVideo from '../section/WorkspaceSetVideo'
 import SetAudio from '../section/WorkspaceSetAudio'
 import SetLanguage from '../section/WorkspaceSetLanguage'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
-import SetVideo from '../section/WorkspaceSetVideo'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
-import { getPermission } from 'utils/deviceCheck'
+import { getPermission, getUserMedia } from 'utils/deviceCheck'
 export default {
   name: 'WorkspaceSetting',
   components: {
+    SetVideo,
     SetAudio,
     SetLanguage,
     SetRecord,
     SetResolution,
     MicTest,
-    SetVideo,
     DeviceDenied,
   },
   data() {
@@ -82,11 +87,15 @@ export default {
     menus() {
       return [
         {
-          key: 'audio-video',
+          key: 'video',
+          text: this.$t('workspace.setting_video'),
+        },
+        {
+          key: 'audio',
           text: this.$t('workspace.setting_audio'),
         },
         {
-          key: 'video-record',
+          key: 'record',
           text: this.$t('workspace.setting_record'),
         },
         {
@@ -100,7 +109,6 @@ export default {
     tabChange(idx) {
       this.$eventBus.$emit('popover:close')
       this.$eventBus.$emit('scroll:reset:workspace')
-      if (this.menus[idx].key === 'language' && this.checkBeta()) return
       this.$nextTick(() => {
         this.tabIdx = idx
       })
@@ -115,15 +123,19 @@ export default {
         }
 
         const devices = await navigator.mediaDevices.enumerateDevices()
+        const videos = [],
+          mics = [],
+          speakers = []
         devices.forEach(device => {
           if (device.kind === 'videoinput') {
-            this.videoDevices.push(device)
+            videos.push(device)
           } else if (device.kind === 'audioinput') {
-            this.micDevices.push(device)
+            mics.push(device)
           } else if (device.kind === 'audiooutput') {
-            this.speakerDevices.push(device)
+            speakers.push(device)
           }
         })
+        return { videos, mics, speakers }
       } catch (err) {
         console.error(err)
       }
@@ -135,8 +147,26 @@ export default {
     try {
       const permission = await getPermission()
 
-      if (permission) {
-        await this.getMediaDevice()
+      if (permission === true) {
+        const devices = await this.getMediaDevice()
+        this.videoDevices = devices.videos
+        this.micDevices = devices.mics
+        this.speakerDevices = devices.speakers
+      } else if (permission === 'prompt') {
+        const devices = await this.getMediaDevice()
+        let video = false,
+          audio = false
+        if (devices.videos.length > 0) {
+          video = true
+        }
+        if (devices.mics.length > 0) {
+          audio = true
+        }
+        await getUserMedia(audio, video)
+        const devicesDetail = await this.getMediaDevice()
+        this.videoDevices = devicesDetail.videos
+        this.micDevices = devicesDetail.mics
+        this.speakerDevices = devicesDetail.speakers
       } else {
         this.showDenied = true
       }

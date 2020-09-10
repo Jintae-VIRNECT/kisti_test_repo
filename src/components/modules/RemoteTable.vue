@@ -5,7 +5,7 @@
     <div class="table__column">
       <div
         class="table__column--toggle"
-        v-if="showToggleHeader && datas.length > 0"
+        v-show="showToggleHeader && datas.length > 0"
       >
         <toggle-button
           slot="body"
@@ -72,15 +72,7 @@ export default {
         this.$eventBus.$emit('table:selectedarray', ary)
 
         if (ary.length > 0) {
-          const allSelected = ary.every(select => {
-            return select === true
-          })
-
-          if (allSelected) {
-            this.toggleAllFlag = true
-          } else {
-            this.toggleAllFlag = false
-          }
+          this.toggleAllFlag = ary.every(select => select === true)
         }
       },
       deep: true,
@@ -145,8 +137,6 @@ export default {
      * copy datas with specific columns and execute render func
      */
     setRenderArray() {
-      this.renderArray = []
-
       this.renderArray = this.datas.map(data => {
         const newData = {}
 
@@ -207,6 +197,7 @@ export default {
 .table__column--cell:nth-child(2) {
   flex-grow: 2;
   text-align: left;
+  text-indent: 0.714rem;
 }
 
 .table__body {

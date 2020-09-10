@@ -10,12 +10,14 @@
   flex: 0;
   width: 100%;
   background-color: $color_bg_default;
+  border-bottom: solid 1px #2c2c2c;
+  transition: background-color 0.3s;
   &.fix {
     position: absolute;
     top: 0;
     z-index: 1;
     width: calc(100% - 0.714rem);
-    background-color: #0c0c0c;
+    background-color: #45474f;
   }
   &.nolicense {
     pointer-events: none;
@@ -38,8 +40,8 @@
 .workspace-tab__button {
   > button {
     position: relative;
-    width: 7.714rem;
-    padding: 1.571rem 0;
+    // width: 7.714rem;
+    padding: 1.571rem;
     color: $color_text;
     font-weight: 500;
     font-size: 1.143rem;
@@ -109,14 +111,29 @@
   padding: 3.643rem 0 0;
 }
 .tab-view__title {
-  margin-right: 0.5rem;
+  margin-right: 0.571rem;
   color: $color_text_main;
   font-weight: 500;
   font-size: 1.571rem;
 }
+.tab-view__count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.429rem;
+  height: 1.571rem;
+  margin-top: 0.286rem;
+  color: $color_text_sub;
+  font-weight: 500;
+  font-size: 1rem;
+  background-color: #4d4d4d;
+  border-radius: 0.857rem;
+}
 .tab-view__description {
+  flex: 1 0 0;
   margin-top: 0.643rem;
   color: rgba($color_text_sub, 0.3);
+  @include ellipsis();
 }
 
 .tab-view__tools {

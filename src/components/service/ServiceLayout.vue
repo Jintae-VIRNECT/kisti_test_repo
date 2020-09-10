@@ -50,9 +50,10 @@ import UserList from './participants/ParticipantList'
 import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
-import alarmMixin from 'mixins/alarm'
 import localRecorderMixin from 'mixins/localRecorder'
+import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
+import confirmMixin from 'mixins/confirm'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -68,7 +69,7 @@ export default {
     Store.dispatch('callReset')
     next()
   },
-  mixins: [alarmMixin, localRecorderMixin],
+  mixins: [localRecorderMixin, serverRecordMixin, confirmMixin],
   components: {
     HeaderSection,
     SubView,
@@ -82,12 +83,13 @@ export default {
   data() {
     return {
       showDenied: false,
+      callTimeout: null,
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox']),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants']),
     isExpert() {
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
         return false
@@ -105,20 +107,81 @@ export default {
     },
   },
 
-  methods: {},
+  methods: {
+    changeOrientation(event) {
+      if (!(this.participants.length > 0)) return
+      const participant = this.participants[0]
+      if (!participant.me || !participant.stream) return
+      const track = participant.stream.getVideoTracks()[0]
+      const settings = track.getSettings()
+      this.logger('call', `resolution::${settings.width}X${settings.height}`)
+      this.$call.sendResolution({
+        width: settings.width,
+        height: settings.height,
+        orientation: event.target.screen.orientation.type,
+      })
+    },
+    showTimeoutConfirm() {
+      if (this.callTimeout) {
+        clearTimeout(this.callTimeout)
+        this.callTimeout = null
+      }
+      this.callTimeout = setTimeout(() => {
+        this.logout()
+      }, 10 * 1000)
+      this.confirmCancel(
+        this.$t('confirm.call_timeout'),
+        {
+          text: this.$t('button.progress'),
+          action: this.initTimeout,
+        },
+        {
+          text: this.$t('button.exit_room'),
+          action: this.logout,
+        },
+      )
+    },
+    initTimeout() {
+      if (this.callTimeout) {
+        clearTimeout(this.callTimeout)
+        this.callTimeout = null
+      }
+      this.confirmClose()
+      this.callTimeout = setTimeout(() => {
+        this.showTimeoutConfirm()
+      }, 60 * 60 * 1000)
+    },
+    logout() {
+      if (this.callTimeout) {
+        clearTimeout(this.callTimeout)
+      }
+
+      this.confirmClose()
+      this.callTimeout = null
+
+      this.$eventBus.$emit('call:logout')
+    },
+  },
 
   /* Lifecycles */
   async created() {
+    this.initTimeout()
     window.onbeforeunload = () => {
       return true
     }
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
+    window.addEventListener('orientationchange', this.changeOrientation)
   },
   beforeDestroy() {
+    if (this.callTimeout) {
+      clearTimeout(this.callTimeout)
+    }
     window.onbeforeunload = () => {}
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
+    window.removeEventListener('orientationchange', this.changeOrientation)
 
-    this.stopRecord()
+    this.stopLocalRecord()
+    this.stopServerRecord()
   },
 }
 </script>

@@ -1,4 +1,5 @@
 export const SIGNAL = {
+  VIDEO: 'signal:video',
   CHAT: 'signal:chat',
   RESOLUTION: 'signal:resolution',
   POINTING: 'signal:pointing',
@@ -14,6 +15,12 @@ export const SIGNAL = {
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
+  SYSTEM: 'signal:system',
+}
+
+export const VIDEO = {
+  NORMAL: 'normal',
+  SHARE: 'share',
 }
 
 export const CAMERA = {
@@ -73,9 +80,8 @@ export const AR_DRAWING = {
   START_DRAWING: 'startArDrawing',
   END_DRAWING: 'endArDrawing',
 
-  LINE_DOWN: 'arDrawLineDown',
-  LINE_MOVE: 'arDrawLineMove',
-  LINE_UP: 'arDrawLineUp',
+  AR_DRAWING: 'arDrawing',
+
   UNDO: 'undo',
   REDO: 'redo',
   CLEAR: 'clear',
@@ -85,13 +91,23 @@ export const AR_DRAWING = {
   CLEAR_ABLE: 'clearAble',
 }
 
+export const AR_DRAWING_ACTION = {
+  LINE_DOWN: 'arDrawLineDown',
+  LINE_MOVE: 'arDrawLineMove',
+  LINE_UP: 'arDrawLineUp',
+}
+
 export const CAPTURE_PERMISSION = {
   REQUEST: 'request',
   RESPONSE: 'response',
 }
 
+export const SYSTEM = {
+  EVICT: 'evict',
+}
+
 export const ROLE = {
-  EXPERT_LEADER: 'LEADER',
+  LEADER: 'LEADER',
   EXPERT: 'EXPERT',
   WORKER: 'WORKER',
   UNKNOWN: 'UNKNOWN',

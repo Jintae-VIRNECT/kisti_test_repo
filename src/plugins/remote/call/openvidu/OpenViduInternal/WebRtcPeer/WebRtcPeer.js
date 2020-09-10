@@ -84,6 +84,9 @@ var WebRtcPeer = /** @class */ (function() {
           _this.pc.addIceCandidate(_this.iceCandidateList.shift())
         }
       }
+      if (_this.pc.signalingState === 'closed') {
+        _this.pc = null
+      }
     }
     this.start()
   }

@@ -23,14 +23,18 @@
         /> -->
         <p class="profile__name">{{ title ? title : room.title }}</p>
         <p class="profile__leader">
-          {{ `${$t('common.leader')} : ${leader.nickname}` }}
+          {{ `${$t('common.leader')} : ${leader.nickName}` }}
         </p>
       </div>
       <div class="groupcard-info">
         <div class="info__section">
           <p class="info__title">{{ $t('workspace.remote_group_info') }}</p>
           <p class="info__description">
-            <b>{{ `접속 멤버 &nbsp;&nbsp;${activeMemberList.length}` }}</b>
+            <b>{{
+              `${$t('workspace.remote_connected_member_num')} &nbsp;&nbsp;${
+                activeMemberList.length
+              }`
+            }}</b>
             {{ `/ ${room.memberList.length}` }}
           </p>
         </div>
@@ -123,7 +127,7 @@ export default {
       )
         return {}
       const idx = this.room.memberList.findIndex(
-        member => member.memberType === ROLE.EXPERT_LEADER,
+        member => member.memberType === ROLE.LEADER,
       )
       if (idx < 0) return {}
       return this.room.memberList[idx]
@@ -152,10 +156,17 @@ export default {
       })
     },
     updateInfo(info) {
-      this.title = info.title
+      if ('title' in info) {
+        this.title = info.title
+      } else {
+        this.$emit('init')
+      }
     },
     join() {
-      this.$emit('join')
+      this.$emit('join', {
+        ...this.room,
+        leaderId: this.leader.uuid,
+      })
     },
   },
 

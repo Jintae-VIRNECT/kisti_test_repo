@@ -16,9 +16,9 @@ Vue.toasted.register(
   payload => {
     let icon = payload.icon
     if (payload.type === 'info' || payload.type === 'license') {
-      icon = require('assets/image/ic_system.svg')
+      icon = require('assets/image/header/ic_system.svg')
     } else if (payload.type === 'fail') {
-      icon = require('assets/image/ic_notice.svg')
+      icon = require('assets/image/header/ic_notice.svg')
     }
     let template = ``
     if (payload.type === 'license') {

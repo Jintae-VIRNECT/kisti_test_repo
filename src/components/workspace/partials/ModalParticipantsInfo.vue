@@ -3,14 +3,14 @@
     <p class="roominfo-view__title">
       {{ $t('workspace.info_remote_member') }}
     </p>
-    <div class="roominfo-view__body">
+    <div class="roominfo-view__body table">
       <scroller>
         <user-info
           v-for="user of participants"
           :key="user.uuid"
           :user="user"
           :isLeader="isLeader"
-          @kickout="kickout(user.uuid)"
+          @kickout="kickout(user)"
         ></user-info>
       </scroller>
     </div>
@@ -18,11 +18,12 @@
 </template>
 
 <script>
-import { kickoutMember } from 'api/workspace'
 import Scroller from 'Scroller'
 import UserInfo from 'UserInfo'
+import confirmMixin from 'mixins/confirm'
 export default {
   name: 'ModalParticipantsInfo',
+  mixins: [confirmMixin],
   components: {
     Scroller,
     UserInfo,
@@ -50,22 +51,21 @@ export default {
     }
   },
   methods: {
-    async kickout(id) {
-      if (this.checkBeta()) return
-      if (this.account.uuid === id) return
-      try {
-        const removeRtn = await kickoutMember({
-          sessionId: this.sessionId,
-          workspaceId: this.workspace.uuid,
-          leaderId: this.account.uuid,
-          participantId: id,
-        })
-        if (removeRtn) {
-          // participants 제거
-        }
-      } catch (err) {
-        console.error(err)
-      }
+    kickout(user) {
+      this.confirmCancel(
+        this.$t('service.participant_kick_confirm', {
+          name: user.nickName,
+        }),
+        {
+          text: this.$t('button.confirm'),
+          action: () => {
+            this.$emit('kickout', user.uuid)
+          },
+        },
+        {
+          text: this.$t('button.cancel'),
+        },
+      )
     },
   },
 }

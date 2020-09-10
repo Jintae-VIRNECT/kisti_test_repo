@@ -11,11 +11,20 @@ export default {
   DELETE_HISTORY_ALL: ['DELETE', '/remote/history/{workspaceId}/{userId}'],
 
   /* Workspace - Member */
-  MEMBER_LIST: ['GET', '/remote/members/{workspaceId}'],
+  MEMBER_LIST: ['GET', '/remote/members/{workspaceId}/{userId}'],
+  INVITABLE_MEMBER_LIST: [
+    'GET',
+    '/remote/members/{workspaceId}/{sessionId}/{userId}',
+  ],
 
   /* Workspace - Room */
   ROOM_LIST: ['GET', '/remote/room?workspaceId={workspaceId}'],
   CREATE_ROOM: ['POST', '/remote/room'],
+  UPDATE_ROOM_PROFILE: [
+    'POST',
+    '/remote/file/{workspaceId}/{sessionId}/profile',
+    { type: 'form' },
+  ],
   JOIN_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/join'],
   ROOM_INFO: ['GET', '/remote/room/{workspaceId}/{sessionId}'],
   DELETE_ROOM: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/{userId}'],
@@ -28,11 +37,12 @@ export default {
   /* CALL */
   INVITE_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/member'],
   KICKOUT_MEMBER: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/member'],
+  SEND_SIGNAL: ['POST', '/remote/room/{workspaceId}/signal'],
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}'],
   /* MESSAGE */
-  SEND_PUSH: ['POST', '/messages/push'],
+  SEND_PUSH: ['POST', '/remote/message/push'],
 
   /* CHAT FILE */
   SEND_FILE: [
@@ -40,6 +50,18 @@ export default {
     'https://192.168.13.94:4443/file/upload',
     { type: 'form' },
   ],
+  FILE_UPLOAD: ['POST', '/remote/file/upload', { type: 'form' }],
+  // FILE_DOWNLOAD: [
+  //   'GET',
+  //   '/remote/file/download/{workspaceId}/{sessionId}',
+  //   { response: 'direct', type: 'blob' },
+  // ],
+  FILE_DOWNLOAD: ['GET', '/remote/file/download/url/{workspaceId}/{sessionId}'],
+  FILE_LIST: ['GET', '/remote/file'],
+
+  /* SERVER RECORD */
+  START_SERVER_RECORD: ['POST', '/remote/recorder/recording'],
+  STOP_SERVER_RECORD: ['DELETE', '/remote/recorder/recording/{id}'],
 }
 
 export const wsUri = {

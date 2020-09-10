@@ -36,7 +36,6 @@
 <script>
 import Profile from 'Profile'
 import WideCard from 'components/workspace/modules/WideCard'
-import ListBadge from 'ListBadge'
 export default {
   data: function() {
     return {
@@ -94,7 +93,7 @@ export default {
       return this.listviewSample.length
     },
   },
-  components: { WideCard, Profile, ListBadge },
+  components: { WideCard, Profile },
   methods: {
     addItem() {
       let min = Math.ceil(0)

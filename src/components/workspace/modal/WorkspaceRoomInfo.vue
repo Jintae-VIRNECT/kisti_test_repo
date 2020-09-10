@@ -17,20 +17,24 @@
             :thumbStyle="{ width: '5.143rem', height: '5.143rem' }"
           ></profile>
         </div>
-        <button
-          class="roominfo-nav__menu"
-          :class="{ active: tabview === 'group' }"
-          @click="tabChange('group')"
-        >
-          {{ $t('workspace.info_remote') }}
-        </button>
-        <button
-          class="roominfo-nav__menu"
-          :class="{ active: tabview === 'user' }"
-          @click="tabChange('user')"
-        >
-          {{ $t('workspace.info_remote_member') }}
-        </button>
+        <div class="roominfo-nav__menus">
+          <button
+            class="roominfo-nav__menu"
+            :class="{ active: tabview === 'group' }"
+            :data-text="$t('workspace.info_remote')"
+            @click="tabChange('group')"
+          >
+            {{ $t('workspace.info_remote') }}
+          </button>
+          <button
+            class="roominfo-nav__menu"
+            :class="{ active: tabview === 'user' }"
+            :data-text="$t('workspace.info_remote_member')"
+            @click="tabChange('user')"
+          >
+            {{ $t('workspace.info_remote_member') }}
+          </button>
+        </div>
       </section>
       <room-info
         v-if="tabview === 'group'"
@@ -45,6 +49,7 @@
         :participants="memberList"
         :isLeader="isLeader"
         :sessionId="sessionId"
+        @kickout="kickout"
       ></participants-info>
     </div>
   </modal>
@@ -52,13 +57,16 @@
 
 <script>
 import Modal from 'Modal'
-import { getRoomInfo, updateRoomInfo } from 'api/workspace/room'
+import { getRoomInfo, updateRoomInfo, updateRoomProfile } from 'api/http/room'
+import { kickoutMember } from 'api/http/member'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import Profile from 'Profile'
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'WorkspaceRoomInfo',
+  mixins: [confirmMixin],
   components: {
     Modal,
     Profile,
@@ -125,6 +133,15 @@ export default {
     },
     async update(params) {
       try {
+        if ('image' in params && params['image'] !== null) {
+          await updateRoomProfile({
+            profile: params.image,
+            sessionId: params.sessionId,
+            uuid: this.account.uuid,
+            workspaceId: this.workspace.uuid,
+          })
+          delete params['image']
+        }
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
           this.$emit('updatedInfo', params)
@@ -133,6 +150,40 @@ export default {
         }
       } catch (err) {
         // 에러처리
+        console.error(err)
+      }
+    },
+    kickoutConfirm(id) {
+      this.confirmCancel(
+        this.$t('confirm.access_remove'),
+        {
+          text: this.$t('button.confirm'),
+          action: () => {
+            this.kickout(id)
+          },
+        },
+        {
+          text: this.$t('button.cancel'),
+        },
+      )
+    },
+    async kickout(id) {
+      if (this.account.uuid === id) return
+      try {
+        const removeRtn = await kickoutMember({
+          sessionId: this.sessionId,
+          workspaceId: this.workspace.uuid,
+          leaderId: this.account.uuid,
+          participantId: id,
+        })
+        if (removeRtn) {
+          // participants 제거
+          const idx = this.memberList.findIndex(member => member.uuid === id)
+          if (idx < 0) return
+          this.memberList.splice(idx, 1)
+          this.$emit('updatedInfo', {})
+        }
+      } catch (err) {
         console.error(err)
       }
     },

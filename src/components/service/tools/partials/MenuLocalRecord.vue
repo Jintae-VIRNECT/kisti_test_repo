@@ -3,9 +3,9 @@
     :text="$t('service.record_local')"
     :active="isRecording"
     :disabled="!canRecord"
-    :src="require('assets/image/ic_local_record.svg')"
+    :src="require('assets/image/call/ic_local_record.svg')"
     :icActive="isRecording"
-    :activeSrc="require('assets/image/ic_local_record_on.svg')"
+    :activeSrc="require('assets/image/call/ic_local_record_on.svg')"
     @click="recording"
   ></menu-button>
 </template>
@@ -28,22 +28,29 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['control', 'localRecordStatus']),
+    ...mapGetters(['allowLocalRecord', 'localRecordStatus']),
     canRecord() {
       if (this.disabled) {
         return false
       }
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         return true
       }
-      if (this.control.localRecord) {
+      if (this.allowLocalRecord) {
         return true
       } else {
         return false
       }
     },
   },
-  watch: {},
+  watch: {
+    allowLocalRecord(allow) {
+      if (allow === false && this.isRecording === true) {
+        this.toastDefault(this.$t('service.record_blocked'))
+        this.$eventBus.$emit('localRecord', { isStart: false })
+      }
+    },
+  },
 
   methods: {
     ...mapActions(['setLocalRecordStatus']),
@@ -57,14 +64,14 @@ export default {
       }
 
       if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
-        this.$eventBus.$emit('localRecord', false)
+        this.$eventBus.$emit('localRecord', { isStart: false })
         return false
       } else {
-        this.$eventBus.$emit('localRecord', true)
+        this.$eventBus.$emit('localRecord', { isStart: true })
       }
     },
-    toggleButton(isStart) {
-      this.isRecording = isStart
+    toggleButton(status) {
+      this.isRecording = status.isStart
     },
   },
   mounted() {

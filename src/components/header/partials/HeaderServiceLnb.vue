@@ -2,24 +2,13 @@
   <nav class="header-lnbs service">
     <ul class="flex">
       <lnb-button
-        :text="$t('service.stream')"
-        :active="currentView === 'stream'"
-        :image="require('assets/image/call/gnb_ic_shareframe.svg')"
-        @click="goTab('stream')"
-      ></lnb-button>
-      <lnb-button
-        :text="$t('service.drawing')"
-        :active="currentView === 'drawing'"
-        :notice="drawingNotice"
-        :image="require('assets/image/call/gnb_ic_creat_basic.svg')"
-        @click="goTab('drawing')"
-      ></lnb-button>
-      <lnb-button
-        :text="$t('service.ar')"
-        :active="currentView === 'ar'"
-        :notice="arNotice"
-        :image="require('assets/image/call/gnb_ic_creat_ar.svg')"
-        @click="goTab('ar')"
+        v-for="menu of menus"
+        :key="menu.key"
+        :text="menu.text"
+        :active="view === menu.key"
+        :image="menu.icon"
+        :notice="menu.notice"
+        @click="goTab(menu.key)"
       ></lnb-button>
     </ul>
   </nav>
@@ -47,25 +36,41 @@ export default {
   },
   data() {
     return {
-      drawingNotice: false,
-      arNotice: false,
+      drawingNotice: 1,
+      arNotice: 2,
+      menus: [
+        {
+          text: this.$t('service.stream'),
+          key: VIEW.STREAM,
+          icon: require('assets/image/call/gnb_ic_shareframe.svg'),
+          notice: false,
+        },
+        {
+          text: this.$t('service.drawing'),
+          key: VIEW.DRAWING,
+          icon: require('assets/image/call/gnb_ic_creat_basic.svg'),
+          notice: false,
+        },
+        {
+          text: this.$t('service.ar'),
+          key: VIEW.AR,
+          icon: require('assets/image/call/gnb_ic_creat_ar.svg'),
+          notice: false,
+        },
+      ],
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'participants', 'view', 'shareFile']),
-    currentView() {
-      if (this.view === VIEW.STREAM) {
-        return 'stream'
-      } else if (this.view === VIEW.DRAWING) {
-        return 'drawing'
-      } else if (this.view === VIEW.AR) {
-        return 'ar'
-      }
-      return ''
-    },
+    ...mapGetters([
+      'mainView',
+      'participants',
+      'view',
+      'shareFile',
+      'viewForce',
+    ]),
     hasLeader() {
       const idx = this.participants.findIndex(
-        user => user.roleType === ROLE.EXPERT_LEADER,
+        user => user.roleType === ROLE.LEADER,
       )
       if (idx < 0) return false
       return true
@@ -86,8 +91,9 @@ export default {
           status: 'drawing',
           type: 'system',
         })
-        if (this.currentView !== 'drawing') {
-          this.drawingNotice = true
+        if (this.view !== VIEW.DRAWING) {
+          // this.drawingNotice = true
+          this.menus[this.drawingNotice].notice = true
         }
       }
     },
@@ -105,27 +111,48 @@ export default {
         }
       }
     },
+    mainView: {
+      deep: true,
+      handler(val, oldVal) {
+        // AR 기능 도중 메인뷰 참가자가 나갔을 경우
+        if (this.view === VIEW.AR && val.id !== oldVal.id) {
+          this.$call.stopArFeature()
+          this.goTabConfirm(VIEW.STREAM)
+        }
+      },
+    },
   },
   methods: {
     ...mapActions(['setView', 'addChat']),
     ...mapMutations(['updateParticipant']),
     goTab(type) {
-      if (type === this.currentView) return
+      if (type === this.view) return
 
       // leader
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
-        if (this.currentView === 'ar') {
+      if (this.account.roleType === ROLE.LEADER) {
+        if (this.view === VIEW.AR) {
           // TODO: MESSAGE
-          this.confirmCancel(this.$t('service.toast_exit_ar'), {
-            text: this.$t('button.exit'),
-            action: () => {
-              this.$call.arFeature(AR_FEATURE.STOP_AR_FEATURE)
-              this.goTabConfirm(type)
+          this.serviceConfirmTitle(
+            this.$t('service.ar_exit'),
+            this.$t('service.ar_exit_description'),
+            {
+              text: this.$t('button.exit'),
+              action: () => {
+                this.$call.stopArFeature()
+                this.goTabConfirm(type)
+              },
             },
-          })
+          )
+          // this.confirmCancel(this.$t('service.toast_exit_ar'), {
+          //   text: this.$t('button.exit'),
+          //   action: () => {
+          //     this.$call.stopArFeature()
+          //     this.goTabConfirm(type)
+          //   },
+          // })
           return
         }
-        if (this.currentView === 'drawing') {
+        if (this.view === VIEW.DRAWING) {
           if (this.shareFile && this.shareFile.id) {
             // TODO: MESSAGE
             this.confirmCancel(this.$t('service.toast_exit_drawing'), {
@@ -141,23 +168,24 @@ export default {
         this.goTabConfirm(type)
       } // other user
       else {
-        if (this.currentView === VIEW.AR) {
+        if (this.view === VIEW.AR) {
           this.toastDefault(this.$t('service.toast_cannot_leave_ar'))
           return
         }
-        if (type === 'stream') {
+        if (type === VIEW.STREAM) {
           this.setView(VIEW.STREAM)
         }
         if (type === 'drawing') {
           if (this.shareFile && this.shareFile.id) {
-            this.drawingNotice = false
+            // this.drawingNotice = false
+            this.menus[this.drawingNotice].notice = false
             this.setView(VIEW.DRAWING)
           } else {
             this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
           }
           this.goDrawing()
         }
-        if (type === 'ar') {
+        if (type === VIEW.AR) {
           if (!this.arNotice) {
             this.toastDefault(this.$t('service.toast_cannot_invite_ar'))
             return
@@ -166,18 +194,22 @@ export default {
       }
     },
     goTabConfirm(type) {
-      if (type === 'stream') {
+      if (type === VIEW.STREAM) {
         this.setView(VIEW.STREAM)
       }
-      if (type === 'drawing') {
+      if (type === VIEW.DRAWING) {
         this.setView(VIEW.DRAWING)
       }
-      if (type === 'ar') {
+      if (type === VIEW.AR) {
+        if (this.viewForce === false) {
+          this.toastDefault(this.$t('service.toast_no_sharing'))
+          return
+        }
         this.permissionCheck()
       }
     },
     goDrawing() {
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         this.setView(VIEW.DRAWING)
         return
       }
@@ -189,7 +221,15 @@ export default {
     },
     permissionSetting(permission) {
       if (permission === true) {
-        this.$call.arFeature(AR_FEATURE.START_AR_FEATURE)
+        this.toastDefault(
+          this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
+        )
+        this.addChat({
+          status: 'ar-start',
+          name: this.mainView.nickname,
+          type: 'system',
+        })
+        this.$call.startArFeature(this.mainView.id)
         this.setView(VIEW.AR)
       } else if (permission === false) {
         this.toastDefault(this.$t('service.toast_refused_ar'))
@@ -211,7 +251,7 @@ export default {
         return
       }
       if (this.mainView.id === this.account.uuid) {
-        console.error(this.$t('service.toast_current_stream'))
+        this.toastDefault(this.$t('service.toast_unsupport_ar'))
         return
       }
       if (this.mainView.hasArFeature === false) {
@@ -222,9 +262,7 @@ export default {
         this.toastDefault(this.$t('service.toast_refused_ar'))
         return
       }
-      this.$call.permission({
-        to: this.mainView.id,
-      })
+      this.$call.permission([this.mainView.connectionId])
       this.toastDefault(this.$t('service.toast_request_permission'))
     },
 
@@ -235,14 +273,18 @@ export default {
       if (data.from === this.account.uuid) return
 
       if (
-        this.account.roleType === ROLE.EXPERT_LEADER &&
+        this.account.roleType === ROLE.LEADER &&
         data.type === CAPTURE_PERMISSION.RESPONSE
       ) {
         this.updateParticipant({
           connectionId: receive.from.connectionId,
           permission: data.isAllowed,
         })
-        this.permissionSetting(data.isAllowed)
+        if (this.view !== VIEW.AR) {
+          this.permissionSetting(data.isAllowed)
+        } else {
+          this.$eventBus.$emit('startAr', data.isAllowed)
+        }
       }
     },
 
@@ -250,7 +292,7 @@ export default {
       const data = JSON.parse(receive.data)
 
       if (data.from === this.account.uuid) return
-      if (this.account.roleType === ROLE.EXPERT_LEADER) {
+      if (this.account.roleType === ROLE.LEADER) {
         if (data.type === AR_FEATURE.FEATURE) {
           if ('hasArFeature' in data) {
             this.updateParticipant({
@@ -268,7 +310,14 @@ export default {
       } else {
         if (data.type === AR_FEATURE.START_AR_FEATURE) {
           // TODO: MESSAGE
-          this.toastDefault(this.$t('service.toast_ar_start'))
+          this.toastDefault(
+            this.$t('service.toast_ar_start', { name: this.mainView.nickname }),
+          )
+          this.addChat({
+            status: 'ar-start',
+            name: this.mainView.nickname,
+            type: 'system',
+          })
           this.setView(VIEW.AR)
         } else if (data.type === AR_FEATURE.STOP_AR_FEATURE) {
           // TODO: MESSAGE
