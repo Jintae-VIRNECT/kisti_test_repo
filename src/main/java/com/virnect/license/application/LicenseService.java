@@ -1,5 +1,6 @@
 package com.virnect.license.application;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -13,10 +14,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,6 +79,10 @@ public class LicenseService {
 	private final LicenseProductRepository licenseProductRepository;
 	private final BillingRestService billingRestService;
 	private final ModelMapper modelMapper;
+	private final RestTemplate restTemplate;
+
+	@Value("${infra.billing.api}")
+	private String billingApi;
 
 	/**
 	 * 워크스페이스 라이선스 플랜 정보 조회
@@ -390,6 +400,9 @@ public class LicenseService {
 			ApiResponse<WorkspaceInfoResponse> workspaceInfoResponseMessage = workspaceRestService.getWorkspaceInfo(
 				detailsInfo.getWorkspaceId());
 			WorkspaceInfoResponse workspaceInfoResponse = workspaceInfoResponseMessage.getData();
+			if (workspaceInfoResponse.getUuid() == null || workspaceInfoResponse.getUuid().isEmpty()) {
+				continue;
+			}
 			MyLicensePlanInfoResponse licensePlanInfoResponse = new MyLicensePlanInfoResponse();
 			licensePlanInfoResponse.setWorkspaceId(workspaceInfoResponse.getUuid());
 			licensePlanInfoResponse.setWorkspaceName(workspaceInfoResponse.getName());
@@ -502,10 +515,17 @@ public class LicenseService {
 	 */
 	private void billingCancelProcess(long userNumber) {
 		// 사용자의 정기 결제 내역 정보 조회
-		BillingRestResponse<MonthlyBillingInfo> userMonthlyBillingInfo = billingRestService.getMonthlyBillingInfo(
-			1,
-			userNumber
-		);
+		URI uri = UriComponentsBuilder
+			.fromUriString(billingApi)
+			.path("/billing/user/monthbillinfo")
+			.queryParam("sitecode", 1)
+			.queryParam("userno", 62)
+			.build()
+			.toUri();
+
+		BillingRestResponse<MonthlyBillingInfo> userMonthlyBillingInfo = restTemplate.exchange(
+			uri, HttpMethod.GET, null, new ParameterizedTypeReference<BillingRestResponse<MonthlyBillingInfo>>() {
+			}).getBody();
 
 		// 정기 결제 내역 조회 시, 페이레터 서버 에러인 경우
 		if (userMonthlyBillingInfo == null || userMonthlyBillingInfo.getData() == null
