@@ -128,8 +128,7 @@ export default {
           }
         })
       } catch (err) {
-        if (err.code === 4016) {
-          // TODO: error code change
+        if (err.code === 4017) {
           this.toastError(this.$t('workspace.confirm_already_invite_remove'))
         }
       }
@@ -151,8 +150,7 @@ export default {
       } catch (err) {
         if (err.code === 4015) {
           this.toastError(this.$t('workspace.confirm_remote_leader_leave'))
-        } else if (err.code === 4016) {
-          // TODO: error code change
+        } else if (err.code === 4017) {
           this.toastError(this.$t('workspace.confirm_already_invite_leave'))
         }
       }
