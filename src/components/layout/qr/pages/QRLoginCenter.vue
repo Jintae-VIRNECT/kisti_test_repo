@@ -1,5 +1,8 @@
 <template>
 	<div class="container">
+		<TheHeader :showSection="showSection">
+			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
+		</TheHeader>
 		<el-row type="flex" justify="center" align="middle">
 			<el-col>
 				<h2>{{ $t('qrLoginCenter.title') }}</h2>
@@ -52,16 +55,23 @@
 </template>
 
 <script>
+import Auth from 'api/virnectPlatformAuth'
+import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import AuthService from 'service/auth-service'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import duration from 'dayjs/plugin/duration'
 export default {
-	props: {
-		myInfo: Object,
+	components: {
+		TheHeader,
 	},
 	data() {
 		return {
+			myInfo: {},
+			showSection: {
+				login: true,
+				profile: false,
+			},
 			runnerID: null,
 			deadline: dayjs()
 				.add(3, 'minute')
@@ -87,8 +97,8 @@ export default {
 	methods: {
 		async reset() {
 			const params = {
-				email: this.$props.myInfo.email,
-				userId: this.$props.myInfo.uuid,
+				email: this.myInfo.email,
+				userId: this.myInfo.uuid,
 			}
 			try {
 				let otp = await AuthService.qrOtp({ params: params })
@@ -126,6 +136,22 @@ export default {
 		async myInfo() {
 			this.reset()
 		},
+	},
+	async mounted() {
+		try {
+			await Auth.init()
+			if (Auth.isLogin) {
+				this.myInfo = Auth.myInfo
+				this.showSection.login = false
+				this.showSection.link = true
+				this.showSection.profile = true
+			} else throw 'error'
+		} catch (e) {
+			this.showSection.login = true
+			this.showSection.profile = false
+			this.showSection.link = false
+			location.replace(`${window.urls['console']}/?continue=${location.href}`)
+		}
 	},
 }
 </script>
