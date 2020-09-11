@@ -58,7 +58,6 @@ import com.virnect.process.domain.TargetType;
 import com.virnect.process.domain.YesOrNo;
 import com.virnect.process.dto.request.CheckProcessOwnerRequest;
 import com.virnect.process.dto.request.EditProcessRequest;
-import com.virnect.process.dto.request.ProcessDeleteRequest;
 import com.virnect.process.dto.request.ProcessDuplicateRequest;
 import com.virnect.process.dto.request.ProcessRegisterRequest;
 import com.virnect.process.dto.request.WorkResultSyncRequest;
@@ -1331,15 +1330,21 @@ public class TaskService {
 	 * @return
 	 */
 	@Transactional
-	public ApiResponse<ProcessSimpleResponse> deleteTheProcess(ProcessDeleteRequest processDeleteRequest) {
-		Long processId = processDeleteRequest.getTaskId();
-		//String actorUUID = processDeleteRequest.getActorUUID();
+	public ApiResponse<ProcessSimpleResponse> deleteTheProcess(CheckProcessOwnerRequest checkProcessOwnerRequest) {
+		Long processId = checkProcessOwnerRequest.getTaskId();
+		String actorUUID = checkProcessOwnerRequest.getActorUUID();
 		// 작업 단건 조회
 		Process process = this.processRepository.findById(processId)
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
-		// 권한 체크
-		if (!processDeleteRequest.getWorkspaceUUID().equals(process.getWorkspaceUUID())) {
+		//권한 체크 - 사용자가 해당 워크스페이스의 매니저 또는 마스터 일때만 작업을 삭제할 수 있음
+		MemberListResponse memberListResponse = this.workspaceRestService.getSimpleWorkspaceUserList(
+			process.getWorkspaceUUID()).getData();
+		boolean userDeletePermission = memberListResponse.getMemberInfoList().stream()
+			.filter(
+				memberInfoDTO -> memberInfoDTO.getRole().equals("MASTER") || memberInfoDTO.getRole().equals("MANAGER"))
+			.anyMatch(memberInfoDTO -> memberInfoDTO.getUuid().equals(actorUUID));
+		if (!userDeletePermission) {
 			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 		}
 		/*if (!actorUUID.equals(process.getContentManagerUUID())) {
