@@ -1,9 +1,9 @@
 RELEASE
 
 New Features
-영문 메일 전송
 
 Bug Fixes
+- 영문 메일 제목 수정
 
 Limitation
 
