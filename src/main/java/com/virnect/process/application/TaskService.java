@@ -1340,16 +1340,13 @@ public class TaskService {
 		//권한 체크 - 사용자가 해당 워크스페이스의 매니저 또는 마스터 일때만 작업을 삭제할 수 있음
 		MemberListResponse memberListResponse = this.workspaceRestService.getSimpleWorkspaceUserList(
 			process.getWorkspaceUUID()).getData();
-		boolean userDeletePermission = memberListResponse.getMemberInfoList().stream()
+		List<String> memberUUIDList = memberListResponse.getMemberInfoList().stream()
 			.filter(
 				memberInfoDTO -> memberInfoDTO.getRole().equals("MASTER") || memberInfoDTO.getRole().equals("MANAGER"))
-			.anyMatch(memberInfoDTO -> memberInfoDTO.getUuid().equals(actorUUID));
-		if (!userDeletePermission) {
+			.map(memberInfoDTO -> memberInfoDTO.getUuid()).collect(Collectors.toList());
+		if (!memberUUIDList.contains(actorUUID)) {
 			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 		}
-		/*if (!actorUUID.equals(process.getContentManagerUUID())) {
-			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-		}*/
 
 		// 삭제 조건 중 컨텐츠의 작업 전환상태를 NO로 만들어야 삭제조건에 부합하므로 미리 조건처리함.
 		this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
