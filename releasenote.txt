@@ -3,7 +3,7 @@ RELEASE
 New Features
 
 Bug Fixes
-- 영문 메일 제목 수정
+- 기본 설정 Locale Cookie값을 ko로 수정
 
 Limitation
 

@@ -4,8 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 
-import java.util.Locale;
-
+import org.apache.commons.io.FilenameUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -57,10 +56,14 @@ public class CreateWorkspaceTest {
             }
         }
 */
-        Locale indiaLocale = new Locale("en", "");
+        String url = "https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/workspace/contents/76c3b9f7-7e1c-4e8f-949e-c3ae631c9dc7.Ares";
 
-        System.out.println(indiaLocale.getCountry());
-        System.out.println(indiaLocale.getLanguage());
+        String resourceEndPoint = String.format("%s%s", "workspace/", "contents");
+        //            String resourceEndPoint = String.format("%s/%s", bucketName, bucketResource);
+        //String key = url.split(String.format("/%s/%s", "workspace/", "contents"))[1];
+        String key = "workspace/" + "contents" + "/" + FilenameUtils.getName(url);
+        System.out.println(resourceEndPoint);
+        System.out.println(key);
 
 
     }
