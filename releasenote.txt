@@ -3,7 +3,7 @@ RELEASE
 New Features
 
 Bug Fixes
-- 컨텐츠 삭제 api reqeust param 변경
+- 컨텐츠 삭제 에러 수정
 
 Limitation
 
