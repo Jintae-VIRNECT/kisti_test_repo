@@ -1,10 +1,10 @@
 package com.virnect.gateway.filter.logging;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Objects;
 
 import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.OrderedGatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -33,7 +33,7 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
 
 	@Override
 	public GatewayFilter apply(Config config) {
-		return (exchange, chain) -> {
+		return new OrderedGatewayFilter(((exchange, chain) -> {
 			ServerHttpRequest request = exchange.getRequest();
 			ServerHttpResponse response = exchange.getResponse();
 			StopWatch stopWatch = new StopWatch();
@@ -47,11 +47,7 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
 					"[{}] [REQUEST] [{}] [{}] [{}] {}", config.messagePrefix, LocalDateTime.now(), clientIp,
 					request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type")
 				);
-				request.getHeaders()
-					.entrySet()
-					.forEach((entry -> log.info("[{}] [HEADER] [{}] => {} ", config.getMessagePrefix(), entry.getKey(),
-						Arrays.toString(entry.getValue().toArray())
-					)));
+				log.info("[{}] [HEADER] {}", config.getMessagePrefix(), request.getHeaders().toString());
 			}
 			return chain.filter(exchange).then(Mono.fromRunnable(() -> {
 				stopWatch.stop();
@@ -67,7 +63,7 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
 					);
 				}
 			}));
-		};
+		}),-3);
 	}
 
 	public static class Config {

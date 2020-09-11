@@ -32,7 +32,7 @@ import reactor.core.publisher.Mono;
  */
 
 @Slf4j
-@Profile(value = {"local", "staging", "production"})
+@Profile(value = {"staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements GlobalFilter {
