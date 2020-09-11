@@ -32,6 +32,7 @@ import com.virnect.process.application.TaskService;
 import com.virnect.process.domain.Conditions;
 import com.virnect.process.dto.request.CheckProcessOwnerRequest;
 import com.virnect.process.dto.request.EditProcessRequest;
+import com.virnect.process.dto.request.ProcessDeleteRequest;
 import com.virnect.process.dto.request.ProcessDuplicateRequest;
 import com.virnect.process.dto.request.ProcessRegisterRequest;
 import com.virnect.process.dto.request.WorkResultSyncRequest;
@@ -223,13 +224,13 @@ public class TaskController {
 	@ApiOperation(value = "작업삭제", notes = "actorUUID는 작업의 contentManagerUUID와 동일해야 함.")
 	@DeleteMapping
 	public ResponseEntity<ApiResponse<ProcessSimpleResponse>> deleteProcessHandler(
-		@RequestBody @Valid CheckProcessOwnerRequest checkProcessOwnerRequest, BindingResult result
+		@RequestBody @Valid ProcessDeleteRequest processDeleteRequest, BindingResult result
 	) {
 		if (result.hasErrors()) {
 			throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<ProcessSimpleResponse> processSimpleResponseApiResponse = this.taskService.deleteTheProcess(
-			checkProcessOwnerRequest);
+			processDeleteRequest);
 		return ResponseEntity.ok(processSimpleResponseApiResponse);
 	}
 

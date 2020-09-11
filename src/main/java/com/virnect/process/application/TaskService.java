@@ -58,6 +58,7 @@ import com.virnect.process.domain.TargetType;
 import com.virnect.process.domain.YesOrNo;
 import com.virnect.process.dto.request.CheckProcessOwnerRequest;
 import com.virnect.process.dto.request.EditProcessRequest;
+import com.virnect.process.dto.request.ProcessDeleteRequest;
 import com.virnect.process.dto.request.ProcessDuplicateRequest;
 import com.virnect.process.dto.request.ProcessRegisterRequest;
 import com.virnect.process.dto.request.WorkResultSyncRequest;
@@ -1330,17 +1331,20 @@ public class TaskService {
 	 * @return
 	 */
 	@Transactional
-	public ApiResponse<ProcessSimpleResponse> deleteTheProcess(CheckProcessOwnerRequest checkProcessOwnerRequest) {
-		Long processId = checkProcessOwnerRequest.getTaskId();
-		String actorUUID = checkProcessOwnerRequest.getActorUUID();
+	public ApiResponse<ProcessSimpleResponse> deleteTheProcess(ProcessDeleteRequest processDeleteRequest) {
+		Long processId = processDeleteRequest.getTaskId();
+		//String actorUUID = processDeleteRequest.getActorUUID();
 		// 작업 단건 조회
 		Process process = this.processRepository.findById(processId)
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
 		// 권한 체크
-		if (!actorUUID.equals(process.getContentManagerUUID())) {
+		if (!processDeleteRequest.getWorkspaceUUID().equals(process.getWorkspaceUUID())) {
 			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
 		}
+		/*if (!actorUUID.equals(process.getContentManagerUUID())) {
+			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
+		}*/
 
 		// 삭제 조건 중 컨텐츠의 작업 전환상태를 NO로 만들어야 삭제조건에 부합하므로 미리 조건처리함.
 		this.contentRestService.contentConvertHandler(process.getContentUUID(), YesOrNo.NO);
