@@ -25,14 +25,12 @@
         </transition>
       </ul>
     </nav>
-    <workspace-select v-if="!workspace || !workspace.uuid"></workspace-select>
-    <component
-      v-else-if="hasLicense && !expireLicense"
-      :is="component"
-      :class="{ fix: fix }"
-    ></component>
-    <workspace-license v-else-if="!hasLicense"></workspace-license>
-    <workspace-expire v-else></workspace-expire>
+    <workspace-license v-if="!hasLicense"></workspace-license>
+    <workspace-expire v-else-if="expireLicense"></workspace-expire>
+    <workspace-select
+      v-else-if="!workspace || !workspace.uuid"
+    ></workspace-select>
+    <component v-else :is="component" :class="{ fix: fix }"></component>
   </div>
 </template>
 
