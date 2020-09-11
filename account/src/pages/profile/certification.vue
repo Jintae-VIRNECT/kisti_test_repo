@@ -56,7 +56,7 @@ export default {
         email: profile.email,
         password: '',
       },
-      findPasswordUrl: `${this.$config.console}/find`,
+      findPasswordUrl: `${this.$url.console}/find`,
     }
   },
   methods: {
