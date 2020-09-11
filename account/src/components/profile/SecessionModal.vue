@@ -8,6 +8,7 @@
   >
     <div>
       <p class="mail-box" v-html="me.email"></p>
+      <p class="caution" v-html="$t('profile.secession.caution')"></p>
       <el-form
         class="virnect-login-form secession-form"
         ref="form"
@@ -125,8 +126,13 @@ export default {
 
 <style lang="scss">
 #__nuxt .secession-modal .el-dialog__body {
+  .caution {
+    margin-top: 4px;
+    color: $danger;
+    font-size: 11px;
+  }
   .secession-form {
-    margin: 28px 0 24px;
+    margin: 24px 0;
     .el-select + .el-input {
       margin-top: 8px;
     }

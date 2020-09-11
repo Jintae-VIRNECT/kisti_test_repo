@@ -3,7 +3,7 @@
   "loggedInDevice": "Devices",
   "loggedInDeviceDesc": "Information of the devices that you are logged into.",
   "notMyDevice": "In case if the devices are not yours.",
-  "now": "Now Login",
+  "now": "Now",
   "column": {
     "deviceName": "Name",
     "loginLocation": "Last Location",
