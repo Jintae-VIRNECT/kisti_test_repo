@@ -87,6 +87,7 @@
 					name="lastname"
 					v-validate="'required'"
 					v-model="signup.lastName"
+					:class="{ 'input-danger': /(\s)/g.test(signup.lastName) }"
 				></el-input>
 				<el-input
 					class="firstname-input"
@@ -95,6 +96,7 @@
 					name="firstname"
 					v-validate="'required'"
 					v-model="signup.firstName"
+					:class="{ 'input-danger': /(\s)/g.test(signup.firstName) }"
 				></el-input>
 
 				<p class="input-title must-check">{{ $t('signup.birth.birth') }}</p>
@@ -291,6 +293,12 @@ export default {
 			)
 				return (val = false)
 			if (this.signup.lastName == '' || this.signup.firstName == '')
+				return (val = false)
+
+			if (
+				/(\s)/g.test(this.signup.lastName) &&
+				/(\s)/g.test(this.signup.firstName)
+			)
 				return (val = false)
 
 			if (
