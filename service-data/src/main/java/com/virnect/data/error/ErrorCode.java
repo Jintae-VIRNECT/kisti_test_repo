@@ -4,11 +4,11 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * @project: PF-Auth
- * @author: jeonghyeon.chang (johnmark)
- * @email: practice1356@gmail.com
- * @since: 2020.03.09
- * @description: Auth Service Error Messages
+ * @project: RM-Service
+ * @author: Kyunghoon.Kim (Hoon)
+ * @email: hoon@virnect.com
+ * @since: 2020.08.01
+ * @description: Remote Service Error Code and Messages
  */
 @ApiModel
 public enum  ErrorCode {

@@ -25,11 +25,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-/**
- *
- */
-@Profile({"develop", "local", "test"})
-//@Profile({"test"})
+@Profile({"develop", "local"})
 @Slf4j
 @Component
 public class LocalFileManagementService implements IFileManagementService {

@@ -7,7 +7,7 @@ buildscript {
 }
 
 plugins {
-    //id("org.springframework.boot") version "2.2.5.RELEASE" apply false
+    // org.springframework.boot version 2.2.5 version has file upload problem.
     id("org.springframework.boot") version "2.2.6.RELEASE" apply false
     id("io.spring.dependency-management") version "1.0.9.RELEASE" apply false
     kotlin("jvm") version "1.3.72" apply false
@@ -18,7 +18,7 @@ plugins {
 
 allprojects {
     group = "com.virnect"
-    version = "2.0.0"
+    version = "2.1.0"
 
     tasks.withType<JavaCompile> {
         sourceCompatibility = "1.8"
