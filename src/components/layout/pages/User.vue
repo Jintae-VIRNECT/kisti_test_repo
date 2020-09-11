@@ -132,11 +132,7 @@
 					class="next-btn block-btn"
 					type="info"
 					@click="checkNickName()"
-					:disabled="
-						(user.nickname == '' || user.nickname == null) &&
-							user.mobile == null &&
-							user.recoveryEmail == null
-					"
+					:disabled="!checkConfirm"
 					>{{ $t('user.confirm') }}</el-button
 				>
 				<el-button class="block-btn" @click="later">{{
@@ -195,6 +191,14 @@ export default {
 					/[^0-9+]/g,
 					'',
 				)}`
+		},
+		checkConfirm() {
+			if (this.user.nickname == '' || this.user.nickname == null) return false
+			if (this.user.mobile == null) return false
+			if (this.user.recoveryEmail == null) return false
+			if (this.user.profile == null || this.user.profile == '') return false
+
+			return true
 		},
 	},
 	mounted() {
