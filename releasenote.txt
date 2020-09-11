@@ -3,7 +3,7 @@ RELEASE
 New Features
 
 Bug Fixes
-- 영문 메일 제목 수정
+- ko lang 쿠키 read 추가
 
 Limitation
 
