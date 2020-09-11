@@ -11,10 +11,9 @@ export default {
     mineLabel: String,
   },
   watch: {
-    mineLabel(label) {
-      if (this.showMyList !== this.$t('common.all')) {
-        this.showMyList = label
-      }
+    mineLabel(after, before) {
+      this.showMyList =
+        before === this.showMyList ? after : this.$t('common.all')
     },
   },
   data() {
