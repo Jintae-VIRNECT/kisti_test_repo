@@ -5,6 +5,7 @@
 <script>
 import { conditions } from '@/models/task/Task'
 import colorMap from '@/models/color'
+import utils from '@/mixins/utils'
 
 // ssr error
 let bb = null
@@ -13,6 +14,7 @@ if (process.client) {
 }
 
 export default {
+  mixins: [utils],
   props: {
     data: Object,
   },
@@ -24,6 +26,9 @@ export default {
   },
   watch: {
     data() {
+      this.initProcessGraph()
+    },
+    '$i18n.locale'() {
       this.initProcessGraph()
     },
   },
@@ -135,7 +140,7 @@ export default {
         const xlabel = item.querySelector('tspan').innerHTML
         item.innerHTML = ''
         var group = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-        const width = 54
+        const width = Math.max(54, that.measureText(xlabel))
         const height = 24
         const textPaddingTop = 4
         group.setAttribute(

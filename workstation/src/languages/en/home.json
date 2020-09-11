@@ -61,7 +61,7 @@
       "desc": "It may differ from the actual view counts so please use it as a reference.",
       "max": "Total",
       "used": "Used",
-      "unit": "Views"
+      "unit": "Times"
     },
     "call": {
       "title": "Talk minutes",
