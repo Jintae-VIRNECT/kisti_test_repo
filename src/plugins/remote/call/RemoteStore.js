@@ -230,7 +230,7 @@ const mutations = {
         }
       }
     }
-    if (state.participants[idx].me === true && param['hasVideo'] === true) {
+    if (state.participants[idx].me === true) {
       state.initing = false
       if (
         param['hasVideo'] === true &&
