@@ -63,6 +63,7 @@
     "eslint-plugin-jest": "^23.8.2",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-vue": "^6.0.1",
+    "node-pre-gyp": "^0.15.0",
     "fabric": "^3.6.3",
     "file-loader": "^1.1.11",
     "freeice": "2.2.2",
