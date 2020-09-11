@@ -13,6 +13,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ContentDeleteRequest {
-    String[] contentUUIDs;
-    String workerUUID;
+	String[] contentUUIDs;
+	String workspaceUUID;
 }
