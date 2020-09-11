@@ -83,6 +83,7 @@ import com.virnect.process.dto.rest.response.content.ContentTargetResponse;
 import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
 import com.virnect.process.dto.rest.response.user.UserInfoResponse;
+import com.virnect.process.dto.rest.response.workspace.AllMemberListResponse;
 import com.virnect.process.dto.rest.response.workspace.MemberInfoDTO;
 import com.virnect.process.dto.rest.response.workspace.MemberListResponse;
 import com.virnect.process.exception.ProcessServiceException;
@@ -1338,8 +1339,8 @@ public class TaskService {
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
 		//권한 체크 - 사용자가 해당 워크스페이스의 매니저 또는 마스터 일때만 작업을 삭제할 수 있음
-		MemberListResponse memberListResponse = this.workspaceRestService.getSimpleWorkspaceUserList(
-			process.getWorkspaceUUID()).getData();
+		AllMemberListResponse memberListResponse = this.workspaceRestService.getWorkspaceUserList(
+			process.getWorkspaceUUID(), 50).getData();
 		List<String> memberUUIDList = memberListResponse.getMemberInfoList().stream()
 			.filter(
 				memberInfoDTO -> memberInfoDTO.getRole().equals("MASTER") || memberInfoDTO.getRole().equals("MANAGER"))
