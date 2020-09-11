@@ -221,8 +221,9 @@ public class TaskService {
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error("CONTENT UPLOAD ERROR: {}", e.getMessage());
+				//rollbackDuplicateContent(contentDuplicate.getData().getContentUUID(), registerNewProcess.getOwnerUUID());
 				rollbackDuplicateContent(
-					contentDuplicate.getData().getContentUUID(), registerNewProcess.getOwnerUUID());
+					contentDuplicate.getData().getContentUUID(), registerNewProcess.getWorkspaceUUID());
 				throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
 			}
 
@@ -331,13 +332,14 @@ public class TaskService {
 	 * @param contentUUID
 	 * @param userUUID
 	 */
-	private void rollbackDuplicateContent(String contentUUID, String userUUID) {
+	private void rollbackDuplicateContent(String contentUUID, String workspaceUUID) {
 		this.contentRestService.contentConvertHandler(contentUUID, YesOrNo.NO);
 		String[] contentUUIDs = {contentUUID};
 
 		ContentDeleteRequest contentDeleteRequest = new ContentDeleteRequest();
 		contentDeleteRequest.setContentUUIDs(contentUUIDs);
-		contentDeleteRequest.setWorkerUUID(userUUID);
+		contentDeleteRequest.setWorkspaceUUID(workspaceUUID);
+		//contentDeleteRequest.setWorkerUUID(userUUID);
 
 		this.contentRestService.contentDeleteRequestHandler(contentDeleteRequest);
 	}
@@ -385,7 +387,8 @@ public class TaskService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("ERROR : ADD TARGET ON PROCESS getMessage: {}, getCause: {}", e.getMessage(), e.getCause());
-			rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+			//rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+			rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getWorkspaceUUID());
 			throw new ProcessServiceException(ErrorCode.ERR_TARGET_REGISTER);
 		}
 	}
@@ -490,7 +493,8 @@ public class TaskService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("ERROR : ADD SUB-PROCESS ON PROCESS: {}", e.getMessage());
-			rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+			//rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+			rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getWorkspaceUUID());
 			throw new ProcessServiceException(ErrorCode.ERR_SUB_PROCESS_REGISTER);
 		}
 	}
@@ -531,7 +535,8 @@ public class TaskService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("ERROR : ADD JOB ON SUB-PROCESS: {}", e.getMessage());
-			rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+			//rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+			rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getWorkspaceUUID());
 			throw new ProcessServiceException(ErrorCode.ERR_JOB_REGISTER);
 		}
 	}
@@ -574,7 +579,8 @@ public class TaskService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			log.error("ERROR : ADD REPORT ON JOB: {}", e.getMessage());
-			rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+			//rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getContentManagerUUID());
+			rollbackDuplicateContent(newProcess.getContentUUID(), newProcess.getWorkspaceUUID());
 			throw new ProcessServiceException(ErrorCode.ERR_REPORT_REGISTER);
 		}
 	}
@@ -639,7 +645,9 @@ public class TaskService {
 			} catch (Exception e) {
 				e.printStackTrace();
 				log.error("CONTENT UPLOAD ERROR: {}", e.getMessage());
-				rollbackDuplicateContent(contentDuplicate.getData().getContentUUID(), duplicateRequest.getOwnerUUID());
+				//rollbackDuplicateContent(contentDuplicate.getData().getContentUUID(), duplicateRequest.getOwnerUUID());
+				rollbackDuplicateContent(
+					contentDuplicate.getData().getContentUUID(), duplicateRequest.getWorkspaceUUID());
 				throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
 			}
 
@@ -1343,7 +1351,8 @@ public class TaskService {
 		ContentDeleteRequest contentDeleteRequest = new ContentDeleteRequest();
 
 		contentDeleteRequest.setContentUUIDs(processes);
-		contentDeleteRequest.setWorkerUUID(actorUUID);
+		//contentDeleteRequest.setWorkerUUID(actorUUID);
+		contentDeleteRequest.setWorkspaceUUID(process.getWorkspaceUUID());
 		ApiResponse<ContentDeleteListResponse> apiResponse = this.contentRestService.contentDeleteRequestHandler(
 			contentDeleteRequest);
 
