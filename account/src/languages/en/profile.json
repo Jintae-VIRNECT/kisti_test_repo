@@ -111,6 +111,7 @@
   },
   "secession": {
     "title": "Delete Account",
+    "caution": "You cannot rejoin with the email that you have left. The account and data cannot be recovered, so please proceed with the membership withdrawal careful.",
     "password": "Password",
     "passwordDesk": "Enter password",
     "secessionReason": "Reason for delete account",
