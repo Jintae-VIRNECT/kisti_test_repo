@@ -1,48 +1,50 @@
 {
-  "welcome": "Hello {nickname} welcome to the Workspace",
-  "master": "Master",
-  "manager": "Manager",
-  "member": "Member",
-  "create": "Create Workspace",
-  "started": {
-    "title": "Finish setting up Workspace details",
-    "desc": "The Workspace information set up is completed. Invite members to start using VIRNECT products at Workspace."
-  },
-  "info": {
-    "title": "Workspace details",
-    "descriptionEmpty": "There is no Workspace description",
-    "planMemberCount": "Members per plans",
-    "planPurchase": "Purchase",
-    "addMember": "Add Member"
-  },
-  "setting": {
-    "title": "Profile Settings",
-    "createdDate": "Created",
-    "name": "Workspace Name",
-    "namePlaceholder": "John's Workspace",
-    "nameComment": "Enter less than 30 characters for your Workspace name",
-    "desc": "Description",
-    "descPlaceholder": "Enter your Workspace description",
-    "descComment": "Enter less than 40 characters for the description.",
-    "image": "Profile Image",
-    "imageComment": "Update your Workspace profile image. This profile picture is displayed on the sidebar and notifications.",
-    "start": "Begin Workspace",
-    "update": "Edit",
-    "leave": "Leave Workspace",
-    "leaveInfo": {
-      "title": "Notice on leaving the Workspace",
-      "list": [
-        "You are no longer participating in this Workspace including the plans and products related to it.",
-        "Data and records uploaded or shared by you will not be deleted. Leaving the Workspace is not canceled.",
-        "If you would like to rejoin the Workspace contact the Workspace master or manager again."
-      ],
-      "agree": "I agree to above guidelines before leaving the Workspace.",
-      "success": "You have left the Workspace.",
-      "fail": "Failed to leave the Workspace please try again later."
+  "workspace": {
+    "welcome": "Hello {nickname} welcome to the Workspace",
+    "master": "Master",
+    "manager": "Manager",
+    "member": "Member",
+    "create": "Create Workspace",
+    "started": {
+      "title": "Finish setting up Workspace details",
+      "desc": "The Workspace information set up is completed. Invite members to start using VIRNECT products at Workspace."
     },
-    "message": {
-      "updateSuccess": "The Workspace details are updated.",
-      "updateFail": "Failed to setting up the Workspace details please try again later."
+    "info": {
+      "title": "Workspace details",
+      "descriptionEmpty": "There is no Workspace description",
+      "planMemberCount": "Members per plans",
+      "planPurchase": "Purchase",
+      "addMember": "Add Member"
+    },
+    "setting": {
+      "title": "Profile Settings",
+      "createdDate": "Created",
+      "name": "Workspace Name",
+      "namePlaceholder": "John's Workspace",
+      "nameComment": "Enter less than 30 characters for your Workspace name",
+      "desc": "Description",
+      "descPlaceholder": "Enter your Workspace description",
+      "descComment": "Enter less than 40 characters for the description.",
+      "image": "Profile Image",
+      "imageComment": "Update your Workspace profile image. This profile picture is displayed on the sidebar and notifications.",
+      "start": "Begin Workspace",
+      "update": "Edit",
+      "leave": "Leave Workspace",
+      "leaveInfo": {
+        "title": "Notice on leaving the Workspace",
+        "list": [
+          "You are no longer participating in this Workspace including the plans and products related to it.",
+          "Data and records uploaded or shared by you will not be deleted. Leaving the Workspace is not canceled.",
+          "If you would like to rejoin the Workspace contact the Workspace master or manager again."
+        ],
+        "agree": "I agree to above guidelines before leaving the Workspace.",
+        "success": "You have left the Workspace.",
+        "fail": "Failed to leave the Workspace please try again later."
+      },
+      "message": {
+        "updateSuccess": "The Workspace details are updated.",
+        "updateFail": "Failed to setting up the Workspace details please try again later."
+      }
     }
   }
 }
