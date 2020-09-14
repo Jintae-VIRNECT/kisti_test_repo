@@ -56,6 +56,7 @@ export default {
       maxSelect: maxParticipants - 1,
       roomInfo: {},
       loading: false,
+      clicked: false,
     }
   },
   props: {
@@ -138,6 +139,8 @@ export default {
     },
     async startRemote(info) {
       try {
+        if (this.clicked === true) return
+        this.clicked = true
         const selectedUser = []
         const selectedUserIds = []
 
@@ -190,8 +193,10 @@ export default {
         } else {
           this.roomClear()
           console.error('join room fail')
+          this.clicked = false
         }
       } catch (err) {
+        this.clicked = false
         if (typeof err === 'string') {
           if (err === 'nodevice') {
             this.toastError(this.$t('workspace.error_no_connected_device'))

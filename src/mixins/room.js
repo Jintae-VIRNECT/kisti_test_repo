@@ -5,11 +5,18 @@ import toastMixin from 'mixins/toast'
 import { mapActions } from 'vuex'
 export default {
   mixins: [toastMixin],
+  data() {
+    return {
+      clicked: false,
+    }
+  },
   methods: {
     ...mapActions(['roomClear', 'setRoomInfo']),
     async join(room) {
       this.logger('>>> JOIN ROOM')
       try {
+        if (this.clicked === true) return
+        this.clicked = true
         this.setRoomInfo(room)
         let myInfo = room.memberList.find(
           member => member.uuid === this.account.uuid,
@@ -36,8 +43,10 @@ export default {
         } else {
           this.roomClear()
           console.error('>>>join room fail')
+          this.clicked = false
         }
       } catch (err) {
+        this.clicked = false
         if (typeof err === 'string') {
           if (err === 'nodevice') {
             this.toastError(this.$t('workspace.error_no_connected_device'))
