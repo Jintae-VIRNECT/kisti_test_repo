@@ -36,9 +36,11 @@
 import { mapActions, mapGetters } from 'vuex'
 import SharingImage from './SharingImage'
 import SharingPdf from './SharingPdf'
+import toastMixin from 'mixins/toast'
 const maxFileSize = 1024 * 1024 * 20
 export default {
   name: 'ShareFileList',
+  mixins: [toastMixin],
   components: {
     SharingImage,
     SharingPdf,
@@ -72,7 +74,7 @@ export default {
     loadFile(file) {
       if (file) {
         if (file.size > maxFileSize) {
-          alert(this.$t('service.file_maxsize'))
+          this.toastError(this.$t('service.file_maxsize'))
           this.clearUploadFile()
           return false
         }
@@ -98,7 +100,7 @@ export default {
           this.addFile(docItem)
           // this.sharingList.push(docItem)
         } else {
-          alert(this.$t('service.file_type'))
+          this.toastError(this.$t('service.file_type'))
           return false
         }
       }

@@ -17,9 +17,10 @@
 <script>
 import { mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'SharingImage',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, toastMixin],
   components: {},
   data() {
     return {
@@ -131,7 +132,7 @@ export default {
         this.addHistory(history)
       } else {
         // TODO: MESSAGE
-        alert(this.$t('service.share_notready'))
+        this.toastNotify(this.$t('service.share_notready'))
       }
     },
     deleteImage() {

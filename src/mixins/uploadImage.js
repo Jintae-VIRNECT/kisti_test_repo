@@ -1,5 +1,7 @@
 // upload image mixin
+import toastMixin from './toast'
 export default {
+  mixins: [toastMixin],
   data() {
     return {
       imageURL: '',
@@ -21,11 +23,11 @@ export default {
             files[0].type,
           ) < 0
         ) {
-          alert('This image is unavailable.')
+          this.toastError(this.$t('service.file_type'))
           return
         }
         if (files[0].size > 2 * 1024 * 1024) {
-          alert('This image size is unavailable.')
+          this.toastError(this.$t('service.file_maxsize'))
           return
         }
         const oReader = new FileReader()
@@ -40,7 +42,7 @@ export default {
           }
           oImg.onerror = () => {
             // 이미지 아닐 시 처리.
-            alert('This image is unavailable.')
+            this.toastError(this.$t('service.file_type'))
           }
           oImg.src = imageData
         }
