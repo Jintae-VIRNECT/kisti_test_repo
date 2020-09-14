@@ -31,7 +31,7 @@ module.exports = {
    */
   modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources', '@nuxtjs/axios'],
   buildModules: ['nuxt-composition-api'],
-  plugins: ['@/plugins/element-ui', '@/plugins/axios'],
+  plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
   /*
    ** Customize style
    */

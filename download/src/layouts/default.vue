@@ -25,6 +25,9 @@ export default {
   head() {
     return {
       title: `VIRNECT | ${this.$t('home.title')}`,
+      htmlAttrs: {
+        lang: this.$i18n.locale,
+      },
     }
   },
   data() {
