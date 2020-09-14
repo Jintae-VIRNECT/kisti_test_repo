@@ -1,6 +1,10 @@
 <template>
 	<section>
-		<TheHeader :showSection="showSection" :runtimeInfo="runtimeInfo">
+		<TheHeader
+			:showSection="showSection"
+			:runtimeInfo="runtimeInfo"
+			v-if="landing"
+		>
 			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
 		</TheHeader>
 		<transition name="app-fade" mode="out-in">
@@ -25,10 +29,12 @@ export default {
 				urls: res,
 				env: res.env,
 			}
+			vm.landing = true
 		})
 	},
 	data() {
 		return {
+			landing: false,
 			showSection: {
 				login: true,
 				profile: false,
