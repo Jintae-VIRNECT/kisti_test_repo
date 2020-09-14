@@ -204,7 +204,6 @@ const config = {
 				}
 		}),
 		new webpack.optimize.ModuleConcatenationPlugin(),
-		new UglifyJSPlugin(),
 		extractSASS,
 		extractCSS,
 		new CopyWebpackPlugin(
