@@ -3,6 +3,7 @@ import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
 import toastMixin from 'mixins/toast'
 import { mapActions } from 'vuex'
+import { checkPermission } from 'utils/deviceCheck'
 export default {
   mixins: [toastMixin],
   data() {
@@ -17,6 +18,9 @@ export default {
       try {
         if (this.clicked === true) return
         this.clicked = true
+
+        const options = await checkPermission()
+
         this.setRoomInfo(room)
         let myInfo = room.memberList.find(
           member => member.uuid === this.account.uuid,
@@ -35,7 +39,7 @@ export default {
         window.urls['coturn'] = res.coturn
         window.urls['wss'] = res.wss
 
-        const joinRtn = await this.$call.connect(res, role)
+        const joinRtn = await this.$call.connect(res, role, options)
         if (joinRtn) {
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })

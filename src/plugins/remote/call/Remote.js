@@ -16,7 +16,6 @@ import {
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
-import { getPermission, getUserMedia } from 'utils/deviceCheck'
 
 let OV
 
@@ -34,42 +33,9 @@ const _ = {
    * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
    */
-  connect: async (configs, role) => {
-    // const publishVideo = role !== ROLE.LEADER
-    const devices = await navigator.mediaDevices.enumerateDevices()
-    const hasVideo =
-      devices.findIndex(device => device.kind.toLowerCase() === 'videoinput') >
-      -1
-    const hasAudio =
-      devices.findIndex(device => device.kind.toLowerCase() === 'audioinput') >
-      -1
-
-    if (!hasAudio && !hasVideo) {
-      throw 'nodevice'
-    }
-    _.account = Store.getters['account']
-    const settingInfo = Store.getters['settingInfo']
-    let audioSource =
-      devices.findIndex(device => device.deviceId === settingInfo.mic) > -1
-        ? settingInfo.mic
-        : undefined
-    let videoSource = hasVideo
-      ? devices.findIndex(device => device.deviceId === settingInfo.video) > -1
-        ? settingInfo.video
-        : undefined
-      : false
-
-    const permission = await getPermission()
-    if (permission === 'prompt') {
-      const mediaResponse = await getUserMedia(true, hasVideo)
-      if (mediaResponse !== true) {
-        throw mediaResponse
-      }
-    } else if (permission !== true) {
-      throw permission
-    }
-
+  connect: async (configs, role, options) => {
     try {
+      _.account = Store.getters['account']
       Store.commit('callClear')
       OV = new OpenVidu()
       if (process.env.NODE_ENV === 'production') {
@@ -94,22 +60,27 @@ const _ = {
       }
       debug('coturn::', iceServers)
 
-      const options = {
+      const connectOption = {
         iceServers,
         wsUri: ws,
         role: 'PUSLISHER',
       }
 
-      await _.session.connect(configs.token, JSON.stringify(metaData), options)
+      await _.session.connect(
+        configs.token,
+        JSON.stringify(metaData),
+        connectOption,
+      )
 
       Store.dispatch('updateAccount', {
         roleType: role,
       })
       _.account.roleType = role
+      const settingInfo = Store.getters['settingInfo']
 
       const publishOptions = {
-        audioSource: audioSource,
-        videoSource: videoSource,
+        audioSource: options.audioSource,
+        videoSource: options.videoSource,
         publishAudio: settingInfo.micOn,
         publishVideo: settingInfo.videoOn,
         resolution: settingInfo.quality,

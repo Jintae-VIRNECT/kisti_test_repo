@@ -39,6 +39,7 @@ import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
+import { checkPermission } from 'utils/deviceCheck'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -141,6 +142,9 @@ export default {
       try {
         if (this.clicked === true) return
         this.clicked = true
+
+        const options = await checkPermission()
+
         const selectedUser = []
         const selectedUserIds = []
 
@@ -168,7 +172,11 @@ export default {
             workspaceId: this.workspace.uuid,
           })
         }
-        const connRes = await this.$call.connect(createdRes, ROLE.LEADER)
+        const connRes = await this.$call.connect(
+          createdRes,
+          ROLE.LEADER,
+          options,
+        )
 
         const roomInfo = await getRoomInfo({
           sessionId: createdRes.sessionId,
