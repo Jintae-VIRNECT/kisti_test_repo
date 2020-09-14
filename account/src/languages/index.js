@@ -8,8 +8,6 @@ import elementEn from 'element-ui/lib/locale/lang/en'
 
 /**
  * json 파일 로더
- * 파일명이 최상위 네임스페이스가 됨
- * messages.json => messages.deleteSuccess
  * @param {String} foldername
  */
 function loader(foldername) {
@@ -28,7 +26,7 @@ function loader(foldername) {
     if (/\.md$/.test(file.key)) {
       json[file.key] = file.val
     } else {
-      json[file.key] = JSON.parse(file.val)
+      Object.assign(json, JSON.parse(file.val))
     }
   })
 

@@ -1,21 +1,23 @@
 {
-  "desc": "List of Workspaces that you are paticipating in.",
-  "list": {
-    "title": "Workspace information that you are participating",
-    "empty": "No information of Workspace",
-    "column": {
-      "name": "Workspace Name",
-      "master": "Master",
-      "joinDate": "Participation Date",
-      "role": "Role"
-    }
-  },
-  "usingPlanList": {
-    "title": "Plans on Use",
-    "column": {
-      "name": "Plan",
-      "workspaceName": "Workspace Name",
-      "renewalDate": "Renew Date"
+  "workspace": {
+    "desc": "List of Workspaces that you are paticipating in.",
+    "list": {
+      "title": "Workspace information that you are participating",
+      "empty": "No information of Workspace",
+      "column": {
+        "name": "Workspace Name",
+        "master": "Master",
+        "joinDate": "Participation Date",
+        "role": "Role"
+      }
+    },
+    "usingPlanList": {
+      "title": "Plans on Use",
+      "column": {
+        "name": "Plan",
+        "workspaceName": "Workspace Name",
+        "renewalDate": "Renew Date"
+      }
     }
   }
 }
