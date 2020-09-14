@@ -55,11 +55,6 @@ public class S3UploadService implements FileUploadService {
 	private List<String> allowedExtension;
 
 	@Override
-	public String upload(MultipartFile file) {
-		return null;
-	}
-
-	@Override
 	public String upload(MultipartFile file, String fileName) throws IOException {
 		log.info("[AWS S3 UPLOADER] - UPLOAD BEGIN");
 		if (file.getSize() <= 0) {
@@ -169,20 +164,15 @@ public class S3UploadService implements FileUploadService {
 	@Override
 	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
 		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD BEGIN");
-		
+
 		// 1. 파일 크기 확인
 		if (file.getSize() <= 0) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
-		
+
 		// 2. 파일 확장자 확인
 		String fileExtension = String.format(
 			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
-
-		if (!allowedExtension.contains(fileExtension)) {
-			log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
-			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
-		}
 
 		// 3. 파일 메타데이터 생성
 		ObjectMetadata objectMetadata = new ObjectMetadata();

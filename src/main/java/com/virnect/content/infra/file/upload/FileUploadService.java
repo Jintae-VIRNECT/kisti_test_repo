@@ -16,14 +16,6 @@ public interface FileUploadService {
 	/**
 	 * 파일 업로드 처리
 	 *
-	 * @param file -  파일 업로드 요청
-	 * @return - 업로드된 파일 url
-	 */
-	String upload(MultipartFile file) throws IOException;
-
-	/**
-	 * 파일 업로드 처리
-	 *
 	 * @param file     - 업로드 요청 파일
 	 * @param fileName - 파일 저장명
 	 * @return - 업로드된 파일 url
