@@ -11,7 +11,7 @@
       </dd>
       <el-divider />
       <dt>{{ $t('payment.will.dueDate') }}</dt>
-      <dd>{{ autoPayments.nextPayDate | dateFormat }}</dd>
+      <dd>{{ autoPayments.nextPayDate | fullYearDateFormat }}</dd>
       <el-divider />
       <dt>{{ $t('payment.will.way') }}</dt>
       <dd v-if="autoPayments.payFlag === 'Y'">
