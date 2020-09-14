@@ -183,7 +183,6 @@ const config = {
 		],
 	},
 	optimization: {
-		minimizer: [new UglifyJsPlugin()],
 		splitChunks: {
 			cacheGroups: {
 				commons: {
@@ -205,6 +204,7 @@ const config = {
 				}
 		}),
 		new webpack.optimize.ModuleConcatenationPlugin(),
+		new UglifyJSPlugin(),
 		extractSASS,
 		extractCSS,
 		new CopyWebpackPlugin(
