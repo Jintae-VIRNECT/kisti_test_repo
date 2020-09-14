@@ -27,9 +27,6 @@ pipeline {
           when {
             branch 'develop'
           }
-          environment {
-              NODE_ENV = 'develop'
-          }
           steps {
             sh 'yarn build'
             sh 'docker build -t pf-login .'
@@ -38,22 +35,6 @@ pipeline {
         stage('Staging Branch') {
           when {
             branch 'staging'
-          }
-          environment {
-              NODE_ENV = 'staging'
-          }
-          steps {
-            sh 'git checkout ${GIT_TAG}'
-            sh 'yarn build'
-            sh 'docker build -t pf-login:${GIT_TAG} .'
-          }
-        }
-        stage('Master Branch') {
-          when {
-            branch 'master'
-          }
-          environment {
-              NODE_ENV = 'production'
           }
           steps {
             sh 'git checkout ${GIT_TAG}'
@@ -95,6 +76,7 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-login:${GIT_TAG}").push("latest")
                 }
               }
               script {
@@ -134,12 +116,6 @@ pipeline {
           }
           steps {
             catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-login:${GIT_TAG}").push("latest")
-                }
-              }
               script {
                 sshPublisher(
                   continueOnError: false, failOnError: true,

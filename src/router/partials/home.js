@@ -1,4 +1,4 @@
-import Home from 'components/Home'
+import Main from 'components/layout/common/Main'
 import Login from 'components/layout/pages/Login'
 import Terms from 'components/layout/pages/Terms'
 import Signup from 'components/layout/pages/Signup'
@@ -8,10 +8,10 @@ import Complete from 'components/layout/pages/Complete'
 
 export default {
 	path: '',
-	component: Home,
+	component: Main,
 	children: [
 		{
-			path: '/',
+			path: '',
 			name: 'login',
 			component: Login,
 		},
