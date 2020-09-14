@@ -61,7 +61,10 @@ const _ = {
 
     const permission = await getPermission()
     if (permission === 'prompt') {
-      await getUserMedia(true, hasVideo)
+      const mediaResponse = await getUserMedia(true, hasVideo)
+      if (mediaResponse !== true) {
+        throw mediaResponse
+      }
     } else if (permission !== true) {
       throw permission
     }

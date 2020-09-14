@@ -25,10 +25,13 @@ export const getPermission = async () => {
 
 export const getUserMedia = async (audio, video) => {
   try {
-    return await navigator.mediaDevices.getUserMedia({ audio, video })
+    await navigator.mediaDevices.getUserMedia({ audio, video })
+    return true
   } catch (err) {
-    console.error(err)
     if (typeof err === 'object') {
+      if (err.name && err.name.toLowerCase() === 'notallowederror') {
+        return 'device access deined'
+      }
       return err.name
     }
     return err
