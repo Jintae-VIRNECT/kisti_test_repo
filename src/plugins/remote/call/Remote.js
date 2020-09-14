@@ -69,6 +69,9 @@ const _ = {
     try {
       Store.commit('callClear')
       OV = new OpenVidu()
+      if (process.env.NODE_ENV === 'production') {
+        OV.enableProdMode()
+      }
       _.session = OV.initSession()
 
       addSessionEventListener(_.session, Store)
