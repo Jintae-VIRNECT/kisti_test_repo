@@ -115,6 +115,11 @@ public class LocalUploadService implements FileUploadService {
 	}
 
 	@Override
+	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
+		return null;
+	}
+
+	@Override
 	public File getFile(String fileUrl) {
 		log.info("{}", fileUrl.replaceAll(HOST_REGEX, "").replace("\\", "/"));
 		return new File(fileUrl.replaceAll(HOST_REGEX, "").replace('\\', '/'));

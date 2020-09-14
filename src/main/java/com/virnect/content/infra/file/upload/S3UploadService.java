@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.amazonaws.AmazonServiceException;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -153,6 +155,64 @@ public class S3UploadService implements FileUploadService {
 			return uploadFileUrl;
 		} catch (Exception e) {
 			log.error(e.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+		}
+	}
+
+	/**
+	 * multipart file 을 input stream 으로 s3에 업로드
+	 * @param file - 업로드하고자하는 MultipartFile
+	 * @param fileName - 저장하고자 하는 파일 명
+	 * @return - s3 파일 url
+	 * @throws IOException
+	 */
+	@Override
+	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
+		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD BEGIN");
+		
+		// 1. 파일 크기 확인
+		if (file.getSize() <= 0) {
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+		}
+		
+		// 2. 파일 확장자 확인
+		String fileExtension = String.format(
+			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
+
+		if (!allowedExtension.contains(fileExtension)) {
+			log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
+			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
+		}
+
+		// 3. 파일 메타데이터 생성
+		ObjectMetadata objectMetadata = new ObjectMetadata();
+		objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+		objectMetadata.setContentLength(file.getSize());
+		objectMetadata.setHeader("filename", fileName+fileExtension);
+		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName+fileExtension));
+
+		// 4. 스트림으로 aws s3에 업로드
+		try {
+			String s3FileKey = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
+
+			PutObjectRequest putObjectRequest = new PutObjectRequest(
+				bucketName, s3FileKey, file.getInputStream(), objectMetadata
+			).withCannedAcl(CannedAccessControlList.PublicRead);
+
+			amazonS3Client.putObject(putObjectRequest);
+			log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD END");
+			String url = amazonS3Client.getUrl(bucketName, s3FileKey)
+				.toExternalForm();
+			log.info("[AWS S3 RESOURCE URL: {}]", url);
+			log.info("[AWS CDN URL: {}]", s3FileKey);
+			return url;
+		} catch (AmazonServiceException e) {
+			log.error("Caught an AmazonServiceException from PUT requests, rejected reasons:");
+			log.error("Error Message:     {}", e.getMessage());
+			log.error("HTTP Status Code:  {}", e.getStatusCode());
+			log.error("AWS Error Code:    {}", e.getErrorCode());
+			log.error("Error Type:        {}", e.getErrorType());
+			log.error("Request ID:        {}", e.getRequestId());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
 	}
