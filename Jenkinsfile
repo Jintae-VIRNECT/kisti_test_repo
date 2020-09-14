@@ -61,6 +61,9 @@ pipeline {
           when {
             branch 'develop'
           }
+          environment {
+            NODE_ENV = 'develop'
+          }
           steps {
             sh 'count=`docker ps -a | grep pf-login | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e "NODE_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login pf-login'
@@ -70,6 +73,9 @@ pipeline {
         stage('Staging Branch') {
           when {
             branch 'staging'
+          }
+          environment {
+            NODE_ENV = 'staging'
           }
           steps {
             catchError() {
@@ -113,6 +119,9 @@ pipeline {
         stage('Master Branch') {
           when {
             branch 'master'
+          }
+          environment {
+            NODE_ENV = 'production'
           }
           steps {
             catchError() {

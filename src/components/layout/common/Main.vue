@@ -14,7 +14,11 @@
 			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
-			<TheHeader :showSection="showSection" :runtimeInfo="runtimeInfo">
+			<TheHeader
+				:showSection="showSection"
+				:runtimeInfo="runtimeInfo"
+				v-if="landing"
+			>
 				<template slot="subTitle">{{ $t('login.subTitle') }}</template>
 			</TheHeader>
 			<transition name="app-fade" mode="out-in">
@@ -37,10 +41,12 @@ export default {
 				urls: res,
 				env: res.env,
 			}
+			vm.landing = true
 		})
 	},
 	data() {
 		return {
+			landing: false,
 			show: false,
 			showSection: {
 				login: false,
