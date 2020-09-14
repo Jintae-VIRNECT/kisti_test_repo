@@ -13,11 +13,13 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
 
@@ -69,6 +71,7 @@ public class S3UploadService implements FileUploadService {
 			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
 		}
 
+		/*
 		File uploadFile = convert(file)
 			.orElseThrow(() -> {
 				log.info("MultipartFile -> File 변환 실패");
@@ -77,7 +80,6 @@ public class S3UploadService implements FileUploadService {
 
 		String saveFileName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
 		String uploadFileUrl = putS3(uploadFile, saveFileName);
-
 		// S3에서 다운로드 받은 파일
 		File downlodedFile = new File("upload/" + uploadFile.getName());
 
@@ -85,6 +87,17 @@ public class S3UploadService implements FileUploadService {
 		removeNewFile(downlodedFile);
 
 		return uploadFileUrl;
+*/
+		String saveFileName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
+		ObjectMetadata metadata = new ObjectMetadata();
+		metadata.setContentLength(file.getSize());
+		metadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+
+		amazonS3Client.putObject(
+			new PutObjectRequest(bucketName, saveFileName, file.getInputStream(), metadata).withCannedAcl(
+				CannedAccessControlList.PublicRead));
+		return amazonS3Client.getUrl(bucketName, saveFileName).toString();
+
 	}
 
 	@Override
