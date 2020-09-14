@@ -141,9 +141,10 @@ const _ = {
           debug('call::capability::', capability)
           if ('zoom' in capability) {
             track.applyConstraints({
-              advanced: [{ zoom: 100 }],
+              advanced: [{ zoom: capability['zoom'].min }],
             })
-            _.maxZoomLevel = parseInt(capability.zoom.max / 100)
+            _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
+            _.minZoomLevel = parseInt(capability.zoom.min)
           }
           _.video(_.publisher.stream.videoActive)
           _.sendResolution({

@@ -159,16 +159,19 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.CAMERA, event => {
     const data = JSON.parse(event.data)
     if (data.type === CAMERA.ZOOM) {
-      if (event.from.connectionId === session.connection.connectionId) {
-        const track = _.publisher.stream.mediaStream.getVideoTracks()[0]
-        track.applyConstraints({
-          advanced: [{ zoom: parseFloat(data.level) * 100 }],
+      const track = _.publisher.stream.mediaStream.getVideoTracks()[0]
+      track
+        .applyConstraints({
+          advanced: [
+            { zoom: parseFloat(data.level) * parseFloat(_.minZoomLevel) },
+          ],
         })
-      }
-      Store.commit('deviceControl', {
-        connectionId: event.from.connectionId,
-        zoomLevel: parseFloat(data.level),
-      })
+        .then(() => {
+          // const zoom = track.getSettings().zoom // bug....
+          // console.log(zoom)
+          _.currentZoomLevel = parseFloat(data.level)
+          _.video(true, [event.from.connectionId])
+        })
       return
     }
     if (data.type === CAMERA.STATUS) {
