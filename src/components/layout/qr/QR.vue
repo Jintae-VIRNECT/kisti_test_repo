@@ -1,10 +1,6 @@
 <template>
 	<section>
-		<TheHeader
-			:showSection="showSection"
-			:runtimeInfo="runtimeInfo"
-			v-if="landing"
-		>
+		<TheHeader :showSection="showSection" :auth="auth">
 			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
 		</TheHeader>
 		<transition name="app-fade" mode="out-in">
@@ -17,31 +13,22 @@
 <script>
 import Vue from 'vue'
 import api from 'api/axios'
-import Auth from 'api/virnectPlatformAuth'
+import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
 export default {
 	async beforeRouteEnter(to, from, next) {
 		let res = await api.getUrls()
 		Vue.prototype.$urls = res
-		next(vm => {
-			vm.runtimeInfo = {
-				urls: res,
-				env: res.env,
-			}
-			vm.landing = true
-		})
+		await auth.init({ env: res.env })
+		next()
 	},
 	data() {
 		return {
-			landing: false,
+			auth,
 			showSection: {
 				login: true,
 				profile: false,
-			},
-			runtimeInfo: {
-				urls: null,
-				env: null,
 			},
 			myInfo: {},
 			qrImg: null,
@@ -53,9 +40,8 @@ export default {
 	},
 	async mounted() {
 		try {
-			await Auth.init()
-			if (Auth.isLogin) {
-				this.myInfo = Auth.myInfo
+			if (auth.isLogin) {
+				this.myInfo = auth.myInfo
 				this.showSection.login = false
 				this.showSection.link = true
 				this.showSection.profile = true
