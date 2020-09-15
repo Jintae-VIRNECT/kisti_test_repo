@@ -287,6 +287,7 @@ export default {
     changedImage(image) {
       this.me.image = image
       this.visible.imageChangeModal = false
+      this.$store.dispatch('auth/getAuth', this.$config.TARGET_ENV)
     },
     changedName({ lastName, firstName }) {
       this.me.lastName = lastName
@@ -296,6 +297,7 @@ export default {
     changedNickname(nickname) {
       this.me.nickname = nickname
       this.visible.nicknameChangeModal = false
+      this.$store.dispatch('auth/getAuth', this.$config.TARGET_ENV)
     },
     changedPassword() {
       this.visible.passwordChangeModal = false
@@ -319,7 +321,7 @@ export default {
     },
   },
   beforeCreate() {
-    this.$store.commit('auth/SET_AUTH', false)
+    this.$store.commit('auth/SET_AUTHENTICATED', false)
   },
 }
 </script>

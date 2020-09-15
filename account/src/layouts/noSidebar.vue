@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <the-header :showSection="showSection">
+      <the-header :showSection="showSection" :auth="auth">
         <template slot="subTitle">{{ $t('menu.account') }}</template>
       </the-header>
     </header>
@@ -34,7 +34,12 @@ export default {
       },
     }
   },
-  mounted() {
+  computed: {
+    auth() {
+      return this.$store.getters['auth/auth']
+    },
+  },
+  beforeMount() {
     // 콘솔 표시
     console.log(
       `%cVirnect Account v${this.$config.VERSION}`,
@@ -42,6 +47,7 @@ export default {
     )
     console.log(`env: ${this.$config.TARGET_ENV}`)
     console.log(`timeout: ${this.$config.API_TIMEOUT}`)
+    this.$store.dispatch('auth/getAuth', this.$config.TARGET_ENV)
   },
 }
 </script>
