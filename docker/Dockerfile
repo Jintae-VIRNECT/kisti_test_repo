@@ -4,7 +4,7 @@ ENV APP_HOME=/usr/app/
 
 WORKDIR $APP_HOME
 
-COPY ./keystore.p12 ./keystore.p12
+COPY ./virnect.pfx ./virnect.pfx
 COPY ./build/libs/PF-Gateway-1.0.0.jar ./PF-Gateway-1.0.0.jar
 
 EXPOSE 8073

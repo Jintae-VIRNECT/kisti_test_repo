@@ -104,10 +104,11 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 			String deviceAuthKey = Objects.requireNonNull(httpHeaders.get(HEADER_DEVICE_AUTH_KEY_NAME)).get(0);
 			log.info("[DEVICE_AUTH_KEY] - {}", deviceAuthKey);
 			Map<String, String> deviceAuth = redisTemplate.opsForHash().entries("DeviceAuth:" + deviceAuthKey);
-			deviceAuth.forEach((key, value) -> log.info("[DEVICE_AUTH_INFORMATION] => [{} : {}]", key, value));
+			log.info(deviceAuth.toString());
 			String secretKey = deviceAuth.get(SECRET_KEY_NAME);
 
-			if (Objects.equals(originRequest.getMethod(), HttpMethod.GET)) {
+			if (Objects.equals(originRequest.getMethod(), HttpMethod.GET)
+				|| originRequest.getHeaders().getContentLength() == -1) {
 				ServerHttpResponse mutateHttpResponse = getServerHttpResponse(exchange, secretKey);
 				return chain.filter(exchange.mutate().response(mutateHttpResponse).build());
 			} else {
