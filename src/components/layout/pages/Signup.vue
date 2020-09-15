@@ -402,7 +402,7 @@ export default {
 				}
 				const mailAuth = await AuthService.emailAuth(params)
 
-				console.log(mailAuth)
+				// console.log(mailAuth)
 				if (mailAuth.code == 200) {
 					this.authLoading = true
 					this.isVeritication = true

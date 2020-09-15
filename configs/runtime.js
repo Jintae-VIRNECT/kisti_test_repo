@@ -14,6 +14,7 @@ module.exports = {
 		Object.keys(urlsConfig).forEach(key => {
 			urls[key] = urlsConfig[key][env]
 		})
+		urls.env = env
 		return urls
 	},
 	getEnvUrls(env) {

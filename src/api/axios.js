@@ -6,20 +6,20 @@ import URI from 'api/uri'
 export async function getUrls() {
 	const res = await Axios.get(`${location.origin}/urls`)
 	window.urls = res.data
+	window.env = res.data.env
 	setBaseURL(res.data.api)
 	return res.data
 }
 
 const axios = Axios.create({
-	timeout: process.env.TARGET_ENV === 'production' ? 2000 : 1000,
+	timeout: window.env === 'production' ? 2000 : 1000,
 	headers: {
 		'Content-Type': 'application/json',
 	},
 	httpsAgent: new https.Agent({
 		rejectUnauthorized: false,
 	}),
-	withCredentials:
-		process.env.TARGET_ENV === ('production' || 'staging') ? true : false,
+	withCredentials: window.env === ('production' || 'staging') ? true : false,
 })
 
 const setBaseURL = baseURL => {
