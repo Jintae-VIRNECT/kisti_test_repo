@@ -203,6 +203,7 @@ spring:
               - "https://stgdownload.virnect.com"
               - "https://stgremote.virnect.com"
               - "https://stgpay.virnect.com"
+              - "https://spp.virnect.com"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
