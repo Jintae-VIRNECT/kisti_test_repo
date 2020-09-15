@@ -196,7 +196,6 @@ export default {
 			if (this.user.nickname == '' || this.user.nickname == null) return false
 			if (this.user.mobile == null) return false
 			if (this.user.recoveryEmail == null) return false
-			if (this.user.profile == null || this.user.profile == '') return false
 
 			return true
 		},
@@ -315,6 +314,7 @@ export default {
 				})
 				.catch(error => {
 					console.log(error)
+					this.alertMessage(this.$t('user.error.etc.title'), error, 'error')
 				})
 		},
 		uploadBtn() {
