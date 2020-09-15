@@ -142,7 +142,7 @@ class Auth {
 	login() {
 		const url = initOptions.LOGIN_SITE_URL
 			? initOptions.LOGIN_SITE_URL
-			: urls.console
+			: window.urls.console
 		location.href = `${url}/?continue=${location.href}`
 		return this
 	}

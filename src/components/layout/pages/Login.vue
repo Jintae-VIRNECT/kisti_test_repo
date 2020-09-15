@@ -1,8 +1,5 @@
 <template>
 	<div class="container">
-		<TheHeader :showSection="showSection">
-			<template slot="subTitle">{{ $t('login.subTitle') }}</template>
-		</TheHeader>
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
 				<h2>{{ $t('login.title') }}</h2>
@@ -72,7 +69,6 @@
 </template>
 
 <script>
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import Cookies from 'js-cookie'
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
@@ -85,7 +81,6 @@ export default {
 	mixins: [mixin],
 	components: {
 		footerSection,
-		TheHeader,
 	},
 	computed: {
 		loggedIn() {
@@ -94,10 +89,6 @@ export default {
 	},
 	data() {
 		return {
-			showSection: {
-				login: false,
-				language: true,
-			},
 			login: {
 				email: '',
 				password: '',
@@ -142,7 +133,7 @@ export default {
 					? redirectTarget
 					: `//${redirectTarget}`
 			} else if (this.login.autoLogin) {
-				location.href = window.urls['workstation']
+				location.href = this.$urls['workstation']
 			}
 		},
 		emailRemember(email, check) {
@@ -199,7 +190,7 @@ export default {
 							? redirectTarget
 							: `//${redirectTarget}`
 					} else {
-						location.href = window.urls['workstation']
+						location.href = this.$urls['workstation']
 					}
 				} else throw res
 			} catch (e) {

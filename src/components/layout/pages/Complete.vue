@@ -24,10 +24,10 @@ export default {
 	},
 	methods: {
 		goWorkstation() {
-			location.replace(window.urls['workstation'])
+			location.replace(this.$urls['workstation'])
 		},
 		payment() {
-			location.replace(`${window.urls['pay']}`)
+			location.replace(`${this.$urls['pay']}`)
 		},
 	},
 }

@@ -193,12 +193,14 @@ export default {
 				)}`
 		},
 		checkConfirm() {
-			if (this.user.nickname == '' || this.user.nickname == null) return false
-			if (this.user.mobile == null) return false
-			if (this.user.recoveryEmail == null) return false
-			if (this.user.profile == null || this.user.profile == '') return false
-
-			return true
+			if (
+				this.user.nickname !== '' ||
+				this.user.mobile !== '' ||
+				this.user.recoveryEmail !== '' ||
+				this.user.profile !== ''
+			)
+				return true
+			return false
 		},
 	},
 	mounted() {
@@ -296,8 +298,8 @@ export default {
 				} else throw res
 			} catch (e) {
 				this.alertMessage(
-					this.$t('user.etc.error.title'), // 기타 오류
-					this.$t('user.etc.error.message'), // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
+					this.$t('user.error.etc.title'), // 기타 오류
+					this.$t('user.error.etc.message'), // 회원가입 진행에 실패하였습니다. 잠시 후 다시 이용해 주세요.
 					'error',
 				)
 			}
@@ -315,6 +317,7 @@ export default {
 				})
 				.catch(error => {
 					console.log(error)
+					this.alertMessage(this.$t('user.error.etc.title'), error, 'error')
 				})
 		},
 		uploadBtn() {

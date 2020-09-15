@@ -42,11 +42,12 @@ Vue.use(VueQrcodeReader)
 Vue.use(VueI18n)
 const i18n = new VueI18n({
 	locale: 'ko',
-	fallbackLocale: process.env.TARGET_ENV === 'production' ? 'ko' : null,
+	fallbackLocale: process.env.NODE_ENV === 'production' ? 'ko' : null,
 	messages: messages,
 })
 
 const environmentCss = 'font-size: 1.2rem;'
+console.log('%cprocess env: %s', environmentCss, process.env.NODE_ENV)
 console.log('%cprocess env: %s', environmentCss, process.env.TARGET_ENV)
 
 const versionCss = 'font-size: 2rem; color: #297af3;'

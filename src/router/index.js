@@ -1,14 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import api from 'api/axios'
 
 Vue.use(Router)
 
+import App from '@/App'
 import HomeRouter from './partials/home'
 import QRRouter from './partials/qr'
 import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
 import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'
-import HealthCheck from 'components/layout/common/HealthCheck'
 
 const router = new Router({
 	name: 'router',
@@ -18,8 +17,10 @@ const router = new Router({
 		QRRouter,
 		{
 			path: '/',
+			name: 'app',
+			component: App,
 			redirect: {
-				name: 'login',
+				name: 'main',
 			},
 		},
 		{
@@ -32,22 +33,17 @@ const router = new Router({
 			name: 'NetworkError',
 			component: NetworkError,
 		},
-		{
-			path: '/healthcheck',
-			name: 'healthcheck',
-			component: HealthCheck,
-		},
 	],
 })
 
-router.beforeEach((to, from, next) => {
-	if (from.name == null) {
-		;(async () => {
-			const res = await api.getUrls()
-			Vue.prototype.$urls = res
-			next()
-		})()
-	} else next()
-})
+// router.beforeEach((to, from, next) => {
+// 	if (from.name == null) {
+// 		;(async () => {
+// 			const res = await api.getUrls()
+// 			Vue.prototype.$urls = res
+// 			next()
+// 		})()
+// 	} else next()
+// })
 
 export default router

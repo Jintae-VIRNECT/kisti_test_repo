@@ -1,8 +1,5 @@
 <template>
 	<div class="container">
-		<TheHeader :showSection="showSection">
-			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
-		</TheHeader>
 		<el-row type="flex" justify="center" align="middle">
 			<el-col>
 				<h2>{{ $t('qrLogin.title') }}</h2>
@@ -36,22 +33,14 @@
 </template>
 
 <script>
-import Auth from 'api/virnectPlatformAuth'
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import { QrcodeStream } from 'vue-qrcode-reader'
 
 export default {
 	components: {
-		TheHeader,
 		QrcodeStream,
 	},
 	data() {
 		return {
-			myInfo: {},
-			showSection: {
-				login: true,
-				profile: false,
-			},
 			result: '',
 			error: '',
 		}
@@ -79,22 +68,6 @@ export default {
 				}
 			}
 		},
-	},
-	async mounted() {
-		try {
-			await Auth.init()
-			if (Auth.isLogin) {
-				this.myInfo = Auth.myInfo
-				this.showSection.login = false
-				this.showSection.link = true
-				this.showSection.profile = true
-			} else throw 'error'
-		} catch (e) {
-			this.showSection.login = true
-			this.showSection.profile = false
-			this.showSection.link = false
-			location.replace(`${window.urls['console']}/?continue=${location.href}`)
-		}
 	},
 }
 </script>

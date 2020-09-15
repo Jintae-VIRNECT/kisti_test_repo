@@ -27,9 +27,6 @@ pipeline {
           when {
             branch 'develop'
           }
-          environment {
-              NODE_ENV = 'develop'
-          }
           steps {
             sh 'yarn build'
             sh 'docker build -t pf-login .'
@@ -38,22 +35,6 @@ pipeline {
         stage('Staging Branch') {
           when {
             branch 'staging'
-          }
-          environment {
-              NODE_ENV = 'staging'
-          }
-          steps {
-            sh 'git checkout ${GIT_TAG}'
-            sh 'yarn build'
-            sh 'docker build -t pf-login:${GIT_TAG} .'
-          }
-        }
-        stage('Master Branch') {
-          when {
-            branch 'master'
-          }
-          environment {
-              NODE_ENV = 'production'
           }
           steps {
             sh 'git checkout ${GIT_TAG}'
@@ -80,6 +61,9 @@ pipeline {
           when {
             branch 'develop'
           }
+          environment {
+            NODE_ENV = 'develop'
+          }
           steps {
             sh 'count=`docker ps -a | grep pf-login | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8883:8883 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e "NODE_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login pf-login'
@@ -90,11 +74,15 @@ pipeline {
           when {
             branch 'staging'
           }
+          environment {
+            NODE_ENV = 'staging'
+          }
           steps {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("pf-login:${GIT_TAG}").push("latest")
                 }
               }
               script {
@@ -132,14 +120,11 @@ pipeline {
           when {
             branch 'master'
           }
+          environment {
+            NODE_ENV = 'production'
+          }
           steps {
             catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-login:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-login:${GIT_TAG}").push("latest")
-                }
-              }
               script {
                 sshPublisher(
                   continueOnError: false, failOnError: true,

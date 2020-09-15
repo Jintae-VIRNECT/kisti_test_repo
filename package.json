@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.4.22",
+  "version": "1.5.22",
   "description": "Virnect Platofrm Login FrontEnd",
   "author": "SungHyun Kang <k23sh138@gmail.com>",
   "private": true,
@@ -11,7 +11,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=local webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
     "build": "cross-env NODE_ENV=$NODE_ENV webpack --mode production --progress --config build/webpack.prod.conf.js",
-    "build:local": "cross-env NODE_ENV=local webpack --mode production --progress --config build/webpack.prod.conf.js",
+    "build:local": "cross-env NODE_ENV=staging webpack --mode production --progress --config build/webpack.prod.conf.js",
     "start:local": "cross-env NODE_ENV=staging node server.js",
     "start": "node server.js"
   },
