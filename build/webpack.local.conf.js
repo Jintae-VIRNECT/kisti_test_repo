@@ -18,8 +18,8 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
   devtool: 'cheap-module-eval-source-map',
   devServer: {
     https: {
-      key: fs.readFileSync(path.join(__dirname, '../ssl/server.key')),
-      cert: fs.readFileSync(path.join(__dirname, '../ssl/server.crt')),
+      key: fs.readFileSync(path.join(__dirname, '../ssl/virnect.key')),
+      cert: fs.readFileSync(path.join(__dirname, '../ssl/virnect.crt')),
     },
     host,
     port,
