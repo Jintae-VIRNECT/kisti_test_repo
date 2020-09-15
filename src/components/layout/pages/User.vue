@@ -196,7 +196,8 @@ export default {
 			if (
 				this.user.nickname !== '' ||
 				this.user.mobile !== '' ||
-				this.user.recoveryEmail !== ''
+				this.user.recoveryEmail !== '' ||
+				this.user.profile !== ''
 			)
 				return true
 			return false
