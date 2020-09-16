@@ -109,6 +109,5 @@ export const SYSTEM = {
 export const ROLE = {
   LEADER: 'LEADER',
   EXPERT: 'EXPERT',
-  WORKER: 'WORKER',
   UNKNOWN: 'UNKNOWN',
 }
