@@ -14,16 +14,16 @@
             @change="fileChangeHandler"
           />
         </li>
-        <template v-for="(file, idx) of sharingList">
+        <template v-for="file of sharingList">
           <sharing-pdf
             v-if="file.pdf"
-            :key="'sharing' + idx"
+            :key="'sharing_' + file.id"
             :fileInfo="file"
             @pdfView="pdfView(file)"
           ></sharing-pdf>
           <sharing-image
             v-else
-            :key="'sharing' + idx"
+            :key="'sharing_' + file.id"
             :fileInfo="file"
           ></sharing-image>
         </template>
