@@ -1,5 +1,3 @@
-import { app } from '@/plugins/context'
-
 export default {
   state: () => ({
     lang: 'ko',

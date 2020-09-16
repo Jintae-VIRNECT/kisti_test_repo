@@ -1,6 +1,7 @@
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import { api } from '@/plugins/axios'
 
-export default async function({ req, store, redirect, error, $config }) {
+export default async function({ req, redirect, error, $config }) {
   if (process.server) {
     const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
     // 사용자가 로그인을 하지 않은 경우.
@@ -14,7 +15,7 @@ export default async function({ req, store, redirect, error, $config }) {
 
     // 토큰으로 내 정보 불러오기
     try {
-      await store.dispatch('auth/getAuthInfo', { headers: req.headers })
+      await api('GET_AUTH_INFO', { headers: req.headers })
     } catch (e) {
       // 비정상 토큰
       if (/^Error: (8003|8005)/.test(e)) {

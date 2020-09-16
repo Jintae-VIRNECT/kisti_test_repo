@@ -1,6 +1,6 @@
 <template>
   <div>
-    <the-header :showSection="showSection">
+    <the-header :showSection="showSection" :auth="auth">
       <template slot="subTitle">
         {{ $t('home.title') }}
       </template>
@@ -38,6 +38,11 @@ export default {
       },
     }
   },
+  computed: {
+    auth() {
+      return this.$store.getters['auth/auth']
+    },
+  },
   mounted() {
     // 콘솔 표시
     console.log(
@@ -46,6 +51,8 @@ export default {
     )
     console.log(`env: ${this.$config.TARGET_ENV}`)
     console.log(`timeout: ${this.$config.API_TIMEOUT}`)
+
+    this.$store.dispatch('auth/getAuth', this.$config.TARGET_ENV)
   },
 }
 </script>
