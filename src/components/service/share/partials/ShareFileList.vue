@@ -87,16 +87,13 @@ export default {
           const docItem = {
             id: Date.now(),
             filedata: '',
-            pages: new Array(1),
+            document: null,
             loaded: 1,
           }
 
           docItem.filedata = file
           docItem.loaded = 0
-          docItem.pdf = false
-          if (file.type === 'application/pdf') {
-            docItem.pdf = true
-          }
+          docItem.pdf = file.type === 'application/pdf'
           this.addFile(docItem)
           // this.sharingList.push(docItem)
         } else {

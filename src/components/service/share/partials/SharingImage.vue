@@ -126,7 +126,9 @@ export default {
       }
     },
     shareImage() {
-      if (this.imageData && this.imageData.length > 0) {
+      if (this.pdfPage > -1) {
+        this.$eventBus.$emit(`loadPdf_${this.fileInfo.id}`, this.pdfPage)
+      } else if (this.imageData && this.imageData.length > 0) {
         const history = this.getHistoryObject()
 
         this.addHistory(history)

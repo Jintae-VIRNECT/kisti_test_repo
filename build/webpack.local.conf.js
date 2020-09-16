@@ -94,7 +94,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       })
 
       app.get('/pdf.worker', function(req, res) {
-        res.sendFile(path.join(__dirname, '../static/js/pdf.worker.js'))
+        res.sendFile(path.join(__dirname, '../static/js/pdf.worker.min.js'))
       })
     },
   },
