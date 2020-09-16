@@ -27,6 +27,10 @@
         </p>
       </div>
     </div>
+    <canvas
+      style=" z-index: -999;display: none; width: 100%; height: 100%;"
+      ref="backCanvas"
+    ></canvas>
   </li>
 </template>
 
