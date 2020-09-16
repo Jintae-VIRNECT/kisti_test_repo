@@ -240,7 +240,6 @@ export default {
     this.size.height = this.$el.querySelector(
       '.sharing-image__item',
     ).offsetHeight
-    console.log(this.size)
   },
   created() {
     this.$eventBus.$on(`loadPdf_${this.fileInfo.id}`, this.addPdfHistory)
