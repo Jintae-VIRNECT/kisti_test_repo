@@ -13,5 +13,8 @@
     "list": "List",
     "numbersUnit": "",
     "paymentCenter": "Payment Center"
+  },
+  "menu": {
+    "home": "Workspace Home"
   }
 }

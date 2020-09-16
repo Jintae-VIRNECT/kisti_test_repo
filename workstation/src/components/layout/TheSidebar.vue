@@ -2,12 +2,19 @@
   <nav class="the-sidebar">
     <div class="the-sidebar__inner">
       <div class="the-sidebar__logo">
-        <a
-          @click.stop="openCollapse(logoCollapse)"
-          :style="
-            `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
-          "
-        />
+        <el-tooltip
+          popper-class="the-sidebar__tooltip"
+          effect="dark"
+          :content="$t('menu.collapse.workspace.title')"
+          placement="right"
+        >
+          <a
+            @click.stop="openCollapse(logoCollapse)"
+            :style="
+              `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
+            "
+          />
+        </el-tooltip>
       </div>
       <div class="the-sidebar__upper">
         <the-sidebar-menu-list :menus="menus" @openCollapse="openCollapse" />

@@ -1,10 +1,10 @@
 {
   "menu": {
-    "home": "Home",
-    "members": "Members",
+    "home": "Workspace Home",
+    "members": "Workspace Members",
     "contents": "Contents",
     "tasks": "Tasks",
-    "workspaceSetting": "Settings",
+    "workspaceSetting": "Workspace Settings",
     "collapse": {
       "workspace": {
         "title": "Workspace list",
@@ -22,7 +22,7 @@
       "tasks": {
         "list": "All Tasks",
         "results": "Reports",
-        "troubles": "Trouble Memo (TM)"
+        "troubles": "Trouble Memo(TM)"
       }
     }
   }
