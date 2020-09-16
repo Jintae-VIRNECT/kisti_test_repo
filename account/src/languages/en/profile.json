@@ -80,14 +80,14 @@
       "newPassword": "New Password",
       "newPasswordPlaceholder": "Enter your new password",
       "newPasswordRepeatPlaceholder": "Re-enter your new password",
-      "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ).",
+      "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters.",
       "submit": "Edit",
       "message": {
         "success": "Succesfully updated your password",
         "fail": "Failed to edit your nickname please try again later",
         "wrong": "Wrong password",
         "duplicate": "You cannot use the previously used password for your new password",
-        "invalid": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 4 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters."
+        "invalid": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters."
       }
     },
     "birthChangeModal": {
