@@ -1,7 +1,7 @@
 <template>
   <div>
     <header class="no-sidebar">
-      <the-header :showSection="showSection" />
+      <the-header :showSection="showSection" :auth="auth" />
     </header>
     <div>
       <main>
@@ -13,6 +13,7 @@
 
 <script>
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
+import { mapGetters } from 'vuex'
 
 export default {
   middleware: 'default',
@@ -32,6 +33,11 @@ export default {
       },
     }
   },
+  computed: {
+    ...mapGetters({
+      auth: 'auth/auth',
+    }),
+  },
   mounted() {
     // 콘솔 표시
     console.log(
@@ -40,6 +46,8 @@ export default {
     )
     console.log(`env: ${this.$config.TARGET_ENV}`)
     console.log(`timeout: ${this.$config.API_TIMEOUT}`)
+
+    this.$store.dispatch('auth/getAuth', this.$config.TARGET_ENV)
   },
 }
 </script>

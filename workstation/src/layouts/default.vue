@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <the-header :showSection="showSection">
+      <the-header :showSection="showSection" :auth="auth">
         <template slot="subTitle">
           <el-divider direction="vertical" />
           <div class="avatar">
@@ -60,10 +60,13 @@ export default {
   },
   computed: {
     ...mapGetters({
+      auth: 'auth/auth',
       activeWorkspace: 'auth/activeWorkspace',
     }),
   },
   mounted() {
+    this.$store.dispatch('auth/getAuth', this.$config.TARGET_ENV)
+
     // 콘솔 표시
     console.log(
       `%cVirnect Workstation v${this.$config.VERSION}`,

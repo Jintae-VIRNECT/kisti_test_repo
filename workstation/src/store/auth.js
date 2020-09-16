@@ -2,17 +2,22 @@ import { api } from '@/plugins/axios'
 import Profile from '@/models/Profile'
 import Workspace from '@/models/workspace/Workspace'
 import Cookies from 'js-cookie'
+import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 
 export default {
   state: () => ({
-    isLogin: false,
+    auth: {
+      env: '',
+      urls: {},
+      myInfo: {},
+    },
     myProfile: {},
     myWorkspaces: [],
     activeWorkspace: {},
   }),
   getters: {
-    isLogin(state) {
-      return state.isLogin
+    auth(state) {
+      return state.auth
     },
     myProfile(state) {
       return state.myProfile
@@ -25,8 +30,8 @@ export default {
     },
   },
   mutations: {
-    SET_LOGIN(state, bool) {
-      state.isLogin = bool
+    SET_AUTH(state, obj) {
+      state.auth = obj
     },
     SET_MY_PROFILE(state, obj) {
       state.myProfile = obj
@@ -42,6 +47,9 @@ export default {
     },
   },
   actions: {
+    async getAuth({ commit }, env) {
+      commit('SET_AUTH', await auth.init({ env }))
+    },
     async getAuthInfo({ commit }, params) {
       const data = await api('GET_AUTH_INFO', params)
       commit('SET_MY_PROFILE', new Profile(data.userInfo))
@@ -49,7 +57,6 @@ export default {
         'SET_MY_WORKSPACES',
         data.workspaceInfoList.map(workspace => new Workspace(workspace)),
       )
-      commit('SET_LOGIN', true)
       return data
     },
   },
