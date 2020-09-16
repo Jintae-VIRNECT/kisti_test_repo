@@ -48,7 +48,7 @@ const i18n = new VueI18n({
 
 const environmentCss = 'font-size: 1.2rem;'
 console.log('%cprocess env: %s', environmentCss, process.env.NODE_ENV)
-console.log('%cprocess env: %s', environmentCss, process.env.TARGET_ENV)
+console.log('%ctarget env: %s', environmentCss, process.env.TARGET_ENV)
 
 const versionCss = 'font-size: 2rem; color: #297af3;'
 console.log('%cVIRNECT Console %s', versionCss, version)

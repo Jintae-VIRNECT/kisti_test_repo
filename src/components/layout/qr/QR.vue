@@ -21,6 +21,8 @@ export default {
 		let res = await api.getUrls()
 		Vue.prototype.$urls = res
 		await auth.init({ env: res.env })
+		const environmentCss = 'font-size: 1.2rem;'
+		console.log('%cruntime env: %s', environmentCss, auth.env)
 		next()
 	},
 	data() {
