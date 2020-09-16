@@ -154,12 +154,12 @@ export default {
 	name: 'user',
 	mixins: [mixin],
 	props: {
-		// signup: Object,
-		signup: {
-			default() {
-				return {}
-			},
-		},
+		signup: Object,
+		// signup: {
+		// 	default() {
+		// 		return {}
+		// 	},
+		// },
 	},
 	data() {
 		return {
@@ -387,8 +387,8 @@ export default {
 				} else throw res
 			} catch (e) {
 				this.alertMessage(
-					this.$t('user.nickName.error.title'), // 닉네임 설정 오류
-					this.$t('user.nickName.error.message'), // 닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.
+					this.$t('user.error.nickName.title'), // 닉네임 설정 오류
+					this.$t('user.error.nickName.message'), // 닉네임은 국문, 영문, 특수문자, 띄어쓰기 포함 20자 이하로 입력해 주세요.
 					'error',
 				)
 			}
@@ -396,6 +396,7 @@ export default {
 		nickNameValidate(nickName) {
 			if (/\s/.test(nickName)) return false
 			if (/[`~!@#$%^&*|\\\'\";:\/?]/gi.test(nickName)) return false
+			if (nickName.length > 20) return false
 			return true
 		},
 	},

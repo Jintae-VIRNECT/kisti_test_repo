@@ -20,15 +20,15 @@
       }
     },
     "findBtn": "이메일 찾기",
-    "number": "회원 정보에 등록된 휴대폰 번호로 찾기",
+    "number": "회원 정보에 등록된 연락처로 찾기",
     "name": {
       "title": "이름",
       "lastName": "성",
       "firstName": "이름"
     },
     "mobile": {
-      "title": "휴대폰 번호",
-      "placeHolder": "휴대폰 번호를 입력해 주세요"
+      "title": "연락처",
+      "placeHolder": "전화번호를 입력해 주세요"
     },
     "recoveryMail": "복구 이메일로 찾기",
     "signupDate": "가입일",
