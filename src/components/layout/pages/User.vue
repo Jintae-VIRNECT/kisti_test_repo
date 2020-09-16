@@ -27,6 +27,7 @@
 					:visible.sync="profilePopup"
 					width="400px"
 					:before-close="handleClose"
+					@open="handleOpen"
 				>
 					<div>
 						<p class="contents">
@@ -42,8 +43,8 @@
 							<label for="profileImage" class="avatar">
 								<div
 									class="image"
-									v-if="thumbnail"
-									:style="`background-image: url(${thumbnail})`"
+									v-if="inputImg"
+									:style="`background-image: url(${inputImg})`"
 								></div>
 							</label>
 						</div>
@@ -56,7 +57,7 @@
 							type="info"
 							@click.native="uploadBtn"
 							class="left-btn"
-							:disabled="thumbnail !== null"
+							:disabled="inputImg !== null"
 							>{{ $t('user.profileImage.upload') }}</el-button
 						>
 						<el-button @click="deleteImage">{{
@@ -153,7 +154,12 @@ export default {
 	name: 'user',
 	mixins: [mixin],
 	props: {
-		signup: Object,
+		// signup: Object,
+		signup: {
+			default() {
+				return {}
+			},
+		},
 	},
 	data() {
 		return {
@@ -175,6 +181,7 @@ export default {
 			formData: new FormData(),
 			file: null,
 			thumbnail: null,
+			inputImg: null,
 		}
 	},
 	computed: {
@@ -304,7 +311,12 @@ export default {
 				)
 			}
 		},
+		handleOpen() {
+			this.inputImg = this.thumbnail
+		},
 		handleClose(done) {
+			this.file = null
+			this.$refs.imgUpload.value = ''
 			done()
 		},
 		uploadImage(event) {
@@ -313,7 +325,7 @@ export default {
 			this.validImage(event)
 				.then(imageData => {
 					this.file = files[files.length - 1]
-					this.thumbnail = imageData
+					this.inputImg = imageData
 				})
 				.catch(error => {
 					console.log(error)
@@ -326,13 +338,12 @@ export default {
 		profileDone() {
 			this.profilePopup = false
 			this.user.profile = this.file
+			this.thumbnail = this.inputImg
 		},
 		deleteImage() {
 			this.$refs.imgUpload.value = ''
-			this.formData.delete('profile')
-			this.user.profile = null
 			this.file = null
-			this.thumbnail = null
+			this.inputImg = null
 		},
 		validImage(event) {
 			let files = event.target.files
