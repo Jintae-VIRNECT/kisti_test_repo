@@ -32,7 +32,7 @@ export default async function({ req, store, redirect, error, $config }) {
       if (myWorkspaces.length) {
         // 마지막 워크스페이스 확인
         const lastWorkspace = req.headers.cookie.match(
-          /activeWorkspace=([0-9a-f]+)/,
+          /activeWorkspace=([0-9a-zA-Z]+)/,
         )
         const activeWorkspace =
           lastWorkspace &&
