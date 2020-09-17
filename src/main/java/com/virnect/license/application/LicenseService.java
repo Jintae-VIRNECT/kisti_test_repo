@@ -256,7 +256,6 @@ public class LicenseService {
 			Product product = licenseProduct.getProduct();
 			// ProductType productType = product.getProductType();
 			if (licenseProduct.getLicenseList() != null && !licenseProduct.getLicenseList().isEmpty()) {
-				log.info(licenseProduct.getLicenseList().toString());
 				licenseProduct.getLicenseList()
 					.stream()
 					.filter(license -> license.getUserId() != null && license.getUserId().equals(userId))
