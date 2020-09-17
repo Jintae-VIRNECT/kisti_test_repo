@@ -32,4 +32,5 @@ out/
 .vscode/
 /src/main/generated/
 
+bin/
 releasenote.txt
