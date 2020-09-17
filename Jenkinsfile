@@ -13,6 +13,9 @@ pipeline {
           when {
             branch 'develop'
           }
+          environment {
+            NODE_ENV='develop'
+          }
           steps {
             catchError() {
               sh 'npm cache verify'
@@ -25,6 +28,9 @@ pipeline {
         stage('Staging Branch') {
           when {
             branch 'staging'
+          }
+          environment {
+            NODE_ENV='staging'
           }
           steps {
             catchError() {
@@ -42,6 +48,9 @@ pipeline {
         stage('Develop Branch') {
           when {
             branch 'develop'
+          }
+          environment {
+            NODE_ENV='production'
           }
           steps {
             sh 'npm run build'
