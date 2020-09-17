@@ -14,11 +14,7 @@
 			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
-			<TheHeader
-				:showSection="showSection"
-				:runtimeInfo="runtimeInfo"
-				v-if="landing"
-			>
+			<TheHeader :showSection="showSection">
 				<template slot="subTitle">{{ $t('login.subTitle') }}</template>
 			</TheHeader>
 			<transition name="app-fade" mode="out-in">
@@ -35,14 +31,10 @@ import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
 	async beforeRouteEnter(to, from, next) {
 		let res = await api.getUrls()
+		const environmentCss = 'font-size: 1.2rem;'
+		console.log('%cprocess env: %s', environmentCss, res.env)
 		Vue.prototype.$urls = res
-		next(vm => {
-			vm.runtimeInfo = {
-				urls: res,
-				env: res.env,
-			}
-			vm.landing = true
-		})
+		next()
 	},
 	data() {
 		return {
@@ -51,10 +43,6 @@ export default {
 			showSection: {
 				login: false,
 				language: true,
-			},
-			runtimeInfo: {
-				urls: null,
-				env: null,
 			},
 		}
 	},
@@ -81,7 +69,7 @@ export default {
 
 		// 로그인 필요 다이얼로그
 		const needNotLogin =
-			redirectTarget && redirectTarget.match(window.urls['www'] !== null)
+			redirectTarget && redirectTarget.match(this.$urls['www'] !== null)
 		if (redirectTarget && !needNotLogin) {
 			this.show = true
 			this.loginService()

@@ -19,10 +19,10 @@ import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
 export default {
 	async beforeRouteEnter(to, from, next) {
 		let res = await api.getUrls()
+		const environmentCss = 'font-size: 1.2rem;'
+		console.log('%cprocess env: %s', environmentCss, res.env)
 		Vue.prototype.$urls = res
 		await auth.init({ env: res.env })
-		const environmentCss = 'font-size: 1.2rem;'
-		console.log('%cruntime env: %s', environmentCss, auth.env)
 		next()
 	},
 	data() {

@@ -4,7 +4,7 @@ const { join, resolve, posix } = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
 const MODE = process.env.NODE_ENV
-const isProduction = (MODE === 'production')
+const isProduction = MODE === 'production'
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -73,9 +73,7 @@ const config = {
 	},
 	resolve: {
 		extensions: ['.js', '.vue'],
-		modules: [
-			'node_modules',
-		],
+		modules: ['node_modules'],
 		alias: {
 			'WC-Modules': resolve(__dirname, '../WC-Modules/src'),
 			'@': resolve(__dirname, '../src'),
@@ -198,9 +196,9 @@ const config = {
 	},
 	plugins: [
 		new webpack.DefinePlugin({
-				'process.env': {
-						NODE_ENV: '"production"'
-				}
+			'process.env': {
+				NODE_ENV: '"production"',
+			},
 		}),
 		new webpack.optimize.ModuleConcatenationPlugin(),
 		extractSASS,
