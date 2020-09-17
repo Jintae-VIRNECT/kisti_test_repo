@@ -137,12 +137,6 @@ pipeline {
           steps {
             catchError() {
               script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-webaccount:${GIT_TAG}").push("${GIT_TAG}")
-                }
-              }
-
-              script {
                 sshPublisher(
                   continueOnError: false, failOnError: true,
                   publishers: [
