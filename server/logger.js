@@ -8,7 +8,7 @@ log4js.configure({
       layout: {
         type: 'pattern',
         pattern:
-          `${chalk.green('[RMWEB]')} - ` +
+          `${chalk.green('[RM-DASHBOARD]')} - ` +
           `${chalk.white('[%d{yyyy-MM-dd hh:mm:ss}]')} - ` +
           `[%p] - ` +
           `${chalk.cyan(`[%c]`)} - ` +
@@ -17,7 +17,7 @@ log4js.configure({
     },
     file: {
       type: 'dateFile',
-      filename: './logs/rmweb',
+      filename: './logs/rm-dashboard',
       pattern: '.yyyy-MM-dd-hh.log',
       alwaysIncludePattern: true,
       layout: {
