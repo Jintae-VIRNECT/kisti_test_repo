@@ -46,7 +46,7 @@ public class LoggerAspect {
 		return jsonObject;
 	}
 
-	@Before("execution(* com.virnect.license.api..*Controller.*(..))")
+	@Before("execution(* com.virnect.license.api.*Controller.*(..))")
 	public void requestLogger(JoinPoint joinPoint) {
 		String controllerName = joinPoint.getSignature().getDeclaringType().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
