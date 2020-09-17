@@ -14,7 +14,7 @@
 			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
-			<TheHeader :showSection="showSection">
+			<TheHeader :showSection="showSection" :auth="auth">
 				<template slot="subTitle">{{ $t('login.subTitle') }}</template>
 			</TheHeader>
 			<transition name="app-fade" mode="out-in">
@@ -27,6 +27,7 @@
 <script>
 import Vue from 'vue'
 import api from 'api/axios'
+import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
 	async beforeRouteEnter(to, from, next) {
@@ -34,6 +35,7 @@ export default {
 		const environmentCss = 'font-size: 1.2rem;'
 		console.log('%cprocess env: %s', environmentCss, res.env)
 		Vue.prototype.$urls = res
+		await auth.init({ env: res.env })
 		next()
 	},
 	data() {
