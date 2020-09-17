@@ -25,6 +25,7 @@ import com.virnect.download.domain.AppUpdateStatus;
 import com.virnect.download.domain.Device;
 import com.virnect.download.domain.OS;
 import com.virnect.download.domain.Product;
+import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
 import com.virnect.download.dto.response.AppDetailInfoResponse;
@@ -218,5 +219,35 @@ public class AppService {
 				return appInfo;
 			}).collect(Collectors.toList());
 		return new ApiResponse<>(new AppSigningKetRegisterResponse(signedAppInfoResponses));
+	}
+
+	@Transactional
+	public ApiResponse<AppDetailInfoResponse> appInfoUpdate(AppInfoUpdateRequest appInfoUpdateRequest) {
+		App app = appRepository.findByUuid(appInfoUpdateRequest.getAppUUID())
+			.orElseThrow(()-> new AppServiceException(ErrorCode.ERR_APP_INFO_NOT_FOUND));
+
+		log.info("[APP_INFORMATION_UPDATE] - [{}]", appInfoUpdateRequest.toString());
+
+		if(appInfoUpdateRequest.getAppStatus() != null){
+			app.setAppStatus(appInfoUpdateRequest.getAppStatus());
+		}
+
+		if(appInfoUpdateRequest.getAppUpdateStatus() != null){
+			app.setAppUpdateStatus(appInfoUpdateRequest.getAppUpdateStatus());
+		}
+
+		appRepository.save(app);
+
+		AppDetailInfoResponse appDetailInfoResponse = new AppDetailInfoResponse();
+		appDetailInfoResponse.setAppUrl(app.getAppUrl());
+		appDetailInfoResponse.setDeviceType(app.getDevice().getName());
+		appDetailInfoResponse.setOperationSystem(app.getOs().getName());
+		appDetailInfoResponse.setProductName(app.getProduct().getName());
+		appDetailInfoResponse.setSigningKey(app.getSignature());
+		appDetailInfoResponse.setUuid(app.getUuid());
+		appDetailInfoResponse.setVersion(app.getVersionName());
+		appDetailInfoResponse.setPackageName(app.getPackageName());
+		appDetailInfoResponse.setUpdateRequired(app.getAppUpdateStatus().equals(AppUpdateStatus.REQUIRED));
+		return new ApiResponse<>(appDetailInfoResponse);
 	}
 }

@@ -31,6 +31,14 @@ public enum ErrorCode {
 		6010,
 		"Application signing key registration failed. Every application found by packageName has signing key information."
 	),
+	ERR_APP_INFO_NOT_FOUND(
+		6011,
+		"No such application information with app uuid."
+	),
+	ERR_APP_INFO_UPDATE(
+		6012,
+		"Application information update fail."
+	),
 
 	// 공통 에러
 	ERR_API_AUTHENTICATION(8003, "Authentication Error"),
