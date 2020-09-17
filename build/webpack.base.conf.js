@@ -56,6 +56,15 @@ const cssOptions = [{ loader: 'css-loader', options: { sourceMap: true } }]
 const sassOptions = [
 	...cssOptions,
 	{
+		loader: 'postcss-loader',
+		options: {
+			sourceMap: true,
+			config: {
+				path: 'postcss.config.js',
+			},
+		},
+	},
+	{
 		loader: 'sass-loader',
 		options: {
 			sourceMap: !isProduction,
