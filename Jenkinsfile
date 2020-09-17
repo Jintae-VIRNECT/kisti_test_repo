@@ -5,7 +5,7 @@ pipeline {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
     }
-    
+
     stages {
         stage('Pre-Build') {
             parallel {
@@ -46,7 +46,7 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh 'NODE_ENV=develop yarn workspace download build'
+                        sh 'yarn workspace download build'
                         sh 'docker build -t pf-webdownload .'
                     }
                 }
@@ -57,7 +57,7 @@ pipeline {
                     }
                     steps {
                         sh 'git checkout ${GIT_TAG}'
-                        sh 'NODE_ENV=staging yarn workspace download build'
+                        sh 'yarn workspace download build'
                         sh 'docker build -t pf-webdownload:${GIT_TAG} .'
                     }
                 }
