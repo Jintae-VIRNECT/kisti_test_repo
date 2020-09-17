@@ -1,9 +1,12 @@
 package com.virnect.license.global.middleware;
 
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -43,13 +46,19 @@ public class LoggerAspect {
 		return jsonObject;
 	}
 
-	@Before("execution(* com.virnect.license.api.BillingController.*(..))")
+	@Before("execution(* com.virnect.license.api..*Controller.*(..))")
 	public void requestLogger(JoinPoint joinPoint) {
 		String controllerName = joinPoint.getSignature().getDeclaringType().getSimpleName();
 		String methodName = joinPoint.getSignature().getName();
 		Map<String, Object> params = new HashMap<>();
 		try {
-			params.put("Authorization", request.getHeader("Authorization"));
+			String userName = Optional.ofNullable(request.getHeader("x-jwt-name")).orElse("dW5rb3du");
+			String authorization = String.format(
+				"{UserName: [%s], UserEmail: [%s] UUID: [%s]}", new String(
+					Base64.getDecoder().decode(userName.getBytes()), StandardCharsets.UTF_8),
+				request.getHeader("x-jwt-email"), request.getHeader("x-jwt-uuid")
+			);
+			params.put("Authorization", authorization);
 			params.put("Content-Type", request.getHeader("Content-Type"));
 			params.put("RequestUri", request.getRequestURI());
 			params.put("HttpMethod", request.getMethod());
