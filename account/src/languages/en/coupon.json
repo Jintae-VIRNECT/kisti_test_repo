@@ -42,6 +42,8 @@
       "registerNotExist": "The coupon with the number you entered does not exist.",
       "registerExpired": "Cannot register this coupon since the validity date has expired",
       "registerAlready": "This coupon is already registered",
+      "registerOrUsedAlready": "The coupon has already been used or registered",
+      "registerDayRistrict": "You are limited to use the coupon tomorrow due to 5 consecutive wrong attemps.",
       "registerSuccess": "Your coupon is registered succesfully",
       "useAlready": "This coupon has already been used",
       "useExpired": "Cannot use this coupon since the validity date has expired"
