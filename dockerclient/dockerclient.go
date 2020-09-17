@@ -151,8 +151,6 @@ func DownloadDockerImage(ctx context.Context) error {
 	return nil
 }
 
-// https://OPENVIDUAPP:MY_SECRET@172.20.194.76:4443/dashboard/#/layout-best-fit/ses_R8y9uSOUn7/MY_SECRET/4443/false
-
 func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 
@@ -182,7 +180,7 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	log.Info("url:", url)
 
 	now := time.Now().UTC().Unix()
-	endTime := now + int64(param.TimeLimit*60)
+	endTime := now + int64(param.TimeLimit)
 	createOpt := docker.CreateContainerOptions{}
 	createOpt.Name = param.RecordingID
 	createOpt.Config = &docker.Config{

@@ -103,7 +103,7 @@ func NewRecording(ctx context.Context, param RecordingParam) (string, error) {
 		return recordingId, ErrInternalError
 	}
 
-	timeout := time.Duration(param.TimeLimit) * time.Minute
+	timeout := time.Duration(param.TimeLimit) * time.Second
 	timer := time.AfterFunc(timeout, func() {
 		timeoutCh <- recordingId
 	})

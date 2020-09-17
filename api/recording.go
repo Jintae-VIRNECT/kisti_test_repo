@@ -121,12 +121,15 @@ func StartRecording(c *gin.Context) {
 	resolution, _ := convertResolution(req.Resolution)
 	log.Debug("resolution:", resolution)
 
+	// The actual recording time is shorter than the requested limit. So, give me about 10 seconds.
+	timeLimit := req.RecordingTimeLimit*60 + 10
+
 	param := recorder.RecordingParam{
 		SessionID:  req.SessionID,
 		Token:      req.Token,
 		Resolution: resolution,
 		Framerate:  req.Framerate,
-		TimeLimit:  req.RecordingTimeLimit,
+		TimeLimit:  timeLimit,
 		Filename:   req.RecordingFilename,
 		MetaData:   req.MetaData,
 	}
