@@ -8,7 +8,9 @@ export default async function({ req, store, redirect, error, $config }) {
   if (process.server) {
     const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
     // not support browser
-    const isIE = req.headers['user-agent'].indexOf('MSIE ') !== -1
+    const isIE =
+      req.headers['user-agent'].indexOf('MSIE ') !== -1 ||
+      req.headers['user-agent'].indexOf('Trident/') !== -1
     const isOldEdge = req.headers['user-agent'].indexOf('Edge') !== -1
     if (isIE || isOldEdge) {
       return error({ message: 'BrowserNotSupport' })
