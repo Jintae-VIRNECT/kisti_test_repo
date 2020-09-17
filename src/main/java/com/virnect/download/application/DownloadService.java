@@ -1,47 +1,46 @@
 package com.virnect.download.application;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.download.dao.AppRepository;
+import com.virnect.download.dao.ProductRepository;
 import com.virnect.download.domain.App;
 import com.virnect.download.domain.Product;
 import com.virnect.download.dto.response.AppInfoListResponse;
+import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
-import com.virnect.download.infra.file.S3FileUploadService;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.context.MessageSource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.virnect.download.infra.file.donwload.S3FileDownloadService;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
 public class DownloadService {
-    private final S3FileUploadService fileUploadService;
-    private final AppRepository appRepository;
-    private final ModelMapper modelMapper;
-    private final MessageSource messageSource;
+	private final S3FileDownloadService fileUploadService;
+	private final AppRepository appRepository;
+	private final ProductRepository productRepository;
+	private final ModelMapper modelMapper;
 
-    public ResponseEntity<Object> downloadApp(String uuid) throws IOException, URISyntaxException {
-        App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
+	public ApiResponse<Boolean> downloadApp(String uuid) {
+		App app = this.appRepository.findByUuid(uuid)
+			.orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
-        app.setAppDownloadCount(app.getAppDownloadCount() + 1);
-        this.appRepository.save(app);
-
-        if (app.getDevice().getType().equals("Google Play")) {
+		app.setAppDownloadCount(app.getAppDownloadCount() + 1);
+		this.appRepository.save(app);
+/*
+        if (app.getDevice().getType().getName().equals("Google Play")) {
             //링크 리턴
             URI redirectUri = new URI(app.getAppUrl());
             HttpHeaders httpHeaders = new HttpHeaders();
@@ -58,15 +57,17 @@ public class DownloadService {
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(this.fileUploadService.fileDownload(fileName));
-        }
-    }
+        }*/
+		return new ApiResponse<>(true);
+	}
 
-    public ResponseEntity<byte[]> downloadGuide(String uuid) throws IOException {
-        App app = this.appRepository.findByUuid(uuid).orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
+	public ApiResponse<Boolean> downloadGuide(String uuid) {
+		App app = this.appRepository.findByUuid(uuid)
+			.orElseThrow(() -> new DownloadException(ErrorCode.ERR_NOT_FOUND_FILE));
 
-        app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
-        this.appRepository.save(app);
-
+		app.setGuideDownloadCount(app.getGuideDownloadCount() + 1);
+		this.appRepository.save(app);
+/*
         String fileName = FilenameUtils.getName(app.getGuideUrl());
 
         HttpHeaders headers = new HttpHeaders();
@@ -76,27 +77,33 @@ public class DownloadService {
 
         return ResponseEntity.ok()
                 .headers(headers)
-                .body(this.fileUploadService.fileDownload(fileName));
-    }
+                .body(this.fileUploadService.fileDownload(fileName));*/
+		return new ApiResponse<>(true);
 
-    public ApiResponse<AppInfoListResponse> getAppList(String productName, Locale locale) {
-        Product product = Product.valueOf(productName.toUpperCase());
-        List<App> apps = this.appRepository.getAppList(product);
-        Map<List<Object>, List<App>> result = apps.stream().collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice().getId(), app.getOs().getId())));
+	}
 
-        List<AppInfoListResponse.AppInfo> appInfoList = new ArrayList<>();
-        result.forEach((objects, appList) -> {
-            AppInfoListResponse.AppInfo appInfo = modelMapper.map(appList.get(0), AppInfoListResponse.AppInfo.class);
-            appInfo.setDevice(messageSource.getMessage(appList.get(0).getDevice().getType().replaceAll(" ",""), null, locale));
-            appInfo.setReleaseTime(appList.get(0).getCreatedDate());
-            appInfo.setOs(appList.get(0).getOs().getName());
-            appInfo.setVersion("v." + appList.get(0).getVersion());
+	public ApiResponse<AppInfoListResponse> getAppList(String productName, Locale locale) {
+		Product product = productRepository.findByName(productName.toUpperCase())
+			.orElseThrow(() -> new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER));
 
-            appInfo.setImageUrl(appList.get(0).getImage());
-            appInfoList.add(appInfo);
-        });
+		List<App> apps = this.appRepository.getAppList(product);
+		Map<List<Object>, List<App>> result = apps.stream()
+			.collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice().getId(), app.getOs().getId())));
 
-        return new ApiResponse<>(new AppInfoListResponse(appInfoList));
-    }
+		List<AppInfoResponse> appInfoList = new ArrayList<>();
+		result.forEach((objects, appList) -> {
+			AppInfoResponse appInfo = modelMapper.map(appList.get(0), AppInfoResponse.class);
+			appInfo.setDeviceName(appList.get(0).getDevice().getDisplayTitle());
+			appInfo.setReleaseTime(appList.get(0).getCreatedDate());
+			appInfo.setDeviceType(appList.get(0).getDevice().getType());
+			appInfo.setVersion("v." + appList.get(0).getVersionName());
+			appInfo.setImageUrl(appList.get(0).getImage());
+			appInfo.setGuideUrl(appList.get(0).getGuideUrl());
+
+			appInfoList.add(appInfo);
+		});
+
+		return new ApiResponse<>(new AppInfoListResponse(appInfoList));
+	}
 
 }

@@ -5,17 +5,10 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-/**
- * Project: PF-Download
- * DATE: 2020-08-06
- * AUTHOR: jeonghyeon.chang (johnmark)
- * EMAIL: practice1356@gmail.com
- * DESCRIPTION:
- */
 @Getter
 @Setter
 @ApiModel
-public class AppUploadResponse {
+public class AppDetailInfoResponse {
 	@ApiModelProperty(value = "앱 식별자", example = "05d1-8795535a1234")
 	private String uuid = "";
 	@ApiModelProperty(value = "앱 버전 정보", position = 1, example = "v1.0.20")
@@ -30,5 +23,23 @@ public class AppUploadResponse {
 	private String appUrl = "";
 	@ApiModelProperty(value = "앱 제품 정보", position = 6, example = "REMOTE")
 	private String productName = "";
+	@ApiModelProperty(value = "앱 서명 키 정보", position = 7, example = "asdasdasdasd")
+	private String signingKey = "";
+	@ApiModelProperty(value = "앱 강제 업데이트 여부", position = 8, example = "false")
+	private boolean isUpdateRequired;
 
+	@Override
+	public String toString() {
+		return "AppDetailInfoResponse{" +
+			"uuid='" + uuid + '\'' +
+			", version='" + version + '\'' +
+			", deviceType='" + deviceType + '\'' +
+			", operationSystem='" + operationSystem + '\'' +
+			", packageName='" + packageName + '\'' +
+			", appUrl='" + appUrl + '\'' +
+			", productName='" + productName + '\'' +
+			", signingKey='" + signingKey + '\'' +
+			", isUpdateRequired=" + isUpdateRequired +
+			'}';
+	}
 }

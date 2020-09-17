@@ -15,13 +15,14 @@ spring:
         format_sql: true
   servlet:
     multipart:
-      max-file-size: 100MB
-      max-request-size: 100MB
+      max-file-size: 500MB
+      max-request-size: 600MB
   zipkin:
     base-url: http://192.168.6.3:9411
 logging:
   level:
     com.virnect.download.application.*: DEBUG
+    org.hibernate.type.descriptor.sql: trace
 
 ## Server Configuration
 server:
@@ -31,7 +32,7 @@ server:
 file:
   upload-path: "app/"
   url: "http://192.168.6.3:${server.port}/download/"
-  allow-extension: "exe,apk,zip"
+  allowed-extension: "apk"
 
 ## Eureka Server Configuration
 eureka:
@@ -52,3 +53,11 @@ cloud:
     s3:
       bucket:
         name: "virnect-download"
+    cdn: "https://file.virnect.com/"
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus

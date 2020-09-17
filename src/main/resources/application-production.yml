@@ -3,22 +3,19 @@ spring:
     name: download-server
   datasource:
     url: jdbc:mysql://platform-prod-db.cxb5wiohfeko.ap-northeast-2.rds.amazonaws.com:8204/downloads
-    username: virnect-donwloads
+    username: virnect-downloads
     password: qjsprxm2020!#@$
   jpa:
     hibernate:
-      ddl-auto: none
-    show-sql: true
+      ddl-auto: validate
     database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    properties:
-      hibernate:
-        format_sql: true
   zipkin:
     base-url: http://zipkin.virnect.com
-logging:
-  level:
-    com.virnect.download.application.*: DEBUG
-
+    discovery-client-enabled: false
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 600MB
 ## Server Configuration
 server:
   port: 8086
@@ -27,7 +24,7 @@ server:
 file:
   upload-path: "app/"
   url: "https://file.virnect.com"
-  allow-extension: "exe,apk,zip"
+  allowed-extension: "apk"
 
 ## Eureka Server Configuration
 eureka:
@@ -48,3 +45,11 @@ cloud:
     s3:
       bucket:
         name: "virnect-download"
+    cdn: "https://file.virnect.com/"
+
+# monitoring
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus

@@ -1,11 +1,14 @@
 package com.virnect.download.global.error;
 
-import com.virnect.download.exception.DownloadException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.download.exception.AppServiceException;
+import com.virnect.download.exception.DownloadException;
 
 /**
  * Project: PF-Admin
@@ -18,17 +21,23 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    // 기타 모든 예외 에러
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity exception(Exception e) {
-        log.error(e.getMessage());
-        e.printStackTrace();
-        return new ResponseEntity<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR, HttpStatus.BAD_REQUEST);
-    }
+	// 기타 모든 예외 에러
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity exception(Exception e) {
+		log.error(e.getMessage());
+		e.printStackTrace();
+		return new ResponseEntity<>(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR, HttpStatus.BAD_REQUEST);
+	}
 
-    @ExceptionHandler(DownloadException.class)
-    protected ResponseEntity<ErrorResponseMessage> handleDownloadException(final DownloadException e) {
-        log.error("handleDownloadException", e);
-        return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
-    }
+	@ExceptionHandler(DownloadException.class)
+	protected ResponseEntity<ErrorResponseMessage> handleDownloadException(final DownloadException e) {
+		log.error("handleDownloadException", e);
+		return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
+	}
+
+	@ExceptionHandler(AppServiceException.class)
+	protected ResponseEntity<ErrorResponseMessage> handleUploadServiceException(final AppServiceException e) {
+		log.error("[UPLOAD_SERVICE_EXCEPTION]", e);
+		return ResponseEntity.ok(new ErrorResponseMessage(e.getErrorCode()));
+	}
 }
