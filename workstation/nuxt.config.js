@@ -1,12 +1,31 @@
 const { resolve } = require('path')
 const lang = require('./src/languages')
-const dotenv = require('dotenv')
-const fs = require('fs')
-const filePath = `.env.${process.env.NODE_ENV.trim()}`
-const env = dotenv.parse(fs.readFileSync(filePath))
 const path = require('path')
+const fs = require('fs')
+const axios = require('axios')
+require('dotenv').config()
 
 module.exports = {
+  /**
+   * from config server
+   */
+  hooks: {
+    render: {
+      async before(renderer) {
+        if (process.env.NODE_ENV === 'local') return false
+
+        const runtimeConfig = renderer.nuxt.options.publicRuntimeConfig
+        const { data } = await axios.get(
+          `${process.env.CONFIG_SERVER_URL}/workstation-web/${process.env.NODE_ENV}`,
+        )
+        const serverConfig = data.propertySources[0].source
+        console.log(serverConfig)
+        Object.entries(serverConfig).forEach(([key, val]) => {
+          runtimeConfig[key] = val
+        })
+      },
+    },
+  },
   /*
    ** Headers of the page
    */
@@ -49,15 +68,15 @@ module.exports = {
   /**
    * env
    */
-  debug: JSON.parse(env.NUXT_DEBUG),
+  debug: JSON.parse(process.env.NUXT_DEBUG),
   env: {
     NODE_ENV: process.env.NODE_ENV,
   },
   publicRuntimeConfig: {
     VERSION: process.env.npm_package_version || '',
-    TARGET_ENV: env.TARGET_ENV,
-    API_GATEWAY_URL: env.API_GATEWAY_URL,
-    API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
+    TARGET_ENV: process.env.TARGET_ENV,
+    API_GATEWAY_URL: process.env.API_GATEWAY_URL,
+    API_TIMEOUT: parseInt(process.env.API_TIMEOUT, 10),
   },
   /**
    * build
@@ -71,9 +90,9 @@ module.exports = {
     },
   },
   server: {
-    port: env.NUXT_PORT, // default: 3000
-    host: env.NUXT_HOST, // default: localhost
-    https: /(local|develop)/.test(env.TARGET_ENV) && {
+    port: process.env.NUXT_PORT, // default: 3000
+    host: process.env.NUXT_HOST, // default: localhost
+    https: /(local|develop)/.test(process.env.NODE_ENV) && {
       key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
       cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
     },
