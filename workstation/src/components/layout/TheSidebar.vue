@@ -19,7 +19,8 @@
       <div class="the-sidebar__upper">
         <the-sidebar-menu-list :menus="menus" @openCollapse="openCollapse" />
       </div>
-      <div class="the-sidebar__lower">
+      <!-- 워크스페이스 설정 -->
+      <div class="the-sidebar__lower" v-if="!hideWorkspaceSetting">
         <the-sidebar-menu-list
           :menus="bottomMenus"
           @openCollapse="openCollapse"
@@ -67,6 +68,12 @@ export default {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
     }),
+    hideWorkspaceSetting() {
+      return (
+        this.$config.TARGET_ENV === 'onpremise' &&
+        this.activeWorkspace.role !== 'MASTER'
+      )
+    },
   },
   methods: {
     openCollapse(component) {
