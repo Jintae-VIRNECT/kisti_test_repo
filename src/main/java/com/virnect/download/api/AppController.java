@@ -28,6 +28,7 @@ import com.virnect.download.dto.response.AppDetailInfoResponse;
 import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppSigningKetRegisterResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
+import com.virnect.download.dto.response.AppVersionInfoListResponse;
 import com.virnect.download.exception.AppServiceException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
@@ -106,8 +107,8 @@ public class AppController {
 
 	@ApiOperation(value = "앱 정보 조회")
 	@GetMapping("/list")
-	public ResponseEntity<ApiResponse<AppInfoListResponse>> getAllAppInfoList(){
-		ApiResponse<AppInfoListResponse> responseMessage = appService.getAllAppInfo();
+	public ResponseEntity<ApiResponse<AppVersionInfoListResponse>> getAllAppInfoList(){
+		ApiResponse<AppVersionInfoListResponse> responseMessage = appService.getAllAppInfo();
 		return ResponseEntity.ok(responseMessage);
 	}
 }
