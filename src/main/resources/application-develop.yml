@@ -19,6 +19,7 @@ spring:
       max-request-size: 600MB
   zipkin:
     base-url: http://192.168.6.3:9411
+    discovery-client-enabled: false
 logging:
   level:
     com.virnect.download.application.*: DEBUG
