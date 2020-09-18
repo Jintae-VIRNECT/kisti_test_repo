@@ -1,0 +1,11 @@
+server:
+  port: 8073
+
+spring:
+  application:
+    name: gateway-server
+  cloud:
+    config:
+      uri: http://192.168.6.3:6383
+      profile: ${spring.profiles.active}
+      name: ${spring.application.name}
