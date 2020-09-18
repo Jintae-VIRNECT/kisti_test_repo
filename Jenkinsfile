@@ -81,7 +81,7 @@ pipeline {
                     steps {
                         catchError() {
                             sh 'count=`docker ps -a | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
-                            sh 'docker run -p 8073:8073 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-gateway pf-gateway'
+                            sh 'docker run -p 8073:8073 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-gateway pf-gateway'
                             sh 'docker image prune -a -f'
                         }
                     }
