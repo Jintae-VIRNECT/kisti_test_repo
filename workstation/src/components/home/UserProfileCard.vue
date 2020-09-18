@@ -87,8 +87,12 @@ export default {
   .avatar {
     float: left;
     width: 40px;
-    height: 40px;
+    height: 60px;
     margin-right: 12px;
+
+    .image {
+      height: 67%;
+    }
   }
   .name {
     display: block;

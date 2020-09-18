@@ -83,7 +83,11 @@
         >
           {{ $t('task.list.dropdown.taskClose') }}
         </el-dropdown-item>
-        <el-dropdown-item class="red" @click.native="remove(row.id)">
+        <el-dropdown-item
+          class="red"
+          @click.native="remove(row.id)"
+          v-if="activeWorkspace.role !== 'MEMBER'"
+        >
           {{ $t('task.list.dropdown.taskDelete') }}
         </el-dropdown-item>
       </column-dropdown>
@@ -120,6 +124,7 @@ import taskService from '@/services/task'
 import TaskTargetInfo from '@/components/task/TaskTargetInfo'
 import SetTaskManage from '@/components/task/SetTaskManage'
 import SetTaskTarget from '@/components/task/SetTaskTarget'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [columnMixin],
@@ -144,6 +149,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+    }),
     sortable() {
       return this.clickable ? 'custom' : null
     },
