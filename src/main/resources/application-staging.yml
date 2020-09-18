@@ -15,6 +15,7 @@ spring:
         format_sql: true
   zipkin:
     base-url: http://stgzipkin.virnect.com
+    discovery-client-enabled: false
   servlet:
     multipart:
       max-file-size: 500MB
