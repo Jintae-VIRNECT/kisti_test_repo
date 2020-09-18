@@ -22,14 +22,63 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	swaggerFiles "github.com/swaggo/gin-swagger/swaggerFiles"
-	"gopkg.in/yaml.v2"
 )
 
-func SetupRouter() *gin.Engine {
+// @title VIRNECT Remote Record Server API Document
+// @version 1.0
+// @description This is Remote Record Server API Document
+func main() {
+
+	// read configuration from config.ini
+	readConfig()
+
+	// initialize global logger
+	logger.Init()
+
+	// display configuration
+	displayConfig()
+
+	// initialize recorder
+	recorder.Init()
+
+	// setup gin router
+	router := setupRouter()
+
+	srv := &http.Server{
+		Addr:    ":" + strconv.Itoa(viper.GetInt("general.port")),
+		Handler: router,
+	}
+
+	go func() {
+		logger.Info("Server Started: listen:", viper.GetInt("general.port"))
+		if err := srv.ListenAndServe(); err != nil {
+			logger.Errorf("listen: %s", err)
+		}
+	}()
+
+	euraka := eurekaclient.NewClient()
+	euraka.Run()
+
+	// Wait for interrupt signal to gracefully shutdown the server with
+	// a timeout of 5 seconds.
+	quit := make(chan os.Signal)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+
+	euraka.Stop()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Error("Server Shutdown:", err)
+	}
+	logger.Info("Record Server stopped")
+}
+
+func setupRouter() *gin.Engine {
 	if viper.GetBool("general.devMode") == false {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -65,103 +114,6 @@ func SetupRouter() *gin.Engine {
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 	r.GET("/v2/api-docs/*any", swaggerMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r
-}
-
-// @title VIRNECT Remote Record Server API Document
-// @version 1.0
-// @description This is Remote Record Server API Document
-func main() {
-
-	// read configuration from config.ini
-	readConfig()
-
-	// initialize global logger
-	logger.Init()
-
-	// display configuration
-	displayConfig()
-
-	// initialize recorder
-	recorder.Init()
-
-	// setup gin router
-	router := SetupRouter()
-
-	srv := &http.Server{
-		Addr:    ":" + strconv.Itoa(viper.GetInt("general.port")),
-		Handler: router,
-	}
-
-	go func() {
-		logger.Info("Server Started: listen:", viper.GetInt("general.port"))
-		if err := srv.ListenAndServe(); err != nil {
-			logger.Errorf("listen: %s", err)
-		}
-	}()
-
-	euraka := eurekaclient.NewClient()
-	euraka.Run()
-
-	// Wait for interrupt signal to gracefully shutdown the server with
-	// a timeout of 5 seconds.
-	quit := make(chan os.Signal)
-	signal.Notify(quit, os.Interrupt)
-	<-quit
-
-	euraka.Stop()
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		logger.Error("Server Shutdown:", err)
-	}
-	logger.Info("Record Server stopped")
-}
-
-func readConfig() {
-	var configPath string
-	var logStdout bool
-	var version bool
-	pflag.BoolVarP(&version, "version", "v", false, "show version")
-	pflag.StringVarP(&configPath, "config", "c", "config.ini", "path to config file")
-	pflag.BoolVarP(&logStdout, "stdout", "s", false, "only output to stdout")
-
-	pflag.Parse()
-
-	if version {
-		fmt.Printf("version: %s-%s\n", Version, Build)
-		os.Exit(0)
-	}
-
-	viper.SetConfigType("toml")
-	viper.SetConfigName(configPath)
-	viper.AddConfigPath(".")
-	err := viper.ReadInConfig() // Find and read the config file
-	if err != nil {             // Handle errors reading the config file
-		panic(fmt.Errorf("Fatal error config file: %s\n", err))
-	}
-
-	if logStdout {
-		viper.Set("log.stdout", true)
-	}
-
-	if instanceIP, ok := os.LookupEnv("EUREKA_INSTANCE_IP"); ok {
-		viper.Set("eureka.instanceIp", instanceIP)
-	}
-
-	var recDir string
-	if _, err := os.Stat("/.dockerenv"); err == nil {
-		recDir = viper.GetString("record.dirOnDocker")
-	} else {
-		recDir = viper.GetString("record.dirOnHost")
-	}
-	viper.Set("record.dir", recDir)
-}
-
-func displayConfig() {
-	// show all settings
-	bs, _ := yaml.Marshal(viper.AllSettings())
-	logger.Info("settings\n", string(bs))
 }
 
 func requestLoggerMiddleware() gin.HandlerFunc {

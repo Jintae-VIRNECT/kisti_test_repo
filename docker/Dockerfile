@@ -11,7 +11,6 @@ RUN make build-linux
 FROM scratch
 
 WORKDIR /
-COPY --from=build /src/config.dev.ini /config.ini 
 COPY --from=build /src/build/recordserver-linux-amd64 /recordserver
 
 EXPOSE 8083

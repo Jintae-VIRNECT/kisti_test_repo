@@ -2,7 +2,7 @@ TARGET=recordserver
 BUILD=`git rev-parse HEAD`
 LDFLAGS=-ldflags "-X=main.Build=${BUILD}"
 DOCKER_TAG=virnect/remote-recordserver
-SRCS=main.go version.go customRecovery.go
+SRCS=main.go version.go customRecovery.go config.go
 BUILD_OPT=-race
 ifndef $(GOPATH)
     GOPATH=$(shell go env GOPATH)
