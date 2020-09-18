@@ -1,11 +1,15 @@
 package com.virnect.download.application;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,9 +29,12 @@ import com.virnect.download.domain.AppUpdateStatus;
 import com.virnect.download.domain.Device;
 import com.virnect.download.domain.OS;
 import com.virnect.download.domain.Product;
+import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
 import com.virnect.download.dto.response.AppDetailInfoResponse;
+import com.virnect.download.dto.response.AppInfoListResponse;
+import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.dto.response.AppSigningKetRegisterResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.dto.response.SignedAppInfoResponse;
@@ -45,6 +52,7 @@ public class AppService {
 	private final ProductRepository productRepository;
 	private final OSRepository osRepository;
 	private final FileUploadService fileUploadService;
+	private final ModelMapper modelMapper;
 
 	@Transactional
 	public ApiResponse<AppUploadResponse> applicationUploadAndRegister(AppUploadRequest appUploadRequest) {
@@ -218,5 +226,54 @@ public class AppService {
 				return appInfo;
 			}).collect(Collectors.toList());
 		return new ApiResponse<>(new AppSigningKetRegisterResponse(signedAppInfoResponses));
+	}
+
+	@Transactional
+	public ApiResponse<AppDetailInfoResponse> appInfoUpdate(AppInfoUpdateRequest appInfoUpdateRequest) {
+		App app = appRepository.findByUuid(appInfoUpdateRequest.getAppUUID())
+			.orElseThrow(()-> new AppServiceException(ErrorCode.ERR_APP_INFO_NOT_FOUND));
+
+		log.info("[APP_INFORMATION_UPDATE] - [{}]", appInfoUpdateRequest.toString());
+
+		if(appInfoUpdateRequest.getAppStatus() != null){
+			app.setAppStatus(appInfoUpdateRequest.getAppStatus());
+		}
+
+		if(appInfoUpdateRequest.getAppUpdateStatus() != null){
+			app.setAppUpdateStatus(appInfoUpdateRequest.getAppUpdateStatus());
+		}
+
+		appRepository.save(app);
+
+		AppDetailInfoResponse appDetailInfoResponse = new AppDetailInfoResponse();
+		appDetailInfoResponse.setAppUrl(app.getAppUrl());
+		appDetailInfoResponse.setDeviceType(app.getDevice().getName());
+		appDetailInfoResponse.setOperationSystem(app.getOs().getName());
+		appDetailInfoResponse.setProductName(app.getProduct().getName());
+		appDetailInfoResponse.setSigningKey(app.getSignature());
+		appDetailInfoResponse.setUuid(app.getUuid());
+		appDetailInfoResponse.setVersion(app.getVersionName());
+		appDetailInfoResponse.setPackageName(app.getPackageName());
+		appDetailInfoResponse.setUpdateRequired(app.getAppUpdateStatus().equals(AppUpdateStatus.REQUIRED));
+		return new ApiResponse<>(appDetailInfoResponse);
+	}
+
+	@Transactional(readOnly = true)
+	public ApiResponse<AppInfoListResponse> getAllAppInfo() {
+		List<App> apps = appRepository.findAll();
+		Map<List<Object>, List<App>> result = apps.stream()
+			.collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice().getId(), app.getOs().getId())));
+		List<AppInfoResponse> appInfoList = new ArrayList<>();
+		result.forEach((objects, appList) -> {
+			AppInfoResponse appInfo = modelMapper.map(appList.get(0), AppInfoResponse.class);
+			appInfo.setDeviceName(appList.get(0).getDevice().getName());
+			appInfo.setReleaseTime(appList.get(0).getCreatedDate());
+			appInfo.setDeviceType(appList.get(0).getDevice().getType());
+			appInfo.setVersion("v." + appList.get(0).getVersionName());
+			appInfo.setImageUrl(appList.get(0).getImage());
+			appInfo.setGuideUrl(appList.get(0).getGuideUrl());
+			appInfoList.add(appInfo);
+		});
+		return new ApiResponse<>(new AppInfoListResponse(appInfoList));
 	}
 }

@@ -21,9 +21,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.download.application.AppService;
+import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
 import com.virnect.download.dto.response.AppDetailInfoResponse;
+import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppSigningKetRegisterResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.exception.AppServiceException;
@@ -87,6 +89,25 @@ public class AppController {
 		}
 		ApiResponse<AppSigningKetRegisterResponse> responseMessage = appService.registerAppSigningKey(
 			signingKeyRegisterRequest);
+		return ResponseEntity.ok(responseMessage);
+	}
+
+	@ApiOperation(value = "앱 정보 수정")
+	@PostMapping("/{appUUID}/info")
+	public ResponseEntity<ApiResponse<AppDetailInfoResponse>> updateAppStatus(
+		AppInfoUpdateRequest appInfoUpdateRequest, BindingResult result
+	) {
+		if (result.hasErrors()) {
+			throw new AppServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		ApiResponse<AppDetailInfoResponse> responseMessage = appService.appInfoUpdate(appInfoUpdateRequest);
+		return ResponseEntity.ok(responseMessage);
+	}
+
+	@ApiOperation(value = "앱 정보 조회")
+	@GetMapping("/list")
+	public ResponseEntity<ApiResponse<AppInfoListResponse>> getAllAppInfoList(){
+		ApiResponse<AppInfoListResponse> responseMessage = appService.getAllAppInfo();
 		return ResponseEntity.ok(responseMessage);
 	}
 }
