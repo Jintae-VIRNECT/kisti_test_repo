@@ -9,8 +9,6 @@ import { debug } from 'utils/logger'
 /**
  * 상태
  */
-let env = null
-let api = null
 let isLogin = false
 let myInfo = {}
 let myWorkspaces = []
@@ -113,15 +111,11 @@ class Auth {
   }
 
   async init() {
-    env = process.env.TARGET_ENV
-    if (env === undefined) {
-      env = 'local'
-    }
     await getUrls()
 
     if (Cookies.get('accessToken')) {
       try {
-        await getMyInfo(api)
+        await getMyInfo()
         isLogin = true
         tokenRenewal()
       } catch (e) {
