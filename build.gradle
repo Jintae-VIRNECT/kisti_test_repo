@@ -55,6 +55,7 @@ dependencies {
 
     // Netflix Eureka Client
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.cloud:spring-cloud-config-client'
 
     // AWS Storage Service
     compile 'com.amazonaws:aws-java-sdk-s3:1.11.415'
