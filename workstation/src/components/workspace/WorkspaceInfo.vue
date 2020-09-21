@@ -84,7 +84,7 @@
         <el-col :span="4">{{ workspaceInfo.plansCount.view }}</el-col>
       </el-row>
     </div>
-    <el-button @click="addMember">
+    <el-button @click="addMember" v-if="activeWorkspace.role !== 'MEMBER'">
       {{ $t('workspace.info.addMember') }}
     </el-button>
   </div>
