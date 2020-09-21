@@ -20,7 +20,8 @@ var ServerModule = (function() {
 
     VIRNECT_ENV = process.env.VIRNECT_ENV || 'production'
     SSL_ENV = config.getAsString('SSL_ENV') || 'public'
-    PORT = config.getPort() || 9989
+    // PORT = config.getPort() || 9989
+    PORT = 9989
 
     return new Promise(function(resolve, reject) {
       process.on('uncaughtException', onProcessError)
