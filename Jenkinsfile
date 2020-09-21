@@ -1,44 +1,28 @@
 pipeline {
   agent any
-
-  environment {
-    GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
-    REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
-  }
-
+        environment {
+        GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+      }
   stages {
     stage('Pre-Build') {
-      parallel {
-        stage('Develop Branch') {
-          when {
-            branch 'develop'
-          }
-          steps {
-            catchError() {
-              sh 'npm cache verify'
-              sh 'npm install'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-
-        stage('Staging Branch') {
-          when {
-            branch 'staging'
-          }
-          steps {
-            catchError() {
-              sh 'npm cache verify'
-              sh 'npm install'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
+      steps {
+        echo 'Pre-Build Stage'
+        catchError() {
+          sh 'npm cache verify'
+          sh 'npm install'
         }
       }
     }
 
     stage('Build') {
       parallel {
+        stage('Build') {
+          steps {
+            echo 'Build Stage'
+          }
+        }
+
         stage('Develop Branch') {
           when {
             branch 'develop'
@@ -57,7 +41,7 @@ pipeline {
             branch 'staging'
           }
           environment {
-            NODE_ENV='production'
+            NODE_ENV='staging'
           }
           steps {
             sh 'git checkout ${GIT_TAG}'
@@ -65,6 +49,21 @@ pipeline {
             sh 'docker build -t rm-dashboard:${GIT_TAG} .'
           }
         }
+
+        stage('Master Branch') {
+          when {
+            branch 'master'
+          }
+          environment {
+            NODE_ENV='production'
+          }
+          steps {
+            sh 'git checkout ${GIT_TAG}'
+            sh 'npm run build' 
+            sh 'docker build -t rm-dashboard:${GIT_TAG} .'
+          }
+        }
+
       }
     }
 
@@ -74,15 +73,31 @@ pipeline {
       }
     }
 
+    stage('Tunneling') {
+      steps {
+        echo 'SSH Check'
+        catchError() {
+          sh 'port=`netstat -lnp | grep 127.0.0.1:2122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Tunneling OK";else echo "SSH QA Tunneling Not OK";ssh -M -S Platform-QA -fnNT -L 2122:10.0.10.143:22 jenkins@13.125.24.98;fi'
+          sh 'port=`netstat -lnp | grep 127.0.0.1:3122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Tunneling OK";else echo "SSH Prod Tunneling Not OK";ssh -M -S Platform-Prod -fnNT -L 3122:10.0.20.170:22 jenkins@13.125.24.98;fi'
+        }
+      }
+    }
+
     stage('Deploy') {
       parallel {
+        stage('Deploy') {
+          steps {
+            echo 'Deploy Stage'
+          }
+        }
+
         stage('Develop Branch') {
           when {
             branch 'develop'
           }
           steps {
             sh 'count=`docker ps | grep rm-dashboard | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard && docker rm rm-dashboard; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 9989:9989 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=rm-dashboard rm-dashboard'
+            sh 'docker run -p 9989:9989 --restart=always -e "NODE_ENV=develop" -d --name=rm-dashboard rm-dashboard'
             sh 'docker image prune -f'
           }
         }
@@ -97,7 +112,6 @@ pipeline {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                   docker.image("rm-dashboard:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("rm-dashboard:${GIT_TAG}").push("latest")
                 }
               }
 
@@ -119,7 +133,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep rm-dashboard| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard && docker rm rm-dashboard; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: 'docker run -p 9989:9989 --restart=always -e "CONFIG_SERVER=https://stgconfig.virnect.com" -e "VIRNECT_ENV=staging" -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}'
+                          execCommand: "docker run -p 9989:9989 --restart=always -e 'NODE_ENV=staging' -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'
@@ -129,7 +143,9 @@ pipeline {
                   ]
                 )
               }
+
             }
+
           }
         }
 
@@ -140,6 +156,13 @@ pipeline {
 
           steps {
             catchError() {
+              script {
+                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                  docker.image("rm-dashboard:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("rm-dashboard:${GIT_TAG}").push("latest")
+                }
+              }
+
               script {
                 sshPublisher(
                   continueOnError: false, failOnError: true,
@@ -158,7 +181,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep rm-dashboard| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard && docker rm rm-dashboard; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: 'docker run -p 9989:9989 --restart=always -e "CONFIG_SERVER=https://config.virnect.com" -e "VIRNECT_ENV=production" -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}'
+                          execCommand: "docker run -p 9989:9989 --restart=always -e 'NODE_ENV=production' -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'
@@ -168,20 +191,26 @@ pipeline {
                   ]
                 )
               }
+                              script {
+                                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                                 def payload = """
+                                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+                                """                             
 
-              script {
-                  def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                  def payload = """
-                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                """                             
+                                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+                               }
+              
 
-               sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-              }
             }
+
           }
+
         }
+
       }
     }
+
+
   }
 
   post {

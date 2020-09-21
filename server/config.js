@@ -1,44 +1,35 @@
 'use strict'
-const env = process.env.VIRNECT_ENV.trim()
-const configServer = process.env.CONFIG_SERVER.trim()
-
-const axios = require('axios')
-
-let envConfig = {}
-let urlConfig = {}
+const dotenv = require('dotenv')
+const fs = require('fs')
+const filePath = `.env.${process.env.NODE_ENV.trim()}`
+const envConfig = dotenv.parse(fs.readFileSync(filePath))
+const urlsConfig = JSON.parse(fs.readFileSync('./server/urls.json'))
 
 module.exports = {
-  async init() {
-    //차후에 remote-web 제거하고 dashboard용 셋팅 필요함.
-    const res = await axios.get(`${configServer}/remote-web/${env}`)
-    const property = res.data.propertySources[0].source
-    for (let key in property) {
-      if (key.includes('env.')) {
-        envConfig[key.replace('env.', '')] = property[key]
-      }
-      if (key.includes('url.')) {
-        urlConfig[key.replace('url.', '')] = property[key]
-      }
-    }
-  },
   getAsNumber(key) {
     return Number(envConfig[key])
   },
   getAsString(key) {
     return String(envConfig[key])
   },
+  getAll() {
+    return envConfig
+  },
+  getEnv() {
+    return process.env.NODE_ENV.trim()
+  },
   getPort() {
-    return process.env.PORT || String(envConfig['PORT'])
+    return String(envConfig['PORT'])
+  },
+  getSSLEnv() {
+    return String(envConfig['SSL_ENV'])
   },
   getUrls() {
-    // const urls = {}
-    // const env = this.getTargetEnv()
-    // Object.keys(urlsConfig).forEach(key => {
-    //   urls[key] = urlsConfig[key][env]
-    // })
-    return {
-      runtime: env,
-      ...urlConfig,
-    }
+    const urls = {}
+    const env = this.getEnv()
+    Object.keys(urlsConfig).forEach(key => {
+      urls[key] = urlsConfig[key][env]
+    })
+    return urls
   },
 }
