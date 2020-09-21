@@ -155,7 +155,7 @@ $the-sidebar-border: solid 1px #0d1d39;
   top: 0;
   left: $the-sidebar-width;
   z-index: 2001;
-  width: 240px;
+  min-width: 240px;
   height: 100%;
   color: #fff;
   background: $the-sidebar-background;
