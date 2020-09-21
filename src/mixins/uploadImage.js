@@ -26,7 +26,7 @@ export default {
           this.toastError(this.$t('service.file_type'))
           return
         }
-        if (files[0].size > 2 * 1024 * 1024) {
+        if (files[0].size > 20 * 1024 * 1024) {
           this.toastError(this.$t('service.file_maxsize'))
           return
         }
