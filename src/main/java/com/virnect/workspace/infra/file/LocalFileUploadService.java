@@ -1,17 +1,19 @@
 package com.virnect.workspace.infra.file;
 
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.error.ErrorCode;
-import lombok.extern.slf4j.Slf4j;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.error.ErrorCode;
 
 /**
  * Project: PF-Admin
@@ -20,7 +22,7 @@ import java.io.IOException;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local","develop"})
+@Profile({"local","develop","default"})
 @Slf4j
 @Service
 public class LocalFileUploadService implements FileUploadService {

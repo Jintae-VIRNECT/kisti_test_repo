@@ -7,5 +7,5 @@ spring:
   cloud:
     config:
       uri: ${CONFIG_SERVER}
-      profile: ${spring.profiles.active}
+      profile: ${VIRNECT_ENV}
       name: ${spring.application.name}
