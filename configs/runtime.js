@@ -1,27 +1,57 @@
 const fs = require('fs')
 const dotenv = require('dotenv')
+const filePath = `.env.${process.env.VIRNECT_ENV.trim()}`
+const parseConfig = dotenv.parse(fs.readFileSync(filePath))
 const urlsConfig = JSON.parse(fs.readFileSync('./configs/urls.json'))
-const filePath = `.env.${process.env.NODE_ENV.trim()}`
-const envConfig = dotenv.parse(fs.readFileSync(filePath))
+
+const envs = process.env.VIRNECT_ENV.trim()
+const configServer =
+	process.env.CONFIG_SERVER == undefined
+		? parseConfig.CONFIG_SERVER
+		: process.env.CONFIG_SERVER.trim()
+
+const axios = require('axios')
+
+let envConfig = {}
+let urlConfig = {}
 
 module.exports = {
-	getTargetEnv() {
-		return String(envConfig['TARGET_ENV'])
+	async init() {
+		const { data } = await axios.get(`${configServer}/login-web/${envs}`)
+		const property = data.propertySources[0].source
+		// console.log(property)
+		for (let key in property) {
+			if (key.includes('url.')) {
+				key.slice(4)
+				urlConfig[key.slice(4)] = property[key]
+			}
+			if (key.includes('env.')) {
+				key.slice(4)
+				envConfig[key.slice(4)] = property[key]
+			}
+		}
+		return true
+		// console.log(urlConfig)
+		// console.log(envConfig)
 	},
 	getUrls() {
+		const urls = urlConfig
+		return urls
+	},
+	getEnv() {
+		const env = envConfig
+		return env
+	},
+	getTargetEnv() {
+		return String(parseConfig['VIRNECT_ENV'])
+	},
+	getDevUrls() {
 		const urls = {}
 		const env = this.getTargetEnv()
 		Object.keys(urlsConfig).forEach(key => {
 			urls[key] = urlsConfig[key][env]
 		})
 		urls.env = env
-		return urls
-	},
-	getEnvUrls(env) {
-		const urls = {}
-		Object.keys(urlsConfig).forEach(key => {
-			urls[key] = urlsConfig[key][env]
-		})
 		return urls
 	},
 }
