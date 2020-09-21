@@ -231,9 +231,10 @@ export default {
           if (this.account.roleType === ROLE.LEADER) {
             const params = {
               imgId: this.file.id,
-              imgName: this.file.oriName
-                ? this.file.oriName
-                : this.file.fileName,
+              // imgName: this.file.oriName
+              //   ? this.file.oriName
+              //   : this.file.fileName,
+              imgName: this.file.fileName,
               image: this.file.img,
             }
             this.sendImage(params)
