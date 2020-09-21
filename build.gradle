@@ -87,13 +87,15 @@ dependencies {
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // Configuration
+    implementation 'org.springframework.cloud:spring-cloud-config-client'
 }
 
 test {
     useJUnitPlatform()
     systemProperty("spring.active.profiles", "test")
 }
-
 
 
 // querydsl 적용
@@ -105,7 +107,7 @@ querydsl {
     querydslSourcesDir = querydslSrcDir
 }
 
-compileQuerydsl{
+compileQuerydsl {
     options.annotationProcessorPath = configurations.querydsl
 }
 
