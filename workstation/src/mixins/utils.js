@@ -32,7 +32,7 @@ export default {
      * @param {String} name
      */
     download(url, name) {
-      if (this.$config.TARGET_ENV !== 'production') {
+      if (this.$config.VIRNECT_ENV !== 'production') {
         alert('개발환경에서는 파일명 설정과 자동 다운로드가 동작하지 않습니다')
       }
       const a = document.createElement('a')

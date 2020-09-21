@@ -16,7 +16,7 @@ module.exports = {
 
         const runtimeConfig = renderer.nuxt.options.publicRuntimeConfig
         const { data } = await axios.get(
-          `${process.env.CONFIG_SERVER_URL}/workstation-web/${process.env.NODE_ENV}`,
+          `${process.env.CONFIG_SERVER}/workstation-web/${process.env.VIRNECT_ENV}`,
         )
         const serverConfig = data.propertySources[0].source
         console.log(serverConfig)
@@ -74,7 +74,7 @@ module.exports = {
   },
   publicRuntimeConfig: {
     VERSION: process.env.npm_package_version || '',
-    TARGET_ENV: process.env.TARGET_ENV,
+    VIRNECT_ENV: process.env.VIRNECT_ENV,
     API_GATEWAY_URL: process.env.API_GATEWAY_URL,
     API_TIMEOUT: parseInt(process.env.API_TIMEOUT, 10),
   },
@@ -92,7 +92,7 @@ module.exports = {
   server: {
     port: process.env.NUXT_PORT, // default: 3000
     host: process.env.NUXT_HOST, // default: localhost
-    https: /(local|develop)/.test(process.env.NODE_ENV) && {
+    https: /(local|develop)/.test(process.env.VIRNECT_ENV) && {
       key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
       cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
     },

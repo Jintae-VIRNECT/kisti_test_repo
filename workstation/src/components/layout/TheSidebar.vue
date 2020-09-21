@@ -70,7 +70,7 @@ export default {
     }),
     hideWorkspaceSetting() {
       return (
-        this.$config.TARGET_ENV === 'onpremise' &&
+        this.$config.VIRNECT_ENV === 'onpremise' &&
         this.activeWorkspace.role !== 'MASTER'
       )
     },

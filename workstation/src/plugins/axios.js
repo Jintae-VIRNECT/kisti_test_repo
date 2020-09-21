@@ -51,7 +51,7 @@ export async function api(name, option = {}) {
     if (code === 200) {
       return data
     } else if (code === 8003 || code === 8005) {
-      if (process.client) location.href = urls.console[$nuxt.$config.TARGET_ENV]
+      if (process.client) location.href = urls.console[$nuxt.$config.VIRNECT_ENV]
       throw new Error(`${code}: ${message}`)
     } else {
       const error = new Error(`${code}: ${message}`)
@@ -80,7 +80,7 @@ export default function({ $config, $axios }, inject) {
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,
     }),
-    withCredentials: /(staging|production)/.test($config.TARGET_ENV),
+    withCredentials: /(staging|production)/.test($config.VIRNECT_ENV),
   })
 
   /**

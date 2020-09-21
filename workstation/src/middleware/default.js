@@ -6,7 +6,7 @@ export default async function({ req, store, redirect, error, $config }) {
     redirect('/')
 
   if (process.server) {
-    const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
+    const LOGIN_SITE_URL = urls.console[$config.VIRNECT_ENV]
     // not support browser
     const isIE =
       req.headers['user-agent'].indexOf('MSIE ') !== -1 ||

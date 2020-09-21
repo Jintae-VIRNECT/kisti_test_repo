@@ -39,7 +39,7 @@ module.exports = {
     cookieDomain: '.virnect.com',
   },
   vueI18n: {
-    fallbackLocale: process.env.NODE_ENV === 'production' ? 'ko' : null,
+    fallbackLocale: process.env.VIRNECT_ENV === 'production' ? 'ko' : null,
     messages: {
       ko: { ...elementKo, ...loader('/ko') },
       en: { ...elementEn, ...loader('/en') },

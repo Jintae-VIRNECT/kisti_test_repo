@@ -227,7 +227,7 @@ export default {
             confirmButtonText: this.$t('common.paymentCenter'),
             customClass: 'no-title',
           }).then(() => {
-            window.open(`${urls.pay[this.$config.TARGET_ENV]}`)
+            window.open(`${urls.pay[this.$config.VIRNECT_ENV]}`)
           })
         }
         // 일반에러

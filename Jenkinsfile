@@ -80,7 +80,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps | grep pf-webworkstation | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8878:8878 --restart=always -e "NODE_ENV=develop" -d --name=pf-webworkstation pf-webworkstation'
+            sh 'docker run -p 8878:8878 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-webworkstation pf-webworkstation'
             sh 'docker image prune -a -f'
           }
         }
@@ -117,7 +117,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep pf-webworkstation| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8878:8878 --restart=always -e 'NODE_ENV=staging' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8878:8878 --restart=always -e "CONFIG_SERVER=https://stgconfig.virnect.com" -e 'VIRNECT_ENV=staging' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -156,7 +156,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep pf-webworkstation| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8878:8878 --restart=always -e 'NODE_ENV=production' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8878:8878 --restart=always -e "CONFIG_SERVER=https://config.virnect.com" -e 'VIRNECT_ENV=production' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
