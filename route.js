@@ -12,10 +12,7 @@ router.get('/urls', (req, res) => {
 	res.header('Content-Type', 'application/json')
 	;(async () => {
 		const response = await config.init()
-		if (response) {
-			res.send(JSON.stringify(config.getUrls()))
-			res.send(JSON.stringify(config.getEnv()))
-		}
+		res.send(JSON.stringify(response.urlConfig))
 	})()
 })
 
