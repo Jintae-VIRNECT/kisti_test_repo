@@ -16,7 +16,11 @@ public enum  ErrorCode {
     ERR_SUCCESS(200, "anyway ok"),
 
     // error code for server process
-    ERR_SERVICE_PROCESS(3001, "Service Server Process error"),
+    ERR_SERVICE_PROCESS(3001, "Remote Service Server Process error, Please try again or re-start the server."),
+    ERR_LICENSE_SERVICE_PROCESS(3002, "License Server Process error, Please try again or contact."),
+    ERR_WORKSPACE_PROCESS(3003, "Workspace Service Server Process error, Please try again or contact."),
+    ERR_USER_PROCESS(3004, "User Service Server Process error, Please try again or contact."),
+    ERR_MESSAGE_PROCESS(3005, "Message Service Server Process error, Please try again or contact."),
 
     // error code for remote session
     ERR_ROOM_INFO(4000, "Room Info Error"),

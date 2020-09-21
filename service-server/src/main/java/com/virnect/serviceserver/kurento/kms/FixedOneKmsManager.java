@@ -17,9 +17,7 @@
 
 package com.virnect.serviceserver.kurento.kms;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 
@@ -28,8 +26,12 @@ import org.kurento.client.KurentoClient;
 import org.kurento.commons.exception.KurentoException;
 
 import com.virnect.serviceserver.core.IdentifierPrefixes;
+import org.springframework.util.StopWatch;
 
 public class FixedOneKmsManager extends KmsManager {
+	//private StopWatch stopWatch = new StopWatch("kms");
+	private Timer timer;
+
 
 	@Override
 	public List<Kms> initializeKurentoClients(List<KmsProperties> kmsProperties, boolean disconnectUponFailure) throws Exception {
@@ -67,9 +69,26 @@ public class FixedOneKmsManager extends KmsManager {
 			this.initializeKurentoClients(kmsProps, true);
 		} catch (Exception e) {
 			// Some KMS wasn't reachable
-			log.error("Shutting down OpenVidu Server");
+			//log.error("Shutting down Remote Service Server");
 			System.exit(1);
+			//timer = new Timer();
+			//timer.schedule(new RemindTask(), 0, 1000);
+
 		}
 	}
 
+	class RemindTask extends TimerTask {
+		int count = 5;
+		@Override
+		public void run() {
+			if (count > 0) {
+				log.info("Shutting down Remote Service Server.... in {}", count);
+				count --;
+			} else {
+				log.error("Shutting down Remote Service Server");
+				//cancel(); //not necessary, because calls System.exit
+				System.exit(1);
+			}
+		}
+	}
 }
