@@ -10,11 +10,10 @@
         </p>
         <r-select
           class="setting__r-selecter"
-          @changeValue="setRecLength"
           :options="localRecTimeOpt"
           value="value"
           text="text"
-          :defaultValue="localRecord.time"
+          :selectedValue.sync="recordTime"
         >
         </r-select>
       </figure>
@@ -39,11 +38,10 @@
         </div>
         <r-select
           class="setting__r-selecter"
-          @changeValue="setRecInterval"
           :options="localRecIntervalOpt"
           value="value"
           text="text"
-          :defaultValue="localRecord.interval"
+          :selectedValue.sync="recordInterval"
         >
         </r-select>
       </figure>
@@ -57,7 +55,10 @@ import { mapGetters, mapActions } from 'vuex'
 import { localRecTime, localRecInterval } from 'utils/recordOptions'
 export default {
   data() {
-    return {}
+    return {
+      recordTime: '',
+      recordInterval: '',
+    }
   },
   components: {
     RSelect,
@@ -84,13 +85,22 @@ export default {
       return options
     },
   },
+  watch: {
+    recordTime(time) {
+      this.setRecLength(time)
+    },
+    recordInterval(interval) {
+      this.setRecInterval(interval)
+    },
+  },
   methods: {
     ...mapActions(['setRecord']),
-    setRecLength(newRecLength) {
+    setRecLength(time) {
+      console.log(time)
       this.setRecord({
-        time: newRecLength.value,
+        time: time,
       })
-      this.$localStorage.setRecord('time', newRecLength.value)
+      this.$localStorage.setRecord('time', time)
     },
     setRecInterval(newInterval) {
       this.setRecord({
@@ -98,6 +108,14 @@ export default {
       })
       this.$localStorage.setRecord('interval', newInterval.value)
     },
+  },
+  mounted() {
+    if (this.localRecord.time) {
+      this.recordTime = this.localRecord.time
+    }
+    if (this.localRecord.interval) {
+      this.recordInterval = this.localRecord.interval
+    }
   },
 }
 </script>
