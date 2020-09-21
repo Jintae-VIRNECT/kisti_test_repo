@@ -275,10 +275,11 @@ export default {
         const user = room.memberList.find(
           member => member.memberType === ROLE.LEADER,
         )
-        this.join({
+        const res = await this.join({
           ...room,
           leaderId: user ? user.uuid : null,
         })
+        if (res !== true) return
         const contents = {
           nickName: this.account.nickname,
         }
