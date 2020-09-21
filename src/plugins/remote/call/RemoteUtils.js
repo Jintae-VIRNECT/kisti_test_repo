@@ -237,7 +237,7 @@ export const addSessionEventListener = session => {
       name: participants[idx].nickname,
       profile: participants[idx].path,
       connectionId: event.from.connectionId,
-      text: data,
+      text: data.replace(/\</g, '&lt;'),
     })
   })
 
