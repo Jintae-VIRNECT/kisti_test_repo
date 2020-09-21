@@ -45,7 +45,7 @@ server:
 
 ## Project Configuration
 file:
-  upload-path: "upload/"
+  upload-path: "virnect-platform/workspace/profile/"
   url: "http://192.168.6.3:${server.port}/workspaces/"
   allow-extension: "gif,jpg,jpeg,png"
 

@@ -1,8 +1,6 @@
 package com.virnect.workspace.application;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,8 +14,6 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -747,7 +743,7 @@ public class WorkspaceService {
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_NOT_FOUND_INVITE_WORKSPACE_INFO));
 		Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        
+
 		//메일 발송 수신자 : 마스터 유저, 매니저 유저
 		List<String> emailReceiverList = new ArrayList<>();
 		UserInfoRestResponse masterUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
@@ -1022,15 +1018,8 @@ public class WorkspaceService {
 		return redirectView;
 	}
 
-	public Resource downloadFile(String fileName) throws IOException {
-		Path file = Paths.get(fileUploadPath).resolve(fileName);
-		Resource resource = new UrlResource(file.toUri());
-		if (resource.getFile().exists()) {
-			return resource;
-		} else {
-			throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
-		}
-
+	public byte[] downloadFile(String fileName) throws IOException {
+		return this.fileUploadService.download(fileName);
 	}
 
 	/**

@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,10 +21,9 @@ import com.virnect.workspace.global.error.ErrorCode;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile("local")
 @Slf4j
 @Service
-public class LocalFileUploadService implements FileUploadService {
+public class LocalFileUploadService  {
 
     @Value("${file.upload-path}")
     private String fileUploadPath;
@@ -37,7 +35,7 @@ public class LocalFileUploadService implements FileUploadService {
     private String allowExtension;
 
 
-    @Override
+
     public String upload(MultipartFile multipartFile) throws IOException {
         if (!allowExtension.contains(FilenameUtils.getExtension(multipartFile.getOriginalFilename()).toLowerCase())) {
             throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
@@ -57,7 +55,6 @@ public class LocalFileUploadService implements FileUploadService {
         return filePath;
     }
 
-    @Override
     public void delete(String url) {
         File file = new File("./" + fileUploadPath + url);
         if (file.delete()) {
@@ -67,13 +64,12 @@ public class LocalFileUploadService implements FileUploadService {
         }
     }
 
-    @Override
     public String getFileExtension(String originFileName) {
         return null;
     }
 
-    @Override
     public boolean isAllowFileExtension(String fileExtension) {
         return false;
     }
+
 }

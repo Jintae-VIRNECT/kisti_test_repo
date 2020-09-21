@@ -1,8 +1,8 @@
 package com.virnect.workspace.infra.file;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
+
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Project: service-server
@@ -38,4 +38,7 @@ public interface FileUploadService {
      * @return - 허용 여부
      */
     boolean isAllowFileExtension(String fileExtension);
+
+    byte[] download(String originFileName) throws IOException;
+
 }
