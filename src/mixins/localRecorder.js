@@ -174,6 +174,7 @@ export default {
       config.maxTime = this.localRecord.time
       config.interval = this.localRecord.interval
       config.roomTitle = this.roomInfo.title
+      config.sessionId = this.roomInfo.sessionId
 
       //get nickname
       if (this.account) {
