@@ -1,23 +1,26 @@
 package com.virnect.workspace.infra.file;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.error.ErrorCode;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.error.ErrorCode;
 
 /**
  * Project: PF-Admin
@@ -26,7 +29,7 @@ import java.util.UUID;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"staging","production"})
+@Profile({"develop","staging","production"})
 @Slf4j
 @Service
 public class S3FileUploadService implements FileUploadService {

@@ -105,3 +105,20 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+## AWS Storage
+cloud:
+  aws:
+    credentials:
+      access-key: virnect
+      secret-key: virnect0!
+    region:
+      auto: true
+    s3:
+      bucket:
+        name: "virnect-platform"
+        resource: "workspace/profile"
+
+## Minio
+minio:
+  url : "http://192.168.6.3:2838"

@@ -22,7 +22,7 @@ import com.virnect.workspace.global.error.ErrorCode;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local","develop"})
+@Profile("local")
 @Slf4j
 @Service
 public class LocalFileUploadService implements FileUploadService {
