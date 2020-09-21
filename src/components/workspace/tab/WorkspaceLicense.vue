@@ -18,7 +18,7 @@
 export default {
   methods: {
     purchase() {
-      location.href = window.urls.pay
+      location.href = window.urls.payment
     },
   },
 }

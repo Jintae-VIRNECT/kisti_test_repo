@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     buy() {
-      window.location = window.urls.pay
+      window.location = window.urls.payment
     },
   },
 }

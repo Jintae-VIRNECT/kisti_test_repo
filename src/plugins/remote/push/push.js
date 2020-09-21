@@ -25,7 +25,7 @@ const push = {
       const workspaceId = workspace.uuid
 
       const config = {
-        brokerURL: `${window.urls.wsapi}${wsUri['MESSAGE']}`,
+        brokerURL: `${window.urls.ws}${wsUri['MESSAGE']}`,
         connectHeaders: {
           login: 'guest',
           passcode: 'guest',
