@@ -25,7 +25,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-@Profile({"develop", "local"})
+@Profile({"local", "develop"})
 @Slf4j
 @Component
 public class LocalFileManagementService implements IFileManagementService {
@@ -42,7 +42,6 @@ public class LocalFileManagementService implements IFileManagementService {
     private String serverUrl;
     @Value("${upload.dir}")
     private String rootDirPath;
-
 
     private List<String> fileAllowExtensionList = new ArrayList<>();
 
