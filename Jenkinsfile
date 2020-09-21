@@ -86,7 +86,7 @@ pipeline {
                     steps {
                         catchError() {
                             sh 'count=`docker ps -a | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
-                            sh 'docker run -p 8632:8632 -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --restart=always --name=pf-license pf-license'
+                            sh 'docker run -p 8632:8632 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --restart=always --name=pf-license pf-license'
                             sh 'docker image prune -a -f'
                         }
                     }
