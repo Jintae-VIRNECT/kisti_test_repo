@@ -4,22 +4,26 @@ const path = require('path')
 const fs = require('fs')
 const axios = require('axios')
 const dotenv = require('dotenv')
-const env = dotenv.parse(fs.readFileSync('.env'))
+
+const env = dotenv.parse(fs.readFileSync('.env.local'))
+for (const key in env) {
+  process.env[key] = env[key]
+}
 
 module.exports = async () => {
   /**
    * from config server
    */
-  if (process.env.NODE_ENV !== 'local') {
+  if (process.env.VIRNECT_ENV !== 'local') {
     const { data } = await axios.get(
       `${process.env.CONFIG_SERVER}/workstation-web/${process.env.VIRNECT_ENV}`,
     )
     const serverConfig = data.propertySources[0].source
-    Object.entries(serverConfig).forEach(([key, val]) => {
-      env[key] = val
-    })
+    console.log(serverConfig)
+    for (const key in serverConfig) {
+      process.env[key] = serverConfig[key]
+    }
   }
-  console.log(env)
   return {
     /*
      ** Headers of the page
@@ -67,15 +71,16 @@ module.exports = async () => {
     /**
      * env
      */
-    debug: env.NUXT_DEBUG ? true : false,
+    debug: process.env.NUXT_DEBUG,
+    devtools: process.env.NUXT_DEBUG,
     env: {
-      NODE_ENV: env.NODE_ENV,
+      NODE_ENV: process.env.NODE_ENV,
     },
     publicRuntimeConfig: {
       VERSION: process.env.npm_package_version || '',
-      VIRNECT_ENV: process.env.VIRNECT_ENV,
-      API_GATEWAY_URL: env.API_GATEWAY_URL,
-      API_TIMEOUT: parseInt(env.API_TIMEOUT, 10),
+      VIRNECT_ENV: process.env.NODE_ENV,
+      API_GATEWAY_URL: process.env.API_GATEWAY_URL,
+      API_TIMEOUT: process.env.API_TIMEOUT,
     },
     /**
      * build
@@ -89,8 +94,8 @@ module.exports = async () => {
       },
     },
     server: {
-      port: env.NUXT_PORT, // default: 3000
-      host: env.NUXT_HOST, // default: localhost
+      port: process.env.NUXT_PORT,
+      host: process.env.NUXT_HOST,
       https: /(local|develop)/.test(process.env.VIRNECT_ENV) && {
         key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
         cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),

@@ -5,9 +5,10 @@
   "author": "SangBaek-VIRNECT <lsb@virnect.com>",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=local VIRNECT_ENV=local nuxt",
-    "build": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV nuxt build --modern=server",
-    "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV nuxt start --modern=server",
+    "dev": "cross-env VIRNECT_ENV=local nuxt",
+    "build:develop": "cross-env NODE_ENV=develop VIRNECT_ENV=local nuxt build --modern=server",
+    "build:staging": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
+    "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
     "generate": "nuxt generate"
   },
   "dependencies": {
