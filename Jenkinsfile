@@ -81,7 +81,7 @@ pipeline {
                     steps {
                         catchError() {
                             sh 'count=`docker ps -a | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
-                            sh 'docker run -p 8073:8073 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-gateway pf-gateway'
+                            sh 'docker run -p 8073:8073 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-gateway pf-gateway'
                             sh 'docker image prune -a -f'
                         }
                     }
@@ -118,7 +118,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}"
+                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
@@ -156,7 +156,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}"
+                                                    execCommand: "docker run -p  8073:8073 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
