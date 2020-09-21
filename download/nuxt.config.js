@@ -16,7 +16,7 @@ module.exports = async () => {
    */
   if (process.env.VIRNECT_ENV !== 'local') {
     const { data } = await axios.get(
-      `${process.env.CONFIG_SERVER}/account-web/${process.env.VIRNECT_ENV}`,
+      `${process.env.CONFIG_SERVER}/download-web/${process.env.VIRNECT_ENV}`,
     )
     const serverConfig = data.propertySources[0].source
     console.log(serverConfig)
