@@ -46,7 +46,7 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh 'yarn workspace download build'
+                        sh 'yarn workspace download build:develop'
                         sh 'docker build -t pf-webdownload .'
                     }
                 }
@@ -57,7 +57,7 @@ pipeline {
                     }
                     steps {
                         sh 'git checkout ${GIT_TAG}'
-                        sh 'yarn workspace download build'
+                        sh 'yarn workspace download build:staging'
                         sh 'docker build -t pf-webdownload:${GIT_TAG} .'
                     }
                 }
@@ -78,7 +78,7 @@ pipeline {
                     }
                     steps {
                         sh 'count=`docker ps -a | grep pf-webdownload | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8833:8833 --restart=always -e "NODE_ENV=develop" -d --name=pf-webdownload pf-webdownload'
+                        sh 'docker run -p 8833:8833 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-webdownload pf-webdownload'
                         sh 'docker image prune -a -f'
                     }
                 }
@@ -115,7 +115,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-webdownload| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=staging' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_TAG}"
+                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'
@@ -154,7 +154,7 @@ pipeline {
                                                     execCommand: 'count=`docker ps -a | grep pf-webdownload| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webdownload && docker rm pf-webdownload; else echo "Not Running STOP&DELETE"; fi;'
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'NODE_ENV=production' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_TAG}"
+                                                    execCommand: "docker run -p 8833:8833 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=pf-webdownload $aws_ecr_address/pf-webdownload:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
                                                     execCommand: 'docker image prune -a -f'

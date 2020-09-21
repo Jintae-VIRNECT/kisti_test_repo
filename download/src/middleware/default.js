@@ -3,7 +3,7 @@ import { api } from '@/plugins/axios'
 
 export default async function({ req, redirect, error, $config }) {
   if (process.server) {
-    const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
+    const LOGIN_SITE_URL = urls.console[$config.VIRNECT_ENV]
     // 사용자가 로그인을 하지 않은 경우.
     if (!req.headers.cookie || !req.headers.cookie.match('accessToken=')) {
       return redirect(

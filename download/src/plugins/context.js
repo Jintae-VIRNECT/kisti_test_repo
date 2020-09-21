@@ -9,7 +9,7 @@ export default function(con, inject) {
   context = con
   app = con.app
   store = con.store
-  url = new Url(con.$config.TARGET_ENV)
+  url = new Url(con.$config.VIRNECT_ENV)
 
   inject('url', url)
 }
