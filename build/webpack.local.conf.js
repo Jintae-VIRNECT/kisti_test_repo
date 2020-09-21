@@ -91,7 +91,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       app.get('/urls', bodyParser.json(), function(req, res) {
         const a = configService.getUrls()
         a.console = '/account'
-        console.log(a)
+        a.runtime = 'local'
         res.json(a)
       })
 

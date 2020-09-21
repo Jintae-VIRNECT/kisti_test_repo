@@ -35,6 +35,9 @@ module.exports = {
     // Object.keys(urlsConfig).forEach(key => {
     //   urls[key] = urlsConfig[key][env]
     // })
-    return urlConfig
+    return {
+      runtime: env,
+      ...urlConfig,
+    }
   },
 }

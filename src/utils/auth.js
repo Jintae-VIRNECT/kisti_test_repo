@@ -4,7 +4,7 @@ import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
 import { setBaseURL } from 'api/gateway/gateway'
 import axios from 'api/axios'
-import { debug } from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 
 /**
  * 상태
@@ -76,6 +76,9 @@ async function getMyInfo() {
 
 async function getUrls() {
   const res = await axios.get(`${location.origin}/urls`)
+
+  logger('RUN ENV', res.data.runtime)
+  delete res.data.runtime
 
   debug('URLS::', res.data)
 
