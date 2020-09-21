@@ -20,8 +20,7 @@
     "dotenv": "^8.2.0",
     "element-ui": "^2.13.0",
     "js-file-download": "^0.4.12",
-    "nuxt": "^2.0.0",
-    "nuxt-composition-api": "^0.10.2",
+    "nuxt": "^2.14.5",
     "nuxt-i18n": "^6.6.1"
   },
   "devDependencies": {
@@ -36,8 +35,8 @@
     "eslint-loader": "^3.0.3",
     "eslint-plugin-prettier": "^3.1.2",
     "eslint-plugin-vue": "^6.2.1",
-    "prettier": "^1.19.1",
     "node-sass": "^4.5.3",
+    "prettier": "^1.19.1",
     "sass": "^1.23.7",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.2",

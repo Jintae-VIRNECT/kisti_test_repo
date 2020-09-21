@@ -7,9 +7,9 @@
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
-    <el-tabs v-model="state.activeTab">
+    <el-tabs v-model="activeTab">
       <el-tab-pane
-        v-for="(product, name) in state.products"
+        v-for="(product, name) in products"
         :label="$t(`home.${name}`)"
         :name="name"
         :key="name"
@@ -39,29 +39,32 @@
 </template>
 
 <script>
-import fileDownload from 'js-file-download'
 import { filters } from '@/plugins/dayjs'
-import {
-  defineComponent,
-  reactive,
-  watchEffect,
-  onMounted,
-  onUnmounted,
-} from 'nuxt-composition-api'
-
-export default defineComponent({
-  filters,
-  setup(props, context) {
-    const state = useTabs(context.root)
-    useStickyNav()
-
-    /**
-     * 다운로드
-     */
-    function link(url) {
-      window.open(url)
+export default {
+  data() {
+    return {
+      activeTab: null,
+      snbTop: 0,
+      didScroll: 0,
+      products: {
+        remote: [],
+        make: [],
+        view: [],
+      },
     }
-    async function download(type, app) {
+  },
+  watch: {
+    async activeTab(tab) {
+      if (this.products[tab].length) return false
+      const data = await this.$api('APP_LIST', {
+        route: { productName: tab },
+      })
+      this.products[tab] = data.appInfoList
+    },
+  },
+  filters,
+  methods: {
+    async download(type, app) {
       let uri, downloadUrl
       if (type === 'app') {
         uri = 'DOWNLOAD_APP'
@@ -71,7 +74,6 @@ export default defineComponent({
         uri = 'DOWNLOAD_GUIDE'
         downloadUrl = app.guideUrl
       }
-
       try {
         await this.$api(uri, {
           route: { uuid: app.uuid },
@@ -84,73 +86,33 @@ export default defineComponent({
           showClose: true,
         })
       }
-    }
-
-    return { state, download, link }
-  },
-})
-
-/**
- * 탭 변경
- */
-function useTabs({ $route, $api }) {
-  const state = reactive({
-    activeTab: null,
-    products: {
-      remote: [],
-      make: [],
-      view: [],
     },
-  })
-
-  watchEffect(async () => {
-    const { products, activeTab } = state
-    if (activeTab) {
-      const data = await $api('APP_LIST', {
-        route: { productName: activeTab },
-      })
-      products[activeTab] = data.appInfoList
-    }
-  })
-
-  onMounted(() => {
-    state.activeTab =
+    link(url) {
+      window.open(url)
+    },
+    snbNav() {
+      const scrollY = window.pageYOffset
+      const tab = document.querySelector('.el-tabs')
+      this.snbTop = tab.offsetTop
+      if (scrollY > this.snbTop) {
+        tab.classList.add('sticky')
+      } else {
+        tab.classList.remove('sticky')
+      }
+    },
+  },
+  mounted() {
+    this.activeTab =
       {
         '/remote': 'remote',
         '/make': 'make',
         '/view': 'view',
-      }[$route.path] || 'remote'
-  })
-
-  return state
-}
-
-/**
- * stick nav
- */
-function useStickyNav() {
-  let snbTop = 0
-
-  function snbNav() {
-    const isDesktop = window.innerWidth > 1200
-    const scrollY = window.pageYOffset
-    const header = document.querySelector('#headerSection')
-    const tab = document.querySelector('.el-tabs')
-    snbTop = isDesktop ? tab.offsetTop : tab.offsetTop - header.offsetHeight
-    if (scrollY > snbTop) {
-      tab.classList.add('sticky')
-    } else {
-      tab.classList.remove('sticky')
-    }
-  }
-
-  // vue hooks
-  onMounted(() => {
-    window.addEventListener('scroll', snbNav)
-  })
-  onUnmounted(() => {
-    window.removeEventListener('scroll', snbNav)
-  })
+      }[this.$route.path] || 'remote'
+    window.addEventListener('scroll', this.snbNav)
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', this.snbNav)
+  },
 }
 </script>
 

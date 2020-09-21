@@ -55,12 +55,12 @@ module.exports = async () => {
     styleResources: {
       scss: [
         resolve(__dirname, '../WC-Modules/src/assets/css/mixin.scss'),
-        '@/assets/css/_vars.scss',
+        resolve(__dirname, 'src/assets/css/common.scss'),
       ],
     },
     css: [
       resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss'),
-      '@/assets/css/global.scss',
+      resolve(__dirname, 'src/assets/css/common.scss'),
     ],
     loading: { color: '#1468e2' },
     /**
