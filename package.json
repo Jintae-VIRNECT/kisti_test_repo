@@ -4,9 +4,9 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "start:develop": "set NODE_ENV=develop && node server.js",
-    "start:staging": "set NODE_ENV=staging && node server.js",
-    "start:production": "set NODE_ENV=production && node server.js",
+    "start:develop": "set NODE_ENV=develop && set VIRNECT_ENV=develop && node server.js",
+    "start:staging": "set NODE_ENV=staging && set VIRNECT_ENV=staging && node server.js",
+    "start:production": "set NODE_ENV=production && set VIRNECT_ENV=production && node server.js",
     "start": "node server.js",
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
