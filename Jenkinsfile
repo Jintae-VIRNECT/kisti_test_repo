@@ -76,7 +76,7 @@ pipeline {
           steps {
             catchError() {
               sh 'count=`docker ps -a | grep pf-minio | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-minio && docker rm pf-minio; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 2838:9000 -e "MINIO_ACCESS_KEY=virnect" -e "MINIO_SECRET_KEY=virnect0!" -v /home/virn/minio:/data -d --restart=always --name=pf-minio pf-minio server /data'
+              sh 'docker run -p 2838:9000 -e "MINIO_ACCESS_KEY=virnect" -e "MINIO_SECRET_KEY=virnect0!" -v /data/minio:/data -d --restart=always --name=pf-minio pf-minio server /data'
               sh 'docker image prune -a -f'
             }
           }
