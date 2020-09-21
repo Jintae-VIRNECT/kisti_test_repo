@@ -9,3 +9,5 @@ spring:
       uri: ${CONFIG_SERVER}
       profile: ${VIRNECT_ENV}
       name: ${spring.application.name}
+  profiles:
+    active: ${VIRNECT_ENV}
