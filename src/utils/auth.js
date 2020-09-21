@@ -40,6 +40,7 @@ const tokenInterval = async () => {
     now = parseInt(Date.now() / 1000)
 
   // check expire time
+  debug('TOKEN RENEWVAL TIME::', expireTime - now)
   if (expireTime - now < renewvalTime) {
     let params = {
       accessToken: accessToken,
