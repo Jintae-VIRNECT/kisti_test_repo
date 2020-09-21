@@ -48,7 +48,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'yarn workspace workstation build:deploy'
+            sh 'yarn workspace workstation build:develop'
             sh 'docker build -t pf-webworkstation .'
           }
         }
