@@ -7,7 +7,6 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.model.UploadData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,7 +23,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.*;
 
-//@Profile({"local", "develop", "staging", "production"})
+//@Profile({"local", "develop"})
 @Profile({"staging", "production"})
 @Slf4j
 @Component
@@ -33,6 +32,7 @@ public class S3FileManagementService implements IFileManagementService {
 
     @Value("${cloud.aws.s3.bucket-public.name}")
     private String publicBucketName;
+
     //@Value("${cloud.aws.s3.bucket-private.name}")
     //private String privateBucketName;
 
@@ -96,9 +96,7 @@ public class S3FileManagementService implements IFileManagementService {
         objectMetadata.setContentType(file.getContentType());
         objectMetadata.setContentLength(file.getSize());
 
-        String fileUrl = putObjectToAWSS3(publicBucketName, file, objectName, objectMetadata, CannedAccessControlList.BucketOwnerRead);
-
-        return fileUrl;
+        return putObjectToAWSS3(publicBucketName, file, objectName, objectMetadata, CannedAccessControlList.BucketOwnerRead);
     }
 
     @Override
@@ -211,25 +209,31 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     /**
-     * AWS S3 이미지 업로드 요청 전송
-     *
-     * @param uploadFile - 업로드 대상 파일
-     * @param fileName   - 파일 이름
-     * @return 이미지 URL
-     */
-
-    /**
      * Request upload object to aws s3
      * @param bucketName
+     *              The name of an existing bucket to which the new object will be uploaded.
      * @param file
-     *
+     *              multipart file
      * @param fileName
      *              fileName is the The key under which to store the new object.
      * @param objectMetadata
+     *              Represents the object metadata that is stored with Amazon S3. This includes custom
+     *              user-supplied metadata, as well as the standard HTTP headers that Amazon S3
+     *              sends and receives (Content-Length, ETag, Content-MD5, etc.).
+     *
      * @param cannedAcl
+     *              Canned access control lists are commonly used access control lists (ACL) that can be
+     *              used as a shortcut when applying an access control list to Amazon S3 buckets
+     *              and objects.
+     *
      * @return Returns an URL for the object stored in the specified bucket and key.
      */
-    private String putObjectToAWSS3(String bucketName, MultipartFile file, String fileName, ObjectMetadata objectMetadata, CannedAccessControlList cannedAcl) {
+    private String putObjectToAWSS3(
+            String bucketName,
+            MultipartFile file,
+            String fileName,
+            ObjectMetadata objectMetadata,
+            CannedAccessControlList cannedAcl) {
         try {
             amazonS3Client.putObject(new PutObjectRequest(
                     bucketName,
