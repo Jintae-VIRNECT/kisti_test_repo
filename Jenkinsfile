@@ -89,7 +89,7 @@ pipeline {
           steps {
             catchError() {
               sh 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 8086:8086 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --restart=always --name=pf-download pf-download'
+              sh 'docker run -p 8086:8086 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --restart=always --name=pf-download pf-download'
               sh 'docker image prune -a -f'
             }
           }
@@ -126,7 +126,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8086:8086 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -166,7 +166,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8086:8086 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
