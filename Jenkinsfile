@@ -1,6 +1,6 @@
 pipeline {
   agent any
-  
+
   environment {
     GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
     REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
@@ -79,7 +79,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps -a | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8084:8084 --restart=always -e "SPRING_PROFILES_ACTIVE=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-message pf-message'
+            sh 'docker run -p 8084:8084 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-message pf-message'
             sh 'docker image prune -a -f'
           }
         }
@@ -115,7 +115,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8084:8084 --restart=always -e 'SPRING_PROFILES_ACTIVE=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8084:8084 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -153,7 +153,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8084:8084 --restart=always -e 'SPRING_PROFILES_ACTIVE=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8084:8084 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-message $aws_ecr_address/pf-message:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -168,7 +168,7 @@ pipeline {
                  def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
                  def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                """                             
+                """
 
                 sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                }
