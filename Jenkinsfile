@@ -46,7 +46,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'yarn workspace account build'
+            sh 'yarn workspace account build:develop'
             sh 'docker build -t pf-webaccount .'
           }
         }
@@ -57,7 +57,7 @@ pipeline {
           }
           steps {
             sh 'git checkout ${GIT_TAG}'
-            sh 'yarn workspace account build'
+            sh 'yarn workspace account build:staging'
             sh 'docker build -t pf-webaccount:${GIT_TAG} .'
           }
         }        
@@ -78,7 +78,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps -a | grep pf-webaccount | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 8822:8822 --restart=always -e "NODE_ENV=develop" -d --name=pf-webaccount pf-webaccount'
+            sh 'docker run -p 8822:8822 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-webaccount pf-webaccount'
             sh 'docker image prune -a -f'
           }
         }
@@ -115,7 +115,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-webaccount| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8822:8822 --restart=always -e 'NODE_ENV=staging' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8822:8822 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -154,7 +154,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-webaccount| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8822:8822 --restart=always -e 'NODE_ENV=production' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8822:8822 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
