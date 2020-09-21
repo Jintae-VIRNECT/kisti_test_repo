@@ -11,11 +11,17 @@ var ServerModule = (function() {
 
   let instance
 
-  const NODE_ENV = process.env.NODE_ENV || 'production'
-  const SSL_ENV = config.getSSLEnv() || 'public'
-  const PORT = process.env.PORT || 9989
+  let VIRNECT_ENV
+  let SSL_ENV
+  let PORT
 
-  function start(app) {
+  async function start(app) {
+    await config.init()
+
+    VIRNECT_ENV = process.env.VIRNECT_ENV || 'production'
+    SSL_ENV = config.getAsString('SSL_ENV') || 'public'
+    PORT = config.getPort() || 9989
+
     return new Promise(function(resolve, reject) {
       process.on('uncaughtException', onProcessError)
 
@@ -70,10 +76,11 @@ var ServerModule = (function() {
   function onListening() {
     logger.log(`server is running...`, 'LISTENING')
     logger.log(`ip: ${getServerIp()}:${PORT}`, 'LISTENING')
-    logger.log(`NODE ENV: ${NODE_ENV}`, 'LISTENING')
-    logger.log(`SSL ENV: ${SSL_ENV}`, 'LISTENING')
+    logger.log(`VIRNECT_ENV: ${VIRNECT_ENV}`, 'LISTENING')
+    logger.log(`SSL_ENV: ${SSL_ENV}`, 'LISTENING')
 
     const urls = config.getUrls()
+    delete urls.runtime
     Object.keys(urls).forEach(key => {
       logger.log(`${key.toUpperCase()}: ${urls[key]}`, 'LISTENING')
     })
