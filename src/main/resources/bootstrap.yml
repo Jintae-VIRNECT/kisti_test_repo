@@ -2,10 +2,12 @@ server:
   port: 8632
 
 spring:
+  profiles:
+    active: ${VIRNECT_ENV}
   application:
     name: license-server
   cloud:
     config:
       uri: ${CONFIG_SERVER}
-      profile: ${spring.profiles.active}
+      profile: ${VIRNECT_ENV}
       name: ${spring.application.name}
