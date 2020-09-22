@@ -96,10 +96,7 @@ export default {
         // Set custom cursor
         canvas.freeDrawingBrush.width = this.tools.lineWidth
         canvas.freeDrawingBrush.color = this.tools.color
-        canvas.freeDrawingBrush.color = hexToRGBA(
-          this.tools.color,
-          this.tools.opacity,
-        )
+        canvas.freeDrawingBrush.color = hexToRGBA(this.tools.color, 1)
 
         // 커서 캔버스 생성.
         const cursor = new fabric.StaticCanvas('arCursorCanvas')
@@ -184,7 +181,7 @@ export default {
       const aId = this.undoList.length
       const state = {
         color: this.tools.color,
-        opacity: this.tools.opacity,
+        opacity: 1,
         width: this.tools.lineWidth,
         size: this.tools.fontSize,
         scale: 1 / this.canvas.backgroundImage.scaleX,
