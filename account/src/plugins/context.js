@@ -7,8 +7,9 @@ export default function(con, inject) {
   context = con
   app = con.app
   store = con.store
+  url = con.$config.URLS
 
-  inject('url', con.$config.URLS)
+  inject('url', url)
   inject(
     'defaultWorkspaceProfile',
     require('assets/images/workspace-profile.png'),
