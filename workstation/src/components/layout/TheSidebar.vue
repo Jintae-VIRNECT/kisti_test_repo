@@ -122,13 +122,13 @@ $the-sidebar-border: solid 1px #0d1d39;
   height: 36px;
   margin: 0 12px;
   overflow: hidden;
-  border-radius: 50%;
+  mask: url('~assets/images/icon/ic-bg.svg');
+  mask-size: 100%;
 
   & > a {
     display: block;
     width: 100%;
     height: 100%;
-    // background-color: #e2e7ed;
     background-position: center;
     background-size: cover;
   }
