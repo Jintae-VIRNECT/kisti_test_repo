@@ -1,3 +1,4 @@
+import { context } from '@/plugins/context'
 import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 
 export default {
@@ -19,8 +20,14 @@ export default {
     },
   },
   actions: {
-    async getAuth({ commit }, env) {
-      commit('SET_AUTH', await auth.init({ env }))
+    async getAuth({ commit }) {
+      commit(
+        'SET_AUTH',
+        await auth.init({
+          env: context.$config.VIRNECT_ENV,
+          urls: context.$url,
+        }),
+      )
     },
   },
 }

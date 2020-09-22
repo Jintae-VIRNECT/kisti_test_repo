@@ -1,5 +1,3 @@
-import { Url } from 'WC-Modules/javascript/api/virnectPlatform/urls'
-
 export let context = null
 export let app = null
 export let store = null
@@ -9,7 +7,6 @@ export default function(con, inject) {
   context = con
   app = con.app
   store = con.store
-  url = new Url(con.$config.VIRNECT_ENV)
 
-  inject('url', url)
+  inject('url', con.$config.URLS)
 }
