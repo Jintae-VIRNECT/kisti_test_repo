@@ -65,7 +65,7 @@ export default {
     }),
   },
   mounted() {
-    this.$store.dispatch('auth/getAuth', this.$config.VIRNECT_ENV)
+    this.$store.dispatch('auth/getAuth')
 
     // 콘솔 표시
     console.log(
