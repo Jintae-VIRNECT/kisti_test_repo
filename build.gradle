@@ -88,6 +88,10 @@ dependencies {
     // Configuration
     implementation 'org.springframework.cloud:spring-cloud-config-client'
 
+    // Minio
+    implementation 'io.minio:minio:7.1.2'
+
+
 }
 
 test {

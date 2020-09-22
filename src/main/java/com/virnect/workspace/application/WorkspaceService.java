@@ -77,7 +77,7 @@ import com.virnect.workspace.global.constant.Role;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
-import com.virnect.workspace.infra.file.FileUploadService;
+import com.virnect.workspace.infra.file.FileService;
 
 @Slf4j
 @Service
@@ -92,18 +92,12 @@ public class WorkspaceService {
 	private final ModelMapper modelMapper;
 	private final MessageRestService messageRestService;
 	private final ProcessRestService processRestService;
-	private final FileUploadService fileUploadService;
+	private final FileService fileUploadService;
 	private final UserInviteRepository userInviteRepository;
 	private final SpringTemplateEngine springTemplateEngine;
 	private final HistoryRepository historyRepository;
 	private final MessageSource messageSource;
 	private final LicenseRestService licenseRestService;
-
-	@Value("${file.upload-path}")
-	private String fileUploadPath;
-
-	@Value("${file.url}")
-	private String fileUrl;
 
 	@Value("${serverUrl}")
 	private String serverUrl;
@@ -159,7 +153,7 @@ public class WorkspaceService {
 				throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 			}
 		} else {
-			profile = fileUrl + fileUploadPath + "workspace-profile.png";//디폴트 이미지 경로.
+			profile = this.fileUploadService.getFileUrl("workspace-profile.png");
 		}
 
 		Workspace newWorkspace = Workspace.builder()
@@ -229,7 +223,8 @@ public class WorkspaceService {
 				workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
 			workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
 
-			UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
+			UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId())
+				.getData();
 			workspaceInfo.setMasterName(userInfoRestResponse.getName());
 			workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
 			workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
@@ -448,7 +443,8 @@ public class WorkspaceService {
 				.collect(Collectors.toList());
 		} else {
 			return memberInfoDTOList.stream()
-				.sorted(Comparator.comparing(MemberInfoDTO::getUpdatedDate,
+				.sorted(Comparator.comparing(
+					MemberInfoDTO::getUpdatedDate,
 					Comparator.nullsFirst(Comparator.reverseOrder())
 				))
 				.collect(Collectors.toList());
@@ -1018,10 +1014,6 @@ public class WorkspaceService {
 		return redirectView;
 	}
 
-	public byte[] downloadFile(String fileName) throws IOException {
-		return this.fileUploadService.download(fileName);
-	}
-
 	/**
 	 * 권한 변경 기능
 	 * 권한 변경에는 워크스페이스 내의 유저 권한 변경, 플랜 변경이 있음.
@@ -1365,7 +1357,7 @@ public class WorkspaceService {
 			String oldProfile = workspace.getProfile();
 			//기존 프로필 이미지 삭제
 			if (StringUtils.hasText(oldProfile) && !oldProfile.contains("workspace-profile.png")) {
-				this.fileUploadService.delete(oldProfile.substring(oldProfile.lastIndexOf("/") + 1));
+				this.fileUploadService.delete(oldProfile);
 			}
 			//새 프로필 이미지 등록
 			try {
@@ -1654,28 +1646,32 @@ public class WorkspaceService {
 
 		if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("asc")) {
 			beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-				.sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getProductName,
+				.sorted(Comparator.comparing(
+					WorkspaceUserLicenseInfoResponse::getProductName,
 					Comparator.nullsFirst(Comparator.naturalOrder())
 				))
 				.collect(Collectors.toList());
 		}
 		if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("desc")) {
 			beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-				.sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getProductName,
+				.sorted(Comparator.comparing(
+					WorkspaceUserLicenseInfoResponse::getProductName,
 					Comparator.nullsFirst(Comparator.reverseOrder())
 				))
 				.collect(Collectors.toList());
 		}
 		if (sortName.equalsIgnoreCase("nickName") && sortDirection.equalsIgnoreCase("asc")) {
 			beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-				.sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getNickName,
+				.sorted(Comparator.comparing(
+					WorkspaceUserLicenseInfoResponse::getNickName,
 					Comparator.nullsFirst(Comparator.naturalOrder())
 				))
 				.collect(Collectors.toList());
 		}
 		if (sortName.equalsIgnoreCase("nickName") && sortDirection.equalsIgnoreCase("desc")) {
 			beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-				.sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getNickName,
+				.sorted(Comparator.comparing(
+					WorkspaceUserLicenseInfoResponse::getNickName,
 					Comparator.nullsFirst(Comparator.reverseOrder())
 				))
 				.collect(Collectors.toList());

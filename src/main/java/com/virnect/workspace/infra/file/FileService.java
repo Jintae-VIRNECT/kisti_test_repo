@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION: File Upload Interface for LocalFileUpload and AWS FileUpload
  */
-public interface FileUploadService {
+public interface FileService {
     /**
      * 파일 업로드 처리
      * @param file -  파일 업로드 요청
@@ -26,19 +26,9 @@ public interface FileUploadService {
     void delete(final String url);
 
     /**
-     *  업로드 요청 파일 확장자 추출
-     * @param originFileName - 업로드 요청 파일 원본 이름
-     * @return - 업로드 요청 파일 확장자
+     * 업로드 된 파일 url 조회
+     * @param fileName
+     * @return
      */
-    String getFileExtension(final String originFileName);
-
-    /**
-     * 업로드 요청 파일 확장자 허용 여부 검사
-     * @param fileExtension - 업로드 요청 파일 확장자
-     * @return - 허용 여부
-     */
-    boolean isAllowFileExtension(String fileExtension);
-
-    byte[] download(String originFileName) throws IOException;
-
+    String getFileUrl(String fileName);
 }
