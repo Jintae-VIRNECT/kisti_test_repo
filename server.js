@@ -16,7 +16,6 @@ app.use(route)
 
 ;(async () => {
 	await config.init()
-	
 	const envSet = config.envConfig
 
 	if (process.env.VIRNECT_ENV === 'local' || process.env.VIRNECT_ENV === 'develop') {
