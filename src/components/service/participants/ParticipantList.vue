@@ -5,7 +5,7 @@
         <!-- <div class="participants__view"></div> -->
         <participant-video
           v-for="participant of participants"
-          :key="participant.id"
+          :key="'participant_' + participant.id"
           :participant="participant"
           @selectMain="selectMain(participant)"
           @kickout="kickout(participant.id)"

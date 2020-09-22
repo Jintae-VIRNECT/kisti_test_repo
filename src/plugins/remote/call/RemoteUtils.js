@@ -280,7 +280,7 @@ const setUserObject = event => {
     connectionId: connection.connectionId,
     // nickname: participant.nickname,
     // path: participant.profile,
-    nickname: null,
+    nickname: '',
     path: null,
     video: false,
     audio: true,
@@ -314,12 +314,12 @@ const setUserObject = event => {
         nickname: participant.nickname,
         path: participant.profile,
       })
-      const chatObj = {
-        name: participant.nickname,
-        status: 'invite',
-        type: 'system',
-      }
-      Store.commit('addChat', chatObj)
+      // const chatObj = {
+      //   name: participant.nickname,
+      //   status: 'invite',
+      //   type: 'system',
+      // }
+      // Store.commit('addChat', chatObj)
     })
   }
 
