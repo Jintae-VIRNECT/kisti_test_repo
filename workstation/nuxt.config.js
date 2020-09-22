@@ -62,7 +62,7 @@ module.exports = async () => {
     publicRuntimeConfig: {
       VERSION: env.PROJECT_VERSION,
       VIRNECT_ENV: env.VIRNECT_ENV,
-      API_GATEWAY_URL: env.API_GATEWAY_URL,
+      API_GATEWAY_URL: env.URLS.api,
       API_TIMEOUT: env.API_TIMEOUT,
       URLS: env.URLS,
     },
@@ -80,7 +80,7 @@ module.exports = async () => {
     server: {
       port: env.NUXT_PORT,
       host: env.NUXT_HOST,
-      https: /(local|develop)/.test(env.VIRNECT_ENV) && {
+      https: env.SSL_ENV && {
         key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
         cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
       },
