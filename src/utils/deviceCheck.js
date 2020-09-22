@@ -24,7 +24,7 @@ export const checkPermission = async () => {
   const permission = await getPermission()
   if (permission === 'prompt') {
     const mediaResponse = await getUserMedia(true, hasVideo)
-    if (mediaResponse !== true) {
+    if (typeof mediaResponse !== 'object') {
       throw mediaResponse
     }
   } else if (permission !== true) {
@@ -64,8 +64,7 @@ export const getPermission = async () => {
 
 export const getUserMedia = async (audio, video) => {
   try {
-    await navigator.mediaDevices.getUserMedia({ audio, video })
-    return true
+    return await navigator.mediaDevices.getUserMedia({ audio, video })
   } catch (err) {
     if (typeof err === 'object') {
       if (err.name && err.name.toLowerCase() === 'notallowederror') {
