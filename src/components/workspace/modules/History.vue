@@ -123,9 +123,15 @@ export default {
         })
     },
     time() {
-      return this.$dayjs(this.history.durationSec * 1000).format(
-        this.$t('date.time'),
-      )
+      if (this.history.durationSec > 60 * 60) {
+        return this.$dayjs(this.history.durationSec * 1000)
+          .utc()
+          .format(this.$t('date.timeHour'))
+      } else {
+        return this.$dayjs(this.history.durationSec * 1000)
+          .utc()
+          .format(this.$t('date.time'))
+      }
     },
     leader() {
       return this.history.memberList.find(member => {
