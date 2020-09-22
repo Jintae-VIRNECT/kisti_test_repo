@@ -24,23 +24,17 @@ import java.time.LocalDate;
 import java.util.*;
 
 //@Profile({"local", "develop"})
-@Profile({"staging", "production"})
+@Profile({ "staging", "production" })
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class S3FileManagementService implements IFileManagementService {
 
-    @Value("${cloud.aws.s3.bucket-public.name}")
+    @Value("${cloud.aws.s3.bucket.name}")
     private String publicBucketName;
 
-    //@Value("${cloud.aws.s3.bucket-private.name}")
-    //private String privateBucketName;
-
-    @Value("${cloud.aws.s3.bucket.resource-profile}")
+    @Value("${cloud.aws.s3.bucket.resource}")
     private String resourceProfile;
-
-    @Value("${cloud.aws.s3.bucket.resource-file}")
-    private String resourceFile;
 
     private final AmazonS3 amazonS3Client;
 
@@ -61,12 +55,14 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String upload(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String upload(MultipartFile file, String dirPath)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return null;
     }
 
     @Override
-    public String uploadProfile(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String uploadProfile(MultipartFile file, String dirPath)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 1. 빈 파일 여부 확인
         if (file.getSize() == 0) {
             throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
@@ -84,33 +80,40 @@ public class S3FileManagementService implements IFileManagementService {
             throw new RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT);
         }
 
-        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(), file.getName(), file.getSize());
+        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(),
+                file.getName(), file.getSize());
         log.info("BUCKET NAME:{}, {}, {}", publicBucketName, dirPath, fileExtension);
 
         // 4. file upload
-        //String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-        String uniqueObjectName = String.format("%s_%s", LocalDate.now(), UUID.randomUUID().toString().replace("-", ""));
+        // String objectName = String.format("%s_%s", LocalDate.now(),
+        // RandomStringUtils.randomAlphabetic(20));
+        String uniqueObjectName = String.format("%s_%s", LocalDate.now(),
+                UUID.randomUUID().toString().replace("-", ""));
         String objectName = String.format("%s/%s%s", resourceProfile, uniqueObjectName, fileExtension);
 
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
         objectMetadata.setContentLength(file.getSize());
 
-        return putObjectToAWSS3(publicBucketName, file, objectName, objectMetadata, CannedAccessControlList.BucketOwnerRead);
+        return putObjectToAWSS3(publicBucketName, file, objectName, objectMetadata,
+                CannedAccessControlList.BucketOwnerRead);
     }
 
     @Override
-    public String uploadFile(MultipartFile file, String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String uploadFile(MultipartFile file, String fileName)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return null;
     }
 
     @Override
-    public String uploadPolicyFile(MultipartFile file, String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String uploadPolicyFile(MultipartFile file, String fileName)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return null;
     }
 
     @Override
-    public boolean removeObject(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public boolean removeObject(String objectPathToName)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return false;
     }
 
@@ -125,10 +128,12 @@ public class S3FileManagementService implements IFileManagementService {
             log.info("기본 이미지는 삭제하지 않습니다.");
             return false;
         } else {
-            if(url != null) {
-                /*String resourceEndPoint = String.format("%s/%s", publicBucketName, resourceProfile);
-                String key = url.split(String.format("/%s/", resourceProfile))[1];
-                amazonS3Client.deleteObject(resourceEndPoint, key);*/
+            if (url != null) {
+                /*
+                 * String resourceEndPoint = String.format("%s/%s", publicBucketName,
+                 * resourceProfile); String key = url.split(String.format("/%s/",
+                 * resourceProfile))[1]; amazonS3Client.deleteObject(resourceEndPoint, key);
+                 */
                 String resourceEndPoint = String.format("%s/%s", publicBucketName, resourceProfile);
                 int index = url.indexOf(resourceProfile);
                 String key = url.substring(index);
@@ -166,7 +171,8 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String filePreSignedUrl(String objectPathToName, int expiry) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String filePreSignedUrl(String objectPathToName, int expiry)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return null;
     }
 
@@ -210,37 +216,30 @@ public class S3FileManagementService implements IFileManagementService {
 
     /**
      * Request upload object to aws s3
-     * @param bucketName
-     *              The name of an existing bucket to which the new object will be uploaded.
-     * @param file
-     *              multipart file
-     * @param fileName
-     *              fileName is the The key under which to store the new object.
-     * @param objectMetadata
-     *              Represents the object metadata that is stored with Amazon S3. This includes custom
-     *              user-supplied metadata, as well as the standard HTTP headers that Amazon S3
-     *              sends and receives (Content-Length, ETag, Content-MD5, etc.).
+     * 
+     * @param bucketName     The name of an existing bucket to which the new object
+     *                       will be uploaded.
+     * @param file           multipart file
+     * @param fileName       fileName is the The key under which to store the new
+     *                       object.
+     * @param objectMetadata Represents the object metadata that is stored with
+     *                       Amazon S3. This includes custom user-supplied metadata,
+     *                       as well as the standard HTTP headers that Amazon S3
+     *                       sends and receives (Content-Length, ETag, Content-MD5,
+     *                       etc.).
      *
-     * @param cannedAcl
-     *              Canned access control lists are commonly used access control lists (ACL) that can be
-     *              used as a shortcut when applying an access control list to Amazon S3 buckets
-     *              and objects.
+     * @param cannedAcl      Canned access control lists are commonly used access
+     *                       control lists (ACL) that can be used as a shortcut when
+     *                       applying an access control list to Amazon S3 buckets
+     *                       and objects.
      *
      * @return Returns an URL for the object stored in the specified bucket and key.
      */
-    private String putObjectToAWSS3(
-            String bucketName,
-            MultipartFile file,
-            String fileName,
-            ObjectMetadata objectMetadata,
-            CannedAccessControlList cannedAcl) {
+    private String putObjectToAWSS3(String bucketName, MultipartFile file, String fileName,
+            ObjectMetadata objectMetadata, CannedAccessControlList cannedAcl) {
         try {
-            amazonS3Client.putObject(new PutObjectRequest(
-                    bucketName,
-                    fileName,
-                    file.getInputStream(),
-                    objectMetadata).withCannedAcl(cannedAcl)
-            );
+            amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, file.getInputStream(), objectMetadata)
+                    .withCannedAcl(cannedAcl));
         } catch (IOException exception) {
             exception.printStackTrace();
             log.info("Upload error occurred:: {}", exception.getMessage());
@@ -250,23 +249,24 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     private void deleteObjectToAWSS3(String bucketName, String fileName) {
-        //amazonS3Client.deleteObject();
+        // amazonS3Client.deleteObject();
     }
 
     @Deprecated
     private String putS3(String bucketName, File uploadFile, String fileName) {
-        amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
+        amazonS3Client.putObject(new PutObjectRequest(bucketName, fileName, uploadFile)
+                .withCannedAcl(CannedAccessControlList.PublicRead));
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
 
     @Deprecated
     private String putS3(String bucketName, File uploadFile, String fileName, ObjectMetadata objectMetadata) {
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.BucketOwnerRead);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, uploadFile)
+                .withCannedAcl(CannedAccessControlList.BucketOwnerRead);
         putObjectRequest.setMetadata(objectMetadata);
         amazonS3Client.putObject(putObjectRequest);
 
         return amazonS3Client.getUrl(bucketName, fileName).toString();
     }
-
 
 }
