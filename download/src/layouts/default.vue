@@ -52,6 +52,13 @@ export default {
     console.log(`env: ${this.$config.VIRNECT_ENV}`)
     console.log(`timeout: ${this.$config.API_TIMEOUT}`)
 
+    // 언어 선택 쿼리
+    const lang = this.$route.query.lang
+    if (this.$i18n.locales.includes(lang)) {
+      this.$store.dispatch('CHANGE_LANG', lang)
+      this.$i18n.locale = lang
+    }
+
     this.$store.dispatch('auth/getAuth')
   },
 }
