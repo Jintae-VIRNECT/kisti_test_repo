@@ -43,12 +43,6 @@ server:
   port: 8082
 #  address: 192.168.6.3
 
-## Project Configuration
-file:
-  upload-path: "workspace/profile/"
-  url: "http://192.168.6.3:${server.port}/workspaces/virnect-platform/"
-  allow-extension: "gif,jpg,jpeg,png"
-
 ## Eureka Server Configuration
 eureka:
   instance:
@@ -106,19 +100,11 @@ management:
     tags:
       application: ${spring.application.name}
 
-## AWS Storage
-cloud:
-  aws:
-    credentials:
-      access-key: virnect
-      secret-key: virnect0!
-    region:
-      auto: true
-    s3:
-      bucket:
-        name: "virnect-platform"
-        resource: "workspace/profile"
-
 ## Minio
 minio:
-  url : "http://192.168.6.3:2838"
+  access-key: "virnect"
+  secret-key: "virnect0!"
+  server: "http://192.168.6.3:2838"
+  bucket: "virnect-platform"
+  resource: "workspace/profile"
+  extension: "gif,jpg,jpeg,png"

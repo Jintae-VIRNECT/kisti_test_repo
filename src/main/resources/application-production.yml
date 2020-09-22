@@ -58,6 +58,7 @@ cloud:
         resource: "workspace/profile"
         extension: "gif,jpg,jpeg,png"
 
+
 ## Mail send rediect Url
 serverUrl: "https://api.virnect.com"
 redirectUrl: "https://workstation.virnect.com"
@@ -69,6 +70,7 @@ supportUrl: "https://virnect.com/contact/inquiry"
 feign:
   hystrix:
     enabled: true
+
 
 # monitoring
 management:
