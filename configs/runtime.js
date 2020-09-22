@@ -2,9 +2,8 @@ const fs = require('fs')
 const dotenv = require('dotenv')
 const filePath = `.env.${process.env.VIRNECT_ENV.trim()}`
 const parseConfig = dotenv.parse(fs.readFileSync(filePath))
-const urlsConfig = JSON.parse(fs.readFileSync('./configs/urls.json'))
 
-const envs = process.env.VIRNECT_ENV.trim()
+const env = process.env.VIRNECT_ENV.trim()
 const configServer =
 	process.env.CONFIG_SERVER == undefined
 		? parseConfig.CONFIG_SERVER
@@ -15,37 +14,29 @@ const axios = require('axios')
 let envConfig = {}
 let urlConfig = {}
 
-module.exports = {
+class Config {
+	constructor() {}
+
+	get envConfig() {
+		return envConfig
+	}
+	get urlConfig() {
+		return urlConfig
+	}
+
 	async init() {
-		const { data } = await axios.get(`${configServer}/login-web/${envs}`)
-		const property = data.propertySources[0].source
-		for (let key in property) {
-			if (key.includes('url.')) {
-				key.slice(4)
-				urlConfig[key.slice(4)] = property[key]
-			}
-			if (key.includes('env.')) {
-				key.slice(4)
-				envConfig[key.slice(4)] = property[key]
-			}
-		}
-		// console.log(property)
-		urlConfig.env = property['env.VIRNECT_ENV']
-		return {
-			envConfig: envConfig,
-			urlConfig: urlConfig,
-		}
-	},
-	getTargetEnv() {
-		return String(parseConfig['VIRNECT_ENV'])
-	},
-	getDevUrls() {
-		const urls = {}
-		const env = this.getTargetEnv()
-		Object.keys(urlsConfig).forEach(key => {
-			urls[key] = urlsConfig[key][env]
-		})
-		urls.env = env
-		return urls
-	},
+		const { data } = await axios.get(
+			`${configServer}/web-url/${env === 'local' ? 'develop' : env}`,
+		)
+		const res = await axios.get(
+			`${configServer}/login-web/${env === 'local' ? 'develop' : env}`,
+		)
+		urlConfig = data.propertySources[0].source
+		envConfig = res.data.propertySources[0].source
+		urlConfig.env = envConfig['VIRNECT_ENV']
+		return this
+	}
 }
+
+const config = new Config()
+module.exports = config

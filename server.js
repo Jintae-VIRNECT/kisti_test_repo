@@ -8,19 +8,27 @@ const route = require('./route')
 const dotenv = require('dotenv')
 const filePath = `.env.${process.env.VIRNECT_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
+const config = require('./configs/runtime')
 
 app.use(express.static(path.join(__dirname, './dist')))
 app.use(route)
 
-const port = env.SERVER_PORT
-console.log(`${env.LOCAL_HOST}:${env.SERVER_PORT}`)
 
-if (process.env.VIRNECT_ENV === 'local' || process.env.VIRNECT_ENV === 'develop') {
-	const options = {
-		key: fs.readFileSync('./cert/key.pem'),
-		cert: fs.readFileSync('./cert/cert.pem')
+;(async () => {
+	await config.init()
+	
+	const envSet = config.envConfig
+
+	if (process.env.VIRNECT_ENV === 'local' || process.env.VIRNECT_ENV === 'develop') {
+		console.log(`https://${env.LOCAL_HOST}:${envSet.SERVER_PORT}`)
+
+		const options = {
+			key: fs.readFileSync('./cert/key.pem'),
+			cert: fs.readFileSync('./cert/cert.pem')
+		}
+		https.createServer(options, app).listen(envSet.SERVER_PORT)
+	} else {
+		console.log(`${envSet.SERVER_PORT}`)
+		server.listen(envSet.SERVER_PORT)
 	}
-	https.createServer(options, app).listen(port)
-} else {
-	server.listen(port)
-}
+})()

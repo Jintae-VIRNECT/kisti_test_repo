@@ -3,12 +3,12 @@ const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
 const fs = require('fs')
 const dotenv = require('dotenv')
-const filePath = `.env.${process.env.VIRNECT_ENV.trim()}`
+const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
-const configService = require('../configs/runtime')
+const config = require('../configs/runtime')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
-	mode: process.env.VIRNECT_ENV === 'local' ? 'development' : 'production',
+	mode: process.env.NODE_ENV === 'local' ? 'development' : 'production',
 	devtool: 'cheap-module-eval-source-map',
 	devServer: {
 		host: env.LOCAL_HOST,
@@ -34,10 +34,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 					limit: '50mb',
 				}),
 			)
+			config.init()
 
-			app.get('/urls', bodyParser.json(), async function(req, res) {
-				const a = await configService.getDevUrls()
-				res.json(a)
+			app.get('/urls', bodyParser.json(), function(req, res) {
+				res.json(config.urlConfig)
 			})
 		},
 	},
