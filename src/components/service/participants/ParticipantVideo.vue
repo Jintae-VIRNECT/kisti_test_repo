@@ -253,6 +253,12 @@ export default {
         this.toastDefault(
           this.$t('service.chat_invite', { name: this.participant.nickname }),
         )
+        const chatObj = {
+          name: name,
+          status: 'invite',
+          type: 'system',
+        }
+        this.addChat(chatObj)
       }
     },
     hoverContents() {
