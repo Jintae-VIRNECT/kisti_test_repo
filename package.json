@@ -21,7 +21,6 @@
     "copy-webpack-plugin": "^4.6.0",
     "cross-env": "^7.0.2",
     "dexie": "^3.0.1",
-    "dotenv": "^8.2.0",
     "dotenv-webpack": "^1.7.0",
     "express": "^4.17.1",
     "file-saver": "^2.0.2",
