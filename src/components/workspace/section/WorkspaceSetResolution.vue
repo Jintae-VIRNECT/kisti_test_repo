@@ -61,7 +61,7 @@ export default {
 
     setRecResolution(resolution) {
       this.setRecord({
-        interval: resolution,
+        resolution: resolution,
       })
       this.$localStorage.setRecord('resolution', resolution)
     },

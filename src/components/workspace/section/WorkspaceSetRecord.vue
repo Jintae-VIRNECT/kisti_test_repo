@@ -96,7 +96,6 @@ export default {
   methods: {
     ...mapActions(['setRecord']),
     setRecLength(time) {
-      console.log(time)
       this.setRecord({
         time: time,
       })
@@ -104,9 +103,9 @@ export default {
     },
     setRecInterval(newInterval) {
       this.setRecord({
-        interval: newInterval.value,
+        interval: newInterval,
       })
-      this.$localStorage.setRecord('interval', newInterval.value)
+      this.$localStorage.setRecord('interval', newInterval)
     },
   },
   mounted() {
