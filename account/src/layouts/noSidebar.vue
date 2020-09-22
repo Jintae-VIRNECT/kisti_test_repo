@@ -47,7 +47,7 @@ export default {
     )
     console.log(`env: ${this.$config.VIRNECT_ENV}`)
     console.log(`timeout: ${this.$config.API_TIMEOUT}`)
-    this.$store.dispatch('auth/getAuth', this.$config.VIRNECT_ENV)
+    this.$store.dispatch('auth/getAuth')
   },
 }
 </script>

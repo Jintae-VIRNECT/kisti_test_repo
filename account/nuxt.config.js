@@ -2,28 +2,11 @@ const { resolve } = require('path')
 const lang = require('./src/languages')
 const path = require('path')
 const fs = require('fs')
-const axios = require('axios')
-const dotenv = require('dotenv')
-
-const env = dotenv.parse(fs.readFileSync('.env.local'))
-for (const key in env) {
-  process.env[key] = env[key]
-}
 
 module.exports = async () => {
-  /**
-   * from config server
-   */
-  if (process.env.VIRNECT_ENV !== 'local') {
-    const { data } = await axios.get(
-      `${process.env.CONFIG_SERVER}/account-web/${process.env.VIRNECT_ENV}`,
-    )
-    const serverConfig = data.propertySources[0].source
-    console.log(serverConfig)
-    for (const key in serverConfig) {
-      process.env[key] = serverConfig[key]
-    }
-  }
+  const env = await require('./config')()
+  console.log(env)
+
   return {
     /*
      ** Headers of the page
@@ -32,7 +15,7 @@ module.exports = async () => {
       htmlAttrs: {
         lang: 'ko',
       },
-      title: process.env.npm_package_name || '',
+      title: env.PROJECT_NAME,
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -71,16 +54,17 @@ module.exports = async () => {
     /**
      * env
      */
-    debug: process.env.NUXT_DEBUG,
-    devtools: process.env.NUXT_DEBUG,
+    debug: env.NUXT_DEBUG,
+    devtools: env.NUXT_DEBUG,
     env: {
-      NODE_ENV: process.env.NODE_ENV,
+      NODE_ENV: env.NODE_ENV,
     },
     publicRuntimeConfig: {
-      VERSION: process.env.npm_package_version || '',
-      VIRNECT_ENV: process.env.NODE_ENV,
-      API_GATEWAY_URL: process.env.API_GATEWAY_URL,
-      API_TIMEOUT: process.env.API_TIMEOUT,
+      VERSION: env.PROJECT_VERSION,
+      VIRNECT_ENV: env.VIRNECT_ENV,
+      API_GATEWAY_URL: env.URLS.api,
+      API_TIMEOUT: env.API_TIMEOUT,
+      URLS: env.URLS,
     },
     /**
      * build
@@ -94,9 +78,9 @@ module.exports = async () => {
       },
     },
     server: {
-      port: process.env.NUXT_PORT,
-      host: process.env.NUXT_HOST,
-      https: /(local|develop)/.test(process.env.VIRNECT_ENV) && {
+      port: env.NUXT_PORT,
+      host: env.NUXT_HOST,
+      https: env.SSL_ENV && {
         key: fs.readFileSync(path.resolve(__dirname, 'ssl/server.key')),
         cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
       },

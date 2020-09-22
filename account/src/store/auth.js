@@ -1,4 +1,5 @@
 import { api } from '@/plugins/axios'
+import { context } from '@/plugins/context'
 import Profile from '@/models/profile/Profile'
 import Workspace from '@/models/workspace/Workspace'
 import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
@@ -43,8 +44,14 @@ export default {
     },
   },
   actions: {
-    async getAuth({ commit }, env) {
-      commit('SET_AUTH', await auth.init({ env }))
+    async getAuth({ commit }) {
+      commit(
+        'SET_AUTH',
+        await auth.init({
+          env: context.$config.VIRNECT_ENV,
+          urls: context.$url,
+        }),
+      )
     },
     async getAuthInfo({ commit }, params) {
       const data = await api('GET_AUTH_INFO', params)
