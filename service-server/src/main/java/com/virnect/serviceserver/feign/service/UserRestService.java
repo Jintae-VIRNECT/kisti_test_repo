@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @FeignClient(name = "${feign.user-prefix}", url = "${feign.user-url}", fallbackFactory = UserRestFallbackFactory.class)
 public interface UserRestService {
-    //@ApiIgnore PageRequest pageRequest
     /**
      * User Information List
      * @param search

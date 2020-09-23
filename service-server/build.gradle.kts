@@ -25,10 +25,11 @@ ext {
 sourceSets {
     main {
         java.srcDir("src/main/java")
-        resources.srcDirs(listOf(
-            "src/main/resources",
-            "src/main/resources-${System.getProperty("spring.profiles")}"
-        ))
+        resources.srcDir("src/main/resources")
+//        resources.srcDirs(listOf(
+//            "src/main/resources",
+//            "src/main/resources-${System.getProperty("spring.profiles")}"
+//        ))
     }
 }
 
