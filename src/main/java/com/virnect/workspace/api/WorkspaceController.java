@@ -1,14 +1,10 @@
 package com.virnect.workspace.api;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
 import javax.validation.Valid;
 
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -115,22 +111,6 @@ public class WorkspaceController {
         }
         ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.setWorkspace(workspaceUpdateRequest, locale);
         return ResponseEntity.ok(apiResponse);
-    }
-
-    @ApiOperation(
-            value = "워크스페이스 이미지 조회(개발 서버 업로드)"
-    )
-    @ApiImplicitParam(name = "fileName", value = "파일 이름", dataType = "string", type = "path", defaultValue = "1.PNG", required = true)
-    @GetMapping("/upload/{fileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
-        if (!StringUtils.hasText(fileName)) {
-            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        Resource resource = this.workspaceService.downloadFile(fileName);
-        return ResponseEntity.ok()
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
     }
 
     @ApiOperation(

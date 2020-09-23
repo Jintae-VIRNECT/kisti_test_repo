@@ -40,12 +40,6 @@ logging:
 server:
   port: 8082
 
-## Project Configuration
-file:
-  upload-path: "workspace/profile/"
-  url: "https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/"
-  allow-extension: "gif,jpg,jpeg,png"
-
 ## Eureka Server Configuration
 eureka:
   instance:
@@ -66,6 +60,7 @@ cloud:
       bucket:
         name: "virnect-platform-qa"
         resource: "workspace/profile"
+        extension: "gif,jpg,jpeg,png"
 
 ## Mail send rediect Url
 serverUrl: "https://stgapi.virnect.com"

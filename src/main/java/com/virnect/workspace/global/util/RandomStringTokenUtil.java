@@ -1,10 +1,11 @@
 package com.virnect.workspace.global.util;
 
-import com.virnect.workspace.global.constant.UUIDType;
-import org.apache.commons.lang3.RandomStringUtils;
-
 import java.util.Random;
 import java.util.UUID;
+
+import org.apache.commons.lang3.RandomStringUtils;
+
+import com.virnect.workspace.global.constant.UUIDType;
 
 /**
  * Project: PF-Workspace
@@ -14,28 +15,28 @@ import java.util.UUID;
  * DESCRIPTION:
  */
 public class RandomStringTokenUtil {
-    public static String generate(UUIDType type, int digit) {
-        switch (type) {
-            case UUID_WITH_SEQUENCE: {
-                return RandomStringUtils.randomAlphanumeric(13);
-            }
-            case PIN_NUMBER: {
-                Random random = new Random(System.currentTimeMillis());
+	public static String generate(UUIDType type, int digit) {
+		switch (type) {
+			case UUID_WITH_SEQUENCE: {
+				return RandomStringUtils.randomAlphanumeric(13);
+			}
+			case PIN_NUMBER: {
+				Random random = new Random(System.currentTimeMillis());
 
-                int range = (int)Math.pow(10,6);
-                int trim = (int)Math.pow(10, 5);
-                int result = random.nextInt(range)+trim;
+				int range = (int)Math.pow(10,6);
+				int trim = (int)Math.pow(10, 5);
+				int result = random.nextInt(range)+trim;
 
-                if(result>range){
-                    result = result - trim;
-                }
+				if(result>range){
+					result = result - trim;
+				}
 
-                return String.valueOf(result);
-            }
-            case INVITE_CODE: {
-                return RandomStringUtils.randomAlphanumeric(digit).toUpperCase();
-            }
-        }
-        return UUID.randomUUID().toString();
-    }
+				return String.valueOf(result);
+			}
+			case INVITE_CODE: {
+				return RandomStringUtils.randomAlphanumeric(digit).toUpperCase();
+			}
+		}
+		return UUID.randomUUID().toString();
+	}
 }

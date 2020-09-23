@@ -1,9 +1,10 @@
 RELEASE
 
 New Features
+- local, develop 파일 업로드 minio로 변경
+- staging, production configuration 설정 외부로 뺌
 
 Bug Fixes
-- 기본 설정 Locale Cookie값을 ko로 수정
 
 Limitation
 
