@@ -1,10 +1,9 @@
 RELEASE
 
 New Features
-- local, develop 파일 업로드 minio로 변경
-- staging, production configuration 설정 외부로 뺌
 
 Bug Fixes
+- 워크스페이스 내보내기 시 라이선스 체크 에러 수정
 
 Limitation
 
