@@ -59,6 +59,7 @@
               :end-placeholder="$t('task.manage.scheduleEnd')"
               format="yyyy. MM. dd.  HH:mm"
               time-arrow-control
+              :picker-options="scheduleOption()"
             />
           </el-form-item>
           <el-form-item
@@ -119,6 +120,18 @@ export default {
       },
       workerList: [],
       searchLoading: false,
+      scheduleOption() {
+        const schedule = this.taskSchedule
+        return {
+          disabledDate(time) {
+            if (!schedule.length) return false
+            const t = time.getTime()
+            const start = schedule[0].getTime()
+            const end = schedule[1].getTime()
+            return t < start || t > end
+          },
+        }
+      },
     }
   },
   methods: {
@@ -128,12 +141,24 @@ export default {
       }
       this.taskName = this.taskInfo.name
       this.taskSchedule = [
-        dayjs.utc(this.taskInfo.startDate).local(),
-        dayjs.utc(this.taskInfo.endDate).local(),
+        dayjs
+          .utc(this.taskInfo.startDate)
+          .local()
+          .toDate(),
+        dayjs
+          .utc(this.taskInfo.endDate)
+          .local()
+          .toDate(),
       ]
       this.form.schedule = [
-        dayjs.utc(this.subTaskInfo.startDate).local(),
-        dayjs.utc(this.subTaskInfo.endDate).local(),
+        dayjs
+          .utc(this.subTaskInfo.startDate)
+          .local()
+          .toDate(),
+        dayjs
+          .utc(this.subTaskInfo.endDate)
+          .local()
+          .toDate(),
       ]
       this.form.worker = this.subTaskInfo.workerUUID
       this.workerList = await workspaceService.allMembers()
