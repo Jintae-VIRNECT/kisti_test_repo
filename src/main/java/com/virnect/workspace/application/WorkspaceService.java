@@ -1458,7 +1458,7 @@ public class WorkspaceService {
 		//라이선스 해제
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, memberKickOutRequest.getKickedUserId()).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
 			myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
 				log.debug(
 					"[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
@@ -1474,9 +1474,7 @@ public class WorkspaceService {
 			});
 		}
 		log.debug(
-			"[WORKSPACE KICK OUT USER] Workspace User License not Revoke. License Product is Empty >> {}",
-			myLicenseInfoListResponse.getLicenseInfoList().toString()
-		);
+			"[WORKSPACE KICK OUT USER] Workspace User License not Revoke. License Product is Empty");
 
 		//workspace_user_permission 삭제(history 테이블 기록)
 		this.workspaceUserPermissionRepository.delete(kickedUserPermission);
