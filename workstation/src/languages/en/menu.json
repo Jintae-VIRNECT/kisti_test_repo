@@ -1,27 +1,29 @@
 {
-  "home": "Home",
-  "members": "Members",
-  "contents": "Contents",
-  "tasks": "Tasks",
-  "workspaceSetting": "Settings",
-  "collapse": {
-    "workspace": {
-      "title": "Workspace list",
-      "master": "Master",
-      "manager": "Manager",
-      "member": "Member"
-    },
-    "members": {
-      "list": "All Members",
-      "activity": "Recent Activity"
-    },
-    "contents": {
-      "list": "All Contents"
-    },
-    "tasks": {
-      "list": "All Tasks",
-      "results": "Reports",
-      "troubles": "Trouble Memo (TM)"
+  "menu": {
+    "home": "Workspace Home",
+    "members": "Workspace Members",
+    "contents": "Contents",
+    "tasks": "Tasks",
+    "workspaceSetting": "Workspace Settings",
+    "collapse": {
+      "workspace": {
+        "title": "Workspace list",
+        "master": "Master",
+        "manager": "Manager",
+        "member": "Member"
+      },
+      "members": {
+        "list": "All Members",
+        "activity": "Recent Activity"
+      },
+      "contents": {
+        "list": "All Contents"
+      },
+      "tasks": {
+        "list": "All Tasks",
+        "results": "Reports",
+        "troubles": "Trouble Memo(TM)"
+      }
     }
   }
 }

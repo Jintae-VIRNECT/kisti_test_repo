@@ -1,15 +1,20 @@
 {
-  "workstation": "Workstation",
-  "all": "All",
-  "prev": "Previous",
-  "next": "Next",
-  "yes": "Yes",
-  "no": "No",
-  "confirm": "Confirm",
-  "download": "Download",
-  "delete": "Delete",
-  "graph": "Graph",
-  "list": "List",
-  "numbersUnit": "",
-  "paymentCenter": "Payment Center"
+  "common": {
+    "workstation": "Workstation",
+    "all": "All",
+    "prev": "Previous",
+    "next": "Next",
+    "yes": "Yes",
+    "no": "No",
+    "confirm": "Confirm",
+    "download": "Download",
+    "delete": "Delete",
+    "graph": "Graph",
+    "list": "List",
+    "numbersUnit": "",
+    "paymentCenter": "Payment Center"
+  },
+  "menu": {
+    "home": "Workspace Home"
+  }
 }

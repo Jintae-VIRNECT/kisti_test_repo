@@ -18,7 +18,9 @@
     <div>
       <div class="max">
         <span>{{ $t(`${i18nGroup}.max`) }}</span>
-        <span class="count">{{ info.max }} {{ $t(`${i18nGroup}.unit`) }}</span>
+        <span class="count">
+          {{ info.max | toLocaleString }} {{ $t(`${i18nGroup}.unit`) }}
+        </span>
       </div>
       <div class="detail">
         <span>{{ $t(`${i18nGroup}.used`) }}</span>
@@ -29,12 +31,14 @@
         />
         <div class="used">
           <span class="count">
-            {{ info.current }} {{ $t(`${i18nGroup}.unit`) }}
+            {{ info.current | toLocaleString }} {{ $t(`${i18nGroup}.unit`) }}
           </span>
           <span>{{ $t('home.plansInfo.used') }}</span>
         </div>
         <div class="remain">
-          <span> {{ info.remain }} {{ $t(`${i18nGroup}.unit`) }} </span>
+          <span>
+            {{ info.remain | toLocaleString }} {{ $t(`${i18nGroup}.unit`) }}
+          </span>
           <span>{{ $t('home.plansInfo.remain') }}</span>
         </div>
       </div>
@@ -54,6 +58,11 @@ export default {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
     }),
+  },
+  filters: {
+    toLocaleString(num) {
+      return num ? num.toLocaleString() : 0
+    },
   },
 }
 </script>

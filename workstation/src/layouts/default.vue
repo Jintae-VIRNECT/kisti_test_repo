@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <the-header :showSection="showSection">
+      <the-header :showSection="showSection" :auth="auth">
         <template slot="subTitle">
           <el-divider direction="vertical" />
           <div class="avatar">
@@ -60,26 +60,26 @@ export default {
   },
   computed: {
     ...mapGetters({
+      auth: 'auth/auth',
       activeWorkspace: 'auth/activeWorkspace',
     }),
   },
   mounted() {
+    this.$store.dispatch('auth/getAuth')
+
     // 콘솔 표시
     console.log(
       `%cVirnect Workstation v${this.$config.VERSION}`,
       'font-size: 20px; color: #1468e2',
     )
-    console.log(`env: ${this.$config.TARGET_ENV}`)
+    console.log(`env: ${this.$config.VIRNECT_ENV}`)
     console.log(`timeout: ${this.$config.API_TIMEOUT}`)
 
-    // 기본 언어 쿠키
-    if (!Cookies.get('lang')) {
-      Cookies.set('lang', this.$i18n.locale, {
-        domain:
-          location.hostname.split('.').length === 3
-            ? location.hostname.replace(/.*?\./, '')
-            : location.hostname,
-      })
+    // 언어 선택 쿼리
+    const lang = this.$route.query.lang
+    if (this.$i18n.locales.includes(lang)) {
+      this.$store.dispatch('CHANGE_LANG', lang)
+      this.$i18n.locale = lang
     }
 
     // 서버 메세지 푸시

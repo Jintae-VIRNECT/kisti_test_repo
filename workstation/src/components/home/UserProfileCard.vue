@@ -44,7 +44,7 @@ import plans from '@/models/workspace/plans'
 export default {
   data() {
     return {
-      profileUpdatePage: `${urls.account[this.$config.TARGET_ENV]}/profile`,
+      profileUpdatePage: `${urls.account[this.$config.VIRNECT_ENV]}/profile`,
       profile: {},
       plans: Object.values(plans).reduce((o, n) => {
         o[n.value] = n
@@ -87,8 +87,12 @@ export default {
   .avatar {
     float: left;
     width: 40px;
-    height: 40px;
+    height: 60px;
     margin-right: 12px;
+
+    .image {
+      height: 67%;
+    }
   }
   .name {
     display: block;

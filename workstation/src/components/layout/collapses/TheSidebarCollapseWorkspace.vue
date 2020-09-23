@@ -17,31 +17,26 @@
           <span>{{ $t('workspace.create') }}</span>
         </button>
 
-        <el-tooltip
+        <button
           v-for="workspace in workspaces[role]"
           :key="workspace.uuid"
-          :content="workspace.name"
-          placement="top"
+          :class="isActive(workspace.uuid) ? 'selected' : ''"
+          @click="workspaceActive(workspace.uuid)"
         >
-          <button
-            :class="isActive(workspace.uuid) ? 'selected' : ''"
-            @click="workspaceActive(workspace.uuid)"
-          >
-            <div class="avatar">
-              <div
-                class="image"
-                :style="
-                  `background-image: url(${workspace.profile}), url(${$defaultWorkspaceProfile})`
-                "
-              />
-            </div>
-            <span>{{ workspace.name }}</span>
-            <img
-              v-if="isActive(workspace.uuid)"
-              src="~assets/images/icon/ic-check-circle.svg"
+          <div class="avatar">
+            <div
+              class="image"
+              :style="
+                `background-image: url(${workspace.profile}), url(${$defaultWorkspaceProfile})`
+              "
             />
-          </button>
-        </el-tooltip>
+          </div>
+          <span>{{ workspace.name }}</span>
+          <img
+            v-if="isActive(workspace.uuid)"
+            src="~assets/images/icon/ic-check-circle.svg"
+          />
+        </button>
       </div>
     </div>
   </div>
@@ -90,8 +85,10 @@ export default {
 .the-sidebar__collapse--workspace {
   height: 100%;
   .the-sidebar__collapse__body {
+    min-width: 216px;
     height: calc(100% - 90px);
     overflow-y: auto;
+    resize: horizontal;
   }
   ::-webkit-scrollbar {
     width: 8px;

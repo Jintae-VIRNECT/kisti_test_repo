@@ -6,9 +6,11 @@ export default async function({ req, store, redirect, error, $config }) {
     redirect('/')
 
   if (process.server) {
-    const LOGIN_SITE_URL = urls.console[$config.TARGET_ENV]
+    const LOGIN_SITE_URL = urls.console[$config.VIRNECT_ENV]
     // not support browser
-    const isIE = req.headers['user-agent'].indexOf('MSIE ') !== -1
+    const isIE =
+      req.headers['user-agent'].indexOf('MSIE ') !== -1 ||
+      req.headers['user-agent'].indexOf('Trident/') !== -1
     const isOldEdge = req.headers['user-agent'].indexOf('Edge') !== -1
     if (isIE || isOldEdge) {
       return error({ message: 'BrowserNotSupport' })
@@ -30,7 +32,7 @@ export default async function({ req, store, redirect, error, $config }) {
       if (myWorkspaces.length) {
         // 마지막 워크스페이스 확인
         const lastWorkspace = req.headers.cookie.match(
-          /activeWorkspace=([0-9a-f]+)/,
+          /activeWorkspace=([0-9a-zA-Z]+)/,
         )
         const activeWorkspace =
           lastWorkspace &&
