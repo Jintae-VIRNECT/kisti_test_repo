@@ -74,7 +74,7 @@ import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 
 import footerSection from '../common/Footer'
-import auth from 'api/virnectPlatformAuth'
+import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 
 export default {
 	name: 'login',

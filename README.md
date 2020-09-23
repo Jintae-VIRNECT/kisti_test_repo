@@ -14,5 +14,5 @@ yarn dev
 # build
 yarn build
 
-# run node server localhost:3333
+# run node server localhost:8883
 yarn start
