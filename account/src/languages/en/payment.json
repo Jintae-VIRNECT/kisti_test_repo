@@ -1,43 +1,45 @@
 {
-  "desc": "Manage the payment details and payment history of the workspace where you are given with master authority.",
-  "monetaryUnit": "Won",
-  "will": {
-    "title": "Upcoming Payment Info",
-    "price": "Upcoming Payment",
-    "dueDate": "Payment Date",
-    "way": "Payment Method",
-    "autoPaymentEveryMonth": "Monthly Subscription"
-  },
-  "info": {
-    "title": "Plans Details",
-    "totalAmount": "Purchasing plans",
-    "extend": "Additional Services"
-  },
-  "log": {
-    "title": "Payment History",
-    "column": {
-      "no": "Payment Code",
-      "way": "Purchase Method",
-      "price": "Amount of Payment",
-      "paidDate": "Payment Date"
-    }
-  },
-  "autoPaymentCancelModal": {
-    "title": "Cancel Subcriptions",
-    "desc": "Please double-check the product plan and subscription you want to cancel.",
-    "column": {
-      "product": "Product plans and additional services",
-      "count": "Quantity",
-      "numbersUnit": "Plans"
+  "payment": {
+    "desc": "Manage the payment details and payment history of the workspace where you are given with master authority.",
+    "monetaryUnit": "Won",
+    "will": {
+      "title": "Upcoming Payment Info",
+      "price": "Upcoming Payment",
+      "dueDate": "Payment Date",
+      "way": "Payment Method",
+      "autoPaymentEveryMonth": "Monthly Subscription"
     },
-    "cautionTitle": "Notice on canceling automatic payment",
-    "caution": "* If you cancel now you will be able to use the product and services until the remaining period. When automatic payment is canceled all users of the workspace will not be able to use VIRNECT products from the next payment due date. Your product and service data will be kept for up to two weeks. If you pay again within 2 weeks of the scheduled payment date you can use the VIRNECT product with your existing information.",
-    "cautionAgree": "Agree to the notice on canceling automatic payment",
-    "submit": "Cancel",
-    "submitDone": "Cancelling automatic payment",
-    "submitDoneDesc": "Automatic payment has been cancelled. If you want to maintain the automatic payment you can cancel the \"cancellation of the automatic payment\" from tomorrow to one day before the expiration date.",
-    "cancelRequestCancel": "Cancel automatic payment application",
-    "cancelRequestCancelDesc": "If you cancel the automatic payment cancellation application automatic payment will be resumed.",
-    "cancelRequestCancelDone": "Succesfully canceled automatic payment"
+    "info": {
+      "title": "Plans Details",
+      "totalAmount": "Purchasing plans",
+      "extend": "Additional Services"
+    },
+    "log": {
+      "title": "Payment History",
+      "column": {
+        "no": "Payment Code",
+        "way": "Purchase Method",
+        "price": "Amount of Payment",
+        "paidDate": "Payment Date"
+      }
+    },
+    "autoPaymentCancelModal": {
+      "title": "Cancel Subcriptions",
+      "desc": "Please double-check the product plan and subscription you want to cancel.",
+      "column": {
+        "product": "Product plans and additional services",
+        "count": "Quantity",
+        "numbersUnit": "Plans"
+      },
+      "cautionTitle": "Notice on canceling automatic payment",
+      "caution": "* If you cancel now you will be able to use the product and services until the remaining period. When automatic payment is canceled all users of the workspace will not be able to use VIRNECT products from the next payment due date. Your product and service data will be kept for up to two weeks. If you pay again within 2 weeks of the scheduled payment date you can use the VIRNECT product with your existing information.",
+      "cautionAgree": "Agree to the notice on canceling automatic payment",
+      "submit": "Cancel",
+      "submitDone": "Cancelling automatic payment",
+      "submitDoneDesc": "Automatic payment has been cancelled. If you want to maintain the automatic payment you can cancel the \"cancellation of the automatic payment\" from tomorrow to one day before the expiration date.",
+      "cancelRequestCancel": "Cancel automatic payment application",
+      "cancelRequestCancelDesc": "If you cancel the automatic payment cancellation application automatic payment will be resumed.",
+      "cancelRequestCancelDone": "Succesfully canceled automatic payment"
+    }
   }
 }

@@ -1,17 +1,23 @@
 import { api } from '@/plugins/axios'
+import { context } from '@/plugins/context'
 import Profile from '@/models/profile/Profile'
 import Workspace from '@/models/workspace/Workspace'
+import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 
 export default {
   state: () => ({
-    isLogin: false,
+    auth: {
+      env: '',
+      urls: {},
+      myInfo: {},
+    },
     authenticated: false,
     myProfile: {},
     myWorkspaces: [],
   }),
   getters: {
-    isLogin(state) {
-      return state.isLogin
+    auth(state) {
+      return state.auth
     },
     authenticated(state) {
       return state.authenticated
@@ -24,10 +30,10 @@ export default {
     },
   },
   mutations: {
-    SET_LOGIN(state, bool) {
-      state.isLogin = bool
+    SET_AUTH(state, obj) {
+      state.auth = obj
     },
-    SET_AUTH(state, bool) {
+    SET_AUTHENTICATED(state, bool) {
       state.authenticated = bool
     },
     SET_MY_PROFILE(state, obj) {
@@ -38,6 +44,15 @@ export default {
     },
   },
   actions: {
+    async getAuth({ commit }) {
+      commit(
+        'SET_AUTH',
+        await auth.init({
+          env: context.$config.VIRNECT_ENV,
+          urls: context.$url,
+        }),
+      )
+    },
     async getAuthInfo({ commit }, params) {
       const data = await api('GET_AUTH_INFO', params)
       const accessToken = params.headers.cookie.match(
@@ -48,7 +63,6 @@ export default {
         'SET_MY_WORKSPACES',
         data.workspaceInfoList.map(workspace => new Workspace(workspace)),
       )
-      commit('SET_LOGIN', true)
     },
   },
 }

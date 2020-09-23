@@ -1,29 +1,31 @@
 {
-  "title": {
-    "welcome": "{username}님, 반갑습니다",
-    "description": "개인 정보 보호 및 보안 설정을 관리하여 <br>VIRNECT 제품과 서비스를 이용할 수 있습니다."
-  },
-  "workspace": {
-    "title": "나의 워크스페이스 정보",
-    "name": "워크스페이스 이름",
-    "desc": "워크스페이스 설명",
-    "master": "워크스페이스 마스터",
-    "descEmpty": "워크스페이스 설명이 없습니다."
-  },
-  "payment": {
-    "title": "구매 정보",
-    "extend": "서비스 이용권"
-  },
-  "usingPlan": {
-    "title": "사용 중인 플랜",
-    "desc": "회원님이 사용 중인 플랜 정보입니다."
-  },
-  "workspacePlan": {
-    "title": "나의 워크스페이스 플랜",
-    "desc": "회원님이 구매한 플랜 정보입니다."
-  },
-  "LoggedInDevice": {
-    "title": "로그인된 기기",
-    "desc": "내 계정으로 로그인된 디바이스 정보입니다."
+  "home": {
+    "title": {
+      "welcome": "{username}님, 반갑습니다",
+      "description": "개인 정보 보호 및 보안 설정을 관리하여 <br>VIRNECT 제품과 서비스를 이용할 수 있습니다."
+    },
+    "workspace": {
+      "title": "나의 워크스페이스 정보",
+      "name": "워크스페이스 이름",
+      "desc": "워크스페이스 설명",
+      "master": "워크스페이스 마스터",
+      "descEmpty": "워크스페이스 설명이 없습니다."
+    },
+    "payment": {
+      "title": "구매 정보",
+      "extend": "서비스 이용권"
+    },
+    "usingPlan": {
+      "title": "사용 중인 플랜",
+      "desc": "회원님이 사용 중인 플랜 정보입니다."
+    },
+    "workspacePlan": {
+      "title": "나의 워크스페이스 플랜",
+      "desc": "회원님이 구매한 플랜 정보입니다."
+    },
+    "LoggedInDevice": {
+      "title": "로그인된 기기",
+      "desc": "내 계정으로 로그인된 디바이스 정보입니다."
+    }
   }
 }

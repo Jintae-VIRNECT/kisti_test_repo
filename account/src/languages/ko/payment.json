@@ -1,43 +1,45 @@
 {
-  "desc": "회원님이 마스터인 워크스페이스 결제 예정 정보 및 결제 이력을 관리합니다",
-  "monetaryUnit": "원",
-  "will": {
-    "title": "결제 예정 정보",
-    "price": "결제 예정 총 금액",
-    "dueDate": "결제 예정일",
-    "way": "결제 수단",
-    "autoPaymentEveryMonth": "매월 자동 결제"
-  },
-  "info": {
-    "title": "제품 이용권 결제 정보",
-    "totalAmount": "결제 예정 플랜 수",
-    "extend": "추가 서비스 이용권 결제 정보"
-  },
-  "log": {
-    "title": "결제 이력",
-    "column": {
-      "no": "구매 번호",
+  "payment": {
+    "desc": "회원님이 마스터인 워크스페이스 결제 예정 정보 및 결제 이력을 관리합니다",
+    "monetaryUnit": "원",
+    "will": {
+      "title": "결제 예정 정보",
+      "price": "결제 예정 총 금액",
+      "dueDate": "결제 예정일",
       "way": "결제 수단",
-      "price": "결제 금액",
-      "paidDate": "결제일"
-    }
-  },
-  "autoPaymentCancelModal": {
-    "title": "자동 결제 해지",
-    "desc": "해지하실 제품 플랜 및 이용권을 다시 한 번 확인해 주세요.",
-    "column": {
-      "product": "제품 플랜 및 추가 서비스 이용권",
-      "count": "수량",
-      "numbersUnit": "개"
+      "autoPaymentEveryMonth": "매월 자동 결제"
     },
-    "cautionTitle": "자동 결제 해지 유의 사항",
-    "caution": "* 지금 해지하시면 남은 기간까지만 제품 플랜 및 서비스 이용이 가능합니다. <br>* 자동 결제 해지 시 다음 결제일부터 워크스페이스 전체 사용자들의 버넥트 제품 이용이 불가하며, 제품 및 서비스 데이터는 최대 2주간 보관됩니다. 결제 예정일 기준 2주 내에 재 결제하시면 기존 정보로 버넥트 제품을 이용하실 수 있습니다.",
-    "cautionAgree": "자동 결제 해지 시 유의 사항에 동의합니다.",
-    "submit": "해지하기",
-    "submitDone": "자동 결제 해지 완료",
-    "submitDoneDesc": "자동 결제가 해지되었습니다. 자동 결제를 다시 유지하고 싶으신 경우 익일부터 이용권 만료일 하루 전까지 [자동 결제 해지 취소]가 가능합니다.",
-    "cancelRequestCancel": "자동 결제 해지 신청 취소",
-    "cancelRequestCancelDesc": "자동 결제 해지 신청을 취소하실 경우 자동결제가 재개됩니다.",
-    "cancelRequestCancelDone": "자동 결제 해지 신청 취소 완료"
+    "info": {
+      "title": "제품 이용권 결제 정보",
+      "totalAmount": "결제 예정 플랜 수",
+      "extend": "추가 서비스 이용권 결제 정보"
+    },
+    "log": {
+      "title": "결제 이력",
+      "column": {
+        "no": "구매 번호",
+        "way": "결제 수단",
+        "price": "결제 금액",
+        "paidDate": "결제일"
+      }
+    },
+    "autoPaymentCancelModal": {
+      "title": "자동 결제 해지",
+      "desc": "해지하실 제품 플랜 및 이용권을 다시 한 번 확인해 주세요.",
+      "column": {
+        "product": "제품 플랜 및 추가 서비스 이용권",
+        "count": "수량",
+        "numbersUnit": "개"
+      },
+      "cautionTitle": "자동 결제 해지 유의 사항",
+      "caution": "* 지금 해지하시면 남은 기간까지만 제품 플랜 및 서비스 이용이 가능합니다. <br>* 자동 결제 해지 시 다음 결제일부터 워크스페이스 전체 사용자들의 버넥트 제품 이용이 불가하며, 제품 및 서비스 데이터는 최대 2주간 보관됩니다. 결제 예정일 기준 2주 내에 재 결제하시면 기존 정보로 버넥트 제품을 이용하실 수 있습니다.",
+      "cautionAgree": "자동 결제 해지 시 유의 사항에 동의합니다.",
+      "submit": "해지하기",
+      "submitDone": "자동 결제 해지 완료",
+      "submitDoneDesc": "자동 결제가 해지되었습니다. 자동 결제를 다시 유지하고 싶으신 경우 익일부터 이용권 만료일 하루 전까지 [자동 결제 해지 취소]가 가능합니다.",
+      "cancelRequestCancel": "자동 결제 해지 신청 취소",
+      "cancelRequestCancelDesc": "자동 결제 해지 신청을 취소하실 경우 자동결제가 재개됩니다.",
+      "cancelRequestCancelDone": "자동 결제 해지 신청 취소 완료"
+    }
   }
 }
