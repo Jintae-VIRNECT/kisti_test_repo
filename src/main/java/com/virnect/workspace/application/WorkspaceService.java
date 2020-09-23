@@ -579,17 +579,36 @@ public class WorkspaceService {
 		//초대받는 사람에게 할당할 라이선스가 있는 지 체크.(useful license check)
 		for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfo : workspaceLicensePlanInfoResponse
 			.getLicenseProductInfoList()) {
-			if (licenseProductInfo.getProductName().equals(LicenseProduct.REMOTE.toString())
-				&& licenseProductInfo.getUnUseLicenseAmount() < requestRemote) {
-				throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+
+			if (licenseProductInfo.getProductName().equals(LicenseProduct.REMOTE.toString())) {
+				log.debug(
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Remote License count >> {}, Request Remote License count >> {}",
+					licenseProductInfo.getUnUseLicenseAmount(),
+					requestRemote
+				);
+				if (licenseProductInfo.getUnUseLicenseAmount() < requestRemote) {
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 			}
-			if (licenseProductInfo.getProductName().equals(LicenseProduct.MAKE.toString())
-				&& licenseProductInfo.getUnUseLicenseAmount() < requestMake) {
-				throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+			if (licenseProductInfo.getProductName().equals(LicenseProduct.MAKE.toString())) {
+				log.debug(
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Make License count >> {}, Request Make License count >> {}",
+					licenseProductInfo.getUnUseLicenseAmount(),
+					requestMake
+				);
+				if (licenseProductInfo.getUnUseLicenseAmount() < requestMake) {
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 			}
-			if (licenseProductInfo.getProductName().equals(LicenseProduct.VIEW.toString())
-				&& licenseProductInfo.getUnUseLicenseAmount() < requestView) {
-				throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+			if (licenseProductInfo.getProductName().equals(LicenseProduct.VIEW.toString())) {
+				log.debug(
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse View License count >> {}, Request View License count >> {}",
+					licenseProductInfo.getUnUseLicenseAmount(),
+					requestView
+				);
+				if (licenseProductInfo.getUnUseLicenseAmount() < requestView) {
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 			}
 		}
 
@@ -644,7 +663,8 @@ public class WorkspaceService {
 						userInvite.setUpdatedDate(LocalDateTime.now());
 						userInvite.setExpireTime(duration);
 						this.userInviteRepository.save(userInvite);
-						log.info("REDIS UPDATE - {}", userInvite.toString());
+						log.debug(
+							"[WORKSPACE INVITE USER] Worksapce Invite Info Redis Update >> {}", userInvite.toString());
 					} else {
 						UserInvite newUserInvite = UserInvite.builder()
 							.inviteId(inviteUserResponse.getUserUUID() + "-" + workspaceId)
@@ -670,7 +690,8 @@ public class WorkspaceService {
 							.expireTime(duration)
 							.build();
 						this.userInviteRepository.save(newUserInvite);
-						log.info("REDIS SET - {}", newUserInvite.toString());
+						log.debug(
+							"[WORKSPACE INVITE USER] Worksapce Invite Info Redis Set >> {}", newUserInvite.toString());
 					}
 					//메일은 이미 초대한 것 여부와 관계없이 발송한다.
 					String rejectUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId="
@@ -1399,9 +1420,15 @@ public class WorkspaceService {
 		return new ApiResponse<>(userInfoDTO);
 	}
 
+	@Transactional
 	public ApiResponse<Boolean> kickOutMember(
 		String workspaceId, MemberKickOutRequest memberKickOutRequest, Locale locale
 	) {
+		log.debug(
+			"[WORKSPACE KICK OUT USER] Workspace >> {}, Kickout User >> {}, Request User >> {}", workspaceId,
+			memberKickOutRequest.getKickedUserId(),
+			memberKickOutRequest.getUserId()
+		);
 		Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 		UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspace.getUserId())
@@ -1431,22 +1458,33 @@ public class WorkspaceService {
 		//라이선스 해제
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, memberKickOutRequest.getKickedUserId()).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+		if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
 			myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
+				log.debug(
+					"[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
+					myLicenseInfoResponse.getProductName()
+				);
 				Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(
 					workspaceId, memberKickOutRequest.getKickedUserId(), myLicenseInfoResponse.getProductName())
 					.getData();
+
 				if (!revokeResult) {
 					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
 				}
 			});
 		}
+		log.debug(
+			"[WORKSPACE KICK OUT USER] Workspace User License not Revoke. License Product is Empty >> {}",
+			myLicenseInfoListResponse.getLicenseInfoList().toString()
+		);
 
 		//workspace_user_permission 삭제(history 테이블 기록)
 		this.workspaceUserPermissionRepository.delete(kickedUserPermission);
+		log.debug("[WORKSPACE KICK OUT USER] Delete Workspace user permission info.");
 
 		//workspace_user 삭제(history 테이블 기록)
 		this.workspaceUserRepository.delete(kickedUserPermission.getWorkspaceUser());
+		log.debug("[WORKSPACE KICK OUT USER] Delete Workspace user info.");
 
 		//메일 발송
 		Context context = new Context();
@@ -1465,6 +1503,7 @@ public class WorkspaceService {
 		String template = this.messageSource.getMessage(Mail.WORKSPACE_KICKOUT.getTemplate(), null, locale);
 		String html = springTemplateEngine.process(template, context);
 		this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
+		log.debug("[WORKSPACE KICK OUT USER] Send Workspace kick out mail.");
 
 		//history 저장
 		String message = this.messageSource.getMessage(
