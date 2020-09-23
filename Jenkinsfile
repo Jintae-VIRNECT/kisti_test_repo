@@ -1,107 +1,91 @@
 pipeline {
-      agent any
-        environment {
-          GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
-          REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
-        }
-      stages {
-        stage('Pre-Build') {
+  agent any
+
+  environment {
+    GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+    REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+  }
+
+  stages {
+    stage('Pre-Build') {
+      parallel {
+        stage('Develop Branch') {
+          when {
+            branch 'develop'
+          }
           steps {
-            echo 'Pre-Build Stage'
             catchError() {
               sh 'cp coturn/Dockerfile ./'
-            }    
+            }
           }
         }
-    
-        stage('Build') {
-          parallel {
-            stage('Build') {
-              steps {
-                echo 'Build Stage'
-              }
-            }
-    
-            stage('Develop Branch') {
-              when {
-                branch 'develop'
-              }
-              steps {
-                sh 'docker build -t rm-coturnserver .'
-              }
-            } 
-    
-            stage('Staging Branch') {
-              when {
-                branch 'staging'
-              }
-              steps {
-                sh 'git checkout ${GIT_TAG}'
-                sh 'cp coturn/Dockerfile.qa ./Dockerfile'
-                sh 'docker build -t rm-coturnserver:${GIT_TAG} .'
-              }
-            }
-    
-            stage('Master Branch') {
-              when {
-                branch 'master'
-              }
-              steps {
-                sh 'git checkout ${GIT_TAG}'
-                sh 'cp coturn/Dockerfile.prod ./Dockerfile'
-                sh 'docker build -t rm-coturnserver:${GIT_TAG} .'
-              }
-            }
-    
+
+        stage('Staging Branch') {
+          when {
+            branch 'staging'
           }
-        }
-    
-        stage('Test') {
           steps {
-            echo 'Test Stage'
+            catchError() {
+              sh 'cp coturn/Dockerfile ./'
+            }
           }
-        }
-
-   stage('Tunneling') {
-      steps {
-        echo 'SSH Check'
-         catchError() {
-          sh 'port=`netstat -lnp | grep 127.0.0.1:4122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Coturn Tunneling OK";else echo "SSH QA Coturn Tunneling Not OK";ssh -M -S Remote-Coturn-QA -fnNT -L 4122:10.0.10.26:22 jenkins@13.125.24.98;fi'
-          sh 'port=`netstat -lnp | grep 127.0.0.1:6122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Coturn Tunneling OK";else echo "SSH Prod Coturn Tunneling Not OK";ssh -M -S Remote-Coturn-Prod -fnNT -L 6122:10.0.20.20:22 jenkins@13.125.24.98;fi'
-
         }
       }
     }
-    
-        stage('Deploy') {
-          parallel {
-            stage('Deploy') {
-              steps {
-                echo 'Deploy Stage'
-              }
-            }
-    
-            stage('Develop Branch') {
-              when {
-                branch 'develop'
-              }
-              steps {
-                sh 'count=`docker ps -a | grep rm-coturnserver | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
-                sh 'docker run -e VIRNECT_ENV=develop -e CONFIG_SERVER=http://192.168.6.3:6383 -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --restart=always -d --name=rm-coturnserver rm-coturnserver --external-ip=192.168.6.3'
-                sh 'docker image prune -a -f'
-              }
-            }
-    
-            stage('Staging Branch') {
-              when {
-                branch 'staging'
-              }
 
-              steps {
+    stage('Build') {
+      parallel {
+        stage('Develop Branch') {
+          when {
+            branch 'develop'
+          }
+          steps {
+            sh 'docker build -t rm-coturnserver .'
+          }
+        }
+
+        stage('Staging Branch') {
+          when {
+            branch 'staging'
+          }
+          steps {
+            sh 'git checkout ${GIT_TAG}'
+            sh 'docker build -t rm-coturnserver:${GIT_TAG} .'
+          }
+        }
+      }
+    }
+
+    stage('Test') {
+      steps {
+        echo 'Test Stage'
+      }
+    }
+
+    stage('Deploy') {
+      parallel {
+        stage('Develop Branch') {
+          when {
+            branch 'develop'
+          }
+          steps {
+            sh 'count=`docker ps -a | grep rm-coturnserver | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -e VIRNECT_ENV=develop -e CONFIG_SERVER=http://192.168.6.3:6383 -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --restart=always -d --name=rm-coturnserver rm-coturnserver --external-ip=192.168.6.3'
+            sh 'docker image prune -a -f'
+          }
+        }
+
+        stage('Staging Branch') {
+          when {
+            branch 'staging'
+          }
+
+          steps {
             catchError() {
               script {
                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                      docker.image("rm-coturnserver:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("rm-coturnserver:${GIT_TAG}").push("${GIT_TAG}")
+                  docker.image("rm-coturnserver:${GIT_TAG}").push("latest")
                 }
               }
 
@@ -123,7 +107,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-coturnserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -e VIRNECT_ENV=staging -e CONFIG_SERVER=http://stgconfig.virnect.com -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG} --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`"
+                          execCommand: "docker run -e VIRNECT_ENV=staging -e CONFIG_SERVER=https://stgconfig.virnect.com -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG} --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -133,26 +117,17 @@ pipeline {
                   ]
                 )
               }
-
             }
-
           }
-            }
-    
-            stage('Master Branch') {
-              when {
-                branch 'master'
-              }
+        }
 
-              steps {
-              catchError() {
-                script {
-                  docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                        docker.image("rm-coturnserver:${GIT_TAG}").push("${GIT_TAG}")
-                        docker.image("rm-coturnserver:${GIT_TAG}").push("latest")
-                  }
-                }
+        stage('Master Branch') {
+          when {
+            branch 'master'
+          }
 
+          steps {
+            catchError() {
               script {
                 sshPublisher(
                   continueOnError: false, failOnError: true,
@@ -171,7 +146,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-coturnserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -e VIRNECT_ENV=production -e CONFIG_SERVER=http://config.virnect.com -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG} --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`"
+                          execCommand: "docker run -e VIRNECT_ENV=production -e CONFIG_SERVER=https://config.virnect.com -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG} --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -181,29 +156,27 @@ pipeline {
                   ]
                 )
               }
+
               script {
-                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                 def payload = """
+                def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
                 """                             
 
                 sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-               }
+              }
             }
-
-          }
-
-            }
-    
           }
         }
-    
       }
-    post {
-        always {
-          emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$remote')
-          office365ConnectorSend 'https://outlook.office.com/webhook/41e17451-4a57-4a25-b280-60d2d81e3dc9@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/JenkinsCI/e79d56c16a7944329557e6cb29184b32/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'
-        }
-      }
-      
     }
+  }
+
+
+  post {
+    always {
+      emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$remote')
+      office365ConnectorSend 'https://outlook.office.com/webhook/41e17451-4a57-4a25-b280-60d2d81e3dc9@d70d3a32-a4b8-4ac8-93aa-8f353de411ef/JenkinsCI/e79d56c16a7944329557e6cb29184b32/d0ac2f62-c503-4802-8bf9-f6368d7f39f8'
+    }
+  }
+}
