@@ -3,6 +3,7 @@ RELEASE
 
 New Features
 - eureka instance host ip 서버 로그 포맷에 추가
+- PF-Config 서버 연동, 환경 설정 정보 동기화 기능 추가
 
 Bug Fixes
 - API 메시지 암호화 및 복호화 필터 로직 수정
