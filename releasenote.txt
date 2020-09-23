@@ -1,11 +1,10 @@
 RELEASE
 
 New Features
+- staging, production 설정 외부로 뺌
 
 Bug Fixes
-- 컨텐츠 삭제 에러 수정
 
 Limitation
-
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
