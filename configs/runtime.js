@@ -1,13 +1,5 @@
-const fs = require('fs')
-const dotenv = require('dotenv')
-const filePath = `.env.${process.env.VIRNECT_ENV.trim()}`
-const parseConfig = dotenv.parse(fs.readFileSync(filePath))
-
-const env = process.env.VIRNECT_ENV.trim()
-const configServer =
-	process.env.CONFIG_SERVER == undefined
-		? parseConfig.CONFIG_SERVER
-		: process.env.CONFIG_SERVER.trim()
+const env = process.env.VIRNECT_ENV
+const configServer = process.env.CONFIG_SERVER
 
 const axios = require('axios')
 
