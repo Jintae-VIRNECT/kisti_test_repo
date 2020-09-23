@@ -92,8 +92,8 @@
     margin-left: 1.143rem;
     padding: 0.429rem 1rem;
     color: transparent;
-    background: url(~assets/image/call/gnb_ic_callout.svg) center no-repeat
-      $color_red;
+    background: url(~assets/image/call/gnb_ic_callout.svg) center/2.429rem
+      no-repeat $color_red;
     border-radius: 1.214rem;
     @include ir();
   }

@@ -75,13 +75,6 @@ export default {
       if (idx < 0) return false
       return true
     },
-    hasWorker() {
-      const idx = this.participants.findIndex(
-        user => user.roleType === ROLE.WORKER,
-      )
-      if (idx < 0) return false
-      return true
-    },
   },
   watch: {
     shareFile(file, oldFile) {
@@ -101,14 +94,6 @@ export default {
       if (!hear && hear !== bHear && this.participants.length > 0) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         this.setView(VIEW.STREAM)
-      }
-    },
-    hasWorker(hear, bHear) {
-      if (!hear && hear !== bHear && this.participants.length > 0) {
-        this.toastDefault(this.$t('service.toast_leave_worker'))
-        if (this.view === VIEW.AR) {
-          this.setView(VIEW.STREAM)
-        }
       }
     },
     mainView: {

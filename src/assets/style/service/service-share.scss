@@ -236,6 +236,7 @@ $share_savebtn_height: 2.929rem;
   &:hover {
     height: auto;
     white-space: pre-wrap;
+    text-overflow: unset;
   }
 }
 

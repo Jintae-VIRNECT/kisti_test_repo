@@ -25,6 +25,7 @@ export default class LocalRecorder {
     this.interval = 1
     this.nickname = 'NONE'
     this.userId = 'NONE'
+    this.sessionId = ''
   }
 
   setConfig(config) {
@@ -37,6 +38,7 @@ export default class LocalRecorder {
     this.interval = config.interval
     this.nickname = config.nickname
     this.userId = config.userId
+    this.sessionId = config.sessionId
   }
 
   /**
@@ -153,6 +155,7 @@ export default class LocalRecorder {
           this.userId,
           this.nickname,
           this.roomTitle,
+          this.sessionId,
         )
       }
 

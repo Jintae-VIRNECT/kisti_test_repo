@@ -8,7 +8,6 @@ const host = '0.0.0.0'
 const port = '8886'
 const logger = require('../server/logger')
 const configService = require('../server/config')
-const Dotenv = require('dotenv-webpack')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const mode = 'development'
@@ -18,8 +17,8 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
   devtool: 'cheap-module-eval-source-map',
   devServer: {
     https: {
-      key: fs.readFileSync(path.join(__dirname, '../ssl/server.key')),
-      cert: fs.readFileSync(path.join(__dirname, '../ssl/server.crt')),
+      key: fs.readFileSync(path.join(__dirname, '../ssl/virnect.key')),
+      cert: fs.readFileSync(path.join(__dirname, '../ssl/virnect.crt')),
     },
     host,
     port,
@@ -77,6 +76,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     open: false,
     before: function(app) {
       var bodyParser = require('body-parser')
+      configService.init()
       app.use(
         bodyParser.json({
           limit: '50mb',
@@ -90,11 +90,13 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
 
       app.get('/urls', bodyParser.json(), function(req, res) {
         const a = configService.getUrls()
+        a.console = '/account'
+        a.runtime = 'local'
         res.json(a)
       })
 
       app.get('/pdf.worker', function(req, res) {
-        res.sendFile(path.join(__dirname, '../static/js/pdf.worker.js'))
+        res.sendFile(path.join(__dirname, '../static/js/pdf.worker.min.js'))
       })
     },
   },
@@ -135,10 +137,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       template: './src/apps/sample/app.html',
       filename: 'sample/index.html',
       chunks: ['sample'],
-    }),
-
-    new Dotenv({
-      path: `.env.${process.env.NODE_ENV.trim()}`,
     }),
 
     // new BundleAnalyzerPlugin({

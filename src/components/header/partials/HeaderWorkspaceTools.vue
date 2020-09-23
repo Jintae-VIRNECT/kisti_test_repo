@@ -1,8 +1,10 @@
 <template>
   <ul class="header-workspace-tools">
-    <stream></stream>
-    <mic></mic>
-    <speaker></speaker>
+    <template v-if="hasWorkspace">
+      <stream></stream>
+      <mic></mic>
+      <speaker></speaker>
+    </template>
     <notice></notice>
     <profile></profile>
   </ul>
@@ -31,6 +33,13 @@ export default {
   },
   computed: {
     ...mapGetters(['mainView', 'mute']),
+    hasWorkspace() {
+      if (this.workspace && this.workspace.uuid && this.hasLicense) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
 
   /* Lifecycles */

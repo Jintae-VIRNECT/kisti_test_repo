@@ -8,11 +8,10 @@
         <p class="setting__label">{{ $t('workspace.setting_input_device') }}</p>
         <r-select
           class="setting__r-selecter"
-          @changeValue="setMic"
           :options="micDevices"
-          :value="'deviceId'"
-          :text="'label'"
-          :defaultValue="micId"
+          value="deviceId"
+          text="label"
+          :selectedValue.sync="micId"
         >
         </r-select>
       </figure>
@@ -24,11 +23,10 @@
         <r-select
           ref="settingOutput"
           class="setting__r-selecter"
-          @changeValue="setSpeaker"
           :options="speakerDevices"
-          :value="'deviceId'"
-          :text="'label'"
-          :defaultValue="speakerId"
+          value="deviceId"
+          text="label"
+          :selectedValue.sync="speakerId"
         >
         </r-select>
       </figure>
@@ -43,7 +41,10 @@ export default {
     RSelect,
   },
   data() {
-    return {}
+    return {
+      speakerId: '',
+      micId: '',
+    }
   },
   props: {
     micDevices: {
@@ -57,12 +58,6 @@ export default {
   },
   computed: {
     ...mapGetters(['mic', 'speaker']),
-    micId() {
-      return this.mic['deviceId']
-    },
-    speakerId() {
-      return this.speaker['deviceId']
-    },
     soundWidth() {
       if (this.micTestMode) {
         return parseInt(this.audioSoundVolume * 100)
@@ -71,20 +66,36 @@ export default {
       }
     },
   },
+  watch: {
+    micId(id) {
+      this.setMic(id)
+    },
+    speakerId(id) {
+      this.setMic(id)
+    },
+  },
   methods: {
     ...mapActions(['setDevices']),
-    setMic(mic) {
+    setMic(deviceId) {
       this.setDevices({
-        mic: { deviceId: mic.deviceId },
+        mic: { deviceId: deviceId },
       })
-      this.$localStorage.setDevice('mic', 'deviceId', mic.deviceId)
+      this.$localStorage.setDevice('mic', 'deviceId', deviceId)
     },
-    setSpeaker(speaker) {
+    setSpeaker(deviceId) {
       this.setDevices({
-        speaker: { deviceId: speaker.deviceId },
+        speaker: { deviceId: deviceId },
       })
-      this.$localStorage.setDevice('speaker', 'deviceId', speaker.deviceId)
+      this.$localStorage.setDevice('speaker', 'deviceId', deviceId)
     },
+  },
+  mounted() {
+    if (this.mic['deviceId']) {
+      this.micId = this.mic['deviceId']
+    }
+    if (this.speaker['deviceId']) {
+      this.speakerId = this.speaker['deviceId']
+    }
   },
 }
 </script>

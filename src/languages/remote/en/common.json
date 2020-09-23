@@ -37,6 +37,7 @@
   "date": {
     "lastday": "[Yesterday]",
     "nextday": "[Tomorrow]",
+    "timeHour": "h[hour] m[min]",
     "time": "m[min] s[sec]",
     "hour": "Hour",
     "minute": "Minute",

@@ -15,24 +15,10 @@ export default {
     },
     'tools.color'(color) {
       if (this.canvas) {
-        this.canvas.freeDrawingBrush.color = hexToRGBA(
-          color,
-          this.tools.opacity,
-        )
+        this.canvas.freeDrawingBrush.color = hexToRGBA(color, 1)
       }
       if (this.cursor) {
-        this.cursor.setColor(hexToRGBA(color, this.tools.opacity))
-      }
-    },
-    'tools.opacity'(opacity) {
-      if (this.canvas) {
-        this.canvas.freeDrawingBrush.color = hexToRGBA(
-          this.tools.color,
-          opacity,
-        )
-      }
-      if (this.cursor) {
-        this.cursor.setColor(hexToRGBA(this.tools.color, opacity))
+        this.cursor.setColor(hexToRGBA(color, 1))
       }
     },
     'tools.lineWidth'(size) {

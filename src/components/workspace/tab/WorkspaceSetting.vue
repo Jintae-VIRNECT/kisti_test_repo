@@ -163,10 +163,9 @@ export default {
           audio = true
         }
         await getUserMedia(audio, video)
-        const devicesDetail = await this.getMediaDevice()
-        this.videoDevices = devicesDetail.videos
-        this.micDevices = devicesDetail.mics
-        this.speakerDevices = devicesDetail.speakers
+        this.videoDevices = devices.videos
+        this.micDevices = devices.mics
+        this.speakerDevices = devices.speakers
       } else {
         this.showDenied = true
       }

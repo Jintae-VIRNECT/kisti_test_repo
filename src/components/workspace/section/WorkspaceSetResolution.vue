@@ -21,11 +21,10 @@
         </div>
         <r-select
           class="setting__r-selecter"
-          @changeValue="setRecResolution"
           :options="localRecResOpt"
-          :value="'value'"
-          :text="'text'"
-          :defaultValue="localRecord.resolution"
+          value="value"
+          text="text"
+          :selectedValue.sync="recordResolution"
         >
         </r-select>
       </figure>
@@ -42,6 +41,7 @@ export default {
   data() {
     return {
       localRecResOpt: localRecResOpt,
+      recordResolution: '',
     }
   },
   components: {
@@ -51,15 +51,25 @@ export default {
   computed: {
     ...mapGetters(['localRecord']),
   },
+  watch: {
+    recordResolution(resolution) {
+      this.setRecResolution(resolution)
+    },
+  },
   methods: {
     ...mapActions(['setRecord']),
 
-    setRecResolution(newResolution) {
+    setRecResolution(resolution) {
       this.setRecord({
-        interval: newResolution.value,
+        resolution: resolution,
       })
-      this.$localStorage.setRecord('resolution', newResolution.value)
+      this.$localStorage.setRecord('resolution', resolution)
     },
+  },
+  mounted() {
+    if (this.localRecord.resolution) {
+      this.recordResolution = this.localRecord.resolution
+    }
   },
 }
 </script>

@@ -37,6 +37,7 @@
   "date": {
     "lastday": "[어제] A",
     "nextday": "[내일] A",
+    "timeHour": "h시간 m분",
     "time": "m분 s초",
     "hour": "시간",
     "minute": "분",

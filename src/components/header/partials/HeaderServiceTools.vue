@@ -12,7 +12,7 @@
 
     <call-time></call-time>
 
-    <button class="header-tools__leave" @click="leave">
+    <button class="header-tools__leave" @click.once="leave">
       {{ $t('button.leave') }}
     </button>
   </div>
@@ -20,8 +20,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { DRAWING, AR_DRAWING, ROLE } from 'configs/remote.config'
-import { VIEW } from 'configs/view.config'
 
 import Stream from '../tools/Stream'
 import Mic from '../tools/Mic'
@@ -59,10 +57,8 @@ export default {
   methods: {
     leave() {
       try {
-        this.$nextTick(() => {
-          this.$call.leave()
-          this.$router.push({ name: 'workspace' })
-        })
+        this.$call.leave()
+        this.$router.push({ name: 'workspace' })
       } catch (err) {
         this.$router.push({ name: 'workspace' })
       }

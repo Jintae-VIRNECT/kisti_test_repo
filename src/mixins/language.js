@@ -57,11 +57,6 @@ export default {
     },
 
     mx_changeLang(locale) {
-      if (this.isScreenApp) {
-        this.mx_mobileChangeLang(locale)
-        return
-      }
-
       if (locale) {
         setLangCookie(locale)
       } else {
@@ -76,13 +71,6 @@ export default {
       if (!this.account || !this.account.sId) {
         return
       }
-    },
-    mx_mobileChangeLang(locale) {
-      if (!locale) {
-        locale = this.mx_getLangCode()
-      }
-      this.$i18n.locale = locale
-      document.documentElement.lang = locale
     },
   },
 }

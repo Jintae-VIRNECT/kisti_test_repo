@@ -9,6 +9,19 @@ let db = null
 let initFlag = true
 const logType = 'IDB'
 const USAGE_LIMIT_PERSENTAGE = 80
+const columns = [
+  '++id',
+  'groupId',
+  'uuid',
+  'fileName',
+  'playTime',
+  'fileSize',
+  'blob',
+  'userId',
+  'accountName',
+  'roomName',
+  'sessionId',
+]
 
 async function initIDB() {
   //define db structure
@@ -20,9 +33,8 @@ async function initIDB() {
        * Warning!! if you change column then
        * increase version number
        */
-      db.version(2).stores({
-        RemoteMediaChunk:
-          '++id, groupId, uuid, fileName, playTime, fileSize,  blob, userId, accountName, roomName',
+      db.version(3).stores({
+        RemoteMediaChunk: columns.join(', '),
       })
       initFlag = false
 
@@ -47,6 +59,7 @@ async function initIDB() {
  * @param {String} userId account id
  * @param {String} accountName account nickname
  * @param {String} roomName room name
+ * @param {String} sessionId sessionId
  */
 async function addMediaChunk(
   groupId,
@@ -58,6 +71,7 @@ async function addMediaChunk(
   userId,
   accountName,
   roomName,
+  sessionId,
 ) {
   debug(
     `groupId : ${groupId} 
@@ -68,7 +82,8 @@ async function addMediaChunk(
     blob :  ${blob} 
     userId : ${userId} 
     accountName :  ${accountName}
-    roomName :  ${roomName}`,
+    roomName :  ${roomName}
+    sessionId : ${sessionId}`,
   )
 
   await db.RemoteMediaChunk.add({
@@ -81,6 +96,7 @@ async function addMediaChunk(
     userId: userId,
     accountName: accountName,
     roomName: roomName,
+    sessionId: sessionId,
   })
 }
 
@@ -140,8 +156,8 @@ async function checkQuota() {
       100
     ).toFixed(2)
 
-    logger(logType, `Quota: ${estimation.quota}`)
-    logger(logType, `Usage: ${estimation.usage}`)
+    logger(logType, `Quota: ${estimation.quota} Byte`)
+    logger(logType, `Usage: ${estimation.usage} Byte`)
     logger(logType, `UsagePersentage: ${quotaUsagePersentage}%`)
 
     if (quotaUsagePersentage < USAGE_LIMIT_PERSENTAGE) {

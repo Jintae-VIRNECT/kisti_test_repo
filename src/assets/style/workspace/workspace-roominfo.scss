@@ -108,6 +108,7 @@
     margin-right: 1.143em;
     padding: 0.857em 3.071em;
     color: rgba($color_primary, 0.7);
+    font-weight: 500;
     font-size: 1.071em;
     border-color: rgba($color_primary, 0.7);
     &:focus {
@@ -126,6 +127,7 @@
   &.delete {
     padding: 0.857em 3.071em;
     color: rgba(#979797, 0.5);
+    font-weight: 500;
     font-size: 1.071em;
     border-color: rgba(#979797, 0.5);
     &:focus {
@@ -139,6 +141,10 @@
     &:active {
       color: rgba(#979797, 0.7);
       border-color: rgba(#979797, 0.7);
+    }
+    &:disabled {
+      color: rgba(#979797, 0.5);
+      border-color: rgba(#979797, 0.5);
     }
   }
 }

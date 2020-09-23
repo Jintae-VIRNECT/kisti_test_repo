@@ -14,16 +14,16 @@
             @change="fileChangeHandler"
           />
         </li>
-        <template v-for="(file, idx) of sharingList">
+        <template v-for="file of sharingList">
           <sharing-pdf
             v-if="file.pdf"
-            :key="'sharing' + idx"
+            :key="'sharing_' + file.id"
             :fileInfo="file"
             @pdfView="pdfView(file)"
           ></sharing-pdf>
           <sharing-image
             v-else
-            :key="'sharing' + idx"
+            :key="'sharing_' + file.id"
             :fileInfo="file"
           ></sharing-image>
         </template>
@@ -36,9 +36,11 @@
 import { mapActions, mapGetters } from 'vuex'
 import SharingImage from './SharingImage'
 import SharingPdf from './SharingPdf'
+import toastMixin from 'mixins/toast'
 const maxFileSize = 1024 * 1024 * 20
 export default {
   name: 'ShareFileList',
+  mixins: [toastMixin],
   components: {
     SharingImage,
     SharingPdf,
@@ -72,7 +74,7 @@ export default {
     loadFile(file) {
       if (file) {
         if (file.size > maxFileSize) {
-          alert(this.$t('service.file_maxsize'))
+          this.toastError(this.$t('service.file_maxsize'))
           this.clearUploadFile()
           return false
         }
@@ -85,20 +87,18 @@ export default {
           const docItem = {
             id: Date.now(),
             filedata: '',
-            pages: new Array(1),
+            document: null,
             loaded: 1,
           }
 
           docItem.filedata = file
           docItem.loaded = 0
-          docItem.pdf = false
-          if (file.type === 'application/pdf') {
-            docItem.pdf = true
-          }
+          docItem.pdf = file.type === 'application/pdf'
           this.addFile(docItem)
+          this.clearUploadFile()
           // this.sharingList.push(docItem)
         } else {
-          alert(this.$t('service.file_type'))
+          this.toastError(this.$t('service.file_type'))
           return false
         }
       }

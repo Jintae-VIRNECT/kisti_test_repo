@@ -39,7 +39,7 @@ Vue.prototype.$localStorage = localStorage
 Vue.prototype.logger = logger
 Vue.prototype.debug = debug
 
-if ('active' === process.env.SENTRY) {
+if ('remote.virnect.com' === location.host) {
   Sentry.init({
     dsn:
       'https://18c249a3501c43bbaf223c6b53f598ab@o280606.ingest.sentry.io/5354647',
