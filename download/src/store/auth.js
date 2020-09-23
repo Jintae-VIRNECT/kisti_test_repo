@@ -1,30 +1,33 @@
+import { context } from '@/plugins/context'
+import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
+
 export default {
   state: () => ({
-    isLogin: false,
-    myProfile: {},
+    auth: {
+      env: '',
+      urls: {},
+      myInfo: {},
+    },
   }),
   getters: {
-    isLogin(state) {
-      return state.isLogin
-    },
-    myProfile(state) {
-      return state.myProfile
+    auth(state) {
+      return state.auth
     },
   },
   mutations: {
-    SET_LOGIN(state, bool) {
-      state.isLogin = bool
-    },
-    SET_MY_PROFILE(state, obj) {
-      state.myProfile = obj
+    SET_AUTH(state, obj) {
+      state.auth = obj
     },
   },
   actions: {
-    async getAuthInfo({ commit }, params) {
-      const data = await this.$api('GET_AUTH_INFO', params)
-      commit('SET_MY_PROFILE', data.userInfo)
-      commit('SET_LOGIN', true)
-      return data
+    async getAuth({ commit }) {
+      commit(
+        'SET_AUTH',
+        await auth.init({
+          env: context.$config.VIRNECT_ENV,
+          urls: context.$url,
+        }),
+      )
     },
   },
 }
