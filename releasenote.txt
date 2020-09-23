@@ -2,12 +2,12 @@
 RELEASE
 
 New Features
-- host ip
+- Configuration Server
 
 Bug Fixes
-- Jenkinsfile Versioning
+- 
 
 Limitation
-- 없음
+- 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
