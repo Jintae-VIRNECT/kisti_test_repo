@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>DE008BC8-FF15-4881-A5B8-0765456A7888@1.00x</title>
+    <defs>
+        <polygon id="path-1" points="6 15.7484848 7.21336761 17 14 10 7.21336761 3 6 4.25151515 11.5732648 10"></polygon>
+    </defs>
+    <g id="Remote_part01" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RW1_0310-_플랜-초과-안내-" transform="translate(-1106.000000, -576.000000)">
+            <g id="popup" transform="translate(750.000000, 382.000000)">
+                <g id="btn_Link" transform="translate(30.000000, 180.000000)">
+                    <g id="icon_link" transform="translate(326.000000, 14.000000)">
+                        <rect id="Rectangle" x="0" y="0" width="20" height="20"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/navigation/arrow_forward_ios_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

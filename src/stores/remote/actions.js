@@ -15,6 +15,9 @@ export default {
   changeWorkspace({ commit }, workspace) {
     commit(types.CHANGE_WORKSPACE, workspace)
   },
+  clearWorkspace({ commit }) {
+    commit(types.CLEAR_WORKSPACE)
+  },
 
   callReset({ commit }) {
     commit(types.CALL_RESET)

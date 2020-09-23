@@ -4,6 +4,10 @@ export default {
   TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { type: 'form' }],
   USER_INFO: ['GET', '/users/{userId}'],
+
+  /* LICENSE */
+  GET_LICENSE: ['GET', '/licenses/plan/{userId}'],
+
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
   HISTORY_ITEM: ['GET', '/remote/history/{workspaceId}/{sessionId}'],
@@ -39,8 +43,6 @@ export default {
   KICKOUT_MEMBER: ['DELETE', '/remote/room/{workspaceId}/{sessionId}/member'],
   SEND_SIGNAL: ['POST', '/remote/room/{workspaceId}/signal'],
 
-  /* LICENSE */
-  GET_LICENSE: ['GET', '/licenses/plan/{userId}'],
   /* MESSAGE */
   SEND_PUSH: ['POST', '/remote/message/push'],
 

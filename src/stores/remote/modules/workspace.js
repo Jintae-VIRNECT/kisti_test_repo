@@ -1,4 +1,8 @@
-import { INIT_WORKSPACE, CHANGE_WORKSPACE } from '../mutation-types'
+import {
+  INIT_WORKSPACE,
+  CHANGE_WORKSPACE,
+  CLEAR_WORKSPACE,
+} from '../mutation-types'
 
 const expireCheck = time => {
   if (process.env.NODE_ENV !== 'production') return true
@@ -62,6 +66,9 @@ const mutations = {
   [CHANGE_WORKSPACE](state, workspace) {
     state.current = workspace
     window.localStorage.setItem('workspace', workspace.uuid)
+  },
+  [CLEAR_WORKSPACE](state) {
+    state.current = {}
   },
 }
 
