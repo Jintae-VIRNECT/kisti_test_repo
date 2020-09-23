@@ -64,6 +64,7 @@ module.exports = async () => {
       VIRNECT_ENV: env.VIRNECT_ENV,
       API_GATEWAY_URL: env.URLS.api,
       API_TIMEOUT: env.API_TIMEOUT,
+      DEBUG: env.NUXT_DEBUG,
       URLS: env.URLS,
     },
     /**

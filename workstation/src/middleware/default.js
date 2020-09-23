@@ -29,20 +29,26 @@ export default async function({ req, store, redirect, error, $config }) {
     try {
       await store.dispatch('auth/getAuthInfo', { headers: req.headers })
       const myWorkspaces = store.getters['auth/myWorkspaces']
-      if (myWorkspaces.length) {
-        // 마지막 워크스페이스 확인
+      if (!myWorkspaces.length) {
+        // 워크스페이스가 없는 경우
+        return redirect('/start')
+      } else {
+        let activeWorkspaceId = ''
+        // 마지막 워크스페이스 쿠키 확인
         const lastWorkspace = req.headers.cookie.match(
           /activeWorkspace=([0-9a-zA-Z]+)/,
         )
-        const activeWorkspace =
-          lastWorkspace &&
-          myWorkspaces.find(workspace => workspace.uuid === lastWorkspace[1])
-            ? lastWorkspace[1]
-            : myWorkspaces[0].uuid
-        store.commit('auth/SET_ACTIVE_WORKSPACE', activeWorkspace)
-      } else {
-        // 워크스페이스가 없는 경우
-        return redirect('/start')
+        if (lastWorkspace) activeWorkspaceId = lastWorkspace[1]
+        // 워크스페이스 선택 쿼리가 있을 경우
+        const workspaceQuery = req.url.match(/[?%]workspace=([0-9a-zA-Z]+)/)
+        if (workspaceQuery) activeWorkspaceId = workspaceQuery[1]
+        // 워크스페이스가 존재하지 않으면 기본 워크스페이스
+        if (
+          !myWorkspaces.some(workspace => workspace.uuid === activeWorkspaceId)
+        ) {
+          activeWorkspaceId = myWorkspaces[0].uuid
+        }
+        store.commit('auth/SET_ACTIVE_WORKSPACE', activeWorkspaceId)
       }
     } catch (e) {
       // 비정상 토큰
