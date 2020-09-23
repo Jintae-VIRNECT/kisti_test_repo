@@ -3,6 +3,7 @@ package com.virnect.data.api;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.response.MemberInfoListResponse;
+import com.virnect.data.dto.response.MemberSecessionResponse;
 import com.virnect.data.dto.response.ResultResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -63,8 +64,8 @@ public interface IMemberRestAPI {
     );
 
     @ApiOperation(value = "Member Account Withdrawal", notes = "")
-    @DeleteMapping(value = "members/account/{userId}")
-    ApiResponse<ResultResponse> deleteMembersByWithdrawal(
+    @DeleteMapping(value = "members/{userId}")
+    ResponseEntity<ApiResponse<MemberSecessionResponse>> deleteMembersBySecession (
             @PathVariable(name = "userId") String userId
     );
 

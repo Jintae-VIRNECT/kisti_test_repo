@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1078,6 +1079,25 @@ public class DataRepository {
                 // mapping data
                 resultResponse = modelMapper.map(member, MemberInfoResponse.class);
                 return new DataProcess<>(resultResponse);
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<MemberSecessionResponse> deleteMember(String userId) {
+        return new RepoDecoder<List<MemberHistory>, MemberSecessionResponse>(RepoDecoderType.DELETE) {
+            @Override
+            List<MemberHistory> loadFromDatabase() {
+                return sessionService.getMemberHistoryList(userId);
+            }
+
+            @Override
+            DataProcess<MemberSecessionResponse> invokeDataProcess() {
+                List<MemberHistory> historyList = loadFromDatabase();
+                for (MemberHistory memberHistory: historyList) {
+                    memberHistory.setMemberType(MemberType.SECESSION);
+                    sessionService.updateMemberHistory(memberHistory);
+                }
+                return new DataProcess<>(new MemberSecessionResponse(userId, true, LocalDateTime.now()));
             }
         }.asApiResponse();
     }
