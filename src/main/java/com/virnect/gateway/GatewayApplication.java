@@ -31,7 +31,7 @@ public class GatewayApplication {
 	@EventListener(ApplicationReadyEvent.class)
 	public void applicationReady() {
 		String msg = "\n\n----------------------------------------------------\n" + "\n"
-			+ "   Platform Authentication Server is ready!\n"
+			+ "   Platform Gateway Server is ready!\n"
 			+ "   ---------------------------\n" + "\n"
 			+ "   * Server Host: [" + System.getenv("eureka.instance.ip-address") + "]\n" + "\n"
 			+ "   * VIRNECT_ENV: [" + System.getenv("VIRNECT_ENV") + "]\n" + "\n"
