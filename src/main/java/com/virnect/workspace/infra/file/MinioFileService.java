@@ -68,7 +68,7 @@ public class MinioFileService implements FileService {
 			.contentType(file.getContentType())
 			.stream(file.getInputStream(), file.getSize(), -1)
 			.build();
-		log.info("Upload File Info >> bucket : {}, resource : {}, filename : {}, fileSize : {}", bucket, resource,
+		log.info("Upload File Info >> bucket : {}, resource : {}, filename : {}, fileSize(byte) : {}", bucket, resource,
 			uniqueFileName, file.getSize()
 		);
 		try {
