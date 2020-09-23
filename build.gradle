@@ -87,6 +87,9 @@ dependencies {
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // Configuration
+    implementation 'org.springframework.cloud:spring-cloud-config-client'
 }
 
 test {

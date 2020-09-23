@@ -16,14 +16,6 @@ public interface FileUploadService {
 	/**
 	 * 파일 업로드 처리
 	 *
-	 * @param file -  파일 업로드 요청
-	 * @return - 업로드된 파일 url
-	 */
-	String upload(MultipartFile file) throws IOException;
-
-	/**
-	 * 파일 업로드 처리
-	 *
 	 * @param file     - 업로드 요청 파일
 	 * @param fileName - 파일 저장명
 	 * @return - 업로드된 파일 url
@@ -69,4 +61,13 @@ public interface FileUploadService {
 	 * @return
 	 */
 	String base64ImageUpload(final String base64Image);
+
+	/**
+	 * Multipartfile를 file input stream 으로 읽어와 s3에 업로드하는 메서드
+	 * @param file - 업로드하고자하는 MultipartFile
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
+	String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException;
 }
