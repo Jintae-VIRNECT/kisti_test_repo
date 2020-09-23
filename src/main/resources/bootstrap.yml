@@ -1,0 +1,14 @@
+## Server Configuration
+server:
+  port: 8086
+
+spring:
+  profiles:
+    active: ${VIRNECT_ENV}
+  application:
+    name: download-server
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER}
+      profile: ${VIRNECT_ENV}
+      name: ${spring.application.name}
