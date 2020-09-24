@@ -27,6 +27,10 @@
         </p>
       </div>
     </div>
+    <canvas
+      style=" z-index: -999;display: none; width: 100%; height: 100%;"
+      ref="backCanvas"
+    ></canvas>
   </li>
 </template>
 
@@ -47,6 +51,10 @@ export default {
     return {
       thumbnail: '',
       document: null,
+      size: {
+        width: 300,
+        height: 150,
+      },
     }
   },
   props: {
@@ -101,7 +109,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addPdfPage', 'removePdfPage', 'removeFile']),
+    ...mapActions(['addPdfPage', 'removePdfPage', 'removeFile', 'addHistory']),
     init() {
       if (
         this.docPages.length !== 0 &&
@@ -109,6 +117,7 @@ export default {
       )
         return
       this.removePdfPage(this.fileInfo.id)
+      let startTime = Date.now()
       PDFJS.getDocument(URL.createObjectURL(this.fileData))
         .promise.then(async pdfDocument => {
           this.document = pdfDocument
@@ -116,6 +125,8 @@ export default {
           for (let index = 1; index <= pdfDocument.numPages; index++) {
             await this.getPage(index, pdfDocument.numPages)
           }
+          let duration = Date.now() - startTime
+          this.logger('pdf loading time', duration)
         })
         .catch(err => {
           if (err.name === 'InvalidPDFException') {
@@ -131,9 +142,28 @@ export default {
         })
     },
     async getPage(index, numPages) {
+      const blobData = await this.loadPage(index)
+      blobData.name = index
+      const docPage = {
+        id: this.fileInfo.id,
+        total: numPages,
+        pageNum: index,
+        // pageData: fileReader,
+        filedata: blobData,
+      }
+      this.addPdfPage(docPage)
+    },
+    async loadPage(index, scale = null) {
       const fileReader = await this.document.getPage(index)
       const canvas = document.createElement('canvas')
-      const viewport = fileReader.getViewport({ scale: 1.5 })
+      if (scale === null) {
+        const vp = fileReader.getViewport({ scale: 1 })
+        let scaleWidth = this.size.width / vp.width
+        let scaleHeight = this.size.height / vp.height
+        scale = scaleWidth > scaleHeight ? scaleHeight : scaleWidth
+        if (scale > 0.1) scale = 0.1
+      }
+      const viewport = fileReader.getViewport({ scale: scale })
       const renderTask = fileReader.render({
         canvasContext: canvas.getContext('2d'),
         viewport,
@@ -141,15 +171,7 @@ export default {
       canvas.width = viewport.width
       canvas.height = viewport.height
       await renderTask.promise
-      const blobData = await this.getCanvasBlob(canvas)
-      blobData.name = fileReader.pageNumber
-      const docPage = {
-        id: this.fileInfo.id,
-        total: numPages,
-        pageNum: fileReader.pageNumber,
-        filedata: blobData,
-      }
-      this.addPdfPage(docPage)
+      return await this.getCanvasBlob(canvas)
     },
     getCanvasBlob(canvas) {
       return new Promise(resolve => {
@@ -185,11 +207,49 @@ export default {
     remove() {
       this.removeFile(this.fileInfo.id)
     },
+    async addPdfHistory(page) {
+      const imageBlob = await this.loadPage(page, 1.5)
+
+      const imgId = parseInt(
+        Date.now()
+          .toString()
+          .substr(-9),
+      )
+
+      const idx = this.fileData.name.lastIndexOf('.')
+      let fileName = `${this.fileData.name.slice(0, idx)} [${page}].png`
+
+      const fileReader = new FileReader()
+      fileReader.onload = async e => {
+        let imgUrl = e.target.result
+        const history = {
+          id: imgId,
+          fileName: fileName,
+          oriName:
+            this.pdfName && this.pdfName.length > 0
+              ? this.pdfName
+              : this.fileData.name,
+          img: imgUrl,
+        }
+        this.addHistory(history)
+      }
+      fileReader.readAsDataURL(imageBlob)
+    },
   },
 
   /* Lifecycles */
   mounted() {
     this.init()
+    this.size.width = this.$el.querySelector('.sharing-image__item').offsetWidth
+    this.size.height = this.$el.querySelector(
+      '.sharing-image__item',
+    ).offsetHeight
+  },
+  created() {
+    this.$eventBus.$on(`loadPdf_${this.fileInfo.id}`, this.addPdfHistory)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(`loadPdf_${this.fileInfo.id}`)
   },
 }
 </script>

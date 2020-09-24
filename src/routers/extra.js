@@ -1,11 +1,10 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import PolicyRouter from './partials/policy'
-import MobileRouter from './partials/mobile'
 const PolicyComponent = () => import('components/policy/PolicyLayout')
-const MobileComponent = () => import('components/mobileApp/MobileAppLayout')
 const OSSComponent = () => import('components/oss/OSS')
 const SupportComponent = () => import('components/support/SupportComponent')
+import Terms from 'components/policy/PolicyTerms'
+import Privacy from 'components/policy/PolicyPrivacy'
 
 Vue.use(VueRouter)
 
@@ -16,12 +15,34 @@ export default new VueRouter({
     {
       path: '/policy',
       component: PolicyComponent,
-      children: PolicyRouter,
-    },
-    {
-      path: '/m',
-      component: MobileComponent,
-      children: MobileRouter,
+      children: [
+        {
+          path: '',
+          redirect: { name: 'terms' },
+        },
+        {
+          // 이용약관
+          path: 'terms',
+          name: 'terms',
+          component: Terms,
+        },
+        {
+          // 개인정보처리방침
+          path: 'privacy',
+          name: 'privacy',
+          component: Privacy,
+        },
+        // {
+        //   // 쿠키취급방침
+        //   path: 'cookie',
+        //   name: 'cookie',
+        //   component: Cookie,
+        // },
+        {
+          path: '*',
+          redirect: { name: 'terms' },
+        },
+      ],
     },
     {
       path: '/OSS',

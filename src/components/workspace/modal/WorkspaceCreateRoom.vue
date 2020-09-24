@@ -39,6 +39,7 @@ import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
+import { checkPermission } from 'utils/deviceCheck'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -56,6 +57,7 @@ export default {
       maxSelect: maxParticipants - 1,
       roomInfo: {},
       loading: false,
+      clicked: false,
     }
   },
   props: {
@@ -138,6 +140,11 @@ export default {
     },
     async startRemote(info) {
       try {
+        if (this.clicked === true) return
+        this.clicked = true
+
+        const options = await checkPermission()
+
         const selectedUser = []
         const selectedUserIds = []
 
@@ -165,7 +172,11 @@ export default {
             workspaceId: this.workspace.uuid,
           })
         }
-        const connRes = await this.$call.connect(createdRes, ROLE.LEADER)
+        const connRes = await this.$call.connect(
+          createdRes,
+          ROLE.LEADER,
+          options,
+        )
 
         const roomInfo = await getRoomInfo({
           sessionId: createdRes.sessionId,
@@ -190,8 +201,10 @@ export default {
         } else {
           this.roomClear()
           console.error('join room fail')
+          this.clicked = false
         }
       } catch (err) {
+        this.clicked = false
         if (typeof err === 'string') {
           if (err === 'nodevice') {
             this.toastError(this.$t('workspace.error_no_connected_device'))

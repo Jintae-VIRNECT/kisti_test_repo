@@ -88,7 +88,7 @@ export default {
     list() {
       return this.getFilter(this.historyList, [
         'title',
-        'memberList[].nickname',
+        'memberList[].nickName',
       ])
     },
     emptyTitle() {

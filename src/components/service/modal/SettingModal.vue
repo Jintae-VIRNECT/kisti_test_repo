@@ -37,8 +37,8 @@
         <div class="rec-setting__selector">
           <r-radio
             :options="localRecordTargetOpt"
-            :value="'value'"
-            :text="'text'"
+            value="value"
+            text="text"
             :selectedOption.sync="recordTarget"
           ></r-radio>
         </div>
@@ -49,11 +49,10 @@
         </p>
         <r-select
           class="rec-setting__selector"
-          @changeValue="changeSetting('time', $event)"
           :options="localRecTimeOpt"
-          :value="'value'"
-          :text="'text'"
-          :defaultValue="localRecord.time"
+          value="value"
+          text="text"
+          :selectedValue.sync="maxRecordTime"
         >
         </r-select>
       </div>
@@ -77,11 +76,10 @@
         </div>
         <r-select
           class="rec-setting__selector"
-          @changeValue="changeSetting('interval', $event)"
           :options="localRecIntervalOpt"
-          :value="'value'"
-          :text="'text'"
-          :defaultValue="localRecord.interval"
+          value="value"
+          text="text"
+          :selectedValue.sync="maxRecordInterval"
         >
         </r-select>
       </div>
@@ -107,11 +105,10 @@
 
         <r-select
           class="rec-setting__selector"
-          @changeValue="changeSetting('resolution', $event)"
           :options="localRecResOpt"
-          :value="'value'"
-          :text="'text'"
-          :defaultValue="localRecord.resolution"
+          value="value"
+          text="text"
+          :selectedValue.sync="recordResolution"
         >
         </r-select>
       </div>
@@ -170,6 +167,9 @@ export default {
       recordTarget: this.$store.state.settings.localRecordTarget,
 
       localRecResOpt: localRecResOpt,
+      maxRecordTime: '',
+      maxRecordInterval: '',
+      recordResolution: '',
     }
   },
   props: {
@@ -296,6 +296,15 @@ export default {
           break
       }
     },
+    maxRecordTime(time) {
+      this.changeSetting('time', time)
+    },
+    maxRecordInterval(interval) {
+      this.changeSetting('interval', interval)
+    },
+    recordResolution(resolution) {
+      this.changeSetting('resolution', resolution)
+    },
   },
   methods: {
     ...mapActions([
@@ -306,10 +315,10 @@ export default {
     ]),
     changeSetting(item, setting) {
       const param = {}
-      param[item] = setting.value
+      param[item] = setting
       this.setRecord(param)
-      this.$localStorage.setRecord(item, setting.value)
-      this.showToast()
+      this.$localStorage.setRecord(item, setting)
+      // this.showToast()
     },
 
     beforeClose() {
@@ -325,6 +334,9 @@ export default {
     if (this.account.roleType !== ROLE.LEADER) return
     this.localRecording = this.allowLocalRecord
     this.pointing = this.allowPointing
+    this.maxRecordTime = this.localRecord.time
+    this.maxRecordInterval = this.localRecord.interval
+    this.recordResolution = this.localRecord.resolution
   },
 }
 </script>

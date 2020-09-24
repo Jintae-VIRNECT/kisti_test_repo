@@ -15,15 +15,5 @@ module.exports = {
     logger.log(logs, 'CONSOLE')
 
     return logs
-
-    // fs.writeFile('url.json', writes, function (err) {
-    //   if (err) {
-    //     logger.error(`${err}`, 'READER')
-    //     logger.error(`can not write file for url.`, 'READER')
-    //     process.exit(1);
-    //   } else {
-    //     logger.log(writes, 'READER')
-    //   }
-    // })
   },
 }

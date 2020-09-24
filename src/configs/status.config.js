@@ -8,3 +8,9 @@ export const WORKSPACE_ROLE = {
   MANAGER: 'MANAGER',
   MEMBER: 'MEMBER',
 }
+
+export const PLAN_STATUS = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  EXCEEDED: 'EXCEEDED',
+}

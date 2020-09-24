@@ -84,7 +84,7 @@ router.get('/urls', function(req, res) {
 })
 
 router.get('/pdf.worker', function(req, res) {
-  res.sendFile(path.join(__dirname, '/static/js/pdf.worker.js'))
+  res.sendFile(path.join(__dirname, '/static/js/pdf.worker.min.js'))
 })
 
 router.get('/record', function(req, res) {

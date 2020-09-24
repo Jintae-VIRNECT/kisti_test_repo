@@ -45,11 +45,8 @@
         </div>
       </section>
       <room-info
-        v-if="tabview === 'group'"
+        v-if="tabview === 'group' && room && room.title"
         :room="room"
-        :image.sync="image"
-        :leader="leader"
-        :isHistory="true"
       ></room-info>
 
       <participants-info
@@ -67,7 +64,7 @@
 <script>
 import Modal from 'Modal'
 import { getHistorySingleItem } from 'api/http/history'
-import RoomInfo from '../partials/ModalRoomInfo'
+import RoomInfo from '../partials/ModalHistoryRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
@@ -119,6 +116,7 @@ export default {
   methods: {
     async initHistory() {
       try {
+        this.room = {}
         this.room = await getHistorySingleItem({
           workspaceId: this.workspace.uuid,
           sessionId: this.sessionId,

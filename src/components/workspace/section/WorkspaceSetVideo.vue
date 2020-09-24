@@ -8,11 +8,10 @@
         <p class="setting__label">{{ $t('workspace.setting_camera') }}</p>
         <r-select
           class="setting__r-selecter"
-          @changeValue="setVideo"
           :options="videoDevices"
-          :value="'deviceId'"
-          :text="'label'"
-          :defaultValue="videoId"
+          value="deviceId"
+          text="label"
+          :selectedValue.sync="videoId"
         ></r-select>
       </figure>
 
@@ -22,11 +21,10 @@
         </p>
         <r-select
           class="setting__r-selecter"
-          @changeValue="setQuality"
           :options="resolutions"
           value="value"
           text="text"
-          :defaultValue="videoQuality"
+          :selectedValue.sync="videoQuality"
         >
         </r-select>
       </figure>
@@ -67,6 +65,8 @@ export default {
       resolutions: resolution,
       stream: null,
       currentVideo: null,
+      videoId: '',
+      videoQuality: '',
     }
   },
   props: {
@@ -77,48 +77,52 @@ export default {
   },
   computed: {
     ...mapGetters(['video']),
-    videoId() {
-      return this.video['deviceId']
-    },
-    videoQuality() {
-      return this.video['quality']
-    },
+    // videoQuality() {
+    //   return this.video['quality']
+    // },
     currentQuality() {
-      const current = resolution.find(
+      const idx = resolution.findIndex(
         resol => resol.value === this.videoQuality,
-      ).resolution
-      if (current === undefined) {
+      )
+      if (idx < 0) {
         return {
           width: 1280,
           height: 720,
         }
-      }
-      const size = current.split('X')
-      return {
-        width: parseInt(size[0]),
-        height: parseInt(size[1]),
+      } else {
+        const size = resolution[idx].resolution.split('X')
+        return {
+          width: parseInt(size[0]),
+          height: parseInt(size[1]),
+        }
       }
     },
   },
   watch: {
     'videoDevices.length': 'initStream',
-    videoQuality: 'initStream',
-    videoId: 'initStream',
+    videoQuality(quality) {
+      this.setQuality(quality)
+      this.initStream()
+    },
+    videoId(id) {
+      this.setVideo(id)
+      this.initStream()
+    },
   },
   methods: {
     ...mapActions(['setDevices']),
-    setVideo(newDevice) {
+    setVideo(deviceId) {
       this.setDevices({
-        video: { deviceId: newDevice.deviceId },
+        video: { deviceId: deviceId },
       })
-      this.currentVideo = newDevice.deviceId
-      this.$localStorage.setDevice('video', 'deviceId', newDevice.deviceId)
+      this.currentVideo = deviceId
+      this.$localStorage.setDevice('video', 'deviceId', deviceId)
     },
     setQuality(quality) {
       this.setDevices({
-        video: { quality: quality.value },
+        video: { quality: quality },
       })
-      this.$localStorage.setDevice('video', 'quality', quality.value)
+      this.$localStorage.setDevice('video', 'quality', quality)
     },
     async initStream() {
       if (this.videoDevices.length === 0) return
@@ -142,6 +146,8 @@ export default {
             this.setQuality(resolution[idx - 1])
           }
         }
+        if (mediaRes.toLowerCase().trim() === 'notreadableerror') {
+        }
         return
       }
       this.stream = mediaRes
@@ -155,6 +161,8 @@ export default {
   },
   mounted() {
     this.initStream()
+    this.videoId = this.video['deviceId']
+    this.videoQuality = this.video['quality']
   },
 }
 </script>

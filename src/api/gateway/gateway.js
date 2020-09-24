@@ -15,7 +15,7 @@ import { cookieClear } from 'utils/auth'
 const URL = API
 const TOKEN = Cookies.get('accessToken')
 
-logger('ENV', process.env.TARGET_ENV)
+logger('BUILD ENV', process.env.NODE_ENV)
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
 

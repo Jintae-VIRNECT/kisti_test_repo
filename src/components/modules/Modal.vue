@@ -1,7 +1,10 @@
 <template>
   <transition name="modal">
     <div v-if="visible" class="modal" :class="customClass" @wheel="scroll">
-      <div class="modal--dimmed" @click.stop="doClose($event)"></div>
+      <div
+        class="modal--dimmed"
+        @click.stop="dimClose ? doClose($event) : () => {}"
+      ></div>
       <div
         class="modal--inner"
         :style="[innerWidth, innerHeight]"
@@ -63,6 +66,10 @@
 export default {
   name: 'Modal',
   props: {
+    dimClose: {
+      type: Boolean,
+      default: true,
+    },
     visible: {
       type: Boolean,
       require: true,
