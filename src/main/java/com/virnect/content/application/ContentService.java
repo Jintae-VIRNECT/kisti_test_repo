@@ -173,7 +173,7 @@ public class ContentService {
 			log.info("CONTENT UPLOAD - contentUUID : {}, request : {}", contentUUID, uploadRequest.toString());
 
 			// 파일명은 컨텐츠 식별자(contentUUID)와 동일
-			String fileUploadPath = this.fileUploadService.upload(uploadRequest.getContent(), contentUUID + "");
+			String fileUploadPath = this.fileUploadService.uploadByFileInputStream(uploadRequest.getContent(), contentUUID + "");
 
 			// 2-1. 프로퍼티로 메타데이터 생성
 			MetadataInfo metadataInfo = metadataService.convertMetadata(
@@ -354,7 +354,7 @@ public class ContentService {
 
 		// 3. 수정 컨텐츠 저장
 		try {
-			String fileUploadPath = this.fileUploadService.upload(
+			String fileUploadPath = this.fileUploadService.uploadByFileInputStream(
 				updateRequest.getContent(), targetContent.getUuid() + "");
 
 			// 4 수정 컨텐츠 경로 반영

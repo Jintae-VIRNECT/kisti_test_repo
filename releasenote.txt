@@ -1,9 +1,9 @@
 RELEASE
 
 New Features
+- staging, production 설정 파일 외부로 뺌
 
 Bug Fixes
-- 컨텐츠 업로드 시 File 변환 로직 제거
 
 Limitation
 

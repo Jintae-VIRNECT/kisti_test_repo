@@ -37,11 +37,6 @@ public class LocalUploadService implements FileUploadService {
 	private String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/contents/";
 
 	@Override
-	public String upload(MultipartFile multipartFile) throws IOException {
-		return null;
-	}
-
-	@Override
 	public String upload(MultipartFile multipartFile, String fileName) throws IOException {
 		// 1. 빈 파일 여부 확인
 		if (multipartFile.getSize() == 0) {
@@ -111,6 +106,11 @@ public class LocalUploadService implements FileUploadService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return null;
+	}
+
+	@Override
+	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
 		return null;
 	}
 
