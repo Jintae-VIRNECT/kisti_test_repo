@@ -7,7 +7,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,6 +23,8 @@ import com.virnect.download.dao.DeviceRepository;
 import com.virnect.download.dao.OSRepository;
 import com.virnect.download.dao.ProductRepository;
 import com.virnect.download.domain.App;
+import com.virnect.download.domain.AppGuideUrl;
+import com.virnect.download.domain.AppImageUrl;
 import com.virnect.download.domain.AppUpdateStatus;
 import com.virnect.download.domain.Device;
 import com.virnect.download.domain.OS;
@@ -32,7 +33,6 @@ import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
 import com.virnect.download.dto.response.AppDetailInfoResponse;
-import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppSigningKetRegisterResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
 import com.virnect.download.dto.response.AppVersionInfoListResponse;
@@ -113,6 +113,26 @@ public class AppService {
 			.signature(applicationSignature)
 			.build();
 
+		// Remote 가이드 문서 및 이미지 설정
+		if (product.getName().equals("REMOTE") && device.getName().equals("MOBILE")) {
+			apps.setGuideUrl(AppGuideUrl.REMOTE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.REMOTE_MOBILE.getUrl());
+		} else if (product.getName().equals("REMOTE") && device.getName().equals("REALWEAR")) {
+			apps.setGuideUrl(AppGuideUrl.REMOTE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.REMOTE_REALWEAR.getUrl());
+		}
+
+		//VIEW 가이드 문서 및 이미지 설정
+		if (product.getName().equals("VIEW") && device.getName().equals("MOBILE")) {
+			apps.setGuideUrl(AppGuideUrl.VIEW_MOBILE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.VIEW_MOBILE.getUrl());
+		} else if (product.getName().equals("VIEW") && device.getName().equals("REALWEAR")) {
+			apps.setGuideUrl(AppGuideUrl.VIEW_REALWARE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.VIEW_REALWEAR.getUrl());
+		} else if (product.getName().equals("MAKE")) {
+			apps.setGuideUrl(AppGuideUrl.MAKE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.MAKE.getUrl());
+		}
 		appRepository.save(apps);
 
 		AppUploadResponse appUploadResponse = new AppUploadResponse();
@@ -230,15 +250,15 @@ public class AppService {
 	@Transactional
 	public ApiResponse<AppDetailInfoResponse> appInfoUpdate(AppInfoUpdateRequest appInfoUpdateRequest) {
 		App app = appRepository.findByUuid(appInfoUpdateRequest.getAppUUID())
-			.orElseThrow(()-> new AppServiceException(ErrorCode.ERR_APP_INFO_NOT_FOUND));
+			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_INFO_NOT_FOUND));
 
 		log.info("[APP_INFORMATION_UPDATE] - [{}]", appInfoUpdateRequest.toString());
 
-		if(appInfoUpdateRequest.getAppStatus() != null){
+		if (appInfoUpdateRequest.getAppStatus() != null) {
 			app.setAppStatus(appInfoUpdateRequest.getAppStatus());
 		}
 
-		if(appInfoUpdateRequest.getAppUpdateStatus() != null){
+		if (appInfoUpdateRequest.getAppUpdateStatus() != null) {
 			app.setAppUpdateStatus(appInfoUpdateRequest.getAppUpdateStatus());
 		}
 
