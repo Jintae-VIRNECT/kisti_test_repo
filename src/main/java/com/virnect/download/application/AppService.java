@@ -1,6 +1,7 @@
 package com.virnect.download.application;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,6 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import net.dongliu.apk.parser.ByteArrayApkFile;
@@ -21,15 +23,20 @@ import com.virnect.download.dao.DeviceRepository;
 import com.virnect.download.dao.OSRepository;
 import com.virnect.download.dao.ProductRepository;
 import com.virnect.download.domain.App;
+import com.virnect.download.domain.AppGuideUrl;
+import com.virnect.download.domain.AppImageUrl;
 import com.virnect.download.domain.AppUpdateStatus;
 import com.virnect.download.domain.Device;
 import com.virnect.download.domain.OS;
 import com.virnect.download.domain.Product;
+import com.virnect.download.dto.request.AppInfoUpdateRequest;
 import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
 import com.virnect.download.dto.request.AppUploadRequest;
 import com.virnect.download.dto.response.AppDetailInfoResponse;
 import com.virnect.download.dto.response.AppSigningKetRegisterResponse;
 import com.virnect.download.dto.response.AppUploadResponse;
+import com.virnect.download.dto.response.AppVersionInfoListResponse;
+import com.virnect.download.dto.response.AppVersionInfoResponse;
 import com.virnect.download.dto.response.SignedAppInfoResponse;
 import com.virnect.download.exception.AppServiceException;
 import com.virnect.download.global.common.ApiResponse;
@@ -106,6 +113,26 @@ public class AppService {
 			.signature(applicationSignature)
 			.build();
 
+		// Remote 가이드 문서 및 이미지 설정
+		if (product.getName().equals("REMOTE") && device.getName().equals("MOBILE")) {
+			apps.setGuideUrl(AppGuideUrl.REMOTE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.REMOTE_MOBILE.getUrl());
+		} else if (product.getName().equals("REMOTE") && device.getName().equals("REALWEAR")) {
+			apps.setGuideUrl(AppGuideUrl.REMOTE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.REMOTE_REALWEAR.getUrl());
+		}
+
+		//VIEW 가이드 문서 및 이미지 설정
+		if (product.getName().equals("VIEW") && device.getName().equals("MOBILE")) {
+			apps.setGuideUrl(AppGuideUrl.VIEW_MOBILE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.VIEW_MOBILE.getUrl());
+		} else if (product.getName().equals("VIEW") && device.getName().equals("REALWEAR")) {
+			apps.setGuideUrl(AppGuideUrl.VIEW_REALWARE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.VIEW_REALWEAR.getUrl());
+		} else if (product.getName().equals("MAKE")) {
+			apps.setGuideUrl(AppGuideUrl.MAKE_USER_GUIDE.getUrl());
+			apps.setImage(AppImageUrl.MAKE.getUrl());
+		}
 		appRepository.save(apps);
 
 		AppUploadResponse appUploadResponse = new AppUploadResponse();
@@ -218,5 +245,58 @@ public class AppService {
 				return appInfo;
 			}).collect(Collectors.toList());
 		return new ApiResponse<>(new AppSigningKetRegisterResponse(signedAppInfoResponses));
+	}
+
+	@Transactional
+	public ApiResponse<AppDetailInfoResponse> appInfoUpdate(AppInfoUpdateRequest appInfoUpdateRequest) {
+		App app = appRepository.findByUuid(appInfoUpdateRequest.getAppUUID())
+			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_INFO_NOT_FOUND));
+
+		log.info("[APP_INFORMATION_UPDATE] - [{}]", appInfoUpdateRequest.toString());
+
+		if (appInfoUpdateRequest.getAppStatus() != null) {
+			app.setAppStatus(appInfoUpdateRequest.getAppStatus());
+		}
+
+		if (appInfoUpdateRequest.getAppUpdateStatus() != null) {
+			app.setAppUpdateStatus(appInfoUpdateRequest.getAppUpdateStatus());
+		}
+
+		appRepository.save(app);
+
+		AppDetailInfoResponse appDetailInfoResponse = new AppDetailInfoResponse();
+		appDetailInfoResponse.setAppUrl(app.getAppUrl());
+		appDetailInfoResponse.setDeviceType(app.getDevice().getName());
+		appDetailInfoResponse.setOperationSystem(app.getOs().getName());
+		appDetailInfoResponse.setProductName(app.getProduct().getName());
+		appDetailInfoResponse.setSigningKey(app.getSignature());
+		appDetailInfoResponse.setUuid(app.getUuid());
+		appDetailInfoResponse.setVersion(app.getVersionName());
+		appDetailInfoResponse.setPackageName(app.getPackageName());
+		appDetailInfoResponse.setUpdateRequired(app.getAppUpdateStatus().equals(AppUpdateStatus.REQUIRED));
+		return new ApiResponse<>(appDetailInfoResponse);
+	}
+
+	@Transactional(readOnly = true)
+	public ApiResponse<AppVersionInfoListResponse> getAllAppInfo() {
+		List<App> apps = appRepository.findAll();
+		List<AppVersionInfoResponse> appInfoList = new ArrayList<>();
+		apps.forEach((app) -> {
+			AppVersionInfoResponse appInfo = new AppVersionInfoResponse();
+			appInfo.setId(app.getId());
+			appInfo.setUuid(app.getUuid());
+			appInfo.setVersionName(app.getVersionName());
+			appInfo.setDeviceName(app.getDevice().getName());
+			appInfo.setAppUrl(app.getAppUrl());
+			appInfo.setPackageName(app.getPackageName());
+			appInfo.setGuideUrl(app.getGuideUrl());
+			appInfo.setImageUrl(app.getImage());
+			appInfo.setRegisterDate(app.getCreatedDate());
+			appInfo.setAppStatus(app.getAppStatus());
+			appInfo.setAppUpdateStatus(app.getAppUpdateStatus());
+			appInfo.setSigningApp(StringUtils.hasText(app.getSignature()));
+			appInfoList.add(appInfo);
+		});
+		return new ApiResponse<>(new AppVersionInfoListResponse(appInfoList));
 	}
 }

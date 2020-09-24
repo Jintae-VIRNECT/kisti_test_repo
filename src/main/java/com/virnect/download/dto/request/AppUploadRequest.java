@@ -21,7 +21,7 @@ import lombok.Setter;
 @Setter
 @ApiModel
 public class AppUploadRequest {
-	@ApiModelProperty(value = "앱 구동 시스템 정보(ANDROID, WINDOWS)", example = "ANDORID")
+	@ApiModelProperty(value = "앱 구동 시스템 정보(ANDROID, WINDOWS)", example = "ANDROID")
 	@NotBlank(message = "앱 구동 시스템 정보는 반드시 입력되어야 합니다.")
 	private String operationSystem;
 	@ApiModelProperty(value = "앱 제품 정보(REMOTE,MAKE,VIEW)", position = 1, example = "REMOTE")
