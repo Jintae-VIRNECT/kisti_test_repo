@@ -21,7 +21,7 @@ let interval
  */
 function setTokensToCookies(response) {
   const cookieOption = {
-    expires: Math.ceil(response.expireIn / 3600000),
+    expires: response.expireIn / 3600000,
     domain:
       location.hostname.split('.').length === 3
         ? location.hostname.replace(/.*?\./, '')
