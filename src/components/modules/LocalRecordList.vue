@@ -45,7 +45,7 @@
                 :imgSrc="require('assets/image/ic_upload.svg')"
                 :customClass="'customClass'"
                 :highlight="hasSelect"
-                @click="download"
+                @click="upload"
               ></icon-button>
               <icon-button
                 :text="$t('workspace.record_download')"
@@ -171,6 +171,15 @@ export default {
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
+    },
+
+    upload() {
+      const uuids = []
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          uuids.push(this.datas[index].uuid)
+        }
+      })
     },
 
     async getList() {

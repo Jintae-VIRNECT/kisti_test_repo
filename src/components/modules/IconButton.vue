@@ -85,6 +85,10 @@ export default {
       color: rgba(#d2d2d2, 1);
       background-color: #38383a;
       opacity: 1;
+
+      &:hover {
+        background-color: #575759;
+      }
     }
   }
 }
