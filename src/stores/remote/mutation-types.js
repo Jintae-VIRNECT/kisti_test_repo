@@ -4,6 +4,7 @@ export const ACCOUNT_CLEAR = 'ACCOUNT_CLEAR'
 export const WORKSPACE_SET = 'WORKSPACE_SET'
 export const INIT_WORKSPACE = 'INIT_WORKSPACE'
 export const CHANGE_WORKSPACE = 'CHANGE_WORKSPACE'
+export const CLEAR_WORKSPACE = 'CLEAR_WORKSPACE'
 
 // oncall
 export const CALL_RESET = 'CALL_RESET'

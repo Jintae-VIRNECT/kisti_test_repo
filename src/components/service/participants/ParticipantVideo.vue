@@ -86,6 +86,7 @@
           </span>
         </div>
         <popover
+          v-if="!isMe"
           trigger="click"
           placement="right-end"
           popperClass="participant-video__menu"
@@ -94,7 +95,6 @@
         >
           <button
             slot="reference"
-            v-if="!isMe"
             class="participant-video__setting"
             :class="{ hover: hover, active: btnActive }"
           >

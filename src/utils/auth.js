@@ -47,7 +47,9 @@ const tokenInterval = async () => {
 
     let response = await tokenRequest(params)
 
-    setTokensToCookies(response)
+    if (response.refreshed === true) {
+      setTokensToCookies(response)
+    }
   }
 }
 

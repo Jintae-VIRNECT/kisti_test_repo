@@ -1,9 +1,14 @@
-import { INIT_WORKSPACE, CHANGE_WORKSPACE } from '../mutation-types'
+import {
+  INIT_WORKSPACE,
+  CHANGE_WORKSPACE,
+  CLEAR_WORKSPACE,
+} from '../mutation-types'
+import { PLAN_STATUS } from 'configs/status.config'
 
-const expireCheck = time => {
+const expireCheck = (time, planStatus) => {
   if (process.env.NODE_ENV !== 'production') return true
   const diff = new Date(time).getTime() - Date.now()
-  return diff > 0
+  return diff > 0 || planStatus === PLAN_STATUS.INACTIVE
 }
 const setWorkspaceObj = info => {
   return {
@@ -12,7 +17,7 @@ const setWorkspaceObj = info => {
     profile: info.workspaceProfile,
     renewalDate: info.renewalDate,
     role: info.role,
-    expire: !expireCheck(info.renewalDate),
+    expire: !expireCheck(info.renewalDate, info.productPlanStatus),
   }
 }
 
@@ -62,6 +67,9 @@ const mutations = {
   [CHANGE_WORKSPACE](state, workspace) {
     state.current = workspace
     window.localStorage.setItem('workspace', workspace.uuid)
+  },
+  [CLEAR_WORKSPACE](state) {
+    state.current = {}
   },
 }
 

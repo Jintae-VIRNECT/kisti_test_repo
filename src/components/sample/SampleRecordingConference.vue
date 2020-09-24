@@ -99,7 +99,6 @@
               class="video-support"
               crossOrigin="anonymous"
               ref="streamVideo2"
-              src="~assets/media/Sample720.mp4"
               autoplay
               loop
             ></video>

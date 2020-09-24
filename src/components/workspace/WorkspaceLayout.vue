@@ -23,6 +23,7 @@
       <record-list :visible.sync="showList"></record-list>
       <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
+    <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
   </section>
 </template>
 
@@ -35,8 +36,10 @@ import { getLicense } from 'api/http/account'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
-import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
+import DeviceDenied from './modal/WorkspaceDeviceDenied'
+import PlanOverflow from './modal/WorkspacePlanOverflow'
 import { mapActions } from 'vuex'
+import { PLAN_STATUS } from 'configs/status.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -69,6 +72,7 @@ export default {
     WorkspaceTab,
     RecordList,
     DeviceDenied,
+    PlanOverflow,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
@@ -80,7 +84,15 @@ export default {
       showList: false,
       license: true,
       showDenied: false,
+      showPlanOverflow: false,
     }
+  },
+  watch: {
+    workspace(val, oldVal) {
+      if (val.uuid && val.uuid !== oldVal.uuid) {
+        this.checkPlan(val)
+      }
+    },
   },
   methods: {
     ...mapActions([
@@ -143,6 +155,13 @@ export default {
     },
     showDeviceDenied() {
       this.showDenied = true
+    },
+    async checkPlan(workspace) {
+      if (workspace.productPlanStatus === PLAN_STATUS.EXCEEDED) {
+        this.showPlanOverflow = true
+      } else {
+        this.showPlanOverflow = false
+      }
     },
   },
 
