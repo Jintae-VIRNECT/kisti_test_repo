@@ -5,7 +5,6 @@
     :placementReverse="true"
     trigger="click"
     popperClass="select-options"
-    :style="style"
     :fullwidth="true"
     :scrollHide="true"
     @visible="visible => (show = visible)"
@@ -36,20 +35,34 @@ export default {
   },
   data() {
     return {
-      selected: {},
-      style: {
-        // backgroundColor: '#111012',
-      },
       show: false,
     }
   },
+  computed: {
+    selected() {
+      const idx = this.options.findIndex(
+        option => option[this.value] === this.selectedValue,
+      )
+      if (idx < 0) {
+        return {
+          [this.value]: '',
+          [this.text]: '',
+        }
+      } else {
+        return this.options[idx]
+      }
+    },
+  },
   props: {
-    defaultValue: {
+    selectedValue: {
       type: String,
       default: '',
     },
     options: {
       type: Array,
+      default: () => {
+        return []
+      },
     },
     value: {
       type: String,
@@ -60,34 +73,29 @@ export default {
       default: 'text',
     },
   },
+  watch: {
+    'options.length': 'init',
+  },
   methods: {
     init() {
-      if (!this.defaultValue || this.defaultValue.length < 1) {
-        if (this.options.length > 0) {
-          this.selected = this.options[0]
-        }
+      if (this.options.length === 0) return
+      if (!this.selectedValue || this.selectedValue.length < 1) {
+        this.$emit('update:selectedValue', this.options[0][this.value])
       } else {
-        const selectVal = this.options.find(
-          option => option[this.value] === this.defaultValue,
+        const idx = this.options.findIndex(
+          option => option[this.value] === this.selectedValue,
         )
 
-        if (selectVal !== undefined) {
-          this.selected = selectVal
+        if (idx > -1) {
+          this.$emit('update:selectedValue', this.options[idx][this.value])
+        } else {
+          this.$emit('update:selectedValue', this.options[0][this.value])
         }
       }
     },
     select(option) {
-      this.selected = option
-      this.$emit('changeValue', option)
+      this.$emit('update:selectedValue', option[this.value])
       this.$eventBus.$emit('popover:close')
-    },
-  },
-  watch: {
-    options: {
-      handler() {
-        this.init()
-      },
-      deep: true,
     },
   },
   /* Lifecycles */

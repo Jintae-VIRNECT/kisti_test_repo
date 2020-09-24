@@ -2,7 +2,12 @@
   <figure class="profile" :class="status" v-on="{ ...$listeners }">
     <div class="profile--thumb" :style="thumbStyle">
       <div class="profile--image" :class="{ group: group, image: useImage }">
-        <img v-if="useImage" :src="image" :alt="mainText" />
+        <img
+          v-if="useImage"
+          :src="image"
+          :alt="mainText"
+          @error="onImageError"
+        />
       </div>
       <!-- <span v-if="status" class="profile--badge" :class="status">{{
         status
@@ -68,6 +73,14 @@ export default {
         return this.image
       } else {
         return false
+      }
+    },
+  },
+  watch: {
+    image() {
+      const img = this.$el.querySelector('img')
+      if (img && img.style.display === 'none') {
+        img.style.display = 'block'
       }
     },
   },

@@ -25,6 +25,7 @@ export default {
         let myInfo = room.memberList.find(
           member => member.uuid === this.account.uuid,
         )
+        if (myInfo === undefined) throw Error('not allow to participant')
         let role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
 
         const res = await joinRoom({
@@ -44,6 +45,7 @@ export default {
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })
           })
+          return true
         } else {
           this.roomClear()
           console.error('>>>join room fail')
@@ -72,6 +74,7 @@ export default {
         if (this['init'] && typeof this['init'] === 'function') {
           this.init()
         }
+        return false
       }
     },
   },

@@ -95,6 +95,7 @@ export default {
           docItem.loaded = 0
           docItem.pdf = file.type === 'application/pdf'
           this.addFile(docItem)
+          this.clearUploadFile()
           // this.sharingList.push(docItem)
         } else {
           this.toastError(this.$t('service.file_type'))

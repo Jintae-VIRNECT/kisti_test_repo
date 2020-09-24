@@ -7,18 +7,26 @@ const axios = require('axios')
 let envConfig = {}
 let urlConfig = {}
 
+async function getEnvConf() {
+  const res = await axios.get(`${configServer}/remote-web/${env}`)
+  const property = res.data.propertySources[0].source
+  for (let key in property) {
+    if (key.includes('env.')) {
+      envConfig[key.replace('env.', '')] = property[key]
+    }
+  }
+}
+async function getUrlConf() {
+  const res = await axios.get(`${configServer}/web-url/${env}`)
+  const property = res.data.propertySources[0].source
+  for (let key in property) {
+    urlConfig[key.replace('url.', '')] = property[key]
+  }
+}
+
 module.exports = {
   async init() {
-    const res = await axios.get(`${configServer}/remote-web/${env}`)
-    const property = res.data.propertySources[0].source
-    for (let key in property) {
-      if (key.includes('env.')) {
-        envConfig[key.replace('env.', '')] = property[key]
-      }
-      if (key.includes('url.')) {
-        urlConfig[key.replace('url.', '')] = property[key]
-      }
-    }
+    await Promise.all([getEnvConf(), getUrlConf()])
   },
   getAsNumber(key) {
     return Number(envConfig[key])

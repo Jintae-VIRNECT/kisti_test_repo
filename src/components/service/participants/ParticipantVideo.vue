@@ -143,6 +143,7 @@ export default {
   },
   data() {
     return {
+      inited: false,
       hover: false,
       btnActive: false,
       statusHover: {},
@@ -152,7 +153,14 @@ export default {
     participant: Object,
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker', 'roomInfo', 'viewForce', 'view']),
+    ...mapGetters([
+      'mainView',
+      'speaker',
+      'roomInfo',
+      'viewForce',
+      'view',
+      'initing',
+    ]),
     showProfile() {
       if (!this.participant.hasVideo) {
         return true
@@ -209,6 +217,7 @@ export default {
         this.$el.querySelector('audio').muted = val
       }
     },
+    'participant.nickname': 'participantInited',
     participant() {},
     cameraStatus(status, oldStatus) {
       if (status === -1 || oldStatus === -1) return
@@ -237,6 +246,21 @@ export default {
   },
   methods: {
     ...mapActions(['setMainView', 'addChat']),
+    participantInited(name, oldName) {
+      if (this.participant.me || this.initing === true) return
+      if (name !== oldName && this.inited === false) {
+        this.inited = true
+        this.toastDefault(
+          this.$t('service.chat_invite', { name: this.participant.nickname }),
+        )
+        const chatObj = {
+          name: name,
+          status: 'invite',
+          type: 'system',
+        }
+        this.addChat(chatObj)
+      }
+    },
     hoverContents() {
       const status = this.$el.querySelector('.participant-video__network')
       if (!status) return
@@ -365,6 +389,13 @@ export default {
         },
       )
     },
+  },
+  beforeDestroy() {
+    if (this.$call.session) {
+      this.toastDefault(
+        this.$t('service.chat_leave', { name: this.participant.nickname }),
+      )
+    }
   },
 }
 </script>
