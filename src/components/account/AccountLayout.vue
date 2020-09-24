@@ -51,8 +51,15 @@ export default {
   },
   methods: {
     setTokensFromCookies(access, refresh) {
-      Cookies.set('accessToken', access)
-      Cookies.set('refreshToken', refresh)
+      const cookieOption = {
+        expires: 1,
+        domain:
+          location.hostname.split('.').length === 3
+            ? location.hostname.replace(/.*?\./, '')
+            : location.hostname,
+      }
+      Cookies.set('accessToken', access, cookieOption)
+      Cookies.set('refreshToken', refresh, cookieOption)
       location.href = '/home'
     },
     async doLogin() {

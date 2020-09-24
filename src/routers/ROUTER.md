@@ -5,10 +5,7 @@
 ```
 /src/routers
 |-- remote.js
-|-- extra.js
-|-- partials/
-    |-- policy.js
-    `-- mobile.js
+`-- extra.js
 ```
 
 ### remote
