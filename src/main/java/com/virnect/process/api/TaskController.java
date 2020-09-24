@@ -190,6 +190,9 @@ public class TaskController {
 		@RequestBody @Valid ProcessRegisterRequest registerNewProcess, BindingResult result
 	) {
 		if (result.hasErrors()) {
+			result.getAllErrors().forEach(message -> {
+				log.error("[CONTENTS > TASK] ERROR MESSAGE >> {}", message);
+			});
 			throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<ProcessRegisterResponse> responseMessage = this.taskService.createTheProcess(registerNewProcess);
@@ -209,6 +212,9 @@ public class TaskController {
 		@RequestBody @Valid ProcessDuplicateRequest duplicateRequest, BindingResult result
 	) {
 		if (result.hasErrors()) {
+			result.getAllErrors().forEach(message -> {
+				log.error("[TASK > TASK] ERROR MESSAGE >> {}", message);
+			});
 			throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<ProcessRegisterResponse> responseMessage = this.taskService.duplicateTheProcess(duplicateRequest);

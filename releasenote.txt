@@ -3,9 +3,9 @@ RELEASE
 New Features
 
 Bug Fixes
-- 컨텐츠 삭제 에러 수정
+- 컨텐츠 -> 작업 복제 실패(타겟관련) 버그 개선
+- 작업 -> 작업 복제 실패(타겟관련) 버그 개선
 
 Limitation
-
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
