@@ -1,9 +1,9 @@
 RELEASE
 
 New Features
+- 제품 플랜 별 기능 워크스페이스 소속 멤버리스트 조회 기능 추가
 
 Bug Fixes
-- 워크스페이스 내보내기 시 라이선스 체크 에러 수정
 
 Limitation
 
