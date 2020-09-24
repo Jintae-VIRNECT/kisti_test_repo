@@ -40,14 +40,25 @@
             </div>
             <div class="table__tools">
               <icon-button
+                v-if="isHome"
+                :text="'선택 업로드'"
+                :imgSrc="require('assets/image/ic_upload.svg')"
+                :customClass="'customClass'"
+                :highlight="hasSelect"
+                @click="download"
+              ></icon-button>
+              <icon-button
                 :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"
                 :highlight="hasSelect"
+                :customClass="'customClass'"
                 @click="download"
               ></icon-button>
               <icon-button
                 :text="$t('workspace.record_remove')"
                 :imgSrc="require('assets/image/ic_delete.svg')"
+                :customClass="'customClass'"
+                :highlight="hasSelect"
                 @click="deleteItems"
               ></icon-button>
             </div>
@@ -87,6 +98,9 @@ export default {
     },
     hasSelect() {
       return this.selectedArray.some(select => select)
+    },
+    isHome() {
+      return this.$route.path === '/home'
     },
   },
   components: {
