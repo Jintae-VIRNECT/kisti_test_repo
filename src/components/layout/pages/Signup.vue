@@ -62,7 +62,7 @@
 					v-model="signup.password"
 					show-password
 					name="password"
-					v-validate="'required|min:6|max:40'"
+					v-validate="'required|password'"
 					:class="{ 'input-danger': errors.has('password') }"
 				>
 				</el-input>
@@ -71,7 +71,7 @@
 					v-model="passwordConfirm"
 					show-password
 					name="passwordConfirm"
-					v-validate="'required|min:6|max:40'"
+					v-validate="'required|password'"
 					:class="{ 'input-danger': signup.password !== passwordConfirm }"
 				>
 				</el-input>
@@ -126,6 +126,7 @@
 					:data-placeholder="$t('signup.birth.month')"
 					v-validate="'required'"
 					:clearable="false"
+					:picker-options="pickerOptions"
 				></el-date-picker>
 
 				<el-date-picker
@@ -140,6 +141,7 @@
 					:data-placeholder="$t('signup.birth.date')"
 					v-validate="'required'"
 					:clearable="false"
+					:picker-options="pickerOptions"
 				></el-date-picker>
 
 				<!-- mobile datepicker -->
@@ -513,6 +515,12 @@ export default {
 				return (this.isMobile = true)
 			else return (this.isMobile = false)
 		},
+	},
+	created() {
+		this.$validator.extend('password', {
+			getMessage: () => this.$t('signup.password.notice'),
+			validate: value => this.passValidate(value),
+		})
 	},
 	mounted() {
 		this.mobileCheck()

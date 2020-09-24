@@ -19,8 +19,14 @@ export const lang = {
 		},
 	},
 	actions: {
-		async CHANGE_LANG({ commit }) {
-			let lang = Cookies.get('lang')
+		async CHANGE_LANG({ commit }, lang) {
+			const cookieOption = {
+				domain:
+					location.hostname.split('.').length === 3
+						? location.hostname.replace(/.*?\./, '')
+						: location.hostname,
+			}
+			// let lang = Cookies.get('lang', cookieOption)
 			if (!lang) {
 				if (navigator.language != null) {
 					lang = navigator.language.substr(0, 2)
@@ -32,6 +38,7 @@ export const lang = {
 					lang = 'ko'
 				}
 			}
+			Cookies.set('lang', lang, cookieOption)
 			commit('CHANGE_LANG', lang)
 		},
 	},

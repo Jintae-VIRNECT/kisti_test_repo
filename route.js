@@ -10,7 +10,7 @@ const config = require('./configs/runtime')
 
 router.get('/urls', (req, res) => {
 	res.header('Content-Type', 'application/json')
-	res.send(JSON.stringify(config.getUrls()))
+	res.send(JSON.stringify(config.urlConfig))
 })
 
 router.get('/healthcheck', (req, res) => {

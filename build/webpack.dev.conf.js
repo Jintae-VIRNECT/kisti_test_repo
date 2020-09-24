@@ -5,7 +5,7 @@ const fs = require('fs')
 const dotenv = require('dotenv')
 const filePath = `.env.${process.env.NODE_ENV.trim()}`
 const env = dotenv.parse(fs.readFileSync(filePath))
-const configService = require('../configs/runtime')
+const config = require('../configs/runtime')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
 	mode: process.env.NODE_ENV === 'local' ? 'development' : 'production',
@@ -34,10 +34,10 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 					limit: '50mb',
 				}),
 			)
+			config.init()
 
 			app.get('/urls', bodyParser.json(), function(req, res) {
-				const a = configService.getUrls()
-				res.json(a)
+				res.json(config.urlConfig)
 			})
 		},
 	},

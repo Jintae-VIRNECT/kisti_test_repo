@@ -1,7 +1,7 @@
 {
   "qrLoginCenter": {
     "title": "QR Login Center",
-    "pageInfo": "Scan the QR code issued from QR Login Center",
+    "pageInfo": "You can log in by recognizing the QR code from Smart Glasses.",
     "loginRole": "QR code login",
     "expire": "Expired",
     "renewalCode": "Refresh the QR code",

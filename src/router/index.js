@@ -19,9 +19,6 @@ const router = new Router({
 			path: '/',
 			name: 'app',
 			component: App,
-			redirect: {
-				name: 'main',
-			},
 		},
 		{
 			path: '*',

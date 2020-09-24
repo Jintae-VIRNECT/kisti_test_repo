@@ -2,8 +2,7 @@
 RELEASE
 
 New Features
-약관 md로 교체
-runtime적용
+config 적용
 
 Bug Fixes
 -

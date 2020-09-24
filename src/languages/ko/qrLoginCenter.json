@@ -1,7 +1,7 @@
 {
   "qrLoginCenter": {
     "title": "QR 로그인 센터",
-    "pageInfo": "모바일, 스마트 글라스에서 로그인용 <br>QR코드를 인식하여 로그인할 수 있습니다.",
+    "pageInfo": "스마트 글라스 QR 로그인 매뉴에서 로그인용 <br>QR 코드를 인식하여 로그인할 수 있습니다.",
     "loginRole": "로그인용 QR코드",
     "expire": "만료",
     "renewalCode": "QR코드를 갱신해 주세요.",
