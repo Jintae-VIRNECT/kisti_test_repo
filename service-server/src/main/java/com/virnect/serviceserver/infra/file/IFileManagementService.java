@@ -10,9 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- *
- */
 public interface IFileManagementService {
 
     String LOG_MESSAGE_TAG = "[FILE MANAGEMENT SERVICE]::";

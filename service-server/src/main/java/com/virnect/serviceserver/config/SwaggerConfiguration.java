@@ -24,7 +24,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.ArrayList;
 import java.util.List;
 
-@Profile({"develop", "local"})
+@Profile({"local", "develop"})
 @Configuration
 @EnableSwagger2
 @RequiredArgsConstructor
@@ -34,7 +34,7 @@ public class SwaggerConfiguration {
 
     private ApiInfo apiInfo(String title, String version) {
         return new ApiInfoBuilder()
-                .contact(new Contact("김경", "https://virnect.com", "hoon@virnect.com"))
+                .contact(new Contact("Kyunghoon Kim", "https://virnect.com", "hoon@virnect.com"))
                 .description("Remote Service API Docs")
                 .version(version)
                 .title(title)
@@ -53,18 +53,18 @@ public class SwaggerConfiguration {
             }
         }
         responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
-responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
-        responseMessages.add(new ResponseMessageBuilder().code(500).message("서버 에러").build());
-        responseMessages.add(new ResponseMessageBuilder().code(404).message("잘못된 요청").build());
+        responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
+        responseMessages.add(new ResponseMessageBuilder().code(500).message("Server Error").build());
+        responseMessages.add(new ResponseMessageBuilder().code(404).message("Invalid Request").build());
 
         return responseMessages;
     }
 
     @Bean
     public Docket remoteServiceApi() {
-        String version = "v1.0";
+        String version = "v2.1";
         String groupName = "remote-service";
-        String title = "VIRNEC Remote Service API Document.";
+        String title = "VIRNECT Remote Service API Document.";
 
         return new Docket(DocumentationType.SWAGGER_2)
                 .useDefaultResponseMessages(false)
