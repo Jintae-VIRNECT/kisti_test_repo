@@ -1,8 +1,9 @@
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.config.property;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonSyntaxException;
+import com.virnect.serviceserver.config.RemoteServiceConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.kurento.jsonrpc.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,8 @@ import java.util.*;
  */
 public abstract class PropertyService {
     private List<RemoteServiceConfig.Error> propertiesErrors = new ArrayList<>();
-    protected Map<String, String> configProps = new HashMap<>();
-    protected Map<String, ?> propertiesSource;
+    public Map<String, String> configProps = new HashMap<>();
+    public Map<String, ?> propertiesSource;
 
     @Autowired
     protected Environment env;
@@ -31,7 +32,7 @@ public abstract class PropertyService {
         this.propertiesSource = propertiesSource;
     }*/
 
-    protected void addError(String property, String msg) {
+    public void addError(String property, String msg) {
 		String value = null;
 
 		if (property != null) {

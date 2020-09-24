@@ -72,6 +72,7 @@ public enum  ErrorCode {
     ERR_FILE_GET_SIGNED_EXCEPTION(7009, "Get Pre signed url has an exception"),
     ERR_FILE_DOWNLOAD_EXCEPTION(7010, "File download has an exception"),
     ERR_FILE_COVERT_FAILED(7011, "File converting is failed"),
+    ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
 
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),
