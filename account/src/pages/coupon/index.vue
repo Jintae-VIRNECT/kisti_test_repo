@@ -171,16 +171,18 @@ export default {
         this.addCouponForm.newCouponCode = ''
       } catch (e) {
         const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
-        const strKey =
+        const message =
           {
-            4030: 'coupon.message.registerNotExist',
-            4031: 'coupon.message.registerAlready',
-            6668: 'coupon.message.useExpired',
-            6760: 'coupon.message.useAlready',
-          }[errCode] || 'coupon.message.registerFail'
+            4030: this.$t('coupon.message.registerNotExist'),
+            4031: this.$t('coupon.message.registerAlready'),
+            4039: this.$t('coupon.message.registerOrUsedAlready'),
+            6668: this.$t('coupon.message.useExpired'),
+            6755: this.$t('coupon.message.registerDayRistrict'),
+            6760: this.$t('coupon.message.useAlready'),
+          }[errCode] || this.$t('coupon.message.registerFail')
 
         this.$notify.error({
-          message: this.$t(strKey),
+          message,
           position: 'bottom-left',
           duration: 2000,
         })

@@ -20,7 +20,7 @@ export default {
       route: { userId: form.uuid },
       params: form,
     })
-    store.commit('auth/SET_AUTH', true)
+    store.commit('auth/SET_AUTHENTICATED', true)
   },
   async updateMyProfile(form) {
     await api('UPDATE_USER_INFO', {

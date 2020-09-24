@@ -1,10 +1,12 @@
 {
-  "account": "Account",
-  "home": "Home",
-  "profile": "Personal Info",
-  "workspace": "Workspaces",
-  "security": "Security",
-  "purchases": "Subscriptions",
-  "payment": "Payments",
-  "coupon": "Coupons"
+  "menu": {
+    "account": "Account",
+    "home": "Home",
+    "profile": "Personal Info",
+    "workspace": "Workspaces",
+    "security": "Security",
+    "purchases": "Subscriptions",
+    "payment": "Payments",
+    "coupon": "Coupons"
+  }
 }

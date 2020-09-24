@@ -32,7 +32,9 @@
     <h6>
       <span>{{ $t('purchases.info.nextPaymentDate') }}</span>
     </h6>
-    <span class="value">{{ paymentInfo.nextPayDate | dateFormat }}</span>
+    <span class="value">
+      {{ paymentInfo.nextPayDate | fullYearDateFormat }}
+    </span>
     <el-divider />
     <h6>{{ $t('purchases.info.way') }}</h6>
     <span class="value">{{ way }}</span>
@@ -101,7 +103,7 @@
         <img src="~assets/images/icon/ic-error.svg" />
       </el-tooltip>
     </h6>
-    <span class="value">{{ plansInfo.endDate | dateFormat }}</span>
+    <span class="value">{{ plansInfo.endDate | fullYearDateFormat }}</span>
     <h6>
       <span>{{ $t('purchases.info.nextPaymentDate') }}</span>
       <el-tooltip
@@ -111,7 +113,9 @@
         <img src="~assets/images/icon/ic-error.svg" />
       </el-tooltip>
     </h6>
-    <span class="value">{{ paymentInfo.nextPayDate | dateFormat }}</span>
+    <span class="value">
+      {{ paymentInfo.nextPayDate | fullYearDateFormat }}
+    </span>
     <el-divider />
     <h6>{{ $t('purchases.info.way') }}</h6>
     <span class="value">{{ way }}</span>
