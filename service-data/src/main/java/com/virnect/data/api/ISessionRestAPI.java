@@ -88,7 +88,7 @@ public interface ISessionRestAPI {
 
     @ApiOperation(value = "Delete Specific Room", notes = "특정 원격협업 방을 삭제하는 API 입니다.")
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/{userId}")
-    ResponseEntity<ApiResponse<ResultResponse>> deleteRoomById(
+    ResponseEntity<ApiResponse<RoomDeleteResponse>> deleteRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @PathVariable("userId") String userId);

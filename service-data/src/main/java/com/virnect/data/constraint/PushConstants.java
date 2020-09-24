@@ -6,4 +6,6 @@ public class PushConstants {
     // ---------------------------- CLIENT PUSH EVENT -----------------------//
     public static final String SEND_PUSH_ROOM_INVITE = "invite";
     public static final String SEND_PUSH_ROOM_EVICT = "evict";
+    public static final String SEND_PUSH_ROOM_CLOSED = "closed";
+
 }

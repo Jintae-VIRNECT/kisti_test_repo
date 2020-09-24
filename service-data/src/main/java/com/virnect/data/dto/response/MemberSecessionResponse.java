@@ -20,8 +20,8 @@ public class MemberSecessionResponse {
 
     @Override
     public String toString() {
-        return "WorkspaceSecessionResponse{" +
-                "workspaceUUID='" + uuid + '\'' +
+        return "MemberSecessionResponse{" +
+                "uuid='" + uuid + '\'' +
                 ", result=" + result +
                 ", deletedDate=" + deletedDate +
                 '}';

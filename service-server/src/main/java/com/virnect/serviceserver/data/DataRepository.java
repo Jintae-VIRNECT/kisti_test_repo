@@ -38,6 +38,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -399,22 +400,57 @@ public class DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<ResultResponse> removeRoom(String workspaceId, String sessionId, String userId) {
-        return new RepoDecoder<Void, ResultResponse>(RepoDecoderType.DELETE) {
+    public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
+        return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
             @Override
-            Void loadFromDatabase() {
-                return null;
+            Room loadFromDatabase() {
+                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
+                return sessionService.getRoom(workspaceId, sessionId);
             }
 
             @Override
-            DataProcess<ResultResponse> invokeDataProcess() {
-                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
-                Room room = sessionService.getRoom(workspaceId, sessionId);
-                Member member = sessionService.getMember(workspaceId, sessionId, userId);
+            DataProcess<RoomDeleteResponse> invokeDataProcess() {
+                Room room = loadFromDatabase();
+                //Member member = sessionService.getMember(workspaceId, sessionId, userId);
+                DataProcess<RoomDeleteResponse> dataProcess = null;
+                try {
+                    dataProcess = new DataProcess<>(RoomDeleteResponse.class);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+                log.info("ROOM INFO DELETE BY dataProcess => [{}]", dataProcess.data.toString());
 
                 if(room == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                } else if(member == null) {
+                    dataProcess.setErrorCode(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return dataProcess;
+                    //return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+
+                //check request user has valid permission
+                if(!room.getLeaderId().equals(userId)) {
+                    dataProcess.setErrorCode(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                    return dataProcess;
+                    //return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                }
+
+                List<Member> members = room.getMembers();
+                for (Member member: members) {
+                    if(member.getUuid().equals(room.getLeaderId())
+                            && member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                        dataProcess.setErrorCode(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                        return dataProcess;
+                        //return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                    }
+                }
+
+                sessionService.removeRoom(room);
+                return new DataProcess<>(new RoomDeleteResponse(
+                        sessionId,
+                        true,
+                        LocalDateTime.now()
+                ));
+
+                /*else if(member == null) {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                 } else {
                     if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
@@ -424,7 +460,7 @@ public class DataRepository {
                     ResultResponse resultResponse = new ResultResponse();
                     resultResponse.setResult(true);
                     return new DataProcess<>(resultResponse);
-                }
+                }*/
             }
         }.asApiResponse();
     }
@@ -808,6 +844,32 @@ public class DataRepository {
                 return new DataProcess<>("");
             }
         }.asResponseData();
+    }
+
+    public DataProcess<List<String>> getConnectionIds(String workspaceId, String sessionId) {
+        return new RepoDecoder<Room, List<String>>(RepoDecoderType.READ) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
+            }
+
+            @Override
+            DataProcess<List<String>> invokeDataProcess() {
+                Room room = loadFromDatabase();
+                List<Member> memberList= room.getMembers();
+
+                memberList.removeIf(member -> member.getUuid().equals(room.getLeaderId()));
+
+                List<String> connectionIds = new ArrayList<>();
+                for (Member member: memberList) {
+                    if(member.getConnectionId() != null) {
+                        connectionIds.add(member.getConnectionId());
+                    }
+                }
+                return new DataProcess<>(connectionIds);
+            }
+        }.asResponseData();
+
     }
 
     public ApiResponse<ResultResponse> kickFromRoom(String workspaceId, String sessionId, KickRoomRequest kickRoomRequest) {
