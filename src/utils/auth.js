@@ -21,7 +21,7 @@ let interval
  */
 function setTokensToCookies(response) {
   const cookieOption = {
-    expires: response.expireIn / 3600000,
+    expires: Math.ceil(response.expireIn / 3600000),
     domain:
       location.hostname.split('.').length === 3
         ? location.hostname.replace(/.*?\./, '')
@@ -47,7 +47,9 @@ const tokenInterval = async () => {
 
     let response = await tokenRequest(params)
 
-    setTokensToCookies(response)
+    if (response.refreshed === true) {
+      setTokensToCookies(response)
+    }
   }
 }
 

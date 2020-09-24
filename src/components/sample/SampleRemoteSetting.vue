@@ -118,7 +118,7 @@ export default {
       audioContext: null,
       audioSoundMeter: null,
       /* output */
-      mp3: require('assets/media/queen.mp3'),
+      mp3: '',
       outputDevices: [],
       selectOutput: null,
       outputStream: null,
