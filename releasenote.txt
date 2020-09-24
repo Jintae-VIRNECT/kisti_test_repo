@@ -1,9 +1,10 @@
 RELEASE
 
 New Features
-- staging, production 설정 외부로 뺌
 
 Bug Fixes
+- 컨텐츠 -> 작업 복제 실패(타겟관련) 버그 개선
+- 작업 -> 작업 복제 실패(타겟관련) 버그 개선
 
 Limitation
 
