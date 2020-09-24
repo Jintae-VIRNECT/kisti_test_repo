@@ -289,8 +289,14 @@ export default {
         this.contentName = taskInfo.name
         this.mainForm = {
           schedule: [
-            dayjs.utc(taskInfo.startDate).local(),
-            dayjs.utc(taskInfo.endDate).local(),
+            dayjs
+              .utc(taskInfo.startDate)
+              .local()
+              .toDate(),
+            dayjs
+              .utc(taskInfo.endDate)
+              .local()
+              .toDate(),
           ],
           worker: '',
           position: taskInfo.position,
@@ -300,8 +306,14 @@ export default {
           name: subTask.subTaskName,
           priority: subTask.priority,
           schedule: [
-            dayjs.utc(subTask.startDate).local(),
-            dayjs.utc(subTask.endDate).local(),
+            dayjs
+              .utc(subTask.startDate)
+              .local()
+              .toDate(),
+            dayjs
+              .utc(subTask.endDate)
+              .local()
+              .toDate(),
           ],
           worker: subTask.workerUUID,
         }))

@@ -1,7 +1,6 @@
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from '@/api/uri'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 import { context } from '@/plugins/context'
 
 let axios = null
@@ -51,7 +50,7 @@ export async function api(name, option = {}) {
     if (code === 200) {
       return data
     } else if (code === 8003 || code === 8005) {
-      if (process.client) location.href = urls.console[$nuxt.$config.TARGET_ENV]
+      if (process.client) location.href = context.$url.console
       throw new Error(`${code}: ${message}`)
     } else {
       const error = new Error(`${code}: ${message}`)
@@ -59,7 +58,7 @@ export async function api(name, option = {}) {
       throw error
     }
   } catch (e) {
-    console.error(`URL: ${uri}`)
+    if (context.$config.DEBUG) console.error(`URL: ${uri}`)
     // timeout
     if (e.code === 'ECONNABORTED') {
       e.statusCode = 504
@@ -80,7 +79,7 @@ export default function({ $config, $axios }, inject) {
     httpsAgent: new https.Agent({
       rejectUnauthorized: false,
     }),
-    withCredentials: /(staging|production)/.test($config.TARGET_ENV),
+    withCredentials: /(staging|production)/.test($config.VIRNECT_ENV),
   })
 
   /**

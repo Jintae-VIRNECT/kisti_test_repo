@@ -20,6 +20,7 @@ export default class DuplicateTask extends Model {
     this.endDate = dayjs.utc(task.schedule[1])
     this.position = task.position
     this.targetType = originTask.targets.length && originTask.targets[0].type
+    this.targetSize = originTask.targetSize
     this.targetSetting = task.targetSetting
     this.subTaskList = subTasks.map(subTask => {
       return {

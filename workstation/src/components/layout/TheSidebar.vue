@@ -2,17 +2,25 @@
   <nav class="the-sidebar">
     <div class="the-sidebar__inner">
       <div class="the-sidebar__logo">
-        <a
-          @click.stop="openCollapse(logoCollapse)"
-          :style="
-            `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
-          "
-        />
+        <el-tooltip
+          popper-class="the-sidebar__tooltip"
+          effect="dark"
+          :content="$t('menu.collapse.workspace.title')"
+          placement="right"
+        >
+          <a
+            @click.stop="openCollapse(logoCollapse)"
+            :style="
+              `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
+            "
+          />
+        </el-tooltip>
       </div>
       <div class="the-sidebar__upper">
         <the-sidebar-menu-list :menus="menus" @openCollapse="openCollapse" />
       </div>
-      <div class="the-sidebar__lower">
+      <!-- 워크스페이스 설정 -->
+      <div class="the-sidebar__lower" v-if="!hideWorkspaceSetting">
         <the-sidebar-menu-list
           :menus="bottomMenus"
           @openCollapse="openCollapse"
@@ -60,6 +68,12 @@ export default {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
     }),
+    hideWorkspaceSetting() {
+      return (
+        this.$config.VIRNECT_ENV === 'onpremise' &&
+        this.activeWorkspace.role !== 'MASTER'
+      )
+    },
   },
   methods: {
     openCollapse(component) {
@@ -108,13 +122,13 @@ $the-sidebar-border: solid 1px #0d1d39;
   height: 36px;
   margin: 0 12px;
   overflow: hidden;
-  border-radius: 50%;
+  mask: url('~assets/images/icon/ic-bg.svg');
+  mask-size: 100%;
 
   & > a {
     display: block;
     width: 100%;
     height: 100%;
-    // background-color: #e2e7ed;
     background-position: center;
     background-size: cover;
   }
@@ -141,7 +155,7 @@ $the-sidebar-border: solid 1px #0d1d39;
   top: 0;
   left: $the-sidebar-width;
   z-index: 2001;
-  width: 240px;
+  min-width: 240px;
   height: 100%;
   color: #fff;
   background: $the-sidebar-background;
