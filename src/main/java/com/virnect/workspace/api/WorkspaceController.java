@@ -1,14 +1,10 @@
 package com.virnect.workspace.api;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
 import javax.validation.Valid;
 
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -118,22 +114,6 @@ public class WorkspaceController {
     }
 
     @ApiOperation(
-            value = "워크스페이스 이미지 조회(개발 서버 업로드)"
-    )
-    @ApiImplicitParam(name = "fileName", value = "파일 이름", dataType = "string", type = "path", defaultValue = "1.PNG", required = true)
-    @GetMapping("/upload/{fileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
-        if (!StringUtils.hasText(fileName)) {
-            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        Resource resource = this.workspaceService.downloadFile(fileName);
-        return ResponseEntity.ok()
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
-    }
-
-    @ApiOperation(
             value = "내가 속한 워크스페이스 목록 조회",
             notes = "사용자가 마스터, 매니저, 멤버로 소속되어 있는 워크스페이스 정보를 조회합니다."
     )
@@ -158,7 +138,7 @@ public class WorkspaceController {
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "search", value = "검색어(닉네임, 이메일)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
-            @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
+            @ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER, REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "role,desc"),

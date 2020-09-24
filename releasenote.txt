@@ -1,9 +1,9 @@
 RELEASE
 
 New Features
+- 제품 플랜 별 기능 워크스페이스 소속 멤버리스트 조회 기능 추가
 
 Bug Fixes
-- 기본 설정 Locale Cookie값을 ko로 수정
 
 Limitation
 

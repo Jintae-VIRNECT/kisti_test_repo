@@ -2,9 +2,9 @@ spring:
   application:
     name: workspace-server
   datasource:
-    url: jdbc:mysql://localhost:3306/workspace?characterEncoding=UTF-8&serverTimezone=UTC
-    username: root
-    password: root
+    url: jdbc:mysql://192.168.6.3:4336/workspace?serverTimezone=UTC
+    username: virnect-workspace
+    password: virnect1234!
   jpa:
     hibernate:
       ddl-auto: update
@@ -41,12 +41,6 @@ logging:
 ## Server Configuration
 server:
   port: 8082
-
-## Project Configuration
-file:
-  upload-path: "upload/"
-  url: "http://localhost:${server.port}/workspaces/"
-  allow-extension: "gif,jpg,jpeg,png"
 
 ## Eureka Server Configuration
 eureka:
@@ -100,3 +94,12 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+## Minio
+minio:
+  access-key: "virnect"
+  secret-key: "virnect0!"
+  server: "http://192.168.6.3:2838"
+  bucket: "virnect-platform"
+  resource: "workspace/profile"
+  extension: "gif,jpg,jpeg,png"

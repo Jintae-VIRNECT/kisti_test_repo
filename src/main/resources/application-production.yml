@@ -27,7 +27,7 @@ spring:
   zipkin:
     base-url: http://zipkin.virnect.com
     discovery-client-enabled: false
-    
+
 logging:
   level:
     com.virnect.workspace.application.*: DEBUG
@@ -35,12 +35,6 @@ logging:
 ## Server Configuration
 server:
   port: 8082
-
-## Project Configuration
-file:
-  upload-path: "workspace/profile/"
-  url: "https://virnect-platform.s3.ap-northeast-2.amazonaws.com/"
-  allow-extension: "gif,jpg,jpeg,png"
 
 ## Eureka Server Configuration
 eureka:
@@ -62,6 +56,8 @@ cloud:
       bucket:
         name: "virnect-platform"
         resource: "workspace/profile"
+        extension: "gif,jpg,jpeg,png"
+
 
 ## Mail send rediect Url
 serverUrl: "https://api.virnect.com"

@@ -43,12 +43,6 @@ server:
   port: 8082
 #  address: 192.168.6.3
 
-## Project Configuration
-file:
-  upload-path: "upload/"
-  url: "http://192.168.6.3:${server.port}/workspaces/"
-  allow-extension: "gif,jpg,jpeg,png"
-
 ## Eureka Server Configuration
 eureka:
   instance:
@@ -105,3 +99,12 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
+
+## Minio
+minio:
+  access-key: "virnect"
+  secret-key: "virnect0!"
+  server: "http://192.168.6.3:2838"
+  bucket: "virnect-platform"
+  resource: "workspace/profile"
+  extension: "gif,jpg,jpeg,png"

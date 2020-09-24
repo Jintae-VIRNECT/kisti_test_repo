@@ -1,8 +1,6 @@
 package com.virnect.workspace.application;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,8 +14,6 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -81,7 +77,7 @@ import com.virnect.workspace.global.constant.Role;
 import com.virnect.workspace.global.constant.UUIDType;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
-import com.virnect.workspace.infra.file.FileUploadService;
+import com.virnect.workspace.infra.file.FileService;
 
 @Slf4j
 @Service
@@ -96,18 +92,12 @@ public class WorkspaceService {
 	private final ModelMapper modelMapper;
 	private final MessageRestService messageRestService;
 	private final ProcessRestService processRestService;
-	private final FileUploadService fileUploadService;
+	private final FileService fileUploadService;
 	private final UserInviteRepository userInviteRepository;
 	private final SpringTemplateEngine springTemplateEngine;
 	private final HistoryRepository historyRepository;
 	private final MessageSource messageSource;
 	private final LicenseRestService licenseRestService;
-
-	@Value("${file.upload-path}")
-	private String fileUploadPath;
-
-	@Value("${file.url}")
-	private String fileUrl;
 
 	@Value("${serverUrl}")
 	private String serverUrl;
@@ -163,7 +153,7 @@ public class WorkspaceService {
 				throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 			}
 		} else {
-			profile = fileUrl + fileUploadPath + "workspace-profile.png";//디폴트 이미지 경로.
+			profile = this.fileUploadService.getFileUrl("workspace-profile.png");
 		}
 
 		Workspace newWorkspace = Workspace.builder()
@@ -233,7 +223,8 @@ public class WorkspaceService {
 				workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
 			workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
 
-			UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
+			UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId())
+				.getData();
 			workspaceInfo.setMasterName(userInfoRestResponse.getName());
 			workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
 			workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
@@ -271,14 +262,24 @@ public class WorkspaceService {
 
 		//filter set
 		List<WorkspaceRole> workspaceRoleList = new ArrayList<>();
-		if (StringUtils.hasText(filter) && filter.contains("MASTER")) {
+		if (StringUtils.hasText(filter) && filter.toUpperCase().contains("MASTER")) {
 			workspaceRoleList.add(WorkspaceRole.builder().id(1L).build());
 		}
-		if (StringUtils.hasText(filter) && filter.contains("MANAGER")) {
+		if (StringUtils.hasText(filter) && filter.toUpperCase().contains("MANAGER")) {
 			workspaceRoleList.add(WorkspaceRole.builder().id(2L).build());
 		}
-		if (StringUtils.hasText(filter) && filter.contains("MEMBER")) {
+		if (StringUtils.hasText(filter) && filter.toUpperCase().contains("MEMBER")) {
 			workspaceRoleList.add(WorkspaceRole.builder().id(3L).build());
+		}
+		List<String> licenseProductList = new ArrayList<>();
+		if (StringUtils.hasText(filter) && filter.toUpperCase().contains("REMOTE")) {
+			licenseProductList.add("REMOTE");
+		}
+		if (StringUtils.hasText(filter) && filter.toUpperCase().contains("MAKE")) {
+			licenseProductList.add("MAKE");
+		}
+		if (StringUtils.hasText(filter) && filter.toUpperCase().contains("VIEW")) {
+			licenseProductList.add("VIEW");
 		}
 
 		Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
@@ -347,6 +348,57 @@ public class WorkspaceService {
 			pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
 			pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
 
+		} else if (!licenseProductList.isEmpty()) {
+			List<String> userIdList = new ArrayList<>();
+			userInfoListRestResponse.getUserInfoList().forEach(userInfoRestResponse -> {
+				MyLicenseInfoListResponse userLicenseInfo = licenseRestService.getMyLicenseInfoRequestHandler(
+					workspaceId, userInfoRestResponse.getUuid()).getData();
+				userLicenseInfo.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+					if (licenseProductList.contains(myLicenseInfoResponse.getProductName()) && !userIdList.contains(
+						userInfoRestResponse.getUuid())) {
+						//페이징 만들 데이터 넣기
+						userIdList.add(userInfoRestResponse.getUuid());
+					}
+
+				});
+			});
+			Page<WorkspaceUser> workspaceUserPage = this.workspaceUserRepository.findByWorkspace_UuidAndUserIdIn(
+				workspaceId, userIdList, newPageable);
+			List<WorkspaceUser> resultWorkspaceUser = workspaceUserPage.toList();
+
+			for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
+
+				WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
+					workspace, userInfoRestResponse.getUuid());
+				if (resultWorkspaceUser.contains(workspaceUserPermission.getWorkspaceUser())) {
+					MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
+					memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+					memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
+					memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
+
+					String[] licenseProducts = new String[0];
+					if (worksapcePlanExist) {
+						MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
+							workspaceId, userInfoRestResponse.getUuid()).getData();
+						if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+							licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
+								.stream()
+								.map(myLicenseInfoResponse -> {
+									return myLicenseInfoResponse.getProductName();
+								})
+								.toArray(String[]::new);
+							memberInfoDTO.setLicenseProducts(licenseProducts);
+						}
+					}
+					memberInfoDTO.setLicenseProducts(licenseProducts);
+					memberInfoDTOList.add(memberInfoDTO);
+				}
+
+			}
+			pageMetadataResponse.setTotalElements(workspaceUserPage.getTotalElements());
+			pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
+			pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
+			pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
 		} else {
 			List<String> userIdList = userInfoListRestResponse.getUserInfoList()
 				.stream()
@@ -452,7 +504,8 @@ public class WorkspaceService {
 				.collect(Collectors.toList());
 		} else {
 			return memberInfoDTOList.stream()
-				.sorted(Comparator.comparing(MemberInfoDTO::getUpdatedDate,
+				.sorted(Comparator.comparing(
+					MemberInfoDTO::getUpdatedDate,
 					Comparator.nullsFirst(Comparator.reverseOrder())
 				))
 				.collect(Collectors.toList());
@@ -587,17 +640,36 @@ public class WorkspaceService {
 		//초대받는 사람에게 할당할 라이선스가 있는 지 체크.(useful license check)
 		for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfo : workspaceLicensePlanInfoResponse
 			.getLicenseProductInfoList()) {
-			if (licenseProductInfo.getProductName().equals(LicenseProduct.REMOTE.toString())
-				&& licenseProductInfo.getUnUseLicenseAmount() < requestRemote) {
-				throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+
+			if (licenseProductInfo.getProductName().equals(LicenseProduct.REMOTE.toString())) {
+				log.debug(
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Remote License count >> {}, Request Remote License count >> {}",
+					licenseProductInfo.getUnUseLicenseAmount(),
+					requestRemote
+				);
+				if (licenseProductInfo.getUnUseLicenseAmount() < requestRemote) {
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 			}
-			if (licenseProductInfo.getProductName().equals(LicenseProduct.MAKE.toString())
-				&& licenseProductInfo.getUnUseLicenseAmount() < requestMake) {
-				throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+			if (licenseProductInfo.getProductName().equals(LicenseProduct.MAKE.toString())) {
+				log.debug(
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Make License count >> {}, Request Make License count >> {}",
+					licenseProductInfo.getUnUseLicenseAmount(),
+					requestMake
+				);
+				if (licenseProductInfo.getUnUseLicenseAmount() < requestMake) {
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 			}
-			if (licenseProductInfo.getProductName().equals(LicenseProduct.VIEW.toString())
-				&& licenseProductInfo.getUnUseLicenseAmount() < requestView) {
-				throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+			if (licenseProductInfo.getProductName().equals(LicenseProduct.VIEW.toString())) {
+				log.debug(
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse View License count >> {}, Request View License count >> {}",
+					licenseProductInfo.getUnUseLicenseAmount(),
+					requestView
+				);
+				if (licenseProductInfo.getUnUseLicenseAmount() < requestView) {
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 			}
 		}
 
@@ -652,7 +724,8 @@ public class WorkspaceService {
 						userInvite.setUpdatedDate(LocalDateTime.now());
 						userInvite.setExpireTime(duration);
 						this.userInviteRepository.save(userInvite);
-						log.info("REDIS UPDATE - {}", userInvite.toString());
+						log.debug(
+							"[WORKSPACE INVITE USER] Worksapce Invite Info Redis Update >> {}", userInvite.toString());
 					} else {
 						UserInvite newUserInvite = UserInvite.builder()
 							.inviteId(inviteUserResponse.getUserUUID() + "-" + workspaceId)
@@ -678,7 +751,8 @@ public class WorkspaceService {
 							.expireTime(duration)
 							.build();
 						this.userInviteRepository.save(newUserInvite);
-						log.info("REDIS SET - {}", newUserInvite.toString());
+						log.debug(
+							"[WORKSPACE INVITE USER] Worksapce Invite Info Redis Set >> {}", newUserInvite.toString());
 					}
 					//메일은 이미 초대한 것 여부와 관계없이 발송한다.
 					String rejectUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId="
@@ -747,7 +821,7 @@ public class WorkspaceService {
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_NOT_FOUND_INVITE_WORKSPACE_INFO));
 		Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        
+
 		//메일 발송 수신자 : 마스터 유저, 매니저 유저
 		List<String> emailReceiverList = new ArrayList<>();
 		UserInfoRestResponse masterUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
@@ -1020,17 +1094,6 @@ public class WorkspaceService {
 		redirectView.setUrl(redirectUrl);
 		redirectView.setContentType("application/json");
 		return redirectView;
-	}
-
-	public Resource downloadFile(String fileName) throws IOException {
-		Path file = Paths.get(fileUploadPath).resolve(fileName);
-		Resource resource = new UrlResource(file.toUri());
-		if (resource.getFile().exists()) {
-			return resource;
-		} else {
-			throw new WorkspaceException(ErrorCode.ERR_INVALID_VALUE);
-		}
-
 	}
 
 	/**
@@ -1376,7 +1439,7 @@ public class WorkspaceService {
 			String oldProfile = workspace.getProfile();
 			//기존 프로필 이미지 삭제
 			if (StringUtils.hasText(oldProfile) && !oldProfile.contains("workspace-profile.png")) {
-				this.fileUploadService.delete(oldProfile.substring(oldProfile.lastIndexOf("/") + 1));
+				this.fileUploadService.delete(oldProfile);
 			}
 			//새 프로필 이미지 등록
 			try {
@@ -1418,9 +1481,15 @@ public class WorkspaceService {
 		return new ApiResponse<>(userInfoDTO);
 	}
 
+	@Transactional
 	public ApiResponse<Boolean> kickOutMember(
 		String workspaceId, MemberKickOutRequest memberKickOutRequest, Locale locale
 	) {
+		log.debug(
+			"[WORKSPACE KICK OUT USER] Workspace >> {}, Kickout User >> {}, Request User >> {}", workspaceId,
+			memberKickOutRequest.getKickedUserId(),
+			memberKickOutRequest.getUserId()
+		);
 		Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 		UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspace.getUserId())
@@ -1450,11 +1519,16 @@ public class WorkspaceService {
 		//라이선스 해제
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, memberKickOutRequest.getKickedUserId()).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
 			myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
+				log.debug(
+					"[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
+					myLicenseInfoResponse.getProductName()
+				);
 				Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(
 					workspaceId, memberKickOutRequest.getKickedUserId(), myLicenseInfoResponse.getProductName())
 					.getData();
+
 				if (!revokeResult) {
 					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
 				}
@@ -1463,9 +1537,11 @@ public class WorkspaceService {
 
 		//workspace_user_permission 삭제(history 테이블 기록)
 		this.workspaceUserPermissionRepository.delete(kickedUserPermission);
+		log.debug("[WORKSPACE KICK OUT USER] Delete Workspace user permission info.");
 
 		//workspace_user 삭제(history 테이블 기록)
 		this.workspaceUserRepository.delete(kickedUserPermission.getWorkspaceUser());
+		log.debug("[WORKSPACE KICK OUT USER] Delete Workspace user info.");
 
 		//메일 발송
 		Context context = new Context();
@@ -1484,6 +1560,7 @@ public class WorkspaceService {
 		String template = this.messageSource.getMessage(Mail.WORKSPACE_KICKOUT.getTemplate(), null, locale);
 		String html = springTemplateEngine.process(template, context);
 		this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
+		log.debug("[WORKSPACE KICK OUT USER] Send Workspace kick out mail.");
 
 		//history 저장
 		String message = this.messageSource.getMessage(
@@ -1665,28 +1742,32 @@ public class WorkspaceService {
 
 		if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("asc")) {
 			beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-				.sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getProductName,
+				.sorted(Comparator.comparing(
+					WorkspaceUserLicenseInfoResponse::getProductName,
 					Comparator.nullsFirst(Comparator.naturalOrder())
 				))
 				.collect(Collectors.toList());
 		}
 		if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("desc")) {
 			beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-				.sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getProductName,
+				.sorted(Comparator.comparing(
+					WorkspaceUserLicenseInfoResponse::getProductName,
 					Comparator.nullsFirst(Comparator.reverseOrder())
 				))
 				.collect(Collectors.toList());
 		}
 		if (sortName.equalsIgnoreCase("nickName") && sortDirection.equalsIgnoreCase("asc")) {
 			beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-				.sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getNickName,
+				.sorted(Comparator.comparing(
+					WorkspaceUserLicenseInfoResponse::getNickName,
 					Comparator.nullsFirst(Comparator.naturalOrder())
 				))
 				.collect(Collectors.toList());
 		}
 		if (sortName.equalsIgnoreCase("nickName") && sortDirection.equalsIgnoreCase("desc")) {
 			beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-				.sorted(Comparator.comparing(WorkspaceUserLicenseInfoResponse::getNickName,
+				.sorted(Comparator.comparing(
+					WorkspaceUserLicenseInfoResponse::getNickName,
 					Comparator.nullsFirst(Comparator.reverseOrder())
 				))
 				.collect(Collectors.toList());
