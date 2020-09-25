@@ -5,7 +5,7 @@ import java.util.List;
 import static com.virnect.data.constraint.LicenseConstants.*;
 
 public enum LicenseItem {
-    ITEM_PRODUCT(6, LICENSE_PRODUCT),
+    ITEM_PRODUCT(64, LICENSE_PRODUCT),
     @Deprecated
     ITEM_BASIC(6, LICENSE_BASIC),
     @Deprecated
