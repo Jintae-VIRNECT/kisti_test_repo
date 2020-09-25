@@ -173,13 +173,12 @@ export default {
         const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
         const message =
           {
-            4030: this.$t('coupon.message.registerNotExist'),
-            4031: this.$t('coupon.message.registerAlready'),
-            4039: this.$t('coupon.message.registerOrUsedAlready'),
-            6668: this.$t('coupon.message.useExpired'),
-            6755: this.$t('coupon.message.registerDayRistrict'),
-            6760: this.$t('coupon.message.useAlready'),
-          }[errCode] || this.$t('coupon.message.registerFail')
+            2900: this.$t('coupon.message.registerDayRistrict'),
+            2904: this.$t('coupon.message.registerNotExist'),
+            2905: this.$t('coupon.message.useAlready'),
+            2907: this.$t('coupon.message.useExpired'),
+            2914: this.$t('coupon.message.registerOrUsedAlready'),
+          }[errCode] || `${errCode}: ${this.$t('coupon.message.registerFail')}`
 
         this.$notify.error({
           message,
