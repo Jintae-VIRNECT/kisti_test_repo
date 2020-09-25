@@ -709,6 +709,15 @@ public class DataRepository {
 
                 sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
                 return new DataProcess<>(true);
+
+                /*if(!Objects.equals(clientMetaData.getRoleType(), MemberType.LEADER.name())
+                || !Objects.equals(clientMetaData.getRoleType(), MemberType.EXPERT.name())
+                || !Objects.equals(clientMetaData.getRoleType(), MemberType.WORKER.name())
+                ) {
+                    return new DataProcess<>(false);
+                } else {
+
+                }*/
             }
         }.asResponseData();
     }
