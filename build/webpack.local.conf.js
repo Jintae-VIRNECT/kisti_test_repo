@@ -8,6 +8,9 @@ const host = '0.0.0.0'
 const port = '8886'
 const logger = require('../server/logger')
 const configService = require('../server/config')
+const translate = require('../translate/translate')
+const stt = require('../translate/stt')
+const tts = require('../translate/tts')
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 
 const mode = 'development'
@@ -97,6 +100,34 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
 
       app.get('/pdf.worker', function(req, res) {
         res.sendFile(path.join(__dirname, '../static/js/pdf.worker.min.js'))
+      })
+
+      app.post('/translate', bodyParser.json(), function(req, res) {
+        const text = req.body.text
+        const target = req.body.target
+        translate.getTranslate(text, target).then(value => {
+          res.send(value)
+        })
+      })
+
+      app.post('/stt', bodyParser.json(), function(req, res) {
+        const file = req.body.file
+        const lang = req.body.lang
+        const rateHertz = req.body.rateHertz
+        stt.getStt(file, lang, rateHertz).then(value => {
+          console.log(req.body.lang, '::', value)
+          res.send(value)
+        })
+      })
+
+      app.post('/tts', bodyParser.json(), function(req, res) {
+        const text = req.body.text
+        const lang = req.body.lang
+        const voice = req.body.voice
+        tts.getTts(text, lang, voice).then(value => {
+          // console.log(req.body.text, '::', value)
+          res.send(value)
+        })
       })
     },
   },

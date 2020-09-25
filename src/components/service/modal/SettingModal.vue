@@ -9,7 +9,7 @@
     <div class="rec-setting">
       <template v-if="isLeader">
         <p class="rec-setting--header">{{ $t('service.setting_pointing') }}</p>
-        <div class="rec-setting__row underbar">
+        <div class="rec-setting__row">
           <p class="rec-setting__text">
             {{ $t('service.setting_pointing_participant') }}
           </p>
@@ -21,14 +21,12 @@
         </div>
       </template>
 
-      <div class="rec-setting__row">
-        <p class="rec-setting--header" :class="{ disable: recording }">
-          {{ $t('service.setting_local_record') }}
-        </p>
-        <p v-if="recording" class="rec-setting--warning">
-          {{ $t('service.setting_local_record_warning') }}
-        </p>
-      </div>
+      <p class="rec-setting--header" :class="{ disable: recording }">
+        {{ $t('service.setting_local_record') }}
+      </p>
+      <p v-if="recording" class="rec-setting--warning">
+        {{ $t('service.setting_local_record_warning') }}
+      </p>
 
       <div class="rec-setting__row" :class="{ disable: recording }">
         <p class="rec-setting__text">
@@ -125,6 +123,26 @@
           :value.sync="localRecording"
         ></r-check>
       </div>
+
+      <p class="rec-setting--header">
+        {{ '번역 설정' }}
+      </p>
+      <div class="rec-setting__row">
+        <switcher :text="'번역 사용'" :value.sync="useTranslate"></switcher>
+      </div>
+      <div class="rec-setting__row vertical">
+        <p class="rec-setting__description">
+          {{ '채팅 시, 번역 받을 국가 언어를 설정해주세요.' }}
+        </p>
+        <r-select
+          class="setting__r-selecter"
+          :options="translateOption"
+          value="code"
+          text="name"
+          :selectedValue.sync="translateCode"
+        >
+        </r-select>
+      </div>
     </div>
   </modal>
 </template>
@@ -135,8 +153,11 @@ import RSelect from 'RemoteSelect'
 import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
 import Tooltip from 'Tooltip'
+import Switcher from 'Switcher'
 
 import toastMixin from 'mixins/toast'
+
+import { languageCode } from 'utils/translate'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
@@ -156,6 +177,7 @@ export default {
     RCheck,
     RRadio,
     Tooltip,
+    Switcher,
   },
   data() {
     return {
@@ -170,6 +192,9 @@ export default {
       maxRecordTime: '',
       maxRecordInterval: '',
       recordResolution: '',
+      useTranslate: false,
+      translateCode: 'ko',
+      translateOption: languageCode,
     }
   },
   props: {
@@ -185,7 +210,13 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['view', 'localRecord', 'allowLocalRecord', 'allowPointing']),
+    ...mapGetters([
+      'view',
+      'localRecord',
+      'allowLocalRecord',
+      'allowPointing',
+      'translate',
+    ]),
     localRecTimeOpt() {
       const options = localRecTime.map(time => {
         return {
@@ -305,6 +336,12 @@ export default {
     recordResolution(resolution) {
       this.changeSetting('resolution', resolution)
     },
+    translateCode(code) {
+      this.changeTranslate('code', code)
+    },
+    useTranslate(flag) {
+      this.changeTranslate('flag', flag)
+    },
   },
   methods: {
     ...mapActions([
@@ -312,12 +349,20 @@ export default {
       'setScreenStream',
       'setLocalRecordTarget',
       'addChat',
+      'setTranslate',
     ]),
     changeSetting(item, setting) {
       const param = {}
       param[item] = setting
       this.setRecord(param)
       this.$localStorage.setRecord(item, setting)
+      // this.showToast()
+    },
+    changeTranslate(item, setting) {
+      const param = {}
+      param[item] = setting
+      this.setTranslate(param)
+      this.$localStorage.setTranslate(item, setting)
       // this.showToast()
     },
 
@@ -337,6 +382,8 @@ export default {
     this.maxRecordTime = this.localRecord.time
     this.maxRecordInterval = this.localRecord.interval
     this.recordResolution = this.localRecord.resolution
+    this.translateCode = this.translate.code
+    this.useTranslate = this.translate.flag
   },
 }
 </script>

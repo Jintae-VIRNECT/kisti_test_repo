@@ -102,6 +102,7 @@ export default {
       'setDevices',
       'setRecord',
       'setAllow',
+      'setTranslate',
     ]),
     init(authInfo, workspaces) {
       this.updateAccount({
@@ -151,6 +152,10 @@ export default {
       const allow = this.$localStorage.getItem('allow')
       if (allow) {
         this.setAllow(allow)
+      }
+      const langCode = this.$localStorage.getItem('translate')
+      if (langCode) {
+        this.setTranslate(langCode)
       }
     },
     showDeviceDenied() {
