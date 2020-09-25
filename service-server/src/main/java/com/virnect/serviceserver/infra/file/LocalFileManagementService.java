@@ -33,31 +33,8 @@ import java.util.*;
 @Component
 public class LocalFileManagementService implements IFileManagementService {
 
-<<<<<<< HEAD
-    @Value("${minio.bucket}")
-=======
-    /*@Value("${cms.bucket-file-name}")
->>>>>>> develop-hoon
-    private String fileBucketName;
-    @Value("${minio.resource}")
-    private String profileBucketName;
-    @Value("${minio.access-key}")
-    private String accessKey;
-    @Value("${minio.secret-key}")
-    private String secretKey;
-<<<<<<< HEAD
-    @Value("${minio.server}")
-    private String serverUrl;
-    @Value("${minio.dir}")
-=======
-    @Value("${cms.serverUrl}")
-    private String serverUrl;
-    @Value("${cms.dir}")
-    private String rootDirPath;*/
-
     private String fileBucketName;
     private String profileBucketName;
->>>>>>> develop-hoon
     private String rootDirPath;
 
     @Autowired
@@ -72,40 +49,6 @@ public class LocalFileManagementService implements IFileManagementService {
 
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
-<<<<<<< HEAD
-        try {
-            fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
-            fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
-            fileAllowExtensionList.addAll(FILE_VIDEO_ALLOW_EXTENSION);
-
-            log.info(LOG_MESSAGE_TAG + "{}", "LocalFileUploadService initialised");
-            log.info(LOG_MESSAGE_TAG + "LocalFileUploadService allow extension {}", fileAllowExtensionList);
-            minioClient = MinioClient.builder().endpoint(serverUrl).credentials(accessKey, secretKey).build();
-
-            boolean isBucketExist = false;
-
-            // create file bucket
-            isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(fileBucketName).build());
-            if (isBucketExist) {
-                log.info("Bucket {} is already exist.", fileBucketName);
-            } else {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(fileBucketName).build());
-            }
-            // set bucket lifecycle
-            String lifeCycle = "<LifecycleConfiguration>" + "<Rule>" + "<ID>expire-bucket</ID>" + "<Prefix></Prefix>"
-                    + "<Status>Disabled</Status>" + "<Expiration>" + "<Days>7</Days>" + "</Expiration>" + "</Rule>"
-                    + "</LifecycleConfiguration>";
-
-            minioClient.setBucketLifeCycle(
-                    SetBucketLifeCycleArgs.builder().bucket(fileBucketName).config(lifeCycle).build());
-
-            // create file bucket
-            isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(profileBucketName).build());
-            if (isBucketExist) {
-                log.info("Bucket {} is already exist.", profileBucketName);
-            } else {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(profileBucketName).build());
-=======
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
             log.info("Remote storage service is enabled");
             this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
@@ -164,7 +107,6 @@ public class LocalFileManagementService implements IFileManagementService {
                 this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
             } catch (MinioException e) {
                 log.info("Bucket error occured:: {}", e.getMessage());
->>>>>>> develop-hoon
             }
         } else {
             log.info("Remote storage service is disabled");
