@@ -23,7 +23,6 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.*;
 
-//@Profile({"develop", "local"})
 @Profile({"staging", "production"})
 @Slf4j
 @Component
