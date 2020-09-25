@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.lang.reflect.InvocationTargetException;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,6 +14,16 @@ public class DataProcess<T> {
     T data;
     int code = 200;
     String message = "complete";
+
+    public DataProcess(Class<T> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        this.data = clazz.getDeclaredConstructor().newInstance();
+
+    }
+
+    @Deprecated
+    private T getGenericInstance(Class<T> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+        return clazz.getDeclaredConstructor().newInstance();
+    }
 
     public DataProcess(T data, int code, String message) {
         this.data = data;
@@ -39,6 +51,11 @@ public class DataProcess<T> {
         this.code = errorCode.getCode();
         this.message = errorCode.getMessage();
         this.data = null;
+    }
+
+    public void setErrorCode(ErrorCode errorCode) {
+        this.code = errorCode.getCode();
+        this.message = errorCode.getMessage();
     }
 
     /*public DataProcess<T> success(T data, int code) {

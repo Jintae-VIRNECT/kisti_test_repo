@@ -29,6 +29,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -261,15 +262,17 @@ public class SessionRestController implements ISessionRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<ResultResponse>> deleteRoomById(
+    public ResponseEntity<ApiResponse<RoomDeleteResponse>> deleteRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @PathVariable("userId") String userId) {
-        log.info("REST API: DELETE {}/{}/{}", REST_PATH,
+        log.info("REST API: DELETE {}/{}/{}/{}", REST_PATH,
                 workspaceId != null ? workspaceId.toString() : "{}",
                 sessionId != null ? sessionId : "{}",
                 userId != null ? userId : "{}");
-        if(sessionId.isEmpty()) {
+
+        //check null or empty
+        if(sessionId == null || sessionId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
@@ -277,12 +280,34 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RemoteServiceException(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
         }*/
 
-        ResultResponse resultResponse = new ResultResponse();
-        resultResponse.setResult(false);
-        ApiResponse<ResultResponse> apiResponse = this.dataRepository.removeRoom(workspaceId, sessionId, userId);
-        if(apiResponse.getData() != null) {
+        //ResultResponse resultResponse = new ResultResponse();
+        //resultResponse.setResult(false);
+        DataProcess<List<String>> dataProcess = this.dataRepository.getConnectionIds(workspaceId, sessionId);
+        ApiResponse<RoomDeleteResponse> apiResponse = this.dataRepository.removeRoom(workspaceId, sessionId, userId);
+
+        //if(apiResponse.getData() != null) {
+        if(apiResponse.getData().result) {
+            //send rpc message to connection id user of the session id
+            JsonObject jsonObject = serviceSessionManager.generateMessage(
+                    sessionId,
+                    dataProcess.getData(),
+                    PushConstants.PUSH_SIGNAL_SYSTEM,
+                    PushConstants.SEND_PUSH_ROOM_CLOSED
+            );
+
+            //
             if(this.serviceSessionManager.closeActiveSession(sessionId)) {
-                resultResponse.setResult(true);
+                //todo: to do sth, when close active session, if you need sth
+                return ResponseEntity.ok(apiResponse);
+            }
+
+            if(this.serviceSessionManager.closeNotActiveSession(sessionId)) {
+                //todo: do sth close not active session, if you need sth
+                return ResponseEntity.ok(apiResponse);
+            }
+
+            /*if(this.serviceSessionManager.closeActiveSession(sessionId)) {
+                //resultResponse.setResult(true);
                 return ResponseEntity.ok(apiResponse);
             }
 
@@ -290,10 +315,9 @@ public class SessionRestController implements ISessionRestAPI {
                 return ResponseEntity.ok(apiResponse);
             } else {
                 return ResponseEntity.ok(apiResponse);
-            }
-        } else {
-            return ResponseEntity.ok(apiResponse);
+            }*/
         }
+        return ResponseEntity.ok(apiResponse);
         /*if(apiResponse.getData().getResult()) {
             //Session session = this.sessionManager.getSession(sessionId);
             if(this.serviceSessionManager.closeActiveSession(sessionId)) {

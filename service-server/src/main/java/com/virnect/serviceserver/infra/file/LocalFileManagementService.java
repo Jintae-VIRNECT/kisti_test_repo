@@ -3,12 +3,14 @@ package com.virnect.serviceserver.infra.file;
 import com.google.common.io.Files;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.serviceserver.config.RemoteServiceConfig;
 import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
@@ -30,7 +33,11 @@ import java.util.*;
 @Component
 public class LocalFileManagementService implements IFileManagementService {
 
+<<<<<<< HEAD
     @Value("${minio.bucket}")
+=======
+    /*@Value("${cms.bucket-file-name}")
+>>>>>>> develop-hoon
     private String fileBucketName;
     @Value("${minio.resource}")
     private String profileBucketName;
@@ -38,10 +45,23 @@ public class LocalFileManagementService implements IFileManagementService {
     private String accessKey;
     @Value("${minio.secret-key}")
     private String secretKey;
+<<<<<<< HEAD
     @Value("${minio.server}")
     private String serverUrl;
     @Value("${minio.dir}")
+=======
+    @Value("${cms.serverUrl}")
+    private String serverUrl;
+    @Value("${cms.dir}")
+    private String rootDirPath;*/
+
+    private String fileBucketName;
+    private String profileBucketName;
+>>>>>>> develop-hoon
     private String rootDirPath;
+
+    @Autowired
+    private RemoteServiceConfig remoteServiceConfig;
 
     private List<String> fileAllowExtensionList = new ArrayList<>();
 
@@ -52,6 +72,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
+<<<<<<< HEAD
         try {
             fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
             fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
@@ -84,9 +105,69 @@ public class LocalFileManagementService implements IFileManagementService {
                 log.info("Bucket {} is already exist.", profileBucketName);
             } else {
                 minioClient.makeBucket(MakeBucketArgs.builder().bucket(profileBucketName).build());
+=======
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            log.info("Remote storage service is enabled");
+            this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
+            this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
+            this.rootDirPath = this.remoteServiceConfig.remoteStorageProperties.getRootDirPath();
+
+            String accessKey = this.remoteServiceConfig.remoteStorageProperties.getAccessKey();
+            String secretKey = this.remoteServiceConfig.remoteStorageProperties.getSecretKey();
+            String serverUrl = this.remoteServiceConfig.remoteStorageProperties.getServerUrl();
+
+            try {
+                fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
+                fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
+                fileAllowExtensionList.addAll(FILE_VIDEO_ALLOW_EXTENSION);
+
+                log.info(LOG_MESSAGE_TAG + "{}", "LocalFileUploadService initialised");
+                log.info(LOG_MESSAGE_TAG + "LocalFileUploadService allow extension {}", fileAllowExtensionList);
+                minioClient = MinioClient.builder()
+                        .endpoint(serverUrl)
+                        .credentials(accessKey, secretKey)
+                        .build();
+
+                boolean isBucketExist = false;
+
+                //create file bucket
+                isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(fileBucketName).build());
+                if (isBucketExist) {
+                    log.info("Bucket {} is already exist.", fileBucketName);
+                } else {
+                    minioClient.makeBucket(MakeBucketArgs.builder().bucket(fileBucketName).build());
+                }
+                // set bucket lifecycle
+                String lifeCycle =
+                        "<LifecycleConfiguration>" +
+                                "<Rule>" +
+                                "<ID>expire-bucket</ID>" +
+                                "<Prefix></Prefix>" +
+                                "<Status>Disabled</Status>" +
+                                "<Expiration>" +
+                                "<Days>7</Days>" +
+                                "</Expiration>"
+                                + "</Rule>" +
+                                "</LifecycleConfiguration>";
+
+                minioClient.setBucketLifeCycle(SetBucketLifeCycleArgs.builder().bucket(fileBucketName).config(lifeCycle).build());
+
+                //create file bucket
+                isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(profileBucketName).build());
+                if (isBucketExist) {
+                    log.info("Bucket {} is already exist.", profileBucketName);
+                } else {
+                    minioClient.makeBucket(MakeBucketArgs.builder().bucket(profileBucketName).build());
+                }
+            } catch (ConnectException e) {
+                log.info("Bucket ConnectException error occured:: {}", e.getMessage());
+                this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
+            } catch (MinioException e) {
+                log.info("Bucket error occured:: {}", e.getMessage());
+>>>>>>> develop-hoon
             }
-        } catch (MinioException e) {
-            log.info("Bucket error occured:: {}", e.getMessage());
+        } else {
+            log.info("Remote storage service is disabled");
         }
     }
 

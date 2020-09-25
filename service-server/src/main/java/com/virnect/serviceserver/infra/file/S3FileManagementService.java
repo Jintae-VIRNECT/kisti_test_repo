@@ -23,8 +23,13 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.*;
 
+<<<<<<< HEAD
 //@Profile({"local", "develop"})
 @Profile({ "staging", "production" })
+=======
+//@Profile({"develop", "local"})
+@Profile({"staging", "production"})
+>>>>>>> develop-hoon
 @Slf4j
 @Component
 @RequiredArgsConstructor

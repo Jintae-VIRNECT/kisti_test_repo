@@ -5,6 +5,7 @@ import com.virnect.data.ApiResponse;
 import com.virnect.data.api.IMemberRestAPI;
 import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.response.MemberInfoListResponse;
+import com.virnect.data.dto.response.MemberSecessionResponse;
 import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.service.MemberService;
 import com.virnect.serviceserver.data.DataRepository;
@@ -58,8 +59,15 @@ public class MemberRestController implements IMemberRestAPI {
         return ResponseEntity.ok(apiResponse);
     }
 
+
+
     @Override
-    public ApiResponse<ResultResponse> deleteMembersByWithdrawal(String userId) {
-        return null;
+    public ResponseEntity<ApiResponse<MemberSecessionResponse>> deleteMembersBySecession(String userId) {
+        log.info("REST API: GET {}/{}",
+                REST_PATH,
+                userId != null ? userId: "{}");
+
+        ApiResponse<MemberSecessionResponse> apiResponse = this.dataRepository.deleteMember(userId);
+        return ResponseEntity.ok(apiResponse);
     }
 }

@@ -7,4 +7,5 @@ public enum MemberStatus {
     UNLOAD, //원격협업 방에 미 참여 중
     //LOADING, // 원격협업 방에 참여 진행 중
     EVICTED, // 원격협업 방에서 퇴출된 상태
+
 }

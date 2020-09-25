@@ -225,6 +225,11 @@ public class SessionService {
         return this.memberRepository.findByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId, pageable);
     }
 
+    public List<MemberHistory> getMemberHistoryList(String userId) {
+        return this.memberHistoryRepository.findAllByUuid(userId);
+    }
+
+    @Deprecated
     @Transactional
     public ApiResponse<Boolean> removeAllRoom(String workspaceId) {
         log.info("ROOM INFO DELETE BY SESSION ID => [{}]", workspaceId);
@@ -315,6 +320,9 @@ public class SessionService {
                     .build();
             memberHistoryRepository.save(memberHistory);
             roomHistory.getMemberHistories().add(memberHistory);
+
+            //delete member
+            memberRepository.delete(roomMember);
         }
 
 
@@ -371,6 +379,9 @@ public class SessionService {
                         .build();
                 memberHistoryRepository.save(memberHistory);
                 roomHistory.getMemberHistories().add(memberHistory);
+
+                //delete member
+                memberRepository.delete(member);
             }
 
 
@@ -636,6 +647,11 @@ public class SessionService {
             }
         }
         return ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND;
+    }
+
+    @Transactional
+    public void updateMemberHistory(MemberHistory memberHistory) {
+        memberHistoryRepository.save(memberHistory);
     }
 
     /*@Transactional

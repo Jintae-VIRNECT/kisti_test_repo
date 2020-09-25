@@ -73,13 +73,11 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     //ng serve --host 0.0.0.0 --ssl true
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
-    //public static final String WS_PATH = "/openvidu";
-    //public static final String WS_PATH = "/remoteservice";
     public static final String WS_PATH = "/remote/websocket";
     public static String wsUrl;
     public static String wssUrl;
     public static String httpUrl;
-    //public static String WS_GATEWAY_PATH = "wss://stgapi.virnect.com:8000";
+    public static String storageUrl;
 
     @Autowired
     RemoteServiceConfig config;
@@ -386,6 +384,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
                 + "   * RemoteService Server: " + httpUrl + "\n" + "\n"
                 + "   * RemoteService Dashboard: " + dashboardUrl + "\n" + "\n"
                 + "   * RemoteService Websocket: " + websocket + "\n" + "\n"
+                + "   * RemoteService Storage Server: " + storageUrl + "\n" + "\n"
                 + "   * RemoteService Temp Directory: " + System.getProperty("java.io.tmpdir") + "\n" + "\n"
                 + "----------------------------------------------------\n";
         // @formatter:on
