@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@ConfigurationProperties(prefix = "cms", ignoreInvalidFields = true)
+@ConfigurationProperties(prefix = "minio", ignoreInvalidFields = true)
 public class RemoteStorageProperties extends PropertyService {
 
     //Local File Config properties
@@ -56,13 +56,13 @@ public class RemoteStorageProperties extends PropertyService {
 
 
     public void checkStorageProperties() {
-        this.fileBucketName = getValue("cms.bucket-file-name");
-        this.profileBucketName = getValue("cms.bucket-profile-name");
-        this.accessKey = getValue("cms.access-key");
-        this.secretKey = getValue("cms.secret-key");
-        this.rootDirPath = getValue("cms.dir");
-        this.serverUrl = getValue("cms.serverUrl");
-        this.serviceEnabled = asBoolean("cms.enabled");
+        this.fileBucketName = getValue("minio.bucket-file-name");
+        this.profileBucketName = getValue("minio.bucket-profile-name");
+        this.accessKey = getValue("minio.access-key");
+        this.secretKey = getValue("minio.secret-key");
+        this.rootDirPath = getValue("minio.dir");
+        this.serverUrl = getValue("minio.serverUrl");
+        this.serviceEnabled = asBoolean("minio.enabled");
 
         log.info("checkFileServiceProperties {}", fileBucketName);
         log.info("checkFileServiceProperties {}", profileBucketName);
