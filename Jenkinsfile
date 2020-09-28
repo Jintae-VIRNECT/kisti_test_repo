@@ -97,7 +97,7 @@ pipeline {
           }
           steps {
             sh 'count=`docker ps | grep rm-dashboard | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard && docker rm rm-dashboard; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 9989:9989 --restart=always -e "NODE_ENV=develop" -d --name=rm-dashboard rm-dashboard'
+            sh 'docker run -p 9989:9989 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=rm-dashboard rm-dashboard'
             sh 'docker image prune -f'
           }
         }
@@ -133,7 +133,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep rm-dashboard| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard && docker rm rm-dashboard; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 9989:9989 --restart=always -e 'NODE_ENV=staging' -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}"
+                          execCommand: "docker run -p 9989:9989 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'
@@ -181,7 +181,7 @@ pipeline {
                           execCommand: 'count=`docker ps | grep rm-dashboard| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard && docker rm rm-dashboard; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 9989:9989 --restart=always -e 'NODE_ENV=production' -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}"
+                          execCommand: "docker run -p 9989:9989 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -f'
