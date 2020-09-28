@@ -39,6 +39,7 @@
               {{ $t('workspace.record_file_title') }}
             </div>
             <div class="table__tools">
+              <!-- 구축형에만 보여야하는 기능이므로 hidden 처리 -->
               <!-- <icon-button
                 v-if="isHome"
                 :text="'선택 업로드'"
