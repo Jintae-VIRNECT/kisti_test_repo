@@ -173,13 +173,18 @@ export default {
       this.selectedArray = selectedArray
     },
 
-    upload() {
+    async upload() {
       const uuids = []
+
       this.selectedArray.forEach((selected, index) => {
         if (selected) {
           uuids.push(this.datas[index].uuid)
         }
       })
+
+      if (uuids.length > 0) {
+        this.$eventBus.$emit('fileupload:show', uuids)
+      }
     },
 
     async getList() {
