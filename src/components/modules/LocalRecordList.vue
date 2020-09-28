@@ -39,14 +39,14 @@
               {{ $t('workspace.record_file_title') }}
             </div>
             <div class="table__tools">
-              <icon-button
+              <!-- <icon-button
                 v-if="isHome"
                 :text="'선택 업로드'"
                 :imgSrc="require('assets/image/ic_upload.svg')"
                 :customClass="'customClass'"
                 :highlight="hasSelect"
                 @click="upload"
-              ></icon-button>
+              ></icon-button> -->
               <icon-button
                 :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"
