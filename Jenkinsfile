@@ -107,7 +107,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-coturnserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -e VIRNECT_ENV=staging -e CONFIG_SERVER=https://stgconfig.virnect.com -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG} --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`"
+                          execCommand: "docker run --net=host --ulimit nofile=1048576:1048576 -e VIRNECT_ENV=staging -e CONFIG_SERVER=https://stgconfig.virnect.com -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-60000:50000-60000 -p 50000-60000:50000-60000/udp --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG} --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -146,7 +146,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep rm-coturnserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-coturnserver && docker rm rm-coturnserver; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -e VIRNECT_ENV=production -e CONFIG_SERVER=https://config.virnect.com -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-50100:50000-50100 -p 50000-50100:50000-50100/udp --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG} --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`"
+                          execCommand: "docker run --net=host --ulimit nofile=1048576:1048576 -e VIRNECT_ENV=production -e CONFIG_SERVER=https://config.virnect.com -p 4443:4443 -p 3478:3478 -p 3478:3478/udp -p 5349:5349 -p 5349:5349/udp -p 50000-60000:50000-60000 -p 50000-60000:50000-60000/udp --restart=always  -d --name=rm-coturnserver $aws_ecr_address/rm-coturnserver:\\${GIT_TAG} --external-ip=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
