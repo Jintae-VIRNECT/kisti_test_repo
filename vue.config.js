@@ -2,18 +2,11 @@ const path = require('path')
 
 module.exports = {
   pages: {
-    dashboard: {
-      entry: 'src/pages/dashboard/dashboard.js',
-      template: 'public/dashboard.html',
-      filename: 'dashboard.html',
-      title: 'dashboard',
-      chunks: ['chunk-vendors', 'chunk-common', 'dashboard'],
-    },
     index: {
-      entry: 'src/pages/index/remote.js',
+      entry: 'src/pages/dashboard/dashboard.js',
       template: 'public/index.html',
       filename: 'index.html',
-      title: 'remote',
+      title: 'Remote - Admin',
       chunks: ['chunk-vendors', 'chunk-common', 'index'],
     },
   },
