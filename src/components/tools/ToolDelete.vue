@@ -1,6 +1,6 @@
 <template>
   <button @click="del" class="tool-button">
-    <img src="~assets/img/ic_delete_w.svg" />
+    <img src="~assets/image/ic_delete_w.svg" />
   </button>
 </template>
 

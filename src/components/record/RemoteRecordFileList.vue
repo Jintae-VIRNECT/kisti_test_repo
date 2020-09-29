@@ -11,14 +11,14 @@
       <div class="file-list__header--tools">
         <icon-button
           :text="'선택 다운로드'"
-          :imgSrc="require('assets/img/ic_down_off.svg')"
-          :activeImgSrc="require('assets/img/ic_down_on.svg')"
+          :imgSrc="require('assets/image/ic_down_off.svg')"
+          :activeImgSrc="require('assets/image/ic_down_on.svg')"
           :active="selectedFiles.length > 0"
           @click="download"
         ></icon-button>
         <icon-button
           :text="'선택 삭제'"
-          :imgSrc="require('assets/img/ic_delete.svg')"
+          :imgSrc="require('assets/image/ic_delete.svg')"
           @click="deleteItems"
         ></icon-button>
       </div>
@@ -32,8 +32,8 @@
                 <toggle-button
                   size="1.7143rem"
                   :active="toggleAllFlag"
-                  :activeSrc="require('assets/img/ic_check.svg')"
-                  :inactiveSrc="require('assets/img/ic_uncheck.svg')"
+                  :activeSrc="require('assets/image/ic_check.svg')"
+                  :inactiveSrc="require('assets/image/ic_uncheck.svg')"
                   @action="toggleAll"
                 ></toggle-button>
               </th>
@@ -54,8 +54,8 @@
                 <toggle-button
                   size="1.7143rem"
                   :active="selectedArray[index]"
-                  :activeSrc="require('assets/img/ic_check.svg')"
-                  :inactiveSrc="require('assets/img/ic_uncheck.svg')"
+                  :activeSrc="require('assets/image/ic_check.svg')"
+                  :inactiveSrc="require('assets/image/ic_uncheck.svg')"
                 ></toggle-button>
               </td>
               <td class="file-list__tbody--column filename">

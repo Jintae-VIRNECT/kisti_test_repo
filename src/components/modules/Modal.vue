@@ -215,7 +215,7 @@ export default {
     height: 1.714em;
     overflow: hidden;
     text-indent: -99px;
-    background: url(~assets/img/ic_close.svg) 50%/2em no-repeat;
+    background: url(~assets/image/ic_close.svg) 50%/2em no-repeat;
     opacity: 0.5;
 
     &:hover {
