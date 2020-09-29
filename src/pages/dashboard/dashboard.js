@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 
 import Vue from 'vue'
-import Router from '../../routers/dashboard'
+//import Router from '../../routers/dashboard'
 import App from './App.vue'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
 import DayJS from 'plugins/remote/dayjs'
@@ -15,6 +15,6 @@ const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
 
 const app = new Vue({
-  router: Router,
+  //router: Router,
   render: h => h(App),
 }).$mount('#app')
