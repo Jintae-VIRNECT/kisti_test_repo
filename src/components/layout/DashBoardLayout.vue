@@ -1,20 +1,19 @@
 <template>
   <div class="dashboard--wrapper">
-    <top-header></top-header>
-    <side-bar></side-bar>
-    <router-view></router-view>
+    <dash-board-header></dash-board-header>
+    <div class="content">content</div>
+    <dash-board-footer></dash-board-footer>
   </div>
 </template>
 
 <script>
-import TopHeader from 'components/header/TopHeader'
-
-import SideBar from 'components/sidebar/SideBar'
+import DashBoardHeader from 'components/header/Header'
+import DashBoardFooter from 'components/footer/Footer'
 export default {
   name: 'DashBoardLayout',
   components: {
-    TopHeader,
-    SideBar,
+    DashBoardHeader,
+    DashBoardFooter,
   },
 }
 </script>
@@ -25,8 +24,12 @@ export default {
 .dashboard--wrapper {
   position: relative;
   width: 100%;
+  // height: 100%;
+  height: 100vh;
+}
 
-  height: 130vh;
-  background: #1e1e2f;
+.content {
+  height: 100%;
+  background: #f8f8fa;
 }
 </style>
