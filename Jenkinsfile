@@ -79,6 +79,8 @@ pipeline {
           steps {
             sh 'count=`docker ps -a | grep pf-webaccount | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8822:8822 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-webaccount pf-webaccount'
+            sh 'count=`docker ps -a | grep pf-webaccount-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount-onpremise && docker rm pf-webaccount-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 18822:8822 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-webaccount-onpremise pf-webaccount'
             sh 'docker image prune -a -f'
           }
         }
