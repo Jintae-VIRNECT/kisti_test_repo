@@ -87,6 +87,8 @@ pipeline {
                         catchError() {
                             sh 'count=`docker ps -a | grep pf-license | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license && docker rm pf-license; else echo "Not Running STOP&DELETE"; fi;'
                             sh 'docker run -p 8632:8632 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --restart=always --name=pf-license pf-license'
+                            sh 'count=`docker ps -a | grep pf-license-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license-onpremise && docker rm pf-license-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+                            sh 'docker run -p 18632:8632 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --restart=always --name=pf-license-onpremise pf-license'
                             sh 'docker image prune -a -f'
                         }
                     }
