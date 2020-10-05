@@ -82,7 +82,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep rm-service | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-service && docker rm rm-service; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 8000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=rm-service rm-service'
                         sh 'count=`docker ps -a | grep rm-service-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-service-onpremise && docker rm rm-service-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 18000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=rm-service rm-service'
+                        sh 'docker run -p 18000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=rm-service-onpremise rm-service'
                         sh 'docker image prune -a -f'
                     }
                 }
