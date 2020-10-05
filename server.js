@@ -17,7 +17,7 @@ app.use(route)
 	const envSet = config.envConfig
 	// console.log(envSet)
 
-	if (env === 'local' || env === 'develop') {
+	if (/local|develop|onpremise/.test(env)) {
 		// console.log(`https://${env.LOCAL_HOST}:${envSet.SERVER_PORT}`)
 
 		const options = {
