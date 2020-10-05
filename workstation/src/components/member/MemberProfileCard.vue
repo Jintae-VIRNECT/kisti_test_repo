@@ -53,6 +53,7 @@
       :visible.sync="showMemberSettingModal"
       @updated="updated"
       @kick="kick"
+      @change-password="showMemberPasswordModal = true"
     />
     <member-kick-modal
       :data="myInfo"
@@ -60,12 +61,18 @@
       @back="back"
       @kicked="kicked"
     />
+    <member-password-modal
+      :data="myInfo"
+      :visible.sync="showMemberPasswordModal"
+      @back="back"
+    />
   </el-card>
 </template>
 
 <script>
 import MemberSettingModal from '@/components/member/MemberSettingModal'
 import MemberKickModal from '@/components/member/MemberKickModal'
+import MemberPasswordModal from '@/components/member/MemberPasswordModal'
 import { mapGetters } from 'vuex'
 import plans from '@/models/workspace/plans'
 
@@ -73,6 +80,7 @@ export default {
   components: {
     MemberSettingModal,
     MemberKickModal,
+    MemberPasswordModal,
   },
   props: {
     data: Object,
@@ -82,6 +90,7 @@ export default {
       myInfo: this.data,
       showMemberSettingModal: false,
       showMemberKickModal: false,
+      showMemberPasswordModal: false,
       plans: Object.values(plans).reduce((o, n) => {
         o[n.value] = n
         return o
@@ -126,6 +135,7 @@ export default {
     back() {
       this.showMemberSettingModal = true
       this.showMemberKickModal = false
+      this.showMemberPasswordModal = false
     },
   },
 }

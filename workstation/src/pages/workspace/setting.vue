@@ -121,7 +121,7 @@
                       @click="submit"
                       v-if="activeWorkspace.role === 'MASTER'"
                     >
-                      {{ $t('workspace.setting.update') }}
+                      {{ $t('common.update') }}
                     </el-button>
                     <el-button @click="showLeaveModal = true" v-else>
                       {{ $t('workspace.setting.leave') }}

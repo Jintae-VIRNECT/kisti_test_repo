@@ -310,15 +310,6 @@ export default {
     .el-button:first-child {
       float: left;
     }
-    button .number {
-      margin-left: 2px;
-      padding: 1px 7px;
-      color: #0052cc;
-      font-weight: bold;
-      font-size: 12px;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 10px;
-    }
   }
 }
 </style>

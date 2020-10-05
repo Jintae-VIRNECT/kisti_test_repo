@@ -36,7 +36,6 @@
       "target": "타겟 유형",
       "properties": "콘텐츠 구성 정보",
       "delete": "삭제하기",
-      "update": "변경하기",
       "register": "작업 등록",
       "message": {
         "delete": "선택 콘텐츠 삭제",

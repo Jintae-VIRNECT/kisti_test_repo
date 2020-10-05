@@ -18,6 +18,12 @@
             />
           </div>
           <span>{{ data.nickname }}</span>
+          <el-button
+            v-if="$config.VIRNECT_ENV === 'onpremise'"
+            @click="$emit('change-password')"
+          >
+            {{ $t('members.password.title') }}
+          </el-button>
         </dd>
         <dt>{{ $t('members.setting.email') }}</dt>
         <dd>{{ data.email }}</dd>
@@ -133,7 +139,7 @@
         {{ $t('members.setting.kick') }}
       </el-button>
       <el-button type="primary" @click="submit">
-        {{ $t('members.setting.submit') }}
+        {{ $t('common.update') }}
       </el-button>
     </div>
   </el-dialog>
@@ -240,12 +246,24 @@ export default {
     margin-bottom: 20px;
   }
   .column-user {
+    display: flex;
+
     .avatar {
+      flex: none;
       width: 28px;
       height: 28px;
+      margin: 0;
     }
-    span {
+    & > span {
+      flex: auto;
       font-size: 18px;
+    }
+    .el-button {
+      height: 34px;
+      padding: 0 20px;
+      span {
+        margin-left: 0;
+      }
     }
   }
   .el-divider {
