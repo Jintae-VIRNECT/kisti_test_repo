@@ -78,6 +78,7 @@ pipeline {
             catchError() {
               sh 'count=`docker ps -a | grep pf-rabbitmq | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-rabbitmq && docker rm pf-rabbitmq; else echo "Not Running STOP&DELETE"; fi;'
               sh 'docker run -p 5672:5672 -p 15672:15672 -p 15674:15674 -d --restart=always --name=pf-rabbitmq pf-rabbitmq'
+              sh 'docker run -p 11672:5672 -p 25672:15672 -p 25674:15674 -d --restart=always --name=pf-rabbitmq-onpremise pf-rabbitmq'
               sh 'docker image prune -a -f'
             }
           }
