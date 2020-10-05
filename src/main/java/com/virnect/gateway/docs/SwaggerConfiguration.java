@@ -39,7 +39,7 @@ import springfox.documentation.swagger.web.SwaggerResourcesProvider;
  * @since 2020.04.09
  */
 @Slf4j
-@Profile({"local", "develop"})
+@Profile({"local", "develop","onpremise"})
 @Configuration
 @RequiredArgsConstructor
 public class SwaggerConfiguration {
