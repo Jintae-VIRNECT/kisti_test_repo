@@ -81,6 +81,7 @@ pipeline {
           steps {
             sh 'count=`docker ps | grep pf-webworkstation | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8878:8878 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-webworkstation pf-webworkstation'
+            sh 'docker run -p 18878:8878 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-webworkstation-onpremise pf-webworkstation'
             sh 'docker image prune -a -f'
           }
         }
