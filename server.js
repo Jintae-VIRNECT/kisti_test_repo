@@ -18,8 +18,6 @@ app.use(route)
 	// console.log(envSet)
 
 	if (env === 'local' || env === 'develop') {
-		// console.log(`https://${env.LOCAL_HOST}:${envSet.SERVER_PORT}`)
-
 		const options = {
 			key: fs.readFileSync('./cert/key.pem'),
 			cert: fs.readFileSync('./cert/cert.pem')

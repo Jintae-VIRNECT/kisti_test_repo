@@ -25,7 +25,7 @@ class Config {
 		)
 		urlConfig = data.propertySources[0].source
 		envConfig = res.data.propertySources[0].source
-		urlConfig.env = envConfig['VIRNECT_ENV']
+		urlConfig.env = data.profiles[0]
 		return this
 	}
 }
