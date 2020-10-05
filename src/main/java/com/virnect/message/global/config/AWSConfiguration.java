@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Profile;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-
+@Profile("!onpremise")
 @Configuration
 public class AWSConfiguration {
 

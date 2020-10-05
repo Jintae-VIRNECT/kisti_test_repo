@@ -1,5 +1,6 @@
 package com.virnect.message.api;
 
+import com.virnect.message.application.DefaultMessageService;
 import com.virnect.message.application.MessageService;
 import com.virnect.message.domain.MessageType;
 import com.virnect.message.dto.request.AttachmentMailRequest;
@@ -17,15 +18,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-import java.io.File;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -46,6 +47,7 @@ public class MessageController {
     private final MessageService messageService;
     private final RabbitTemplate rabbitTemplate;
     private final RabbitmqConfiguration rabbitmqConfiguration;
+
 
     @ApiOperation(
             value = "메일 메세지 발행",

@@ -80,6 +80,8 @@ pipeline {
           steps {
             sh 'count=`docker ps -a | grep pf-message | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message && docker rm pf-message; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8084:8084 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-message pf-message'
+            sh 'count=`docker ps -a | grep pf-message-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message-onpremise && docker rm pf-message-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 18084:8084 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-message-onpremise pf-message'
             sh 'docker image prune -a -f'
           }
         }
