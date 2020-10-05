@@ -48,17 +48,6 @@ pipeline {
                         sh 'docker build -t rm-recordserver:${GIT_TAG} .'
                     }
                 }
-
-                stage('Master Branch') {
-                    when {
-                        branch 'master'
-                    }                    
-                    steps {
-                        sh 'git checkout ${GIT_TAG}'
-                        sh 'make'
-                        sh 'docker build -t rm-recordserver:${GIT_TAG} .'
-                    }
-                }
             }
         }
 
@@ -68,24 +57,8 @@ pipeline {
             }
         }
 
-        stage('Tunneling') {
-            steps {
-                echo 'SSH Check'
-                catchError() {
-                    sh 'port=`netstat -lnp | grep 127.0.0.1:2122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH QA Tunneling OK";else echo "SSH QA Tunneling Not OK";ssh -M -S Platform-QA -fnNT -L 2122:10.0.10.143:22 jenkins@13.125.24.98;fi'
-                    sh 'port=`netstat -lnp | grep 127.0.0.1:3122 | wc -l`; if [ ${port} -gt 0 ]; then echo "SSH Prod Tunneling OK";else echo "SSH Prod Tunneling Not OK";ssh -M -S Platform-Prod -fnNT -L 3122:10.0.20.170:22 jenkins@13.125.24.98;fi'
-                }
-            }
-        }
-
         stage('Deploy') {
             parallel {
-                stage('Deploy') {
-                    steps {
-                        echo 'Deploy Stage'
-                    }
-                }
-
                 stage('Develop Branch') {
                     when {
                         branch 'develop'
@@ -93,6 +66,8 @@ pipeline {
                     steps {
                         sh 'count=`docker ps -a | grep rm-recordserver | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 8083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=develop -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print $1}\'` -d -v /var/run/docker.sock:/var/run/docker.sock -v /home/esahn/recordings:/recordings --name=rm-recordserver rm-recordserver'
+                        sh 'count=`docker ps -a | grep rm-recordserver-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver-onpremise && docker rm rm-recordserver-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+                        sh 'docker run -p 18083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=onpremise -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print $1}\'` -d -v /var/run/docker.sock:/var/run/docker.sock -v /home/esahn/recordings:/recordings --name=rm-recordserver-onpremise rm-recordserver'
                         sh 'docker image prune -a -f'
                     }
                 }
@@ -107,6 +82,7 @@ pipeline {
                             script {
                                 docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
                                     docker.image("rm-recordserver:${GIT_TAG}").push("${GIT_TAG}")
+                                    docker.image("rm-recordserver:${GIT_TAG}").push("latest")
                                 }
                             }
 
@@ -149,13 +125,6 @@ pipeline {
 
                     steps {
                         catchError() {
-                            script {
-                                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("rm-recordserver:${GIT_TAG}").push("${GIT_TAG}")
-                                    docker.image("rm-recordserver:${GIT_TAG}").push("latest")
-                                }
-                            }
-
                             script {
                                 sshPublisher(
                                     continueOnError: false, failOnError: true,
