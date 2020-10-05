@@ -37,10 +37,10 @@ minio.dir=/drive
 
 ## Feign URL
 feign.hystrix.enabled=true
-feign.license-url = http://192.168.6.3:8632
-feign.workspace-url = http://192.168.6.3:8082
-feign.user-url = http://192.168.6.3:8081
-feign.message-url = http://192.168.6.3:8084
+feign.license-url = http://192.168.6.3:18632
+feign.workspace-url = http://192.168.6.3:18082
+feign.user-url = http://192.168.6.3:18081
+feign.message-url = http://192.168.6.3:18084
 
 ## Feign Prefix
 feign.license-prefix = license-server
@@ -50,7 +50,7 @@ feign.message-prefix = message-server
 
 ##Eureka
 eureka.instance.prefer-ip-address=true
-eureka.client.service-url.defaultZone=http://192.168.6.3:8761/eureka
+eureka.client.service-url.defaultZone=http://192.168.6.3:18761/eureka
 eureka.client.enabled=true
 
 ##Service
@@ -58,8 +58,8 @@ service.domain_or_public_ip=192.168.6.3
 service.gateway=192.168.6.3
 service.certificate_type=owncert
 service.https_port=8000
-service.kms_uris=["ws://192.168.6.3:8888/kurento"]
-service.wss=wss://192.168.6.3:8073
+service.kms_uris=["ws://192.168.6.3:18888/kurento"]
+service.wss=wss://192.168.6.3:18073
 
 ##Service Remote
 service.remote_secret=remote
