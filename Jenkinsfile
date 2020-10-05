@@ -78,7 +78,9 @@ pipeline {
                     }
                     steps {
                         sh 'count=`docker ps -a | grep pf-login | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8883:8883 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login pf-login'
+                        sh 'docker run -p 8883:8883 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login pf-login'                        
+                        sh 'count=`docker ps -a | grep pf-login-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login-onpremise && docker rm pf-login-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+                        sh 'docker run -p 18883:8883 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login-onpremise pf-login'
                         sh 'docker image prune -a -f'
                     }
                 }
