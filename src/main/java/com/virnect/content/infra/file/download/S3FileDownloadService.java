@@ -32,7 +32,7 @@ import com.virnect.content.global.error.ErrorCode;
  * @since 2020.05.10
  */
 @Slf4j
-@Profile({"local", "develop", "staging", "production", "test"})
+@Profile({"staging", "production", "test"})
 @Component
 @RequiredArgsConstructor
 public class S3FileDownloadService implements FileDownloadService {
