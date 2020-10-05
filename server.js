@@ -15,9 +15,7 @@ app.use(route)
 ;(async () => {
 	await config.init()
 	const envSet = config.envConfig
-	// console.log(envSet)
-
-	if (env === 'local' || env === 'develop') {
+	if (/local|develop|onpremise/.test(env)) {
 		const options = {
 			key: fs.readFileSync('./cert/key.pem'),
 			cert: fs.readFileSync('./cert/cert.pem')
