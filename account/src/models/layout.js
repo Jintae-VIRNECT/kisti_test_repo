@@ -38,7 +38,7 @@ export const sideMenus = [
 
 export const sideMenus_op = [
   {
-    path: '/profile',
+    path: '/profile/op',
     image: require('@/assets/images/icon/ic-account-info.svg'),
     label: 'menu.profile_op',
   },

@@ -85,32 +85,5 @@ module.exports = async () => {
         cert: fs.readFileSync(path.resolve(__dirname, 'ssl/server.crt')),
       },
     },
-    /**
-     * onpremise router
-     */
-    router: {
-      extendRoutes(routes, resolve) {
-        if (env.VIRNECT_ENV !== 'onpremise') return routes
-
-        routes.length = 0
-        routes.push({
-          path: '/',
-          redirect: '/profile',
-        })
-        routes.push({
-          path: '/profile',
-          component: resolve(__dirname, 'src/pages/profile_op/index.vue'),
-          name: 'profile',
-        })
-        routes.push({
-          path: '/profile/certification',
-          component: resolve(
-            __dirname,
-            'src/pages/profile_op/certification.vue',
-          ),
-          name: 'profile_certification',
-        })
-      },
-    },
   }
 }
