@@ -28,7 +28,6 @@ import com.virnect.license.global.error.ErrorCode;
 
 @Slf4j
 @Service
-@Profile(value = "!onpremise")
 @RequiredArgsConstructor
 public class PayAPIService {
 	private final RestTemplate restTemplate;
