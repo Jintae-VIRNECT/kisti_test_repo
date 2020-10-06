@@ -1468,14 +1468,16 @@ public class WorkspaceService {
 		UserInfoDTO userInfoDTO = modelMapper.map(userInfoRestResponse, UserInfoDTO.class);
 		userInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
 
-		String[] licenseProducts = new String[0];
+		List<String> licenseProducts = new ArrayList<>();
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, userId).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
-			licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
-				return myLicenseInfoResponse.getProductName();
-			}).toArray(String[]::new);
-			userInfoDTO.setLicenseProducts(licenseProducts);
+		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+			myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+					if (myLicenseInfoResponse.getStatus().equals("ACTIVE")) {
+						licenseProducts.add(myLicenseInfoResponse.getProductName());
+					}
+				});
+				userInfoDTO.setLicenseProducts(licenseProducts.toArray(new String[licenseProducts.size()]));
 		}
 
 		return new ApiResponse<>(userInfoDTO);
