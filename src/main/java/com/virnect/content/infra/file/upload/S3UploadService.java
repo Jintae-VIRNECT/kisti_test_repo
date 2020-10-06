@@ -154,6 +154,7 @@ public class S3UploadService implements FileUploadService {
 		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD BEGIN");
 
 		// 1. 파일 크기 확인
+		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD FILE SIZE >> "+file.getSize());
 		if (file.getSize() <= 0) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
@@ -161,6 +162,11 @@ public class S3UploadService implements FileUploadService {
 		// 2. 파일 확장자 확인
 		String fileExtension = String.format(
 			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
+
+		if (!allowedExtension.contains(fileExtension)) {
+			log.error("[AWS S3 FILE INPUT STREAM UPLOADER] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
+			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
+		}
 
 		// 3. 파일 메타데이터 생성
 		ObjectMetadata objectMetadata = new ObjectMetadata();

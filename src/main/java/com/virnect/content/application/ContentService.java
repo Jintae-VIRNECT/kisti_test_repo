@@ -130,8 +130,8 @@ public class ContentService {
 	private final ObjectMapper objectMapper;
 	private final ApplicationEventPublisher eventPublisher;
 	private final Gson gson;
-	@Value("${upload.dir}")
-	private String uploadPath;
+	/*@Value("${upload.dir}")
+	private String uploadPath;*/
 	@Value("${file.upload-path}")
 	private String fileUploadPath;
 
@@ -779,7 +779,8 @@ public class ContentService {
 
 		ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
 			.workspaceUUID(content.getWorkspaceUUID())
-			.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+			//.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+			.content(convertFileToMultipart(contentUUID.concat(ARES_FILE_EXTENSION)))
 			// TODO : 공정 수정 후 반영 예정
 			//                .contentType(content.getType().getType())
 			.name(response.getData().getName())
@@ -834,7 +835,8 @@ public class ContentService {
 
 		ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
 			.workspaceUUID(workspaceUUID)
-			.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+			//.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+			.content(convertFileToMultipart(contentUUID.concat(ARES_FILE_EXTENSION)))
 			// TODO : 공정 수정 후 반영 예정
 			//                .contentType(content.getType().getType())
 			.name(content.getName())

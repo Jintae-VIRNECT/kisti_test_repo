@@ -47,8 +47,8 @@ server:
 
 # File Upload Configuration
 upload:
-  dir: "upload/"
-  serverUrl: "http://localhost:${server.port}/contents/"
+#  dir: "upload/"
+#  serverUrl: "http://localhost:${server.port}/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 ## FEIGN Configuration

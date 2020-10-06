@@ -2,13 +2,13 @@ package com.virnect.content.infra.file.upload;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.io.FilenameUtils;
@@ -19,10 +19,6 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
 
 import io.minio.MinioClient;
@@ -35,7 +31,6 @@ import io.minio.errors.InvalidBucketNameException;
 import io.minio.errors.InvalidResponseException;
 import io.minio.errors.ServerException;
 import io.minio.errors.XmlParserException;
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -65,6 +60,9 @@ public class MinioUploadService implements FileUploadService {
 
 	@Value("${minio.bucket-resource}")
 	private String bucketResource;
+
+	@Value("#{'${upload.allowed-extension}'.split(',')}")
+	private List<String> allowedExtension;
 
 	@Override
 	public boolean delete(String url) {
@@ -121,8 +119,9 @@ public class MinioUploadService implements FileUploadService {
 	}
 
 	@Override
-	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException{
+	public String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException {
 		// 1. 파일 크기 확인
+		log.info("[FILE INPUT STREAM UPLOADER] - UPLOAD FILE SIZE >> " + file.getSize());
 		if (file.getSize() <= 0) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
@@ -131,6 +130,10 @@ public class MinioUploadService implements FileUploadService {
 		String fileExtension = String.format(
 			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
 
+		if (!allowedExtension.contains(fileExtension)) {
+			log.error("[AWS S3 FILE INPUT STREAM UPLOADER] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
+			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
+		}
 
 		String objectName = String.format("%s%s/%s%s", bucketResource, CONTENT_DIRECTORY, fileName, fileExtension);
 
