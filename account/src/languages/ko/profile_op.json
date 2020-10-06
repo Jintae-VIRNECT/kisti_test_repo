@@ -1,0 +1,29 @@
+{
+  "profile_op": {
+    "desc": "제품과 서비스에서 사용되는 계정 정보를 관리합니다.",
+    "info": {
+      "desc": "계정 프로필 정보를 관리합니다.",
+      "imageDesc": "계정 프로필 정보를 관리합니다.",
+      "nicknameDesc": "계정 닉네임은 제품 및 서비스를 이용하는 다른 사용자에게 보여집니다."
+    },
+    "account": {
+      "emailDesc": "계정 ID는 변경할 수 없습니다.",
+      "passwordQuestion": "비밀번호 재설정 질문"
+    },
+    "imageChangeModal": {
+      "desc": "프로필 이미지가 전체 사용자에게 보여집니다."
+    },
+    "nicknameChangeModal": {
+      "desc": "닉네임을 변경하면 제품과 서비스에 변경된 닉네임이 적용됩니다."
+    },
+    "passwordQuestionModal": {
+      "title": "비밀번호 재설정 질문/답변 변경",
+      "desc": "계정 ID와 비밀번호 찾기 질문 / 답변으로 비밀번호를 재설정할 수 있습니다.",
+      "question": "비밀번호 찾기 질문/답변",
+      "message": {
+        "success": "비밀번호 재설정 질문/답변 변경 완료",
+        "successDesc": "비밀번호 재설정 질문 및 답변이 변경되었습니다."
+      }
+    }
+  }
+}

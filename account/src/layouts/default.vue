@@ -15,7 +15,7 @@
 <script>
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import TheSidebar from '@/components/TheSidebar'
-import { sideMenus } from '@/models/layout'
+import { sideMenus, sideMenus_op } from '@/models/layout'
 
 export default {
   middleware: 'default',
@@ -33,7 +33,8 @@ export default {
   },
   data() {
     return {
-      sideMenus,
+      sideMenus:
+        this.$config.VIRNECT_ENV !== 'onpremise' ? sideMenus : sideMenus_op,
       showSection: {
         login: false,
         lang: false,

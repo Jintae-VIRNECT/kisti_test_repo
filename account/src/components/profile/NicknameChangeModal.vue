@@ -7,7 +7,13 @@
     :before-close="handleClose"
   >
     <div>
-      <p v-html="$t('profile.nicknameChangeModal.desc')"></p>
+      <p
+        v-html="
+          $config.VIRNECT_ENV === 'onpremise'
+            ? $t('profile_op.nicknameChangeModal.desc')
+            : $t('profile.nicknameChangeModal.desc')
+        "
+      />
       <el-form
         class="virnect-login-form"
         ref="form"

@@ -35,3 +35,11 @@ export const sideMenus = [
     label: 'menu.coupon',
   },
 ]
+
+export const sideMenus_op = [
+  {
+    path: '/profile',
+    image: require('@/assets/images/icon/ic-account-info.svg'),
+    label: 'menu.profile_op',
+  },
+]

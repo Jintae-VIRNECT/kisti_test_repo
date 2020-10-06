@@ -1,6 +1,7 @@
 {
   "certification": {
     "desc": "회원님의 정보를 안전하게 보호하기 위해 <br>비밀번호를 입력해 주세요.",
+    "desc_op": "계정 정보를 안전하게 보호하기 위해 <br>비밀번호를 입력해 주세요.",
     "password": "비밀번호",
     "passwordPlaceholder": "비밀번호 입력",
     "forgetPassword": "비밀번호를 잊으셨나요?",
