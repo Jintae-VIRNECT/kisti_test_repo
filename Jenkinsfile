@@ -83,9 +83,9 @@ pipeline {
           steps {
             catchError() {
               sh 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 8079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -v /data/content/processmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-processmanagement pf-processmanagement'
+              sh 'docker run -p 8079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-processmanagement pf-processmanagement'
               sh 'count=`docker ps -a | grep pf-processmanagement-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement-onpremise && docker rm pf-processmanagement-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 18079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -v /data/content/processmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=pf-processmanagement-onpremise pf-processmanagement'
+              sh 'docker run -p 18079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-processmanagement-onpremise pf-processmanagement'
               sh 'docker image prune -a -f'
             }
           }
@@ -122,7 +122,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8079:8079 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -v /data/content/processmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8079:8079 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
@@ -160,7 +160,7 @@ pipeline {
                           execCommand: 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
                         ),
                         sshTransfer(
-                          execCommand: "docker run -p 8079:8079 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -v /data/content/processmanagement:/usr/app/upload -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
+                          execCommand: "docker run -p 8079:8079 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
                         ),
                         sshTransfer(
                           execCommand: 'docker image prune -a -f'
