@@ -126,7 +126,7 @@
 
 <script>
 import mixin from 'mixins/mixin'
-import UserService from 'service/user-service'
+// import UserService from 'service/user-service'
 export default {
 	mixins: [mixin],
 	data() {

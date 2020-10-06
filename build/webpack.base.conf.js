@@ -94,7 +94,7 @@ const config = {
 			service: join(__dirname, '../src/service'),
 			mixins: join(__dirname, '../src/mixins'),
 			languages: join(__dirname, '../src/languages'),
-			// config: join(__dirname, '../src/config'),
+			configs: join(__dirname, '../configs'),
 			router: join(__dirname, '../src/router'),
 			stores: join(__dirname, '../src/stores'),
 			element: join(__dirname, '../theme/'),

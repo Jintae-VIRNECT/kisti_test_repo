@@ -80,9 +80,15 @@ import Cookies from 'js-cookie'
 import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 
-import footerSection from '../common/Footer'
+import footerSection from '../../common/Footer'
 import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
 
+const cookieOption = {
+	domain:
+		location.hostname.split('.').length === 3
+			? location.hostname.replace(/.*?\./, '')
+			: location.hostname,
+}
 export default {
 	name: 'login',
 	mixins: [mixin],
@@ -102,12 +108,6 @@ export default {
 			token: Cookies.get('accessToken'),
 			rememberEmail: Cookies.get('email'),
 			rememberLogin: Cookies.get('auto'),
-			cookieOption: {
-				domain:
-					location.hostname.split('.').length === 3
-						? location.hostname.replace(/.*?\./, '')
-						: location.hostname,
-			},
 		}
 	},
 	computed: {
@@ -141,9 +141,9 @@ export default {
 		emailRemember(email, check) {
 			if (check == true) {
 				this.rememberEmail = true
-				Cookies.set('email', email, this.cookieOption)
+				Cookies.set('email', email, cookieOption)
 			} else {
-				Cookies.remove('email', this.cookieOption)
+				Cookies.remove('email', cookieOption)
 			}
 		},
 		autoLogin(check) {

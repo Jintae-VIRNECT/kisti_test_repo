@@ -122,10 +122,8 @@ export default {
 			}, 1000)
 		},
 	},
-	watch: {
-		async myInfo() {
-			this.reset()
-		},
+	mounted() {
+		this.reset()
 	},
 }
 </script>

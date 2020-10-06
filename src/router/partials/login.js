@@ -1,15 +1,15 @@
-import Main from 'components/layout/common/Main'
-import Login from 'components/layout/pages/Login'
-import Terms from 'components/layout/pages/Terms'
-import Signup from 'components/layout/pages/Signup'
-import User from 'components/layout/pages/User'
-import Find from 'components/layout/pages/Find'
-import ResetPass from 'components/layout/pages/onpremise/ResetPassword'
-import Complete from 'components/layout/pages/Complete'
+import Center from 'components/layout/login/LoginCenter'
+import Login from 'components/layout/login/pages/Login'
+import Terms from 'components/layout/login/pages/Terms'
+import Signup from 'components/layout/login/pages/Signup'
+import User from 'components/layout/login/pages/User'
+import Find from 'components/layout/login/pages/Find'
+import ResetPass from 'components/layout/login/pages/onpremise/ResetPassword'
+import Complete from 'components/layout/login/pages/Complete'
 
 export default {
 	path: '',
-	component: Main,
+	component: Center,
 	children: [
 		{
 			path: '',
