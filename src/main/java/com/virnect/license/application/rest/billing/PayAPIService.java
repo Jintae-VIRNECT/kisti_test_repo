@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -27,12 +28,13 @@ import com.virnect.license.global.error.ErrorCode;
 
 @Slf4j
 @Service
+@Profile(value = "!onpremise")
 @RequiredArgsConstructor
 public class PayAPIService {
 	private final RestTemplate restTemplate;
 	private final ObjectMapper objectMapper;
 
-	@Value("${infra.billing.api}")
+	@Value("${infra.billing.api:none}")
 	private String billingApi;
 
 	/**
@@ -40,6 +42,10 @@ public class PayAPIService {
 	 * @param userNumber - 정기 결제 진행중인 사용자 식별자
 	 */
 	public void billingCancelProcess(long userNumber) {
+		if(billingApi.equals("none")){
+			log.info("BILLING API INFORMATION NOT INITIALIZED.");
+			return;
+		}
 		// 사용자의 정기 결제 내역 정보 조회
 		URI uri = UriComponentsBuilder
 			.fromUriString(billingApi)
