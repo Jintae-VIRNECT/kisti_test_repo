@@ -30,7 +30,7 @@ import java.util.List;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop"})
+@Profile({"!staging", "!production"})
 @Configuration
 @EnableSwagger2
 @RequiredArgsConstructor
