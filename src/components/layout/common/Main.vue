@@ -40,6 +40,7 @@ export default {
 		const environmentCss = 'font-size: 1.2rem;'
 		console.log('%cprocess env: %s', environmentCss, res.env)
 		Vue.prototype.$urls = res
+		Vue.prototype.$env = res.env
 		await auth.init({ env: res.env })
 		next()
 	},

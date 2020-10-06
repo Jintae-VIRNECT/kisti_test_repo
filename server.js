@@ -17,8 +17,8 @@ app.use(route)
 	const envSet = config.envConfig
 	if (/local|develop|onpremise/.test(env)) {
 		const options = {
-			key: fs.readFileSync('./cert/key.pem'),
-			cert: fs.readFileSync('./cert/cert.pem')
+			key: fs.readFileSync('./cert/virnect.key'),
+			cert: fs.readFileSync('./cert/virnect.crt')
 		}
 		https.createServer(options, app).listen(envSet.SERVER_PORT)
 	} else {

@@ -9,10 +9,10 @@
     "WC-Modules"
   ],
   "scripts": {
-    "dev": "cross-env VIRNECT_ENV=local NODE_ENV=local CONFIG_SERVER=http://192.168.6.3:6383 webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
+    "dev": "cross-env VIRNECT_ENV=onpremise NODE_ENV=onpremise CONFIG_SERVER=http://192.168.6.3:6383 webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
     "build": "cross-env VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER webpack --mode production --progress --config build/webpack.prod.conf.js",
     "build:local": "cross-env VIRNECT_ENV=develop CONFIG_SERVER=http://192.168.6.3:6383 webpack --mode production --progress --config build/webpack.prod.conf.js",
-    "start:local": "cross-env VIRNECT_ENV=develop CONFIG_SERVER=http://192.168.6.3:6383 node server.js",
+    "start:local": "cross-env VIRNECT_ENV=local CONFIG_SERVER=http://192.168.6.3:6383 node server.js",
     "start": "node server.js"
   },
   "dependencies": {

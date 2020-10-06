@@ -4,6 +4,7 @@ import Terms from 'components/layout/pages/Terms'
 import Signup from 'components/layout/pages/Signup'
 import User from 'components/layout/pages/User'
 import Find from 'components/layout/pages/Find'
+import ResetPass from 'components/layout/pages/onpremise/ResetPassword'
 import Complete from 'components/layout/pages/Complete'
 
 export default {
@@ -36,6 +37,12 @@ export default {
 			path: '/find',
 			name: 'find',
 			component: Find,
+			props: true,
+		},
+		{
+			path: '/reset_password',
+			name: 'reset_password',
+			component: ResetPass,
 			props: true,
 		},
 		{

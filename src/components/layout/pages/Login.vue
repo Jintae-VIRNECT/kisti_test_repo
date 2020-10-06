@@ -3,10 +3,16 @@
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
 				<h2>{{ $t('login.title') }}</h2>
-				<p class="input-title">{{ $t('login.email') }}</p>
+				<p class="input-title">
+					{{ $env !== 'onpremise' ? $t('login.email') : 'ID' }}
+				</p>
 				<el-input
 					ref="focusOut"
-					:placeholder="$t('login.emailPlaceholder')"
+					:placeholder="
+						$env !== 'onpremise'
+							? $t('login.emailPlaceholder')
+							: 'ID를 입력해 주세요'
+					"
 					v-model="login.email"
 					name="email"
 					:class="{ 'input-danger': message }"
@@ -32,7 +38,9 @@
 					<el-checkbox
 						v-model="login.rememberMe"
 						@change="emailRemember(login.email, login.rememberMe)"
-						>{{ $t('login.remember') }}</el-checkbox
+						>{{
+							$env !== 'onpremise' ? $t('login.remember') : 'ID 저장'
+						}}</el-checkbox
 					>
 					<el-checkbox
 						@change="autoLogin(login.autoLogin)"
@@ -51,20 +59,19 @@
 				<div class="find-wrap">
 					<router-link
 						:to="{ name: 'findTab', params: { findCategory: 'email' } }"
+						v-if="$env !== 'onpremise'"
 						>{{ $t('login.findAccount') }}</router-link
 					>
-					<router-link
-						:to="{
-							name: 'findTab',
-							params: { findCategory: 'reset_password' },
-						}"
-						>{{ $t('login.resetPassword') }}</router-link
-					>
-					<router-link to="/terms">{{ $t('login.signUp') }}</router-link>
+					<router-link :to="setPath">{{
+						$t('login.resetPassword')
+					}}</router-link>
+					<router-link to="/terms" v-if="$env !== 'onpremise'">{{
+						$t('login.signUp')
+					}}</router-link>
 				</div>
 			</el-col>
 		</el-row>
-		<footer-section></footer-section>
+		<footer-section v-if="$env !== 'onpremise'"></footer-section>
 	</div>
 </template>
 
@@ -81,11 +88,6 @@ export default {
 	mixins: [mixin],
 	components: {
 		footerSection,
-	},
-	computed: {
-		loggedIn() {
-			return this.$store.state.auth.initial.status.loggedIn
-		},
 	},
 	data() {
 		return {
@@ -108,19 +110,19 @@ export default {
 			},
 		}
 	},
-	beforeMount() {
-		this.checkToken()
-	},
-	mounted() {
-		// console.log(this.rememberEmail)
-		if (this.rememberLogin === 'true') {
-			this.login.autoLogin = true
-		}
-
-		if (this.rememberEmail) {
-			this.login.rememberMe = true
-			this.login.email = this.rememberEmail
-		}
+	computed: {
+		setPath() {
+			if (this.$env !== 'onpremise') {
+				return {
+					name: 'findTab',
+					params: { findCategory: 'reset_password' },
+				}
+			} else {
+				return {
+					name: 'reset_password',
+				}
+			}
+		},
 	},
 	methods: {
 		async checkToken() {
@@ -208,6 +210,20 @@ export default {
 				}
 			}
 		},
+	},
+	beforeMount() {
+		this.checkToken()
+	},
+	mounted() {
+		// console.log(this.rememberEmail)
+		if (this.rememberLogin === 'true') {
+			this.login.autoLogin = true
+		}
+
+		if (this.rememberEmail) {
+			this.login.rememberMe = true
+			this.login.email = this.rememberEmail
+		}
 	},
 }
 </script>
