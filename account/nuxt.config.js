@@ -90,7 +90,7 @@ module.exports = async () => {
      */
     router: {
       extendRoutes(routes, resolve) {
-        if (env.VIRNECT_ENV !== 'onpremise') return false
+        if (env.VIRNECT_ENV !== 'onpremise') return routes
 
         routes.length = 0
         routes.push({
