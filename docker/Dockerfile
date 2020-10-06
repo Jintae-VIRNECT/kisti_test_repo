@@ -8,7 +8,7 @@ COPY ./build/libs/PF-ContentManagement-1.0.0.jar ./PF-ContentManagement-1.0.0.ja
 
 EXPOSE 8078
 
-VOLUME ["/data/content", "/usr/app/upload"]
+#VOLUME ["/data/content", "/usr/app/upload"]
 
 ## Command executed when container is start up.
 CMD ["java", "-Xmx500M", "-jar","PF-ContentManagement-1.0.0.jar"]
