@@ -81,9 +81,9 @@ pipeline {
           steps {
             catchError() {
               sh 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'      
-              sh 'docker run -p 8761:8761 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --restart=always --name=pf-eureka pf-eureka'
+              sh 'docker run -p 8761:8761 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --restart=always --name=pf-eureka pf-eureka'
               sh 'count=`docker ps | grep pf-eureka-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka-onpremise && docker rm pf-eureka-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 18761:8761 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --restart=always --name=pf-eureka-onpremise pf-eureka'
+              sh 'docker run -p 18761:8761 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --restart=always --name=pf-eureka-onpremise pf-eureka'
               sh 'docker image prune -a -f'
             }
           }
