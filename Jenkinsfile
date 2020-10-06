@@ -65,9 +65,9 @@ pipeline {
                     }
                     steps {
                         sh 'count=`docker ps -a | grep rm-recordserver | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=develop -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print $1}\'` -d -v /var/run/docker.sock:/var/run/docker.sock -v /home/esahn/recordings:/recordings --name=rm-recordserver rm-recordserver'
+                        sh 'docker run -p 8083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=develop -d -v /var/run/docker.sock:/var/run/docker.sock -v /home/esahn/recordings:/recordings --name=rm-recordserver rm-recordserver'
                         sh 'count=`docker ps -a | grep rm-recordserver-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver-onpremise && docker rm rm-recordserver-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 18083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=onpremise -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print $1}\'` -d -v /var/run/docker.sock:/var/run/docker.sock -v /home/esahn/recordings:/recordings --name=rm-recordserver-onpremise rm-recordserver'
+                        sh 'docker run -p 18083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=onpremise -d -v /var/run/docker.sock:/var/run/docker.sock -v /home/esahn/recordings:/recordings --name=rm-recordserver-onpremise rm-recordserver'
                         sh 'docker image prune -a -f'
                     }
                 }
