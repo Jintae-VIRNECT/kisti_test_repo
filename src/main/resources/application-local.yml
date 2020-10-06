@@ -41,6 +41,8 @@ server:
 
 # File Upload Configuration
 upload:
+  #  dir: "upload/"
+  #  serverUrl: "https://api.virnect.com/processes/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
 ## FEIGN Configuration
