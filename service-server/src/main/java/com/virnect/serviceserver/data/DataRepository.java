@@ -239,10 +239,17 @@ public class DataRepository {
             DataProcess<RoomInfoListResponse> invokeDataProcess() {
                 if(!paging) {
                     //roomList = this.roomRepository.findByWorkspaceId(workspaceId);
-                    List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(workspaceId, userId)
+                    List<Room> roomList = sessionService.getRoomList(workspaceId, userId);
+                    List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+                    for (Room room: roomList) {
+                        RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+                        roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        roomInfoList.add(roomInfoResponse);
+                    }
+                    /*List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(workspaceId, userId)
                             .stream()
                             .map(room -> modelMapper.map(room, RoomInfoResponse.class))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
 
                     // Page Metadata Empty
                     PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -286,10 +293,18 @@ public class DataRepository {
                 } else {
                     Page<Member> memberPage = sessionService.getMemberList(workspaceId, userId, pageable);
 
-                    List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(memberPage)
+                    List<Room> roomList = sessionService.getRoomList(memberPage);
+                    List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+                    for (Room room: roomList) {
+                        RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+                        roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        roomInfoList.add(roomInfoResponse);
+                    }
+
+                    /*List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(memberPage)
                             .stream()
                             .map(room -> modelMapper.map(room, RoomInfoResponse.class))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
 
                     // Page Metadata
                     PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -358,6 +373,8 @@ public class DataRepository {
                         // mapping data
                         //RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
                         resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        resultResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        resultResponse.setTranslation(room.getSessionProperty().isTranslation());
 
                         // Get Member List by Room Session ID
                         // Mapping Member List Data to Member Information List

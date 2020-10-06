@@ -1,5 +1,6 @@
 package com.virnect.data.dto.response;
 
+import com.virnect.data.dao.SessionType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -27,9 +28,15 @@ public class RoomDetailInfoResponse {
     @ApiModelProperty(value = "Remote Session Maximum User Capacity", position = 4, example = "3")
     private int maxUserCount;
 
-    @ApiModelProperty(value = "Remote Session Activation Date", position = 5, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "Remote Session translation", position = 5, example = "false")
+    private boolean translation;
+
+    @ApiModelProperty(value = "Remote Session Type", position = 6, example = "PRIVATE")
+    private SessionType sessionType;
+
+    @ApiModelProperty(value = "Remote Session Activation Date", position = 7, example = "2020-01-20T14:05:30")
     private LocalDateTime activeDate;
 
-    @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 6)
+    @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 8)
     private List<MemberInfoResponse> memberList;
 }

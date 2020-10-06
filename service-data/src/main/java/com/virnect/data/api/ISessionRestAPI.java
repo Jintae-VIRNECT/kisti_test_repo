@@ -53,10 +53,17 @@ public interface ISessionRestAPI {
      * 6. register other users as a worker(participant), if the request contains other user information.
      * 7. return session id and token
      */
-    @ApiOperation(value = "Initialize a Remote Room", notes = "Generate Remote Session")
+    /*@ApiOperation(value = "Initialize a Remote Room", notes = "Generate Remote Session")
     @PostMapping(value = "room")
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestBody @Valid RoomRequest roomRequest,
+            BindingResult result);*/
+
+    @ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "Generate Remote Session")
+    @PostMapping(value = "room")
+    ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
+            @RequestBody @Valid RoomRequest roomRequest,
+            @RequestParam(name = "companyCode") int companyCode,
             BindingResult result);
 
     /*@PostMapping(value = "room", consumes = )

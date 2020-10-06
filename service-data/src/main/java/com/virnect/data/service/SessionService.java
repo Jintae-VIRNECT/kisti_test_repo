@@ -53,7 +53,7 @@ public class SessionService {
                 .leaderId(roomRequest.getLeaderId())
                 .workspaceId(roomRequest.getWorkspaceId())
                 .maxUserCount(licenseItem.getUserCapacity())
-                .licenseName(licenseItem.getItemName())
+                .licenseName(licenseItem.name())
                 .build();
 
         // Remote Session Property Entity Create
@@ -63,6 +63,9 @@ public class SessionService {
                 .defaultOutputMode("COMPOSED")
                 .defaultRecordingLayout("BEST_FIT")
                 .recording(true)
+                .translation(roomRequest.isTranslation())
+                .keepalive(roomRequest.isKeepAlive())
+                .sessionType(roomRequest.getSessionType())
                 .room(room)
                 .build();
 
