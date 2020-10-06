@@ -18,8 +18,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-@RequiredArgsConstructor
 public class MyLicenseInfoListResponse {
 	@ApiModelProperty(value = "내 라이선스 정보 목록")
-	private final List<MyLicenseInfoResponse> licenseInfoList;
+	private List<MyLicenseInfoResponse> licenseInfoList;
 }
