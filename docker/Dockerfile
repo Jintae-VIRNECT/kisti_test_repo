@@ -1,14 +1,14 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jre-slim
 ENV APP_HOME=/usr/app/
 
 WORKDIR $APP_HOME
 
 COPY ./virnect.pfx ./virnect.pfx
 
-ARG BUILD=build/unpack
+ARG buildDir=build/unpack
 
-COPY ${BUILD}/app .
-COPY ${BUILD}/lib/ BOOT-INF/lib/
+COPY ${buildDir}/lib BOOT-INF/lib
+COPY ${buildDir}/app .
 
 EXPOSE 8761
 

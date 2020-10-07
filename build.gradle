@@ -47,6 +47,7 @@ test {
 }
 
 
+// separate jar into app and library layers
 task moveLib {
     doLast {
         def unpackDir = "$buildDir/unpack"
