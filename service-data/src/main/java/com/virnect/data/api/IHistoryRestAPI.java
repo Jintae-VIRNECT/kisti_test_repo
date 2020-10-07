@@ -3,9 +3,11 @@ package com.virnect.data.api;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.request.PageRequest;
 import com.virnect.data.dto.request.RoomHistoryDeleteRequest;
+import com.virnect.data.dto.request.RoomRequest;
 import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.RoomHistoryDetailInfoResponse;
 import com.virnect.data.dto.response.RoomHistoryInfoListResponse;
+import com.virnect.data.dto.response.RoomResponse;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +20,15 @@ import javax.validation.Valid;
 
 @RequestMapping("/remote")
 public interface IHistoryRestAPI {
+
+    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "Redial Remote Session")
+    @PostMapping(value = "history")
+    ResponseEntity<ApiResponse<RoomResponse>> redialRoomRequest(
+            @RequestBody @Valid RoomRequest roomRequest,
+            @RequestParam(name = "sessionId") String sessionId,
+            @RequestParam(name = "companyCode") int companyCode,
+            BindingResult result
+            );
 
     @ApiOperation(value = "Load Room History Information List", notes = "최근 기록 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({

@@ -45,6 +45,7 @@ public enum  ErrorCode {
     ERR_ROOM_CREATE_FAIL(4019, "Room Create fail"),
     ERR_ROOM_PROCESS_FAIL(4020, "Current Room request is failed"),
     ERR_ROOM_MEMBER_MAX_COUNT(4021, "Current Room member is over the limit"),
+    ERR_ROOM_LICENSE_COMPANY_CODE(4022, "Can not find license for company code"),
 
     // error code for service validation
     ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),

@@ -1,5 +1,6 @@
 package com.virnect.data.dto.request;
 
+import com.virnect.data.dao.SessionType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -24,11 +25,20 @@ public class RoomRequest {
     @ApiModelProperty(value = "Enable Auto Server Recording", position = 3, example = "false")
     private boolean autoRecording;
 
-    @ApiModelProperty(value = "Leader User Unique Identifier", position = 4, example = "410df50ca6e32db0b6acba09bcb457ff")
+    @ApiModelProperty(value = "Enable translation", position = 4, example = "false")
+    private boolean translation;
+
+    @ApiModelProperty(value = "Enable Keep alive remote room session", position = 5, example = "false")
+    private boolean isKeepAlive;
+
+    @ApiModelProperty(value = "Remote Session Type", position = 6, example = "PRIVATE")
+    private SessionType sessionType;
+
+    @ApiModelProperty(value = "Leader User Unique Identifier", position = 7, example = "410df50ca6e32db0b6acba09bcb457ff")
     @NotNull
     private String leaderId;
 
-    @ApiModelProperty(value = "Workspace Identifier", position = 5, example = "40f9bbee9d85dca7a34a0dd205aae718")
+    @ApiModelProperty(value = "Workspace Identifier", position = 8, example = "40f9bbee9d85dca7a34a0dd205aae718")
     @NotNull
     private String workspaceId;
 
@@ -38,7 +48,7 @@ public class RoomRequest {
      */
     @ApiModelProperty(
             value = "Participants Identifier",
-            position = 7,
+            position = 9,
             dataType = "List",
             example = "[\n" +
                     "    \"4705cf50e6d02c59b0eef9591666e2a3\",\n" +

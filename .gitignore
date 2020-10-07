@@ -32,3 +32,6 @@ out/
 .vscode/
 
 releasenote.txt
+
+### PROJECT ###
+service-kms/

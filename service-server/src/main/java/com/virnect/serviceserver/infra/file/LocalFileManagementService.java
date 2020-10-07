@@ -28,13 +28,28 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-@Profile({ "local", "develop", "onpremise" })
+
+@Profile({"local", "onpremise","develop"})
 @Slf4j
 @Component
 public class LocalFileManagementService implements IFileManagementService {
 
+    @Value("${minio.bucket}")
     private String fileBucketName;
+
+    @Value("${minio.resource}")
     private String profileBucketName;
+
+    @Value("${minio.access-key}")
+    private String accessKey;
+
+    @Value("${minio.secret-key}")
+    private String secretKey;
+
+    @Value("${minio.server}")
+    private String serverUrl;
+
+    @Value("${minio.dir}")
     private String rootDirPath;
 
     @Autowired

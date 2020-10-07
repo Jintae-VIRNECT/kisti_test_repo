@@ -26,7 +26,4 @@ public class RoomResponse {
 
     @ApiModelProperty(value = "Remote Server Websocket Address", position = 3, example = "wss://")
     private String wss;
-
-
-
 }

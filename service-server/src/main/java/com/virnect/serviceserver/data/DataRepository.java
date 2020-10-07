@@ -239,10 +239,17 @@ public class DataRepository {
             DataProcess<RoomInfoListResponse> invokeDataProcess() {
                 if(!paging) {
                     //roomList = this.roomRepository.findByWorkspaceId(workspaceId);
-                    List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(workspaceId, userId)
+                    List<Room> roomList = sessionService.getRoomList(workspaceId, userId);
+                    List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+                    for (Room room: roomList) {
+                        RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+                        roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        roomInfoList.add(roomInfoResponse);
+                    }
+                    /*List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(workspaceId, userId)
                             .stream()
                             .map(room -> modelMapper.map(room, RoomInfoResponse.class))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
 
                     // Page Metadata Empty
                     PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -271,7 +278,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -286,10 +293,18 @@ public class DataRepository {
                 } else {
                     Page<Member> memberPage = sessionService.getMemberList(workspaceId, userId, pageable);
 
-                    List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(memberPage)
+                    List<Room> roomList = sessionService.getRoomList(memberPage);
+                    List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+                    for (Room room: roomList) {
+                        RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+                        roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        roomInfoList.add(roomInfoResponse);
+                    }
+
+                    /*List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(memberPage)
                             .stream()
                             .map(room -> modelMapper.map(room, RoomInfoResponse.class))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
 
                     // Page Metadata
                     PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -320,7 +335,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -358,6 +373,8 @@ public class DataRepository {
                         // mapping data
                         //RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
                         resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        resultResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        resultResponse.setTranslation(room.getSessionProperty().isTranslation());
 
                         // Get Member List by Room Session ID
                         // Mapping Member List Data to Member Information List
@@ -379,7 +396,7 @@ public class DataRepository {
                             //todo://user infomation does not have role and role id change to workspace member info
                             WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                             memberInfoResponse.setRole(workspaceMemberData.getRole());
-                            memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                             memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                             memberInfoResponse.setName(workspaceMemberData.getName());
                             memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -406,7 +423,6 @@ public class DataRepository {
             @Override
             DataProcess<RoomDeleteResponse> invokeDataProcess() {
                 Room room = loadFromDatabase();
-                //Member member = sessionService.getMember(workspaceId, sessionId, userId);
                 DataProcess<RoomDeleteResponse> dataProcess = null;
                 try {
                     dataProcess = new DataProcess<>(RoomDeleteResponse.class);
@@ -418,14 +434,12 @@ public class DataRepository {
                 if(room == null) {
                     dataProcess.setErrorCode(ErrorCode.ERR_ROOM_NOT_FOUND);
                     return dataProcess;
-                    //return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
 
                 //check request user has valid permission
                 if(!room.getLeaderId().equals(userId)) {
                     dataProcess.setErrorCode(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     return dataProcess;
-                    //return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                 }
 
                 List<Member> members = room.getMembers();
@@ -434,7 +448,6 @@ public class DataRepository {
                             && member.getMemberStatus().equals(MemberStatus.LOAD)) {
                         dataProcess.setErrorCode(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
                         return dataProcess;
-                        //return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
                     }
                 }
 
@@ -444,18 +457,6 @@ public class DataRepository {
                         true,
                         LocalDateTime.now()
                 ));
-
-                /*else if(member == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                } else {
-                    if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
-                    }
-                    sessionService.removeRoom(room);
-                    ResultResponse resultResponse = new ResultResponse();
-                    resultResponse.setResult(true);
-                    return new DataProcess<>(resultResponse);
-                }*/
             }
         }.asApiResponse();
     }
@@ -523,6 +524,8 @@ public class DataRepository {
                     if(room.getLeaderId().equals(modifyRoomInfoRequest.getUuid())) {
                         // mapping data
                         RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        resultResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        resultResponse.setTranslation(room.getSessionProperty().isTranslation());
                         // Get Member List by Room Session ID
                         // Mapping Member List Data to Member Information List
                         List<MemberInfoResponse> memberInfoList = sessionService.getMemberList(resultResponse.getSessionId())
@@ -538,7 +541,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -1242,7 +1245,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -1333,7 +1336,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -1397,7 +1400,7 @@ public class DataRepository {
                             //todo://user infomation does not have role and role id change to workspace member info
                             WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                             memberInfoResponse.setRole(workspaceMemberData.getRole());
-                            memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                             memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                             memberInfoResponse.setName(workspaceMemberData.getName());
                             memberInfoResponse.setNickName(workspaceMemberData.getNickName());

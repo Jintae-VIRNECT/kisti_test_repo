@@ -41,6 +41,9 @@ public class RoomHistory extends BaseTimeEntity  {
         @Column(name = "maxUserCount", nullable = false)
         private int maxUserCount;
 
+        @Column(name = "license_name", nullable = false)
+        private String licenseName;
+
         @Column(name = "active_at", nullable = false)
         private LocalDateTime activeDate;
 
@@ -63,6 +66,8 @@ public class RoomHistory extends BaseTimeEntity  {
                            String profile,
                            String leaderId,
                            String workspaceId,
+                           String licenseName,
+                           int maxUserCount,
                            SessionPropertyHistory sessionPropertyHistory
         ) {
                 this.sessionId = sessionId;
@@ -71,6 +76,8 @@ public class RoomHistory extends BaseTimeEntity  {
                 this.profile = profile;
                 this.leaderId = leaderId;
                 this.workspaceId = workspaceId;
+                this.licenseName = licenseName;
+                this.maxUserCount = maxUserCount;
                 this.sessionPropertyHistory = sessionPropertyHistory;
         }
 

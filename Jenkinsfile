@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-taggerdate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
+        GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
         REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
     }
 
@@ -80,9 +80,9 @@ pipeline {
                     }
                     steps {
                         sh 'count=`docker ps -a | grep rm-service | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-service && docker rm rm-service; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 8000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=rm-service rm-service'
+                        sh 'docker run -p 8000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=rm-service rm-service'
                         sh 'count=`docker ps -a | grep rm-service-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-service-onpremise && docker rm rm-service-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-                        sh 'docker run -p 18000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-service-onpremise rm-service'
+                        sh 'docker run -p 18000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=rm-service-onpremise rm-service'
                         sh 'docker image prune -a -f'
                     }
                 }
@@ -132,15 +132,15 @@ pipeline {
                 }
             }
 
-            stage('Master Branch') {
-                when {
-                    branch 'master'
-                }
-                steps {
-                    catchError() {
-                        script {
-                            sshPublisher(
-                                continueOnError: false, failOnError: true,
+                stage('Master Branch') {
+                    when {
+                        branch 'master'
+                    }
+                    steps {
+                        catchError() {
+                            script {
+                                sshPublisher(
+                                    continueOnError: false, failOnError: true,
                                     publishers: [
                                         sshPublisherDesc(
                                             configName: 'aws-bastion-deploy-prod',
@@ -164,6 +164,16 @@ pipeline {
                                             ]
                                         )
                                     ]
+                                )
+                            }
+
+                            script {
+                                def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                                def payload = """
+                                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+                                """                             
+
+                                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                             )
                         }
 

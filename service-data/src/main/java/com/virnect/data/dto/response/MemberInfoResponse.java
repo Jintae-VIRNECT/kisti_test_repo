@@ -37,10 +37,10 @@ public class MemberInfoResponse {
             position = 7)
     private String role;
 
-    @ApiModelProperty(
+    /*@ApiModelProperty(
             value = "User Permission Id ( MASTER(1), MANAGER(2), MEMBER(3) )",
             position = 8)
-    private Long roleId = 0L;
+    private Long roleId = 0L;*/
 
     @ApiModelProperty(
             value = "장치 타입 " +
@@ -59,7 +59,7 @@ public class MemberInfoResponse {
                 "uuid='" + uuid + '\'' +
                 ", email='" + email + '\'' +
                 ", role='" + role + '\'' +
-                ", roleId='" + roleId + '\'' +
+                //", roleId='" + roleId + '\'' +
                 ", name='" + name + '\'' +
                 ", nickname='" + nickName + '\'' +
                 ", profile='" + profile + '\'' +

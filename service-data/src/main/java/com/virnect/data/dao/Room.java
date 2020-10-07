@@ -46,11 +46,11 @@ public class Room extends BaseTimeEntity {
     @Column(name = "leader_id", nullable = false)
     private String leaderId;
 
-    @Column(name = "maxUserCount", nullable = false)
-    private int maxUserCount;
-
     @Column(name = "workspace_id", nullable = false)
     private String workspaceId;
+
+    @Column(name = "maxUserCount", nullable = false)
+    private int maxUserCount;
 
     @Column(name = "room_status", nullable = false)
     private RoomStatus roomStatus;
