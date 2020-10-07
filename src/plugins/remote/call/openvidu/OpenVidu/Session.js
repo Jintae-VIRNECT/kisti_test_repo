@@ -128,6 +128,8 @@ var Session = /** @class */ (function(_super) {
      */
     _this.stopSpeakingEventsEnabledOnce = false
     _this.openvidu = openvidu
+    // ::CUSTOMIZED::
+    _this.onIceStateChanged = false
     return _this
   }
   /**
