@@ -5,19 +5,19 @@
 
 // import axios from 'api/axios'
 import { merge } from 'lodash'
-// import Cookies from 'js-cookie'
+import Cookies from 'js-cookie'
 import API from './api'
-// import { logger, debug } from 'utils/logger'
+import { logger, debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
-// import { cookieClear } from 'utils/auth'
+import { cookieClear } from 'utils/auth'
 
 const URL = API
-// const TOKEN = Cookies.get('accessToken')
+const TOKEN = Cookies.get('accessToken')
 
-// logger('ENV', process.env.TARGET_ENV)
+logger('ENV', process.env.TARGET_ENV)
 
-// axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
+axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
 
 /**
  * Common request handler
@@ -49,8 +49,9 @@ const sender = async function(constant, params, headers = {}, custom) {
     }
 
     // Token
-    // const accessToken = Cookies.get('accessToken')
-    // axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+    const accessToken = Cookies.get('accessToken')
+    axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
+    axios.defaults.headers.common['Accept'] = `*/*`
 
     // URI 전환
     url = url.replace(/{(\w+)}/g, (match, $1) => {
@@ -72,7 +73,6 @@ const sender = async function(constant, params, headers = {}, custom) {
       for (let param in paramsOption) {
         parameter.append(param, params[param])
       }
-      // debug(option)
     } else if (custom && 'application/octet-stream' === custom.type) {
       option.headers['Content-Type'] = 'application/octet-stream'
     } else {
@@ -145,7 +145,7 @@ const errorHandler = function(err) {
       case 8003:
       case 8005:
         // console.error(error.message)
-        // cookieClear()
+        cookieClear()
         window.location.reload()
         break
       // case 'Network Error':
@@ -163,7 +163,7 @@ export const setBaseURL = baseURL => {
   axios.defaults.baseURL = baseURL
   axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
 
-  // debug('BASE_URL::', baseURL)
+  debug('BASE_URL::', baseURL)
 }
 
 export default sender
