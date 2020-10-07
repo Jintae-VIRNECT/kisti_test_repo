@@ -1,16 +1,26 @@
-FROM openjdk:8-jre-slim
+# Build Stage
+FROM openjdk:8 AS builder
+
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
+COPY src src
+COPY virnect.pfx .
+
+RUN chmod +x ./gradlew
+RUN ./gradlew build -x test
+
+# Runtime Stage
+FROM openjdk:8-jre-alpine
+
 ENV APP_HOME=/usr/app/
-
 WORKDIR $APP_HOME
-
-COPY ./virnect.pfx ./virnect.pfx
-
 ARG buildDir=build/unpack
 
-COPY ${buildDir}/lib BOOT-INF/lib
-COPY ${buildDir}/app .
+COPY --from=builder virnect.pfx .
+COPY --from=builder ${buildDir}/lib BOOT-INF/lib
+COPY --from=builder ${buildDir}/app .
 
-EXPOSE 8761
-
-## Command executed when container is start up.
-CMD ["java", "-XX:+UseG1GC", "-Xmx200M", "org.springframework.boot.loader.JarLauncher"]
+EXPOSE 8321
+CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]
