@@ -13,15 +13,10 @@
     ></profile>
     <div>
       <div class="popover-profile__myinfo">
-        <!-- <profile
+        <profile
           :image="account.profile"
           :mainText="account.nickname"
           :subText="account.email"
-        ></profile> -->
-        <profile
-          :image="account.profile"
-          :mainText="'TEST'"
-          :subText="'TEST@TEST.COM'"
         ></profile>
       </div>
       <div class="popover-profile__link">
