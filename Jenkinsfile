@@ -132,15 +132,15 @@ pipeline {
                 }
             }
 
-            stage('Master Branch') {
-                when {
-                    branch 'master'
-                }
-                steps {
-                    catchError() {
-                        script {
-                            sshPublisher(
-                                continueOnError: false, failOnError: true,
+                stage('Master Branch') {
+                    when {
+                        branch 'master'
+                    }
+                    steps {
+                        catchError() {
+                            script {
+                                sshPublisher(
+                                    continueOnError: false, failOnError: true,
                                     publishers: [
                                         sshPublisherDesc(
                                             configName: 'aws-bastion-deploy-prod',
@@ -164,6 +164,16 @@ pipeline {
                                             ]
                                         )
                                     ]
+                                )
+                            }
+
+                            script {
+                                def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                                def payload = """
+                                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+                                """                             
+
+                                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                             )
                         }
 
@@ -188,4 +198,3 @@ pipeline {
         }
     }
 }
-
