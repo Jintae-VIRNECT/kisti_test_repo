@@ -63,6 +63,7 @@ project(":service-server") {
         implementation(project(":service-client"))
         implementation(project(":service-java-client"))
         implementation(project(":service-data"))
+        implementation("org.springframework.cloud:spring-cloud-config-client")
     }
     /*val jar: Jar by tasks
     val bootJar: BootJar by tasks
