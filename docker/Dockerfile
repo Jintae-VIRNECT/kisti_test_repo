@@ -22,7 +22,6 @@ ARG buildDir=build/unpack
 COPY --from=builder virnect.pfx .
 COPY --from=builder ${buildDir}/lib BOOT-INF/lib
 COPY --from=builder ${buildDir}/app .
-COPY ./upload ./upload
 
 EXPOSE 8082
 CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]
