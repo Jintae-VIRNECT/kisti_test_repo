@@ -1,8 +1,6 @@
 <template>
   <footer class="footer">
-    <p>
-      ©VIRNECT CO., LTD. All rights reserved.
-    </p>
+    <p><strong>©VIRNECT CO., LTD.</strong> All rights reserved.</p>
   </footer>
 </template>
 
@@ -24,8 +22,12 @@ export default {}
   & > p {
     color: #656f84;
     font-weight: 500;
-    font-size: 0.8571rem;
+    font-size: 12px;
     text-align: center;
+
+    > strong {
+      font-weight: bold;
+    }
   }
 }
 </style>
