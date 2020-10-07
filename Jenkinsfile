@@ -7,40 +7,6 @@ pipeline {
   }
 
   stages {
-    stage('Pre-Build') {
-      parallel {
-        stage('Develop Branch') {
-          when {
-            branch 'develop'
-          }
-          steps {
-            catchError() {
-              sh 'chmod +x ./gradlew'
-              sh './gradlew clean'
-              sh './gradlew cleanQuerydslSourcesDir'
-              sh './gradlew build -x test'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-
-        stage('Staging Branch') {
-          when {
-            branch 'staging'
-          }
-          steps {
-            catchError() {
-              sh 'chmod +x ./gradlew'
-              sh './gradlew clean'
-              sh './gradlew cleanQuerydslSourcesDir'
-              sh './gradlew build -x test'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-      }
-    }
-
     stage('Build') {
       parallel {
         stage('Develop Branch') {
@@ -48,6 +14,7 @@ pipeline {
             branch 'develop'
           }
           steps {
+            sh 'cp docker/Dockerfile ./'
             sh 'docker build -t pf-workspace .'
           }
         }
@@ -57,6 +24,7 @@ pipeline {
             branch 'staging'
           }
           steps {
+            sh 'cp docker/Dockerfile ./'
             sh 'git checkout $GIT_TAG'
             sh 'docker build -t pf-workspace:${GIT_TAG} .'
           }
@@ -87,7 +55,7 @@ pipeline {
             sh 'docker run -p 8082:8082 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-workspace pf-workspace'
             sh 'count=`docker ps -a | grep pf-workspace-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-workspace-onpremise && docker rm pf-workspace-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18082:8082 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-workspace-onpremise pf-workspace'
-            sh 'docker image prune -a -f'
+            sh 'docker image prune -f'
           }
         }
 
@@ -125,7 +93,7 @@ pipeline {
                           execCommand: "docker run -p 8082:8082 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG}"
                         ),
                         sshTransfer(
-                          execCommand: 'docker image prune -a -f'
+                          execCommand: 'docker image prune -f'
                         )
                       ]
                     )
@@ -164,7 +132,7 @@ pipeline {
                           execCommand: "docker run -p 8082:8082 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-workspace $aws_ecr_address/pf-workspace:\\${GIT_TAG}"
                         ),
                         sshTransfer(
-                          execCommand: 'docker image prune -a -f'
+                          execCommand: 'docker image prune -f'
                         )
                       ]
                     )
