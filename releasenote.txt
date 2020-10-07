@@ -1,9 +1,9 @@
 RELEASE
 
 New Features
-- staging, production 설정 파일 외부로 뺌
 
 Bug Fixes
+- 컨텐츠 리스트 조회 search 파라미터 추가 에러 개선
 
 Limitation
 

@@ -83,6 +83,7 @@ import com.virnect.content.dto.response.SceneGroupInfoResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
 import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MemberListResponse;
+import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.dto.rest.ProcessInfoResponse;
 import com.virnect.content.dto.rest.UserInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
@@ -130,8 +131,8 @@ public class ContentService {
 	private final ObjectMapper objectMapper;
 	private final ApplicationEventPublisher eventPublisher;
 	private final Gson gson;
-	@Value("${upload.dir}")
-	private String uploadPath;
+	/*@Value("${upload.dir}")
+	private String uploadPath;*/
 	@Value("${file.upload-path}")
 	private String fileUploadPath;
 
@@ -173,7 +174,8 @@ public class ContentService {
 			log.info("CONTENT UPLOAD - contentUUID : {}, request : {}", contentUUID, uploadRequest.toString());
 
 			// 파일명은 컨텐츠 식별자(contentUUID)와 동일
-			String fileUploadPath = this.fileUploadService.uploadByFileInputStream(uploadRequest.getContent(), contentUUID + "");
+			String fileUploadPath = this.fileUploadService.uploadByFileInputStream(
+				uploadRequest.getContent(), contentUUID + "");
 
 			// 2-1. 프로퍼티로 메타데이터 생성
 			MetadataInfo metadataInfo = metadataService.convertMetadata(
@@ -779,7 +781,8 @@ public class ContentService {
 
 		ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
 			.workspaceUUID(content.getWorkspaceUUID())
-			.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+			//.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+			.content(convertFileToMultipart(contentUUID.concat(ARES_FILE_EXTENSION)))
 			// TODO : 공정 수정 후 반영 예정
 			//                .contentType(content.getType().getType())
 			.name(response.getData().getName())
@@ -834,7 +837,8 @@ public class ContentService {
 
 		ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
 			.workspaceUUID(workspaceUUID)
-			.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+			//.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
+			.content(convertFileToMultipart(contentUUID.concat(ARES_FILE_EXTENSION)))
 			// TODO : 공정 수정 후 반영 예정
 			//                .contentType(content.getType().getType())
 			.name(content.getName())
@@ -954,6 +958,7 @@ public class ContentService {
 	 * @return
 	 */
 	private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize, String userUUID) {
+/*
 		LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 
 		LicenseInfoResponse response = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
@@ -983,7 +988,27 @@ public class ContentService {
 					}
 				}
 			});
-
+*/
+		//업로드 사용자의 MAKE 라이선스 체크
+		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
+			userUUID, workspaceUUID).getData();
+		if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
+		}
+		List<String> userLicenseInfoList = new ArrayList<>();
+		myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+			userLicenseInfoList.add(myLicenseInfoResponse.getProductName());
+			if (myLicenseInfoResponse.getProductName().equals("MAKE") && !myLicenseInfoResponse.getProductPlanStatus()
+				.equals("ACTIVE")) {
+				throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
+			}
+		});
+		if(!userLicenseInfoList.contains("MAKE")){
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
+		}
+		//용량 체크
+		LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
+		LicenseInfoResponse response = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
 		// 업로드를 요청하는 워크스페이스를 기반으로 라이센스 서버의 최대 저장 용량을 가져온다. (MB 단위)
 		Long maxCapacity = response.getMaxStorageSize();
 
