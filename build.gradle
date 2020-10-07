@@ -93,6 +93,9 @@ dependencies {
 
     // Minio
     implementation 'io.minio:minio:7.1.0'
+
+    // feign oktthp
+    implementation 'io.github.openfeign:feign-okhttp'
 }
 
 test {
