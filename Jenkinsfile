@@ -7,49 +7,15 @@ pipeline {
   }
 
   stages {
-    stage('Pre-Build') {
-      parallel {
-        stage('Develop Branch') {
-          when {
-            branch 'develop'
-          }
-          steps {
-            catchError() {
-              sh 'chmod +x ./gradlew'
-              sh './gradlew clean'
-              sh './gradlew cleanQuerydslSourcesDir'
-              sh './gradlew build -x test'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-
-        stage('Staging Branch') {
-          when {
-            branch 'staging'
-          }
-          steps {
-            catchError() {
-              sh 'chmod +x ./gradlew'
-              sh './gradlew clean'
-              sh './gradlew cleanQuerydslSourcesDir'
-              sh './gradlew build -x test'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-      }
-    }
-
     stage('Build') {
       parallel {
-
         stage('Develop Branch') {
           when {
             branch 'develop'
           }
           steps {
             catchError() {
+              sh 'cp docker/Dockerfile ./'
               sh 'docker build -t pf-contentsmanagement .'
             }
           }
@@ -61,6 +27,7 @@ pipeline {
           }
           steps {
             catchError() {
+              sh 'cp docker/Dockerfile ./'
               sh 'git checkout ${GIT_TAG}'
               sh 'docker build -t pf-contentsmanagement:${GIT_TAG} .'
             }
