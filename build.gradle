@@ -72,6 +72,9 @@ dependencies {
 
     // Configuration
     implementation 'org.springframework.cloud:spring-cloud-config-client'
+
+    // feign oktthp
+    implementation 'io.github.openfeign:feign-okhttp'
 }
 
 test {
