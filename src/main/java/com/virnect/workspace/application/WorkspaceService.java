@@ -321,7 +321,8 @@ public class WorkspaceService {
 					String[] licenseProducts = new String[0];
 					MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 						workspaceId, userInfoRestResponse.getUuid()).getData();
-					if (myLicenseInfoListResponse.getLicenseInfoList() != null &&!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+					if (myLicenseInfoListResponse.getLicenseInfoList() != null
+						&& !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
 						licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
 							.stream()
 							.map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
@@ -373,7 +374,8 @@ public class WorkspaceService {
 					String[] licenseProducts = new String[0];
 					MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 						workspaceId, userInfoRestResponse.getUuid()).getData();
-					if (myLicenseInfoListResponse.getLicenseInfoList() != null &&!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+					if (myLicenseInfoListResponse.getLicenseInfoList() != null
+						&& !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
 						licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
 							.stream()
 							.map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
@@ -417,7 +419,8 @@ public class WorkspaceService {
 					String[] licenseProducts = new String[0];
 					MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 						workspaceId, userInfoRestResponse.getUuid()).getData();
-					if ( myLicenseInfoListResponse.getLicenseInfoList() != null &&!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+					if (myLicenseInfoListResponse.getLicenseInfoList() != null
+						&& !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
 						licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
 							.stream()
 							.map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
@@ -546,7 +549,8 @@ public class WorkspaceService {
 
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null &&!workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null
+			&& !workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
 			for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse
 				.getLicenseProductInfoList()) {
 				if (licenseProductInfoResponse.getProductName().equals(LicenseProduct.REMOTE.toString())) {
@@ -598,7 +602,8 @@ public class WorkspaceService {
 		// 워크스페이스 플랜 조회하여 최대 초대 가능 명 수를 초과했는지 체크
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null ||workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
+			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
 		}
 		int workspaceUserAmount = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId).size();
@@ -882,7 +887,8 @@ public class WorkspaceService {
 		//라이선스 플랜 - 라이선스 플랜 보유 체크, 멤버 제한 수 체크
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null ||workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
+			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
 		}
 
@@ -1164,7 +1170,8 @@ public class WorkspaceService {
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspace.getUuid(), userId).getData();
 		List<String> oldProductList = new ArrayList<>();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+		if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
+			.isEmpty()) {
 			oldProductList = myLicenseInfoListResponse.getLicenseInfoList()
 				.stream()
 				.map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
@@ -1484,7 +1491,8 @@ public class WorkspaceService {
 		List<String> licenseProducts = new ArrayList<>();
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, userId).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null && myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+		if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
+			.isEmpty()) {
 			myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
 				licenseProducts.add(myLicenseInfoResponse.getProductName());
 			});
@@ -1532,7 +1540,8 @@ public class WorkspaceService {
 		//라이선스 해제
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, memberKickOutRequest.getKickedUserId()).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null &&!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+		if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
+			.isEmpty()) {
 			myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
 				log.debug(
 					"[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
@@ -1604,7 +1613,8 @@ public class WorkspaceService {
 		//라이선스 해제
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, userId).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+		if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
+			.isEmpty()) {
 			myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
 				Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(
 					workspaceId, userId, myLicenseInfoResponse.getProductName()).getData();
@@ -1715,7 +1725,8 @@ public class WorkspaceService {
 	) {
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
+			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
 		}
 
@@ -1833,7 +1844,8 @@ public class WorkspaceService {
 	public ApiResponse<WorkspaceLicenseInfoResponse> getWorkspaceLicenseInfo(String workspaceId) {
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
+			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
 		}
 		WorkspaceLicenseInfoResponse workspaceLicenseInfoResponse = new WorkspaceLicenseInfoResponse();
