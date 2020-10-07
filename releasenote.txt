@@ -1,9 +1,9 @@
 RELEASE
 
 New Features
-- staging, production 설정 파일 외부로 뺌
 
 Bug Fixes
+- 만료 라이선스 체크 로직 추가
 
 Limitation
 

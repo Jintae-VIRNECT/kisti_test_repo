@@ -22,13 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class ApplicationRunnerHandler implements ApplicationRunner {
-	@Value("${upload.dir}")
-	private String uploadDirectoryPath;
+	/*@Value("${upload.dir}")
+	private String uploadDirectoryPath;*/
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
-		File file = new File(uploadDirectoryPath);
+		/*File file = new File(uploadDirectoryPath);
 		FileUtils.forceMkdir(file);
-		log.info("FILE UPLOAD DIRECTORY CREATE: [{}]", file.getAbsolutePath());
+		log.info("FILE UPLOAD DIRECTORY CREATE: [{}]", file.getAbsolutePath());*/
 	}
 }

@@ -1,10 +1,13 @@
 package com.virnect.content.application.license;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.virnect.content.dto.rest.LicenseInfoResponse;
+import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.content.global.common.ApiResponse;
 
 /**
@@ -20,4 +23,8 @@ public interface LicenseRestService {
 
 	@GetMapping("/licenses/{workspaceId}/plan")
 	ApiResponse<LicenseInfoResponse> getWorkspaceLicenseInfo(@PathVariable("workspaceId") String workspaceId);
+
+	@GetMapping("/licenses/{workspaceId}/{userId}")
+	ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoRequestHandler(@PathVariable("userId") String userId, @PathVariable("workspaceId") String workspaceId);
 }
+

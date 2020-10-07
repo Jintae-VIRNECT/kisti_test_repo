@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.amazonaws.AmazonServiceException;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +17,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
@@ -39,7 +38,7 @@ import com.virnect.content.global.error.ErrorCode;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local", "develop", "staging", "production", "test"})
+@Profile({"staging", "production", "test"})
 @Component
 @RequiredArgsConstructor
 public class S3UploadService implements FileUploadService {
@@ -54,8 +53,7 @@ public class S3UploadService implements FileUploadService {
 	@Value("#{'${upload.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
 
-	@Override
-	public String upload(MultipartFile file, String fileName) throws IOException {
+	private String upload(MultipartFile file, String fileName) throws IOException {
 		log.info("[AWS S3 UPLOADER] - UPLOAD BEGIN");
 		if (file.getSize() <= 0) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
@@ -115,16 +113,6 @@ public class S3UploadService implements FileUploadService {
 	}
 
 	@Override
-	public String getFileExtension(String originFileName) {
-		return null;
-	}
-
-	@Override
-	public boolean isAllowFileExtension(String fileExtension) {
-		return false;
-	}
-
-	@Override
 	public File getFile(String url) {
 		return null;
 	}
@@ -166,6 +154,7 @@ public class S3UploadService implements FileUploadService {
 		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD BEGIN");
 
 		// 1. 파일 크기 확인
+		log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD FILE SIZE >> "+file.getSize());
 		if (file.getSize() <= 0) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
 		}
@@ -174,12 +163,17 @@ public class S3UploadService implements FileUploadService {
 		String fileExtension = String.format(
 			".%s", Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())));
 
+		if (!allowedExtension.contains(fileExtension)) {
+			log.error("[AWS S3 FILE INPUT STREAM UPLOADER] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
+			throw new ContentServiceException(ErrorCode.ERR_UNSUPPORTED_FILE_EXTENSION);
+		}
+
 		// 3. 파일 메타데이터 생성
 		ObjectMetadata objectMetadata = new ObjectMetadata();
 		objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
 		objectMetadata.setContentLength(file.getSize());
-		objectMetadata.setHeader("filename", fileName+fileExtension);
-		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName+fileExtension));
+		objectMetadata.setHeader("filename", fileName + fileExtension);
+		objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", fileName + fileExtension));
 
 		// 4. 스트림으로 aws s3에 업로드
 		try {
