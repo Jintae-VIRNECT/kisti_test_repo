@@ -17,7 +17,7 @@ export const languageCode = [
   },
   {
     // 일본어
-    name: '日本',
+    name: '日本語',
     code: 'ja',
     sttCode: 'ja-JP',
   },

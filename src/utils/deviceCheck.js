@@ -1,9 +1,17 @@
 import Store from 'stores/remote/store'
 
-export const checkPermission = async () => {
+/**
+ * 권한 허용 체크 로직
+ * @return {Object} { audioSource: Boolean, videoSource: Boolean }
+ * @throw
+ */
+export const checkPermission = async (hasVideo = false) => {
   const devices = await navigator.mediaDevices.enumerateDevices()
-  const hasVideo =
-    devices.findIndex(device => device.kind.toLowerCase() === 'videoinput') > -1
+  hasVideo = hasVideo
+    ? devices.findIndex(device => device.kind.toLowerCase() === 'videoinput') >
+      -1
+    : false
+  // const hasVideo = false
   const hasAudio =
     devices.findIndex(device => device.kind.toLowerCase() === 'audioinput') > -1
 
@@ -74,4 +82,16 @@ export const getUserMedia = async (audio, video) => {
     }
     return err
   }
+}
+
+/**
+ * camera 디바이스 여부 체크
+ */
+export const checkVideoInput = async () => {
+  const devices = await navigator.mediaDevices.enumerateDevices()
+  const idx = devices.findIndex(device => device.kind === 'videoinput')
+  if (idx < 0) {
+    return false
+  }
+  return true
 }

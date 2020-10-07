@@ -16,6 +16,7 @@ import {
 
 import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
+import { checkVideoInput } from 'utils/deviceCheck'
 
 export const addSessionEventListener = session => {
   session.on('connectionCreated', event => {
@@ -23,22 +24,65 @@ export const addSessionEventListener = session => {
     setUserObject(event)
   })
   session.on('streamCreated', event => {
+    event.stream.onIceStateChanged = state => {
+      if (
+        state === 'failed' ||
+        state === 'disconnected' ||
+        state === 'closed'
+      ) {
+        Store.commit('updateParticipant', {
+          connectionId: event.stream.connection.connectionId,
+          status: 'bad',
+        })
+      } else if (state === 'connected') {
+        Store.commit('updateParticipant', {
+          connectionId: event.stream.connection.connectionId,
+          status: 'good',
+        })
+      } else {
+        Store.commit('updateParticipant', {
+          connectionId: event.stream.connection.connectionId,
+          status: 'normal',
+        })
+      }
+
+      logger('ice state', state)
+    }
     const subscriber = session.subscribe(event.stream, '', () => {
       logger('room', 'participant subscribe successed')
       debug('room::', 'participant::', subscriber)
-      Store.commit('updateParticipant', {
-        connectionId: event.stream.connection.connectionId,
-        stream: event.stream.mediaStream,
-        hasVideo: event.stream.hasVideo,
-        video: event.stream.hasVideo
-          ? event.stream.videoActive
-          : event.stream.hasVideo,
-      })
+      if (_.openRoom) {
+        Store.commit('updateParticipant', {
+          connectionId: event.stream.connection.connectionId,
+          stream: event.stream.mediaStream,
+          // hasVideo: event.stream.hasVideo,
+          // video: event.stream.hasVideo
+          //   ? event.stream.videoActive
+          //   : event.stream.hasVideo,
+        })
+        if (
+          Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE
+        ) {
+          _.video(
+            Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
+            [event.stream.connection.connectionId],
+          )
+        }
+      } else {
+        Store.commit('updateParticipant', {
+          connectionId: event.stream.connection.connectionId,
+          stream: event.stream.mediaStream,
+          hasVideo: event.stream.hasVideo,
+          video: event.stream.hasVideo
+            ? event.stream.videoActive
+            : event.stream.hasVideo,
+        })
+        _.video(Store.getters['video'].isOn, [
+          event.stream.connection.connectionId,
+        ])
+      }
       addSubscriber(subscriber)
       _.sendResolution(null, [event.stream.connection.connectionId])
-      _.video(Store.getters['video'].isOn, [
-        event.stream.connection.connectionId,
-      ])
       _.mic(Store.getters['mic'].isOn, [event.stream.connection.connectionId])
       _.speaker(Store.getters['speaker'].isOn, [
         event.stream.connection.connectionId,
@@ -119,10 +163,48 @@ export const addSessionEventListener = session => {
 
   /** 메인뷰 변경 */
   session.on(SIGNAL.VIDEO, event => {
-    if (session.connection.connectionId === event.from.connectionId) return
+    // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type === VIDEO.SHARE) {
-      Store.dispatch('setMainView', { id: data.id, force: true })
+      if (
+        _.openRoom &&
+        Store.getters['myInfo'].hasCamera === true &&
+        Store.getters['myInfo'].hasVideo === false &&
+        data.id === _.account.uuid
+      ) {
+        _.publisher.stream.initWebRtcPeerSend(true, () => {
+          const mediaStream = _.publisher.stream.mediaStream
+          const track = mediaStream.getVideoTracks()[0]
+          const settings = track.getSettings()
+          const capability = track.getCapabilities()
+          logger('call', `resolution::${settings.width}X${settings.height}`)
+          debug('call::setting::', settings)
+          debug('call::capability::', capability)
+          if ('zoom' in capability) {
+            track.applyConstraints({
+              advanced: [{ zoom: capability['zoom'].min }],
+            })
+            _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
+            _.minZoomLevel = parseInt(capability.zoom.min)
+          }
+          _.sendResolution({
+            width: settings.width,
+            height: settings.height,
+            orientation: '',
+          })
+          _.video(true)
+          _.mic(Store.getters['mic'].isOn)
+          _.speaker(Store.getters['speaker'].isOn)
+          Store.commit('updateParticipant', {
+            connectionId: session.connection.connectionId,
+            stream: _.publisher.stream.mediaStream,
+            hasVideo: true,
+          })
+          Store.dispatch('setMainView', { id: data.id, force: true })
+        })
+      } else {
+        Store.dispatch('setMainView', { id: data.id, force: true })
+      }
     } else {
       Store.dispatch('setMainView', { force: false })
     }
@@ -175,16 +257,23 @@ export const addSessionEventListener = session => {
       return
     }
     if (data.type === CAMERA.STATUS) {
-      if (session.connection.connectionId === event.from.connectionId) {
-        _.currentZoomLevel = parseFloat(data.currentZoomLevel)
-      }
-      Store.commit('deviceControl', {
+      const params = {
         connectionId: event.from.connectionId,
         zoomLevel: parseFloat(data.currentZoomLevel),
         zoomMax: parseInt(data.maxZoomLevel),
         cameraStatus: parseInt(data.status),
         video: data.status === CAMERA_STATUS.CAMERA_ON,
-      })
+      }
+      if (session.connection.connectionId === event.from.connectionId) {
+        _.currentZoomLevel = parseFloat(data.currentZoomLevel)
+      }
+      if (data.status !== CAMERA_STATUS.CAMERA_NONE) {
+        params.hasCamera = true
+      }
+      if (data.status === CAMERA_STATUS.CAMERA_ON) {
+        params.hasVideo = true
+      }
+      Store.commit('updateParticipant', params)
     }
   })
   /** 화면 해상도 설정 */
@@ -285,9 +374,10 @@ const setUserObject = event => {
     video: false,
     audio: true,
     hasVideo: false,
+    hasCamera: false,
     speaker: true,
     mute: false,
-    status: 'good',
+    status: 'normal',
     roleType: roleType,
     deviceType: deviceType,
     permission: 'default',
@@ -303,6 +393,18 @@ const setUserObject = event => {
     userObj.path = account.profile
     userObj.me = true
     Store.commit('addStream', userObj)
+
+    checkVideoInput().then(hasVideo => {
+      Store.commit('updateParticipant', {
+        connectionId: event.connection.connectionId,
+        cameraStatus: hasVideo
+          ? CAMERA_STATUS.CAMERA_OFF
+          : CAMERA_STATUS.CAMERA_NONE,
+      })
+      if (hasVideo) {
+        _.changeProperty(true)
+      }
+    })
   } else {
     logger('room', "participant's connected")
     Store.commit('addStream', userObj)

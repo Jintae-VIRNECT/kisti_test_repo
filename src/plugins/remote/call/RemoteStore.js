@@ -294,6 +294,13 @@ const getters = {
   viewForce: state => state.viewForce,
   mainView: state => state.mainView,
   participants: state => state.participants,
+  myInfo: state => {
+    if (state.participants.length > 0) {
+      return state.participants[0]
+    } else {
+      return {}
+    }
+  },
   chatList: state => state.chatList,
   resolutions: state => state.resolutions,
   initing: state => state.initing,

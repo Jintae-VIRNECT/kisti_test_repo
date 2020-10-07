@@ -3,7 +3,9 @@ import {
   ADD_ROOM_MEMBER,
   REMOVE_ROOM_MEMBER,
   ROOM_CLEAR,
+  CALL_ACTION_SET,
 } from '../mutation-types'
+import { ACTION } from 'configs/view.config'
 
 function getDefaultRoomInfo() {
   return {
@@ -14,6 +16,7 @@ function getDefaultRoomInfo() {
     leaderId: null,
     maxUserCount: 0,
     memberList: [],
+    open: false,
   }
 }
 const state = getDefaultRoomInfo()
@@ -27,6 +30,8 @@ const mutations = {
     state.leaderId = payload.leaderId
     state.maxUserCount = payload.maxUserCount
     state.memberList = payload.memberList
+    // state.open = !!payload.open
+    state.open = true
   },
 
   [ADD_ROOM_MEMBER](state, payload) {
@@ -62,6 +67,9 @@ const actions = {
    * @param {Object} payload // room info
    */
   setRoomInfo({ commit }, payload) {
+    if (open in payload && payload.open === true) {
+      commit(CALL_ACTION_SET, ACTION.STREAM_POINTING)
+    }
     commit(ROOM_SET, payload)
   },
   /**
@@ -90,6 +98,7 @@ const actions = {
 
 const getters = {
   roomInfo: state => state,
+  openRoom: state => state.open,
 }
 
 export default {

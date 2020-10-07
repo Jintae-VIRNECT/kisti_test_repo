@@ -28,6 +28,7 @@ const _ = {
   resolution: null,
   currentZoomLevel: 1,
   maxZoomLevel: 1,
+  openRoom: false,
   /**
    * join session
    * @param {Object} configs {coturn, wss, token}
@@ -36,6 +37,8 @@ const _ = {
   connect: async (configs, role, options) => {
     try {
       _.account = Store.getters['account']
+      _.openRoom = Store.getters['openRoom'] || true
+
       Store.commit('callClear')
       OV = new OpenVidu()
       if (process.env.NODE_ENV === 'production') {
@@ -93,6 +96,29 @@ const _ = {
       debug('call::publish::', publishOptions)
 
       _.publisher = OV.initPublisher('', publishOptions)
+      _.publisher.onIceStateChanged(state => {
+        if (
+          state === 'failed' ||
+          state === 'disconnected' ||
+          state === 'closed'
+        ) {
+          Store.commit('updateParticipant', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            status: 'bad',
+          })
+        } else if (state === 'connected') {
+          Store.commit('updateParticipant', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            status: 'good',
+          })
+        } else {
+          Store.commit('updateParticipant', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            status: 'normal',
+          })
+        }
+        logger('ice state change', state)
+      })
       _.publisher.on('streamCreated', () => {
         logger('room', 'publish success')
         const mediaStream = _.publisher.stream.mediaStream
@@ -331,15 +357,38 @@ const _ = {
    * @BROADCATE
    * @TARGET
    * my video stream control
+   * @param {Boolean, String} active true / false / 'NONE'
    */
   video: (active, target = null) => {
     if (!_.publisher) return
-    if (!_.publisher.stream.hasVideo) return
-    _.publisher.publishVideo(active)
+    // if (!_.publisher.stream.hasVideo) return
+    if (active === 'NONE') {
+      active = CAMERA_STATUE.CAMERA_NONE
+    } else {
+      _.publisher.publishVideo(active)
+      active = active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF
+    }
 
     const params = {
       type: CAMERA.STATUS,
-      status: active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF,
+      status: active,
+      currentZoomLevel: _.currentZoomLevel,
+      maxZoomLevel: _.maxZoomLevel,
+    }
+    try {
+      _.session.signal({
+        data: JSON.stringify(params),
+        to: target,
+        type: SIGNAL.CAMERA,
+      })
+    } catch (err) {
+      return false
+    }
+  },
+  changeProperty: (newValue, target = []) => {
+    const params = {
+      type: CAMERA.STATUS,
+      status: newValue ? CAMERA_STATUE.CAMERA_OFF : CAMERA_STATUE.CAMERA_NONE,
       currentZoomLevel: _.currentZoomLevel,
       maxZoomLevel: _.maxZoomLevel,
     }
