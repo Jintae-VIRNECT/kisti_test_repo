@@ -19,6 +19,7 @@ import { logger, debug } from 'utils/logger'
 import { checkVideoInput } from 'utils/deviceCheck'
 
 export const addSessionEventListener = session => {
+  let loading = false
   session.on('connectionCreated', event => {
     logger('room', 'connection created')
     setUserObject(event)
@@ -172,7 +173,10 @@ export const addSessionEventListener = session => {
         Store.getters['myInfo'].hasVideo === false &&
         data.id === _.account.uuid
       ) {
+        if (loading === true) return
+        loading = true
         _.publisher.stream.initWebRtcPeerSend(true, () => {
+          loading = false
           const mediaStream = _.publisher.stream.mediaStream
           const track = mediaStream.getVideoTracks()[0]
           const settings = track.getSettings()
@@ -317,7 +321,7 @@ export const addSessionEventListener = session => {
       user => user.connectionId === connectionId,
     )
     if (idx < 0) return
-    let data = event.data
+    let data = JSON.parse(event.data)
     Store.commit('addChat', {
       type:
         session.connection.connectionId === event.from.connectionId

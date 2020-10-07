@@ -172,7 +172,7 @@ const _ = {
       languageCode: code,
     }
     _.session.signal({
-      data: params,
+      data: JSON.stringify(params),
       to: null,
       type: SIGNAL.CHAT,
     })
