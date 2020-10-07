@@ -1,9 +1,145 @@
 <template>
-  <div></div>
+  <popover
+    placement="bottom-end"
+    width="21.429rem"
+    trigger="click"
+    popperClass="popover-profile"
+  >
+    <profile
+      slot="reference"
+      :image="account.profile"
+      :size="30"
+      :thumbStyle="{ width: '36.002px', height: '36.002px' }"
+    ></profile>
+    <div>
+      <div class="popover-profile__myinfo">
+        <!-- <profile
+          :image="account.profile"
+          :mainText="account.nickname"
+          :subText="account.email"
+        ></profile> -->
+        <profile
+          :image="account.profile"
+          :mainText="'TEST'"
+          :subText="'TEST@TEST.COM'"
+        ></profile>
+      </div>
+      <div class="popover-profile__link">
+        <button @click="link(urlLink)">
+          VIRNECT Workstation
+        </button>
+      </div>
+      <div class="popover-profile__link">
+        <button @click="fileList">{{ 'Remote' }}</button>
+      </div>
+      <div class="popover-profile__link">
+        <button @click="logout">{{ '로그아웃' }}</button>
+      </div>
+      <div class="popover-profile__version">{{ `web v.${$version}` }}</div>
+    </div>
+  </popover>
 </template>
 
 <script>
-export default {}
-</script>
+import { mapGetters } from 'vuex'
+import Popover from 'Popover'
+import Profile from 'Profile'
+import auth from 'utils/auth'
+export default {
+  name: 'HeaderProfile',
+  components: {
+    Popover,
+    Profile,
+  },
+  computed: {
+    ...mapGetters(['account']),
+    urlLink() {
+      return window.urls.workstation
+    },
+  },
+  methods: {
+    link(url) {
+      window.open(url)
+      this.$nextTick(() => {
+        this.$eventBus.$emit('popover:close')
+      })
+    },
+    logout() {
+      this.$eventBus.$emit('popover:close')
+      this.$nextTick(() => {
+        auth.logout()
+        // auth.login()
+      })
+    },
+    fileList() {
+      this.$eventBus.$emit('popover:close')
 
-<style></style>
+      //show media chunk list
+      this.$eventBus.$emit('filelist:open')
+    },
+  },
+
+  /* Lifecycles */
+  mounted() {},
+}
+</script>
+<style lang="scss">
+@import '~assets/style/vars';
+@import '~assets/style/mixin';
+
+.popover-profile {
+  background-color: rgb(255, 255, 255);
+  border: solid 1px #e3e3e3;
+  border-radius: 8px;
+  transform: translateY(1.571rem);
+  > .popover--body {
+    padding: 0;
+  }
+}
+.popover-profile__myinfo {
+  margin-bottom: 0.429rem;
+  padding: 2.143rem;
+  border-bottom: solid 1px $color_line_border;
+  > .profile .profile--thumb {
+    width: 4rem;
+    height: 4rem;
+  }
+  > .profile .profile--text .profile--maintext {
+    margin: 0.286rem 0;
+    color: rgb(11, 31, 72);
+    font-size: 1.214rem;
+  }
+  > .profile .profile--subtext {
+    color: #0b1f48;
+    font-weight: normal;
+    opacity: 0.6;
+  }
+}
+.popover-profile__link {
+  margin: 0.143rem 0;
+  padding: 0.929rem 2.143rem;
+  &:hover {
+    background: #e3e7ed;
+  }
+
+  > button {
+    color: rgb(11, 31, 72);
+    font-weight: 500;
+    font-size: 1.071rem;
+    background: transparent;
+
+    &:active {
+      font-weight: 500;
+    }
+  }
+}
+.popover-profile__version {
+  margin: 0.429rem 0 0.214rem;
+  padding: 0.714rem;
+  color: #0f75f5;
+  font-weight: normal;
+  font-size: 0.857rem;
+  text-align: center;
+  border-top: solid 1px $color_line_border;
+}
+</style>

@@ -6,19 +6,28 @@
 </template>
 
 <script>
-export default {}
+export default {
+  name: 'HeaderLogo',
+}
 </script>
 
 <style lang="scss">
+.header-logo {
+  display: flex;
+  padding: 16px 0px;
+}
+
 .header-logo--image {
   width: 133.19px;
   height: 31.2px;
+  margin-right: 12px;
   border-radius: 0px;
 }
 
 .header-logo--text {
   width: 64.8px;
   height: 26.4px;
+  margin-top: 3px;
   font-weight: 500;
   font-size: 14.4px;
   text-align: center;
