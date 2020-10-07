@@ -1,11 +1,12 @@
 package com.virnect.workspace.dto.response;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -19,7 +20,7 @@ import java.util.List;
 @ApiModel
 public class WorkspaceLicenseInfoResponse {
     @ApiModelProperty(value = "플랜 제품별 정보 라이선스 정보", position = 0)
-    private List<LicenseInfo> licenseInfoList;
+    private List<LicenseInfo> licenseInfoList = new ArrayList<>();
     @ApiModelProperty(value = "AR 스토리지 용량(GB)", position = 1, example = "10")
     private long maxStorageSize = 0L;
     @ApiModelProperty(value = "온라인 AR 콘텐츠 조회 수", position = 2, example = "100000")
