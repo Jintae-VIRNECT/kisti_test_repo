@@ -1,8 +1,6 @@
 <template>
   <footer class="footer">
-    <p>
-      Copyright 2020 KOREA SOUTHERN POWER CO.,LTD {KOSP}, All rights Reserved
-    </p>
+    <p><strong>©VIRNECT CO., LTD.</strong> All rights reserved.</p>
   </footer>
 </template>
 
@@ -12,16 +10,24 @@ export default {}
 
 <style lang="scss">
 .footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   height: 3.5714rem;
-  background: #3c4049;
+  background: #e0e4eb;
   & > p {
-    color: #a1a6b0;
+    color: #656f84;
     font-weight: 500;
-    font-size: 0.8571rem;
+    font-size: 12px;
     text-align: center;
+
+    > strong {
+      font-weight: bold;
+    }
   }
 }
 </style>

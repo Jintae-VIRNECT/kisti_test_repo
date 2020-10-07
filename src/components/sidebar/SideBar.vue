@@ -1,7 +1,7 @@
 <template>
   <nav class="sidebar">
     <div class="sidebar-header">
-      <img src="~assets/img/ic_setting.svg" /><span>메뉴</span>
+      <img src="~assets/image/ic_setting.svg" /><span>메뉴</span>
     </div>
     <div class="sidebar-link" v-for="(link, index) in links" :key="index">
       <img :src="link.ic" /><router-link :to="link.path"
@@ -20,17 +20,17 @@ export default {
         {
           name: '대시보드',
           path: '/',
-          ic: require('@/assets/img/chat_ic_folder_w.svg'),
+          ic: require('@/assets/image/chat_ic_folder_w.svg'),
         },
         {
           name: '파일관리',
           path: '/filemanage',
-          ic: require('@/assets/img/ic_chat_file_w.svg'),
+          ic: require('@/assets/image/ic_chat_file_w.svg'),
         },
         // {
         //   name: '녹화파일보기',
         //   path: '/recordfiles',
-        //   ic: require('@/assets/img/ic_chat_video_w.svg'),
+        //   ic: require('@/assets/image/ic_chat_video_w.svg'),
         // },
       ],
     }

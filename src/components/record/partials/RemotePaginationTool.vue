@@ -127,7 +127,7 @@ export default {
   &.prev {
     width: 2.7857rem;
     padding: 0.4286rem 1.0714rem;
-    background: url(~@/assets/img/ic_arrow_left.svg) center/60% no-repeat;
+    background: url(~@/assets/image/ic_arrow_left.svg) center/60% no-repeat;
     transform: rotate(180deg);
   }
 
@@ -143,7 +143,7 @@ export default {
   &.next {
     width: 2.7857rem;
     padding: 0.4286rem 1.0714rem;
-    background: url(~@/assets/img/ic_arrow_right.svg) center/60% no-repeat;
+    background: url(~@/assets/image/ic_arrow_right.svg) center/60% no-repeat;
   }
 
   &.next::before {

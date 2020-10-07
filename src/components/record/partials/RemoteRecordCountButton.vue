@@ -36,11 +36,11 @@ export default {
   computed: {
     imgSrc() {
       if (this.count > 0 && this.selected) {
-        return require('@/assets/img/ic_video_select.svg')
+        return require('@/assets/image/ic_video_select.svg')
       } else if (this.count > 0) {
-        return require('@/assets/img/ic_video_active.svg')
+        return require('@/assets/image/ic_video_active.svg')
       } else {
-        return require('@/assets/img/ic_video_default.svg')
+        return require('@/assets/image/ic_video_default.svg')
       }
     },
   },

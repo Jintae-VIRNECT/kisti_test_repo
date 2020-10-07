@@ -1,6 +1,6 @@
 <template>
   <button @click="downloadObject" class="tool-button">
-    <img src="~assets/img/ic_down_on.svg" />
+    <img src="~assets/image/ic_down_on.svg" />
   </button>
 </template>
 

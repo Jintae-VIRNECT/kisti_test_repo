@@ -1,20 +1,70 @@
 <template>
   <div class="dashboard--wrapper">
-    <top-header></top-header>
-    <side-bar></side-bar>
-    <router-view></router-view>
+    <dash-board-header></dash-board-header>
+    <div class="content">content</div>
+    <dash-board-footer></dash-board-footer>
   </div>
 </template>
 
 <script>
-import TopHeader from 'components/header/TopHeader'
-
-import SideBar from 'components/sidebar/SideBar'
+import DashBoardHeader from 'components/header/Header'
+import DashBoardFooter from 'components/footer/Footer'
+import auth from 'utils/auth'
+import { mapActions } from 'vuex'
+import { getLicense } from 'api/http/account'
 export default {
   name: 'DashBoardLayout',
+
+  // async beforeRouteEnter(to, from, next) {},
+
   components: {
-    TopHeader,
-    SideBar,
+    DashBoardHeader,
+    DashBoardFooter,
+  },
+  async beforeCreate() {
+    const authInfo = await auth.init()
+    if (!auth.isLogin) {
+      auth.login()
+    } else {
+      const res = await getLicense({ userId: authInfo.account.uuid })
+      const workspaces = res.myPlanInfoList.filter(
+        plan => plan.planProduct === 'REMOTE',
+      )
+      if (workspaces.length === 0) {
+        this.license = false
+        this.init(authInfo)
+      } else {
+        this.license = true
+        this.init(authInfo, workspaces)
+      }
+    }
+  },
+  methods: {
+    ...mapActions([
+      'updateAccount',
+      'initWorkspace',
+      'changeWorkspace',
+      'setDevices',
+      'setRecord',
+      'setAllow',
+    ]),
+
+    init(authInfo, workspaces) {
+      this.updateAccount({
+        ...authInfo.account,
+        licenseEmpty: this.license,
+      })
+      if (workspaces) {
+        for (let workspace of workspaces) {
+          const info = authInfo.workspace.find(
+            work => work.uuid === workspace.workspaceId,
+          )
+          if (!info || !info.workspaceId) continue
+          workspace['role'] = info.role
+        }
+        this.initWorkspace(workspaces)
+      }
+    },
   },
 }
 </script>
@@ -25,8 +75,12 @@ export default {
 .dashboard--wrapper {
   position: relative;
   width: 100%;
+  // height: 100%;
+  height: 100vh;
+}
 
-  height: 130vh;
-  background: #1e1e2f;
+.content {
+  height: 100%;
+  background: #f8f8fa;
 }
 </style>

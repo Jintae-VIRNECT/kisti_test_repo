@@ -1,0 +1,16 @@
+export const STATUS = {
+  UNLOAD: 'UNLOAD',
+  LOAD: 'LOAD',
+}
+
+export const WORKSPACE_ROLE = {
+  MASTER: 'MASTER',
+  MANAGER: 'MANAGER',
+  MEMBER: 'MEMBER',
+}
+
+export const PLAN_STATUS = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  EXCEEDED: 'EXCEEDED',
+}
