@@ -14,7 +14,7 @@ import io.minio.MinioClient;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop"})
+@Profile({"local", "develop", "onpremise"})
 @Configuration
 public class MinioConfiguration {
 

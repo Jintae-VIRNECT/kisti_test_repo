@@ -1,12 +1,16 @@
 package com.virnect.workspace.dto.rest;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.virnect.workspace.domain.rest.LicenseProductStatus;
+import com.virnect.workspace.domain.rest.LicenseStatus;
+import com.virnect.workspace.domain.rest.PlanStatus;
 
 /**
  * Project: PF-Workspace
@@ -36,7 +40,7 @@ public class WorkspaceLicensePlanInfoResponse {
     @ApiModelProperty(value = "라이선스 플랜 종료일자", position = 7, example = "2020-05-15T13:00:00")
     private LocalDateTime endDate = LocalDateTime.now();
     @ApiModelProperty(value = "라이선스 플랜 상태", position = 8, example = "ACTIVE")
-    private String planStatus = "INACTIVE";
+    private PlanStatus planStatus;
     @ApiModelProperty(value = "플랜 제품별 정보 라이선스 정보", position = 9)
     private List<LicenseProductInfoResponse> licenseProductInfoList;
 
@@ -56,6 +60,8 @@ public class WorkspaceLicensePlanInfoResponse {
         private int unUseLicenseAmount;
         @ApiModelProperty(value = "현재 할당 된 라이선스 수량", position = 5, example = "1")
         private int useLicenseAmount;
+        @ApiModelProperty(value = "제품 라이선스 플랜 상태(ACTIVE,INACTIVE,EXCEEDED)", position = 6, example = "ACTIVE")
+        private LicenseProductStatus productStatus;
         @ApiModelProperty(value = "라이선스 정보", position = 6)
         private List<LicenseInfoResponse> licenseInfoList;
     }
@@ -69,7 +75,7 @@ public class WorkspaceLicensePlanInfoResponse {
         @ApiModelProperty(value = "할당된 유저 식별자", position = 1, example = "")
         private String userId;
         @ApiModelProperty(value = "라이선스 상태", position = 2, example = "UNUSE")
-        private String status;
+        private LicenseStatus status;
         @ApiModelProperty(value = "라이선스 생성일", position = 3, example = "2020-04-16T16:34:35")
         private LocalDateTime createdDate;
         @ApiModelProperty(value = "라이선스 생성일", position = 4, example = "2020-04-16T16:34:35")

@@ -41,6 +41,8 @@ import com.virnect.workspace.domain.WorkspaceRole;
 import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.domain.WorkspaceUserPermission;
 import com.virnect.workspace.domain.redis.UserInvite;
+import com.virnect.workspace.domain.rest.LicenseProductStatus;
+import com.virnect.workspace.domain.rest.LicenseStatus;
 import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
@@ -255,7 +257,6 @@ public class WorkspaceService {
 	public ApiResponse<MemberListResponse> getMembers(
 		String workspaceId, String search, String filter, com.virnect.workspace.global.common.PageRequest pageRequest
 	) {
-		boolean worksapcePlanExist = false;
 
 		//Pageable로 Sort처리를 할 수 없기때문에 sort값을 제외한 Pageable을 만든다.
 		Pageable newPageable = PageRequest.of(pageRequest.of().getPageNumber(), pageRequest.of().getPageSize());
@@ -294,23 +295,15 @@ public class WorkspaceService {
 		List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
 		PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
 
-		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
-			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null) {
-			worksapcePlanExist = true;
-		}
-
 		UserInfoListRestResponse userInfoListRestResponse = this.userRestService.getUserInfoList(
 			search, workspaceUserIdList).getData();
-		//불러온 정보들에서 userId 가지고 페이징 처리를 한다. (+ filter)
+
+		//filter로 role을 건 경우
 		if (!workspaceRoleList.isEmpty()) {
 			List<WorkspaceUser> workspaceUsers = userInfoListRestResponse.getUserInfoList()
 				.stream()
-				.map(userInfoRestResponse -> {
-					return this.workspaceUserRepository.findByUserIdAndWorkspace(
-						userInfoRestResponse.getUuid(), workspace);
-
-				})
+				.map(userInfoRestResponse -> workspaceUserRepository.findByUserIdAndWorkspace(
+					userInfoRestResponse.getUuid(), workspace))
 				.collect(Collectors.toList());
 			Page<WorkspaceUserPermission> workspaceUserPermissionPage = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
 				workspace, workspaceUsers, workspaceRoleList, newPageable);
@@ -326,18 +319,15 @@ public class WorkspaceService {
 					memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
 
 					String[] licenseProducts = new String[0];
-					if (worksapcePlanExist) {
-						MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
-							workspaceId, userInfoRestResponse.getUuid()).getData();
-						if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
-							licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
-								.stream()
-								.map(myLicenseInfoResponse -> {
-									return myLicenseInfoResponse.getProductName();
-								})
-								.toArray(String[]::new);
-							memberInfoDTO.setLicenseProducts(licenseProducts);
-						}
+					MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
+						workspaceId, userInfoRestResponse.getUuid()).getData();
+					if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()
+						&& myLicenseInfoListResponse.getLicenseInfoList() != null) {
+						licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
+							.stream()
+							.map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
+							.toArray(String[]::new);
+						memberInfoDTO.setLicenseProducts(licenseProducts);
 					}
 					memberInfoDTO.setLicenseProducts(licenseProducts);
 					memberInfoDTOList.add(memberInfoDTO);
@@ -348,19 +338,24 @@ public class WorkspaceService {
 			pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
 			pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
 
-		} else if (!licenseProductList.isEmpty()) {
+			List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
+			return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
+			//filter로 license 정보를 건 경우
+		}
+		if (!licenseProductList.isEmpty()) {
 			List<String> userIdList = new ArrayList<>();
 			userInfoListRestResponse.getUserInfoList().forEach(userInfoRestResponse -> {
 				MyLicenseInfoListResponse userLicenseInfo = licenseRestService.getMyLicenseInfoRequestHandler(
 					workspaceId, userInfoRestResponse.getUuid()).getData();
-				userLicenseInfo.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-					if (licenseProductList.contains(myLicenseInfoResponse.getProductName()) && !userIdList.contains(
-						userInfoRestResponse.getUuid())) {
-						//페이징 만들 데이터 넣기
-						userIdList.add(userInfoRestResponse.getUuid());
-					}
-
-				});
+				if (!userLicenseInfo.getLicenseInfoList().isEmpty() && userLicenseInfo.getLicenseInfoList() != null) {
+					userLicenseInfo.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+						if (licenseProductList.contains(myLicenseInfoResponse.getProductName()) && !userIdList.contains(
+							userInfoRestResponse.getUuid())) {
+							//페이징 만들 데이터 넣기
+							userIdList.add(userInfoRestResponse.getUuid());
+						}
+					});
+				}
 			});
 			Page<WorkspaceUser> workspaceUserPage = this.workspaceUserRepository.findByWorkspace_UuidAndUserIdIn(
 				workspaceId, userIdList, newPageable);
@@ -377,18 +372,15 @@ public class WorkspaceService {
 					memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
 
 					String[] licenseProducts = new String[0];
-					if (worksapcePlanExist) {
-						MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
-							workspaceId, userInfoRestResponse.getUuid()).getData();
-						if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
-							licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
-								.stream()
-								.map(myLicenseInfoResponse -> {
-									return myLicenseInfoResponse.getProductName();
-								})
-								.toArray(String[]::new);
-							memberInfoDTO.setLicenseProducts(licenseProducts);
-						}
+					MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
+						workspaceId, userInfoRestResponse.getUuid()).getData();
+					if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()
+						&& myLicenseInfoListResponse.getLicenseInfoList() != null) {
+						licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
+							.stream()
+							.map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
+							.toArray(String[]::new);
+						memberInfoDTO.setLicenseProducts(licenseProducts);
 					}
 					memberInfoDTO.setLicenseProducts(licenseProducts);
 					memberInfoDTOList.add(memberInfoDTO);
@@ -399,7 +391,12 @@ public class WorkspaceService {
 			pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
 			pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
 			pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
-		} else {
+
+			List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
+			return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
+		}
+		//아무것도 filter 건 게 없는 경우
+		if (workspaceRoleList.isEmpty() && licenseProductList.isEmpty()) {
 			List<String> userIdList = userInfoListRestResponse.getUserInfoList()
 				.stream()
 				.map(userInfoRestResponse -> userInfoRestResponse.getUuid())
@@ -420,18 +417,15 @@ public class WorkspaceService {
 					memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
 
 					String[] licenseProducts = new String[0];
-					if (worksapcePlanExist) {
-						MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
-							workspaceId, userInfoRestResponse.getUuid()).getData();
-						if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
-							licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
-								.stream()
-								.map(myLicenseInfoResponse -> {
-									return myLicenseInfoResponse.getProductName();
-								})
-								.toArray(String[]::new);
-							memberInfoDTO.setLicenseProducts(licenseProducts);
-						}
+					MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
+						workspaceId, userInfoRestResponse.getUuid()).getData();
+					if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()
+						&& myLicenseInfoListResponse.getLicenseInfoList() != null) {
+						licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
+							.stream()
+							.map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
+							.toArray(String[]::new);
+						memberInfoDTO.setLicenseProducts(licenseProducts);
 					}
 					memberInfoDTO.setLicenseProducts(licenseProducts);
 					memberInfoDTOList.add(memberInfoDTO);
@@ -441,12 +435,12 @@ public class WorkspaceService {
 			pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
 			pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
 			pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
+
+			List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
+			return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
 		}
-		List<MemberInfoDTO> resultMemberListResponse = new ArrayList<>();
 
-		//sort처리
-		resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
-
+		List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
 		return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
 	}
 
@@ -555,7 +549,8 @@ public class WorkspaceService {
 
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null) {
+		if (!workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()
+			&& workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null) {
 			for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse
 				.getLicenseProductInfoList()) {
 				if (licenseProductInfoResponse.getProductName().equals(LicenseProduct.REMOTE.toString())) {
@@ -607,7 +602,8 @@ public class WorkspaceService {
 		// 워크스페이스 플랜 조회하여 최대 초대 가능 명 수를 초과했는지 체크
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()
+			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
 		}
 		int workspaceUserAmount = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId).size();
@@ -627,13 +623,13 @@ public class WorkspaceService {
 			userLicenseValidCheck(userInfo.getPlanRemote(), userInfo.getPlanMake(), userInfo.getPlanView());
 
 			if (userInfo.getPlanRemote()) {
-				requestRemote = requestRemote + 1;
+				requestRemote++;
 			}
 			if (userInfo.getPlanMake()) {
-				requestMake = requestMake + 1;
+				requestMake++;
 			}
 			if (userInfo.getPlanView()) {
-				requestView = requestView + 1;
+				requestView++;
 			}
 		}
 
@@ -643,30 +639,51 @@ public class WorkspaceService {
 
 			if (licenseProductInfo.getProductName().equals(LicenseProduct.REMOTE.toString())) {
 				log.debug(
-					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Remote License count >> {}, Request Remote License count >> {}",
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Remote License count >> {}, Request REMOTE License count >> {}",
 					licenseProductInfo.getUnUseLicenseAmount(),
 					requestRemote
 				);
+				if (!licenseProductInfo.getProductStatus().equals(LicenseProductStatus.ACTIVE)) {
+					log.error(
+						"[WORKSPACE INVITE USER] REMOTE License Product Status is not active. Product Status >>[{}]",
+						licenseProductInfo.getProductStatus()
+					);
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 				if (licenseProductInfo.getUnUseLicenseAmount() < requestRemote) {
 					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
 				}
 			}
 			if (licenseProductInfo.getProductName().equals(LicenseProduct.MAKE.toString())) {
 				log.debug(
-					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Make License count >> {}, Request Make License count >> {}",
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Make License count >> {}, Request MAKE License count >> {}",
 					licenseProductInfo.getUnUseLicenseAmount(),
 					requestMake
 				);
+				if (!licenseProductInfo.getProductStatus().equals(LicenseProductStatus.ACTIVE)) {
+					log.error(
+						"[WORKSPACE INVITE USER] MAKE License Product Status is not active. Product Status >>[{}]",
+						licenseProductInfo.getProductStatus()
+					);
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 				if (licenseProductInfo.getUnUseLicenseAmount() < requestMake) {
 					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
 				}
 			}
 			if (licenseProductInfo.getProductName().equals(LicenseProduct.VIEW.toString())) {
 				log.debug(
-					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse View License count >> {}, Request View License count >> {}",
+					"[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse View License count >> {}, Request VIEW License count >> {}",
 					licenseProductInfo.getUnUseLicenseAmount(),
 					requestView
 				);
+				if (!licenseProductInfo.getProductStatus().equals(LicenseProductStatus.ACTIVE)) {
+					log.error(
+						"[WORKSPACE INVITE USER] VIEW License Product Status is not active. Product Status >>[{}]",
+						licenseProductInfo.getProductStatus()
+					);
+					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
+				}
 				if (licenseProductInfo.getUnUseLicenseAmount() < requestView) {
 					throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE);
 				}
@@ -870,7 +887,8 @@ public class WorkspaceService {
 		//라이선스 플랜 - 라이선스 플랜 보유 체크, 멤버 제한 수 체크
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()
+			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
 		}
 
@@ -1152,7 +1170,8 @@ public class WorkspaceService {
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspace.getUuid(), userId).getData();
 		List<String> oldProductList = new ArrayList<>();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()
+			&& myLicenseInfoListResponse.getLicenseInfoList() != null) {
 			oldProductList = myLicenseInfoListResponse.getLicenseInfoList()
 				.stream()
 				.map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
@@ -1467,15 +1486,17 @@ public class WorkspaceService {
 
 		UserInfoDTO userInfoDTO = modelMapper.map(userInfoRestResponse, UserInfoDTO.class);
 		userInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+		userInfoDTO.setLicenseProducts(new String[0]);
 
-		String[] licenseProducts = new String[0];
+		List<String> licenseProducts = new ArrayList<>();
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, userId).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
-			licenseProducts = myLicenseInfoListResponse.getLicenseInfoList().stream().map(myLicenseInfoResponse -> {
-				return myLicenseInfoResponse.getProductName();
-			}).toArray(String[]::new);
-			userInfoDTO.setLicenseProducts(licenseProducts);
+		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()
+			&& myLicenseInfoListResponse.getLicenseInfoList() != null) {
+			myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+				licenseProducts.add(myLicenseInfoResponse.getProductName());
+			});
+			userInfoDTO.setLicenseProducts(licenseProducts.toArray(new String[licenseProducts.size()]));
 		}
 
 		return new ApiResponse<>(userInfoDTO);
@@ -1519,7 +1540,8 @@ public class WorkspaceService {
 		//라이선스 해제
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, memberKickOutRequest.getKickedUserId()).getData();
-		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()
+			&& myLicenseInfoListResponse.getLicenseInfoList() != null) {
 			myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
 				log.debug(
 					"[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
@@ -1591,7 +1613,8 @@ public class WorkspaceService {
 		//라이선스 해제
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			workspaceId, userId).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList() != null) {
+		if (!myLicenseInfoListResponse.getLicenseInfoList().isEmpty()
+			&& myLicenseInfoListResponse.getLicenseInfoList() != null) {
 			myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
 				Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(
 					workspaceId, userId, myLicenseInfoResponse.getProductName()).getData();
@@ -1702,7 +1725,8 @@ public class WorkspaceService {
 	) {
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()
+			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
 		}
 
@@ -1710,17 +1734,20 @@ public class WorkspaceService {
 
 		for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse
 			.getLicenseProductInfoList()) {
-			for (WorkspaceLicensePlanInfoResponse.LicenseInfoResponse licenseInfoResponse : licenseProductInfoResponse.getLicenseInfoList()) {
-				if (licenseInfoResponse.getStatus().equals("USE")) {
-					UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(
-						licenseInfoResponse.getUserId()).getData();
-					WorkspaceUserLicenseInfoResponse workspaceUserLicenseInfo = new WorkspaceUserLicenseInfoResponse();
-					workspaceUserLicenseInfo.setUuid(userInfoRestResponse.getUuid());
-					workspaceUserLicenseInfo.setProfile(userInfoRestResponse.getProfile());
-					workspaceUserLicenseInfo.setNickName(userInfoRestResponse.getNickname());
-					workspaceUserLicenseInfo.setProductName(licenseProductInfoResponse.getProductName());
-					workspaceUserLicenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
-					workspaceUserLicenseInfoList.add(workspaceUserLicenseInfo);
+			if (!licenseProductInfoResponse.getLicenseInfoList().isEmpty()) {
+				for (WorkspaceLicensePlanInfoResponse.LicenseInfoResponse licenseInfoResponse : licenseProductInfoResponse
+					.getLicenseInfoList()) {
+					if (licenseInfoResponse.getStatus().equals(LicenseStatus.USE)) {
+						UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(
+							licenseInfoResponse.getUserId()).getData();
+						WorkspaceUserLicenseInfoResponse workspaceUserLicenseInfo = new WorkspaceUserLicenseInfoResponse();
+						workspaceUserLicenseInfo.setUuid(userInfoRestResponse.getUuid());
+						workspaceUserLicenseInfo.setProfile(userInfoRestResponse.getProfile());
+						workspaceUserLicenseInfo.setNickName(userInfoRestResponse.getNickname());
+						workspaceUserLicenseInfo.setProductName(licenseProductInfoResponse.getProductName());
+						workspaceUserLicenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
+						workspaceUserLicenseInfoList.add(workspaceUserLicenseInfo);
+					}
 				}
 			}
 		}
@@ -1817,24 +1844,27 @@ public class WorkspaceService {
 	public ApiResponse<WorkspaceLicenseInfoResponse> getWorkspaceLicenseInfo(String workspaceId) {
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()
+			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
 		}
 		WorkspaceLicenseInfoResponse workspaceLicenseInfoResponse = new WorkspaceLicenseInfoResponse();
-		List<WorkspaceLicenseInfoResponse.LicenseInfo> licenseInfoList = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
-			.stream()
-			.map(licenseProductInfoResponse -> {
-				WorkspaceLicenseInfoResponse.LicenseInfo licenseInfo = new WorkspaceLicenseInfoResponse.LicenseInfo();
-				licenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
-				licenseInfo.setProductName(licenseProductInfoResponse.getProductName());
-				licenseInfo.setUseLicenseAmount(licenseProductInfoResponse.getUseLicenseAmount());
-				licenseInfo.setLicenseAmount(licenseProductInfoResponse.getUnUseLicenseAmount()
-					+ licenseProductInfoResponse.getUseLicenseAmount());
-				return licenseInfo;
-			})
-			.collect(Collectors.toList());
+		if (!workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+			List<WorkspaceLicenseInfoResponse.LicenseInfo> licenseInfoList = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
+				.stream()
+				.map(licenseProductInfoResponse -> {
+					WorkspaceLicenseInfoResponse.LicenseInfo licenseInfo = new WorkspaceLicenseInfoResponse.LicenseInfo();
+					licenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
+					licenseInfo.setProductName(licenseProductInfoResponse.getProductName());
+					licenseInfo.setUseLicenseAmount(licenseProductInfoResponse.getUseLicenseAmount());
+					licenseInfo.setLicenseAmount(licenseProductInfoResponse.getUnUseLicenseAmount()
+						+ licenseProductInfoResponse.getUseLicenseAmount());
+					return licenseInfo;
+				})
+				.collect(Collectors.toList());
+			workspaceLicenseInfoResponse.setLicenseInfoList(licenseInfoList);
+		}
 
-		workspaceLicenseInfoResponse.setLicenseInfoList(licenseInfoList);
 		DecimalFormat decimalFormat = new DecimalFormat("0");
 		long size = workspaceLicensePlanInfoResponse.getMaxStorageSize();
 		workspaceLicenseInfoResponse.setMaxStorageSize(Long.parseLong(decimalFormat.format(size / 1024.0))); //MB -> GB
