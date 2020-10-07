@@ -3,7 +3,7 @@ RELEASE
 New Features
 
 Bug Fixes
-- 만료 라이선스 체크 로직 추가
+- 컨텐츠 리스트 조회 search 파라미터 추가 에러 개선
 
 Limitation
 
