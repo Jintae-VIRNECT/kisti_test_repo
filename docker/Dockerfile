@@ -22,5 +22,5 @@ COPY --from=builder virnect.pfx .
 COPY --from=builder ${buildDir}/lib BOOT-INF/lib
 COPY --from=builder ${buildDir}/app .
 
-EXPOSE 8321
+EXPOSE 8761
 CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]
