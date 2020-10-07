@@ -1,5 +1,9 @@
 <template>
-  <div class="widecard" :style="{ height: height }" :class="customClass">
+  <div
+    class="widecard"
+    :style="{ height: height }"
+    :class="{ ...customClass, open: false }"
+  >
     <div class="card-item">
       <profile
         :image="history.profile"
@@ -164,6 +168,13 @@ export default {
 
   &:hover {
     background-color: $color_darkgray_500;
+  }
+  &.open {
+    background-color: #203531;
+    border-color: #0a4338;
+    &:hover {
+      background-color: #1d4e44;
+    }
   }
   .card-item {
     flex: 1 1 0;

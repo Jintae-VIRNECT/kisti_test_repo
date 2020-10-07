@@ -10,7 +10,7 @@
           @selectMain="selectMain(participant)"
           @kickout="kickout(participant.id)"
         ></participant-video>
-        <article v-if="isLeader" key="append">
+        <article v-if="!openRoom && isLeader" key="append">
           <div class="participant-video more" @click="more">
             <p>{{ $t('service.participant_invite') }}</p>
           </div>
@@ -48,7 +48,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['participants', 'mainView', 'viewForce', 'roomInfo']),
+    ...mapGetters([
+      'participants',
+      'mainView',
+      'viewForce',
+      'roomInfo',
+      'openRoom',
+    ]),
     isLeader() {
       if (this.account.roleType === ROLE.LEADER) {
         return true

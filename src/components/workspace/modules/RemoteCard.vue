@@ -1,6 +1,7 @@
 <template>
   <card
     class="groupcard"
+    :class="{ open: false }"
     :menu="true"
     width="100%"
     height="33rem"

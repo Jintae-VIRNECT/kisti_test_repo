@@ -228,7 +228,11 @@ export default {
           paging: true,
           page,
         })
-        this.pageMeta = datas.pageMeta
+        if ('padeMeta' in datas) {
+          this.pageMeta = datas.pageMeta
+        } else {
+          this.pageMeta = []
+        }
         return datas.roomHistoryInfoList
       } catch (err) {
         console.error(err)
