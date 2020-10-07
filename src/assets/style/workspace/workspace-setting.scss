@@ -1,5 +1,6 @@
 .setting-wrapper {
   display: flex;
+  flex: 1;
   // flex: 1;
   padding-top: 3.786rem;
 }
@@ -48,8 +49,9 @@
 }
 
 .setting-view__body {
-  // flex: 1;
+  flex: 1;
   background-color: $color_darkgray_600;
+  border: solid 1px #2e2e2e;
 }
 
 .setting-section {
@@ -59,6 +61,9 @@
   &:last-child {
     border-bottom: none;
   }
+  // &:first-child {
+  //   border-bottom: 1px solid rgba(#969696, 0.2);
+  // }
   .radio-option {
     padding: 0.857rem 0;
   }

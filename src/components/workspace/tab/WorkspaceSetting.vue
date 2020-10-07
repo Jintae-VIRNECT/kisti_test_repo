@@ -48,7 +48,6 @@
           </template>
           <template v-else-if="menus[tabIdx].key === 'translate'">
             <set-translate></set-translate>
-            <set-translate-language></set-translate-language>
           </template>
         </div>
       </div>
@@ -60,7 +59,6 @@ import SetVideo from '../section/WorkspaceSetVideo'
 import SetAudio from '../section/WorkspaceSetAudio'
 import SetLanguage from '../section/WorkspaceSetLanguage'
 import SetTranslate from '../section/WorkspaceSetTranslate'
-import SetTranslateLanguage from '../section/WorkspaceSetTranslateLanguage'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
@@ -73,7 +71,6 @@ export default {
     SetAudio,
     SetLanguage,
     SetTranslate,
-    SetTranslateLanguage,
     SetRecord,
     SetResolution,
     MicTest,
