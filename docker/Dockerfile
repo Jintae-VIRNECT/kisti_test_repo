@@ -1,12 +1,16 @@
-FROM openjdk:8
+FROM openjdk:8-jre-slim
+
 ENV APP_HOME=/usr/app/
 
 WORKDIR $APP_HOME
 
+ARG buildDir=build/unpack
+
 COPY ./virnect.pfx ./virnect.pfx
-COPY ./build/libs/PF-Download-1.0.jar ./PF-Download-1.0.jar
+COPY ${buildDir}/lib BOOT-INF/lib
+COPY ${buildDir}/app .
 
 EXPOSE 8086
 
 ## Command executed when container is start up.
-CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "-jar","PF-Download-1.0.jar"]
+CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]

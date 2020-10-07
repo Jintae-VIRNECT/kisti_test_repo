@@ -108,3 +108,25 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+
+// separate jar into app and library layers
+task moveLib {
+    doLast {
+        def unpackDir = "$buildDir/unpack"
+        ant.move(file: "${unpackDir}/app/BOOT-INF/lib", toFile: "${unpackDir}/lib")
+    }
+}
+
+task unpackJar(type: Copy) {
+    def unpackDir = "$buildDir/unpack"
+
+    delete unpackDir
+    from zipTree(jar.getArchiveFile())
+    into "$unpackDir/app"
+
+    finalizedBy moveLib
+}
+
+build {
+    finalizedBy unpackJar
+}
