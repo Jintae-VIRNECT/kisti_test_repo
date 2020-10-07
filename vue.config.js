@@ -1,4 +1,15 @@
 const path = require('path')
+const fs = require('fs')
+const host = '0.0.0.0'
+const port = '9989'
+let logger = null
+let configService = null
+
+//only work in local deveop env
+if (process.env.NODE_ENV === 'develop') {
+  logger = require('./server/logger')
+  configService = require('./server/config')
+}
 
 module.exports = {
   pages: {
@@ -8,6 +19,13 @@ module.exports = {
       filename: 'index.html',
       title: 'Remote - Admin',
       chunks: ['chunk-vendors', 'chunk-common', 'index'],
+    },
+    account: {
+      entry: 'src/pages/account/account.js',
+      template: 'public/account.html',
+      filename: 'account.html',
+      title: 'Login',
+      chunks: ['chunk-vendors', 'chunk-common', 'account'],
     },
   },
 
@@ -24,7 +42,50 @@ module.exports = {
         mixins: path.join(__dirname, '/src/mixins'),
         configs: path.join(__dirname, '/src/configs'),
         stores: path.join(__dirname, '/src/stores'),
+        routers: path.join(__dirname, '/src/routers'),
       },
+    },
+  },
+
+  devServer: {
+    https: {
+      key: fs.readFileSync(path.join(__dirname, './ssl/virnect.key')),
+      cert: fs.readFileSync(path.join(__dirname, './ssl/virnect.crt')),
+    },
+    host,
+    port,
+    proxy: {
+      '/api': {
+        target: 'https://192.168.6.3:8073',
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+        },
+        secure: false,
+        changeOrigin: true,
+      },
+    },
+    noInfo: true,
+    open: false,
+    before: function(app) {
+      var bodyParser = require('body-parser')
+      configService.init()
+      app.use(
+        bodyParser.json({
+          limit: '50mb',
+        }),
+      )
+
+      app.post('/logs', bodyParser.json(), function(req, res) {
+        logger.log(req.body.data, 'CONSOLE')
+        res.send(true)
+      })
+
+      app.get('/urls', bodyParser.json(), function(req, res) {
+        const a = configService.getUrls()
+        a.console = '/account'
+        a.runtime = 'local'
+        res.json(a)
+      })
     },
   },
 }
