@@ -5,8 +5,8 @@ const port = '9989'
 let logger = null
 let configService = null
 
-//only work in local deveop env
-if (process.env.NODE_ENV === 'develop') {
+//only work in local env
+if (process.env.NODE_ENV === 'development') {
   logger = require('./server/logger')
   configService = require('./server/config')
 }
