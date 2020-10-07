@@ -45,11 +45,6 @@
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 1rem;
-  margin-left: 0.571em;
-  &.checkbox {
-    display: inline-flex;
-    margin-top: 1rem;
-  }
   &.disable {
     opacity: 0.3;
     pointer-events: none;

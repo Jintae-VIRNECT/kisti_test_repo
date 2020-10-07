@@ -111,7 +111,7 @@
         </r-select>
       </div>
       <div
-        class="rec-setting__row checkbox"
+        class="rec-setting__row"
         v-if="isLeader"
         :class="{ disable: recording }"
       >
@@ -128,17 +128,33 @@
         {{ '번역 설정' }}
       </p>
       <div class="rec-setting__row">
-        <switcher :text="'번역 사용'" :value.sync="useTranslate"></switcher>
-      </div>
-      <div class="rec-setting__row vertical">
-        <p class="rec-setting__description">
-          {{ '채팅 시, 번역 받을 국가 언어를 설정해주세요.' }}
+        <p class="rec-setting__text">
+          {{ '번역 사용' }}
         </p>
+        <r-check :text="'번역 사용 허용'" :value.sync="useTranslate"></r-check>
+      </div>
+      <div class="rec-setting__row">
+        <div class="rec-setting__text custom">
+          <p>{{ '번역 언어 설정' }}</p>
+          <tooltip
+            customClass="tooltip-guide"
+            :content="'채팅 시, 번역 받을 국가언어를 설정해주세요.'"
+            placement="right"
+            effect="blue"
+          >
+            <img
+              slot="body"
+              class="setting__tooltip--icon"
+              src="~assets/image/ic_tool_tip.svg"
+            />
+          </tooltip>
+        </div>
         <r-select
-          class="setting__r-selecter"
+          class="rec-setting__selector"
           :options="translateOption"
           value="code"
           text="name"
+          :disabled="!useTranslate"
           :selectedValue.sync="translateCode"
         >
         </r-select>
@@ -153,7 +169,6 @@ import RSelect from 'RemoteSelect'
 import RCheck from 'RemoteCheckBox'
 import RRadio from 'RemoteRadio'
 import Tooltip from 'Tooltip'
-import Switcher from 'Switcher'
 
 import toastMixin from 'mixins/toast'
 
@@ -177,7 +192,6 @@ export default {
     RCheck,
     RRadio,
     Tooltip,
-    Switcher,
   },
   data() {
     return {
@@ -376,14 +390,15 @@ export default {
   },
 
   created() {
-    if (this.account.roleType !== ROLE.LEADER) return
-    this.localRecording = this.allowLocalRecord
-    this.pointing = this.allowPointing
+    this.translateCode = this.translate.code
+    this.useTranslate = this.translate.flag
     this.maxRecordTime = this.localRecord.time
     this.maxRecordInterval = this.localRecord.interval
     this.recordResolution = this.localRecord.resolution
-    this.translateCode = this.translate.code
-    this.useTranslate = this.translate.flag
+    if (this.account.roleType === ROLE.LEADER) {
+      this.localRecording = this.allowLocalRecord
+      this.pointing = this.allowPointing
+    }
   },
 }
 </script>
