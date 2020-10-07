@@ -20,9 +20,9 @@ export default {}
   justify-content: center;
   width: 100%;
   height: 3.5714rem;
-  background: #3c4049;
+  background: #e0e4eb;
   & > p {
-    color: #a1a6b0;
+    color: #656f84;
     font-weight: 500;
     font-size: 0.8571rem;
     text-align: center;
