@@ -6,6 +6,11 @@ import App from './App.vue'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
 import DayJS from 'plugins/remote/dayjs'
 
+// import { version } from '@/package.json'
+import { version } from '../../../package.json'
+
+import Store from 'stores/remote/store'
+
 Vue.use(Vue2Scrollbar)
 Vue.use(DayJS)
 
@@ -13,8 +18,10 @@ Vue.config.productionTip = false
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
+Vue.prototype.$version = version
 
 const app = new Vue({
   //router: Router,
+  store: Store,
   render: h => h(App),
 }).$mount('#app')
