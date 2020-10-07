@@ -1,13 +1,16 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:8-jre-slim
 
 ENV APP_HOME=/usr/app/
 
 WORKDIR $APP_HOME
 
+ARG buildDir=build/unpack
+
 COPY ./virnect.pfx ./virnect.pfx
-COPY ./build/libs/PF-License-1.0.0.jar ./PF-License-1.0.0.jar
+COPY ${buildDir}/lib BOOT-INF/lib
+COPY ${buildDir}/app .
 
 EXPOSE 8632
 
 ## Command executed when container is start up.
-CMD ["java", "-XX:+UseG1GC", "-Xmx300M", "-jar","PF-License-1.0.0.jar"]
+CMD ["java", "-XX:+UseG1GC", "-Xmx300M", "org.springframework.boot.loader.JarLauncher"]
