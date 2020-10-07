@@ -131,6 +131,7 @@ export default {
   background-color: $color_darkgray;
   border: solid 1px #363638;
   border-radius: 3px;
+  transition: all 0.3s;
   &::after {
     position: absolute;
     top: 0.429rem;
@@ -158,6 +159,7 @@ export default {
   }
   &.disabled {
     color: rgba($color_text, 0.2);
+    border-color: #000000;
     outline-offset: 0;
     cursor: default;
     &::after {
