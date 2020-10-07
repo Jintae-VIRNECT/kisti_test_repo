@@ -3,9 +3,7 @@
     <div class="container">
       <div class="title">
         <el-breadcrumb separator="/">
-          <el-breadcrumb-item to="/">{{
-            $t('menu.account')
-          }}</el-breadcrumb-item>
+          <el-breadcrumb-item>{{ $t('menu.account') }}</el-breadcrumb-item>
           <el-breadcrumb-item>{{ $t('menu.profile_op') }}</el-breadcrumb-item>
         </el-breadcrumb>
         <h2>{{ $t('menu.profile_op') }}</h2>
@@ -83,7 +81,10 @@
             <div class="content">
               <span class="value"></span>
             </div>
-            <el-button type="text">
+            <el-button
+              type="text"
+              @click="visible.passwordQuestionModal = true"
+            >
               {{ $t('common.change') }}
             </el-button>
           </div>
@@ -106,6 +107,10 @@
       :visible.sync="visible.passwordChangeModal"
       @changedPassword="changedPassword"
     />
+    <password-question-modal
+      :me="me"
+      :visible.sync="visible.passwordQuestionModal"
+    />
   </div>
 </template>
 
@@ -116,6 +121,7 @@ import profileService from '@/services/profile'
 import ImageChangeModal from '@/components/profile/ImageChangeModal'
 import NicknameChangeModal from '@/components/profile/NicknameChangeModal'
 import PasswordChangeModal from '@/components/profile/PasswordChangeModal'
+import PasswordQuestionModal from '@/components/profile/PasswordQuestionModal'
 
 export default {
   middleware: ['default', 'profile'],
@@ -123,6 +129,7 @@ export default {
     ImageChangeModal,
     NicknameChangeModal,
     PasswordChangeModal,
+    PasswordQuestionModal,
   },
   filters: {
     ...filters,
@@ -134,6 +141,7 @@ export default {
         imageChangeModal: false,
         nicknameChangeModal: false,
         passwordChangeModal: false,
+        passwordQuestionModal: false,
       },
     }
   },
