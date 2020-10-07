@@ -62,6 +62,7 @@
       @kicked="kicked"
     />
     <member-password-modal
+      v-if="$config.VIRNECT_ENV === 'onpremise'"
       :data="myInfo"
       :visible.sync="showMemberPasswordModal"
       @back="back"

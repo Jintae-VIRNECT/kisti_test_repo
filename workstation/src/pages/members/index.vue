@@ -28,11 +28,7 @@
         </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="memberSearch" />
-          <el-button
-            type="primary"
-            @click="showAddModal = true"
-            v-if="canAddMember"
-          >
+          <el-button type="primary" @click="addMember" v-if="canAddMember">
             {{ $t('members.allMembers.addMember') }}
           </el-button>
         </el-col>
@@ -105,6 +101,13 @@ export default {
       this.membersList = list
       this.membersTotal = total
       this.loading = false
+    },
+    addMember() {
+      if (this.$config.VIRNECT_ENV === 'onpremise') {
+        this.$router.push('/members/create')
+      } else {
+        this.showAddModal = true
+      }
     },
   },
   beforeMount() {
