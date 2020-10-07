@@ -7,49 +7,15 @@ pipeline {
     }
 
     stages {
-        stage('Pre-Build') {
-            parallel {
-                stage('Develop Branch') {
-                    when {
-                        branch 'develop'
-                    }
-                    steps {
-                        catchError() {
-                            sh 'chmod +x ./gradlew'
-                            sh './gradlew clean'
-                            sh './gradlew cleanQuerydslSourcesDir'
-                            sh './gradlew build -x test'
-                            sh 'cp docker/Dockerfile ./'
-                        }
-                    }
-                }
-
-                stage('Staging Branch') {
-                    when {
-                        branch 'staging'
-                    }
-                    steps {
-                        catchError() {
-                            sh 'chmod +x ./gradlew'
-                            sh './gradlew clean'
-                            sh './gradlew cleanQuerydslSourcesDir'
-                            sh './gradlew build -x test'
-                            sh 'cp docker/Dockerfile ./'
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Build') {
             parallel {
-
                 stage('Develop Branch') {
                     when {
                         branch 'develop'
                     }
                     steps {
                         catchError() {
+                            sh 'cp docker/Dockerfile ./'
                             sh 'docker build -t pf-license .'
                         }
                     }
@@ -61,6 +27,7 @@ pipeline {
                     }
                     steps {
                         catchError() {
+                            sh 'cp docker/Dockerfile ./'
                             sh 'git checkout ${GIT_TAG}'
                             sh 'docker build -t pf-license:${GIT_TAG} .'
                         }
@@ -89,7 +56,7 @@ pipeline {
                             sh 'docker run -p 8632:8632 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --restart=always --name=pf-license pf-license'
                             sh 'count=`docker ps -a | grep pf-license-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license-onpremise && docker rm pf-license-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                             sh 'docker run -p 18632:8632 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --restart=always --name=pf-license-onpremise pf-license'
-                            sh 'docker image prune -a -f'
+                            sh 'docker image prune -f'
                         }
                     }
                 }
@@ -128,7 +95,7 @@ pipeline {
                                                     execCommand: "docker run -p 8632:8632 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker image prune -a -f'
+                                                    execCommand: 'docker image prune -f'
                                                 )
                                             ]
                                         )
@@ -166,7 +133,7 @@ pipeline {
                                                     execCommand: "docker run -p 8632:8632 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker image prune -a -f'
+                                                    execCommand: 'docker image prune -f'
                                                 )
                                             ]
                                         )
