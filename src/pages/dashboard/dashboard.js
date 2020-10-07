@@ -6,6 +6,8 @@ import App from './App.vue'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
 import DayJS from 'plugins/remote/dayjs'
 
+import globalMixin from 'mixins/global'
+
 // import { version } from '@/package.json'
 import { version } from '../../../package.json'
 
@@ -13,6 +15,7 @@ import Store from 'stores/remote/store'
 
 Vue.use(Vue2Scrollbar)
 Vue.use(DayJS)
+Vue.mixin(globalMixin)
 
 Vue.config.productionTip = false
 
