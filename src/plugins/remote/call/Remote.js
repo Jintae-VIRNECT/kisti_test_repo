@@ -164,11 +164,15 @@ const _ = {
    * chatting
    * @param {String} text
    */
-  sendChat: text => {
+  sendChat: (text, code = 'ko') => {
     if (!_.session) return
     if (text.trim().length === 0) return
+    const params = {
+      text: text.trim(),
+      languageCode: code,
+    }
     _.session.signal({
-      data: text.trim(),
+      data: params,
       to: null,
       type: SIGNAL.CHAT,
     })

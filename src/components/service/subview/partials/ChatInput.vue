@@ -43,20 +43,19 @@
         @keydown.enter.exact="doSend($event)"
       />
 
-      <button
+      <!-- <button
         class="chat-input__form-button"
         style="right: 6rem;"
         @click="doTranslate"
         v-if="translate.flag"
       >
         {{ '번역' }}
-      </button>
+      </button> -->
 
       <button class="chat-input__form-button" @click="doSend()">
         {{ $t('button.send') }}
       </button>
     </div>
-    <translate-modal :visible.sync="viewTrans"></translate-modal>
   </div>
 </template>
 
@@ -64,13 +63,9 @@
 import { mapGetters } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
-import TranslateModal from 'components/service/modal/TranslateModal'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
-  components: {
-    TranslateModal,
-  },
   data() {
     return {
       viewTrans: false,
@@ -130,7 +125,7 @@ export default {
         this.clearUploadFile()
         this.fileList = []
       } else if (this.inputText.length > 0) {
-        this.$call.sendChat(this.inputText)
+        this.$call.sendChat(this.inputText, this.translate.code)
       }
 
       this.inputText = ''

@@ -253,10 +253,27 @@ const mutations = {
 
   // chat
   addChat(state, payload) {
+    let id
+    if (state.chatList.length > 0) {
+      id = state.chatList[state.chatList.length - 1].id + 1
+    } else {
+      id = 1
+    }
     state.chatList.push({
+      id: id,
       ...payload,
       date: new Date(),
     })
+  },
+  updateChat(state, payload) {
+    const idx = state.chatList.findIndex(chat => chat.id === payload.id)
+    if (idx < 0) return
+    const chat = state.chatList[idx]
+    for (let key in payload) {
+      if (key === 'id') continue
+      chat[key] = payload[key]
+    }
+    state.chatList.splice(idx, 1, chat)
   },
   removeChat(state, payload) {
     const idx = state.chatList.findIndex(obj => obj.uuid === payload)
@@ -277,6 +294,9 @@ const mutations = {
 const actions = {
   addChat({ commit }, payload) {
     commit('addChat', payload)
+  },
+  updateChat({ commit }, payload) {
+    commit('updateChat', payload)
   },
   setMainView({ commit }, payload) {
     if ('id' in payload) {
