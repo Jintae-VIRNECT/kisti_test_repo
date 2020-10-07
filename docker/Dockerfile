@@ -7,7 +7,6 @@ WORKDIR $APP_HOME
 ARG buildDir=build/unpack
 
 COPY ./virnect.pfx ./virnect.pfx
-COPY ./upload ./upload
 COPY ${buildDir}/lib BOOT-INF/lib
 COPY ${buildDir}/app .
 
