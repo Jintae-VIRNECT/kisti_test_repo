@@ -7,47 +7,14 @@ pipeline {
     }
 
     stages {
-        stage('Pre-Build') {
-            parallel {
-                stage('Develop Branch') {
-                    when {
-                        branch 'develop'
-                    }
-                    steps {
-                        catchError() {
-                            sh 'chmod +x ./gradlew'
-                            sh './gradlew :service-server:clean'
-                            sh 'cp docker/Dockerfile ./'
-                        }
-                    }
-                }
-
-                stage('Staging Branch') {
-                    when {
-                        branch 'staging'
-                    }
-                    steps {
-                        catchError() {
-                            sh 'chmod +x ./gradlew'
-                            sh './gradlew :service-server:clean'
-                            sh 'cp docker/Dockerfile ./'
-                        }
-                    }
-                }
-            }
-        }
-
         stage('Build') {
             parallel {
                 stage('Develop Branch') {
                     when {
                         branch 'develop'
                     }
-                    steps {
-                        catchError() {
-                            sh './gradlew :service-server:build -x test'
-                        }
-                        sh 'docker build -t rm-service .'
+                    steps {                        
+                        sh 'docker build -t rm-service -f docker/Dockerfile .'
                     }
                 }
 
@@ -56,11 +23,8 @@ pipeline {
                         branch 'staging'
                     }
                     steps {
-                        sh 'git checkout ${GIT_TAG}'
-                        catchError() {
-                            sh './gradlew :service-server:build -x test'
-                        }
-                        sh 'docker build -t rm-service:${GIT_TAG} .'
+                        sh 'git checkout ${GIT_TAG}'                                         
+                        sh 'docker build -t rm-service:${GIT_TAG} -f docker/Dockerfile .'
                     }
                 }
             }
@@ -83,7 +47,7 @@ pipeline {
                         sh 'docker run -p 8000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=rm-service rm-service'
                         sh 'count=`docker ps -a | grep rm-service-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-service-onpremise && docker rm rm-service-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --name=rm-service-onpremise rm-service'
-                        sh 'docker image prune -a -f'
+                        sh 'docker image prune -f'
                     }
                 }
 
@@ -121,7 +85,7 @@ pipeline {
                                                     execCommand: "docker run -p 8000:8000 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=rm-service $aws_ecr_address/rm-service:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker image prune -a -f'
+                                                    execCommand: 'docker image prune -f'
                                                 )
                                             ]
                                         )
@@ -159,7 +123,7 @@ pipeline {
                                                     execCommand: "docker run -p 8000:8000 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=rm-service $aws_ecr_address/rm-service:\\${GIT_TAG}"
                                                 ),
                                                 sshTransfer(
-                                                    execCommand: 'docker image prune -a -f'
+                                                    execCommand: 'docker image prune -f'
                                                 )
                                             ]
                                         )
