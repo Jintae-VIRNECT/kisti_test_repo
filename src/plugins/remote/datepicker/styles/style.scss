@@ -57,7 +57,7 @@
       position: relative;
       float: left;
       width: 14%;
-      background: url(~@/assets/image/ic_calendar_left.svg) center/50% no-repeat;
+      background: url(~assets/image/ic_calendar_left.svg) center/50% no-repeat;
 
       &:not(.disabled) {
         cursor: pointer;
@@ -70,8 +70,7 @@
       position: relative;
       float: left;
       width: 14%;
-      background: url(~@/assets/image/ic_calendar_right.svg) center/50%
-        no-repeat;
+      background: url(~assets/image/ic_calendar_right.svg) center/50% no-repeat;
       &:not(.disabled) {
         cursor: pointer;
         // &:hover {
