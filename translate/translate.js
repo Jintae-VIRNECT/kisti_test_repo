@@ -1,4 +1,5 @@
 // Imports the Google Cloud client library
+const logger = require('../server/logger')
 const { Translate } = require('@google-cloud/translate').v2
 
 let translate = null
@@ -32,9 +33,10 @@ async function getTranslate(text, target) {
 
   // Translates some text into Russian
   try {
-    console.log(`Text: ${text}`)
+    // console.log(`Text: ${text}`)
     const [translation] = await translate.translate(text, target)
-    console.log(`Translation: ${translation}`)
+    // console.log(`Translation: ${translation}`)
+    logger.log(`${text} -> ${translation}`, 'TRANSLATION')
     return translation
   } catch (err) {
     console.log(err)
