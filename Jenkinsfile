@@ -13,7 +13,7 @@ pipeline {
           when {
             branch 'develop'
           }
-          steps {            
+          steps {
             sh 'docker build -t --build-args NODE_ENV=develop pf-webaccount -f docker/Dockerfile .'
           }
         }
@@ -26,7 +26,7 @@ pipeline {
             sh 'git checkout ${GIT_TAG}'
             sh 'docker build -t --build-args NODE_ENV=production pf-webaccount:${GIT_TAG} -f docker/Dockerfile .'
           }
-        }        
+        }
       }
     }
 
@@ -34,7 +34,7 @@ pipeline {
       steps {
         echo 'Test Stage'
       }
-    }    
+    }
 
     stage('Deploy') {
       parallel {
@@ -47,7 +47,9 @@ pipeline {
             sh 'docker run -p 8822:8822 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-webaccount pf-webaccount'
             sh 'count=`docker ps -a | grep pf-webaccount-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount-onpremise && docker rm pf-webaccount-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18822:8822 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-webaccount-onpremise pf-webaccount'
-            sh 'docker image prune -a -f'
+            catchError {
+              sh 'docker image prune -f'
+            }
           }
         }
 
@@ -57,42 +59,40 @@ pipeline {
           }
 
           steps {
-            catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-webaccount:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-webaccount:${GIT_TAG}").push("latest")
-                }
+            script {
+              docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                docker.image("pf-webaccount:${GIT_TAG}").push("${GIT_TAG}")
+                docker.image("pf-webaccount:${GIT_TAG}").push("latest")
               }
+            }
 
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-qa',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps -a | grep pf-webaccount| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8822:8822 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -a -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-qa',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps -a | grep pf-webaccount| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8822:8822 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
             }
           }
         }
@@ -103,45 +103,43 @@ pipeline {
           }
 
           steps {
-            catchError() {
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-prod',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps -a | grep pf-webaccount| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8822:8822 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -a -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
-
-              script {
-                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                 def payload = """
-                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                """                             
-
-                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-prod',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps -a | grep pf-webaccount| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webaccount && docker rm pf-webaccount; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8822:8822 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=pf-webaccount $aws_ecr_address/pf-webaccount:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
             }
+
+            script {
+              def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+              def payload = """
+              {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+              """                             
+
+              sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+            }  
           }
         }
       }
