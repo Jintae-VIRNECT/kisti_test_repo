@@ -7,32 +7,6 @@ pipeline {
   }
 
   stages {
-    stage('Pre-Build') {
-      parallel {
-        stage('Develop Branch') {
-          when {
-            branch 'develop'
-          }
-          steps {
-            catchError() {
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-
-        stage('Staging Branch') {
-          when {
-            branch 'staging'
-          }
-          steps {
-            catchError() {              
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-      }
-    }
-
     stage('Build') {
       parallel {
         stage('Develop Branch') {
@@ -40,9 +14,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            catchError() {
-              sh 'docker build -t pf-minio .'
-            }
+            sh 'docker build -t pf-minio -f docker/Dockerfile .'
           }
         }
 
@@ -51,10 +23,8 @@ pipeline {
             branch 'staging'
           }
           steps {
-            catchError() {
-              sh 'git checkout ${GIT_TAG}'
-              sh 'docker build -t pf-minio:${GIT_TAG} .'
-            }
+            sh 'git checkout ${GIT_TAG}'
+            sh 'docker build -t pf-minio:${GIT_TAG} -f docker/Dockerfile .'
           }
         }
       }
@@ -66,7 +36,6 @@ pipeline {
       }
     }
 
-
     stage('Deploy') {
       parallel {
         stage('Develop Branch') {
@@ -74,10 +43,10 @@ pipeline {
             branch 'develop'
           }
           steps {
+            sh 'count=`docker ps -a | grep pf-minio | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-minio && docker rm pf-minio; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 2838:9000 -e "MINIO_ACCESS_KEY=virnect" -e "MINIO_SECRET_KEY=Qjsprxm13@$" -v /data/minio:/data -d --restart=always --name=pf-minio pf-minio server /data'
             catchError() {
-              sh 'count=`docker ps -a | grep pf-minio | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-minio && docker rm pf-minio; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 2838:9000 -e "MINIO_ACCESS_KEY=virnect" -e "MINIO_SECRET_KEY=Qjsprxm13@$" -v /data/minio:/data -d --restart=always --name=pf-minio pf-minio server /data'
-              sh 'docker image prune -a -f'
+              sh 'docker image prune -f'
             }
           }
         }
@@ -87,12 +56,10 @@ pipeline {
             branch 'staging'
           }
           steps {
-            catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-minio:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-minio:${GIT_TAG}").push("latest")
-                }
+            script {
+              docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                docker.image("pf-minio:${GIT_TAG}").push("${GIT_TAG}")
+                docker.image("pf-minio:${GIT_TAG}").push("latest")
               }
             }
           }
@@ -103,15 +70,13 @@ pipeline {
             branch 'master'
           }
           steps {
-            catchError() {
-              script {
-                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                 def payload = """
-                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                """
+            script {
+              def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+              def payload = """
+              {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+              """
 
-                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-              }
+              sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
             }
           }
         }
