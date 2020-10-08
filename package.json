@@ -6,6 +6,7 @@
   "author": "wooka@virnect.com",
   "scripts": {
     "build": "webpack --progress --config build/webpack.production.conf.js",
+    "build:production": "webpack --progress --config build/webpack.production.conf.js",
     "start": "node server.js",
     "build:develop": "set NODE_ENV=develop&& webpack --progress --config build/webpack.develop.conf.js",
     "start:develop": "set CONFIG_SERVER=http://192.168.6.3:6383&& set VIRNECT_ENV=develop&& set PORT=8885&& node server.js",
