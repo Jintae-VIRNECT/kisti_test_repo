@@ -7,49 +7,14 @@ pipeline {
   }
 
   stages {
-    stage('Pre-Build') {
-      parallel {
-        stage('Develop Branch') {
-          when {
-            branch 'develop'
-          }
-          steps {
-            catchError() {
-              sh 'yarn cache clean'
-              sh 'rm -f yarn.lock'
-              sh 'yarn install'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-
-        stage('Staging Branch') {
-          when {
-            branch 'staging'
-          }
-          steps {
-            catchError() {
-              sh 'yarn cache clean'
-              sh 'rm -f yarn.lock'
-              sh 'yarn install'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-      }
-    }
-
     stage('Build') {
       parallel {
-
-
         stage('Develop Branch') {
           when {
             branch 'develop'
           }
           steps {
-            sh 'yarn workspace workstation build:develop'
-            sh 'docker build -t pf-webworkstation .'
+            sh 'docker build -t pf-webworkstation --build-arg NODE_ENV=develop -f docker/Dockerfile .'
           }
         }
 
@@ -59,8 +24,7 @@ pipeline {
           }
           steps {
             sh 'git checkout $GIT_TAG'
-            sh 'yarn workspace workstation build:staging'
-            sh 'docker build -t pf-webworkstation:${GIT_TAG} .'
+            sh 'docker build -t pf-webworkstation:${GIT_TAG} --build-arg NODE_ENV=production -f docker/Dockerfile .'
           }
         }
       }
