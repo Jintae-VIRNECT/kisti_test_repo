@@ -1,51 +1,35 @@
 pipeline {
     agent any
+
     tools {
         go 'go-1.14'
     }
 
     environment {
         GIT_TAG = sh(returnStdout: true, script: 'git for-each-ref refs/tags --sort=-creatordate --format="%(refname)" --count=1 | cut -d/  -f3').trim()
-        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()        
-        GO111MODULE = 'on'        
+        REPO_NAME = sh(returnStdout: true, script: 'git config --get remote.origin.url | sed "s/.*:\\/\\/github.com\\///;s/.git$//"').trim()
+        GO111MODULE = 'on'
     }
 
     stages {
-        stage('Pre-Build') {
-            steps {
-                echo 'Pre-Build Stage'
-                catchError() {
-                    sh 'go get -u github.com/swaggo/swag/cmd/swag'
-                    sh 'cp docker/Dockerfile ./'
-                }
-            }
-        }
-
-        stage('Build') {            
+        stage('Build') {
             parallel {
-                stage('Build') {
-                    steps {
-                        echo 'Build Stage'
-                    }
-                }
-
                 stage('Develop Branch') {
                     when {
                         branch 'develop'
-                    }                   
+                    }
                     steps {
-                        sh 'docker build -t rm-recordserver .'                                                
+                        sh 'docker build -t rm-recordserver -f docker/Dockerfile .'
                     }
                 }
 
                 stage('Staging Branch') {
                     when {
                         branch 'staging'
-                    }                    
+                    }
                     steps {
                         sh 'git checkout ${GIT_TAG}'
-                        sh 'make'
-                        sh 'docker build -t rm-recordserver:${GIT_TAG} .'
+                        sh 'docker build -t rm-recordserver:${GIT_TAG} -f docker/Dockerfile .'
                     }
                 }
             }
@@ -68,7 +52,9 @@ pipeline {
                         sh 'docker run -p 8083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=develop -d -v /var/run/docker.sock:/var/run/docker.sock -v /home/esahn/recordings:/recordings --name=rm-recordserver rm-recordserver'
                         sh 'count=`docker ps -a | grep rm-recordserver-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver-onpremise && docker rm rm-recordserver-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=onpremise -d -v /var/run/docker.sock:/var/run/docker.sock -v /home/esahn/recordings:/recordings --name=rm-recordserver-onpremise rm-recordserver'
-                        sh 'docker image prune -a -f'
+                        catchError {
+                            sh 'docker image prune -f'
+                        }
                     }
                 }
 
@@ -78,42 +64,40 @@ pipeline {
                     }
 
                     steps {
-                        catchError() {
-                            script {
-                                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                                    docker.image("rm-recordserver:${GIT_TAG}").push("${GIT_TAG}")
-                                    docker.image("rm-recordserver:${GIT_TAG}").push("latest")
-                                }
+                        script {
+                            docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                                docker.image("rm-recordserver:${GIT_TAG}").push("${GIT_TAG}")
+                                docker.image("rm-recordserver:${GIT_TAG}").push("latest")
                             }
+                        }
 
-                            script {
-                                sshPublisher(
-                                    continueOnError: false, failOnError: true,
-                                    publishers: [
-                                        sshPublisherDesc(
-                                            configName: 'aws-bastion-deploy-qa',
-                                            verbose: true,
-                                            transfers: [
-                                                sshTransfer(
-                                                    execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                                                ),
-                                                sshTransfer(
-                                                    execCommand: "docker pull $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
-                                                ),
-                                                sshTransfer(
-                                                    execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
-                                                ),
-                                                sshTransfer(
-                                                    execCommand: "docker run -p 8083:8083 --restart=always -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print \$1}\'` -d -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
-                                                ),
-                                                sshTransfer(
-                                                    execCommand: 'docker image prune -a -f'
-                                                )
-                                            ]
-                                        )
-                                    ]
-                                )
-                            }
+                        script {
+                            sshPublisher(
+                                continueOnError: false, failOnError: true,
+                                publishers: [
+                                    sshPublisherDesc(
+                                        configName: 'aws-bastion-deploy-qa',
+                                        verbose: true,
+                                        transfers: [
+                                            sshTransfer(
+                                                execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker pull $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker run -p 8083:8083 --restart=always -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print \$1}\'` -d -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: 'docker image prune -f'
+                                            )
+                                        ]
+                                    )
+                                ]
+                            )
                         }
                     }
                 }
@@ -124,43 +108,42 @@ pipeline {
                     }
 
                     steps {
-                        catchError() {
-                            script {
-                                sshPublisher(
-                                    continueOnError: false, failOnError: true,
-                                    publishers: [
-                                        sshPublisherDesc(
-                                            configName: 'aws-bastion-deploy-prod',
-                                            verbose: true,
-                                            transfers: [
-                                                sshTransfer(
-                                                    execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                                                ),
-                                                sshTransfer(
-                                                    execCommand: "docker pull $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
-                                                ),
-                                                sshTransfer(
-                                                    execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
-                                                ),
-                                                sshTransfer(
-                                                    execCommand: "docker run -p 8083:8083 --restart=always -d -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print \$1}\'` -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
-                                                ),
-                                                sshTransfer(
-                                                    execCommand: 'docker image prune -a -f'
-                                                )
-                                            ]
-                                        )
-                                    ]
-                                )
-                            }
-                              script {
-                                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                                 def payload = """
-                                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                                """                             
+                        script {
+                            sshPublisher(
+                                continueOnError: false, failOnError: true,
+                                publishers: [
+                                    sshPublisherDesc(
+                                        configName: 'aws-bastion-deploy-prod',
+                                        verbose: true,
+                                        transfers: [
+                                            sshTransfer(
+                                                execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker pull $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker run -p 8083:8083 --restart=always -d -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print \$1}\'` -v /var/run/docker.sock:/var/run/docker.sock --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: 'docker image prune -f'
+                                            )
+                                        ]
+                                    )
+                                ]
+                            )
+                        }
 
-                                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-                               }
+                        script {
+                            def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                            def payload = """
+                            {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+                            """                             
+
+                            sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                         }
                     }
                 }
