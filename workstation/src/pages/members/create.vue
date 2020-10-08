@@ -21,7 +21,11 @@
           <el-button @click="addMember">
             {{ $t('members.create.addMember') }}
           </el-button>
-          <el-button type="primary" :disabled="!userInfoList.length">
+          <el-button
+            type="primary"
+            :disabled="!userInfoList.length"
+            @click="submit"
+          >
             {{ $t('members.create.createMember') }}
             <span class="number">{{ userInfoList.length }}</span>
           </el-button>
@@ -47,12 +51,13 @@
             ref="form"
             class="virnect-workstation-form"
             :model="form"
-            :rules="rules"
             :show-message="false"
           >
             <el-row>
-              <el-col :span="12">
-                <label>{{ $t('members.create.id') }}</label>
+              <el-col :span="9">
+                <label class="required">
+                  {{ $t('members.create.id') }}
+                </label>
                 <el-form-item prop="id" required>
                   <el-input
                     v-model="form.id"
@@ -60,11 +65,25 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="12"> </el-col>
+              <el-col :span="15">
+                <label>{{ $t('members.setting.role') }}</label>
+                <el-select v-model="form.role" prop="role">
+                  <el-option
+                    class="column-role"
+                    v-for="role in roles"
+                    :key="role.value"
+                    :value="role.value"
+                  >
+                    <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
+                  </el-option>
+                </el-select>
+              </el-col>
             </el-row>
             <el-row>
-              <el-col :span="12">
-                <label>{{ $t('members.create.password') }}</label>
+              <el-col :span="9">
+                <label class="required">
+                  {{ $t('members.create.password') }}
+                </label>
                 <el-form-item prop="password" required>
                   <el-input
                     v-model="form.password"
@@ -72,24 +91,79 @@
                   />
                 </el-form-item>
               </el-col>
-              <el-col :span="12"> </el-col>
+              <el-col :span="15">
+                <label class="required">
+                  {{ $t('members.setting.givePlans') }}
+                </label>
+                <div class="plans">
+                  <el-form-item :label="plans.remote.label">
+                    <el-select v-model="form.planRemote" @change="choosePlan">
+                      <el-option
+                        :value="false"
+                        :label="$t('members.setting.givePlansEmpty')"
+                      />
+                      <el-option
+                        :value="true"
+                        :label="plans.remote.label"
+                        :disabled="!availablePlans.remote"
+                      >
+                        <span>{{ plans.remote.label }}</span>
+                        <span class="right">
+                          {{ availablePlans.remote }}
+                        </span>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item class="horizon" :label="plans.make.label">
+                    <el-select v-model="form.planMake" @change="choosePlan">
+                      <el-option
+                        :value="false"
+                        :label="$t('members.setting.givePlansEmpty')"
+                      />
+                      <el-option
+                        :value="true"
+                        :label="plans.make.label"
+                        :disabled="!availablePlans.make"
+                      >
+                        <span>{{ plans.make.label }}</span>
+                        <span class="right">
+                          {{ availablePlans.make }}
+                        </span>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item class="horizon" :label="plans.view.label">
+                    <el-select v-model="form.planView" @change="choosePlan">
+                      <el-option
+                        :value="false"
+                        :label="$t('members.setting.givePlansEmpty')"
+                      />
+                      <el-option
+                        :value="true"
+                        :label="plans.view.label"
+                        :disabled="!availablePlans.view"
+                      >
+                        <span>{{ plans.view.label }}</span>
+                        <span class="right">
+                          {{ availablePlans.view }}
+                        </span>
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+              </el-col>
             </el-row>
           </el-form>
         </el-card>
       </el-row>
       <!-- 주의사항 -->
       <el-row class="caution">
-        <div
-          v-for="(caution, index) in $t('members.create.caution')"
-          :key="index"
-        >
-          <p v-html="caution.main" />
-          <ul v-if="caution.sub">
-            <li v-for="(sub, index) in caution.sub" :key="index">
-              <p v-html="sub" />
-            </li>
-          </ul>
-        </div>
+        <p v-html="$t('members.create.caution.createId')" />
+        <ul>
+          <li v-html="$t('members.create.caution.validId')" />
+          <li v-html="$t('members.create.caution.validPassword')" />
+        </ul>
+        <p v-html="$t('members.create.caution.canModify')" />
       </el-row>
     </div>
   </div>
@@ -108,9 +182,7 @@ export default {
       plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       userInfoList: [new CreateMember()],
-      rules: {
-        email: [{ required: true, trigger: 'blur' }],
-      },
+      availablePlans: { remote: 0, make: 0, view: 0 },
     }
   },
   computed: {
@@ -125,6 +197,52 @@ export default {
     clearMember(index) {
       this.userInfoList.splice(index, 1)
     },
+    initAvailablePlans() {
+      this.plansInfo.products.forEach(product => {
+        this.availablePlans[product.value.toLowerCase()] = product.unUsedAmount
+      })
+    },
+    choosePlan() {
+      this.initAvailablePlans()
+      this.userInfoList.forEach(user => {
+        if (user.planRemote) this.availablePlans.remote -= 1
+        if (user.planMake) this.availablePlans.make -= 1
+        if (user.planView) this.availablePlans.view -= 1
+      })
+    },
+    async submit() {
+      // 유효성 검사
+      try {
+        await Promise.all(this.$refs.form.map(form => form.validate()))
+      } catch (e) {
+        return false
+      }
+      // api 요청
+      try {
+        // throw new Error('test error')
+        this.$alert(
+          this.$t('members.create.message.successContent'),
+          this.$t('members.create.message.successTitle'),
+          {
+            confirmButtonText: this.$t('common.confirm'),
+            callback: () => this.$router.push('/members'),
+          },
+        )
+      } catch (e) {
+        // 에러
+        this.$message.error({
+          message: e,
+          duration: 4000,
+          showClose: true,
+        })
+      }
+    },
+  },
+  async beforeMount() {
+    if (!this.plansInfo.planStatus) {
+      await this.$store.dispatch('plan/getPlansInfo')
+    }
+    this.initAvailablePlans()
   },
 }
 </script>
@@ -144,7 +262,10 @@ export default {
       font-size: 16px;
     }
   }
+  // 고객 정보
   .user-info {
+    margin-bottom: 20px;
+
     .el-card__header {
       height: 44px;
       padding: 12px 20px;
@@ -160,8 +281,16 @@ export default {
     .el-card__body {
       padding: 32px;
     }
+    label.required:after {
+      color: $danger;
+      content: '*';
+    }
     .el-form-item {
       display: inline-block;
+      margin-bottom: 24px;
+    }
+    .el-row:last-child .el-form-item {
+      margin-bottom: 0;
     }
     .el-col:first-child {
       label {
@@ -171,8 +300,27 @@ export default {
         width: 420px;
       }
     }
+    .el-col:last-child {
+      label {
+        width: 150px;
+      }
+    }
+    .el-col:last-child .plans {
+      display: inline-block;
+      label {
+        width: auto;
+        margin-right: 10px;
+        line-height: 38px;
+        text-align: left;
+      }
+      .el-form-item__content {
+        width: 274px;
+      }
+    }
   }
+  // 주의사항
   .caution {
+    margin-top: 20px;
     padding: 20px;
     font-size: 13px;
     background: rgba(217, 225, 236, 0.25);
