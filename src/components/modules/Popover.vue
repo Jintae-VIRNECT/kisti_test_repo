@@ -157,7 +157,7 @@ export default {
         //this.$root.$el.append(this.$refs['popover'])
         // document.body.append(this.$refs['popover'])
         document
-          .querySelector('.dashboard--wrapper')
+          .querySelector('.dashboard-layout')
           .append(this.$refs['popover'])
       }
       this.visible = true
