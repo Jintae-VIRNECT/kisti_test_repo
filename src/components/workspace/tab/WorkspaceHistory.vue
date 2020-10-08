@@ -23,7 +23,7 @@
         height="6.143rem"
         :menu="true"
         :history="history"
-        @createRoom="createRoom(history.sessionId)"
+        @createRoom="createRoom(history.sessionId, history.sessionType)"
         @openRoomInfo="openRoomInfo(history.sessionId)"
         @deleteHistory="deleteHistory(history.sessionId)"
       ></history>
@@ -35,6 +35,10 @@
         :visible.sync="showRestart"
         :sessionId="sessionId"
       ></create-room-modal>
+      <open-room-modal
+        :visible.sync="showOpenRestart"
+        :sessionId="sessionId"
+      ></open-room-modal>
       <loader :loading="paging"></loader>
     </div>
   </tab-view>
@@ -42,14 +46,16 @@
 
 <script>
 import TabView from '../partials/WorkspaceTabView'
+import CreateRoomModal from '../modal/WorkspaceCreateRoom'
+import OpenRoomModal from '../modal/WorkspaceCreateOpenRoom'
+import HistoryInfoModal from '../modal/WorkspaceHistoryInfo'
 
 import History from 'History'
 import Loader from 'Loader'
 
 import searchMixin from 'mixins/filter'
 import confirmMixin from 'mixins/confirm'
-import CreateRoomModal from '../modal/WorkspaceCreateRoom'
-import HistoryInfoModal from '../modal/WorkspaceHistoryInfo'
+import { ROOM_STATUS } from 'configs/status.config'
 
 import {
   getHistoryList,
@@ -64,6 +70,7 @@ export default {
     Loader,
     TabView,
     CreateRoomModal,
+    OpenRoomModal,
     History,
     HistoryInfoModal,
   },
@@ -72,6 +79,7 @@ export default {
       historyList: [],
       loading: false,
       showRestart: false,
+      showOpenRestart: false,
       showHistoryInfo: false,
       sessionId: '',
       pageMeta: {
@@ -157,9 +165,13 @@ export default {
     },
 
     //재시작
-    async createRoom(sessionId) {
+    async createRoom(sessionId, sessionType) {
       this.sessionId = sessionId
-      this.showRestart = !this.showRestart
+      if (sessionType === ROOM_STATUS.OPEN) {
+        this.showOpenRestart = !this.showOpenRestart
+      } else {
+        this.showRestart = !this.showRestart
+      }
     },
     deleteAll() {
       this.confirmCancel(

@@ -37,7 +37,7 @@ const _ = {
   connect: async (configs, role, options) => {
     try {
       _.account = Store.getters['account']
-      _.openRoom = Store.getters['openRoom'] || true
+      _.openRoom = Store.getters['openRoom']
 
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -155,8 +155,12 @@ const _ = {
       _.session.publish(_.publisher)
       return true
     } catch (err) {
-      console.error(err)
-      return false
+      if (err && err.message && err.message.length > 0) {
+        console.error(`${err.message} (${err.code})`)
+      } else {
+        console.error(err)
+      }
+      throw err
     }
   },
   /**

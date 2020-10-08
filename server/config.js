@@ -37,15 +37,16 @@ module.exports = {
   getPort() {
     return process.env.PORT || String(envConfig['PORT'])
   },
+  getEnv() {
+    return env
+  },
   getUrls() {
     // const urls = {}
     // const env = this.getTargetEnv()
     // Object.keys(urlsConfig).forEach(key => {
     //   urls[key] = urlsConfig[key][env]
     // })
-    return {
-      runtime: env,
-      ...urlConfig,
-    }
+    // urlConfig['console'] = '/account'
+    return urlConfig
   },
 }

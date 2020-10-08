@@ -25,9 +25,9 @@ import OpenRoomInfo from '../partials/ModalCreateOpenRoomInfo'
 import { getHistorySingleItem } from 'api/http/history'
 import { createRoom, updateRoomProfile, getRoomInfo } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
+import { ROOM_STATUS, COMPANY_CODE } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 import { checkPermission } from 'utils/deviceCheck'
 
@@ -41,10 +41,8 @@ export default {
   data() {
     return {
       visibleFlag: false,
-      users: [],
       maxSelect: maxParticipants - 1,
       roomInfo: {},
-      loading: false,
       clicked: false,
     }
   },
@@ -60,13 +58,6 @@ export default {
   },
   watch: {
     visible(flag) {
-      if (flag) {
-        this.selection = []
-        this.inviteRefresh()
-        if (this.sessionId && this.sessionId.length > 0) {
-          this.getInfo()
-        }
-      }
       this.visibleFlag = flag
     },
   },
@@ -105,27 +96,6 @@ export default {
         this.selection.splice(idx, 1)
       }
     },
-    async inviteRefresh() {
-      this.loading = true
-      const inviteList = await getMemberList({
-        size: 50,
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-      })
-      this.users = inviteList.memberList
-      this.users.sort((A, B) => {
-        if (A.role === 'MASTER') {
-          return -1
-        } else if (B.role === 'MASTER') {
-          return 1
-        } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
-          return -1
-        } else {
-          return 0
-        }
-      })
-      this.loading = false
-    },
     async startRemote(info) {
       try {
         if (this.clicked === true) return
@@ -133,24 +103,14 @@ export default {
 
         const options = await checkPermission()
 
-        const selectedUser = []
-        const selectedUserIds = []
-
-        for (let select of this.selection) {
-          selectedUser.push({
-            id: select.uuid,
-            uuid: select.uuid,
-            email: select.email,
-          })
-          selectedUserIds.push(select.uuid)
-        }
-
         const createdRes = await createRoom({
           title: info.title,
           description: info.description,
           leaderId: this.account.uuid,
-          participantIds: selectedUserIds,
+          sessionType: ROOM_STATUS.OPEN,
+          participantIds: [],
           workspaceId: this.workspace.uuid,
+          companyCode: COMPANY_CODE[window.companyCode],
         })
         if (info.imageFile) {
           updateRoomProfile({
@@ -170,17 +130,18 @@ export default {
           sessionId: createdRes.sessionId,
           workspaceId: this.workspace.uuid,
         })
-
-        this.setRoomInfo({
-          ...roomInfo,
-          leaderId: this.account.uuid,
-        })
         window.urls['token'] = createdRes.token
         window.urls['coturn'] = createdRes.coturn
         window.urls['wss'] = createdRes.wss
 
-        this.setRoomInfo(roomInfo)
+        this.setRoomInfo({
+          ...roomInfo,
+          leaderId: this.account.uuid,
+          open: true,
+        })
+
         if (connRes) {
+          this.clicked = false
           this.$eventBus.$emit('popover:close')
 
           this.$nextTick(() => {

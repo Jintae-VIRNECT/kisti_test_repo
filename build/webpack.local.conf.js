@@ -95,6 +95,8 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         const a = configService.getUrls()
         a.console = '/account'
         a.runtime = 'local'
+        a.companyCode = configService.getAsString('COMPANY_CODE')
+        // a.companyCode = 'KINTEX'
         res.json(a)
       })
 

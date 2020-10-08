@@ -82,6 +82,10 @@ async function getUrls() {
   logger('RUN ENV', res.data.runtime)
   delete res.data.runtime
 
+  logger('COMPANY CODE', res.data.companyCode)
+  window.companyCode = res.data.companyCode || 'VIRNECT'
+  delete res.data.companyCode
+
   debug('URLS::', res.data)
 
   setBaseURL(res.data.api)
