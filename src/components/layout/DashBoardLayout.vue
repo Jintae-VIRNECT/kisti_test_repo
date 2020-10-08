@@ -1,7 +1,9 @@
 <template>
-  <div class="dashboard--wrapper">
+  <div class="dashboard-layout">
     <dash-board-header></dash-board-header>
-    <div class="content">content</div>
+    <div class="dashboard-layout__contents">
+      <dash-board-tab ref="tabSection" @tabChange="tabChange"></dash-board-tab>
+    </div>
     <dash-board-footer></dash-board-footer>
   </div>
 </template>
@@ -9,9 +11,10 @@
 <script>
 import DashBoardHeader from 'components/header/Header'
 import DashBoardFooter from 'components/footer/Footer'
-import auth from 'utils/auth'
+import DashBoardTab from 'components/section/DashBoardTab'
 import { mapActions } from 'vuex'
 import { getLicense } from 'api/http/account'
+import auth from 'utils/auth'
 export default {
   name: 'DashBoardLayout',
 
@@ -20,6 +23,7 @@ export default {
   components: {
     DashBoardHeader,
     DashBoardFooter,
+    DashBoardTab,
   },
   async beforeCreate() {
     const authInfo = await auth.init()
@@ -65,6 +69,11 @@ export default {
         this.initWorkspace(workspaces)
       }
     },
+
+    tabChange() {
+      // this.scrollTop()
+      console.log('tabChanged')
+    },
   },
 }
 </script>
@@ -72,11 +81,13 @@ export default {
 <style lang="scss">
 @import '~assets/style/layout.scss';
 @import '~assets/style/dashboard.scss';
-.dashboard--wrapper {
+.dashboard-layout {
   position: relative;
   width: 100%;
-  // height: 100%;
   height: 100vh;
+}
+.dashboard-layout__contents {
+  padding: 68px 22.8571rem 0 22.8571rem;
 }
 
 .content {
