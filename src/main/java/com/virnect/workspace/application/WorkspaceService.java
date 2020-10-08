@@ -340,8 +340,9 @@ public class WorkspaceService {
 
 			List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
 			return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
-			//filter로 license 정보를 건 경우
+
 		}
+		//filter로 license 정보를 건 경우
 		if (!licenseProductList.isEmpty()) {
 			List<String> userIdList = new ArrayList<>();
 			userInfoListRestResponse.getUserInfoList().forEach(userInfoRestResponse -> {
@@ -1844,12 +1845,15 @@ public class WorkspaceService {
 	public ApiResponse<WorkspaceLicenseInfoResponse> getWorkspaceLicenseInfo(String workspaceId) {
 		WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
 			workspaceId).getData();
-		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
-			|| workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+		/*if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
 			throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
-		}
+		}*/
+
 		WorkspaceLicenseInfoResponse workspaceLicenseInfoResponse = new WorkspaceLicenseInfoResponse();
-		if (!workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+		workspaceLicenseInfoResponse.setLicenseInfoList(new ArrayList<>());
+
+		if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() != null
+			&& !workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
 			List<WorkspaceLicenseInfoResponse.LicenseInfo> licenseInfoList = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
 				.stream()
 				.map(licenseProductInfoResponse -> {
