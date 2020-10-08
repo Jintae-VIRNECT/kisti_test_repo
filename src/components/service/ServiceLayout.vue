@@ -112,7 +112,9 @@ export default {
       if (!(this.participants.length > 0)) return
       const participant = this.participants[0]
       if (!participant.me || !participant.stream) return
-      const track = participant.stream.getVideoTracks()[0]
+      const tracks = participant.stream.getVideoTracks()
+      if (tracks.length === 0) return
+      const track = tracks[0]
       const settings = track.getSettings()
       this.logger('call', `resolution::${settings.width}X${settings.height}`)
       this.$call.sendResolution({

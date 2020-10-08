@@ -171,12 +171,7 @@ export default {
       // console.log('notice list refresh logic')
     },
     playSound() {
-      let playPromise = this.$refs['noticeAudio'].play()
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          this.$refs['noticeAudio'].pause()
-        })
-      }
+      this.$refs['noticeAudio'].play()
     },
     async alarmListener(listen) {
       // if (!this.onPush) return
