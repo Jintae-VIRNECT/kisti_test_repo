@@ -34,6 +34,9 @@ module.exports = {
   getAsString(key) {
     return String(envConfig[key])
   },
+  getAsBoolean(key) {
+    return Boolean(envConfig[key])
+  },
   getPort() {
     return process.env.PORT || String(envConfig['PORT'])
   },
@@ -48,5 +51,14 @@ module.exports = {
     // })
     // urlConfig['console'] = '/account'
     return urlConfig
+  },
+  getConfigs() {
+    return {
+      ...this.getUrls(),
+      runtime: this.getEnv(),
+      targetCompany: this.getAsString('TARGET_COMPANY'),
+      useOpenRoom: this.getAsBoolean('USE_OPEN_ROOM'),
+      useTranslate: this.getAsBoolean('USE_TRANSLATE'),
+    }
   },
 }

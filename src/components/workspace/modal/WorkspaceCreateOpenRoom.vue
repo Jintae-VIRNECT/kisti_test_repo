@@ -26,6 +26,7 @@ import { getHistorySingleItem } from 'api/http/history'
 import { createRoom, updateRoomProfile, getRoomInfo } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import { ROOM_STATUS, COMPANY_CODE } from 'configs/status.config'
+import { TARGET_COMPANY } from 'configs/env.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { maxParticipants } from 'utils/callOptions'
@@ -110,7 +111,7 @@ export default {
           sessionType: ROOM_STATUS.OPEN,
           participantIds: [],
           workspaceId: this.workspace.uuid,
-          companyCode: COMPANY_CODE[window.companyCode],
+          companyCode: COMPANY_CODE[TARGET_COMPANY],
         })
         if (info.imageFile) {
           updateRoomProfile({

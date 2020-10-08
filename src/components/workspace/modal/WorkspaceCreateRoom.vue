@@ -46,6 +46,7 @@ import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 import { checkPermission } from 'utils/deviceCheck'
 import { ROOM_STATUS, COMPANY_CODE } from 'configs/status.config'
+import { TARGET_COMPANY } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -174,7 +175,7 @@ export default {
             workspaceId: this.workspace.uuid,
             sessionId: this.sessionId,
             sessionType: ROOM_STATUS.PRIVATE,
-            companyCode: COMPANY_CODE[window.companyCode],
+            companyCode: COMPANY_CODE[TARGET_COMPANY],
           })
         } else {
           createdRes = await createRoom({
@@ -184,7 +185,7 @@ export default {
             participantIds: selectedUserIds,
             workspaceId: this.workspace.uuid,
             sessionType: ROOM_STATUS.PRIVATE,
-            companyCode: COMPANY_CODE[window.companyCode],
+            companyCode: COMPANY_CODE[TARGET_COMPANY],
           })
         }
         if (info.imageFile) {

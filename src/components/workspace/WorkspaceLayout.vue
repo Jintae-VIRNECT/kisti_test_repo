@@ -40,6 +40,7 @@ import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import { mapActions } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
+import { USE_TRANSLATE } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -153,9 +154,15 @@ export default {
       if (allow) {
         this.setAllow(allow)
       }
-      const langCode = this.$localStorage.getItem('translate')
-      if (langCode) {
-        this.setTranslate(langCode)
+      if (USE_TRANSLATE) {
+        const translateInfo = this.$localStorage.getItem('translate')
+        if (translateInfo) {
+          this.setTranslate(translateInfo)
+        }
+      } else {
+        this.setTranslate({
+          flag: false,
+        })
       }
     },
     showDeviceDenied() {

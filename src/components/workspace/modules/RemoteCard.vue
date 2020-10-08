@@ -36,7 +36,7 @@
                 activeMemberList.length
               }`
             }}</b>
-            {{ `/ ${room.memberList.length}` }}
+            {{ `/ ${isOpenRoom ? room.maxUserCount : room.memberList.length}` }}
           </p>
         </div>
         <div class="info__section">
@@ -121,7 +121,11 @@ export default {
   },
   computed: {
     isOpenRoom() {
-      if (this.room.sessionType && this.room.sessionType === ROOM_STATUS.OPEN) {
+      if (
+        this.room &&
+        this.room.sessionType &&
+        this.room.sessionType === ROOM_STATUS.OPEN
+      ) {
         return true
       } else {
         return false

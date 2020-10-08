@@ -123,42 +123,46 @@
           :value.sync="localRecording"
         ></r-check>
       </div>
-
-      <p class="rec-setting--header">
-        {{ '번역 설정' }}
-      </p>
-      <div class="rec-setting__row">
-        <p class="rec-setting__text">
-          {{ '번역 사용' }}
+      <template v-if="useTranslate">
+        <p class="rec-setting--header">
+          {{ '번역 설정' }}
         </p>
-        <r-check :text="'번역 사용 허용'" :value.sync="useTranslate"></r-check>
-      </div>
-      <div class="rec-setting__row">
-        <div class="rec-setting__text custom">
-          <p>{{ '번역 언어 설정' }}</p>
-          <tooltip
-            customClass="tooltip-guide"
-            :content="'채팅 시, 번역 받을 국가언어를 설정해주세요.'"
-            placement="right"
-            effect="blue"
-          >
-            <img
-              slot="body"
-              class="setting__tooltip--icon"
-              src="~assets/image/ic_tool_tip.svg"
-            />
-          </tooltip>
+        <div class="rec-setting__row">
+          <p class="rec-setting__text">
+            {{ '번역 사용' }}
+          </p>
+          <r-check
+            :text="'번역 사용 허용'"
+            :value.sync="useTranslateAllow"
+          ></r-check>
         </div>
-        <r-select
-          class="rec-setting__selector"
-          :options="translateOption"
-          value="code"
-          text="name"
-          :disabled="!useTranslate"
-          :selectedValue.sync="translateCode"
-        >
-        </r-select>
-      </div>
+        <div class="rec-setting__row">
+          <div class="rec-setting__text custom">
+            <p>{{ '번역 언어 설정' }}</p>
+            <tooltip
+              customClass="tooltip-guide"
+              :content="'채팅 시, 번역 받을 국가언어를 설정해주세요.'"
+              placement="right"
+              effect="blue"
+            >
+              <img
+                slot="body"
+                class="setting__tooltip--icon"
+                src="~assets/image/ic_tool_tip.svg"
+              />
+            </tooltip>
+          </div>
+          <r-select
+            class="rec-setting__selector"
+            :options="translateOption"
+            value="code"
+            text="name"
+            :disabled="!useTranslateAllow"
+            :selectedValue.sync="translateCode"
+          >
+          </r-select>
+        </div>
+      </template>
     </div>
   </modal>
 </template>
@@ -176,6 +180,7 @@ import { languageCode } from 'utils/translate'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
+import { USE_TRANSLATE } from 'configs/env.config'
 import {
   localRecTime,
   localRecResOpt,
@@ -206,7 +211,7 @@ export default {
       maxRecordTime: '',
       maxRecordInterval: '',
       recordResolution: '',
-      useTranslate: false,
+      useTranslateAllow: false,
       translateCode: 'ko',
       translateOption: languageCode,
     }
@@ -274,6 +279,9 @@ export default {
       } else {
         return false
       }
+    },
+    useTranslate() {
+      return USE_TRANSLATE
     },
   },
 
@@ -353,7 +361,7 @@ export default {
     translateCode(code) {
       this.changeTranslate('code', code)
     },
-    useTranslate(flag) {
+    useTranslateAllow(flag) {
       this.changeTranslate('flag', flag)
     },
   },
@@ -391,7 +399,7 @@ export default {
 
   created() {
     this.translateCode = this.translate.code
-    this.useTranslate = this.translate.flag
+    this.useTranslateAllow = this.translate.flag
     this.maxRecordTime = this.localRecord.time
     this.maxRecordInterval = this.localRecord.interval
     this.recordResolution = this.localRecord.resolution

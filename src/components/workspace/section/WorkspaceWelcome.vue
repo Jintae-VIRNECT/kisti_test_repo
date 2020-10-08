@@ -27,7 +27,7 @@
         {{ $t('workspace.create_room') }}
       </button>
       <button
-        v-if="!emptyWorkspace && !expireLicense"
+        v-if="useOpenRoom && !emptyWorkspace && !expireLicense"
         class="btn workspace-welcome__open"
         @click="createOpenRoom"
       >
@@ -45,6 +45,7 @@ import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import OpenRoomModal from '../modal/WorkspaceCreateOpenRoom'
 import { mapGetters } from 'vuex'
 import { WORKSPACE_ROLE } from 'configs/status.config'
+import { USE_OPENROOM } from 'configs/env.config'
 export default {
   name: 'WorkspaceWelcome',
   components: {
@@ -60,6 +61,9 @@ export default {
   },
   computed: {
     ...mapGetters(['expireLicense']),
+    useOpenRoom() {
+      return USE_OPENROOM
+    },
     emptyWorkspace() {
       if (!this.hasLicense || !(this.workspace && this.workspace.uuid)) {
         return true
