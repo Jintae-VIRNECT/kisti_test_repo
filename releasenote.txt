@@ -3,7 +3,7 @@ RELEASE
 New Features
 
 Bug Fixes
-- 워크스페이스 초대시 라이선스 만료 체크 추가
+- 워크스페이스 라이선스 체크 에러 수정
 
 Limitation
 
