@@ -14,7 +14,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'docker build -t --build-args NODE_ENV=develop pf-webaccount -f docker/Dockerfile .'
+            sh 'docker build -t pf-webaccount --build-args NODE_ENV=develop -f docker/Dockerfile .'
           }
         }
 
@@ -24,7 +24,7 @@ pipeline {
           }
           steps {
             sh 'git checkout ${GIT_TAG}'
-            sh 'docker build -t --build-args NODE_ENV=production pf-webaccount:${GIT_TAG} -f docker/Dockerfile .'
+            sh 'docker build -t pf-webaccount:${GIT_TAG} --build-args NODE_ENV=production -f docker/Dockerfile .'
           }
         }
       }
