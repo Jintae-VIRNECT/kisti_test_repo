@@ -15,6 +15,7 @@ FROM node:alpine
 ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
 
+COPY --from=builder record record
 COPY --from=builder server server
 COPY --from=builder ssl ssl
 COPY --from=builder static static
