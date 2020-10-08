@@ -51,6 +51,7 @@
             ref="form"
             class="virnect-workstation-form"
             :model="form"
+            :rules="rules"
             :show-message="false"
           >
             <el-row>
@@ -177,12 +178,57 @@ import plans from '@/models/workspace/plans'
 import { mapGetters } from 'vuex'
 
 export default {
+  middleware({ $config, error }) {
+    if ($config.VIRNECT_ENV !== 'onpremise') {
+      return error({ statusCode: 404 })
+    }
+  },
   data() {
     return {
       plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       userInfoList: [new CreateMember()],
       availablePlans: { remote: 0, make: 0, view: 0 },
+      rules: {
+        id: [
+          {
+            trigger: ['blur', 'change'],
+            validator: (rule, value, callback) => {
+              let err
+              let typeCount = 0
+              if (!/^.{4,20}$/.test(value)) err = new Error()
+              if (/[0-9]/.test(value)) typeCount++
+              if (/[a-zA-Z]/.test(value)) typeCount++
+              if (typeCount < 2) err = new Error()
+
+              callback(err)
+            },
+          },
+        ],
+        password: [
+          {
+            trigger: ['blur', 'change'],
+            validator: (rule, value, callback) => {
+              let err
+              let typeCount = 0
+              if (/[0-9]/.test(value)) typeCount++
+              if (/[a-z]/.test(value)) typeCount++
+              if (/[A-Z]/.test(value)) typeCount++
+              if (/[$.$,$!$@$#$$$%]/.test(value)) typeCount++
+
+              if (typeCount < 3) err = new Error()
+              if (!/^.{8,20}$/.test(value)) err = new Error()
+              if (/(.)\1\1\1/.test(value)) err = new Error()
+              if (/(0123|1234|2345|3456|4567|5678|6789|7890)/.test(value))
+                err = new Error()
+              if (/(0987|9876|8765|7654|6543|5432|4321|3210)/.test(value))
+                err = new Error()
+
+              callback(err)
+            },
+          },
+        ],
+      },
     }
   },
   computed: {
@@ -215,6 +261,21 @@ export default {
       try {
         await Promise.all(this.$refs.form.map(form => form.validate()))
       } catch (e) {
+        return false
+      }
+      // 플랜 할당 없으면
+      if (
+        !this.userInfoList.every(user => {
+          if (user.planRemote) return true
+          if (user.planMake) return true
+          if (user.planView) return true
+        })
+      ) {
+        this.$message.error({
+          message: this.$t('members.create.message.notHaveAnyPlan'),
+          duration: 4000,
+          showClose: true,
+        })
         return false
       }
       // api 요청
