@@ -19,6 +19,7 @@ WORKDIR $APP_HOME
 
 COPY --from=builder package.json .
 COPY --from=builder account account
+COPY --from=builder WC-Modules WC-Modules
 
 RUN yarn install --production
 
