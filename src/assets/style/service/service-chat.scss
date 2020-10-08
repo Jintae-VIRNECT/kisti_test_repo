@@ -323,6 +323,9 @@
     text-overflow: ellipsis;
     vertical-align: top;
   }
+  > b {
+    font-weight: 500;
+  }
   .chat-url {
     color: $color_primary_700;
     font-size: 0.9375rem;

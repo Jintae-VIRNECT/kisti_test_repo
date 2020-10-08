@@ -41,7 +41,8 @@ import FileSaver from 'file-saver'
 import linkifyHtml from 'linkifyjs/html'
 import { systemClass, systemText } from './chatUtils'
 import { downloadFile } from 'api/http/file'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import { translate as doTranslate } from 'plugins/remote/translate'
 export default {
   name: 'ChatItem',
   components: {
@@ -56,7 +57,7 @@ export default {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['roomInfo']),
+    ...mapGetters(['roomInfo', 'translate']),
     isFile() {
       if (this.chat.file) {
         return true
@@ -162,6 +163,7 @@ export default {
   },
   watch: {},
   methods: {
+    ...mapActions(['updateChat']),
     async download() {
       const res = await downloadFile({
         fileName: this.chat.file.fileName,
@@ -171,9 +173,24 @@ export default {
       })
       // FileSaver.saveAs(file.fileUrl, file.fileName)
     },
+    async translateText() {
+      const response = await doTranslate(this.chat.text, this.translate.code)
+      this.updateChat({
+        id: this.chat.id,
+        text: `${this.chat.text}<br><b>${response}</b>`,
+      })
+    },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    if (
+      this.chat.type === 'opponent' &&
+      this.translate.flag &&
+      this.chat.languageCode !== this.translate.code
+    ) {
+      this.translateText()
+    }
+  },
 }
 </script>

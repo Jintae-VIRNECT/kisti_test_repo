@@ -160,6 +160,7 @@ export default {
       'viewForce',
       'view',
       'initing',
+      'openRoom',
     ]),
     showProfile() {
       if (!this.participant.hasVideo) {
@@ -285,7 +286,22 @@ export default {
       this.btnActive = val
     },
     changeMain() {
-      if (!this.participant.hasVideo) return
+      if (this.openRoom) {
+        if (!this.participant.hasVideo) {
+          if (
+            this.account.roleType === ROLE.LEADER &&
+            this.openRoom &&
+            this.participant.cameraStatus === CAMERA.CAMERA_OFF
+          ) {
+            this.requestVideo()
+            return
+          }
+          return
+        } else {
+          this.$call.mainview(this.participant.id, true)
+        }
+        return
+      }
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {
           if (this.participant.hasArFeature === false) {
@@ -335,7 +351,7 @@ export default {
       if (this.participant.permission === true) {
         // 메인뷰 변경
 
-        this.forceMain()
+        this.$emit('selectMain')
       } else {
         // 퍼미션 요청
         this.$eventBus.$on('startAr', this.getPermission)
@@ -348,7 +364,7 @@ export default {
         // this.forceMain()
         // this.$call.stopArFeature()
         this.$nextTick(() => {
-          this.forceMain()
+          this.$emit('selectMain')
           // this.$call.startArFeature(this.participant.id)
         })
       } else {
@@ -388,6 +404,13 @@ export default {
           text: this.$t('button.cancel'),
         },
       )
+    },
+    requestVideo() {
+      if (this.participant.cameraStatus === CAMERA.CAMREA_NONE) {
+        this.toastDefault(this.$t('영상을 공유할 수 없는 참가자 입니다.'))
+        return
+      }
+      this.$call.mainview(this.participant.id, true)
     },
   },
   beforeDestroy() {

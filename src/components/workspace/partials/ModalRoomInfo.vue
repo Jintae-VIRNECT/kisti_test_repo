@@ -60,6 +60,12 @@
     </div>
     <div class="roominfo-view__footer">
       <div class="roominfo-view__data">
+        <span class="data-title">{{ '모드' }}</span>
+        <span class="data-value">{{
+          isOpenRoom ? '오픈 방' : '원격 협업'
+        }}</span>
+      </div>
+      <div class="roominfo-view__data">
         <span class="data-title">{{ $t('workspace.info_remote_date') }}</span>
         <span class="data-value">{{ createdDate }}</span>
       </div>
@@ -95,6 +101,7 @@
 <script>
 import InputRow from 'InputRow'
 import imageMixin from 'mixins/uploadImage'
+import { ROOM_STATUS } from 'configs/status.config'
 export default {
   name: 'ModalRoomInfo',
   mixins: [imageMixin],
@@ -131,6 +138,17 @@ export default {
     }
   },
   computed: {
+    isOpenRoom() {
+      if (
+        this.room &&
+        this.room.sessionType &&
+        this.room.sessionType === ROOM_STATUS.OPEN
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     titleValidMessage() {
       if (this.title.length < 2) {
         return this.$t('workspace.remote_name_valid1')

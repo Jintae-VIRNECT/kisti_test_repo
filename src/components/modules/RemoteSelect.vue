@@ -7,9 +7,14 @@
     popperClass="select-options"
     :fullwidth="true"
     :scrollHide="true"
+    :disabled="disabled"
     @visible="visible => (show = visible)"
   >
-    <button slot="reference" class="select-label" :class="{ active: show }">
+    <button
+      slot="reference"
+      class="select-label"
+      :class="{ active: show, disabled: disabled }"
+    >
       {{ selected[text] }}
     </button>
     <div class="select-optionbox">
@@ -54,6 +59,10 @@ export default {
     },
   },
   props: {
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     selectedValue: {
       type: String,
       default: '',
@@ -122,6 +131,7 @@ export default {
   background-color: $color_darkgray;
   border: solid 1px #363638;
   border-radius: 3px;
+  transition: all 0.3s;
   &::after {
     position: absolute;
     top: 0.429rem;
@@ -145,6 +155,15 @@ export default {
     &::after {
       transform: rotate(-180deg);
       content: '';
+    }
+  }
+  &.disabled {
+    color: rgba($color_text, 0.2);
+    border-color: #000000;
+    outline-offset: 0;
+    cursor: default;
+    &::after {
+      opacity: 0.2;
     }
   }
 }

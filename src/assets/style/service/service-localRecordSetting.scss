@@ -16,9 +16,18 @@
 }
 
 .rec-setting--header {
+  position: relative;
+  margin-top: 2.143em;
   margin-bottom: 1.2857rem;
+  padding-top: 2.571em;
   color: $color_white;
   font-size: 1.2857rem;
+  border-top: solid 1px #454548;
+  &:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
 
   &.disable {
     margin-bottom: 1rem;
@@ -36,34 +45,24 @@
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 1rem;
-
-  &.underbar {
-    position: relative;
-    margin-bottom: 2.143em;
-    padding-bottom: 2.571em;
-    &:after {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      width: 100%;
-      height: 1px;
-      background-color: #454548;
-      content: "";
-    }
-  }
-  &.checkbox {
-    display: inline-flex;
-    margin-top: 1rem;
-  }
   &.disable {
     opacity: 0.3;
     pointer-events: none;
   }
+  &.vertical {
+    flex-direction: column;
+    align-items: baseline;
+  }
+}
+
+.rec-setting__description {
+  margin-bottom: 10px;
+  color: $color_text_main;
+  font-size: 0.929rem;
 }
 
 .rec-setting__text {
   width: 12.857rem;
-  margin-left: 0.571em;
   color: $color_text_main;
   font-size: 1rem;
 

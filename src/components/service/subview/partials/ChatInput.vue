@@ -43,6 +43,15 @@
         @keydown.enter.exact="doSend($event)"
       />
 
+      <!-- <button
+        class="chat-input__form-button"
+        style="right: 6rem;"
+        @click="doTranslate"
+        v-if="translate.flag"
+      >
+        {{ '번역' }}
+      </button> -->
+
       <button class="chat-input__form-button" @click="doSend()">
         {{ $t('button.send') }}
       </button>
@@ -57,9 +66,9 @@ import toastMixin from 'mixins/toast'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
-  components: {},
   data() {
     return {
+      viewTrans: false,
       fileList: [],
       inputText: '',
     }
@@ -68,7 +77,7 @@ export default {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['chatList', 'roomInfo']),
+    ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate']),
   },
   watch: {
     fileList: {
@@ -83,6 +92,13 @@ export default {
     },
   },
   methods: {
+    doTranslate() {
+      if (!this.mic.isOn) {
+        this.toastDefault('마이크가 활성화 되어있지 않습니다.')
+        return
+      }
+      this.viewTrans = !this.viewTrans
+    },
     async doSend(e) {
       if (e) {
         e.preventDefault()
@@ -109,7 +125,7 @@ export default {
         this.clearUploadFile()
         this.fileList = []
       } else if (this.inputText.length > 0) {
-        this.$call.sendChat(this.inputText)
+        this.$call.sendChat(this.inputText, this.translate.code)
       }
 
       this.inputText = ''

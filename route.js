@@ -80,7 +80,7 @@ router.get('/OSS', function(req, res) {
 
 router.get('/urls', function(req, res) {
   res.header('Content-Type', 'application/json')
-  res.send(JSON.stringify(config.getUrls()))
+  res.send(JSON.stringify(config.getConfigs()))
 })
 
 router.get('/pdf.worker', function(req, res) {

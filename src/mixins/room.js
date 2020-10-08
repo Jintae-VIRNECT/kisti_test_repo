@@ -1,6 +1,7 @@
 import { joinRoom } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import { DEVICE } from 'configs/device.config'
+import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import { mapActions } from 'vuex'
 import { checkPermission } from 'utils/deviceCheck'
@@ -22,11 +23,16 @@ export default {
         const options = await checkPermission()
 
         this.setRoomInfo(room)
-        let myInfo = room.memberList.find(
-          member => member.uuid === this.account.uuid,
-        )
-        if (myInfo === undefined) throw Error('not allow to participant')
-        let role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
+        let role
+        if (room.sessionType === ROOM_STATUS.PRIVATE) {
+          let myInfo = room.memberList.find(
+            member => member.uuid === this.account.uuid,
+          )
+          if (myInfo === undefined) throw Error('not allow to participant')
+          role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
+        } else {
+          role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
+        }
 
         const res = await joinRoom({
           uuid: this.account.uuid,

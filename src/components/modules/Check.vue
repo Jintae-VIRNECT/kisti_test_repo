@@ -1,15 +1,15 @@
 <template>
-  <div class="checkbox" :class="{ toggle: value }" @click="changeToggle">
-    <span class="checkbox-toggle" :class="{ toggle: value }">
+  <div class="check" :class="{ toggle: value }" @click="changeToggle">
+    <span class="check-toggle" :class="{ toggle: value }">
       {{ type }}
     </span>
-    <span class="checkbox-text" v-if="text && text.length > 0">{{ text }}</span>
+    <span class="check-text" v-if="text && text.length > 0">{{ text }}</span>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'RemoteCheckBox',
+  name: 'Check',
   data() {
     return {}
   },
@@ -45,9 +45,9 @@ export default {
 
 <style lang="scss">
 @import '~assets/style/mixin';
-.checkbox {
+.check {
   display: flex;
-  width: 23.286em;
+  width: 28.571rem;
   padding: 0.571rem;
   background-color: #212125;
   border: solid 1px #171718;
@@ -58,14 +58,14 @@ export default {
     background-color: $color_primary;
   }
 }
-.checkbox-text {
+.check-text {
   margin: auto;
   margin-left: 0.714rem;
   color: rgba($color_white, 0.6);
   font-weight: 400;
   line-height: 1.429rem;
 }
-.checkbox-toggle {
+.check-toggle {
   position: relative;
   width: 1.429rem;
   height: 1.429rem;

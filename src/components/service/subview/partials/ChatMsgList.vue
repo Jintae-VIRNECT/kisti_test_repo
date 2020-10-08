@@ -7,7 +7,7 @@
         </li>
         <chat-item
           v-for="(chat, idx) of chatList"
-          :key="idx"
+          :key="'chat_' + chat.id"
           :beforeChat="idx === 0 ? null : chatList[idx - 1]"
           :afterChat="idx === chatList.length - 1 ? null : chatList[idx + 1]"
           :chat="chat"

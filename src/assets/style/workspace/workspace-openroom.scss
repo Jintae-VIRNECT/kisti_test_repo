@@ -1,0 +1,15 @@
+@import "~assets/style/vars";
+@import "~assets/style/mixin";
+
+.openroom-modal .modal--inner {
+  max-width: 90vw;
+  max-height: 90vh;
+
+  @include modal();
+}
+
+.openroom {
+  position: relative;
+  display: flex;
+  height: 100%;
+}

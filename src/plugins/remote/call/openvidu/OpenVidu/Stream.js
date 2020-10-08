@@ -71,6 +71,8 @@ var Stream = /** @class */ (function(_super) {
    */
   function Stream(session, options) {
     var _this = _super.call(this) || this
+    // ::CUSTOMIZED::
+    _this.onIceStateChanged = false
     _this.isSubscribeToRemote = false
     /**
      * @hidden
@@ -846,16 +848,30 @@ var Stream = /** @class */ (function(_super) {
   }
   /**
    * @hidden
+   * ::CUSTOMIZED:: add cb parameter
    */
-  Stream.prototype.initWebRtcPeerSend = function(reconnect) {
+  Stream.prototype.initWebRtcPeerSend = function(reconnect, cb = false) {
     var _this = this
-    return new Promise(function(resolve, reject) {
+    console.log('>>>>>>>>>>>>>>>>>>>initWebRtcPeerSend')
+    return new Promise(async function(resolve, reject) {
       if (!reconnect) {
         _this.initHarkEvents() // Init hark events for the local stream
       }
+      // var userMediaConstraints = {
+      //   audio: _this.isSendAudio(),
+      //   video: _this.isSendVideo(),
+      // }
+      // ::CUSTOMIZED::
       var userMediaConstraints = {
         audio: _this.isSendAudio(),
-        video: _this.isSendVideo(),
+        video: reconnect,
+      }
+      // let mediastream = _this.mediaStream
+      // ::CUSTOMIZED::
+      if (reconnect) {
+        _this.mediaStream = await navigator.mediaDevices.getUserMedia(
+          userMediaConstraints,
+        )
       }
       var options = {
         mediaStream: _this.mediaStream,
@@ -918,9 +934,17 @@ var Stream = /** @class */ (function(_super) {
               reject('Error on publishVideo: ' + JSON.stringify(error))
             }
           } else {
+            // ::CUSTOMIZED::
+            if (reconnect) {
+              _this.audioActive = true
+            }
             _this.webRtcPeer
               .processAnswer(response.sdpAnswer, false)
               .then(function() {
+                // ::CUSTOMIZED::
+                if (cb) {
+                  cb()
+                }
                 _this.streamId = response.id
                 _this.creationTime = response.createdAt
                 _this.isLocalStreamPublished = true
@@ -959,6 +983,10 @@ var Stream = /** @class */ (function(_super) {
       } else {
         _this.webRtcPeer = new WebRtcPeer_1.WebRtcPeerSendonly(options)
       }
+      // ::CUSTOMIZED::
+      if (_this.onIceStateChanged) {
+        _this.webRtcPeer.addIceConnectionStateChange(_this.onIceStateChanged)
+      }
       _this.webRtcPeer.addIceConnectionStateChangeListener(
         'publisher of ' + _this.connection.connectionId,
       )
@@ -980,9 +1008,10 @@ var Stream = /** @class */ (function(_super) {
   Stream.prototype.initWebRtcPeerReceive = function(reconnect) {
     var _this = this
     return new Promise(function(resolve, reject) {
+      logger.info('stream changed')
       var offerConstraints = {
         audio: _this.inboundStreamOpts.hasAudio,
-        video: _this.inboundStreamOpts.hasVideo,
+        video: true,
       }
       logger.debug(
         "'Session.subscribe(Stream)' called. Constraints of generate SDP offer",
@@ -1046,6 +1075,10 @@ var Stream = /** @class */ (function(_super) {
         })
       }
       _this.webRtcPeer = new WebRtcPeer_1.WebRtcPeerRecvonly(options)
+      // ::CUSTOMIZED::
+      if (_this.onIceStateChanged) {
+        _this.webRtcPeer.addIceConnectionStateChange(_this.onIceStateChanged)
+      }
       _this.webRtcPeer.addIceConnectionStateChangeListener(_this.streamId)
       _this.webRtcPeer
         .generateOffer()

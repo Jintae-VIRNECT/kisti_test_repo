@@ -5,6 +5,7 @@ import jwtDecode from 'jwt-decode'
 import { setBaseURL } from 'api/gateway/gateway'
 import axios from 'api/axios'
 import { logger, debug } from 'utils/logger'
+import { setConfigs } from 'configs/env.config'
 
 /**
  * 상태
@@ -76,17 +77,33 @@ async function getMyInfo() {
   }
 }
 
-async function getUrls() {
+async function getConfigs() {
   const res = await axios.get(`${location.origin}/urls`)
 
   logger('RUN ENV', res.data.runtime)
   delete res.data.runtime
 
+  const targetCompany = res.data.targetCompany || 'VIRNECT'
+  debug('TARGET COMPANY', targetCompany)
+  delete res.data.targetCompany
+
+  const useOpenRoom = res.data.useOpenRoom || false
+  debug('USE OPEN ROOM', useOpenRoom)
+  delete res.data.useOpenRoom
+
+  const useTranslate = res.data.useTranslate || false
+  debug('USE TRANSLATE', useTranslate)
+  delete res.data.useTranslate
+
   debug('URLS::', res.data)
 
-  setBaseURL(res.data.api)
+  setBaseURL(res.data['api'])
   window.urls = res.data
-  return res.data
+  setConfigs({
+    targetCompany,
+    useOpenRoom,
+    useTranslate,
+  })
 }
 
 export const cookieClear = () => {
@@ -116,7 +133,7 @@ class Auth {
   }
 
   async init() {
-    await getUrls()
+    await getConfigs()
 
     if (Cookies.get('accessToken')) {
       try {

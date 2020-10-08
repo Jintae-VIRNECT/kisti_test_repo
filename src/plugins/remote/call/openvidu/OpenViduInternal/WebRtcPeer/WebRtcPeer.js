@@ -84,10 +84,12 @@ var WebRtcPeer = /** @class */ (function() {
           _this.pc.addIceCandidate(_this.iceCandidateList.shift())
         }
       }
-      if (_this.pc.signalingState === 'closed') {
-        _this.pc = null
-      }
+      // if (_this.pc.signalingState === 'closed') {
+      //   _this.pc = null
+      // }
     }
+    // ::CUSTOMIZED:: ice connection state callback
+    this.onIceStateChanged = false
     this.start()
   }
   /**
@@ -125,9 +127,12 @@ var WebRtcPeer = /** @class */ (function() {
     logger.debug('Disposing WebRtcPeer')
     if (this.pc) {
       if (this.pc.signalingState === 'closed') {
+        // this.pc = null
         return
       }
       this.pc.close()
+      // ::CUSTOMIZED::
+      this.pc = null
       this.remoteCandidatesQueue = []
       this.localCandidatesQueue = []
     }
@@ -306,10 +311,26 @@ var WebRtcPeer = /** @class */ (function() {
       }
     })
   }
+  /**
+   * ::CUSTOMIZED::
+   * @param {Function} cb add ice state callback
+   */
+  WebRtcPeer.prototype.addIceConnectionStateChange = function(cb) {
+    // this.pc.oniceconnectionstatechange.bind(cb)
+    this.onIceStateChanged = cb
+  }
   WebRtcPeer.prototype.addIceConnectionStateChangeListener = function(otherId) {
     var _this = this
     this.pc.oniceconnectionstatechange = function() {
       var iceConnectionState = _this.pc.iceConnectionState
+      console.log(
+        '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Ice Connection State Changed',
+        iceConnectionState,
+      )
+      // ::CUSTOMIZED::
+      if (_this.onIceStateChanged) {
+        _this.onIceStateChanged(iceConnectionState)
+      }
       switch (iceConnectionState) {
         case 'disconnected':
           // Possible network disconnection
