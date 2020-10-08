@@ -14,10 +14,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            catchError() {
-              sh 'cp docker/Dockerfile ./'
-              sh 'docker build -t pf-processmanagement .'
-            }
+            sh 'docker build -t pf-processmanagement -f docker/Dockerfile .'
           }
         }
 
@@ -26,11 +23,8 @@ pipeline {
             branch 'staging'
           }
           steps {
-            catchError() {
-              sh 'cp docker/Dockerfile ./'
-              sh 'git checkout ${GIT_TAG}'
-              sh 'docker build -t pf-processmanagement:${GIT_TAG} .'
-            }
+            sh 'git checkout ${GIT_TAG}'
+            sh 'docker build -t pf-processmanagement:${GIT_TAG} -f docker/Dockerfile .'
           }
         }
       }
@@ -49,11 +43,11 @@ pipeline {
             branch 'develop'
           }
           steps {
+            sh 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 8079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-processmanagement pf-processmanagement'
+            sh 'count=`docker ps -a | grep pf-processmanagement-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement-onpremise && docker rm pf-processmanagement-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 18079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-processmanagement-onpremise pf-processmanagement'
             catchError() {
-              sh 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 8079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-processmanagement pf-processmanagement'
-              sh 'count=`docker ps -a | grep pf-processmanagement-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement-onpremise && docker rm pf-processmanagement-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 18079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-processmanagement-onpremise pf-processmanagement'
               sh 'docker image prune -f'
             }
           }
@@ -64,42 +58,40 @@ pipeline {
             branch 'staging'
           }
           steps {
-            catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-processmanagement:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-processmanagement:${GIT_TAG}").push("latest")
-                }
+            script {
+              docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                docker.image("pf-processmanagement:${GIT_TAG}").push("${GIT_TAG}")
+                docker.image("pf-processmanagement:${GIT_TAG}").push("latest")
               }
+            }
 
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-qa',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8079:8079 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-qa',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8079:8079 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
             }
           }
         }
@@ -109,44 +101,42 @@ pipeline {
             branch 'master'
           }
           steps {
-            catchError() {
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-prod',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8079:8079 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-prod',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps -a | grep pf-processmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement && docker rm pf-processmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8079:8079 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-processmanagement $aws_ecr_address/pf-processmanagement:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
+            }
 
-              script {
-                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                 def payload = """
+            script {
+                def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                def payload = """
                 {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
                 """
 
                 sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-              }
             }
           }
         }
