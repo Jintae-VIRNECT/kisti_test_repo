@@ -23,7 +23,7 @@ export default {
 
 <style lang="scss">
 .header {
-  position: absolute;
+  position: fixed;
   display: flex;
   // flex-direction: row;
   // justify-content: space-between;
