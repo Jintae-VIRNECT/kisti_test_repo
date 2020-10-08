@@ -14,10 +14,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            catchError() {
-              sh 'cp docker/Dockerfile ./'
-              sh 'docker build -t pf-eureka .'
-            }
+            sh 'docker build -t pf-eureka -f docker/Dockerfile .'
           }
         }
 
@@ -26,11 +23,8 @@ pipeline {
             branch 'staging'
           }
           steps {
-            catchError() {
-              sh 'cp docker/Dockerfile ./'
-              sh 'git checkout ${GIT_TAG}'
-              sh 'docker build -t pf-eureka:${GIT_TAG} .'
-            }
+            sh 'git checkout ${GIT_TAG}'
+            sh 'docker build -t pf-eureka:${GIT_TAG} -f docker/Dockerfile .'
           }
         }
       }
@@ -49,11 +43,11 @@ pipeline {
             branch 'develop'
           }
           steps {
+            sh 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 8761:8761 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --restart=always --name=pf-eureka pf-eureka'
+            sh 'count=`docker ps | grep pf-eureka-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka-onpremise && docker rm pf-eureka-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 18761:8761 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --restart=always --name=pf-eureka-onpremise pf-eureka'
             catchError() {
-              sh 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'      
-              sh 'docker run -p 8761:8761 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --restart=always --name=pf-eureka pf-eureka'
-              sh 'count=`docker ps | grep pf-eureka-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka-onpremise && docker rm pf-eureka-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 18761:8761 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --restart=always --name=pf-eureka-onpremise pf-eureka'
               sh 'docker image prune -f'
             }
           }
@@ -64,46 +58,43 @@ pipeline {
             branch 'staging'
           }
           steps {
-            catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-eureka:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-eureka:${GIT_TAG}").push("latest")
-                }
+            script {
+              docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                docker.image("pf-eureka:${GIT_TAG}").push("${GIT_TAG}")
+                docker.image("pf-eureka:${GIT_TAG}").push("latest")
               }
+            }
 
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-qa',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8761:8761 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-qa',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8761:8761 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
             }
           }
         }
-
 
         stage('Master Branch') {
           when {
@@ -111,51 +102,49 @@ pipeline {
 
           }
           steps {
-            catchError() {
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-prod',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8761:8761 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-prod',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps | grep pf-eureka | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-eureka && docker rm pf-eureka; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8761:8761 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-eureka $aws_ecr_address/pf-eureka:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
+            }
 
-              script {
-                def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                def payload = """
-                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                """                             
+            script {
+              def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+              def payload = """
+              {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+              """                             
 
-                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-              }
+              sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
             }
           }
         }
       }
     }
   }
-  
+
   post {
     always {
       emailext(subject: '$DEFAULT_SUBJECT', body: '$DEFAULT_CONTENT', attachLog: true, compressLog: true, to: '$platform')
