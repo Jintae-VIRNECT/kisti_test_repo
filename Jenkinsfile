@@ -7,48 +7,14 @@ pipeline {
   }
 
   stages {
-    stage('Pre-Build') {
-      parallel {
-        stage('Develop Branch') {
-          when {
-            branch 'develop'
-          }
-          steps {
-            catchError() {
-              sh 'npm cache verify'
-              sh 'npm install'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-
-        stage('Staging Branch') {
-          when {
-            branch 'staging'
-          }
-          steps {
-            catchError() {
-              sh 'npm cache verify'
-              sh 'npm install'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-      }
-    }
-
     stage('Build') {
       parallel {
         stage('Develop Branch') {
           when {
             branch 'develop'
           }
-          environment {
-            NODE_ENV='develop'
-          }
           steps {
-            sh 'npm run build'
-            sh 'docker build -t rm-web .'
+            sh 'docker build -t rm-web --build-arg NODE_ENV=develop -f docker/Dockerfile .'
           }
         }
 
@@ -56,13 +22,9 @@ pipeline {
           when {
             branch 'staging'
           }
-          environment {
-            NODE_ENV='production'
-          }
           steps {
             sh 'git checkout ${GIT_TAG}'
-            sh 'npm run build'
-            sh 'docker build -t rm-web:${GIT_TAG} .'
+            sh 'docker build -t rm-web:${GIT_TAG} --build-arg NODE_ENV=production -f docker/Dockerfile .'
           }
         }
       }
