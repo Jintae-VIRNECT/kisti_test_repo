@@ -5,7 +5,7 @@ const config = require('./server/config')
 const url = require('url')
 
 function IsAllowBrowser(req) {
-  const userAgent = req.headers['user-agent']
+  const userAgent = req.headers['user-agent'] || ''
   const isChrome = userAgent.includes('Chrome')
   const isChromeMobile =
     userAgent.includes('CriOS') || userAgent.includes('mobileApp')
@@ -19,7 +19,7 @@ function IsAllowBrowser(req) {
 }
 
 function IsMobileBrowser(req) {
-  const userAgent = req.headers['user-agent']
+  const userAgent = req.headers['user-agent'] || ''
   const isChromeMobile =
     userAgent.includes('Mobile') ||
     userAgent.includes('CriOS') ||
