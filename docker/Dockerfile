@@ -23,6 +23,7 @@ COPY --from=builder route.js .
 COPY --from=builder server.js .
 COPY --from=builder package.json .
 COPY --from=builder dist dist
+COPY --from=builder translate translate
 
 RUN npm install --production
 
