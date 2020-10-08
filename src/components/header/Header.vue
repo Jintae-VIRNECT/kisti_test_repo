@@ -2,20 +2,20 @@
   <div class="header">
     <header-logo></header-logo>
     <div class="header-divider"></div>
-    <header-workspace-nav></header-workspace-nav>
+    <header-nav></header-nav>
     <header-tools></header-tools>
   </div>
 </template>
 
 <script>
 import HeaderLogo from './partial/HeaderLogo'
-import HeaderWorkspaceNav from './partial/HeaderWorkspaceNav'
+import HeaderNav from './partial/HeaderNav'
 import HeaderTools from './partial/HeaderTools'
 export default {
   name: 'Header',
   components: {
     HeaderLogo,
-    HeaderWorkspaceNav,
+    HeaderNav,
     HeaderTools,
   },
 }
