@@ -28,7 +28,7 @@ module.exports = async () => {
     for (const key in env.URLS) {
       env.URLS[key] = /api|ws/.test(key)
         ? env.URLS[key]
-        : env.URLS[key].replace('https://192.168.6.3', 'http://localhost')
+        : env.URLS[key].replace('https://192.168.6.3', 'https://localhost')
     }
   }
   // not local

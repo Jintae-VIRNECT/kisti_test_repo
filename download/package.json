@@ -20,6 +20,7 @@
     "dotenv": "^8.2.0",
     "element-ui": "^2.13.0",
     "js-file-download": "^0.4.12",
+    "jwt-decode": "^3.0.0",
     "nuxt": "^2.14.5",
     "nuxt-i18n": "^6.6.1"
   },
