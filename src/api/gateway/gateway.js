@@ -110,24 +110,23 @@ const sender = async function(constant, params, headers = {}, custom) {
     return receiver(response)
   } catch (err) {
     if ('message' in err) {
-      if ('message' in err) {
-        window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
-          position: 'bottom-center',
-          duration: 5000,
-          action: {
-            icon: 'close',
-            onClick: (e, toastObject) => {
-              toastObject.goAway(0)
-            },
+      window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
+        position: 'bottom-center',
+        duration: 5000,
+        action: {
+          icon: 'close',
+          onClick: (e, toastObject) => {
+            toastObject.goAway(0)
           },
-        })
-        throw err.message.toLowerCase()
-        // switch (err.message.toLowerCase()) {
-        //   case 'network error':
-        //     throw err.message
-        //   case `timeout of ${timeout}ms exceeded`:
-        //     throw err.message
-        // }
+        },
+      })
+      throw err.message.toLowerCase()
+      // switch (err.message.toLowerCase()) {
+      //   case 'network error':
+      //     throw err.message
+      //   case `timeout of ${timeout}ms exceeded`:
+      //     throw err.message
+      // }
     }
     throw err
   }
