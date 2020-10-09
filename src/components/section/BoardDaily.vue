@@ -8,7 +8,9 @@
       <datepicker
         class="board-daily__header--datepicker"
         :pickerName="'daily'"
-        :highlighted="true"
+        :highlighted="{}"
+        :minimumView="'day'"
+        :maximumView="'day'"
       ></datepicker>
     </div>
     <div class="board-daily__body">
@@ -16,7 +18,7 @@
       <card-board
         :count="5"
         :countDescription="'일별 총 협업 수'"
-        :time="36555"
+        :time="5219611"
         :timeDescription="'일별 총 협업 시간'"
       ></card-board>
     </div>
@@ -61,8 +63,8 @@ export default {
   font-size: 15px;
 }
 
-.vdp-datepicker {
-  &.board-daily__header--datepicker {
+.board-daily__header--datepicker {
+  &.datepicker {
     position: absolute;
     top: 0px;
     right: 0px;

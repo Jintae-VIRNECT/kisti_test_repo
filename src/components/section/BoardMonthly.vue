@@ -5,7 +5,14 @@
       <span class="board-monthly__header--description">
         설정한 기간의 협업 내용을 보여줍니다.
       </span>
-      <datepicker :pickerName="'monthly'" :highlighted="true"></datepicker>
+      <datepicker
+        class="board-daily__header--datepicker"
+        :pickerName="'monthly'"
+        :highlighted="{}"
+        :minimumView="'month'"
+        :maximumView="'month'"
+        :format="'yyyy-MM'"
+      ></datepicker>
     </div>
     <div class="board-monthly__body">
       <card :customClass="'custom-card-chart'"><div>차트 들어가요</div></card>
@@ -38,6 +45,11 @@ export default {
   height: 371px;
   margin-top: 40px;
 }
+.board-monthly__header {
+  position: relative;
+  height: 60px;
+}
+
 .board-monthly__header--title {
   margin-right: 10px;
   color: rgb(11, 31, 72);
@@ -49,6 +61,14 @@ export default {
   color: rgb(122, 122, 122);
   font-weight: 500;
   font-size: 15px;
+}
+
+.board-monthly__header--datepicker {
+  &.datepicker {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+  }
 }
 
 .board-monthly__body {

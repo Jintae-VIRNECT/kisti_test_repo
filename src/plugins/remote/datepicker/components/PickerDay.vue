@@ -16,8 +16,8 @@
         class="day__month_btn"
         @click="showMonthCalendar"
         :class="allowedToShowView('month') ? 'up' : ''"
-        >{{ isYmd ? currYearName : currMonthName }}
-        {{ isYmd ? currMonthName : currYearName }}</span
+        >{{ isYmd ? currYearName : currMonthName
+        }}{{ isYmd ? currMonthName : currYearName }}</span
       >
       <span
         @click="isRtl ? previousMonth() : nextMonth()"
@@ -160,17 +160,20 @@ export default {
       const monthName = this.fullMonthName
         ? this.translation.months
         : this.translation.monthsAbbr
-      return this.utils.getMonthNameAbbr(
+      const monthAbbr = this.utils.getMonthNameAbbr(
         this.utils.getMonth(this.pageDate),
         monthName,
       )
+      //get only month as number
+      return monthAbbr.replace(/\D/g, '')
     },
     /**
      * Gets the name of the year that current page is on
      * @return {Number}
      */
     currYearName() {
-      const yearSuffix = this.translation.yearSuffix
+      // const yearSuffix = this.translation.yearSuffix
+      const yearSuffix = '-'
       return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
     },
     /**

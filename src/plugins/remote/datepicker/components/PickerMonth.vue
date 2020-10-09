@@ -30,7 +30,7 @@
       :key="month.timestamp"
       :class="{ selected: month.isSelected, disabled: month.isDisabled }"
       @click.stop="selectMonth(month)"
-      >{{ month.month }}</span
+      >{{ month.month.replace(/\D/g, '') }}</span
     >
   </div>
 </template>
@@ -86,7 +86,8 @@ export default {
      * @return {String}
      */
     pageYearName() {
-      const yearSuffix = this.translation.yearSuffix
+      // const yearSuffix = this.translation.yearSuffix
+      const yearSuffix = ''
       return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
     },
     /**
