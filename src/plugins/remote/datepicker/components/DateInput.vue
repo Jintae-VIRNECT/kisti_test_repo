@@ -52,6 +52,7 @@
 </template>
 <script>
 import { makeDateUtils } from '../utils/DateUtils'
+import { mapActions } from 'vuex'
 export default {
   props: {
     selectedDate: Date,
@@ -121,13 +122,18 @@ export default {
       this.typedDate = false
     },
     formattedValue(date) {
-      this.$eventBus.$emit('update::datepicker', {
-        pickerName: this.pickerName,
+      this.setCalendar({
+        name: this.pickerName,
         date: date,
       })
+      // this.$eventBus.$emit('update::datepicker', {
+      //   pickerName: this.pickerName,
+      //   date: date,
+      // })
     },
   },
   methods: {
+    ...mapActions(['setCalendar']),
     showCalendar() {
       this.$emit('showCalendar')
     },
@@ -165,13 +171,12 @@ export default {
      * called once the input is blurred
      */
     inputBlurred() {
-      if (this.typeable && isNaN(Date.parse(this.input.value))) {
-        this.clearDate()
-        this.input.value = null
-        this.typedDate = null
-      }
-
-      this.$emit('closeCalendar')
+      // if (this.typeable && isNaN(Date.parse(this.input.value))) {
+      //   this.clearDate()
+      //   this.input.value = null
+      //   this.typedDate = null
+      // }
+      // this.$emit('closeCalendar')
     },
     /**
      * emit a clearDate event

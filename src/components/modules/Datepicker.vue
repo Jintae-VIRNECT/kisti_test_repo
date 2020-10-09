@@ -10,11 +10,7 @@
       :maximumView="maximumView"
     >
     </vue-datepicker>
-    <button
-      @click="toggleCalendar"
-      @blur="toggleCalendar"
-      class="calendar-button"
-    >
+    <button @click="toggleCalendar" class="calendar-button">
       <img v-if="!isActive" src="~assets/image/ic_calendar_default.svg" />
       <img v-else src="~assets/image/ic_calendar_active.svg" />
     </button>
@@ -22,6 +18,7 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'Datepicker',
   data() {
@@ -51,12 +48,36 @@ export default {
       default: 'yyyy-MM-dd',
     },
   },
+  computed: {
+    ...mapGetters(['calendars']),
+    calendar() {
+      const index = this.calendars.findIndex(
+        cal => cal.name === this.pickerName,
+      )
+      if (index < 0) return {}
+      return this.calendars[index]
+    },
+  },
+  watch: {
+    calendar: {
+      handler() {
+        if (typeof this.calendar.status === 'boolean') {
+          this.isActive = this.calendar.status
+        }
+      },
+      deep: true,
+    },
+  },
   methods: {
-    toggleCalendar(event) {
+    ...mapActions(['setCalendar']),
+    toggleCalendar() {
       // this.isActive = !this.isActive
-      if (event.type === 'blur' && !this.isActive) {
-        return
-      }
+      // if (event.type === 'blur' && !this.isActive) {
+      //   return
+      // }
+      // console.log(this.$el)
+      // console.log(this.$refs)
+      console.log('호출되는거맞니?')
       this.$eventBus.$emit('toggle::calendar', this.pickerName)
     },
   },
