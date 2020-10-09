@@ -48,14 +48,15 @@ export default {
   },
   computed: {
     hour() {
-      return this.$dayjs(this.time * 1000)
-        .utc()
-        .format('hh')
+      let sec_num = Number.parseInt(this.time, 10)
+      let hours = Math.floor(sec_num / 3600)
+      return hours < 10 ? `0${hours}` : hours
     },
     min() {
-      return this.$dayjs(this.time * 1000)
-        .utc()
-        .format('mm')
+      let sec_num = Number.parseInt(this.time, 10)
+      let hours = Math.floor(sec_num / 3600)
+      let minutes = Math.floor((sec_num - hours * 3600) / 60)
+      return minutes < 10 ? `0${minutes}` : minutes
     },
   },
   methods: {},
