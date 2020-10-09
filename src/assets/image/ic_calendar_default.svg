@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="28px" height="28px" viewBox="0 0 28 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>FE6E3FFB-9590-48C9-B875-CB97436D085A@1.00x</title>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>0584193C-AE61-41FC-81B8-B4A5D037D512@1x</title>
     <defs>
-        <path d="M29,23 L19,23 L19,25 L29,25 L29,23 Z M31,16 L30,16 L30,14 L28,14 L28,16 L20,16 L20,14 L18,14 L18,16 L17,16 C15.89,16 15,16.9 15,18 L15,32 C15,33.1 15.89,34 17,34 L31,34 C32.1,34 33,33.1 33,32 L33,18 C33,16.9 32.1,16 31,16 Z M31,32 L17,32 L17,21 L31,21 L31,32 Z M26,27 L19,27 L19,29 L26,29 L26,27 Z" id="path-1"></path>
+        <path d="M17,11 L7,11 L7,13 L17,13 L17,11 Z M19,4 L18,4 L18,2 L16,2 L16,4 L8,4 L8,2 L6,2 L6,4 L5,4 C3.89,4 3,4.9 3,6 L3,20 C3,21.1 3.89,22 5,22 L19,22 C20.1,22 21,21.1 21,20 L21,6 C21,4.9 20.1,4 19,4 Z M19,20 L5,20 L5,9 L19,9 L19,20 Z M14,15 L7,15 L7,17 L14,17 L14,15 Z" id="path-1"></path>
     </defs>
-    <g id="내역관리" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="01_내역관리-페이지" transform="translate(-687.000000, -248.000000)">
-            <g id="setting" transform="translate(320.000000, 212.000000)">
-                <g id="Group-10" transform="translate(150.000000, 26.000000)">
-                    <g id="01" transform="translate(70.000000, 0.000000)">
-                        <g id="icon" transform="translate(137.000000, 0.000000)">
-                            <rect id="container-copy-2" stroke="#E5E7E9" fill="#FFFFFF" transform="translate(24.000000, 24.000000) scale(1, -1) translate(-24.000000, -24.000000) " x="0.5" y="0.5" width="47" height="47"></rect>
-                            <rect id="tr" x="10" y="10" width="28" height="28"></rect>
-                            <mask id="mask-2" fill="white">
-                                <use xlink:href="#path-1"></use>
-                            </mask>
-                            <use id="icon/notification/event_note_24px" fill="#757F91" fill-rule="nonzero" xlink:href="#path-1"></use>
-                        </g>
+    <g id="Design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-1567.000000, -201.000000)">
+            <g id="Day_graph" transform="translate(320.000000, 192.000000)">
+                <g id="drop-down" transform="translate(1095.000000, 0.000000)">
+                    <g id="ic_calender" transform="translate(152.000000, 9.000000)">
+                        <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/notification/event_note_24px" fill="#757F91" fill-rule="nonzero" xlink:href="#path-1"></use>
                     </g>
                 </g>
             </g>
