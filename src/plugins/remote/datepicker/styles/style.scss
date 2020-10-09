@@ -2,8 +2,8 @@
   direction: rtl;
 }
 .vdp-wrapper {
-  width: 9.7857rem;
-  height: 3.4286rem;
+  width: 143px;
+  height: 42px;
 }
 
 .vdp-datepicker {
@@ -16,7 +16,7 @@
   }
 
   input[type="text"] {
-    color: #757f91;
+    color: #0b1f48;
     font-weight: 500;
     font-size: 1.1429rem;
   }
@@ -25,10 +25,11 @@
 .vdp-datepicker--input {
   width: 100%;
   height: 100%;
-  padding: 0.7143rem 0 1rem 1.4286rem;
+  padding: 12.0002px 0 1rem 20.0004px;
   background: #ffffff;
-  border: 1px solid #e5e7e9;
-  border-right: none;
+  border: 1px solid rgb(227, 227, 227);
+  // border-right: none;
+  border-radius: 4px;
 }
 
 .vdp-datepicker__calendar {
@@ -44,7 +45,7 @@
     width: 100%;
     height: 3.4286rem;
     // line-height: 40px;
-    background: #7d8ba0;
+    background: #516277;
     border-radius: 0px;
 
     span {
@@ -57,7 +58,7 @@
       position: relative;
       float: left;
       width: 14%;
-      background: url(~@/assets/image/ic_calendar_left.svg) center/50% no-repeat;
+      background: url(~assets/image/ic_calendar_left.svg) center/50% no-repeat;
 
       &:not(.disabled) {
         cursor: pointer;
@@ -70,8 +71,7 @@
       position: relative;
       float: left;
       width: 14%;
-      background: url(~@/assets/image/ic_calendar_right.svg) center/50%
-        no-repeat;
+      background: url(~assets/image/ic_calendar_right.svg) center/50% no-repeat;
       &:not(.disabled) {
         cursor: pointer;
         // &:hover {
@@ -109,14 +109,18 @@
   }
   .cell {
     display: inline-block;
-    width: 14%;
-    height: 2rem;
-    margin: 0.1429rem 0;
+    width: 9.5%;
+    // width: 2.3rem;
+
+    height: 24px;
+
+    // margin: 1px 0;
+    margin: 5px;
     // padding: 0 5px;
     color: #545454;
     font-weight: 500;
-    font-size: 1rem;
-    line-height: 1.4286rem;
+    font-size: 14px;
+    // line-height: 23.0004px;
     text-align: center;
     vertical-align: middle;
     border: 1px solid transparent;
@@ -141,13 +145,21 @@
       }
     }
     &.day {
-      padding: 0.2857rem;
+    }
+    &.month {
+      width: 23%;
+      height: 64px;
+      // margin: 20px;
+      margin: 8px 2px 2px 2px;
+      // line-height: 23.0004px;
+      padding-top: 18px;
     }
   }
   .cell.selected {
     color: #ffffff;
     background: #5c98f0;
-    border-radius: 100px;
+    // border-radius: 100px;
+    border-radius: 50%;
     &:hover {
       background: #5c98f0;
     }
@@ -168,6 +180,10 @@
 
     &.highlight-start.highlight-end {
       border-radius: 0px;
+    }
+
+    &.month {
+      border-radius: 0%;
     }
   }
 
@@ -197,7 +213,7 @@
     }
   }
   .cell.day-header {
-    margin-top: 1.3571rem;
+    margin-top: 19px;
     margin-bottom: 0px;
     color: #23355a;
     font-size: normal;
@@ -208,15 +224,13 @@
     }
   }
 
-  .month {
-    width: 33.333%;
-  }
   .year {
     width: 33.333%;
   }
 
   & > .day__body {
-    padding-left: 0.4286rem;
+    // padding-left: 6.0004px;
+    margin-left: 16px;
   }
 }
 .vdp-datepicker__clear-button {
@@ -237,7 +251,7 @@
 }
 
 .vdp-datepicker__header {
-  background: #7d8ba0;
+  background: #516277;
   border-radius: 0px;
 }
 

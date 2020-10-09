@@ -7,7 +7,7 @@
 <script>
 import LnbSelector from '../tools/LnbSelector'
 export default {
-  name: 'HeaderWorkspaceNav',
+  name: 'HeaderNav',
   components: {
     LnbSelector,
   },

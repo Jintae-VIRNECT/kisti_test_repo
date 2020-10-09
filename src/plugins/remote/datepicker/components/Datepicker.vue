@@ -103,6 +103,8 @@ import PickerDay from './PickerDay.vue'
 import PickerMonth from './PickerMonth.vue'
 import PickerYear from './PickerYear.vue'
 import utils, { makeDateUtils } from '../utils/DateUtils'
+
+import { mapActions } from 'vuex'
 export default {
   components: {
     DateInput,
@@ -235,6 +237,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setCalendar']),
     /**
      * Called in the event that the user navigates to date pages and
      * closes the picker without selecting a date.
@@ -258,7 +261,7 @@ export default {
         return this.close(true)
       }
       this.setInitialView()
-      this.$eventBus.$emit('open::calendar', this.pickerName)
+      // this.$eventBus.$emit('open::calendar', this.pickerName)
     },
     /**
      * Sets the initial picker page view: day, month or year
@@ -281,6 +284,11 @@ export default {
           this.showDayCalendar()
           break
       }
+
+      this.setCalendar({
+        name: this.pickerName,
+        status: true,
+      })
     },
     /**
      * Are we allowed to show a specific picker view?
@@ -448,8 +456,12 @@ export default {
           this.$emit('closed')
         }
         document.removeEventListener('click', this.clickOutside, false)
+        this.setCalendar({
+          name: this.pickerName,
+          status: false,
+        })
       }
-      this.$eventBus.$emit('closed::calendar', this.pickerName)
+      // this.$eventBus.$emit('closed::calendar', this.pickerName)
     },
     /**
      * Initiate the component
