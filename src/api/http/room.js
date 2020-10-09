@@ -1,29 +1,85 @@
 import http from 'api/gateway'
+import { ROOM_STATUS } from 'configs/status.config'
 
 /**
  * 원격협업 통화방 생성
  * @param {String} title
  * @param {String} description
  * @param {String} autoRecording
+ * @param {Boolean} translation // 번역 활성화 여부..?
+ * @param {Boolean} isKeepAlive // 룸 세션 유지 여부
+ * @param {String} sessionType // 원격 협업('PRIVATE') / 오픈방('PUBLIC')
  * @param {String} leaderId // 리더 아이디(uuid)
  * @param {Array[String]} participantIds // 참여자 리스트
  * @param {String} workspaceId
+ * @param {String} companyCode
  */
 export const createRoom = async ({
   title,
   description,
   autoRecording = false,
+  translation = false,
+  isKeepAlive = false,
+  sessionType = ROOM_STATUS.PRIVATE,
   leaderId,
   participantIds = [],
   workspaceId,
+  companyCode = 0,
 }) => {
   const returnVal = await http('CREATE_ROOM', {
     title,
     description,
     autoRecording,
+    translation,
+    isKeepAlive,
+    sessionType,
     leaderId,
     participantIds,
     workspaceId,
+    companyCode,
+  })
+
+  return returnVal
+}
+/**
+ * 원격협업 통화방 재시작
+ * @param {String} title
+ * @param {String} description
+ * @param {String} autoRecording
+ * @param {Boolean} translation // 번역 활성화 여부..?
+ * @param {Boolean} isKeepAlive // 룸 세션 유지 여부
+ * @param {String} sessionType // 원격 협업('PRIVATE') / 오픈방('PUBLIC')
+ * @param {String} leaderId // 리더 아이디(uuid)
+ * @param {Array[String]} participantIds // 참여자 리스트
+ * @param {String} workspaceId
+ * @query {String} companyCode
+ * @query {String} sessionId
+ */
+export const restartRoom = async ({
+  title,
+  description,
+  autoRecording = false,
+  translation = false,
+  isKeepAlive = false,
+  sessionType = ROOM_STATUS.PRIVATE,
+  leaderId,
+  participantIds = [],
+  workspaceId,
+  companyCode = 0,
+  sessionId,
+}) => {
+  const returnVal = await http('RESTART_ROOM', {
+    title,
+    description,
+    autoRecording,
+    translation,
+    isKeepAlive,
+    sessionType,
+    leaderId,
+    participantIds,
+    workspaceId,
+    companyCode,
+    sessionId,
   })
 
   return returnVal

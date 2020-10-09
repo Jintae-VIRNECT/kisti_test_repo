@@ -170,6 +170,9 @@ export default {
       if (this.onPush) return
       // console.log('notice list refresh logic')
     },
+    playSound() {
+      this.$refs['noticeAudio'].play()
+    },
     async alarmListener(listen) {
       // if (!this.onPush) return
       const body = JSON.parse(listen.body)
@@ -194,7 +197,7 @@ export default {
             date: new Date(),
           })
           if (!this.onPush) return
-          this.$refs['noticeAudio'].play()
+          this.playSound()
           this.alarmInvite(
             body.contents,
             () => this.acceptInvite(body.contents.sessionId, body.userId),

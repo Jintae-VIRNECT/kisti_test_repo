@@ -24,7 +24,7 @@
           </p>
         </button>
       </div>
-      <button class="capture-share" @click="share">
+      <button v-if="!openRoom" class="capture-share" @click="share">
         <p>
           <img src="~assets/image/call/ic_share.svg" />
           {{ $t('service.capture_image_share') }}
@@ -35,7 +35,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import shutterMixin from 'mixins/shutter'
 import FileSaver from 'file-saver'
 export default {
@@ -54,6 +54,9 @@ export default {
         return {}
       },
     },
+  },
+  computed: {
+    ...mapGetters(['openRoom']),
   },
   watch: {
     file: {
@@ -117,7 +120,7 @@ export default {
   bottom: 2.143rem;
   background-color: $color_darkgray_500;
   border: solid 1px $color_darkgray_400;
-  border-radius: 2px;
+  border-radius: 4px;
 }
 .capture-header {
   position: relative;

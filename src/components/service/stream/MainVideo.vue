@@ -23,7 +23,7 @@
         <transition name="opacity">
           <div class="main-video__sharing" v-if="viewForce">
             <button
-              v-if="isLeader"
+              v-if="isLeader && !openRoom"
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
@@ -72,8 +72,14 @@
         <div class="main-video__empty-inner" v-if="resolutions.length === 0">
           <img src="~assets/image/img_novideo.svg" />
           <p>{{ $t('service.stream_no_video') }}</p>
-          <p class="inner-discription">
+          <p v-if="!openRoom" class="inner-discription">
             {{ $t('service.stream_no_worker') }}
+          </p>
+          <p v-else-if="isLeader" class="inner-discription">
+            {{ '공유할 참가자 영상을 선택해 주세요.' }}
+          </p>
+          <p v-else class="inner-discription">
+            {{ '공유된 영상이 없습니다.' }}
           </p>
         </div>
         <div class="main-video__empty-inner" v-else>
@@ -164,6 +170,7 @@ export default {
       resolutions: 'resolutions',
       initing: 'initing',
       viewForce: 'viewForce',
+      openRoom: 'openRoom',
     }),
     isLeader() {
       if (this.account.roleType === ROLE.LEADER) {

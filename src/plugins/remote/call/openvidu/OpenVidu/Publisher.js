@@ -257,6 +257,13 @@ var Publisher = /** @class */ (function(_super) {
     this.stream.subscribeToMyRemote(value)
   }
   /**
+   * ::CUSTOMIZED::
+   * @param {Fuction} cb ice state changed event
+   */
+  Publisher.prototype.onIceStateChanged = function(cb) {
+    this.stream.onIceStateChanged = cb
+  }
+  /**
    * See [[EventDispatcher.on]]
    */
   Publisher.prototype.on = function(type, handler) {

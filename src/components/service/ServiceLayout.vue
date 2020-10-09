@@ -49,11 +49,13 @@ import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
 import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
+import { CAMERA } from 'configs/device.config'
 import { VIEW } from 'configs/view.config'
 import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
+import { checkVideoInput } from 'utils/deviceCheck'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -87,7 +89,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants']),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants', 'myInfo']),
     isExpert() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
@@ -112,7 +114,9 @@ export default {
       if (!(this.participants.length > 0)) return
       const participant = this.participants[0]
       if (!participant.me || !participant.stream) return
-      const track = participant.stream.getVideoTracks()[0]
+      const tracks = participant.stream.getVideoTracks()
+      if (tracks.length === 0) return
+      const track = tracks[0]
       const settings = track.getSettings()
       this.logger('call', `resolution::${settings.width}X${settings.height}`)
       this.$call.sendResolution({
@@ -161,6 +165,11 @@ export default {
 
       this.$eventBus.$emit('call:logout')
     },
+    async onDeviceChange() {
+      const hasVideo = await checkVideoInput()
+      if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
+      this.$call.changeProperty(hasVideo)
+    },
   },
 
   /* Lifecycles */
@@ -169,6 +178,7 @@ export default {
     window.onbeforeunload = () => {
       return true
     }
+    navigator.mediaDevices.ondevicechange = this.onDeviceChange
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
   },
@@ -177,6 +187,7 @@ export default {
       clearTimeout(this.callTimeout)
     }
     window.onbeforeunload = () => {}
+    navigator.mediaDevices.ondevicechange = () => {}
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.removeEventListener('orientationchange', this.changeOrientation)
 

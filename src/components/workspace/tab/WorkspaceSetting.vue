@@ -46,6 +46,9 @@
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
           </template>
+          <template v-else-if="menus[tabIdx].key === 'translate'">
+            <set-translate></set-translate>
+          </template>
         </div>
       </div>
     </div>
@@ -55,17 +58,20 @@
 import SetVideo from '../section/WorkspaceSetVideo'
 import SetAudio from '../section/WorkspaceSetAudio'
 import SetLanguage from '../section/WorkspaceSetLanguage'
+import SetTranslate from '../section/WorkspaceSetTranslate'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
+import { USE_TRANSLATE } from 'configs/env.config'
 export default {
   name: 'WorkspaceSetting',
   components: {
     SetVideo,
     SetAudio,
     SetLanguage,
+    SetTranslate,
     SetRecord,
     SetResolution,
     MicTest,
@@ -85,7 +91,7 @@ export default {
   },
   computed: {
     menus() {
-      return [
+      const menu = [
         {
           key: 'video',
           text: this.$t('workspace.setting_video'),
@@ -103,6 +109,13 @@ export default {
           text: this.$t('workspace.setting_language'),
         },
       ]
+      if (USE_TRANSLATE) {
+        menu.push({
+          key: 'translate',
+          text: '번역 설정',
+        })
+      }
+      return menu
     },
   },
   methods: {

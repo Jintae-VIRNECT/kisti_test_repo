@@ -45,6 +45,7 @@ import PlanOverflow from './modal/WorkspacePlanOverflow'
 import FileUpload from './modal/WorkspaceRecordFileUpload'
 import { mapActions } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
+import { USE_TRANSLATE } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -110,6 +111,7 @@ export default {
       'setDevices',
       'setRecord',
       'setAllow',
+      'setTranslate',
     ]),
     init(authInfo, workspaces) {
       this.updateAccount({
@@ -159,6 +161,16 @@ export default {
       const allow = this.$localStorage.getItem('allow')
       if (allow) {
         this.setAllow(allow)
+      }
+      if (USE_TRANSLATE) {
+        const translateInfo = this.$localStorage.getItem('translate')
+        if (translateInfo) {
+          this.setTranslate(translateInfo)
+        }
+      } else {
+        this.setTranslate({
+          flag: false,
+        })
       }
     },
     showDeviceDenied() {

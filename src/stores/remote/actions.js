@@ -118,6 +118,19 @@ export default {
   setAllow({ commit }, payload) {
     commit(types.SETTINGS.SET_ALLOW, payload)
   },
+  /**
+   * set Allow
+   * @param {*} param0
+   * @param {Object} payload
+   */
+  setTranslate({ commit }, payload) {
+    if ('flag' in payload) {
+      commit(types.SETTINGS.SET_TRANSLATE_FLAG, payload['flag'])
+    }
+    if ('code' in payload) {
+      commit(types.SETTINGS.SET_TRANSLATE_CODE, payload['code'])
+    }
+  },
 
   /**
    * set screen stream for local recording

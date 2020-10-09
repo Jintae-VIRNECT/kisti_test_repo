@@ -1,6 +1,7 @@
 <template>
   <card
     class="groupcard"
+    :class="{ open: isOpenRoom }"
     :menu="true"
     width="100%"
     height="33rem"
@@ -35,7 +36,7 @@
                 activeMemberList.length
               }`
             }}</b>
-            {{ `/ ${room.memberList.length}` }}
+            {{ `/ ${isOpenRoom ? room.maxUserCount : room.memberList.length}` }}
           </p>
         </div>
         <div class="info__section">
@@ -91,7 +92,7 @@ import Card from 'Card'
 import Profile from 'Profile'
 import ProfileList from 'ProfileList'
 import RoominfoModal from '../modal/WorkspaceRoomInfo'
-import { STATUS } from 'configs/status.config'
+import { STATUS, ROOM_STATUS } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
 import mixinToast from 'mixins/toast'
 
@@ -119,6 +120,17 @@ export default {
     },
   },
   computed: {
+    isOpenRoom() {
+      if (
+        this.room &&
+        this.room.sessionType &&
+        this.room.sessionType === ROOM_STATUS.OPEN
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     leader() {
       if (
         !this.room ||
@@ -166,6 +178,7 @@ export default {
       this.$emit('join', {
         ...this.room,
         leaderId: this.leader.uuid,
+        open: this.isOpenRoom,
       })
     },
   },
