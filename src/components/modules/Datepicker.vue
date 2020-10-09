@@ -71,13 +71,6 @@ export default {
   methods: {
     ...mapActions(['setCalendar']),
     toggleCalendar() {
-      // this.isActive = !this.isActive
-      // if (event.type === 'blur' && !this.isActive) {
-      //   return
-      // }
-      // console.log(this.$el)
-      // console.log(this.$refs)
-      console.log('호출되는거맞니?')
       this.$eventBus.$emit('toggle::calendar', this.pickerName)
     },
   },
