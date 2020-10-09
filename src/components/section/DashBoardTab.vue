@@ -53,7 +53,7 @@ export default {
         },
         {
           name: 'collabo',
-          text: '협업보드',
+          text: '협업내역',
           // text: this.$t('workspace.remote'),
         },
       ]
