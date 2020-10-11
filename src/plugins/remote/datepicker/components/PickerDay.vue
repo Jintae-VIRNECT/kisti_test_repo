@@ -28,6 +28,7 @@
     <div class="day__body" :class="isRtl ? 'flex-rtl' : ''">
       <span
         class="cell day-header"
+        :class="{ wide: wide }"
         v-for="d in daysOfWeek"
         :key="d.timestamp"
         >{{ d }}</span
@@ -35,6 +36,7 @@
       <template v-if="blankDays > 0">
         <span
           class="cell day blank"
+          :class="{ wide: wide }"
           v-for="d in blankDays"
           :key="d.timestamp"
         ></span> </template
@@ -200,6 +202,29 @@ export default {
       return this.isRtl
         ? this.isPreviousMonthDisabled(this.pageTimestamp)
         : this.isNextMonthDisabled(this.pageTimestamp)
+    },
+    /**
+     * use wide width for highlighted day cell
+     * @return {Boolean}
+     */
+    wide() {
+      if (!this.highlighted) {
+        return false
+      }
+
+      if (!this.highlighted.from || !this.highlighted.to) {
+        return false
+      }
+
+      if (this.highlighted.to.getTime() === this.highlighted.from.getTime()) {
+        return false
+      }
+
+      if (this.highlighted.to.getTime() < this.highlighted.from.getTime()) {
+        return false
+      }
+
+      return true
     },
   },
   methods: {
@@ -427,6 +452,7 @@ export default {
         sun: day.isSunday,
         'highlight-start': day.isHighlightStart,
         'highlight-end': day.isHighlightEnd,
+        wide: this.wide,
       }
     },
     /**
