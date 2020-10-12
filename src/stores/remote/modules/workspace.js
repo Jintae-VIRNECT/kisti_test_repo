@@ -61,6 +61,10 @@ const mutations = {
         if (idx > -1) {
           state.current = state.workspaceList[idx]
         }
+      } else {
+        if (state.workspaceList.length === 1) {
+          state.current = state.workspaceList[0]
+        }
       }
     }
   },
