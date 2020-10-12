@@ -182,7 +182,14 @@ const mutations = {
         }
       }
       let participant = state.participants.splice(idx, 1)
+      let id
+      if (state.chatList.length > 0) {
+        id = state.chatList[state.chatList.length - 1].id + 1
+      } else {
+        id = 1
+      }
       state.chatList.push({
+        id,
         name: participant[0].nickname,
         status: 'leave',
         date: new Date(),
