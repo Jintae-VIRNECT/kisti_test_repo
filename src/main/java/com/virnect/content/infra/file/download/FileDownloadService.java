@@ -13,4 +13,6 @@ public interface FileDownloadService {
 	ResponseEntity<byte[]> fileDownload(final String fileName);
 
 	void copyFileS3ToLocal(String fileName);
+
+	String getFilePath(String bucketResource, String fileName);
 }

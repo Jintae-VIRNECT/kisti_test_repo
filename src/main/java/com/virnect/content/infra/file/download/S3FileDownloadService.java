@@ -91,6 +91,11 @@ public class S3FileDownloadService implements FileDownloadService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
 
+	@Override
+	public String getFilePath(String bucketResource, String fileName) {
+		String objectName = bucketResource + fileName;
+		return amazonS3Client.getUrl(bucketName, objectName).toExternalForm();
 	}
 }

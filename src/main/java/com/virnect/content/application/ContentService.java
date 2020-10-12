@@ -136,8 +136,9 @@ public class ContentService {
 	@Value("${file.upload-path}")
 	private String fileUploadPath;
 
-	@Value("${file.url}")
-	private String fileUploadUrl;
+	//@Value("${file.url}")
+	//private String fileUploadUrl;
+
 	private String defaultVTarget = "virnect_target.png";
 
 	/**
@@ -274,7 +275,8 @@ public class ContentService {
 				imgPath = decodeData(targetData);
 			}
 			if (targetType.equals(TargetType.VTarget)) {
-				imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;
+				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;
+				imgPath = fileDownloadService.getFilePath(fileUploadPath, defaultVTarget);
 			}
 		}
 
@@ -1003,7 +1005,7 @@ public class ContentService {
 				throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
 			}
 		});
-		if(!userLicenseInfoList.contains("MAKE")){
+		if (!userLicenseInfoList.contains("MAKE")) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
 		}
 		//용량 체크
