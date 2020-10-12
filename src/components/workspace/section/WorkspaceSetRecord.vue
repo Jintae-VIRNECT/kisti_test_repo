@@ -108,7 +108,7 @@ export default {
       this.$localStorage.setRecord('interval', newInterval)
     },
   },
-  mounted() {
+  created() {
     if (this.localRecord.time) {
       this.recordTime = this.localRecord.time
     }
