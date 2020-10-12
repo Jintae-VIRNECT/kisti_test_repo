@@ -1,6 +1,6 @@
 package com.virnect.gateway.metric;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +21,14 @@ public class MetricController {
 
 	@GetMapping("/healthcheck")
 	public ResponseEntity<String> healthCheck() {
-		return ResponseEntity.ok("HELLO VIRNECT PLATFORM API GATEWAY - " + LocalDateTime.now());
+		String message =
+				"\n\n"
+				+ "------------------------------------------------------------------------------\n" + "\n"
+				+ "   VIRNECT PLATFORM API GATEWAY\n"
+				+ "   ---------------------------\n" + "\n"
+				+ "   * SERVER_MODE: [ " + System.getenv("VIRNECT_ENV") + " ]\n" + "\n"
+				+ "   * HEALTH_CHECK_DATE: [ " + ZonedDateTime.now() + " ]\n" + "\n"
+				+ "------------------------------------------------------------------------------\n";
+		return ResponseEntity.ok(message);
 	}
 }

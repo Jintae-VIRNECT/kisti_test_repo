@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -72,11 +73,20 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.header("X-jwt-countryCode", body.get("countryCode", String.class))
 			.header("X-jwt-jwtId", body.get("jwtId", String.class))
 			.build();
+
 		authenticateRequest.getHeaders()
 			.entrySet()
 			.forEach((entry -> log.info("[AUTHENTICATE_REQUEST] [HEADER] [{}] => {} ", entry.getKey(),
 				Arrays.toString(entry.getValue().toArray())
 			)));
+
+		// MDC Request User Information Logging
+		MDC.put("email", body.get("email", String.class));
+		MDC.put("uuid", body.get("uuid", String.class));
+		MDC.put("ip", body.get("ip", String.class));
+		MDC.put("country", body.get("country", String.class));
+		MDC.put("countryCode", body.get("countryCode", String.class));
+
 		return chain.filter(exchange.mutate().request(authenticateRequest).build());
 	}
 
