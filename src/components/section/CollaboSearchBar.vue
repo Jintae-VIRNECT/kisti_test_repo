@@ -37,7 +37,10 @@
         ></check-box>
       </div>
     </div>
-    <button class="collabo-search-bar--submit"><img />검색하기</button>
+    <button class="collabo-search-bar--submit">
+      <!-- <img src="~assets/image/ic_search.svg" /> -->
+      <span>검색하기</span>
+    </button>
   </section>
 </template>
 
@@ -200,10 +203,31 @@ export default {
 }
 
 .collabo-search-bar--submit {
+  position: relative;
   width: 100%;
   height: 52px;
-  background: rgb(15, 117, 245);
+  font-weight: 400;
+  font-size: 16px;
+  background-color: #9aa6bd;
   border-radius: 0px;
+  transition: 0.3s;
+  &:hover {
+    background: rgb(15, 117, 245);
+  }
+
+  & > span {
+    position: relative;
+    &::before {
+      position: absolute;
+      top: 2px;
+      // right: 50px;
+      left: -30px;
+      width: 22px;
+      height: 22px;
+      background: 50% url('~assets/image/ic_search.svg') no-repeat;
+      content: '';
+    }
+  }
 }
 
 .collabo-search-bar__condition--tilde {

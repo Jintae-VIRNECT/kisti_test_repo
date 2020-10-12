@@ -12,10 +12,10 @@
           리더
         </div>
         <div class="history__header--text start-date">협업 시작일</div>
-        <div class="history__header--text record">상태</div>
-        <div class="history__header--text record">서버 녹화</div>
-        <div class="history__header--text record">로컬 녹화</div>
-        <div class="history__header--text record">첨부 파일</div>
+        <div class="history__header--text state">상태</div>
+        <div class="history__header--text count">서버 녹화</div>
+        <div class="history__header--text count">로컬 녹화</div>
+        <div class="history__header--text count">첨부 파일</div>
       </div>
 
       <div class="history__body" :class="{ nodata: !listExists }">
@@ -28,20 +28,35 @@
             <div class="history__text index">
               <p>{{ userItem.index }}</p>
             </div>
-            <div class="history__text user-name">
-              <p>{{ userItem.userName }}</p>
-            </div>
-            <div class="history__text cooperation-name">
+            <div class="history__text collabo-name">
               <p>{{ userItem.cooperateName }}</p>
+            </div>
+            <div class="history__text leader-name">
+              <p>{{ userItem.leader }}</p>
             </div>
             <div class="history__text start-date">
               {{ userItem.startDate }}
             </div>
-            <div class="history__text record">
-              <count-button
+            <div class="history__text state">
+              <collabo-status :status="userItem.status"> </collabo-status>
+            </div>
+            <div class="history__text count">
+              <server-record-count-button
                 :count="userItem.recordCount"
                 :serialNum="userItem.serialNum"
-              ></count-button>
+              ></server-record-count-button>
+            </div>
+            <div class="history__text count">
+              <local-record-count-button
+                :count="userItem.recordCount"
+                :serialNum="userItem.serialNum"
+              ></local-record-count-button>
+            </div>
+            <div class="history__text count">
+              <file-count-button
+                :count="userItem.recordCount"
+                :serialNum="userItem.serialNum"
+              ></file-count-button>
             </div>
           </div>
         </template>
@@ -54,11 +69,17 @@
 </template>
 
 <script>
-import CountButton from 'CountButton'
+import ServerRecordCountButton from 'ServerRecordCountButton'
+import LocalRecordCountButton from 'LocalRecordCountButton'
+import FileCountButton from 'FileCountButton'
+import CollaboStatus from 'CollaboStatus'
 export default {
   name: 'History',
   components: {
-    CountButton,
+    CollaboStatus,
+    ServerRecordCountButton,
+    LocalRecordCountButton,
+    FileCountButton,
   },
   props: {
     datas: {
@@ -117,27 +138,42 @@ export default {
   font-weight: 500;
   font-size: 0.8571rem;
   text-align: center;
+  &:hover {
+    cursor: pointer;
+  }
+  &::after {
+    display: inline-block;
+    width: 14px;
+    height: 10px;
+    background: url(~assets/image/ic_list_up.svg) center/100% no-repeat;
+    content: '';
+  }
 
   &.index {
-    width: 12.1429rem;
+    width: 100px;
   }
 
   &.collabo-name {
-    width: 14.3571rem;
+    width: 300px;
     text-align: left;
   }
 
   &.leader-name {
-    width: 26.3571rem;
+    width: 200px;
     text-align: left;
   }
 
   &.start-date {
-    width: 26.4286rem;
+    width: 170px;
   }
 
-  &.record {
-    width: 18.3571rem;
+  &.state {
+    width: 120px;
+    text-align: left;
+  }
+
+  &.count {
+    width: 120px;
   }
 }
 
@@ -146,8 +182,11 @@ export default {
   align-items: center;
   justify-content: center;
   height: 4.5714rem;
-  // border-color: 1px #eaedf3;
   box-shadow: 0px 1px 0px 0px #eaedf3;
+  &:hover {
+    background-color: #f5f9ff;
+    cursor: pointer;
+  }
 }
 .history__text {
   color: #0b1f48;
@@ -156,44 +195,58 @@ export default {
   text-align: center;
   opacity: 0.9;
 
+  &:hover {
+    cursor: pointer;
+  }
+
   &.index {
-    width: 12.1429rem;
+    width: 100px;
     color: #757f91;
     font-weight: 500;
-    font-size: 1.0714rem;
+    font-size: 14.9996px;
     text-align: center;
   }
 
-  &.user-name {
-    width: 14.3571rem;
+  // &.user-name {
+  //   width: 286px;
+  //   text-align: left;
+
+  //   & > p {
+  //     width: 10.9286rem;
+  //     overflow: hidden;
+  //     white-space: nowrap;
+  //     text-overflow: ellipsis;
+  //   }
+  // }
+
+  &.collabo-name {
+    width: 300px;
     text-align: left;
 
     & > p {
-      width: 10.9286rem;
+      width: 286px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
     }
   }
 
-  &.cooperation-name {
-    width: 26.3571rem;
+  &.leader-name {
+    width: 200px;
     text-align: left;
-
-    & > p {
-      width: 22.7857rem;
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
   }
 
   &.start-date {
-    width: 26.4286rem;
+    width: 170px;
   }
 
-  &.record {
-    width: 18.3571rem;
+  &.state {
+    width: 120px;
+    text-align: left;
+  }
+
+  &.count {
+    width: 120px;
   }
 }
 

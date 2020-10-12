@@ -182,6 +182,8 @@ export default {
   }
   &.greyarrow {
     &::after {
+      top: 0.7147rem;
+      right: 1.071rem;
       background: url(~assets/image/ic_dropdown_grey.svg) no-repeat 50%;
     }
   }

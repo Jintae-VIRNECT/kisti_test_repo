@@ -8,16 +8,18 @@
       <button class="collabo-history-list__header--excel">EXCEL</button>
     </div>
     <history :datas="datas"></history>
+    <pagination-tool :totalPage="13"></pagination-tool>
   </section>
 </template>
 
 <script>
 import History from 'components/partials/History'
-
+import PaginationTool from 'components/partials/PaginationTool'
 export default {
   name: 'CollaboHistoryList',
   components: {
     History,
+    PaginationTool,
   },
   data() {
     return {
@@ -33,6 +35,8 @@ export default {
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 123456,
+          status: 'PROGRESS',
+          leader: '일이삼사오육칠팔구십십일',
         },
         {
           index: 2,
@@ -42,6 +46,8 @@ export default {
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 12342134,
+          status: 'PROGRESS',
+          leader: '김관리',
         },
         {
           index: 3,
@@ -50,6 +56,8 @@ export default {
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 65467543,
+          status: 'PROGRESS',
+          leader: '김관리',
         },
         {
           index: 4,
@@ -58,6 +66,8 @@ export default {
           startDate: '2020.07.30',
           recordCount: 10,
           serialNum: 264565196,
+          status: 'PROGRESS',
+          leader: '김관리',
         },
         {
           index: 5,
@@ -66,6 +76,8 @@ export default {
           startDate: '2020.07.30',
           recordCount: 0,
           serialNum: 745864123,
+          status: 'FINISHED',
+          leader: '김관리',
         },
         {
           index: 6,
@@ -74,6 +86,8 @@ export default {
           startDate: '2020.07.30',
           recordCount: 999,
           serialNum: 1215,
+          status: 'FINISHED',
+          leader: '김관리',
         },
         {
           index: 7,
@@ -82,6 +96,8 @@ export default {
           startDate: '2020.07.30',
           recordCount: 2,
           serialNum: 4984,
+          status: 'FINISHED',
+          leader: '김관리',
         },
       ],
 

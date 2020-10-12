@@ -1,13 +1,13 @@
 <template>
   <button
     type="button"
-    class="record-button"
+    class="local-record-button"
     :class="{ nodata: count <= 0, normal: count > 0, seleted: selected }"
     @click="showList"
   >
     <img :src="imgSrc" />
     <p
-      class="record-button--count"
+      class="local-record-button--count"
       :class="{ nodata: count <= 0, normal: count > 0, seleted: selected }"
     >
       {{ count }}건
@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  name: 'CountButton',
+  name: 'LocalRecordCountButton',
   data() {
     return {
       selected: false,
@@ -66,7 +66,7 @@ export default {
 </script>
 
 <style lang="scss">
-.record-button {
+.local-record-button {
   display: flex;
   align-items: center;
   justify-content: space-around;
@@ -88,7 +88,7 @@ export default {
   }
 }
 
-.record-button--count {
+.local-record-button--count {
   color: #0b1f48;
   font-weight: 500;
   font-size: 1.0714rem;
