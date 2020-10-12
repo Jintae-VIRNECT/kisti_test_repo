@@ -52,27 +52,27 @@ export default {
 		loginService() {
 			setTimeout(() => {
 				this.show = false
-			}, 2000)
+			}, 1500)
 		},
-		mounted() {
-			const redirectTarget = this.$route.query.continue
-			// 자신으로 리다이렉트 제외
-			if (
-				redirectTarget === location.origin ||
-				redirectTarget === location.origin + '/'
-			) {
-				location.href = '/'
-				return false
-			}
+	},
+	mounted() {
+		const redirectTarget = this.$route.query.continue
+		// 자신으로 리다이렉트 제외
+		if (
+			redirectTarget === location.origin ||
+			redirectTarget === location.origin + '/'
+		) {
+			location.href = '/'
+			return false
+		}
 
-			// 로그인 필요 다이얼로그
-			const needNotLogin =
-				redirectTarget && redirectTarget.match(this.$urls['www'] !== null)
-			if (redirectTarget && !needNotLogin) {
-				this.show = true
-				this.loginService()
-			}
-		},
+		// 로그인 필요 다이얼로그
+		const needNotLogin =
+			redirectTarget && redirectTarget.match(this.$urls['www'] !== null)
+		if (redirectTarget && !needNotLogin) {
+			this.show = true
+			this.loginService()
+		}
 	},
 }
 </script>
