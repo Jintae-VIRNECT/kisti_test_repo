@@ -25,12 +25,7 @@ export default {
 	},
 	data() {
 		return {
-			auth: {
-				env: auth.env,
-				urls: auth.urls,
-				myInfo: auth.myInfo,
-				isLogin: auth.isLogin,
-			},
+			auth,
 			showSection: {
 				login: false,
 				language: true,

@@ -4,7 +4,7 @@
 			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
 		</TheHeader>
 		<transition name="app-fade" mode="out-in">
-			<router-view :myInfo="auth.myInfo" />
+			<router-view :auth="auth" />
 		</transition>
 		<TheFooter />
 	</section>
@@ -15,16 +15,7 @@ import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
 export default {
 	props: {
-		auth: {
-			default() {
-				return {
-					env: '',
-					urls: {},
-					myInfo: {},
-					isLogin: false,
-				}
-			},
-		},
+		auth: Object,
 	},
 	data() {
 		return {

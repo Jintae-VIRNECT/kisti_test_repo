@@ -81,8 +81,6 @@ import AuthService from 'service/auth-service'
 import mixin from 'mixins/mixin'
 
 import footerSection from '../../common/Footer'
-import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
-
 const cookieOption = {
 	domain:
 		location.hostname.split('.').length === 3
@@ -94,6 +92,18 @@ export default {
 	mixins: [mixin],
 	components: {
 		footerSection,
+	},
+	props: {
+		auth: {
+			default() {
+				return {
+					env: '',
+					urls: {},
+					myInfo: {},
+					isLogin: false,
+				}
+			},
+		},
 	},
 	data() {
 		return {
@@ -126,9 +136,8 @@ export default {
 	},
 	methods: {
 		async checkToken() {
-			const res = await auth.init()
 			const redirectTarget = this.$route.query.continue
-			if (!res.isLogin) return false
+			if (!this.auth.isLogin) return false
 
 			if (redirectTarget) {
 				location.href = /^https?:/.test(redirectTarget)
@@ -215,7 +224,6 @@ export default {
 		this.checkToken()
 	},
 	mounted() {
-		// console.log(this.rememberEmail)
 		if (this.rememberLogin === 'true') {
 			this.login.autoLogin = true
 		}

@@ -58,7 +58,7 @@ import utc from 'dayjs/plugin/utc'
 import duration from 'dayjs/plugin/duration'
 export default {
 	props: {
-		myInfo: Object,
+		auth: Object,
 	},
 	data() {
 		return {
@@ -87,8 +87,8 @@ export default {
 	methods: {
 		async reset() {
 			const params = {
-				email: this.$props.myInfo.email,
-				userId: this.$props.myInfo.uuid,
+				email: this.auth.myInfo.email,
+				userId: this.auth.myInfo.uuid,
 			}
 			try {
 				let otp = await AuthService.qrOtp({ params: params })
