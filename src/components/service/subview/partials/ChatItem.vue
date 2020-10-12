@@ -43,6 +43,7 @@ import { systemClass, systemText } from './chatUtils'
 import { downloadFile } from 'api/http/file'
 import { mapGetters, mapActions } from 'vuex'
 import { translate as doTranslate } from 'plugins/remote/translate'
+import { languageCode } from 'utils/translate'
 export default {
   name: 'ChatItem',
   components: {
@@ -58,6 +59,19 @@ export default {
   },
   computed: {
     ...mapGetters(['roomInfo', 'translate']),
+    translateCode() {
+      if (this.translate && this.translate.flag && this.translate.code) {
+        const idx = languageCode.findIndex(
+          lang => lang.sttCode === this.translate.code,
+        )
+        if (idx < 0) {
+          return false
+        }
+        return languageCode[idx].code
+      } else {
+        return false
+      }
+    },
     isFile() {
       if (this.chat.file) {
         return true
@@ -175,7 +189,8 @@ export default {
     },
     async translateText() {
       try {
-        const response = await doTranslate(this.chat.text, this.translate.code)
+        if (this.translateCode === false) return
+        const response = await doTranslate(this.chat.text, this.translateCode)
         this.updateChat({
           id: this.chat.id,
           text: `${this.chat.text}<br><b>${response}</b>`,
