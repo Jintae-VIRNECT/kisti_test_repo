@@ -8,7 +8,6 @@
       <datepicker
         class="board-daily__header--datepicker"
         :pickerName="'daily'"
-        :highlighted="{}"
         :minimumView="'day'"
         :maximumView="'day'"
       ></datepicker>

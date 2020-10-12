@@ -8,7 +8,6 @@
       <datepicker
         class="board-daily__header--datepicker"
         :pickerName="'monthly'"
-        :highlighted="{}"
         :minimumView="'month'"
         :maximumView="'month'"
         :format="'yyyy-MM'"

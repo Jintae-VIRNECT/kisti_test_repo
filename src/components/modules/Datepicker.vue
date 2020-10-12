@@ -8,6 +8,7 @@
       :useUtc="true"
       :minimumView="minimumView"
       :maximumView="maximumView"
+      @selected="selected"
     >
     </vue-datepicker>
     <button @click="toggleCalendar" class="calendar-button">
@@ -18,7 +19,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
   name: 'Datepicker',
   data() {
@@ -69,9 +70,11 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setCalendar']),
     toggleCalendar() {
       this.$eventBus.$emit('toggle::calendar', this.pickerName)
+    },
+    selected(date) {
+      console.log(date)
     },
   },
   mounted() {},

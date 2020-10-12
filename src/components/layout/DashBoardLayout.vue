@@ -84,7 +84,7 @@ export default {
 .dashboard-layout {
   position: relative;
   width: 100%;
-  height: 100vh;
+  height: 110vh;
 }
 .dashboard-layout__contents {
   height: 100%;

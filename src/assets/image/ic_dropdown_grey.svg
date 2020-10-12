@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>4F64A97F-2E0B-41DC-ABC5-97C285502121@1x</title>
+    <defs>
+        <polygon id="path-1" points="117 19 117 29 125 24"></polygon>
+    </defs>
+    <g id="Design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0101-_협업-내역_리스트-" transform="translate(-563.000000, -236.000000)">
+            <rect fill="#FFFFFF" x="0" y="0" width="1920" height="1080"></rect>
+            <rect id="bg" fill="#F8F8FA" x="0" y="0" width="1920" height="1081"></rect>
+            <g id="setting" transform="translate(320.000000, 194.000000)">
+                <path d="M1279.5,0.5 L1279.5,107.5 L0.5,107.5 L0.5,0.5 L1279.5,0.5 Z" id="bg" stroke="#CDD2DC" fill="#D7E0EC"></path>
+                <g id="form" transform="translate(60.000000, 30.000000)">
+                    <g id="01" transform="translate(74.000000, 0.000000)">
+                        <path d="M138.5,0.5 C139.466498,0.5 140.341498,0.891750844 140.974874,1.52512627 C141.608249,2.15850169 142,3.03350169 142,4 L142,4 L142,44 C142,44.9664983 141.608249,45.8414983 140.974874,46.4748737 C140.341498,47.1082492 139.466498,47.5 138.5,47.5 L138.5,47.5 L4.5,47.5 C3.53350169,47.5 2.65850169,47.1082492 2.02512627,46.4748737 C1.39175084,45.8414983 1,44.9664983 1,44 L1,44 L1,4 C1,3.03350169 1.39175084,2.15850169 2.02512627,1.52512627 C2.65850169,0.891750844 3.53350169,0.5 4.5,0.5 L4.5,0.5 Z" id="container" stroke="#C2C6CE" fill="#FFFFFF" transform="translate(71.500000, 24.000000) scale(1, -1) translate(-71.500000, -24.000000) "></path>
+                        <rect id="tr" x="109" y="12" width="24" height="24"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="play-[#1001]" fill="#757F91" transform="translate(121.000000, 24.000000) rotate(-270.000000) translate(-121.000000, -24.000000) " xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
