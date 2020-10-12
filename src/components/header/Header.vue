@@ -24,6 +24,7 @@ export default {
 <style lang="scss">
 .header {
   position: fixed;
+  z-index: 999;
   display: flex;
   // flex-direction: row;
   // justify-content: space-between;
