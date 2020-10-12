@@ -174,11 +174,15 @@ export default {
       // FileSaver.saveAs(file.fileUrl, file.fileName)
     },
     async translateText() {
-      const response = await doTranslate(this.chat.text, this.translate.code)
-      this.updateChat({
-        id: this.chat.id,
-        text: `${this.chat.text}<br><b>${response}</b>`,
-      })
+      try {
+        const response = await doTranslate(this.chat.text, this.translate.code)
+        this.updateChat({
+          id: this.chat.id,
+          text: `${this.chat.text}<br><b>${response}</b>`,
+        })
+      } catch (err) {
+        console.error(`${err.message} (${err.code})`)
+      }
     },
   },
 

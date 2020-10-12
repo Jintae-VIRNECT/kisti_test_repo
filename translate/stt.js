@@ -1,6 +1,7 @@
 // Imports the Google Cloud client library
 const speech = require('@google-cloud/speech')
 const fs = require('fs')
+const logger = require('../server/logger')
 
 // Creates a client
 let client = null
@@ -36,9 +37,19 @@ async function getStt(audioFile, languageCode, rateHertz) {
     const transcription = response.results
       .map(result => result.alternatives[0].transcript)
       .join('\n')
-    return transcription
+    logger.info(`SUCCESS STT: ${transcription}`, 'STT')
+    return {
+      code: 200,
+      data: transcription,
+      message: 'complete',
+    }
   } catch (err) {
-    console.log(err)
+    logger.error(`${err.message}(${err.code})`, 'STT')
+    return {
+      code: err.code,
+      data: null,
+      message: err.message,
+    }
   }
 }
 

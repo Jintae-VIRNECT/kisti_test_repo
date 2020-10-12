@@ -30,7 +30,7 @@
           class="setting__r-selecter"
           :options="radioOption"
           :disabled="!useTranslate"
-          value="code"
+          value="sttCode"
           text="name"
           :selectedValue.sync="transCode"
         >
@@ -84,7 +84,7 @@ export default {
       this.$localStorage.setTranslate('code', code)
     },
   },
-  mounted() {
+  created() {
     this.useTranslate = this.translate.flag
     this.transCode = this.translate.code
   },

@@ -37,9 +37,18 @@ async function getTranslate(text, target) {
     const [translation] = await translate.translate(text, target)
     // console.log(`Translation: ${translation}`)
     logger.log(`${text} -> ${translation}`, 'TRANSLATION')
-    return translation
+    return {
+      code: 200,
+      data: translation,
+      message: 'complate',
+    }
   } catch (err) {
-    console.log(err)
+    logger.error(`${err.message}(${err.code})`, 'TRANSLATION')
+    return {
+      code: err.code,
+      data: null,
+      message: err.message,
+    }
   }
 }
 

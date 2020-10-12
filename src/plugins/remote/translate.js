@@ -7,33 +7,31 @@ import axios from 'axios'
  * @param {String} rateHertz rate hertz
  */
 const stt = async (file, lang, rateHertz = 48000) => {
-  try {
-    const res = await axios.post('/stt', {
-      file,
-      lang,
-      rateHertz,
-    })
-    return res.data
-  } catch (err) {
-    console.log(err)
+  const { data } = await axios.post('/stt', {
+    file,
+    lang,
+    rateHertz,
+  })
+  if (data.code !== 200) {
+    throw { message: data.message, code: data.code }
   }
+  return data.data
 }
 
 /**
  * TRANSLATE
- * @param {String} message 번역할 텍스트
- * @param {String} code translate 타겟 언어코드
+ * @param {String} text 번역할 텍스트
+ * @param {String} targetCode translate 타겟 언어코드
  */
-const translate = async (message, code) => {
-  try {
-    const res = await axios.post('/translate', {
-      text: message,
-      target: code,
-    })
-    return res.data
-  } catch (err) {
-    console.log(err)
+const translate = async (text, targetCode) => {
+  const { data } = await axios.post('/translate', {
+    text: text,
+    target: targetCode,
+  })
+  if (data.code !== 200) {
+    throw { message: data.message, code: data.code }
   }
+  return data.data
 }
 
 /**
@@ -43,16 +41,15 @@ const translate = async (message, code) => {
  * @param {String} voice 기본 음성 목소리 'male', 'female'
  */
 const tts = async (text, lang, voice) => {
-  try {
-    const res = await axios.post('/tts', {
-      text: text,
-      lang: lang,
-      voice: voice,
-    })
-    return res.data
-  } catch (err) {
-    console.log(err)
+  const { data } = await axios.post('/tts', {
+    text: text,
+    lang: lang,
+    voice: voice,
+  })
+  if (data.code !== 200) {
+    throw { message: data.message, code: data.code }
   }
+  return data.data
 }
 
 module.exports = {

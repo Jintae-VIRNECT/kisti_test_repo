@@ -1,4 +1,5 @@
 // Imports the Google Cloud client library
+const logger = require('../server/logger')
 const textToSpeech = require('@google-cloud/text-to-speech')
 // Import other required libraries
 const fs = require('fs')
@@ -36,9 +37,19 @@ async function getTts(text, lang, voice) {
     // await writeFile('output.wav', response.audioContent, 'binary')
     // console.log('Audio content written to file: output.mp3')
     // console.log(response.audioContent.toString('base64'))
-    return response.audioContent.toString('base64')
+    logger.info(`SUCCESS TTS: ${text}`, 'TTS')
+    return {
+      code: 200,
+      data: response.audioContent.toString('base64'),
+      message: 'complete',
+    }
   } catch (err) {
-    console.log(err)
+    logger.error(`${err.message}(${err.code})`, 'TTS')
+    return {
+      code: err.code,
+      data: null,
+      message: err.message,
+    }
   }
 }
 
