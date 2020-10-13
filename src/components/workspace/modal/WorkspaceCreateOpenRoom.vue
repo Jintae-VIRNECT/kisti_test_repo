@@ -1,6 +1,6 @@
 <template>
   <modal
-    :title="'오픈 방 생성하기'"
+    :title="$t('workspace.create_open')"
     width="28.786em"
     height="46.929em"
     :showClose="true"

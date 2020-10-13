@@ -60,9 +60,11 @@
     </div>
     <div class="roominfo-view__footer">
       <div class="roominfo-view__data">
-        <span class="data-title">{{ '모드' }}</span>
+        <span class="data-title">{{ $t('workspace.info_mode') }}</span>
         <span class="data-value">{{
-          isOpenRoom ? '오픈 방' : '원격 협업'
+          isOpenRoom
+            ? $t('workspace.info_mode_open')
+            : $t('workspace.info_mode_collabo')
         }}</span>
       </div>
       <div class="roominfo-view__data">

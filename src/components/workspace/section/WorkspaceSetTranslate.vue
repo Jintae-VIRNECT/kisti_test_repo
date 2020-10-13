@@ -1,21 +1,26 @@
 <template>
   <section class="setting-section">
     <div class="setting-section__title">
-      {{ '번역 설정' }}
+      {{ $t('workspace.setting_translate') }}
     </div>
     <div class="setting-section__body horizon first">
       <figure class="setting__figure">
-        <p class="setting__label">{{ '번역 사용' }}</p>
-        <check :text="'번역 사용 허용'" :value.sync="useTranslate"></check>
+        <p class="setting__label">
+          {{ $t('workspace.setting_translate_use') }}
+        </p>
+        <check
+          :text="$t('workspace.setting_translate_use_allow')"
+          :value.sync="useTranslate"
+        ></check>
       </figure>
       <figure class="setting__figure">
         <div class="setting__figure--wrapper">
           <p class="setting__label">
-            {{ '번역 언어 설정' }}
+            {{ $t('workspace.setting_translate_language') }}
           </p>
           <tooltip
             customClass="tooltip-guide"
-            :content="'채팅 시, 번역 받을 국가 언어를 설정해주세요.'"
+            :content="$t('workspace.setting_translate_language_tooltip')"
             placement="right"
             effect="blue"
           >

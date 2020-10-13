@@ -31,7 +31,7 @@
         class="btn workspace-welcome__open"
         @click="createOpenRoom"
       >
-        {{ '오픈 방 생성' }}
+        {{ $t('workspace.create_open_room') }}
       </button>
     </div>
     <create-room-modal :visible.sync="visible"></create-room-modal>

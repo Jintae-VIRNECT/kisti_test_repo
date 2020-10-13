@@ -112,7 +112,7 @@ export default {
       if (USE_TRANSLATE) {
         menu.push({
           key: 'translate',
-          text: '번역 설정',
+          text: this.$t('workspace.setting_translate'),
         })
       }
       return menu
