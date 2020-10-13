@@ -7,16 +7,26 @@
       </span>
       <button class="collabo-history-list__header--excel">EXCEL</button>
     </div>
-    <history :datas="datas"></history>
-    <pagination-tool :totalPage="13"></pagination-tool>
+    <history :historys="historyList"></history>
+    <pagination-tool
+      @current-page="getHistoryPage"
+      :totalPage="pageMeta.totalPage"
+    ></pagination-tool>
   </section>
 </template>
 
 <script>
 import History from 'components/partials/History'
 import PaginationTool from 'components/partials/PaginationTool'
+
+import { getHistoryList } from 'api/http/history'
+
+import confirmMixin from 'mixins/confirm'
+import searchMixin from 'mixins/filter'
+
 export default {
   name: 'CollaboHistoryList',
+  mixins: [searchMixin, confirmMixin],
   components: {
     History,
     PaginationTool,
@@ -26,84 +36,88 @@ export default {
       targetId: 0,
       modalVisible: false,
       fileList: [],
-      datas: [
-        {
-          index: 1,
-          userName:
-            '일이삼사아육칠팔구십일이삼사아육칠팔구십일이삼사아육칠팔구',
-          cooperateName: '일이삼사오',
-          startDate: '2020.07.30',
-          recordCount: 10,
-          serialNum: 123456,
-          status: 'PROGRESS',
-          leader: '일이삼사오육칠팔구십십일',
-        },
-        {
-          index: 2,
-          userName: 'test1',
-          cooperateName:
-            '일이삼사아육칠팔구십일이삼사아육칠팔구asgfasfgsafssdsfdsfdfdsdsfdsfdsfdsfdfdsfdsfdsfddsfsdfafs십',
-          startDate: '2020.07.30',
-          recordCount: 10,
-          serialNum: 12342134,
-          status: 'PROGRESS',
-          leader: '김관리',
-        },
-        {
-          index: 3,
-          userName: 'test1',
-          cooperateName: '일이삼사오',
-          startDate: '2020.07.30',
-          recordCount: 10,
-          serialNum: 65467543,
-          status: 'PROGRESS',
-          leader: '김관리',
-        },
-        {
-          index: 4,
-          userName: 'test1',
-          cooperateName: '일이삼사오',
-          startDate: '2020.07.30',
-          recordCount: 10,
-          serialNum: 264565196,
-          status: 'PROGRESS',
-          leader: '김관리',
-        },
-        {
-          index: 5,
-          userName: 'test1',
-          cooperateName: '일이삼사오',
-          startDate: '2020.07.30',
-          recordCount: 0,
-          serialNum: 745864123,
-          status: 'FINISHED',
-          leader: '김관리',
-        },
-        {
-          index: 6,
-          userName: 'test1',
-          cooperateName: '일이삼사오',
-          startDate: '2020.07.30',
-          recordCount: 999,
-          serialNum: 1215,
-          status: 'FINISHED',
-          leader: '김관리',
-        },
-        {
-          index: 7,
-          userName: 'test1',
-          cooperateName: '일이ㄴ삼사오',
-          startDate: '2020.07.30',
-          recordCount: 2,
-          serialNum: 4984,
-          status: 'FINISHED',
-          leader: '김관리',
-        },
-      ],
-
-      totalPage: 13,
+      historyList: [],
+      pageMeta: {
+        currentPage: 0,
+        currentSize: 0,
+        totalElements: 0,
+        totalPage: 0,
+        last: false,
+      },
+      paging: false,
     }
   },
+  computed: {},
+  methods: {
+    async init(page = 0) {
+      this.loading = true
+      const list = await this.getHistory(page)
+      if (list === false) {
+        this.loading = false
+        return
+      }
+      this.historyList = list.sort((roomA, roomB) => {
+        return (
+          new Date(roomB.activeDate).getTime() -
+          new Date(roomA.activeDate).getTime()
+        )
+      })
+      this.setIndex()
+      this.setLeader()
+      this.loading = false
+      this.$eventBus.$emit('scroll:reset:workspace')
+    },
+    async getHistoryPage(page) {
+      this.init(page - 1)
+    },
+    async getHistory(page = 0) {
+      try {
+        const datas = await getHistoryList({
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+          paging: true,
+          page,
+        })
+        if ('pageMeta' in datas) {
+          this.pageMeta = datas.pageMeta
+        } else {
+          this.pageMeta = {
+            currentPage: 0,
+            currentSize: 0,
+            totalElements: 0,
+            totalPage: 0,
+            last: false,
+          }
+        }
+        return datas.roomHistoryInfoList
+      } catch (err) {
+        console.error(err)
+        return false
+      }
+    },
+    setIndex() {
+      const startIndex = this.pageMeta.currentPage * 7
+      this.historyList.map((history, index) => {
+        history.index = index + startIndex
+        history.index++
+      })
+    },
+    setLeader() {
+      this.historyList.map(history => {
+        const leader = history.memberList.find(member => {
+          return member.memberType === 'LEADER'
+        })
+        history.leader = leader
+      })
+    },
+  },
+
+  mounted() {
+    if (this.workspace.uuid) {
+      this.init()
+    }
+  },
+  beforeDestroy() {},
 }
 </script>
 
