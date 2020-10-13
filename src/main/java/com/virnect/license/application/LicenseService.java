@@ -1,6 +1,5 @@
 package com.virnect.license.application;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,20 +13,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,9 +44,6 @@ import com.virnect.license.dto.response.MyLicenseInfoResponse;
 import com.virnect.license.dto.response.MyLicensePlanInfoListResponse;
 import com.virnect.license.dto.response.MyLicensePlanInfoResponse;
 import com.virnect.license.dto.response.WorkspaceLicensePlanInfoResponse;
-import com.virnect.license.dto.rest.billing.BillingRestResponse;
-import com.virnect.license.dto.rest.billing.MonthlyBillingCancelRequest;
-import com.virnect.license.dto.rest.billing.MonthlyBillingInfo;
 import com.virnect.license.dto.rest.content.ContentResourceUsageInfoResponse;
 import com.virnect.license.dto.rest.user.WorkspaceInfoResponse;
 import com.virnect.license.exception.LicenseServiceException;
@@ -129,7 +115,7 @@ public class LicenseService {
 					licenseProductInfo.getUnUseLicenseAmount() + unUsedLicenseAmount.get()
 				);
 				licenseProductInfo.getLicenseInfoList().addAll(licenseInfoList);
-				licenseProductInfo.setQuantity(licenseProductInfo.getLicenseInfoList().size());
+				licenseProductInfo.setQuantity(licenseProductInfo.getQuantity());
 				licenseProductInfo.setProductStatus(licenseProduct.getStatus());
 			} else {
 				LicenseProductInfoResponse licenseProductInfo = new LicenseProductInfoResponse();
@@ -146,7 +132,7 @@ public class LicenseService {
 				);
 
 				licenseProductInfo.setLicenseInfoList(licenseInfoList);
-				licenseProductInfo.setQuantity(licenseInfoList.size());
+				licenseProductInfo.setQuantity(licenseProduct.getQuantity());
 				licenseProductInfo.setUnUseLicenseAmount(unUsedLicenseAmount.get());
 				licenseProductInfo.setUseLicenseAmount(usedLicenseAmount.get());
 				licenseProductInfo.setProductStatus(licenseProduct.getStatus());
@@ -294,22 +280,11 @@ public class LicenseService {
 			PlanStatus.ACTIVE
 		)
 			.orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
-		Set<LicenseProduct> licenseProductSet = licensePlan.getLicenseProductList();
 
 		LicenseProduct licenseProduct = licenseProductRepository.findByLicensePlanAndProduct_Name(
 			licensePlan, productName
 		).orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PRODUCT_NOT_FOUND));
 
-		// Product product = null;
-		// for (LicenseProduct licenseProduct : licenseProductSet) {
-		// 	if (licenseProduct.getProduct().getName().equalsIgnoreCase(productName)) {
-		// 		product = licenseProduct.getProduct();
-		// 	}
-		// }
-		// //워크스페이스가 가진 라이선스 중에 사용자가 요청한 제품 라이선스가 없는경우.
-		// if (product == null) {
-		// 	throw new LicenseServiceException(ErrorCode.ERR_LICENSE_PRODUCT_NOT_FOUND);
-		// }
 
 		Product product = licenseProduct.getProduct();
 
