@@ -20,7 +20,7 @@ export default {
 		console.log('%cprocess env: %s', environmentCss, res.env)
 		Vue.prototype.$urls = res
 		Vue.prototype.$env = res.env
-		await auth.init({ env: res.env })
+		await auth.init({ env: res.env, urls: res })
 		next()
 	},
 	data() {
