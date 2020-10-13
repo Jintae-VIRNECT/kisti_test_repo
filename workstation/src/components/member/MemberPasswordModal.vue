@@ -18,6 +18,7 @@
         ref="form"
         class="virnect-workstation-form"
         :model="form"
+        :rules="rules"
         :show-message="false"
       >
         <el-form-item
@@ -62,6 +63,40 @@ export default {
         password: '',
         password2: '',
       },
+      rules: {
+        password: [
+          {
+            trigger: ['blur', 'change'],
+            validator: (rule, value, callback) => {
+              let err
+              let typeCount = 0
+              if (/[0-9]/.test(value)) typeCount++
+              if (/[a-z]/.test(value)) typeCount++
+              if (/[A-Z]/.test(value)) typeCount++
+              if (/[$.$,$!$@$#$$$%]/.test(value)) typeCount++
+
+              if (typeCount < 3) err = new Error()
+              if (!/^.{8,20}$/.test(value)) err = new Error()
+              if (/(.)\1\1\1/.test(value)) err = new Error()
+              if (/(0123|1234|2345|3456|4567|5678|6789|7890)/.test(value))
+                err = new Error()
+              if (/(0987|9876|8765|7654|6543|5432|4321|3210)/.test(value))
+                err = new Error()
+
+              callback(err)
+            },
+          },
+        ],
+        password2: [
+          {
+            trigger: ['blur', 'change'],
+            validator: (rule, value, callback) => {
+              if (value === this.form.password) callback()
+              else callback(new Error())
+            },
+          },
+        ],
+      },
     }
   },
   methods: {
@@ -69,6 +104,32 @@ export default {
       this.form = {
         password: '',
         password2: '',
+      }
+    },
+    async submit() {
+      console.log('test')
+      // 유효성 검사
+      try {
+        await this.$refs.form.validate()
+      } catch (e) {
+        return false
+      }
+      // api 요청
+      try {
+        // throw new Error('test error')
+        this.$message.success({
+          message: this.$t('members.password.message.success'),
+          duration: 4000,
+          showClose: true,
+        })
+        this.showMe = false
+      } catch (e) {
+        // 에러
+        this.$message.error({
+          message: this.$t('members.password.message.fail'),
+          duration: 4000,
+          showClose: true,
+        })
       }
     },
   },
