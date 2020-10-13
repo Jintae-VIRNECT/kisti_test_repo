@@ -407,7 +407,7 @@ export default {
     },
     requestVideo() {
       if (this.participant.cameraStatus === CAMERA.CAMREA_NONE) {
-        this.toastDefault(this.$t('영상을 공유할 수 없는 참가자 입니다.'))
+        this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
       this.$call.mainview(this.participant.id, true)

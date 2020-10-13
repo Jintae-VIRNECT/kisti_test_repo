@@ -177,7 +177,7 @@ export default {
       this.showDenied = true
     },
     async checkPlan(workspace) {
-      if (workspace.productPlanStatus === PLAN_STATUS.EXCEEDED) {
+      if (workspace.planStatus === PLAN_STATUS.EXCEEDED) {
         this.showPlanOverflow = true
       } else {
         this.showPlanOverflow = false

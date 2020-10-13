@@ -76,10 +76,10 @@
             {{ $t('service.stream_no_worker') }}
           </p>
           <p v-else-if="isLeader" class="inner-discription">
-            {{ '공유할 참가자 영상을 선택해 주세요.' }}
+            {{ $t('service.stream_choose_stream') }}
           </p>
           <p v-else class="inner-discription">
-            {{ '공유된 영상이 없습니다.' }}
+            {{ $t('service.stream_no_stream') }}
           </p>
         </div>
         <div class="main-video__empty-inner" v-else>

@@ -4,6 +4,7 @@
     "search_member": "Search member",
     "tab_empty_description": "Start remote Collabo.",
     "create_room": "Create remote Collabo",
+    "create_open_room": "Create an open room",
     "expire_license": "Plan expiration",
     "welcome": "Hello {name}.",
     "welcome_license": "{name}, <br>you don't have any plan allotted.",
@@ -70,6 +71,11 @@
     "setting_video_resolution": "Input resolution",
     "setting_video_preview": "Preview video",
     "setting_camera": "Camera",
+    "setting_translate": "Translation settings",
+    "setting_translate_use": "Use translation",
+    "setting_translate_use_allow": "Use translation allow",
+    "setting_translate_language": "Translation language settings",
+    "setting_translate_language_tooltip": "Set the texting translation language.",
     "access_deny": "Camera and mic. access denied.",
     "access_deny_description": "Click <span class='device-denied__content--emphasize'>icon</span> on browser address field <br />to allow access and refresh the page.",
 
@@ -91,6 +97,8 @@
     "create_max_member": "Exceeded selectable number of members.",
     "create_remote_fail": "Failed to create Collabo",
 
+    "create_open": "Create Open Room",
+
     "info_remote_detail": "Remote Collabo details",
     "info_remote": "Collabo details",
     "info_remote_member": "Particpant details",
@@ -100,6 +108,9 @@
     "info_remote_duration": "Duration",
     "info_name": "Name",
     "info_dutation": "Duration",
+    "info_mode": "Mode",
+    "info_mode_open": "Open room",
+    "info_mode_collabo": "Remote Collabo",
 
     "record_file": "Local recording file",
     "record_file_title": "Local recording file list",
@@ -122,9 +133,9 @@
     "error_no_connected_device": "Cannot find a connected device.",
     "error_no_device": "Cannot find a device.",
 
-    "plan_exceeded": "Plan Overuse Guidance",
-    "plan_exceeded_desctiption": "The service was restricted because there were more plan assignment users than the number of plans you had.<br>Please request plan management from the master user.",
-    "go_workspace_member": "Moving a list of workspace members",
+    "plan_exceeded": "Notice of excess use of plans",
+    "plan_exceeded_desctiption": "The service is restricted because there were more users assigned to the plans than the number of plans you possess. Please request for plan management to the Master user.",
+    "go_workspace_member": "Move to Workspace member list",
 
     "cookie": "VIRNECT uses cookies to operate VIRNECT's services and improve customer experience. For more information,<br> check out our <a href='/policy/cookie' target='_blank'>cookie policy</a>. By clicking ‘OK’ or continuing to use the site, you agree to these cookie settings."
   }

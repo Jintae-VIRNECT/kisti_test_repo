@@ -125,23 +125,23 @@
       </div>
       <template v-if="useTranslate">
         <p class="rec-setting--header">
-          {{ '번역 설정' }}
+          {{ $t('service.setting_translate') }}
         </p>
         <div class="rec-setting__row">
           <p class="rec-setting__text">
-            {{ '번역 사용' }}
+            {{ $t('service.setting_translate_use') }}
           </p>
           <r-check
-            :text="'번역 사용 허용'"
+            :text="$t('service.setting_translate_use_allow')"
             :value.sync="useTranslateAllow"
           ></r-check>
         </div>
         <div class="rec-setting__row">
           <div class="rec-setting__text custom">
-            <p>{{ '번역 언어 설정' }}</p>
+            <p>{{ $t('service.setting_translate_language') }}</p>
             <tooltip
               customClass="tooltip-guide"
-              :content="'채팅 시, 번역 받을 국가언어를 설정해주세요.'"
+              :content="$t('service.setting_translate_language_tooltip')"
               placement="right"
               effect="blue"
             >
