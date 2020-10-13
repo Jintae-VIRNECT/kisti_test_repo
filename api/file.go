@@ -40,6 +40,8 @@ type ListRecordingFilesQuery struct {
 	Filename string `json:"filename" example:"2020-08-14_12-00-00.mp4"`
 	// search by recording_id
 	ID string `json:"id" example:"recording_id"`
+	// search by session_id
+	SessionID string `json:"sessionId" example:"session_id"`
 	// time-based search
 	// - format: [op]:[date]
 	// - date: ISO8601 format (YYYY-MM-DDTHH:mm:ss.sssZ)
@@ -126,6 +128,10 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 	if id, ok := c.GetQuery("id"); ok {
 		tmp := data.RecordingID(id)
 		filter.RecordingID = &tmp
+	}
+	if id, ok := c.GetQuery("sessionId"); ok {
+		tmp := data.SessionID(id)
+		filter.SessionID = &tmp
 	}
 	if page, ok := c.GetQuery("page"); ok {
 		tmp, _ := strconv.Atoi(page)

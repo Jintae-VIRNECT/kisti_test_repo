@@ -107,6 +107,9 @@ func (m *RecordingFileDB) Select(filter *data.Filter) ([]RecordingFile, int, err
 	if filter.RecordingID != nil {
 		tx = tx.Where(&RecordingFile{RecordingID: *filter.RecordingID})
 	}
+	if filter.SessionID != nil {
+		tx = tx.Where(&RecordingFile{SessionID: *filter.SessionID})
+	}
 	if filter.WorkspaceID != nil {
 		tx = tx.Where(&RecordingFile{WorkspaceID: *filter.WorkspaceID})
 	}

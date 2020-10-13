@@ -9,6 +9,7 @@ type FilterTime struct {
 
 type Filter struct {
 	RecordingID *RecordingID
+	SessionID   *SessionID
 	WorkspaceID *WorkspaceID
 	Filename    *string
 	CreatedAt   []FilterTime
