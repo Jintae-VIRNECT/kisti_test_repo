@@ -6,31 +6,24 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"path/filepath"
 
 	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
 )
 
 var db *database.RecordingFileDB
 
-func insertIntoDB(ctx context.Context, recordingID string) {
+func insertIntoDB(ctx context.Context, info RecordingFileInfo) {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 	if db == nil {
 		return
 	}
-	root := viper.GetString("record.dir")
-	info, err := readInfoFile(ctx, recordingID, filepath.Join(root, recordingID))
-	if err != nil {
-		log.Error(err)
-		return
-	}
 	metaData, _ := json.Marshal(info.MetaData)
 	if _, err := db.Create(
-		recordingID,
+		info.RecordingID,
 		info.SessionID,
+		info.WorkspaceID,
+		info.UserID,
 		info.Filename,
-		info.FullPath,
 		info.Duration,
 		info.Size,
 		info.Resolution,
@@ -72,8 +65,9 @@ func queryFromDB(ctx context.Context, filter *data.Filter) ([]RecordingFileInfo,
 		info := RecordingFileInfo{
 			RecordingID: r.RecordingID,
 			SessionID:   r.SessionID,
+			WorkspaceID: r.WorkspaceID,
+			UserID:      r.UserID,
 			Filename:    r.Filename,
-			FullPath:    r.FullPath,
 			Duration:    r.Duration,
 			Size:        r.Size,
 			Resolution:  r.Resolution,

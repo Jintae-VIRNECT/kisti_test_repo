@@ -3,9 +3,6 @@ package api
 import (
 	"RM-RecordServer/data"
 	"RM-RecordServer/recorder"
-	"io"
-	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -14,10 +11,24 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type RecordingFiles struct {
+	RecordingID data.RecordingID `json:"recordingId"`
+	SessionID   data.SessionID   `json:"sessionId"`
+	WorkspaceID data.WorkspaceID `json:"workspaceId"`
+	UserID      string           `json:"userId"`
+	Filename    string           `json:"filename"`
+	Duration    int              `json:"duration"`
+	Size        int              `json:"size"`
+	Resolution  string           `json:"resolution"`
+	Framerate   int              `json:"framerate"`
+	CreateAt    time.Time        `json:"createAt"`
+	MetaData    interface{}      `json:"metaData,omitempty"`
+}
+
 type ListRecordingFilesResponse struct {
-	TotalPages  int                          `json:"totalPages,omitempty"`
-	CurrentPage int                          `json:"currentPage,omitempty"`
-	FileInfos   []recorder.RecordingFileInfo `json:"infos"`
+	TotalPages  int              `json:"totalPages,omitempty"`
+	CurrentPage int              `json:"currentPage,omitempty"`
+	FileInfos   []RecordingFiles `json:"infos"`
 }
 
 type RemoveRecordingFilesResponse struct {
@@ -56,7 +67,7 @@ type ListRecordingFilesQuery struct {
 // @Produce json
 // @Success 200 {object} successResponse{data=ListRecordingFilesResponse}
 // @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
-// @Router /remote/recorder/file [get]
+// @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/files [get]
 func ListRecordingFiles(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 	filter, err := setFilter(c)
@@ -73,7 +84,24 @@ func ListRecordingFiles(c *gin.Context) {
 		return
 	}
 
-	response := ListRecordingFilesResponse{FileInfos: list}
+	fileInfos := []RecordingFiles{}
+	for _, f := range list {
+		fileInfos = append(fileInfos, RecordingFiles{
+			RecordingID: f.RecordingID,
+			SessionID:   f.SessionID,
+			WorkspaceID: f.WorkspaceID,
+			UserID:      f.UserID,
+			Filename:    f.Filename,
+			Duration:    f.Duration,
+			Size:        f.Size,
+			Resolution:  f.Resolution,
+			Framerate:   f.Framerate,
+			CreateAt:    f.CreateAt,
+			MetaData:    f.MetaData,
+		})
+	}
+
+	response := ListRecordingFilesResponse{FileInfos: fileInfos}
 	if totalPages > 0 {
 		response.TotalPages = totalPages
 	}
@@ -87,11 +115,17 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 	filter := &data.Filter{}
 
+	// parameter in path
+	workspaceID := data.WorkspaceID(c.Param("workspaceId"))
+	filter.WorkspaceID = &workspaceID
+
+	// query
 	if filename, ok := c.GetQuery("filename"); ok {
 		filter.Filename = &filename
 	}
 	if id, ok := c.GetQuery("id"); ok {
-		filter.RecordingID = &id
+		tmp := data.RecordingID(id)
+		filter.RecordingID = &tmp
 	}
 	if page, ok := c.GetQuery("page"); ok {
 		tmp, _ := strconv.Atoi(page)
@@ -131,11 +165,11 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 // @Produce json
 // @Success 200 {object} successResponse{data=RemoveRecordingFilesResponse}
 // @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
-// @Router /remote/recorder/file [delete]
+// @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/files [delete]
 func RemoveRecordingFileAll(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
-
-	count, err := recorder.RemoveRecordingFileAll(c.Request.Context())
+	workspaceID := data.WorkspaceID(c.Param("workspaceId"))
+	count, err := recorder.RemoveRecordingFileAll(c.Request.Context(), workspaceID)
 	if err != nil {
 		log.Error(err)
 		sendResponseWithError(c, NewErrorInternalServer(err))
@@ -152,12 +186,15 @@ func RemoveRecordingFileAll(c *gin.Context) {
 // @Success 200 {object} successResponse
 // @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
 // @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
-// @Router /remote/recorder/file/{id} [delete]
+// @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/files/{id} [delete]
 func RemoveRecordingFile(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 
-	recordingID := c.Param("id")
-	err := recorder.RemoveRecordingFile(c.Request.Context(), recordingID)
+	workspaceID := data.WorkspaceID(c.Param("workspaceId"))
+	recordingID := data.RecordingID(c.Param("id"))
+	filter := &data.Filter{WorkspaceID: &workspaceID, RecordingID: &recordingID}
+
+	err := recorder.RemoveRecordingFile(c.Request.Context(), filter)
 	if err != nil {
 		log.Error(err)
 		if err == recorder.ErrNotFoundRecordingID {
@@ -170,43 +207,32 @@ func RemoveRecordingFile(c *gin.Context) {
 	sendResponseWithSuccess(c, nil)
 }
 
-// @Summary Download Recording File
-// @Description Download Recording File
+// @Summary Get Recording File Download Url
+// @Description Get Recording File Download Url
 // @tags Recording File
 // @Produce json
 // @Param id path string true "recording id"
+// @Success 200 {} json "{"code":200,"message":"success","data":"download_url"}"
 // @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
 // @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
-// @Router /remote/recorder/file/download/{id} [get]
-func DownloadRecordingFile(c *gin.Context) {
+// @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/files/{id}/url [get]
+func GetRecordingFileDownloadUrl(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 
-	recordingID := c.Param("id")
+	workspaceID := data.WorkspaceID(c.Param("workspaceId"))
+	recordingID := data.RecordingID(c.Param("id"))
+	filter := &data.Filter{WorkspaceID: &workspaceID, RecordingID: &recordingID}
 
-	filePath, err := recorder.GetRecordingFilePath(c.Request.Context(), recordingID)
+	url, err := recorder.GetRecordingFileDownloadUrl(c.Request.Context(), filter)
 	if err != nil {
-		sendResponseWithError(c, NewErrorNotFoundRecordingID())
+		log.Error(err)
+		if err == recorder.ErrNotFoundRecordingID {
+			sendResponseWithError(c, NewErrorNotFoundRecordingID())
+		} else {
+			sendResponseWithError(c, NewErrorInternalServer(err))
+		}
 		return
 	}
-	log.Debug("file:", filePath)
 
-	file, err := os.Open(filePath) // open a file
-	if err != nil {
-		sendResponseWithError(c, NewErrorInternalServer(err))
-		return
-	}
-	defer file.Close()
-
-	c.Header("Content-Description", "File Transfer")
-	c.Header("Content-Transfer-Encoding", "binary")
-	c.Header("Content-type", "application/octet-stream")
-	c.Header("Content-Disposition", "attachment; filename="+filepath.Base(filePath))
-
-	log.Info("begin download:", filePath)
-	_, err = io.Copy(c.Writer, file)
-	if err != nil {
-		sendResponseWithError(c, NewErrorInternalServer(err))
-		return
-	}
-	log.Info("end download:", filePath)
+	sendResponseWithSuccess(c, url)
 }
