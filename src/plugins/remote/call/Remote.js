@@ -168,7 +168,7 @@ const _ = {
    * chatting
    * @param {String} text
    */
-  sendChat: (text, code = 'ko') => {
+  sendChat: (text, code = 'ko-KR') => {
     if (!_.session) return
     if (text.trim().length === 0) return
     const params = {
