@@ -16,7 +16,7 @@ import com.virnect.license.global.common.ApiResponse;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@FeignClient(name = "workspace-servers", fallbackFactory = WorkspaceRestFallbackFactory.class)
+@FeignClient(name = "workspace-server", fallbackFactory = WorkspaceRestFallbackFactory.class)
 public interface WorkspaceRestService {
 	/**
 	 * 소속된 워크스페이스 목록 조회 API
