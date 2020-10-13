@@ -6,7 +6,7 @@ export default {
   USER_INFO: ['GET', '/users/{userId}'],
 
   /* LICENSE */
-  GET_LICENSE: ['GET', '/licenses/plan/{userId}'],
+  GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],
 
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
