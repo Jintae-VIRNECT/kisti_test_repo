@@ -89,7 +89,7 @@ export default {
       this.$localStorage.setDevice('speaker', 'deviceId', deviceId)
     },
   },
-  mounted() {
+  created() {
     if (this.mic['deviceId']) {
       this.micId = this.mic['deviceId']
     }

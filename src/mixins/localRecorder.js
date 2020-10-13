@@ -173,6 +173,9 @@ export default {
 
       config.maxTime = this.localRecord.time
       config.interval = this.localRecord.interval
+      if (this.localRecord.time < this.localRecord.interval) {
+        config.interval = this.localRecord.time
+      }
       config.roomTitle = this.roomInfo.title
       config.sessionId = this.roomInfo.sessionId
 

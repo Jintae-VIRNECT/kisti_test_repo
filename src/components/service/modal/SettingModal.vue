@@ -155,7 +155,7 @@
           <r-select
             class="rec-setting__selector"
             :options="translateOption"
-            value="code"
+            value="sttCode"
             text="name"
             :disabled="!useTranslateAllow"
             :selectedValue.sync="translateCode"

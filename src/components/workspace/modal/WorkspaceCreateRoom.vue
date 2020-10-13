@@ -150,7 +150,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission()
+        const options = await checkPermission(true)
 
         const selectedUser = []
         const selectedUserIds = []
