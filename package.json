@@ -12,8 +12,8 @@
     "dev": "cross-env VIRNECT_ENV=onpremise NODE_ENV=onpremise webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
     "build:develop": "cross-env NODE_ENV=develop webpack --progress --config build/webpack.prod.conf.js",
     "build:production": "cross-env NODE_ENV=production webpack --progress --config build/webpack.prod.conf.js",
-    "build:local": "cross-env NODE_ENV=develop webpack --mode production --progress --config build/webpack.prod.conf.js",
-    "start:local": "cross-env NODE_ENV=develop node server.js",
+    "build:local": "cross-env VIRNECT_ENV=develop NODE_ENV=develop webpack --mode production --progress --config build/webpack.prod.conf.js",
+    "start:local": "cross-env VIRNECT_ENV=develop NODE_ENV=develop node server.js",
     "start": "node server.js"
   },
   "dependencies": {
