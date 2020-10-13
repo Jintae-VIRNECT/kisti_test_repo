@@ -22,7 +22,7 @@ COPY --from=builder server.js .
 COPY --from=builder package.json .
 COPY --from=builder dist dist
 
-RUN npm install --production
+RUN yarn install --production
 
 EXPOSE 8883
 CMD ["yarn", "start"]
