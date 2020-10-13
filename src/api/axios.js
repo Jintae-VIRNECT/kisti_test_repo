@@ -2,6 +2,7 @@ import Axios from 'axios'
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from 'api/uri'
+const env = process.env.VIRNECT_ENV
 
 export async function getUrls() {
 	const res = await Axios.get(`${location.origin}/urls`)
@@ -85,6 +86,9 @@ export async function api(name, option = {}) {
 		}
 	} catch (e) {
 		console.error(`URL: ${uri}`)
+		if (/local|develop|onpremise/.test(env)) {
+			console.error(e)
+		}
 		throw e
 	}
 }

@@ -1,5 +1,7 @@
 const env = process.env.VIRNECT_ENV
 const configServer = process.env.CONFIG_SERVER
+	? process.env.CONFIG_SERVER
+	: 'http://192.168.6.3:6383'
 
 const axios = require('axios')
 
