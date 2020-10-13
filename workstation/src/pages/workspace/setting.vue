@@ -132,6 +132,10 @@
             </div>
           </el-card>
         </el-col>
+        <workspace-onpremise-setting
+          v-if="$config.VIRNECT_ENV === 'onpremise'"
+          class="container__right"
+        />
       </el-row>
     </div>
     <workspace-leave-modal
@@ -146,6 +150,7 @@
 import { mapGetters } from 'vuex'
 import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
 import WorkspaceLeaveModal from '@/components/workspace/WorkspaceLeaveModal'
+import WorkspaceOnpremiseSetting from '@/components/workspace/onpremise/WorkspaceOnpremiseSetting'
 import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
 
@@ -154,6 +159,7 @@ export default {
   components: {
     WorkspaceInfo,
     WorkspaceLeaveModal,
+    WorkspaceOnpremiseSetting,
   },
   computed: {
     ...mapGetters({
@@ -220,7 +226,7 @@ export default {
 
 <style lang="scss">
 #workspace-setting .container__center.el-col-24 {
-  width: 732px;
+  width: 810px;
 
   .el-card__body {
     padding: 0;
@@ -230,7 +236,7 @@ export default {
     padding: 28px 30px;
   }
   .right.el-col-24 {
-    width: 490px;
+    width: 568px;
     padding: 28px 50px;
   }
   dt {
@@ -260,5 +266,9 @@ export default {
   .el-textarea .el-input__count {
     background: none;
   }
+}
+
+#workspace-setting .container__right.el-col-24 {
+  width: 526px;
 }
 </style>
