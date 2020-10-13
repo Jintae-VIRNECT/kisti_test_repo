@@ -146,7 +146,7 @@ public class WorkspaceController {
 		notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다."
 	)
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", paramType = "query", defaultValue = "45ea004001c56a3380d48168b9db0492", required = true),
+		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", defaultValue = "45ea004001c56a3380d48168b9db0492", required = true),
 		@ApiImplicitParam(name = "search", value = "검색어(닉네임, 이메일)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
 		@ApiImplicitParam(name = "filter", value = "사용자 필터(MASTER, MANAGER, MEMBER, REMOTE, MAKE, VIEW)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
 		@ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
