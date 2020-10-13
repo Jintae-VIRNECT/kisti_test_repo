@@ -234,7 +234,8 @@ public class LicenseService {
 	 */
 	@Transactional(readOnly = true)
 	public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoList(String userId, String workspaceId) {
-		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatusNot(workspaceId, PlanStatus.TERMINATE)
+		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatusNot(
+			workspaceId, PlanStatus.TERMINATE)
 			.orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
 
 		List<MyLicenseInfoResponse> myLicenseInfoResponseList = new ArrayList<>();
@@ -283,7 +284,6 @@ public class LicenseService {
 		LicenseProduct licenseProduct = licenseProductRepository.findByLicensePlanAndProduct_Name(
 			licensePlan, productName
 		).orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PRODUCT_NOT_FOUND));
-
 
 		Product product = licenseProduct.getProduct();
 
@@ -375,6 +375,7 @@ public class LicenseService {
 				detailsInfo.getWorkspaceId());
 			WorkspaceInfoResponse workspaceInfoResponse = workspaceInfoResponseMessage.getData();
 			if (workspaceInfoResponse.getUuid() == null || workspaceInfoResponse.getUuid().isEmpty()) {
+				log.info("[WORKSPACE_NOT_FOUND] - {}", detailsInfo.toString());
 				continue;
 			}
 			MyLicensePlanInfoResponse licensePlanInfoResponse = new MyLicensePlanInfoResponse();
