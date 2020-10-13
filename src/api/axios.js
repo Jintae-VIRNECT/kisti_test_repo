@@ -2,7 +2,7 @@ import Axios from 'axios'
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from 'api/uri'
-const env = process.env.VIRNECT_ENV
+const env = process.env.NODE_ENV
 
 export async function getUrls() {
 	const res = await Axios.get(`${location.origin}/urls`)
@@ -69,6 +69,9 @@ export async function api(name, option = {}) {
 		const { code, data, message } = response.data
 
 		if (code === 200) {
+			if (/local|develop|onpremise/.test(env)) {
+				console.log(data)
+			}
 			return {
 				code: code,
 				data: data,
