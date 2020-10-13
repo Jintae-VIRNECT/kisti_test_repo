@@ -18,6 +18,7 @@ public enum ErrorCode {
     ERR_INCORRECT_USER_LICENSE_INFO(1007,"Users must have at least 1 plan."),
     ERR_NOMORE_JOIN_WORKSPACE(1008,"No more join the workspace"),
     ERR_WORKSPACE_NOT_FOUND(1009, "Workspace not found"),
+    ERR_WORKSPACE_USER_NOT_FOUND(1010, "Workspace User not found"),
 
     //라이선스 관련 에러
     ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL(2000,"Workspace user license grant fail"),

@@ -5,6 +5,7 @@ import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -47,6 +48,8 @@ import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
+import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
@@ -1914,5 +1917,51 @@ public class WorkspaceService {
 		workspaceRepository.delete(workspace);
 
 		return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
+	}
+
+	@Transactional
+	public Boolean createWorkspaceMemberAccount(
+		String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest
+	) {
+		//1. 요청한 사람의 권한 체크
+		checkWorkspaceAndUserRole(
+			workspaceId, memberAccountCreateRequest.getUserId(), new String[] {"MASTER", "MANAGER"});
+
+		//2. user-server 멤버 정보 등록 api 요청
+		//3. workspace 권한 및 소속 부여 -> 실패시 user-server 롤백 api 요청
+		//4. license-server grant api 요청 -> 실패시 user-server 롤백 api 요청, workspace-server 롤백
+		return true;
+	}
+
+	@Transactional
+	public Boolean deleteWorkspaceMemberAccount(
+		String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest
+	) {
+		//1. 요청한 사람의 권한 체크
+		checkWorkspaceAndUserRole(workspaceId, memberAccountDeleteRequest.getUserId(), new String[] {"MASTER"});
+
+		//2. license-sever revoke api 요청
+		//3. workspace-sever 권한 및 소속 해제 -> 실패시 grant api 요청?
+		//4. user-server에 멤버 삭제 api 요청 -> 실패시 grant api 요청, workspace-sever 롤백
+		return true;
+	}
+
+	private void checkWorkspaceAndUserRole(String workspaceId, String userId, String[] role) {
+		Optional<Workspace> workspace = workspaceRepository.findByUuid(workspaceId);
+		workspace.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+
+		Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_UserIdAndWorkspaceUser_Workspace(
+			userId, workspace.get());
+		workspaceUserPermission.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+
+		log.info("[CHECK WORKSPACE USER ROLE] Acceptable User Workspace Role : {}, Present User Role : [{}]",
+			Arrays.toString(role),
+			workspaceUserPermission.get().getWorkspaceRole().getRole()
+		);
+		if (!Arrays.asList(role)
+			.stream()
+			.anyMatch(workspaceUserPermission.get().getWorkspaceRole().getRole()::equals)) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+		}
 	}
 }

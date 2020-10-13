@@ -35,6 +35,8 @@ import com.virnect.workspace.application.WorkspaceService;
 import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
+import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
@@ -60,6 +62,7 @@ import com.virnect.workspace.global.error.ErrorCode;
  * DESCRIPTION: workspace service rest api controller
  */
 @Slf4j
+//@Profile("!onpremise")
 @RestController
 @RequestMapping("/workspaces")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
@@ -315,8 +318,7 @@ public class WorkspaceController {
 	@DeleteMapping("/{workspaceId}/exit")
 	public ResponseEntity<ApiResponse<Boolean>> exitWorkspace(
 		@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @ApiIgnore Locale locale
-	) {
-		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
+	) {		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<Boolean> apiResponse = this.workspaceService.exitWorkspace(workspaceId, userId, locale);
@@ -454,4 +456,35 @@ public class WorkspaceController {
 		WorkspaceSecessionResponse responseMessage = workspaceService.deleteAllWorkspaceInfo(workspaceUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
+
+	@ApiOperation(value = "워크스페이스 멤버 계정 생성", tags = "onpremise server only")
+	@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+	@PostMapping("/{workspaceId}/members/account")
+	public ResponseEntity<ApiResponse<Boolean>> createWorkspaceMemberAccount(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestBody @Valid MemberAccountCreateRequest memberAccountCreateRequest, BindingResult bindingResult
+	) {
+		if (bindingResult.hasErrors()) {
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		Boolean response = workspaceService.createWorkspaceMemberAccount(workspaceId,memberAccountCreateRequest);
+		return ResponseEntity.ok(new ApiResponse<>(response));
+	}
+
+	@ApiOperation(value = "워크스페이스 멤버 계정 삭제 및 내보내기", tags = "onpremise server only")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+	})
+	@DeleteMapping("/{workspaceId}/members/account")
+	public ResponseEntity<ApiResponse<Boolean>> removeWorkspaceMemberAccount(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestBody @Valid MemberAccountDeleteRequest memberAccountDeleteRequest, BindingResult bindingResult
+	) {
+		if(bindingResult.hasErrors()){
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		Boolean response = workspaceService.deleteWorkspaceMemberAccount(workspaceId,memberAccountDeleteRequest);
+		return ResponseEntity.ok(new ApiResponse<>(response));
+	}
+
 }
