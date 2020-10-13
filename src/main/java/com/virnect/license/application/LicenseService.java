@@ -79,8 +79,8 @@ public class LicenseService {
 	 */
 	@Transactional(readOnly = true)
 	public WorkspaceLicensePlanInfoResponse getWorkspaceLicensePlanInfo(String workspaceId) {
-		Optional<LicensePlan> licensePlanInfo = licensePlanRepository.findByWorkspaceIdAndPlanStatus(
-			workspaceId, PlanStatus.ACTIVE
+		Optional<LicensePlan> licensePlanInfo = licensePlanRepository.findByWorkspaceIdAndPlanStatusNot(
+			workspaceId, PlanStatus.TERMINATE
 		);
 
 		if (!licensePlanInfo.isPresent()) {
@@ -234,7 +234,7 @@ public class LicenseService {
 	 */
 	@Transactional(readOnly = true)
 	public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoList(String userId, String workspaceId) {
-		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatus(workspaceId, PlanStatus.ACTIVE)
+		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatusNot(workspaceId, PlanStatus.TERMINATE)
 			.orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
 
 		List<MyLicenseInfoResponse> myLicenseInfoResponseList = new ArrayList<>();
@@ -252,7 +252,6 @@ public class LicenseService {
 						licenseInfo.setCreatedDate(license.getCreatedDate());
 						licenseInfo.setProductName(product.getName());
 						licenseInfo.setUpdatedDate(license.getUpdatedDate());
-						// licenseInfo.setLicenseType(productType.getName());
 						licenseInfo.setStatus(license.getStatus());
 						licenseInfo.setProductPlanStatus(licenseProduct.getStatus().toString());
 						myLicenseInfoResponseList.add(licenseInfo);
