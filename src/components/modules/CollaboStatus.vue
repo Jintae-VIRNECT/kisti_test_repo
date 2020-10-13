@@ -1,8 +1,7 @@
 <template>
-  <div class="collabo-status">
-    <span class="collabo-status--text" :class="getClass">{{
-      collaboText
-    }}</span>
+  <div class="collabo-status" :class="customClass">
+    <div class="collabo-status--dot" :class="getClass"></div>
+    <span class="collabo-status--text">{{ collaboText }}</span>
   </div>
 </template>
 
@@ -14,7 +13,10 @@ export default {
     status: {
       type: String,
       default: null,
-      required: true,
+    },
+    customClass: {
+      type: String,
+      default: '',
     },
   },
 
@@ -46,30 +48,26 @@ export default {
 <style lang="scss">
 .collabo-status {
   position: relative;
-  // text-align: left;
+  display: flex;
+  align-items: center;
+  justify-items: center;
+}
+
+.collabo-status--dot {
+  width: 8px;
+  height: 8px;
+  background-color: #757f91;
+  border-radius: 50%;
+
+  &.progress {
+    background-color: #0f75f5;
+  }
 }
 
 .collabo-status--text {
-  padding-left: 15px;
+  padding-left: 10px;
   color: rgb(11, 31, 72);
   font-weight: 500;
   font-size: 15px;
-
-  &::before {
-    position: absolute;
-    top: 8px;
-    left: 0px;
-    width: 8px;
-    height: 8px;
-    background-color: #757f91;
-    border-radius: 50%;
-    content: '';
-  }
-
-  &.progress {
-    &::before {
-      background-color: #0f75f5;
-    }
-  }
 }
 </style>

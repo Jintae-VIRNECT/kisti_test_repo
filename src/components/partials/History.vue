@@ -22,43 +22,48 @@
         <template v-if="listExists">
           <div
             class="history__row"
-            v-for="(userItem, index) in datas"
+            v-for="(history, index) in historys"
             :key="index"
+            @click="openHistoryInfo(history.sessionId)"
           >
             <div class="history__text index">
-              <p>{{ userItem.index }}</p>
+              <p>{{ history.index }}</p>
             </div>
             <div class="history__text collabo-name">
-              <p>{{ userItem.cooperateName }}</p>
+              <p>{{ history.title }}</p>
             </div>
             <div class="history__text leader-name">
-              <p>{{ userItem.leader }}</p>
+              <p>{{ history.leader.nickName }}</p>
             </div>
             <div class="history__text start-date">
-              {{ userItem.startDate }}
+              {{ date(history.activeDate) }}
             </div>
             <div class="history__text state">
-              <collabo-status :status="userItem.status"> </collabo-status>
+              <collabo-status :status="history.status"> </collabo-status>
             </div>
             <div class="history__text count">
               <server-record-count-button
-                :count="userItem.recordCount"
-                :serialNum="userItem.serialNum"
+                :count="history.recordCount"
+                :serialNum="history.serialNum"
               ></server-record-count-button>
             </div>
             <div class="history__text count">
               <local-record-count-button
-                :count="userItem.recordCount"
-                :serialNum="userItem.serialNum"
+                :count="history.recordCount"
+                :serialNum="history.serialNum"
               ></local-record-count-button>
             </div>
             <div class="history__text count">
               <file-count-button
-                :count="userItem.recordCount"
-                :serialNum="userItem.serialNum"
+                :count="history.recordCount"
+                :serialNum="history.serialNum"
               ></file-count-button>
             </div>
           </div>
+          <history-info
+            :sessionId="sessionId"
+            :visible.sync="showHistoryInfo"
+          ></history-info>
         </template>
         <span v-else class="history__body--nodata"
           >검색된 결과가 없습니다.</span
@@ -73,6 +78,7 @@ import ServerRecordCountButton from 'ServerRecordCountButton'
 import LocalRecordCountButton from 'LocalRecordCountButton'
 import FileCountButton from 'FileCountButton'
 import CollaboStatus from 'CollaboStatus'
+import HistoryInfo from 'components/modal/HistoryInfo'
 export default {
   name: 'History',
   components: {
@@ -80,23 +86,45 @@ export default {
     ServerRecordCountButton,
     LocalRecordCountButton,
     FileCountButton,
+    HistoryInfo,
   },
   props: {
-    datas: {
+    historys: {
       type: Array,
       default: () => {},
     },
   },
   data() {
-    return {}
+    return {
+      sessionId: '',
+      showHistoryInfo: false,
+    }
   },
   computed: {
     listExists() {
-      return this.datas.length > 0
+      return this.historys.length > 0
     },
   },
   methods: {
     showList() {},
+    openHistoryInfo(sessionId) {
+      console.log(sessionId)
+      this.sessionId = sessionId
+      this.showHistoryInfo = true
+    },
+    date(activeDate) {
+      return this.$dayjs(activeDate + '+00:00')
+        .local()
+        .calendar(null, {
+          sameDay: 'A h:mm',
+          // lastDay: this.$t('date.lastday'),
+          // nextDay: this.$t('date.nextday'),
+          lastDay: '어제',
+          nextDay: '내일',
+          lastWeek: 'YYYY.MM.DD',
+          sameElse: 'YYYY.MM.DD',
+        })
+    },
   },
 }
 </script>

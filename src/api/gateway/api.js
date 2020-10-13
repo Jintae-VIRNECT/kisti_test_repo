@@ -8,6 +8,10 @@ export default {
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}'],
 
+  /* Workspace - History */
+  HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
+  HISTORY_ITEM: ['GET', '/remote/history/{workspaceId}/{sessionId}'],
+
   /* RECORD */
   RECORD_FILES: ['GET', 'https://192.168.6.3:8073/remote/recorder/file'],
   DOWNLOAD_RECORD_FILE: [

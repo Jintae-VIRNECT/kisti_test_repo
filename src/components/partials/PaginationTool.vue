@@ -36,9 +36,12 @@ export default {
 
   computed: {},
   watch: {
-    currentPage(pageNum) {
+    totalPage() {
       this.setPages()
-      this.$emit('currentPage', pageNum)
+    },
+    currentPage(page) {
+      this.setPages()
+      this.$emit('current-page', page)
     },
   },
   methods: {
