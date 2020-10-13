@@ -6,7 +6,7 @@ COPY . .
 ARG NODE_ENV=production
 
 RUN yarn install
-RUN yarn build:${NODE_ENV} \
+RUN yarn build \
 && rm -rf node_modules
 
 # Runtime Stage
