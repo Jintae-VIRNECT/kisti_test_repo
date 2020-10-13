@@ -154,6 +154,7 @@ export default {
 .modal.modal-history-info {
   .modal--header {
     height: 68px;
+    padding: 22px 0px 16px 27px;
     color: rgb(11, 31, 72);
     font-weight: normal;
 
@@ -163,6 +164,11 @@ export default {
 
   .modal--body {
     padding: 40px 45px 45px 45px;
+  }
+
+  .modal--close {
+    width: 14px;
+    height: 14px;
   }
 }
 
