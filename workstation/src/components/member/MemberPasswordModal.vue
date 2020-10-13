@@ -107,7 +107,6 @@ export default {
       }
     },
     async submit() {
-      console.log('test')
       // 유효성 검사
       try {
         await this.$refs.form.validate()

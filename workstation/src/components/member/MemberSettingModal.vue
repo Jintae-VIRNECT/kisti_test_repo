@@ -136,7 +136,11 @@
     </div>
     <div slot="footer">
       <el-button v-show="canKick" @click="$emit('kick')">
-        {{ $t('members.setting.kick') }}
+        {{
+          $config.VIRNECT_ENV === 'onpremise'
+            ? $t('members.delete.title')
+            : $t('members.setting.kick')
+        }}
       </el-button>
       <el-button type="primary" @click="submit">
         {{ $t('common.update') }}
