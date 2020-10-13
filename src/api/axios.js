@@ -13,7 +13,7 @@ export async function getUrls() {
 }
 
 const axios = Axios.create({
-	timeout: window.env === 'production' ? 2000 : 1000,
+	timeout: window.env === 'production' ? 3000 : 2000,
 	headers: {
 		'Content-Type': 'application/json',
 	},
