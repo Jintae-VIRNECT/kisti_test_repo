@@ -16,16 +16,18 @@ import (
 )
 
 type ContainerParam struct {
-	RecordingID string
+	RecordingID data.RecordingID
 	Token       string
 	VideoID     string
 	VideoName   string
 	Resolution  string
-	Framerate   uint
+	Framerate   int
 	VideoFormat string
 	LayoutURL   string
 	TimeLimit   int
-	SessionID   string
+	SessionID   data.SessionID
+	WorkspaceID data.WorkspaceID
+	UserID      string
 	MetaData    interface{}
 }
 
@@ -34,19 +36,24 @@ var (
 	ErrContainerInternal      = errors.New("Container Internal Error")
 )
 
-type Container struct {
+type ContainerLabel struct {
 	ID          string
 	RecordingID string
+	SessionID   string
+	WorkspaceID string
+	UserID      string
 	EndTime     int64
 }
 
 type recordingJson struct {
-	RecordingID string      `json:"recordingId"`
-	SessionID   string      `json:"sessionId"`
-	Filename    string      `json:"filename"`
-	Framerate   uint        `json:"framerate"`
-	Resolution  string      `json:"resolution"`
-	MetaData    interface{} `json:"metaData,omitempty"`
+	RecordingID data.RecordingID `json:"recordingId"`
+	WorkspaceID data.WorkspaceID `json:"workspaceId"`
+	UserID      string           `json:"userId"`
+	SessionID   data.SessionID   `json:"sessionId"`
+	Filename    string           `json:"filename"`
+	Framerate   int              `json:"framerate"`
+	Resolution  string           `json:"resolution"`
+	MetaData    interface{}      `json:"metaData,omitempty"`
 }
 
 func Init() {
@@ -81,10 +88,13 @@ func garbageCollector() {
 			for _, c := range cons {
 				endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
 				if now > endTime+60 {
-					log.Infof("remove container which state is not running. id:%s state:%s recordId:%s createTime:%d endTime:%d",
+					log.Infof("remove container which state is not running. id:%s state:%s recordingId:%s sessionId:%s workspaceId:%s userId:%s createTime:%d endTime:%d",
 						c.ID,
 						c.State,
 						c.Labels["recordingId"],
+						c.Labels["sessionId"],
+						c.Labels["workspaceId"],
+						c.Labels["userId"],
 						c.Created,
 						endTime)
 					StopContainer(ctx, c.ID)
@@ -94,10 +104,10 @@ func garbageCollector() {
 	}
 }
 
-func ListContainers(ctx context.Context) []Container {
+func ListContainers(ctx context.Context) []ContainerLabel {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 
-	containers := []Container{}
+	containers := []ContainerLabel{}
 
 	cli, err := docker.NewClientFromEnv()
 	if err != nil {
@@ -112,9 +122,12 @@ func ListContainers(ctx context.Context) []Container {
 	cons, err := cli.ListContainers(docker.ListContainersOptions{Filters: filter})
 	for _, c := range cons {
 		endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
-		containers = append(containers, Container{
+		containers = append(containers, ContainerLabel{
 			ID:          c.ID,
 			RecordingID: c.Labels["recordingId"],
+			SessionID:   c.Labels["sessionId"],
+			WorkspaceID: c.Labels["workspaceId"],
+			UserID:      c.Labels["userId"],
 			EndTime:     endTime,
 		})
 	}
@@ -161,10 +174,12 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	}
 
 	// make recording json
-	filename := filepath.Join(viper.GetString("record.dirOnDocker"), param.RecordingID, param.VideoName) + "." + param.VideoFormat
+	filename := filepath.Join(viper.GetString("record.dirOnDocker"), param.RecordingID.String(), param.VideoName) + "." + param.VideoFormat
 	recordingJson, err := json.Marshal(
 		&recordingJson{
 			RecordingID: param.RecordingID,
+			WorkspaceID: param.WorkspaceID,
+			UserID:      param.UserID,
 			SessionID:   param.SessionID,
 			MetaData:    param.MetaData,
 			Filename:    filename,
@@ -176,13 +191,13 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	}
 	log.Debug(string(recordingJson))
 
-	url := param.LayoutURL + "?sessionId=" + param.SessionID + "&token=" + param.Token
+	url := param.LayoutURL + "?sessionId=" + param.SessionID.String() + "&token=" + param.Token
 	log.Info("url:", url)
 
 	now := time.Now().UTC().Unix()
 	endTime := now + int64(param.TimeLimit)
 	createOpt := docker.CreateContainerOptions{}
-	createOpt.Name = param.RecordingID
+	createOpt.Name = param.RecordingID.String()
 	createOpt.Config = &docker.Config{
 		Image: viper.GetString("record.dockerImage"),
 		Env: []string{
@@ -196,7 +211,10 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 			"RECORDING_JSON=" + string(recordingJson),
 		},
 		Labels: map[string]string{
-			"recordingId": param.RecordingID,
+			"recordingId": param.RecordingID.String(),
+			"sessionId":   param.SessionID.String(),
+			"workspaceId": param.WorkspaceID.String(),
+			"userID":      param.UserID,
 			"endTime":     strconv.FormatInt(endTime, 10),
 		},
 	}
@@ -230,9 +248,8 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	return container.ID, nil
 }
 
-func StopContainer(ctx context.Context, containerID string) error {
+func StopContainer(ctx context.Context, containerID string) {
 	stopAndRemoveContainer(ctx, containerID)
-	return nil
 }
 
 func stopAndRemoveContainer(ctx context.Context, containerID string) {
@@ -244,7 +261,7 @@ func stopAndRemoveContainer(ctx context.Context, containerID string) {
 		return
 	}
 	var timeout = time.Duration(5) * time.Second
-	ctx, cancel := context.WithCancel(context.Background())
+	stopCtx, cancel := context.WithCancel(ctx)
 	time.AfterFunc(timeout, func() {
 		cancel()
 	})
@@ -256,12 +273,12 @@ func stopAndRemoveContainer(ctx context.Context, containerID string) {
 		AttachStderr: true,
 	}
 	if exec, err := cli.CreateExec(cmd); err == nil {
-		err = cli.StartExec(exec.ID, docker.StartExecOptions{Context: ctx})
+		err = cli.StartExec(exec.ID, docker.StartExecOptions{Context: stopCtx})
 		if err != nil {
 			log.Error("StartExec:", err)
 		}
 
-		rc, err := cli.WaitContainerWithContext(containerID, ctx)
+		rc, err := cli.WaitContainerWithContext(containerID, stopCtx)
 		if err != nil {
 			log.Error("WaitContainer:", err)
 		}

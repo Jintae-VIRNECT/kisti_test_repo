@@ -8,7 +8,8 @@ type FilterTime struct {
 }
 
 type Filter struct {
-	RecordingID *string
+	RecordingID *RecordingID
+	WorkspaceID *WorkspaceID
 	Filename    *string
 	CreatedAt   []FilterTime
 	Page        *int

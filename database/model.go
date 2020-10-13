@@ -16,15 +16,16 @@ type RecordingFileDB struct {
 }
 
 type RecordingFile struct {
-	ID          uint64 `gorm:"primary_key;AUTO_INCREMENT;not_null"`
-	RecordingID string `gorm:"not null;unique;unique_index"`
-	SessionID   string `gorm:"not null"`
-	Filename    string `gorm:"not null" sql:"type:VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci"`
-	FullPath    string `gorm:"not null" sql:"type:VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci"`
-	Duration    int    `gorm:"not null"`
-	Size        int    `gorm:"not null"`
-	Resolution  string `gorm:"not null"`
-	Framerate   uint   `gorm:"not null"`
+	ID          uint64           `gorm:"primary_key;AUTO_INCREMENT;not_null"`
+	RecordingID data.RecordingID `gorm:"not null;unique;unique_index"`
+	SessionID   data.SessionID   `gorm:"not null"`
+	WorkspaceID data.WorkspaceID `gorm:"not null"`
+	UserID      string           `gorm:"not null"`
+	Filename    string           `gorm:"not null" sql:"type:VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_520_ci"`
+	Duration    int              `gorm:"not null"`
+	Size        int              `gorm:"not null"`
+	Resolution  string           `gorm:"not null"`
+	Framerate   int              `gorm:"not null"`
 	MetaData    string
 	CreatedDate time.Time `gorm:"not null"`
 	CreatedAt   time.Time
@@ -48,12 +49,13 @@ func NewTable(dbDriver string, parameter string) *RecordingFileDB {
 	return &RecordingFileDB{db}
 }
 
-func (m *RecordingFileDB) Create(id string, sessionId string, filename string, fullpath string, duration int, size int, resolution string, framerate uint, metaData string, createdAt time.Time) (*RecordingFile, error) {
+func (m *RecordingFileDB) Create(id data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID, userID string, filename string, duration int, size int, resolution string, framerate int, metaData string, createdAt time.Time) (*RecordingFile, error) {
 	record := &RecordingFile{
 		RecordingID: id,
-		SessionID:   sessionId,
+		SessionID:   sessionID,
+		WorkspaceID: workspaceID,
+		UserID:      userID,
 		Filename:    filename,
-		FullPath:    fullpath,
 		Duration:    duration,
 		Size:        size,
 		Resolution:  resolution,
@@ -76,6 +78,9 @@ func (m *RecordingFileDB) Delete(filter *data.Filter) (int64, error) {
 		tx := m.db
 		if filter.RecordingID != nil {
 			tx = tx.Where(&RecordingFile{RecordingID: *filter.RecordingID})
+		}
+		if filter.WorkspaceID != nil {
+			tx = tx.Where(&RecordingFile{WorkspaceID: *filter.WorkspaceID})
 		}
 		result = tx.Unscoped().Delete(&RecordingFile{})
 	}
@@ -101,6 +106,9 @@ func (m *RecordingFileDB) Select(filter *data.Filter) ([]RecordingFile, int, err
 	}
 	if filter.RecordingID != nil {
 		tx = tx.Where(&RecordingFile{RecordingID: *filter.RecordingID})
+	}
+	if filter.WorkspaceID != nil {
+		tx = tx.Where(&RecordingFile{WorkspaceID: *filter.WorkspaceID})
 	}
 	for _, t := range filter.CreatedAt {
 		if t.Op == "ge" {

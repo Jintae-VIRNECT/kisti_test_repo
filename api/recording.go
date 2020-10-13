@@ -14,13 +14,13 @@ import (
 
 type StartRecordingRequest struct {
 	// session id of room
-	SessionID string `json:"sessionId" binding:"required" example:"session_id"`
+	SessionID string `json:"sessionId" binding:"required" example:"session_1"`
 	// token
 	Token string `json:"token" binding:"required" example:"wss://192.168.6.3:8000?sessionId=ses_PAtRKcOQSX&token=tok_G5Pgb8cIRTfq8U3E&role=PUBLISHER&version=2.0.1"`
 	// video resolution
 	Resolution string `json:"resolution,omitempty" binding:"oneof=480p 720p 1080p" enums:"480p, 720p, 1080p" default:"720p" example:"720p"`
 	// video framerate
-	Framerate uint `json:"framerate,omitempty" binding:"min=1,max=30" mininum:"1" maxinum:"30" default:"20" example:"20"`
+	Framerate int `json:"framerate,omitempty" binding:"min=1,max=30" mininum:"1" maxinum:"30" default:"20" example:"20"`
 	// recording time
 	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" binding:"min=5,max=60" mininum:"5" maxinum:"60" default:"5" example:"5"`
 	// recording filename without extension
@@ -51,19 +51,24 @@ type StopRecordingQuery struct {
 // @tags Recording
 // @Accept json
 // @Produce json
+// @Param workspaceId path string true "workspace id"
+// @Param userId path string true "user id"
 // @Param body body StartRecordingRequest true "information for recording"
 // @Success 200 {object} successResponse{data=StartRecordingResponse}
 // @Failure 1001 {} json "{"code":1001,"message":"Too Many Recordings","service":"remote-record-server","data":{}}"
 // @Failure 1002 {} json "{"code":1002,"message":"Not Enough Free Space","service":"remote-record-server","data":{}}"
 // @Failure 8001 {} json "{"code":8001,"message":"error message","service":"remote-record-server","data":{}}"
 // @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
-// @Router /remote/recorder/recording [post]
+// @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings [post]
 func StartRecording(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 
+	workspaceID := c.Param("workspaceId")
+	userID := c.Param("userId")
+
 	req := StartRecordingRequest{
 		Resolution:         viper.GetString("record.defaultResolution"),
-		Framerate:          viper.GetUint("record.defaultFramerate"),
+		Framerate:          viper.GetInt("record.defaultFramerate"),
 		RecordingTimeLimit: viper.GetInt("record.defaultRecordingTimeLimit"),
 		RecordingFilename:  "",
 	}
@@ -125,23 +130,25 @@ func StartRecording(c *gin.Context) {
 	timeLimit := req.RecordingTimeLimit*60 + 10
 
 	param := recorder.RecordingParam{
-		SessionID:  req.SessionID,
-		Token:      req.Token,
-		Resolution: resolution,
-		Framerate:  req.Framerate,
-		TimeLimit:  timeLimit,
-		Filename:   req.RecordingFilename,
-		MetaData:   req.MetaData,
+		SessionID:   data.SessionID(req.SessionID),
+		WorkspaceID: data.WorkspaceID(workspaceID),
+		UserID:      userID,
+		Token:       req.Token,
+		Resolution:  resolution,
+		Framerate:   req.Framerate,
+		TimeLimit:   timeLimit,
+		Filename:    req.RecordingFilename,
+		MetaData:    req.MetaData,
 	}
 
-	recordingId, err := recorder.NewRecording(c.Request.Context(), param)
+	recordingID, err := recorder.NewRecording(c.Request.Context(), param)
 	if err != nil {
 		log.Error(err)
 		sendResponseWithError(c, NewErrorInternalServer(err))
 		return
 	}
 
-	sendResponseWithSuccess(c, StartRecordingResponse{recordingId})
+	sendResponseWithSuccess(c, StartRecordingResponse{recordingID.String()})
 }
 
 func convertResolution(resolution string) (string, error) {
@@ -161,45 +168,52 @@ func convertResolution(resolution string) (string, error) {
 // @Description Stop Recording
 // @tags Recording
 // @Produce json
+// @Param workspaceId path string true "workspace id"
+// @Param userId path string true "user id"
 // @Param id path string true "recording id"
 // @Success 200 {object} successResponse{data=StopRecordingResponse}
 // @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
-// @Router /remote/recorder/recording/{id} [delete]
+// @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings/{id} [delete]
 func StopRecording(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 
-	recordingID := c.Param("id")
+	recordingID := data.RecordingID(c.Param("id"))
+	workspaceID := data.WorkspaceID(c.Param("workspaceId"))
+
 	log.Debug("stop recording (id:", recordingID, ")")
 
-	exist := recorder.ExistRecordingID(recordingID)
+	exist := recorder.ExistRecordingID(recordingID, workspaceID)
 	if exist == false {
 		log.Error("stop recording: ", recorder.ErrNotFoundRecordingID.Error())
 		sendResponseWithError(c, NewErrorNotFoundRecordingID())
 		return
 	}
 
-	recorder.StopRecording(c.Request.Context(), recordingID, "stop")
+	recorder.StopRecording(c.Request.Context(), recordingID, workspaceID, recorder.Stopped)
 
-	sendResponseWithSuccess(c, StopRecordingResponse{[]string{recordingID}})
+	sendResponseWithSuccess(c, StopRecordingResponse{[]string{recordingID.String()}})
 }
 
 // @Summary Stop Recordings By SessionId
 // @Description Stop Recordings By SessionId
 // @tags Recording
 // @Produce json
+// @Param workspaceId path string true "workspace id"
+// @Param userId path string true "user id"
 // @Param sessionID query StopRecordingQuery false "description"
 // @Success 200 {object} successResponse{data=StopRecordingResponse}
-// @Router /remote/recorder/recording [delete]
+// @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings [delete]
 func StopRecordingBySessionID(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 
-	sessionID, _ := c.GetQuery("session_id")
+	sessID, _ := c.GetQuery("session_id")
+	sessionID := data.SessionID(sessID)
+	workspaceID := data.WorkspaceID(c.Param("workspaceId"))
 
-	log.Debug("stop recordings (session_id:", sessionID, ")")
+	log.Debugf("stop recordings session_id:%s workspaceID:%s", sessionID, workspaceID)
 
 	body := ListRecordingResponse{make([]string, 0)}
-	ids, _ := recorder.StopRecordingBySessionID(c.Request.Context(), sessionID)
-	log.Debug(ids)
+	ids, _ := recorder.StopRecordingBySessionID(c.Request.Context(), workspaceID, sessionID)
 	body.RecordingIDs = append(body.RecordingIDs, ids...)
 	sendResponseWithSuccess(c, body)
 }
@@ -208,14 +222,18 @@ func StopRecordingBySessionID(c *gin.Context) {
 // @Description List Recordings
 // @tags Recording
 // @Produce json
+// @Param workspaceId path string true "workspace id"
+// @Param userId path string true "user id"
 // @Success 200 {object} successResponse{data=ListRecordingResponse}
 // @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
-// @Router /remote/recorder/recording [get]
+// @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings [get]
 func ListRecordings(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
 
+	workspaceID := data.WorkspaceID(c.Param("workspaceId"))
+
 	body := ListRecordingResponse{make([]string, 0)}
-	list := recorder.ListRecordingIDs()
+	list := recorder.ListRecordingIDs(workspaceID)
 	log.Debug("ListRecordings:", list)
 	body.RecordingIDs = append(body.RecordingIDs, list...)
 

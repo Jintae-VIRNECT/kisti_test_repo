@@ -7,6 +7,7 @@ import (
 	"RM-RecordServer/eurekaclient"
 	"RM-RecordServer/logger"
 	"RM-RecordServer/recorder"
+	"RM-RecordServer/storage"
 	"bytes"
 	"context"
 	"fmt"
@@ -43,6 +44,10 @@ func main() {
 
 	// initialize recorder
 	recorder.Init()
+
+	// initialize storage
+	storageClient := storage.GetClient()
+	storageClient.Init()
 
 	// setup gin router
 	router := setupRouter()
@@ -90,19 +95,19 @@ func setupRouter() *gin.Engine {
 
 	recorder := r.Group("/remote/recorder")
 	{
-		recording := recorder.Group("/recording")
+		recording := recorder.Group("/workspaces/:workspaceId/users/:userId/recordings")
 		{
 			recording.POST("", api.StartRecording)
 			recording.DELETE("", api.StopRecordingBySessionID)
 			recording.DELETE(":id", api.StopRecording)
 			recording.GET("", api.ListRecordings)
 		}
-		file := recorder.Group("/file")
+		file := recorder.Group("/workspaces/:workspaceId/users/:userId/files")
 		{
 			file.DELETE("", api.RemoveRecordingFileAll)
 			file.DELETE(":id", api.RemoveRecordingFile)
 			file.GET("", api.ListRecordingFiles)
-			file.GET("download/:id", api.DownloadRecordingFile)
+			file.GET(":id/url", api.GetRecordingFileDownloadUrl)
 		}
 	}
 
