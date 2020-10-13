@@ -17,6 +17,7 @@ const setWorkspaceObj = info => {
     profile: info.workspaceProfile,
     renewalDate: info.renewalDate,
     role: info.role,
+    planStatus: info.productPlanStatus,
     expire: !expireCheck(info.renewalDate, info.productPlanStatus),
   }
 }
