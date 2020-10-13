@@ -5,11 +5,6 @@ import {
 } from '../mutation-types'
 import { PLAN_STATUS } from 'configs/status.config'
 
-const expireCheck = (time, planStatus) => {
-  if (process.env.NODE_ENV !== 'production') return true
-  const diff = new Date(time).getTime() - Date.now()
-  return diff > 0 || planStatus === PLAN_STATUS.INACTIVE
-}
 const setWorkspaceObj = info => {
   return {
     uuid: info.workspaceId,
@@ -18,7 +13,7 @@ const setWorkspaceObj = info => {
     renewalDate: info.renewalDate,
     role: info.role,
     planStatus: info.productPlanStatus,
-    expire: !expireCheck(info.renewalDate, info.productPlanStatus),
+    expire: info.productPlanStatus === PLAN_STATUS.INACTIVE,
   }
 }
 
