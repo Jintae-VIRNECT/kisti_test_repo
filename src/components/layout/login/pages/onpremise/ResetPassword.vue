@@ -126,7 +126,7 @@
 
 <script>
 import mixin from 'mixins/mixin'
-// import UserService from 'service/user-service'
+import UserService from 'service/user-service'
 export default {
 	mixins: [mixin],
 	data() {
@@ -161,47 +161,46 @@ export default {
 	},
 	methods: {
 		async checkAuth() {
-			this.nextStep('question')
-			// try {
-			// 	const res = await UserService.userAuth({
-			// 		uuid: this.resetPass.uuid,
-			// 	})
-			// 	if (res.authenticated) {
-			// 		this.nextStep('question')
-			// 	} else throw res
-			// } catch (e) {
-			// 	// console.log(e)
-			// 	if (e === 4002) {
-			// 		this.alertMessage(
-			// 			'ID 불일치',
-			// 			'등록된 ID가 없습니다. 마스터에게 계정 생성을 요청하세요.',
-			// 			'error',
-			// 		)
-			// 	}
-			// }
+			// this.nextStep('question')
+			try {
+				const res = await UserService.userAuth({
+					email: this.resetPass.uuid,
+				})
+				if (res.authenticated) {
+					this.nextStep('question')
+				} else throw res
+			} catch (e) {
+				if (e === 4002) {
+					this.alertMessage(
+						'ID 불일치',
+						'등록된 ID가 없습니다. 마스터에게 계정 생성을 요청하세요.',
+						'error',
+					)
+				}
+			}
 		},
 		async checkAnswer() {
-			this.nextStep('resetPass')
-			// try {
-			// 	const res = await UserService.userCheckAnswer({
-			// 		uuid: this.resetPass.uuid,
-			// 		question: this.question,
-			// 		answer: this.answer,
-			// 	})
-			// 	// console.log(res)
-			// 	if (res.authenticated) {
-			// 		this.nextStep('resetPass')
-			// 	} else throw res
-			// } catch (e) {
-			// 	console.log(e)
-			// 	if (e === 4007) {
-			// 		this.alertMessage(
-			// 			'비밀번호 찾기 질문/답변 불일치 오류',
-			// 			'입력하신 질문/답변이 일치하지 않습니다. 다시 한 번 확인해 주세요.',
-			// 			'error',
-			// 		)
-			// 	}
-			// }
+			// this.nextStep('resetPass')
+			try {
+				const res = await UserService.userCheckAnswer({
+					email: this.resetPass.uuid,
+					question: this.question,
+					answer: this.answer,
+				})
+				// console.log(res)
+				if (res.authenticated) {
+					this.nextStep('resetPass')
+				} else throw res
+			} catch (e) {
+				console.log(e)
+				if (e === 4007) {
+					this.alertMessage(
+						'비밀번호 찾기 질문/답변 불일치 오류',
+						'입력하신 질문/답변이 일치하지 않습니다. 다시 한 번 확인해 주세요.',
+						'error',
+					)
+				}
+			}
 		},
 		nextStep(step) {
 			this.step = step
@@ -219,34 +218,34 @@ export default {
 				},
 			)
 			// if (twin) {
-			location.href = '/'
+			// // location.href = '/'
 			// }
-			// try {
-			// 	const res = await UserService.userPassChange({
-			// 		uuid: this.resetPass.uuid,
-			// 		password: this.resetPass.password,
-			// 	})
-			// 	if (res.changed) {
-			// 		this.confirmWindow(
-			// 			'비밀번호 변경 완료',
-			// 			'기존 로그인된 기기에서 로그아웃 됩니다. 변경된 새 비밀번호로 다시 로그인해 주세요.',
-			// 			true,
-			// 		)
-			// 	} else throw res
-			// } catch (e) {
-			// 	if (e.code === 4009)
-			// 		return this.alertMessage(
-			// 			'비밀번호 재설정 실패',
-			// 			'이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.',
-			// 			'error',
-			// 		)
-			// 	else
-			// 		return this.alertMessage(
-			// 			'비밀번호 재설정 실패',
-			// 			'비밀번호 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요.',
-			// 			'error',
-			// 		)
-			// }
+			try {
+				const res = await UserService.putUserPassChange({
+					uuid: this.resetPass.uuid,
+					password: this.resetPass.password,
+				})
+				if (res.changed) {
+					this.confirmWindow(
+						'비밀번호 변경 완료',
+						'기존 로그인된 기기에서 로그아웃 됩니다. 변경된 새 비밀번호로 다시 로그인해 주세요.',
+						true,
+					)
+				} else throw res
+			} catch (e) {
+				if (e.code === 4009)
+					return this.alertMessage(
+						'비밀번호 재설정 실패',
+						'이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.',
+						'error',
+					)
+				else
+					return this.alertMessage(
+						'비밀번호 재설정 실패',
+						'비밀번호 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요.',
+						'error',
+					)
+			}
 		},
 		passValidate(password) {
 			let typeCount = 0
