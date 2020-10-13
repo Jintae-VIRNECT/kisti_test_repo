@@ -3,7 +3,7 @@ RELEASE
 New Features
 
 Bug Fixes
-- 워크스페이스 라이선스 체크 에러 수정
+- AWS S3 리전 변경
 
 Limitation
 
