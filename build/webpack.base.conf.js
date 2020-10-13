@@ -3,7 +3,7 @@
 const { join, resolve, posix } = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
-const MODE = process.env.VIRNECT_ENV
+const MODE = process.env.NODE_ENV === 'develop' ? 'development' : process.env.NODE_ENV
 const isProduction = MODE === 'production'
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
@@ -203,11 +203,6 @@ const config = {
 		hints: false,
 	},
 	plugins: [
-		new webpack.DefinePlugin({
-			'process.env': {
-				VIRNECT_ENV: '"production"',
-			},
-		}),
 		new webpack.optimize.ModuleConcatenationPlugin(),
 		extractSASS,
 		extractCSS,

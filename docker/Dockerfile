@@ -1,15 +1,28 @@
-FROM node:alpine
+# Build Stage
+FROM node:alpine AS builder
 
-ENV APP_HOME=/usr/app/
+COPY . .
 
-WORKDIR $APP_HOME
-
-ADD ./ $APP_HOME
-ADD ./WC-Modules $APP_HOME/WC-Modules
-ADD ./package.json $APP_HOME/package.json
+ARG NODE_ENV=production
 
 RUN yarn install
+RUN yarn build:${NODE_ENV} \
+&& rm -rf node_modules
+
+# Runtime Stage
+FROM node:alpine
+
+ENV APP_HOME=/usr/app
+WORKDIR $APP_HOME
+
+COPY --from=builder cert cert
+COPY --from=builder configs configs
+COPY --from=builder route.js .
+COPY --from=builder server.js .
+COPY --from=builder package.json .
+COPY --from=builder dist dist
+
+RUN npm install --production
 
 EXPOSE 8883
-
 CMD ["yarn", "start"]
