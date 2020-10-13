@@ -173,6 +173,7 @@
     "file_upload_maxsize": "첨부 가능한 용량을 초과하였습니다.",
     "file_image_notsupport": "해당 이미지는 지원하지 않습니다.",
     "file_type_notsupport": "지원하지 않는 파일 형식입니다.",
+    "translate": "번역",
 
     "record_local": "로컬 녹화",
     "record_local_setting": "로컬 녹화 설정",
