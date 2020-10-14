@@ -3,7 +3,7 @@
     <div class="menus-box">
       <template v-if="isLeader">
         <capture :disabled="!isMainView"></capture>
-        <!-- <server-record :disabled="!isMainView"></server-record> -->
+        <server-record v-if="onpremise" :disabled="!isMainView"></server-record>
       </template>
       <local-record :disabled="!isMainView"></local-record>
       <local-record-list></local-record-list>
@@ -15,19 +15,20 @@
 <script>
 import {
   Capture,
-  //ServerRecord,
+  ServerRecord,
   LocalRecord,
   Setting,
   LocalRecordList,
 } from './partials'
 import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'Menus',
   components: {
     Capture,
-    //ServerRecord,
+    ServerRecord,
     LocalRecord,
     LocalRecordList,
     Setting,
@@ -53,6 +54,9 @@ export default {
       } else {
         return false
       }
+    },
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
     },
   },
   props: {

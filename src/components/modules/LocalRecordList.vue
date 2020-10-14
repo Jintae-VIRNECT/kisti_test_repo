@@ -39,15 +39,14 @@
               {{ $t('workspace.record_file_title') }}
             </div>
             <div class="table__tools">
-              <!-- 구축형에만 보여야하는 기능이므로 hidden 처리 -->
-              <!-- <icon-button
-                v-if="isHome"
+              <icon-button
+                v-if="isHome && onpremise"
                 :text="'선택 업로드'"
                 :imgSrc="require('assets/image/ic_upload.svg')"
                 :customClass="'customClass'"
                 :highlight="hasSelect"
                 @click="upload"
-              ></icon-button> -->
+              ></icon-button>
               <icon-button
                 :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"
@@ -76,6 +75,7 @@ import IconButton from 'IconButton'
 import IDBHelper from 'utils/idbHelper'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'LocalRecordList',
@@ -102,6 +102,9 @@ export default {
     },
     isHome() {
       return this.$route.path === '/home'
+    },
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
     },
   },
   components: {
