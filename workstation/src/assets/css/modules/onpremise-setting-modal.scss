@@ -2,8 +2,9 @@
   .preview {
     position: relative;
     box-sizing: border-box;
-    height: 78px;
+    height: 79px;
     margin-top: 30px;
+    border: solid 1px rgba(226, 231, 237, 0.8);
 
     img {
       display: block;
@@ -57,7 +58,6 @@
 
   .el-form {
     margin: 24px 0 40px;
-
     .el-form-item {
       margin-bottom: 8px;
     }
@@ -70,5 +70,11 @@
   }
   .el-dialog__footer {
     border-top: solid 1px #edf0f7;
+    .el-upload {
+      display: inline;
+      .el-button {
+        float: left;
+      }
+    }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <the-header :showSection="showSection" :auth="auth">
+      <the-header :logoImg="logoImg" :showSection="showSection" :auth="auth">
         <template slot="subTitle">
           <el-divider direction="vertical" />
           <div class="avatar">
@@ -32,8 +32,6 @@ import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import { sideMenus, sideBottomMenus } from '@/models/layout'
 import { mapGetters } from 'vuex'
 
-import Cookies from 'js-cookie'
-
 export default {
   middleware: 'default',
   components: {
@@ -42,7 +40,7 @@ export default {
   },
   head() {
     return {
-      title: `VIRNECT | ${this.$t('common.workstation')}`,
+      title: `${this.title} | ${this.$t('common.workstation')}`,
       htmlAttrs: {
         lang: this.$i18n.locale,
       },
@@ -62,7 +60,16 @@ export default {
     ...mapGetters({
       auth: 'auth/auth',
       activeWorkspace: 'auth/activeWorkspace',
+      logo: 'layout/logo',
+      title: 'layout/title',
     }),
+    logoImg() {
+      return {
+        default: this.logo,
+        x2: this.logo,
+        x3: this.logo,
+      }
+    },
   },
   mounted() {
     this.$store.dispatch('auth/getAuth')

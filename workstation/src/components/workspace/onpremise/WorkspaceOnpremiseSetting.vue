@@ -23,7 +23,7 @@
             <p>{{ $t('workspace.onpremiseSetting.logo.desc') }}</p>
           </el-col>
           <el-col :span="7">
-            <el-button @click="showFaviconModal = true">
+            <el-button @click="showLogoModal = true">
               {{ $t('common.update') }}
             </el-button>
           </el-col>
@@ -34,29 +34,35 @@
             <p>{{ $t('workspace.onpremiseSetting.favicon.desc') }}</p>
           </el-col>
           <el-col :span="7">
-            <el-button>{{ $t('common.update') }}</el-button>
+            <el-button @click="showFaviconModal = true">
+              {{ $t('common.update') }}
+            </el-button>
           </el-col>
         </el-row>
       </div>
     </el-card>
 
     <workspace-company-name-modal :visible.sync="showCompanyNameModal" />
+    <workspace-logo-modal :visible.sync="showLogoModal" />
     <workspace-favicon-modal :visible.sync="showFaviconModal" />
   </el-col>
 </template>
 
 <script>
 import WorkspaceCompanyNameModal from '@/components/workspace/onpremise/WorkspaceCompanyNameModal'
+import WorkspaceLogoModal from '@/components/workspace/onpremise/WorkspaceLogoModal'
 import WorkspaceFaviconModal from '@/components/workspace/onpremise/WorkspaceFaviconModal'
 
 export default {
   components: {
     WorkspaceCompanyNameModal,
+    WorkspaceLogoModal,
     WorkspaceFaviconModal,
   },
   data() {
     return {
       showCompanyNameModal: false,
+      showLogoModal: false,
       showFaviconModal: false,
     }
   },

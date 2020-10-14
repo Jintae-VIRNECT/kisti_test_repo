@@ -1,27 +1,38 @@
 <template>
   <el-dialog
-    class="workspace-favicon-modal onpremise-setting-modal"
+    class="workspace-logo-modal onpremise-setting-modal"
     :visible.sync="showMe"
-    :title="$t('workspace.onpremiseSetting.favicon.title')"
+    :title="$t('workspace.onpremiseSetting.logo.title')"
     width="440px"
     top="11vh"
   >
     <div>
-      <p>{{ $t('workspace.onpremiseSetting.favicon.desc') }}</p>
+      <p>{{ $t('workspace.onpremiseSetting.logo.desc') }}</p>
       <div class="preview">
-        <img src="~assets/images/workstation-title-example.png" />
         <div class="area">
           <span class="editable">
-            <img :src="file || defaultFavicon" />
+            <img :src="file || defaultlogo" />
+          </span>
+          <span class="sub-title">
+            <el-divider direction="vertical" />
+            <div class="avatar">
+              <div
+                class="image"
+                :style="
+                  `background-image: url('${activeWorkspace.profile}'), url('${$defaultWorkspaceProfile}')`
+                "
+              />
+            </div>
+            {{ activeWorkspace.name }}
           </span>
         </div>
         <div class="tooltip">
-          {{ $t('workspace.onpremiseSetting.favicon.tooltip') }}
+          {{ $t('workspace.onpremiseSetting.logo.tooltip') }}
         </div>
       </div>
       <p
         class="caution"
-        v-html="$t('workspace.onpremiseSetting.favicon.caution')"
+        v-html="$t('workspace.onpremiseSetting.logo.caution')"
       />
     </div>
     <div slot="footer">
@@ -47,23 +58,26 @@
 </template>
 
 <script>
-import modalMixin from '@/mixins/modal'
 import { mapGetters } from 'vuex'
+import modalMixin from '@/mixins/modal'
 
 export default {
   mixins: [modalMixin],
   data() {
     return {
-      defaultFavicon: require('assets/images/logo/favicon.png'),
+      defaultlogo: require('assets/images/logo/logo-gnb-ci.png'),
       file: null,
     }
   },
   computed: {
-    ...mapGetters({ favicon: 'layout/favicon' }),
+    ...mapGetters({
+      activeWorkspace: 'auth/activeWorkspace',
+      logo: 'layout/logo',
+    }),
   },
   methods: {
     opened() {
-      this.file = this.favicon
+      this.file = this.logo
     },
     imageSelected(file) {
       const reader = new FileReader()
@@ -76,15 +90,7 @@ export default {
       this.file = null
     },
     async submit() {
-      const link =
-        document.querySelector("link[rel*='icon']") ||
-        document.createElement('link')
-      link.type = 'image/x-icon'
-      link.rel = 'shortcut icon'
-      link.href = this.file
-      document.getElementsByTagName('head')[0].appendChild(link)
-
-      this.$store.commit('layout/SET_FAVICON', this.file)
+      this.$store.commit('layout/SET_LOGO', this.file)
       this.showMe = false
     },
   },
@@ -92,33 +98,33 @@ export default {
 </script>
 
 <style lang="scss">
-#__nuxt .workspace-favicon-modal {
+#__nuxt .workspace-logo-modal {
   .preview {
+    height: 60px;
+
     .area {
-      top: 11px;
-      left: 15px;
-      width: auto;
+      top: 6px;
+      left: 9px;
+      width: calc(100% - 20px);
+      height: 46px;
     }
     .tooltip {
-      top: -8px;
-      left: 15px;
+      top: -13px;
+      left: 9px;
     }
     .area > span {
       top: 0;
+      vertical-align: middle;
     }
     .area > .editable {
-      display: block;
-      width: 26px;
-      height: 26px;
-    }
-    .area::after {
-      display: none;
-    }
-    .editable {
-      padding: 3px;
+      display: inline-block;
+      height: 100%;
+      padding: 4px;
+      img {
+        height: 100%;
+      }
     }
   }
-
   .caution {
     margin-top: 8px;
     margin-bottom: 76px;

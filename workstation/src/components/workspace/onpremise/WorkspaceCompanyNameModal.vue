@@ -48,23 +48,30 @@
 
 <script>
 import modalMixin from '@/mixins/modal'
+import { mapGetters } from 'vuex'
 
 export default {
   mixins: [modalMixin],
   data() {
     return {
       form: {
-        companyName: 'VIRNECT',
+        companyName: '',
       },
     }
+  },
+  computed: {
+    ...mapGetters({ title: 'layout/title' }),
   },
   methods: {
     opened() {
       this.form = {
-        companyName: 'VIRNECT',
+        companyName: this.title,
       }
     },
-    async submit() {},
+    async submit() {
+      this.$store.commit('layout/SET_TITLE', this.form.companyName)
+      this.showMe = false
+    },
   },
 }
 </script>
