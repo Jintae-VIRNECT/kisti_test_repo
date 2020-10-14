@@ -81,7 +81,7 @@ async function getConfigs() {
   const res = await axios.get(`${location.origin}/configs`)
 
   const runtimeEnv = res.data.runtime || 'production'
-  logger('RUN ENV', res.data.runtime)
+  logger('RUNTIME ENV', res.data.runtime)
   delete res.data.runtime
 
   debug('URLS::', res.data)

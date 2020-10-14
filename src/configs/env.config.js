@@ -6,6 +6,14 @@ export const setConfigs = configs => {
   TARGET_COMPANY = configs.targetCompany || TARGET_COMPANY
 }
 
+export const RUNTIME = {
+  LOCAL: 'local',
+  DEVELOP: 'develop',
+  STAGING: 'staging',
+  PRODUCTION: 'production',
+  ONPREMISE: 'onpremise',
+}
+
 export default {
   RUNTIME_ENV,
   TARGET_COMPANY,
