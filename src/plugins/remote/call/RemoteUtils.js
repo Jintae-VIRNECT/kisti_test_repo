@@ -26,7 +26,7 @@ export const addSessionEventListener = session => {
 
     if (user === 'me') return
     // send default signals
-    _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
+    // _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
     // _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
     // _.sendResolution(null, [event.connection.connectionId])
     // _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.connection.connectionId])
