@@ -244,8 +244,9 @@ export default {
 }
 
 .chart-holder {
-  width: 900px;
-  height: 270px;
+  position: relative;
+  width: 64.2857rem;
+  height: 19.2857rem;
   padding-left: 30px;
 }
 </style>
