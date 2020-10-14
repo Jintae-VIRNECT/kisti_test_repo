@@ -22,7 +22,41 @@ export const addSessionEventListener = session => {
   let loading = false
   session.on('connectionCreated', event => {
     logger('room', 'connection created')
-    setUserObject(event)
+    const user = setUserObject(event)
+
+    if (user === 'me') return
+    // send default signals
+    _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
+    // _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
+    // _.sendResolution(null, [event.connection.connectionId])
+    // _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.connection.connectionId])
+    // if (_.account.roleType === ROLE.LEADER) {
+    //   _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
+    //     event.connection.connectionId,
+    //   ])
+    //   _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
+    //     event.connection.connectionId,
+    //   ])
+    //   if (Store.getters['viewForce'] === true) {
+    //     _.mainview(Store.getters['mainView'].id, true, [
+    //       event.connection.connectionId,
+    //     ])
+    //   }
+    //   if (Store.getters['view'] === 'drawing') {
+    //     window.vue.$eventBus.$emit(
+    //       'participantChange',
+    //       event.connection.connectionId,
+    //     )
+    //   }
+    // }
+    // if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
+    //   _.video(
+    //     Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
+    //     [event.connection.connectionId],
+    //   )
+    // } else {
+    //   _.video(Store.getters['video'].isOn, [event.connection.connectionId])
+    // }
   })
   session.on('streamCreated', event => {
     event.stream.onIceStateChanged = state => {
@@ -63,14 +97,6 @@ export const addSessionEventListener = session => {
           //   ? event.stream.videoActive
           //   : event.stream.hasVideo,
         })
-        if (
-          Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE
-        ) {
-          _.video(
-            Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
-            [event.stream.connection.connectionId],
-          )
-        }
       } else {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
@@ -81,36 +107,38 @@ export const addSessionEventListener = session => {
             ? event.stream.videoActive
             : event.stream.hasVideo,
         })
-        _.video(Store.getters['video'].isOn, [
-          event.stream.connection.connectionId,
-        ])
       }
-      _.sendResolution(null, [event.stream.connection.connectionId])
-      _.mic(Store.getters['mic'].isOn, [event.stream.connection.connectionId])
-      _.speaker(Store.getters['speaker'].isOn, [
-        event.stream.connection.connectionId,
-      ])
-      _.flashStatus(FLASH_STATUE.FLASH_NONE, [
-        event.stream.connection.connectionId,
-      ])
+      // next move to connectionCreated
+      _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
+      _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
+      _.sendResolution(null, [event.connection.connectionId])
+      _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.connection.connectionId])
       if (_.account.roleType === ROLE.LEADER) {
         _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
-          event.stream.connection.connectionId,
+          event.connection.connectionId,
         ])
         _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
-          event.stream.connection.connectionId,
+          event.connection.connectionId,
         ])
         if (Store.getters['viewForce'] === true) {
           _.mainview(Store.getters['mainView'].id, true, [
-            event.stream.connection.connectionId,
+            event.connection.connectionId,
           ])
         }
         if (Store.getters['view'] === 'drawing') {
           window.vue.$eventBus.$emit(
             'participantChange',
-            event.stream.connection.connectionId,
+            event.connection.connectionId,
           )
         }
+      }
+      if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
+        _.video(
+          Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
+          [event.connection.connectionId],
+        )
+      } else {
+        _.video(Store.getters['video'].isOn, [event.connection.connectionId])
       }
     })
   })
@@ -408,6 +436,7 @@ const setUserObject = event => {
         Store.commit('updateParticipant', {
           connectionId: event.connection.connectionId,
           cameraStatus: CAMERA_STATUS.CAMERA_NONE,
+          status: 'good',
         })
       } else {
         Store.commit('updateParticipant', {
@@ -422,6 +451,7 @@ const setUserObject = event => {
         }
       }
     })
+    return 'me'
   } else {
     logger('room', "participant's connected")
     Store.commit('addStream', userObj)
@@ -440,6 +470,7 @@ const setUserObject = event => {
       // }
       // Store.commit('addChat', chatObj)
     })
+    return 'participant'
   }
 
   // return streamObj
