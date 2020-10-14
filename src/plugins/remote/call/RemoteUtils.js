@@ -404,16 +404,22 @@ const setUserObject = event => {
     Store.commit('addStream', userObj)
 
     checkVideoInput().then(hasCamera => {
-      Store.commit('updateParticipant', {
-        connectionId: event.connection.connectionId,
-        cameraStatus: _.openRoom
-          ? CAMERA_STATUS.CAMERA_NONE
-          : hasCamera
-          ? CAMERA_STATUS.CAMERA_OFF
-          : CAMERA_STATUS.CAMERA_NONE,
-      })
-      if (!_.openRoom && hasCamera) {
-        _.changeProperty(true)
+      if (_.openRoom) {
+        Store.commit('updateParticipant', {
+          connectionId: event.connection.connectionId,
+          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
+        })
+      } else {
+        Store.commit('updateParticipant', {
+          connectionId: event.connection.connectionId,
+          hasAudio: true,
+          cameraStatus: hasCamera
+            ? CAMERA_STATUS.CAMERA_OFF
+            : CAMERA_STATUS.CAMERA_NONE,
+        })
+        if (!_.openRoom && hasCamera) {
+          _.changeProperty(true)
+        }
       }
     })
   } else {
