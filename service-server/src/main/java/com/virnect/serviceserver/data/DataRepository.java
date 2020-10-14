@@ -238,7 +238,11 @@ public class DataRepository {
             @Override
             DataProcess<RoomInfoListResponse> invokeDataProcess() {
                 if(!paging) {
+                    //first add private room
                     List<Room> roomList = sessionService.getRoomList(workspaceId, userId);
+                    //send add open room
+                    roomList.addAll(sessionService.getRoomList(workspaceId));
+
                     List<RoomInfoResponse> roomInfoList = new ArrayList<>();
                     for (Room room: roomList) {
                         RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
@@ -291,9 +295,15 @@ public class DataRepository {
                     }
                     return new DataProcess<>(new RoomInfoListResponse(roomInfoList, pageMeta));
                 } else {
+
+
                     Page<Member> memberPage = sessionService.getMemberList(workspaceId, userId, pageable);
 
+                    //first add private room
                     List<Room> roomList = sessionService.getRoomList(memberPage);
+                    //send add open room
+                    roomList.addAll(sessionService.getRoomList(workspaceId));
+
                     List<RoomInfoResponse> roomInfoList = new ArrayList<>();
                     for (Room room: roomList) {
                         RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
@@ -382,8 +392,6 @@ public class DataRepository {
                                 .stream()
                                 .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
-
-
 
                         //remove members who is evicted
                         memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));

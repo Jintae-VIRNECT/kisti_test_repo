@@ -207,6 +207,19 @@ public class SessionService {
         return roomList;
     }
 
+    //
+    public List<Room> getRoomList(String workspaceId) {
+        List<Room> roomList = new ArrayList<>();
+        for(Room room : this.roomRepository.findByWorkspaceId(workspaceId)) {
+            if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)
+                    && room.getRoomStatus().equals(RoomStatus.ACTIVE)) {
+                roomList.add(room);
+            }
+        }
+
+        return roomList;
+    }
+
     public List<Room> getRoomList(Page<Member> memberPage) {
         List<Room> roomList = new ArrayList<>();
         for(Member member : memberPage.getContent() ) {
