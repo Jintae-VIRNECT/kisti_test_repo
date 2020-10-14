@@ -1,5 +1,9 @@
 # RM-RecordServer
 
+remote 서비스의 서버 녹화 기능을 제공한다.
+
+![architecture](./images/architecture.png)
+
 ## Prerequisites
 
 ### go
