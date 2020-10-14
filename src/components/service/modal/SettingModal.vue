@@ -180,6 +180,7 @@ import { languageCode } from 'utils/translate'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
+import { USE_TRANSLATE } from 'configs/env.config'
 import {
   localRecTime,
   localRecResOpt,
@@ -282,7 +283,7 @@ export default {
     },
     useTranslate() {
       // TODO: KINTEX
-      return true
+      return USE_TRANSLATE
     },
   },
 
