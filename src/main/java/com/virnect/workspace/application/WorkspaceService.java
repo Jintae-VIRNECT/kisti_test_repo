@@ -125,6 +125,8 @@ public class WorkspaceService {
 	@Value("${supportUrl}")
 	private String supportUrl;
 
+	private static final String serviceID = "workspace-server";
+
 	/**
 	 * 워크스페이스 생성
 	 *
@@ -1946,7 +1948,8 @@ public class WorkspaceService {
 			RegisterMemberRequest registerMemberRequest = new RegisterMemberRequest();
 			registerMemberRequest.setEmail(memberAccountCreateInfo.getId());
 			registerMemberRequest.setPassword(memberAccountCreateInfo.getPassword());
-			UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(registerMemberRequest,"workspace-server")
+			UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(registerMemberRequest,
+				serviceID)
 				.getData();
 
 			if (userInfoRestResponse == null) {
@@ -1968,7 +1971,7 @@ public class WorkspaceService {
 						userInfoRestResponse.getUuid(), "REMOTE"
 					);
 					UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
-						userInfoRestResponse.getUuid(), "workspace-server").getData();
+						userInfoRestResponse.getUuid(), serviceID).getData();
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
 						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
@@ -1990,7 +1993,7 @@ public class WorkspaceService {
 						userInfoRestResponse.getUuid(), "REMOTE"
 					);
 					UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
-						userInfoRestResponse.getUuid(), "workspace-server").getData();
+						userInfoRestResponse.getUuid(), serviceID).getData();
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
 						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
@@ -2012,7 +2015,7 @@ public class WorkspaceService {
 						userInfoRestResponse.getUuid(), "REMOTE"
 					);
 					UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
-						userInfoRestResponse.getUuid(), "workspace-server").getData();
+						userInfoRestResponse.getUuid(), serviceID).getData();
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
 						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
@@ -2119,10 +2122,11 @@ public class WorkspaceService {
 
 		//3. user-server에 멤버 삭제 api 요청 -> 실패시 grant api 요청
 		UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
-			memberAccountDeleteRequest.getDeleteUserId(), "workspace-service").getData();
+			memberAccountDeleteRequest.getDeleteUserId(), serviceID).getData();
 		if (userDeleteRestResponse == null) {
 			log.error("[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail.");
-			if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+			if (myLicenseInfoListResponse.getLicenseInfoList() != null
+				&& !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
 				myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
 					MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(
 						workspaceId, memberAccountDeleteRequest.getDeleteUserId(),
@@ -2143,10 +2147,10 @@ public class WorkspaceService {
 
 		//4. workspace-sever 권한 및 소속 해제
 		Optional<Workspace> workspace = workspaceRepository.findByUuid(workspaceId);
-		WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(
-			memberAccountDeleteRequest.getDeleteUserId(), workspace.get());
+		WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(memberAccountDeleteRequest.getDeleteUserId(), workspace.get());
 		workspaceUserPermissionRepository.deleteAllByWorkspaceUser(workspaceUser);
 		workspaceUserRepository.deleteById(workspaceUser.getId());
+
 		log.info(
 			"[DELETE WORKSPACE MEMBER ACCOUNT] Workspace delete user success. Request User UUID : [{}], Delete User UUID : [{}], DeleteDate : [{}]",
 			memberAccountDeleteRequest.getUserId(), memberAccountDeleteRequest.getDeleteUserId(), LocalDateTime.now()
