@@ -9,6 +9,7 @@ let envConfig = {}
 let urlConfig = {}
 
 const localUrls = {
+	www: 'http://192.168.13.72:9010',
 	console: 'https://192.168.13.72:8888',
 	api: 'https://192.168.6.3:8073',
 	// api: 'http://192.168.13.34:8085',

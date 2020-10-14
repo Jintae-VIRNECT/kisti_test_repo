@@ -59,7 +59,7 @@ export default {
 	async userAuth(params) {
 		// 아이디 확인
 		try {
-			const { data } = await api('POST_CHECK_UUID', {
+			const { data } = await api('GET_CHECK_EMAIL', {
 				params: params,
 			})
 			return data
@@ -70,7 +70,7 @@ export default {
 	async userCheckAnswer(params) {
 		// 질문확인
 		try {
-			const data = await api('POST_CHECK_ANSWER', {
+			const { data } = await api('POST_CHECK_ANSWER', {
 				params: params,
 			})
 			return data

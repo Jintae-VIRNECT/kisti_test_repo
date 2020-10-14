@@ -20,7 +20,8 @@ module.exports = {
 	POST_CODE_CHECK: ['POST', '/users/find/password/check'],
 	// 비밀번호 재설정 - 비번 재설정
 	PUT_PASS: ['PUT', '/users/find/password'],
-	POST_CHECK_UUID: ['POST', '/users/find/password/auth'],
-	POST_CHECK_ANSWER: ['POST', '/users/find/password/check'],
+
+	GET_CHECK_EMAIL: ['GET', '/users/exist'],
+	POST_CHECK_ANSWER: ['POST', '/users/password/identity/check'],
 	PUT_USER_PASSWORD: ['PUT', '/users/find/password'],
 }

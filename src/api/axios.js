@@ -5,7 +5,9 @@ import URI from 'api/uri'
 const env = process.env.NODE_ENV
 
 export async function getUrls() {
-	const res = await Axios.get(`${location.origin}/urls`)
+	const res = await Axios.get(
+		`${location.origin}/urls?origin=${location.hostname}`,
+	)
 	window.urls = res.data
 	window.env = res.data.env
 	setBaseURL(res.data.api)

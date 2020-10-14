@@ -14,7 +14,7 @@
 						placeholder="ID를 입력해 주세요"
 						clearable
 						type="email"
-						v-model="resetPass.uuid"
+						v-model="resetPass.email"
 						@keyup.enter.native="checkAuth()"
 					></el-input>
 
@@ -22,7 +22,7 @@
 						<el-button
 							class="next-btn block-btn"
 							type="primary"
-							:disabled="resetPass.uuid == ''"
+							:disabled="resetPass.email == ''"
 							@click="checkAuth()"
 							>다음</el-button
 						>
@@ -71,7 +71,7 @@
 						<div class="user-email-holder">
 							<p>
 								<i>ID:</i>
-								<span>{{ resetPass.uuid }}</span>
+								<span>{{ resetPass.email }}</span>
 							</p>
 						</div>
 
@@ -133,9 +133,10 @@ export default {
 		return {
 			step: 'number',
 			resetPass: {
-				uuid: '',
+				email: '',
 				password: '',
 			},
+			uuid: null,
 			answer: '',
 			question: null,
 			userId: null,
@@ -161,45 +162,39 @@ export default {
 	},
 	methods: {
 		async checkAuth() {
-			// this.nextStep('question')
 			try {
 				const res = await UserService.userAuth({
-					email: this.resetPass.uuid,
+					email: this.resetPass.email,
 				})
-				if (res.authenticated) {
+				if (res.result) {
 					this.nextStep('question')
 				} else throw res
 			} catch (e) {
-				if (e === 4002) {
-					this.alertMessage(
-						'ID 불일치',
-						'등록된 ID가 없습니다. 마스터에게 계정 생성을 요청하세요.',
-						'error',
-					)
-				}
+				this.alertMessage(
+					'ID 불일치',
+					'등록된 ID가 없습니다. 마스터에게 계정 생성을 요청하세요.',
+					'error',
+				)
 			}
 		},
 		async checkAnswer() {
-			// this.nextStep('resetPass')
 			try {
 				const res = await UserService.userCheckAnswer({
-					email: this.resetPass.uuid,
+					email: this.resetPass.email,
 					question: this.question,
 					answer: this.answer,
 				})
 				// console.log(res)
-				if (res.authenticated) {
+				if (res.uuid) {
+					this.uuid = res.uuid
 					this.nextStep('resetPass')
 				} else throw res
 			} catch (e) {
-				console.log(e)
-				if (e === 4007) {
-					this.alertMessage(
-						'비밀번호 찾기 질문/답변 불일치 오류',
-						'입력하신 질문/답변이 일치하지 않습니다. 다시 한 번 확인해 주세요.',
-						'error',
-					)
-				}
+				this.alertMessage(
+					'비밀번호 찾기 질문/답변 불일치 오류',
+					'입력하신 질문/답변이 일치하지 않습니다. 다시 한 번 확인해 주세요.',
+					'error',
+				)
 			}
 		},
 		nextStep(step) {
@@ -209,31 +204,21 @@ export default {
 			}
 		},
 		async changePass() {
-			await this.$alert(
-				'변경된 새 비밀번호로 다시 로그인해 주세요.',
-				'비밀번호 변경 완료',
-				{
-					distinguishCancelAndClose: true,
-					confirmButtonText: '확인',
-				},
-			)
-			// if (twin) {
-			// // location.href = '/'
-			// }
 			try {
 				const res = await UserService.putUserPassChange({
-					uuid: this.resetPass.uuid,
+					uuid: this.uuid,
+					email: this.resetPass.email,
 					password: this.resetPass.password,
 				})
-				if (res.changed) {
+				if (res.code === 200) {
 					this.confirmWindow(
 						'비밀번호 변경 완료',
 						'기존 로그인된 기기에서 로그아웃 됩니다. 변경된 새 비밀번호로 다시 로그인해 주세요.',
 						true,
 					)
 				} else throw res
-			} catch (e) {
-				if (e.code === 4009)
+			} catch (res) {
+				if (res.code === 4009)
 					return this.alertMessage(
 						'비밀번호 재설정 실패',
 						'이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.',

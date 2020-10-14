@@ -28,7 +28,7 @@ export default {
 			auth,
 			showSection: {
 				login: false,
-				language: true,
+				language: this.$env !== 'onpremise',
 			},
 		}
 	},

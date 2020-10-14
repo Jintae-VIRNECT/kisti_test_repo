@@ -6,7 +6,7 @@
 		<transition name="app-fade" mode="out-in">
 			<router-view :auth="auth" />
 		</transition>
-		<TheFooter />
+		<TheFooter v-if="$env !== 'onpremise'" />
 	</section>
 </template>
 
