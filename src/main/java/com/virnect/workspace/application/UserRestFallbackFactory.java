@@ -55,7 +55,7 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
 
             @Override
             public ApiResponse<UserInfoRestResponse> registerMemberRequest(
-                RegisterMemberRequest registerMemberRequest
+                RegisterMemberRequest registerMemberRequest, String serviceID
             ) {
                 return new ApiResponse<>(new UserInfoRestResponse());
             }

@@ -63,7 +63,7 @@ public interface UserRestService {
 
     //멤버 등록
     @PostMapping("/users/register/member")
-    ApiResponse<UserInfoRestResponse> registerMemberRequest(@RequestBody RegisterMemberRequest registerMemberRequest);
+    ApiResponse<UserInfoRestResponse> registerMemberRequest(@RequestBody RegisterMemberRequest registerMemberRequest,@RequestHeader("serviceID") String serviceID);
 
     //멤버 삭제
     @DeleteMapping("/users/{userUUID}")

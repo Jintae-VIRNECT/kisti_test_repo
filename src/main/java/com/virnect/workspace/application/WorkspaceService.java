@@ -1946,7 +1946,7 @@ public class WorkspaceService {
 			RegisterMemberRequest registerMemberRequest = new RegisterMemberRequest();
 			registerMemberRequest.setEmail(memberAccountCreateInfo.getId());
 			registerMemberRequest.setPassword(memberAccountCreateInfo.getPassword());
-			UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(registerMemberRequest)
+			UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(registerMemberRequest,"workspace-server")
 				.getData();
 
 			if (userInfoRestResponse == null) {
