@@ -1951,7 +1951,7 @@ public class WorkspaceService {
 
 			if (userInfoRestResponse == null) {
 				log.error("[CREATE WORKSPACE MEMBER ACCOUNT] USER SERVER Member Register fail.");
-				throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL);
 			}
 			log.info(
 				"[CREATE WORKSPACE MEMBER ACCOUNT] USER SERVER account register success. Create UUID : [{}], Create Date : [{}]",
@@ -1971,9 +1971,9 @@ public class WorkspaceService {
 						userInfoRestResponse.getUuid(), "workspace-server").getData();
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
-						userDeleteRestResponse.getDeletedDate(), userDeleteRestResponse.getDeletedDate()
+						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
 					);
-					throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
 				}
 				log.info(
 					"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
@@ -1993,9 +1993,9 @@ public class WorkspaceService {
 						userInfoRestResponse.getUuid(), "workspace-server").getData();
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
-						userDeleteRestResponse.getDeletedDate(), userDeleteRestResponse.getDeletedDate()
+						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
 					);
-					throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
 				}
 				log.info(
 					"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
@@ -2015,9 +2015,9 @@ public class WorkspaceService {
 						userInfoRestResponse.getUuid(), "workspace-server").getData();
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
-						userDeleteRestResponse.getDeletedDate(), userDeleteRestResponse.getDeletedDate()
+						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
 					);
-					throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
 				}
 				log.info(
 					"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
@@ -2053,6 +2053,7 @@ public class WorkspaceService {
 			memberInfoResponse.setRoleId(newWorkspaceUserPermission.getWorkspaceRole().getId());
 			memberInfoResponse.setJoinDate(newWorkspaceUser.getCreatedDate());
 			memberInfoResponse.setLicenseProducts(responseLicense.toArray(new String[responseLicense.size()]));
+			memberInfoDTOList.add(memberInfoResponse);
 		}
 
 		return new WorkspaceMemberInfoListResponse(memberInfoDTOList);
@@ -2106,7 +2107,7 @@ public class WorkspaceService {
 						memberAccountDeleteRequest.getUserId(),
 						myLicenseInfoResponse.getProductName()
 					);
-					throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
 				}
 				log.info(
 					"[DELETE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license revoke success. Request user UUID : [{}], Product License [{}]",
@@ -2133,7 +2134,7 @@ public class WorkspaceService {
 					);
 				});
 			}
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL);
 		}
 		log.info(
 			"[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user success. Request user UUID : [{}],Delete Date [{}]",
