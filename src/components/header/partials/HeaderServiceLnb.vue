@@ -38,26 +38,26 @@ export default {
     return {
       drawingNotice: 1,
       arNotice: 2,
-      // menus: [
-      //   {
-      //     text: this.$t('service.stream'),
-      //     key: VIEW.STREAM,
-      //     icon: require('assets/image/call/gnb_ic_shareframe.svg'),
-      //     notice: false,
-      //   },
-      //   {
-      //     text: this.$t('service.drawing'),
-      //     key: VIEW.DRAWING,
-      //     icon: require('assets/image/call/gnb_ic_creat_basic.svg'),
-      //     notice: false,
-      //   },
-      //   {
-      //     text: this.$t('service.ar'),
-      //     key: VIEW.AR,
-      //     icon: require('assets/image/call/gnb_ic_creat_ar.svg'),
-      //     notice: false,
-      //   },
-      // ],
+      menus: [
+        {
+          text: this.$t('service.stream'),
+          key: VIEW.STREAM,
+          icon: require('assets/image/call/gnb_ic_shareframe.svg'),
+          notice: false,
+        },
+        {
+          text: this.$t('service.drawing'),
+          key: VIEW.DRAWING,
+          icon: require('assets/image/call/gnb_ic_creat_basic.svg'),
+          notice: false,
+        },
+        {
+          text: this.$t('service.ar'),
+          key: VIEW.AR,
+          icon: require('assets/image/call/gnb_ic_creat_ar.svg'),
+          notice: false,
+        },
+      ],
     }
   },
   computed: {
@@ -69,39 +69,6 @@ export default {
       'viewForce',
       'openRoom',
     ]),
-    menus() {
-      if (this.openRoom) {
-        return [
-          {
-            text: this.$t('service.stream'),
-            key: VIEW.STREAM,
-            icon: require('assets/image/call/gnb_ic_shareframe.svg'),
-            notice: false,
-          },
-        ]
-      } else {
-        return [
-          {
-            text: this.$t('service.stream'),
-            key: VIEW.STREAM,
-            icon: require('assets/image/call/gnb_ic_shareframe.svg'),
-            notice: false,
-          },
-          {
-            text: this.$t('service.drawing'),
-            key: VIEW.DRAWING,
-            icon: require('assets/image/call/gnb_ic_creat_basic.svg'),
-            notice: false,
-          },
-          {
-            text: this.$t('service.ar'),
-            key: VIEW.AR,
-            icon: require('assets/image/call/gnb_ic_creat_ar.svg'),
-            notice: false,
-          },
-        ]
-      }
-    },
     hasLeader() {
       const idx = this.participants.findIndex(
         user => user.roleType === ROLE.LEADER,
@@ -360,6 +327,17 @@ export default {
   created() {
     this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
+
+    if (this.openRoom) {
+      this.menus = [
+        {
+          text: this.$t('service.stream'),
+          key: VIEW.STREAM,
+          icon: require('assets/image/call/gnb_ic_shareframe.svg'),
+          notice: false,
+        },
+      ]
+    }
   },
 }
 </script>
