@@ -6,7 +6,6 @@ import {
   CALL_ACTION_SET,
 } from '../mutation-types'
 import { ACTION } from 'configs/view.config'
-import { USE_OPENROOM } from 'configs/env.config'
 
 function getDefaultRoomInfo() {
   return {
@@ -31,7 +30,7 @@ const mutations = {
     state.leaderId = payload.leaderId
     state.maxUserCount = payload.maxUserCount
     state.memberList = payload.memberList
-    state.open = USE_OPENROOM ? !!payload.open : false
+    state.open = !!payload.open
     // state.open = true
   },
 

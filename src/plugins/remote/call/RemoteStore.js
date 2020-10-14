@@ -238,13 +238,15 @@ const mutations = {
       }
     }
     if (state.participants[idx].me === true) {
-      state.initing = false
-      if (
-        param['hasVideo'] === true &&
-        (!state.mainView || !state.mainView.id)
-      ) {
-        state.mainView = state.participants[idx]
-      }
+      setTimeout(() => {
+        state.initing = false
+        if (
+          param['hasVideo'] === true &&
+          (!state.mainView || !state.mainView.id)
+        ) {
+          state.mainView = state.participants[idx]
+        }
+      }, 100)
     }
   },
   updateResolution(state, payload) {

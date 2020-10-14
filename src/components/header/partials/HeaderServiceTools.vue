@@ -4,7 +4,7 @@
 
     <stream v-if="hasVideo"></stream>
 
-    <mic></mic>
+    <mic v-if="hasAudio"></mic>
 
     <speaker></speaker>
 
@@ -48,6 +48,16 @@ export default {
         return true
       }
       if (this.participants.length > 0 && this.participants[0].hasVideo) {
+        return true
+      } else {
+        return false
+      }
+    },
+    hasAudio() {
+      if (this.$route.name === 'workspace') {
+        return true
+      }
+      if (this.participants.length > 0 && this.participants[0].hasAudio) {
         return true
       } else {
         return false

@@ -29,8 +29,6 @@ import { ROOM_STATUS, COMPANY_CODE } from 'configs/status.config'
 import { TARGET_COMPANY } from 'configs/env.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { maxParticipants } from 'utils/callOptions'
-import { checkPermission } from 'utils/deviceCheck'
 
 export default {
   name: 'WorkspaceCreateOpenRoom',
@@ -42,7 +40,6 @@ export default {
   data() {
     return {
       visibleFlag: false,
-      maxSelect: maxParticipants - 1,
       roomInfo: {},
       clicked: false,
     }
@@ -85,24 +82,13 @@ export default {
     beforeClose() {
       this.$emit('update:visible', false)
     },
-    selectUser(user) {
-      const idx = this.selection.findIndex(select => user.uuid === select.uuid)
-      if (idx < 0) {
-        if (this.selection.length >= this.maxSelect) {
-          this.toastNotify(this.$t('workspace.create_max_member'))
-          return
-        }
-        this.selection.push(user)
-      } else {
-        this.selection.splice(idx, 1)
-      }
-    },
     async startRemote(info) {
       try {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission()
+        // const options = await checkPermission()
+        const options = false
 
         const createdRes = await createRoom({
           title: info.title,

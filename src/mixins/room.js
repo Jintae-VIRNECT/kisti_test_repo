@@ -20,8 +20,6 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission(true)
-
         this.setRoomInfo(room)
         let role
         if (room.sessionType === ROOM_STATUS.PRIVATE) {
@@ -32,6 +30,10 @@ export default {
           role = myInfo.memberType === ROLE.LEADER ? ROLE.LEADER : ROLE.EXPERT
         } else {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
+        }
+        let options = false
+        if (room.open !== true) {
+          options = await checkPermission(true)
         }
 
         const res = await joinRoom({

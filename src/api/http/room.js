@@ -7,7 +7,7 @@ import { ROOM_STATUS } from 'configs/status.config'
  * @param {String} description
  * @param {String} autoRecording
  * @param {Boolean} translation // 번역 활성화 여부..?
- * @param {Boolean} isKeepAlive // 룸 세션 유지 여부
+ * @param {Boolean} keepAlive // 룸 세션 유지 여부
  * @param {String} sessionType // 원격 협업('PRIVATE') / 오픈방('PUBLIC')
  * @param {String} leaderId // 리더 아이디(uuid)
  * @param {Array[String]} participantIds // 참여자 리스트
@@ -19,7 +19,7 @@ export const createRoom = async ({
   description,
   autoRecording = false,
   translation = false,
-  isKeepAlive = false,
+  keepAlive = false,
   sessionType = ROOM_STATUS.PRIVATE,
   leaderId,
   participantIds = [],
@@ -31,7 +31,7 @@ export const createRoom = async ({
     description,
     autoRecording,
     translation,
-    isKeepAlive,
+    keepAlive,
     sessionType,
     leaderId,
     participantIds,
@@ -47,7 +47,7 @@ export const createRoom = async ({
  * @param {String} description
  * @param {String} autoRecording
  * @param {Boolean} translation // 번역 활성화 여부..?
- * @param {Boolean} isKeepAlive // 룸 세션 유지 여부
+ * @param {Boolean} keepAlive // 룸 세션 유지 여부
  * @param {String} sessionType // 원격 협업('PRIVATE') / 오픈방('PUBLIC')
  * @param {String} leaderId // 리더 아이디(uuid)
  * @param {Array[String]} participantIds // 참여자 리스트
@@ -60,7 +60,7 @@ export const restartRoom = async ({
   description,
   autoRecording = false,
   translation = false,
-  isKeepAlive = false,
+  keepAlive = false,
   sessionType = ROOM_STATUS.PRIVATE,
   leaderId,
   participantIds = [],
@@ -73,7 +73,7 @@ export const restartRoom = async ({
     description,
     autoRecording,
     translation,
-    isKeepAlive,
+    keepAlive,
     sessionType,
     leaderId,
     participantIds,
