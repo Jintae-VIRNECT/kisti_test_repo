@@ -238,7 +238,6 @@ public class DataRepository {
             @Override
             DataProcess<RoomInfoListResponse> invokeDataProcess() {
                 if(!paging) {
-                    //roomList = this.roomRepository.findByWorkspaceId(workspaceId);
                     List<Room> roomList = sessionService.getRoomList(workspaceId, userId);
                     List<RoomInfoResponse> roomInfoList = new ArrayList<>();
                     for (Room room: roomList) {
@@ -246,6 +245,7 @@ public class DataRepository {
                         roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
                         roomInfoList.add(roomInfoResponse);
                     }
+
                     /*List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(workspaceId, userId)
                             .stream()
                             .map(room -> modelMapper.map(room, RoomInfoResponse.class))
@@ -423,6 +423,7 @@ public class DataRepository {
             @Override
             DataProcess<RoomDeleteResponse> invokeDataProcess() {
                 Room room = loadFromDatabase();
+                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", room.getMembers().size());
                 DataProcess<RoomDeleteResponse> dataProcess = null;
                 try {
                     dataProcess = new DataProcess<>(RoomDeleteResponse.class);
@@ -442,8 +443,10 @@ public class DataRepository {
                     return dataProcess;
                 }
 
-                List<Member> members = room.getMembers();
+                //List<Member> members = room.getMembers();
+                List<Member> members = sessionService.getMemberList(room.getWorkspaceId(), room.getSessionId());
                 for (Member member: members) {
+                    log.info("ROOM INFO DELETE BY dataProcess => [{}]", member.getUuid());
                     if(member.getUuid().equals(room.getLeaderId())
                             && member.getMemberStatus().equals(MemberStatus.LOAD)) {
                         dataProcess.setErrorCode(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
@@ -452,6 +455,7 @@ public class DataRepository {
                 }
 
                 sessionService.removeRoom(room);
+                //sessionService.removeRoom(workspaceId, sessionId);
                 return new DataProcess<>(new RoomDeleteResponse(
                         sessionId,
                         true,
@@ -863,13 +867,15 @@ public class DataRepository {
             @Override
             DataProcess<List<String>> invokeDataProcess() {
                 Room room = loadFromDatabase();
-                List<Member> memberList= room.getMembers();
+                List<Member> memberList = room.getMembers();
 
-                memberList.removeIf(member -> member.getUuid().equals(room.getLeaderId()));
+                //Do not use collection method removeIf with Data Access Object
+                //memberList.removeIf(member -> member.getUuid().equals(room.getLeaderId()));
 
                 List<String> connectionIds = new ArrayList<>();
                 for (Member member: memberList) {
-                    if(member.getConnectionId() != null) {
+                    if(member.getConnectionId() != null &&
+                            !member.getUuid().equals(room.getLeaderId())) {
                         connectionIds.add(member.getConnectionId());
                     }
                 }
@@ -1187,21 +1193,26 @@ public class DataRepository {
             DataProcess<RoomHistoryInfoListResponse> invokeDataProcess() {
                 if (!paging) {
                     // get all member history by uuid
-                    //List<MemberHistory> memberHistoryList = historyService.getMemberHistoryList(workspaceId, userId);
-
                     PageRequest pageRequest = new PageRequest();
                     Page<MemberHistory> memberPage = historyService.getMemberHistoryList(workspaceId, userId, pageRequest.of());
 
                     List<RoomHistory> roomHistoryList = new ArrayList<>();
                     memberPage.getContent().forEach(memberHistory -> {
-                        //if (memberHistory.getRoomHistory() != null) {
                         roomHistoryList.add(memberHistory.getRoomHistory());
-                        //}
                     });
 
-                    List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
+
+                    List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
+                    for(RoomHistory roomHistory: roomHistoryList) {
+                        RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+                        roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+                        roomHistoryInfoList.add(roomHistoryInfoResponse);
+                    }
+
+
+                    /*List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
                             .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
 
                     // find specific member has room history
                     /*List<RoomHistory> roomHistoryList = new ArrayList<>();
@@ -1286,22 +1297,15 @@ public class DataRepository {
                     // find specific member has room history
                     List<RoomHistory> roomHistoryList = new ArrayList<>();
                     memberPage.getContent().forEach(memberHistory -> {
-                        //if (memberHistory.getRoomHistory() != null) {
                         roomHistoryList.add(memberHistory.getRoomHistory());
-                        //}
                     });
 
-                    List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
-                            .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                            .collect(Collectors.toList());
-
-            /*List<RoomHistoryInfoResponse> roomHistoryInfoList = roomPage.stream()
-                    .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                    .collect(Collectors.toList());*/
-
-            /*List<RoomHistoryInfoResponse> roomHistoryInfoList = roomPage.stream()
-                    .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                    .collect(Collectors.toList());*/
+                    List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
+                    for(RoomHistory roomHistory: roomHistoryList) {
+                        RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+                        roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+                        roomHistoryInfoList.add(roomHistoryInfoResponse);
+                    }
 
                     // Page Metadata
                     PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -1381,6 +1385,7 @@ public class DataRepository {
                 } else {
                     // mapping data
                     RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(roomHistory, RoomHistoryDetailInfoResponse.class);
+                    resultResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
                     // Get Member List by Room Session ID
                     // Mapping Member List Data to Member Information List

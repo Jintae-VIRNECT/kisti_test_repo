@@ -16,6 +16,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -33,6 +36,7 @@ import java.util.List;
 public class SessionService {
     private static final String TAG = SessionService.class.getSimpleName();
 
+    private final ModelMapper modelMapper;
     private final RoomRepository roomRepository;
     private final MemberRepository memberRepository;
     private final RoomHistoryRepository roomHistoryRepository;
@@ -73,7 +77,7 @@ public class SessionService {
 
         // set room members
         if(!roomRequest.getLeaderId().isEmpty()) {
-            log.debug("leader Id is {}", roomRequest.getLeaderId());
+            log.info("leader Id is {}", roomRequest.getLeaderId());
             Member member = Member.builder()
                     .room(room)
                     .memberType(MemberType.LEADER)
@@ -84,12 +88,12 @@ public class SessionService {
 
             room.getMembers().add(member);
         } else {
-            log.debug("leader Id is null");
+            log.info("leader Id is null");
         }
 
         if(!roomRequest.getParticipantIds().isEmpty()) {
             for (String participant : roomRequest.getParticipantIds()) {
-                log.debug("getParticipants Id is {}", participant);
+                log.info("getParticipants Id is {}", participant);
                 Member member = Member.builder()
                         .room(room)
                         .memberType(MemberType.UNKNOWN)
@@ -101,8 +105,13 @@ public class SessionService {
                 room.getMembers().add(member);
             }
         } else {
-            log.debug("participants Id List is null");
+            log.info("participants Id List is null");
         }
+
+        /*List<Member> members = room.getMembers();
+        for (Member member: members) {
+            log.info("ROOM INFO CREATE => [{}]", member.getUuid());
+        }*/
         return roomRepository.save(room);
     }
 
@@ -309,9 +318,25 @@ public class SessionService {
     }
 
     @Transactional
+    @Deprecated
+    public void removeRoom(String workspaceId, String sessionId) {
+        log.info("ROOM INFO REMOVE BY removeRoom => [{}]");
+        Room room = getRoom(workspaceId, sessionId);
+        //List<Member> members = sessionService.getMemberList(room.getWorkspaceId(), room.getSessionId());
+        List<Member> members = room.getMembers()
+                .stream()
+                .map(member -> modelMapper.map(member, Member.class))
+                .collect(Collectors.toList());
+        for (Member member: members) {
+            log.info("ROOM INFO REMOVE BY removeRoom => [{}]", member.getUuid());
+
+        }
+    }
+
+    @Transactional
     public void removeRoom(Room room) {
         // save room and member History
-        log.info("ROOM INFO DELETE => []");
+        log.info("ROOM INFO REMOVE => []");
         // check the same session id history room is already exist
         RoomHistory oldRoomHistory = roomHistoryRepository.findBySessionId(room.getSessionId()).orElse(null);
         if(oldRoomHistory != null) {
@@ -347,7 +372,8 @@ public class SessionService {
 
             // Get Member List by Room Session Ids
             //List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
-            List<Member> memberList = room.getMembers();
+            //List<Member> memberList = room.getMembers();
+            List<Member> memberList = this.getMemberList(room.getWorkspaceId(), room.getSessionId());
             // Mapping Member List Data to Member History List
             for (Member member : memberList) {
                 MemberHistory memberHistory = MemberHistory.builder()
@@ -413,7 +439,10 @@ public class SessionService {
 
             // Set room member history
             // Get Member List by Room Session Ids
-            List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
+            //List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
+            List<Member> memberList = room.getMembers();
+            //List<Member> memberList = this.getMemberList(room.getWorkspaceId(), room.getSessionId());
+            log.info("ROOM INFO REMOVE memberList size => [{}]", memberList.size());
             // Mapping Member List Data to Member History List
             for (Member roomMember : memberList) {
                 MemberHistory memberHistory = MemberHistory.builder()
@@ -427,6 +456,7 @@ public class SessionService {
                         .endDate(roomMember.getEndDate())
                         .durationSec(roomMember.getDurationSec())
                         .build();
+
                 memberHistoryRepository.save(memberHistory);
                 roomHistory.getMemberHistories().add(memberHistory);
 

@@ -7,12 +7,11 @@ import com.virnect.serviceserver.core.Participant;
 import com.virnect.serviceserver.core.SessionManager;
 import com.virnect.serviceserver.core.Token;
 import com.virnect.serviceserver.kurento.kms.KmsManager;
-import com.virnect.serviceserver.rest.SessionRestController;
+import com.virnect.serviceserver.rest.KurentoSessionRestController;
 import com.virnect.serviceserver.test.integration.config.IntegrationTestConfiguration;
 import org.junit.Assert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.HashMap;
@@ -42,7 +40,7 @@ public class SessionGarbageCollectorIntegrationTest {
     private SessionManager sessionManager;
 
     @Autowired
-    private SessionRestController sessionRestController;
+    private KurentoSessionRestController sessionRestController;
 
     @Test
     @DisplayName("Sessions not active garbage collector")
