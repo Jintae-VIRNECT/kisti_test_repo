@@ -246,11 +246,7 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    if (
-      this.chat.type === 'opponent' &&
-      this.translate.flag &&
-      this.chat.languageCode !== this.translate.code
-    ) {
+    if (this.chat.type === 'opponent' && this.translate.flag) {
       this.doTranslateText()
     }
   },
