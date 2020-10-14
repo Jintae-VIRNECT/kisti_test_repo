@@ -259,6 +259,7 @@ export default {
     & > span {
       flex: auto;
       font-size: 18px;
+      overflow-wrap: anywhere;
     }
     .el-button {
       height: 34px;
