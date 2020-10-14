@@ -275,11 +275,10 @@ public class LicenseService {
 		String workspaceId, String userId, String productName, Boolean grant
 	) {
 		//워크스페이스 플랜찾기
-		LicensePlan licensePlan = this.licensePlanRepository.findByWorkspaceIdAndPlanStatus(
+		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatus(
 			workspaceId,
 			PlanStatus.ACTIVE
-		)
-			.orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
+		).orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));
 
 		LicenseProduct licenseProduct = licenseProductRepository.findByLicensePlanAndProduct_Name(
 			licensePlan, productName
@@ -288,7 +287,7 @@ public class LicenseService {
 		Product product = licenseProduct.getProduct();
 
 		//라이선스 부여/해제
-		License oldLicense = this.licenseRepository.findByUserIdAndLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_ProductAndStatus(
+		License oldLicense = licenseRepository.findByUserIdAndLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_ProductAndStatus(
 			userId, workspaceId, product, LicenseStatus.USE);
 		if (grant) {
 			if (oldLicense != null) {
@@ -314,7 +313,7 @@ public class LicenseService {
 			}
 
 			//부여 가능한 라이선스 찾기
-			List<License> licenseList = this.licenseRepository.findAllByLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_LicensePlan_PlanStatusAndLicenseProduct_ProductAndStatus(
+			List<License> licenseList = licenseRepository.findAllByLicenseProduct_LicensePlan_WorkspaceIdAndLicenseProduct_LicensePlan_PlanStatusAndLicenseProduct_ProductAndStatus(
 				workspaceId, PlanStatus.ACTIVE, product, LicenseStatus.UNUSE);
 			if (licenseList.isEmpty()) {
 				throw new LicenseServiceException(ErrorCode.ERR_USEFUL_LICENSE_NOT_FOUND);
@@ -323,9 +322,9 @@ public class LicenseService {
 			License updatedLicense = licenseList.get(0);
 			updatedLicense.setUserId(userId);
 			updatedLicense.setStatus(LicenseStatus.USE);
-			this.licenseRepository.save(updatedLicense);
+			licenseRepository.save(updatedLicense);
 
-			MyLicenseInfoResponse myLicenseInfoResponse = this.modelMapper.map(
+			MyLicenseInfoResponse myLicenseInfoResponse = modelMapper.map(
 				updatedLicense,
 				MyLicenseInfoResponse.class
 			);
@@ -334,7 +333,7 @@ public class LicenseService {
 			// 라이선스 축소
 			oldLicense.setUserId(null);
 			oldLicense.setStatus(LicenseStatus.UNUSE);
-			this.licenseRepository.save(oldLicense);
+			licenseRepository.save(oldLicense);
 
 			// 해당 제품 라이선스 초과 상태 체크
 			if (licenseProduct.getStatus().equals(LicenseProductStatus.EXCEEDED)) {

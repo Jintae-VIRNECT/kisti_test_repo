@@ -21,6 +21,9 @@ public interface LicensePlanRepository extends JpaRepository<LicensePlan, Long>,
 	LicensePlan findByUserIdAndWorkspaceIdAndPlanStatus(String userId, String workspaceId, PlanStatus status);
 
 	@Transactional(readOnly = true)
+	LicensePlan findByUserIdAndWorkspaceIdAndPlanStatusNot(String userId, String workspaceId, PlanStatus status);
+
+	@Transactional(readOnly = true)
 	Optional<LicensePlan> findByUserIdAndWorkspaceId(String userId, String workspaceId);
 
 	Optional<LicensePlan> findByWorkspaceIdAndPlanStatus(String workspaceId, PlanStatus planStatus);
@@ -29,7 +32,11 @@ public interface LicensePlanRepository extends JpaRepository<LicensePlan, Long>,
 
 	Optional<LicensePlan> findByUserIdAndPaymentId(String userId, String paymentId);
 
+	@Transactional(readOnly = true)
 	Optional<LicensePlan> findByUserIdAndPlanStatus(String userUUID, PlanStatus status);
+
+	@Transactional(readOnly = true)
+	Optional<LicensePlan> findByUserIdAndPlanStatusNot(String userUUID, PlanStatus status);
 
 	boolean existsByUserId(String userUUID);
 

@@ -102,10 +102,10 @@ public class BillingService {
 
 		log.info("[BILLING][REQUEST_TOTAL_RESOURCE] => {}", requestTotalResource.toString());
 
-		// 3. 사용자의 현재 사용중인 라이선스 플랜 조회
-		Optional<LicensePlan> licensePlan = licensePlanRepository.findByUserIdAndPlanStatus(
+		// 3. 사용자의 현재 사용중인 라이선스 플랜 조회 (활성화 or 비활성화)
+		Optional<LicensePlan> licensePlan = licensePlanRepository.findByUserIdAndPlanStatusNot(
 			requestUserInfo.getUuid(),
-			PlanStatus.ACTIVE
+			PlanStatus.TERMINATE
 		);
 
 		// 3-1. 현재 기간 결제 라이선스 플랜이 활성화 되어있는 경우
@@ -117,6 +117,23 @@ public class BillingService {
 			rejectMessage.put("exceededAmount", 0);
 			rejectMessage.put("availableAmount", 0);
 			rejectMessage.put("message", "previous term plan is exist and activated.");
+			detailMessage.add(rejectMessage);
+			log.error("[BILLING_LICENSE_ALLOCATE_CHECK][ERROR_MESSAGE] - {}", detailMessage.toString());
+			log.error("[BILLING_LICENSE_ALLOCATE_CHECK][PREVIOUS_PLAN] - {}", licensePlan.get().toString());
+			throw new LicenseAllocateDeniedException(
+				ErrorCode.ERR_BILLING_PRODUCT_ALLOCATE_DENIED, allocateCheckRequest.getUserId(), detailMessage
+			);
+		}
+
+		if (licensePlan.isPresent() && licensePlan.get().getPlanStatus().equals(PlanStatus.INACTIVE)
+			&& !allocateCheckRequest.isRegularRequest()) {
+			List<HashMap<String, Object>> detailMessage = new ArrayList<>();
+			HashMap<String, Object> rejectMessage = new HashMap<>();
+			rejectMessage.put("type", "plan");
+			rejectMessage.put("requestAmount", 0);
+			rejectMessage.put("exceededAmount", 0);
+			rejectMessage.put("availableAmount", 0);
+			rejectMessage.put("message", "previous plan is inactive but is not regularRequest");
 			detailMessage.add(rejectMessage);
 			log.error("[BILLING_LICENSE_ALLOCATE_CHECK][ERROR_MESSAGE] - {}", detailMessage.toString());
 			log.error("[BILLING_LICENSE_ALLOCATE_CHECK][PREVIOUS_PLAN] - {}", licensePlan.get().toString());
@@ -232,9 +249,9 @@ public class BillingService {
 			return new ApiResponse<>(response);
 		}
 
-		// 8. 라이선스 플랜 정보 조회
-		LicensePlan userLicensePlan = licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatus(
-			requestUserInfo.getUuid(), workspaceInfo.getUuid(), PlanStatus.ACTIVE);
+		// 8. 라이선스 플랜 정보 조회 (활성화 or 비활성화)
+		LicensePlan userLicensePlan = licensePlanRepository.findByUserIdAndWorkspaceIdAndPlanStatusNot(
+			requestUserInfo.getUuid(), workspaceInfo.getUuid(), PlanStatus.TERMINATE);
 
 		if (userLicensePlan == null) {
 			log.error("[BILLING][LICENSE_ALLOCATE] - User License Plan (status = ACTIVE) Not found.");
@@ -278,6 +295,7 @@ public class BillingService {
 		userLicensePlan.setPaymentId(licenseAllocateRequest.getPaymentId());
 		userLicensePlan.setCountryCode(licenseAllocateRequest.getUserCountryCode());
 		userLicensePlan.setEndDate(userLicensePlan.getEndDate().plusMonths(1));
+		userLicensePlan.setPlanStatus(PlanStatus.ACTIVE);
 		licensePlanRepository.save(userLicensePlan);
 
 		// 라이선스 지급 인증 정보 삭제
