@@ -437,6 +437,9 @@
   &.video:before {
     background-image: url(~assets/image/call/chat_ic_video_b.svg);
   }
+  &.file:before {
+    background-image: url(~assets/image/call/chat_ic_file_b.svg);
+  }
 }
 
 .chat-item__file--size {

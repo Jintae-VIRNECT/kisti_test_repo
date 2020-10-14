@@ -63,6 +63,7 @@ import { downloadFile } from 'api/http/file'
 import { mapGetters, mapActions } from 'vuex'
 import { translate as doTranslate } from 'plugins/remote/translate'
 import { languageCode } from 'utils/translate'
+import { downloadByURL } from 'utils/file'
 export default {
   name: 'ChatItem',
   components: {
@@ -165,12 +166,15 @@ export default {
       } else {
         return ''
       }
+      ext = ext.toLowerCase()
 
       if (ext === 'avi' || ext === 'mp4') {
         ext = 'video'
       }
 
-      ext = ext.toLowerCase()
+      if (!['pdf', 'txt', 'jpg', 'png', 'mp3', 'video'].includes(ext)) {
+        ext = 'file'
+      }
 
       return ext
     },
@@ -225,12 +229,13 @@ export default {
     ...mapActions(['updateChat']),
     async download() {
       const res = await downloadFile({
-        fileName: this.chat.file.fileName,
+        objectName: this.chat.file.fileName,
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
       })
-      // FileSaver.saveAs(file.fileUrl, file.fileName)
+      downloadByURL(res)
+      // FileSaver.saveAs(res)
     },
     async doTranslateText() {
       try {

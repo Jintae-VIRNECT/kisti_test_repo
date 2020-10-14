@@ -63,6 +63,7 @@
 import { mapGetters } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
+import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
@@ -78,6 +79,13 @@ export default {
   },
   computed: {
     ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate']),
+    isOnpremise() {
+      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   watch: {
     fileList: {
@@ -131,8 +139,10 @@ export default {
       this.inputText = ''
     },
     clickUpload() {
-      this.unsupport()
-      return
+      if (!this.isOnpremise) {
+        this.unsupport()
+        return
+      }
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE
         this.toastDefault(this.$t('service.file_upload_maxnum'))
@@ -229,8 +239,10 @@ export default {
       // console.log(event);
     },
     dropHandler(event) {
-      this.unsupport()
-      return
+      if (!this.isOnpremise) {
+        this.unsupport()
+        return
+      }
       const file = event.dataTransfer.files[0]
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE

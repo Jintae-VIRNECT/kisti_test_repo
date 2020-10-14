@@ -49,6 +49,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
+import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 
 import ChatMsgList from './partials/ChatMsgList'
 import ChatFileList from './partials/ChatFileList'
@@ -69,6 +70,13 @@ export default {
     showChat() {
       if (this.show === 'chat') return true
       else return false
+    },
+    isOnpremise() {
+      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
+        return true
+      } else {
+        return false
+      }
     },
   },
   watch: {
@@ -106,7 +114,7 @@ export default {
   methods: {
     ...mapActions(['addChat']),
     toggleMenu(menu) {
-      if (menu === 'file') {
+      if (!this.isOnpremise && menu === 'file') {
         this.unsupport()
         return
       }

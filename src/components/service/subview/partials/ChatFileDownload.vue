@@ -15,7 +15,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { downloadFile } from 'api/http/file'
-import { downloadByDataURL } from 'utils/file'
+import { downloadByURL } from 'utils/file'
 export default {
   name: 'ChatFileDownload',
   props: {
@@ -33,13 +33,13 @@ export default {
     async download() {
       for (let file of this.fileList) {
         const res = await downloadFile({
-          filePath: file.path,
+          objectName: file.objectName,
           sessionId: this.roomInfo.sessionId,
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
         })
 
-        downloadByDataURL(res, file.name)
+        downloadByURL(res, file.name)
       }
       this.$emit('clear')
     },
