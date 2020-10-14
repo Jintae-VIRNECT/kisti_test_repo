@@ -78,31 +78,19 @@ async function getMyInfo() {
 }
 
 async function getConfigs() {
-  const res = await axios.get(`${location.origin}/urls`)
+  const res = await axios.get(`${location.origin}/configs`)
 
+  const runtimeEnv = res.data.runtime || 'production'
   logger('RUN ENV', res.data.runtime)
   delete res.data.runtime
-
-  const targetCompany = res.data.targetCompany || 'VIRNECT'
-  debug('TARGET COMPANY', targetCompany)
-  delete res.data.targetCompany
-
-  const useOpenRoom = res.data.useOpenRoom || false
-  debug('USE OPEN ROOM', useOpenRoom)
-  delete res.data.useOpenRoom
-
-  const useTranslate = res.data.useTranslate || false
-  debug('USE TRANSLATE', useTranslate)
-  delete res.data.useTranslate
 
   debug('URLS::', res.data)
 
   setBaseURL(res.data['api'])
   window.urls = res.data
   setConfigs({
-    targetCompany,
-    useOpenRoom,
-    useTranslate,
+    runtimeEnv,
+    targetCompany: 'VIRNECT',
   })
 }
 

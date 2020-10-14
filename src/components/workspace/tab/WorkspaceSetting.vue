@@ -64,7 +64,6 @@ import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
-import { USE_TRANSLATE } from 'configs/env.config'
 export default {
   name: 'WorkspaceSetting',
   components: {
@@ -109,7 +108,8 @@ export default {
           text: this.$t('workspace.setting_language'),
         },
       ]
-      if (USE_TRANSLATE) {
+      // TODO: KINTEX
+      if (true) {
         menu.push({
           key: 'translate',
           text: this.$t('workspace.setting_translate'),
