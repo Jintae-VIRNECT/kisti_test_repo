@@ -1962,7 +1962,7 @@ public class WorkspaceService {
 			if (memberAccountCreateInfo.getPlanRemote()) {
 				MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
 					workspaceId, userInfoRestResponse.getUuid(), "REMOTE").getData();
-				if (myLicenseInfoResponse == null) {
+				if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
 						userInfoRestResponse.getUuid(), "REMOTE"
@@ -1984,7 +1984,7 @@ public class WorkspaceService {
 			if (memberAccountCreateInfo.getPlanMake()) {
 				MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
 					workspaceId, userInfoRestResponse.getUuid(), "MAKE").getData();
-				if (myLicenseInfoResponse == null) {
+				if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
 						userInfoRestResponse.getUuid(), "REMOTE"
@@ -2006,7 +2006,7 @@ public class WorkspaceService {
 			if (memberAccountCreateInfo.getPlanView()) {
 				MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
 					workspaceId, userInfoRestResponse.getUuid(), "VIEW").getData();
-				if (myLicenseInfoResponse == null) {
+				if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
 					log.error(
 						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
 						userInfoRestResponse.getUuid(), "REMOTE"
