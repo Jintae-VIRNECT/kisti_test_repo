@@ -65,6 +65,8 @@ type ListRecordingFilesQuery struct {
 // @Summary List Recording Files
 // @Description List Recordings Files
 // @tags Recording File
+// @Param workspaceId path string true "workspace id"
+// @Param userId path string true "user id"
 // @Param filename query ListRecordingFilesQuery false "description"
 // @Produce json
 // @Success 200 {object} successResponse{data=ListRecordingFilesResponse}
@@ -169,6 +171,8 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 // @Description Remove All Recording Files
 // @tags Recording File
 // @Produce json
+// @Param workspaceId path string true "workspace id"
+// @Param userId path string true "user id"
 // @Success 200 {object} successResponse{data=RemoveRecordingFilesResponse}
 // @Failure 9999 {} json "{"code":9999,"message":"error message","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/files [delete]
@@ -188,6 +192,8 @@ func RemoveRecordingFileAll(c *gin.Context) {
 // @Description Remove Recording File
 // @tags Recording File
 // @Produce json
+// @Param workspaceId path string true "workspace id"
+// @Param userId path string true "user id"
 // @Param id path string true "recording id"
 // @Success 200 {object} successResponse
 // @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
@@ -217,6 +223,8 @@ func RemoveRecordingFile(c *gin.Context) {
 // @Description Get Recording File Download Url
 // @tags Recording File
 // @Produce json
+// @Param workspaceId path string true "workspace id"
+// @Param userId path string true "user id"
 // @Param id path string true "recording id"
 // @Success 200 {} json "{"code":200,"message":"success","data":"download_url"}"
 // @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
