@@ -125,23 +125,6 @@ public class BillingService {
 			);
 		}
 
-		if (licensePlan.isPresent() && licensePlan.get().getPlanStatus().equals(PlanStatus.INACTIVE)
-			&& !allocateCheckRequest.isRegularRequest()) {
-			List<HashMap<String, Object>> detailMessage = new ArrayList<>();
-			HashMap<String, Object> rejectMessage = new HashMap<>();
-			rejectMessage.put("type", "plan");
-			rejectMessage.put("requestAmount", 0);
-			rejectMessage.put("exceededAmount", 0);
-			rejectMessage.put("availableAmount", 0);
-			rejectMessage.put("message", "previous plan is inactive but is not regularRequest");
-			detailMessage.add(rejectMessage);
-			log.error("[BILLING_LICENSE_ALLOCATE_CHECK][ERROR_MESSAGE] - {}", detailMessage.toString());
-			log.error("[BILLING_LICENSE_ALLOCATE_CHECK][PREVIOUS_PLAN] - {}", licensePlan.get().toString());
-			throw new LicenseAllocateDeniedException(
-				ErrorCode.ERR_BILLING_PRODUCT_ALLOCATE_DENIED, allocateCheckRequest.getUserId(), detailMessage
-			);
-		}
-
 		// 4. 최대 통화 수 , 최대 용량, 최대 다운로드 횟수 비교
 		allocateResourceValidation(
 			requestTotalResource.getTotalCallTime(), requestTotalResource.getTotalStorageSize(),
