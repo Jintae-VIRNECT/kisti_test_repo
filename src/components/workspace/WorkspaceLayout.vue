@@ -45,7 +45,6 @@ import PlanOverflow from './modal/WorkspacePlanOverflow'
 import FileUpload from './modal/WorkspaceRecordFileUpload'
 import { mapActions } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
-import { USE_TRANSLATE } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -162,7 +161,8 @@ export default {
       if (allow) {
         this.setAllow(allow)
       }
-      if (USE_TRANSLATE) {
+      // TODO: KINTEX
+      if (true) {
         const translateInfo = this.$localStorage.getItem('translate')
         if (translateInfo) {
           this.setTranslate(translateInfo)

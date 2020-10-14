@@ -91,13 +91,10 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         res.send(true)
       })
 
-      app.get('/urls', bodyParser.json(), function(req, res) {
+      app.get('/configs', bodyParser.json(), function(req, res) {
         const a = configService.getConfigs()
         a.console = '/account'
         a.runtime = 'local'
-        // a.targetCompany = 'KINTEX'
-        // a.useOpenRoom = true
-        // a.useTranslate = true
         res.json(a)
       })
 

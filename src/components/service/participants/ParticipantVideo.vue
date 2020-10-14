@@ -64,6 +64,7 @@
         />
         <template v-if="!isMe">
           <img
+            v-if="participant.hasAudio"
             :src="
               participant.audio
                 ? require('assets/image/ic_mic_on.svg')
@@ -249,11 +250,13 @@ export default {
     ...mapActions(['setMainView', 'addChat']),
     participantInited(name, oldName) {
       if (this.participant.me || this.initing === true) return
-      if (name !== oldName && this.inited === false) {
+      if (name !== oldName && name.length > 0 && this.inited === false) {
         this.inited = true
-        this.toastDefault(
-          this.$t('service.chat_invite', { name: this.participant.nickname }),
-        )
+        if (!this.openRoom || this.iamLeader) {
+          this.toastDefault(
+            this.$t('service.chat_invite', { name: this.participant.nickname }),
+          )
+        }
         const chatObj = {
           name: name,
           status: 'invite',
@@ -287,6 +290,10 @@ export default {
     },
     changeMain() {
       if (this.openRoom) {
+        if (!this.participant.hasCamera) {
+          this.toastDefault(this.$t('service.participant_no_stream'))
+          return
+        }
         if (!this.participant.hasVideo) {
           if (
             this.account.roleType === ROLE.LEADER &&
@@ -414,7 +421,7 @@ export default {
     },
   },
   beforeDestroy() {
-    if (this.$call.session) {
+    if ((!this.openRoom || this.iamLeader) && this.$call.session) {
       this.toastDefault(
         this.$t('service.chat_leave', { name: this.participant.nickname }),
       )

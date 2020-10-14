@@ -56,9 +56,6 @@ module.exports = {
     return {
       ...this.getUrls(),
       runtime: this.getEnv(),
-      targetCompany: this.getAsString('TARGET_COMPANY'),
-      useOpenRoom: this.getAsBoolean('USE_OPEN_ROOM'),
-      useTranslate: this.getAsBoolean('USE_TRANSLATE'),
     }
   },
 }

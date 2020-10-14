@@ -173,6 +173,7 @@
     "file_upload_maxsize": "Exceeded the attachable file size.",
     "file_image_notsupport": "Does not support this image format.",
     "file_type_notsupport": "Does not support this file format.",
+    "translate": "Translate",
 
     "record_local": "Local recording",
     "record_local_setting": "Local recording settings",

@@ -7,12 +7,12 @@
       </transition>
 
       <transition name="share">
-        <share v-show="isExpert && currentView === 'drawing'"></share>
+        <share v-show="isLeader && currentView === 'drawing'"></share>
       </transition>
 
       <main
         class="main-wrapper"
-        :class="{ shareview: isExpert && currentView === 'drawing' }"
+        :class="{ shareview: isLeader && currentView === 'drawing' }"
       >
         <transition name="main">
           <stream-view
@@ -34,10 +34,25 @@
       </main>
 
       <user-list
+        v-if="!openRoom || isLeader"
         :class="{
-          shareview: isExpert && currentView === 'drawing',
+          shareview: isLeader && currentView === 'drawing',
         }"
       ></user-list>
+      <div v-else>
+        <figure
+          v-for="participant of participants"
+          :key="'audio_' + participant.id"
+        >
+          <audio
+            v-if="!participant.me && participant.hasAudio"
+            :srcObject.prop="participant.stream"
+            autoplay
+            playsinline
+            loop
+          ></audio>
+        </figure>
+      </div>
       <!-- <component :is="viewComponent"></component> -->
     </div>
   </section>
@@ -89,8 +104,15 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants', 'myInfo']),
-    isExpert() {
+    ...mapGetters([
+      'view',
+      'captureFile',
+      'chatBox',
+      'participants',
+      'myInfo',
+      'openRoom',
+    ]),
+    isLeader() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       } else {
@@ -178,7 +200,9 @@ export default {
     window.onbeforeunload = () => {
       return true
     }
-    navigator.mediaDevices.ondevicechange = this.onDeviceChange
+    if (!this.openRoom) {
+      navigator.mediaDevices.ondevicechange = this.onDeviceChange
+    }
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
   },

@@ -1,15 +1,20 @@
+export let RUNTIME_ENV = 'production'
 export let TARGET_COMPANY = 'VIRNECT'
-export let USE_OPENROOM = false
-export let USE_TRANSLATE = false
 
 export const setConfigs = configs => {
-  TARGET_COMPANY = configs.targetCompany
-  USE_OPENROOM = configs.useOpenRoom
-  USE_TRANSLATE = configs.useTranslate
+  RUNTIME_ENV = configs.runtimeEnv || RUNTIME_ENV
+  TARGET_COMPANY = configs.targetCompany || TARGET_COMPANY
+}
+
+export const RUNTIME = {
+  LOCAL: 'local',
+  DEVELOP: 'develop',
+  STAGING: 'staging',
+  PRODUCTION: 'production',
+  ONPREMISE: 'onpremise',
 }
 
 export default {
+  RUNTIME_ENV,
   TARGET_COMPANY,
-  USE_OPENROOM,
-  USE_TRANSLATE,
 }

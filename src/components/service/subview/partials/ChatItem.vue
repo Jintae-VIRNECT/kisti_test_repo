@@ -7,9 +7,9 @@
     ></profile>
     <div class="chat-item__body" :class="[chat.type, { hidden: hideProfile }]">
       <div class="chat-item__body--chatbox">
-        <span class="chat-item__body--name" v-if="!hideProfile">{{
-          chat.name
-        }}</span>
+        <span class="chat-item__body--name" v-if="!hideProfile">
+          {{ chat.name }}
+        </span>
         <div v-if="isFile" class="chat-item__file">
           <div class="chat-item__file--wrapper">
             <!-- <div class="chat-item__file--icon" :class="extension"></div> -->
@@ -19,11 +19,30 @@
           </div>
           <p class="chat-item__file--size">{{ fileSize }}</p>
         </div>
-        <p
-          class="chat-item__body--text"
-          :class="subClass"
-          v-html="chatText"
-        ></p>
+        <div class="chat-item__body--textbox">
+          <p
+            class="chat-item__body--text"
+            :class="[
+              subClass,
+              { inactive: isTranslate ? translateActive : false },
+            ]"
+            v-html="chatText"
+          ></p>
+          <p
+            v-if="isTranslate"
+            class="chat-item__body--text"
+            :class="{ inactive: !translateActive }"
+            v-html="chatTranslateText"
+          ></p>
+        </div>
+        <button
+          v-if="isTranslate"
+          class="chat-item__translate--button"
+          :class="{ active: translateActive }"
+          @click="translateActive = !translateActive"
+        >
+          {{ $t('service.translate') }}
+        </button>
         <button v-if="isFile" class="chat-item__file--button" @click="download">
           <span class="button-text">{{ $t('button.download') }}</span>
         </button>
@@ -50,7 +69,10 @@ export default {
     Profile,
   },
   data() {
-    return {}
+    return {
+      translateText: '',
+      translateActive: false,
+    }
   },
   props: {
     beforeChat: Object,
@@ -59,6 +81,16 @@ export default {
   },
   computed: {
     ...mapGetters(['roomInfo', 'translate']),
+    isTranslate() {
+      if (
+        this.translateText.length > 0 &&
+        this.translateText !== this.chat.text
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     translateCode() {
       if (this.translate && this.translate.flag && this.translate.code) {
         const idx = languageCode.findIndex(
@@ -162,6 +194,20 @@ export default {
       })
       return chatText ? chatText.replace(/\n/gi, '<br>') : ''
     },
+    chatTranslateText() {
+      if (this.chat.type === 'system') {
+        return systemText(this.chat.status, this.chat.name)
+      }
+      let chatText = this.translateText ? this.translateText : ''
+      if (typeof chatText === 'object') {
+        return ''
+      }
+      chatText = linkifyHtml(chatText, {
+        defaultProtocol: 'https',
+        className: 'chat-url',
+      })
+      return chatText ? chatText.replace(/\n/gi, '<br>') : ''
+    },
     fileSize() {
       let size = this.chat.file.size
       const mb = 1048576
@@ -175,7 +221,6 @@ export default {
       }
     },
   },
-  watch: {},
   methods: {
     ...mapActions(['updateChat']),
     async download() {
@@ -187,14 +232,12 @@ export default {
       })
       // FileSaver.saveAs(file.fileUrl, file.fileName)
     },
-    async translateText() {
+    async doTranslateText() {
       try {
         if (this.translateCode === false) return
         const response = await doTranslate(this.chat.text, this.translateCode)
-        this.updateChat({
-          id: this.chat.id,
-          text: `${this.chat.text}<br><b>${response}</b>`,
-        })
+        this.translateText = response
+        this.translateActive = true
       } catch (err) {
         console.error(`${err.message} (${err.code})`)
       }
@@ -203,12 +246,8 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    if (
-      this.chat.type === 'opponent' &&
-      this.translate.flag &&
-      this.chat.languageCode !== this.translate.code
-    ) {
-      this.translateText()
+    if (this.chat.type === 'opponent' && this.translate.flag) {
+      this.doTranslateText()
     }
   },
 }

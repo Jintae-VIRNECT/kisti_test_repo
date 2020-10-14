@@ -78,7 +78,7 @@ router.get('/OSS', function(req, res) {
   res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
 })
 
-router.get('/urls', function(req, res) {
+router.get('/configs', function(req, res) {
   res.header('Content-Type', 'application/json')
   res.send(JSON.stringify(config.getConfigs()))
 })

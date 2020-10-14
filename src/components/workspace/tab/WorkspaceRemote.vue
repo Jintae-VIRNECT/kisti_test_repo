@@ -17,7 +17,7 @@
         v-for="room of roomList"
         :key="room.sessionId"
         :room="room"
-        @join="join(room)"
+        @join="roomInfo => join(roomInfo)"
         @leave="leave(room.sessionId)"
         @remove="remove(room.sessionId)"
         @init="init"

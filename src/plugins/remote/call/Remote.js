@@ -79,80 +79,84 @@ const _ = {
         roleType: role,
       })
       _.account.roleType = role
-      const settingInfo = Store.getters['settingInfo']
+      if (options !== false) {
+        const settingInfo = Store.getters['settingInfo']
 
-      const publishOptions = {
-        audioSource: options.audioSource,
-        videoSource: options.videoSource,
-        publishAudio: settingInfo.micOn,
-        publishVideo: settingInfo.videoOn,
-        resolution: settingInfo.quality,
-        // resolution: '1920x1080', // FHD
-        // resolution: '3840x2160', // 4K
-        frameRate: 30,
-        insertMode: 'PREPEND',
-        mirror: false,
-      }
-      debug('call::publish::', publishOptions)
-
-      _.publisher = OV.initPublisher('', publishOptions)
-      _.publisher.onIceStateChanged(state => {
-        if (
-          state === 'failed' ||
-          state === 'disconnected' ||
-          state === 'closed'
-        ) {
-          Store.commit('updateParticipant', {
-            connectionId: _.publisher.stream.connection.connectionId,
-            status: 'bad',
-          })
-        } else if (state === 'connected') {
-          Store.commit('updateParticipant', {
-            connectionId: _.publisher.stream.connection.connectionId,
-            status: 'good',
-          })
-        } else {
-          Store.commit('updateParticipant', {
-            connectionId: _.publisher.stream.connection.connectionId,
-            status: 'normal',
-          })
+        const publishOptions = {
+          audioSource: options.audioSource,
+          videoSource: options.videoSource,
+          publishAudio: settingInfo.micOn,
+          publishVideo: settingInfo.videoOn,
+          resolution: settingInfo.quality,
+          // resolution: '1920x1080', // FHD
+          // resolution: '3840x2160', // 4K
+          frameRate: 30,
+          insertMode: 'PREPEND',
+          mirror: false,
         }
-        logger('ice state change', state)
-      })
-      _.publisher.on('streamCreated', () => {
-        logger('room', 'publish success')
-        const mediaStream = _.publisher.stream.mediaStream
-        Store.commit('updateParticipant', {
-          connectionId: _.publisher.stream.connection.connectionId,
-          stream: mediaStream,
-          hasVideo: _.publisher.stream.hasVideo,
-          video: _.publisher.stream.videoActive,
-          audio: _.publisher.stream.audioActive,
-        })
-        if (_.publisher.stream.hasVideo) {
-          const track = mediaStream.getVideoTracks()[0]
-          const settings = track.getSettings()
-          const capability = track.getCapabilities()
-          logger('call', `resolution::${settings.width}X${settings.height}`)
-          debug('call::setting::', settings)
-          debug('call::capability::', capability)
-          if ('zoom' in capability) {
-            track.applyConstraints({
-              advanced: [{ zoom: capability['zoom'].min }],
+        debug('call::publish::', publishOptions)
+
+        _.publisher = OV.initPublisher('', publishOptions)
+        _.publisher.onIceStateChanged(state => {
+          if (
+            state === 'failed' ||
+            state === 'disconnected' ||
+            state === 'closed'
+          ) {
+            Store.commit('updateParticipant', {
+              connectionId: _.publisher.stream.connection.connectionId,
+              status: 'bad',
             })
-            _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
-            _.minZoomLevel = parseInt(capability.zoom.min)
+          } else if (state === 'connected') {
+            Store.commit('updateParticipant', {
+              connectionId: _.publisher.stream.connection.connectionId,
+              status: 'good',
+            })
+          } else {
+            Store.commit('updateParticipant', {
+              connectionId: _.publisher.stream.connection.connectionId,
+              status: 'normal',
+            })
           }
-          _.video(_.publisher.stream.videoActive)
-          _.sendResolution({
-            width: settings.width,
-            height: settings.height,
-            orientation: '',
+          logger('ice state change', state)
+        })
+        _.publisher.on('streamCreated', () => {
+          logger('room', 'publish success')
+          const mediaStream = _.publisher.stream.mediaStream
+          Store.commit('updateParticipant', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            stream: mediaStream,
+            hasVideo: _.publisher.stream.hasVideo,
+            video: _.publisher.stream.videoActive,
+            audio: _.publisher.stream.audioActive,
           })
-        }
-      })
+          if (_.publisher.stream.hasVideo) {
+            const track = mediaStream.getVideoTracks()[0]
+            const settings = track.getSettings()
+            const capability = track.getCapabilities()
+            logger('call', `resolution::${settings.width}X${settings.height}`)
+            debug('call::setting::', settings)
+            debug('call::capability::', capability)
+            if ('zoom' in capability) {
+              track.applyConstraints({
+                advanced: [{ zoom: capability['zoom'].min }],
+              })
+              _.maxZoomLevel = parseInt(
+                capability.zoom.max / capability.zoom.min,
+              )
+              _.minZoomLevel = parseInt(capability.zoom.min)
+            }
+            _.video(_.publisher.stream.videoActive)
+            _.sendResolution({
+              width: settings.width,
+              height: settings.height,
+              orientation: '',
+            })
+          }
+        })
 
-      _.session.publish(_.publisher)
+        _.session.publish(_.publisher)
+      }
       return true
     } catch (err) {
       if (err && err.message && err.message.length > 0) {
@@ -168,7 +172,7 @@ const _ = {
    * chatting
    * @param {String} text
    */
-  sendChat: (text, code = 'ko') => {
+  sendChat: (text, code = 'ko-KR') => {
     if (!_.session) return
     if (text.trim().length === 0) return
     const params = {

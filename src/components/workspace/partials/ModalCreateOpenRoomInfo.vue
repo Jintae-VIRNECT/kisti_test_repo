@@ -130,6 +130,7 @@ export default {
         title: this.title,
         description: this.description,
         imageFile: this.imageFile,
+        open: true,
       })
     },
     checkEmpty() {

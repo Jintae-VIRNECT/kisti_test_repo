@@ -5,9 +5,9 @@ import Store from 'stores/remote/store'
  * @return {Object} { audioSource: Boolean, videoSource: Boolean }
  * @throw
  */
-export const checkPermission = async (hasVideo = false) => {
+export const checkPermission = async (checkVideo = true) => {
   const devices = await navigator.mediaDevices.enumerateDevices()
-  hasVideo = hasVideo
+  const hasVideo = checkVideo
     ? devices.findIndex(device => device.kind.toLowerCase() === 'videoinput') >
       -1
     : false

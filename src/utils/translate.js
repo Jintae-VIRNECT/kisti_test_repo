@@ -21,6 +21,18 @@ export const languageCode = [
     code: 'ja',
     sttCode: 'ja-JP',
   },
+  {
+    // 프랑스어
+    name: 'Français',
+    code: 'fr',
+    sttCode: 'fr-FR',
+  },
+  {
+    // 스페인어
+    name: 'Español',
+    code: 'es',
+    sttCode: 'es-ES',
+  },
   // {
   //   // 폴란드어
   //   name: 'Polski',

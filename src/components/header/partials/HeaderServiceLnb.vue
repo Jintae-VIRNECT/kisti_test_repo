@@ -125,7 +125,12 @@ export default {
       }
     },
     hasLeader(hear, bHear) {
-      if (!hear && hear !== bHear && this.participants.length > 0) {
+      if (
+        !this.openRoom &&
+        !hear &&
+        hear !== bHear &&
+        this.participants.length > 0
+      ) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         this.setView(VIEW.STREAM)
       }

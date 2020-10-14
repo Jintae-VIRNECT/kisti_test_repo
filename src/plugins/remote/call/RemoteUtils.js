@@ -52,10 +52,12 @@ export const addSessionEventListener = session => {
     const subscriber = session.subscribe(event.stream, '', () => {
       logger('room', 'participant subscribe successed')
       debug('room::', 'participant::', subscriber)
+      addSubscriber(subscriber)
       if (_.openRoom) {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
           stream: event.stream.mediaStream,
+          hasAudio: event.stream.hasAudio,
           // hasVideo: event.stream.hasVideo,
           // video: event.stream.hasVideo
           //   ? event.stream.videoActive
@@ -74,6 +76,7 @@ export const addSessionEventListener = session => {
           connectionId: event.stream.connection.connectionId,
           stream: event.stream.mediaStream,
           hasVideo: event.stream.hasVideo,
+          hasAudio: event.stream.hasAudio,
           video: event.stream.hasVideo
             ? event.stream.videoActive
             : event.stream.hasVideo,
@@ -82,7 +85,6 @@ export const addSessionEventListener = session => {
           event.stream.connection.connectionId,
         ])
       }
-      addSubscriber(subscriber)
       _.sendResolution(null, [event.stream.connection.connectionId])
       _.mic(Store.getters['mic'].isOn, [event.stream.connection.connectionId])
       _.speaker(Store.getters['speaker'].isOn, [
@@ -151,11 +153,12 @@ export const addSessionEventListener = session => {
     }
   })
   // user leave
-  session.on('streamDestroyed', event => {
+  // session.on('streamDestroyed', event => {
+  session.on('connectionDestroyed', event => {
     logger('room', 'participant destroy')
-    const connectionId = event.stream.connection.connectionId
+    const connectionId = event.connection.connectionId
     Store.commit('removeStream', connectionId)
-    removeSubscriber(event.stream.streamId)
+    removeSubscriber(event.connection.connectionId)
   })
   // user leave
   session.on(SIGNAL.SYSTEM, () => {
@@ -379,6 +382,7 @@ const setUserObject = event => {
     video: false,
     audio: true,
     hasVideo: false,
+    hasAudio: false,
     hasCamera: false,
     speaker: true,
     mute: false,
@@ -399,15 +403,23 @@ const setUserObject = event => {
     userObj.me = true
     Store.commit('addStream', userObj)
 
-    checkVideoInput().then(hasVideo => {
-      Store.commit('updateParticipant', {
-        connectionId: event.connection.connectionId,
-        cameraStatus: hasVideo
-          ? CAMERA_STATUS.CAMERA_OFF
-          : CAMERA_STATUS.CAMERA_NONE,
-      })
-      if (hasVideo) {
-        _.changeProperty(true)
+    checkVideoInput().then(hasCamera => {
+      if (_.openRoom) {
+        Store.commit('updateParticipant', {
+          connectionId: event.connection.connectionId,
+          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
+        })
+      } else {
+        Store.commit('updateParticipant', {
+          connectionId: event.connection.connectionId,
+          hasAudio: true,
+          cameraStatus: hasCamera
+            ? CAMERA_STATUS.CAMERA_OFF
+            : CAMERA_STATUS.CAMERA_NONE,
+        })
+        if (!_.openRoom && hasCamera) {
+          _.changeProperty(true)
+        }
       }
     })
   } else {
