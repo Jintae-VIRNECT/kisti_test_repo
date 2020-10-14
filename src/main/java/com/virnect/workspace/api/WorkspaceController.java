@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import javax.validation.Valid;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -47,6 +48,7 @@ import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -318,7 +320,8 @@ public class WorkspaceController {
 	@DeleteMapping("/{workspaceId}/exit")
 	public ResponseEntity<ApiResponse<Boolean>> exitWorkspace(
 		@PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId, @ApiIgnore Locale locale
-	) {		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
+	) {
+		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<Boolean> apiResponse = this.workspaceService.exitWorkspace(workspaceId, userId, locale);
@@ -457,20 +460,26 @@ public class WorkspaceController {
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
+	@Profile("onpremise")
 	@ApiOperation(value = "워크스페이스 멤버 계정 생성", tags = "onpremise server only")
 	@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
 	@PostMapping("/{workspaceId}/members/account")
-	public ResponseEntity<ApiResponse<Boolean>> createWorkspaceMemberAccount(
+	public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestBody @Valid MemberAccountCreateRequest memberAccountCreateRequest, BindingResult bindingResult
 	) {
 		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors()
+				.forEach(
+					objectError -> log.error("[CREATE WORKSPACE MEMBER ACCOUNT] Error message : [{}]", objectError));
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		Boolean response = workspaceService.createWorkspaceMemberAccount(workspaceId,memberAccountCreateRequest);
+		WorkspaceMemberInfoListResponse response = workspaceService.createWorkspaceMemberAccount(workspaceId,
+			memberAccountCreateRequest);
 		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
+	@Profile("onpremise")
 	@ApiOperation(value = "워크스페이스 멤버 계정 삭제 및 내보내기", tags = "onpremise server only")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
@@ -480,10 +489,13 @@ public class WorkspaceController {
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestBody @Valid MemberAccountDeleteRequest memberAccountDeleteRequest, BindingResult bindingResult
 	) {
-		if(bindingResult.hasErrors()){
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors()
+				.forEach(
+					objectError -> log.error("[DELETE WORKSPACE MEMBER ACCOUNT] Error message : [{}]", objectError));
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		Boolean response = workspaceService.deleteWorkspaceMemberAccount(workspaceId,memberAccountDeleteRequest);
+		Boolean response = workspaceService.deleteWorkspaceMemberAccount(workspaceId, memberAccountDeleteRequest);
 		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
