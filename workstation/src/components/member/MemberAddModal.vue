@@ -59,16 +59,7 @@
                   <img src="~assets/images/icon/ic-error.svg" />
                 </el-tooltip>
               </template>
-              <el-select v-model="form.role">
-                <el-option
-                  class="column-role"
-                  v-for="role in roles"
-                  :key="role.value"
-                  :value="role.value"
-                >
-                  <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
-                </el-option>
-              </el-select>
+              <member-role-select v-model="form.role" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -162,6 +153,7 @@
 </template>
 
 <script>
+import MemberRoleSelect from '@/components/member/MemberRoleSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
@@ -171,6 +163,9 @@ import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 import { mapGetters } from 'vuex'
 
 export default {
+  components: {
+    MemberRoleSelect,
+  },
   mixins: [modalMixin],
   data() {
     return {

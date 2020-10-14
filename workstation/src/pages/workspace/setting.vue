@@ -237,7 +237,7 @@ export default {
   }
   .right.el-col-24 {
     width: 568px;
-    padding: 28px 50px;
+    padding: 28px 40px;
   }
   dt {
     margin-bottom: 4px;

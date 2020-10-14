@@ -48,16 +48,10 @@
                   <img src="~assets/images/icon/ic-error.svg" />
                 </el-tooltip>
               </template>
-              <el-select v-model="form.role" :disabled="!canChangeRole">
-                <el-option
-                  class="column-role"
-                  v-for="role in roles"
-                  :key="role.value"
-                  :value="role.value"
-                >
-                  <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
-                </el-option>
-              </el-select>
+              <member-role-select
+                v-model="form.role"
+                :disabled="!canChangeRole"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -150,6 +144,7 @@
 </template>
 
 <script>
+import MemberRoleSelect from '@/components/member/MemberRoleSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import workspaceService from '@/services/workspace'
@@ -159,6 +154,9 @@ import plans from '@/models/workspace/plans'
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
+  components: {
+    MemberRoleSelect,
+  },
   mixins: [modalMixin],
   props: {
     data: Object,

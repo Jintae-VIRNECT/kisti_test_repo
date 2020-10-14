@@ -57,7 +57,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .workspace-onpremise-setting {
   .el-card {
     color: $font-color-desc;
@@ -81,9 +81,9 @@ export default {
     p {
       font-size: 12px;
     }
-  }
-  .el-button {
-    float: right;
+    .el-button {
+      float: right;
+    }
   }
 }
 </style>

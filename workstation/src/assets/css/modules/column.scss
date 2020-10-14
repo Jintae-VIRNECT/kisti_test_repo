@@ -41,7 +41,8 @@
   }
 }
 
-.column-role {
+.column-role,
+.member-role-select .el-select__tags > span {
   & > .el-tag {
     height: 24px;
     padding: 0 12px;

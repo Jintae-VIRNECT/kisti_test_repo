@@ -68,16 +68,7 @@
               </el-col>
               <el-col :span="15">
                 <label>{{ $t('members.setting.role') }}</label>
-                <el-select v-model="form.role" prop="role">
-                  <el-option
-                    class="column-role"
-                    v-for="role in roles"
-                    :key="role.value"
-                    :value="role.value"
-                  >
-                    <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
-                  </el-option>
-                </el-select>
+                <member-role-select v-model="form.role" />
               </el-col>
             </el-row>
             <el-row>
@@ -171,13 +162,16 @@
 </template>
 
 <script>
-import { role } from '@/models/workspace/Member'
+import MemberRoleSelect from '@/components/member/MemberRoleSelect'
 import CreateMember from '@/models/workspace/CreateMember'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
 import { mapGetters } from 'vuex'
 
 export default {
+  components: {
+    MemberRoleSelect,
+  },
   middleware({ $config, error }) {
     if ($config.VIRNECT_ENV !== 'onpremise') {
       return error({ statusCode: 404 })
@@ -186,7 +180,6 @@ export default {
   data() {
     return {
       plans,
-      roles: role.options.filter(({ value }) => value !== 'MASTER'),
       userInfoList: [new CreateMember()],
       availablePlans: { remote: 0, make: 0, view: 0 },
       rules: {

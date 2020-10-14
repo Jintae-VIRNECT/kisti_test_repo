@@ -71,10 +71,11 @@ export default {
   .preview {
     position: relative;
     box-sizing: border-box;
+    height: 78px;
+    margin-top: 30px;
 
     img {
       display: block;
-      margin-top: 30px;
     }
     .tooltip {
       position: absolute;
