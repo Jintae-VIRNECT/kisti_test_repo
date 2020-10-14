@@ -28,7 +28,7 @@ export default {
         case collabo.FINISHED:
           return '종료'
         default:
-          return 'UNKNNOW'
+          return '알수없음'
       }
     },
     getClass() {

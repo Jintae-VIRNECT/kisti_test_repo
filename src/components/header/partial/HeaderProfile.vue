@@ -25,7 +25,7 @@
         </button>
       </div>
       <div class="popover-profile__link">
-        <button @click="fileList">{{ 'Remote' }}</button>
+        <button @click="link(remoteLink)">{{ 'Remote' }}</button>
       </div>
       <div class="popover-profile__link">
         <button @click="logout">{{ '로그아웃' }}</button>
@@ -50,6 +50,9 @@ export default {
     ...mapGetters(['account']),
     urlLink() {
       return window.urls.workstation
+    },
+    remoteLink() {
+      return window.urls.remote
     },
   },
   methods: {

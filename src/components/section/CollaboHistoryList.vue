@@ -45,9 +45,17 @@ export default {
         last: false,
       },
       paging: false,
+      loading: false,
     }
   },
   computed: {},
+  watch: {
+    workspace(val, oldVal) {
+      if (val.uuid !== oldVal.uuid && val.uuid) {
+        this.init()
+      }
+    },
+  },
   methods: {
     async init(page = 0) {
       this.loading = true
