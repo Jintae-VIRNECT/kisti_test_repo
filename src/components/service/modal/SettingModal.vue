@@ -199,6 +199,7 @@ export default {
   },
   data() {
     return {
+      initing: false,
       localRecording: false,
       pointing: false,
 
@@ -290,16 +291,19 @@ export default {
       this.visibleFlag = flag
     },
     localRecording(flag) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
       this.$localStorage.setAllow('localRecord', !!flag)
     },
     pointing(flag) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       this.$call.control(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
     },
     allowLocalRecord(val, bVal) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       if (val !== bVal) {
         if (val === true) {
@@ -316,6 +320,7 @@ export default {
       }
     },
     allowPointing(val, bVal) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       if (val !== bVal) {
         if (val === true) {
@@ -333,6 +338,7 @@ export default {
     },
 
     recordTarget(target) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       switch (target) {
         case RECORD_TARGET.WORKER:
@@ -407,6 +413,9 @@ export default {
       this.localRecording = this.allowLocalRecord
       this.pointing = this.allowPointing
     }
+    this.$nextTick(() => {
+      this.initing = true
+    })
   },
 }
 </script>
