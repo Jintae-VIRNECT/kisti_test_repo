@@ -66,8 +66,14 @@ export default {
   FILE_LIST: ['GET', '/remote/file'],
 
   /* SERVER RECORD */
-  START_SERVER_RECORD: ['POST', '/remote/recorder/recording'],
-  STOP_SERVER_RECORD: ['DELETE', '/remote/recorder/recording/{id}'],
+  START_SERVER_RECORD: [
+    'POST',
+    '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings',
+  ],
+  STOP_SERVER_RECORD: [
+    'DELETE',
+    '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings/{id}',
+  ],
 }
 
 export const wsUri = {
