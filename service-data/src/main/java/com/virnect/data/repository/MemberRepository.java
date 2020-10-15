@@ -26,6 +26,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findByWorkspaceIdAndUuidAndRoomNotNull(final String workspaceId, final String uuid);
 
+    List<Member> findByWorkspaceIdAndRoomNotNull(final String workspaceId);
+
     @Modifying
     @Query("delete from Member m where m.room.sessionId=:sessionId")
     void deleteBySessionId(@Param("sessionId")final String sessionId);

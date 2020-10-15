@@ -1,32 +1,26 @@
 package com.virnect.data.dao;
 
-import com.virnect.data.constraint.LicenseConstants;
-import com.virnect.data.constraint.LicenseItem;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * Room Domain Model Class
- * DATE:
- * AUTHOR:
- * EMAIL:
- * DESCRIPTION:
- *
- */
-@Entity
+/*@Entity
 @Getter
 @Setter
 @Audited
-@Table(name = "rooms")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Room extends BaseTimeEntity {
-    @Id
+@Table(name = "company")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)*/
+public class Company {
+    public Company() {
+
+    }
+    /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "room_id", nullable = false)
+    @Column(name = "company_id", nullable = false)
     private Long id;
 
     @Column(name = "session_id", unique = true)
@@ -60,18 +54,13 @@ public class Room extends BaseTimeEntity {
     private LocalDateTime activeDate;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@ElementCollection
-    //private Set<Member> members = new HashSet<>();
     private List<Member> members = new ArrayList<>();
-    //private Collection<Member> Member;
-
-    //add active or un-active type later
 
     @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     private SessionProperty sessionProperty;
 
     @Builder
-    public Room(String sessionId,
+    public Company(String sessionId,
                 String title,
                 String description,
                 String profile,
@@ -80,7 +69,7 @@ public class Room extends BaseTimeEntity {
                 String licenseName,
                 int maxUserCount,
                 SessionProperty sessionProperty
-                      ) {
+    ) {
         this.sessionId = sessionId;
         this.title = title;
         this.description = description;
@@ -108,5 +97,5 @@ public class Room extends BaseTimeEntity {
                 ", workspaceId='" + workspaceId + '\'' +
                 ", profile='" + profile + '\'' +
                 '}';
-    }
+    }*/
 }
