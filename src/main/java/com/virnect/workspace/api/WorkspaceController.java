@@ -537,7 +537,7 @@ public class WorkspaceController {
 	@PostMapping("/{workspaceId}/title")
 	public ResponseEntity<ApiResponse<WorkspaceTitleUpdateResponse>> updateWorkspaceTitle(
 		@PathVariable("workspaceId") String workspaceId,
-		@ModelAttribute @Valid WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest, BindingResult bindingResult
+		@RequestBody @Valid WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest, BindingResult bindingResult
 	) {
 		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
 			bindingResult.getAllErrors()
