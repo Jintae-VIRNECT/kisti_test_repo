@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import io.minio.MinioClient;
+import okhttp3.HttpUrl;
 
 /**
  * Project: PF-Admin
@@ -30,7 +31,7 @@ public class MinioConfiguration {
 	@Bean
 	public MinioClient minioClient() {
 		MinioClient minioClient = MinioClient.builder()
-			.endpoint(minioServer)
+			.endpoint(HttpUrl.parse(minioServer))
 			.credentials(accessKey, secretKey)
 			.build();
 		return minioClient;
