@@ -555,7 +555,18 @@
   @include ir();
 }
 
+.chat-input__form-remove {
+  width: 2.2857rem;
+  height: 100%;
+  margin-right: 0.5714rem;
+  background: url(~assets/image/call/chat/ic_chat_cancel_select.svg) center/100%
+    no-repeat;
+
+  @include ir();
+}
+
 .chat-input__form-write {
+  flex: 1;
   overflow: hidden;
   color: $color_text_main;
   font-size: 1rem;
@@ -571,9 +582,14 @@
   }
 }
 
+.chat-input__form-filetext {
+  flex: 1;
+  align-self: center;
+  color: rgba($color_text_sub, 0.42);
+}
+
 .chat-input__form-button {
-  position: absolute;
-  right: 1.286rem;
+  margin-left: 5px;
   padding: 0.214rem 0.857rem;
   color: $color_text_sub;
   background-color: $color_primary;

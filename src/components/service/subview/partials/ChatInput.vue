@@ -24,24 +24,32 @@
       @dragover.stop.prevent="dragoverHandler"
       @drop.stop.prevent="dropHandler"
     >
-      <button class="chat-input__form-upload" @click="clickUpload">
-        {{ $t('service.file_upload') }}
-      </button>
-      <input
-        type="file"
-        name="file"
-        ref="inputFile"
-        style="display: none"
-        class="el-input__form-input"
-        accept="*/*"
-        @change="fileUpload($event)"
-      />
-      <textarea
-        class="chat-input__form-write"
-        v-model="inputText"
-        :placeholder="$t('service.chat_input')"
-        @keydown.enter.exact="doSend($event)"
-      />
+      <template v-if="fileList.length === 0">
+        <button class="chat-input__form-upload" @click="clickUpload">
+          {{ $t('service.file_upload') }}
+        </button>
+        <input
+          type="file"
+          name="file"
+          ref="inputFile"
+          style="display: none"
+          class="el-input__form-input"
+          accept="*/*"
+          @change="fileUpload($event)"
+        />
+        <textarea
+          class="chat-input__form-write"
+          v-model="inputText"
+          :placeholder="$t('service.chat_input')"
+          @keydown.enter.exact="doSend($event)"
+        />
+      </template>
+      <template v-else>
+        <button class="chat-input__form-remove" @click="fileList = []"></button>
+        <p class="chat-input__form-filetext">
+          {{ fileName }}
+        </p>
+      </template>
 
       <!-- <button
         class="chat-input__form-button"
@@ -72,6 +80,7 @@ export default {
       viewTrans: false,
       fileList: [],
       inputText: '',
+      fileName: '',
     }
   },
   props: {
@@ -183,7 +192,8 @@ export default {
 
           docItem.filedata = file
           docItem.loaded = 0
-          this.inputText = file.name
+          this.fileName = file.name
+          // this.inputText = file.name
 
           const oReader = new FileReader()
           oReader.onload = event => {
@@ -216,7 +226,7 @@ export default {
           docItem.fileData = file
           this.fileList = []
           this.fileList.push(docItem)
-          this.inputText = file.name
+          this.fileName = file.name
           // this.toastDefault(this.$t('service.file_type_notsupport'))
           // this.clearUploadFile()
           // return false
