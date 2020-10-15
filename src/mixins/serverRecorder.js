@@ -28,6 +28,8 @@ export default {
         }&recorder=true&options=${JSON.stringify(options)}`
 
         const result = await startServerRecord({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
           framerate: 20,
           recordingFilename: today,
           recordingTimeLimit: 5,
@@ -49,7 +51,11 @@ export default {
     async stopServerRecord() {
       if (this.recordingId) {
         this.logger('SERVER RECORD', 'stop')
-        await stopServerRecord({ id: this.recordingId })
+        await stopServerRecord({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+          id: this.recordingId,
+        })
         this.recordingId = null
       }
     },

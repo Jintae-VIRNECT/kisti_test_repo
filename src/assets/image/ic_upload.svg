@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>A59FA430-6757-40FA-B111-03D811ED73EE@1.00x</title>
+    <defs>
+        <path d="M17.2222222,11 L17.2222222,17.2222222 L4.77777778,17.2222222 L4.77777778,11 L3,11 L3,17.2222222 C3,18.2 3.8,19 4.77777778,19 L17.2222222,19 C18.2,19 19,18.2 19,17.2222222 L19,11 L17.2222222,11 Z M10.1111111,6.40444444 L7.80888889,8.69777778 L6.55555556,7.44444444 L11,3 L15.4444444,7.44444444 L14.1911111,8.69777778 L11.8888889,6.40444444 L11.8888889,15 L10.1111111,15 L10.1111111,6.40444444 Z" id="path-1"></path>
+    </defs>
+    <g id="Design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="00_리소스-정리" transform="translate(-778.000000, -503.000000)">
+            <g id="btn_all_upload" transform="translate(760.000000, 496.000000)">
+                <g id="ic_download" transform="translate(18.000000, 7.000000)">
+                    <rect id="tr" x="0" y="0" width="22" height="22"></rect>
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="icon/content/save_alt_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
