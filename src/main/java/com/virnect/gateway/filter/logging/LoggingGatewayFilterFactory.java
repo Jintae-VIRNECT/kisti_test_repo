@@ -37,20 +37,19 @@ public class LoggingGatewayFilterFactory extends AbstractGatewayFilterFactory<Lo
 			ServerHttpRequest request = exchange.getRequest();
 			ServerHttpResponse response = exchange.getResponse();
 			StopWatch stopWatch = new StopWatch();
-
-			// pre logging
-			if (config.isPreLogger()) {
-				stopWatch.start();
-				String uri = request.getURI().toString();
-				String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostName();
-				log.info(
-					"[{}] [REQUEST] [{}] [{}] [{}] {}", config.messagePrefix, LocalDateTime.now(), clientIp,
-					request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type")
-				);
-				log.info("[{}] [HEADER] {}", config.getMessagePrefix(), request.getHeaders().toString());
-			}
 			return chain.filter(exchange).then(Mono.fromRunnable(() -> {
 				stopWatch.stop();
+				// pre logging
+				if (config.isPreLogger()) {
+					stopWatch.start();
+					String uri = request.getURI().toString();
+					String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostName();
+					log.info(
+						"[{}] [REQUEST] [{}] [{}] [{}] {}", config.messagePrefix, LocalDateTime.now(), clientIp,
+						request.getMethodValue() + " " + uri, request.getHeaders().get("Content-Type")
+					);
+					log.info("[{}] [HEADER] {}", config.getMessagePrefix(), request.getHeaders().toString());
+				}
 				if (config.isPostLogger()) {
 					String uri = request.getURI().toString();
 					String clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
