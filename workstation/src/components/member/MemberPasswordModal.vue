@@ -28,12 +28,14 @@
           :label="$t('members.password.newPassword')"
         >
           <el-input
+            show-password
             v-model="form.password"
             :placeholder="$t('members.password.placeholder')"
           />
         </el-form-item>
         <el-form-item class="horizon" prop="password2" required>
           <el-input
+            show-password
             v-model="form.password2"
             :placeholder="$t('members.password.placeholder2')"
           />
@@ -51,6 +53,7 @@
 
 <script>
 import modalMixin from '@/mixins/modal'
+import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [modalMixin],
@@ -115,7 +118,11 @@ export default {
       }
       // api 요청
       try {
-        // throw new Error('test error')
+        await workspaceService.changeMembersPassword(
+          this.data.uuid,
+          this.form.password,
+        )
+
         this.$message.success({
           message: this.$t('members.password.message.success'),
           duration: 4000,
@@ -125,7 +132,9 @@ export default {
       } catch (e) {
         // 에러
         this.$message.error({
-          message: this.$t('members.password.message.fail'),
+          message:
+            this.$t('members.password.message.fail') +
+            ` [ERROR CODE : ${e.code}]`,
           duration: 4000,
           showClose: true,
         })

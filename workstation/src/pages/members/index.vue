@@ -106,7 +106,7 @@ export default {
       this.loading = false
     },
     addMember() {
-      if (this.$config.VIRNECT_ENV === 'onpremise') {
+      if (this.$isOnpremise) {
         this.$router.push('/members/create')
       } else {
         this.showAddModal = true

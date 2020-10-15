@@ -60,6 +60,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import modalMixin from '@/mixins/modal'
+import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [modalMixin],
@@ -90,8 +91,21 @@ export default {
       this.file = null
     },
     async submit() {
-      this.$store.commit('layout/SET_LOGO', this.file)
-      this.showMe = false
+      try {
+        const { uploadFiles } = this.$refs.upload
+        const raw = uploadFiles.length
+          ? uploadFiles[uploadFiles.length - 1].raw
+          : null
+        await workspaceService.setWorkspaceLogo(raw)
+        this.$store.commit('layout/SET_LOGO', this.file)
+        this.showMe = false
+      } catch (e) {
+        this.$message.error({
+          message: e,
+          duration: 2000,
+          showClose: true,
+        })
+      }
     },
   },
 }

@@ -49,6 +49,7 @@
 <script>
 import modalMixin from '@/mixins/modal'
 import { mapGetters } from 'vuex'
+import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [modalMixin],
@@ -76,16 +77,21 @@ export default {
       this.file = null
     },
     async submit() {
-      const link =
-        document.querySelector("link[rel*='icon']") ||
-        document.createElement('link')
-      link.type = 'image/x-icon'
-      link.rel = 'shortcut icon'
-      link.href = this.file
-      document.getElementsByTagName('head')[0].appendChild(link)
-
-      this.$store.commit('layout/SET_FAVICON', this.file)
-      this.showMe = false
+      try {
+        const { uploadFiles } = this.$refs.upload
+        const raw = uploadFiles.length
+          ? uploadFiles[uploadFiles.length - 1].raw
+          : null
+        await workspaceService.setWorkspaceFavicon(raw)
+        this.$store.commit('layout/SET_FAVICON', this.file)
+        this.showMe = false
+      } catch (e) {
+        this.$message.error({
+          message: e,
+          duration: 2000,
+          showClose: true,
+        })
+      }
     },
   },
 }

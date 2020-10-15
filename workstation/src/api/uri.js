@@ -112,4 +112,17 @@ export default {
   MEMBERS_CREATE: ['POST', '/workspaces/{workspaceId}/members/account'],
   // 워크스페이스 멤버 계정 삭제
   MEMBER_DELETE: ['DELETE', '/workspaces/{workspaceId}/members/account'],
+  // 워크스페이스 멤버 비밀번호 재설정
+  MEMBER_CHANGE_PASSWORD: [
+    'POST',
+    '/workspaces/{workspaceId}/members/password',
+  ],
+  // 워크스페이스 커스텀 설정 조회
+  WORKSPACE_GET_SETTING: ['GET', '/workspaces/{workspaceId}/setting'],
+  // 워크스페이스 고객사명 변경
+  WORKSPACE_SET_TITLE: ['POST', '/workspaces/{workspaceId}/title'],
+  // 워크스페이스 로고 변경
+  WORKSPACE_SET_LOGO: ['POST', '/workspaces/{workspaceId}/logo'],
+  // 워크스페이스 파비콘 변경
+  WORKSPACE_SET_FAVICON: ['POST', '/workspaces/{workspaceId}/favicon'],
 }

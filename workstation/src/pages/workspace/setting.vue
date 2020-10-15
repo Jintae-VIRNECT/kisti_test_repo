@@ -133,7 +133,7 @@
           </el-card>
         </el-col>
         <workspace-onpremise-setting
-          v-if="$config.VIRNECT_ENV === 'onpremise'"
+          v-if="$isOnpremise"
           class="container__right"
         />
       </el-row>

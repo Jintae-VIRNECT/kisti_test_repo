@@ -1,6 +1,6 @@
 import { url } from '@/plugins/context'
 
-export default async function({ req, store, redirect, error }) {
+export default async function({ req, store, redirect, error, $config }) {
   // nuxt undefined url bug
   if (req && req.url.split('/').find(_ => _.match(/undefined|null/)))
     redirect('/')
@@ -61,6 +61,13 @@ export default async function({ req, store, redirect, error }) {
         e.statusCode = 504
       }
       error({ statusCode: e.statusCode, message: e.message })
+    }
+
+    // onrpemise
+    if ($config.VIRNECT_ENV === 'onpremise') {
+      await store.dispatch('layout/getWorkspaceSetting', {
+        headers: req.headers,
+      })
     }
   }
 }

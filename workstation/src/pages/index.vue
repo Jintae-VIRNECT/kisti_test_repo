@@ -15,7 +15,7 @@
               <workspace-info />
             </el-card>
           </el-row>
-          <el-row>
+          <el-row v-if="$config.VIRNECT_ENV !== 'onpremise'">
             <plans-used
               i18nGroup="home.plansInfo.arStorage"
               :info="plansInfo.storage"
@@ -44,9 +44,13 @@
         <!-- 오른쪽 -->
         <el-col class="container__right">
           <user-profile-card />
-          <download-center />
-          <guide-list />
-          <a :href="`${$url.www}/support/faq`" target="_blank">
+          <download-center v-if="$config.VIRNECT_ENV !== 'onpremise'" />
+          <guide-list v-if="$config.VIRNECT_ENV !== 'onpremise'" />
+          <a
+            v-if="$config.VIRNECT_ENV !== 'onpremise'"
+            :href="`${$url.www}/support/faq`"
+            target="_blank"
+          >
             <el-card class="faq-banner">
               <h6>
                 <span>{{ $t('home.faq.title') }}</span>

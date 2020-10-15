@@ -49,6 +49,7 @@
 <script>
 import modalMixin from '@/mixins/modal'
 import { mapGetters } from 'vuex'
+import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [modalMixin],
@@ -69,8 +70,17 @@ export default {
       }
     },
     async submit() {
-      this.$store.commit('layout/SET_TITLE', this.form.companyName)
-      this.showMe = false
+      try {
+        await workspaceService.setWorkspaceTitle(this.form.companyName)
+        this.$store.commit('layout/SET_TITLE', this.form.companyName)
+        this.showMe = false
+      } catch (e) {
+        this.$message.error({
+          message: e,
+          duration: 2000,
+          showClose: true,
+        })
+      }
     },
   },
 }

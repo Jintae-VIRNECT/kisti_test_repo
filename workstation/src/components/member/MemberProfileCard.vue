@@ -63,12 +63,12 @@
       @kicked="kicked"
     />
     <member-password-modal
-      v-if="$config.VIRNECT_ENV === 'onpremise'"
+      v-if="$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberPasswordModal"
     />
     <member-delete-modal
-      v-if="$config.VIRNECT_ENV === 'onpremise'"
+      v-if="$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberDeleteModal"
       @kicked="kicked"
@@ -141,7 +141,7 @@ export default {
       this.$emit('refresh')
     },
     kick() {
-      if (this.$config.VIRNECT_ENV === 'onpremise') {
+      if (this.$isOnpremise) {
         this.showMemberDeleteModal = true
       } else {
         this.showMemberKickModal = true

@@ -19,7 +19,7 @@
           </div>
           <span>{{ data.nickname }}</span>
           <el-button
-            v-if="$config.VIRNECT_ENV === 'onpremise'"
+            v-if="$isOnpremise"
             @click="$emit('change-password')"
           >
             {{ $t('members.password.title') }}
@@ -131,7 +131,7 @@
     <div slot="footer">
       <el-button v-show="canKick" @click="$emit('kick')">
         {{
-          $config.VIRNECT_ENV === 'onpremise'
+          $isOnpremise
             ? $t('members.delete.title')
             : $t('members.setting.kick')
         }}
