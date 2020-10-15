@@ -27,6 +27,7 @@
           :label="$t('members.delete.masterPassword')"
         >
           <el-input
+            show-password
             v-model="form.password"
             :placeholder="$t('members.delete.placeholder')"
           />
@@ -43,6 +44,7 @@
 
 <script>
 import modalMixin from '@/mixins/modal'
+import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [modalMixin],
@@ -71,7 +73,8 @@ export default {
       }
       // api 요청
       try {
-        // throw new Error('test error')
+        await workspaceService.deleteMember(this.data.uuid, this.form.password)
+
         this.$alert(
           this.$t('members.delete.message.successContent'),
           this.$t('members.delete.message.successTitle'),
@@ -81,9 +84,14 @@ export default {
           },
         )
       } catch (e) {
+        const errMsg =
+          {
+            1003: this.$t('members.delete.message.wrongPassword'),
+          }[e.code] ||
+          this.$t('members.delete.message.fail') + ` [ERROR CODE : ${e.code}]`
         // 에러
         this.$message.error({
-          message: this.$t('members.delete.message.fail'),
+          message: errMsg,
           duration: 4000,
           showClose: true,
         })

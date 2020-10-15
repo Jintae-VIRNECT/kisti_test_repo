@@ -111,5 +111,5 @@ export default {
   // 워크스페이스 멤버 계정 생성
   MEMBERS_CREATE: ['POST', '/workspaces/{workspaceId}/members/account'],
   // 워크스페이스 멤버 계정 삭제
-  MEMBER_DELETE: ['POST', '/workspaces/{workspaceId}/members/account'],
+  MEMBER_DELETE: ['DELETE', '/workspaces/{workspaceId}/members/account'],
 }

@@ -286,9 +286,14 @@ export default {
           },
         )
       } catch (e) {
+        const errMsg =
+          {
+            1011: this.$t('members.create.message.idDuplicated'),
+          }[e.code] ||
+          this.$t('members.create.message.fail') + ` [ERROR CDOE : ${e.code}]`
         // 에러
         this.$message.error({
-          message: e,
+          message: errMsg,
           duration: 4000,
           showClose: true,
         })

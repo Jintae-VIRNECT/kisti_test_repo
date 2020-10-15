@@ -234,14 +234,13 @@ export default {
    * @param {string} password
    */
   async deleteMember(uuid, password) {
-    const formData = new FormData()
-    formData.append('deleteUserId', uuid)
-    formData.append('userId', myProfileGetter().uuid)
-    formData.append('userPassword', password)
-
     const data = await api('MEMBER_DELETE', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
-      params: formData,
+      params: {
+        userId: myProfileGetter().uuid,
+        userPassword: password,
+        deleteUserId: uuid,
+      },
     })
     store.dispatch('plan/getPlansInfo')
     return data
