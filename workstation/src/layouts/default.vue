@@ -44,6 +44,13 @@ export default {
       htmlAttrs: {
         lang: this.$i18n.locale,
       },
+      link: [
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          href: this.favicon,
+        },
+      ],
     }
   },
   data() {
@@ -60,8 +67,9 @@ export default {
     ...mapGetters({
       auth: 'auth/auth',
       activeWorkspace: 'auth/activeWorkspace',
-      logo: 'layout/logo',
       title: 'layout/title',
+      logo: 'layout/logo',
+      favicon: 'layout/favicon',
     }),
     logoImg() {
       return {

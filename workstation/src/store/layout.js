@@ -27,17 +27,6 @@ export default {
     },
     SET_FAVICON(state, img) {
       state.favicon = img || defaultSetting.favicon
-
-      if (!process.server) {
-        console.log('hello')
-        const link =
-          document.querySelector("link[rel*='icon']") ||
-          document.createElement('link')
-        link.type = 'image/x-icon'
-        link.rel = 'shortcut icon'
-        link.href = state.favicon
-        document.getElementsByTagName('head')[0].appendChild(link)
-      }
     },
   },
   actions: {
