@@ -59,7 +59,7 @@
       </template>
     </div>
     <div class="roominfo-view__footer">
-      <div class="roominfo-view__data">
+      <div class="roominfo-view__data" v-if="useOpenRoom">
         <span class="data-title">{{ $t('workspace.info_mode') }}</span>
         <span class="data-value">{{
           isOpenRoom
@@ -104,6 +104,7 @@
 import InputRow from 'InputRow'
 import imageMixin from 'mixins/uploadImage'
 import { ROOM_STATUS } from 'configs/status.config'
+import { OPEN_ROOM } from 'configs/env.config'
 export default {
   name: 'ModalRoomInfo',
   mixins: [imageMixin],
@@ -140,6 +141,9 @@ export default {
     }
   },
   computed: {
+    useOpenRoom() {
+      return OPEN_ROOM
+    },
     isOpenRoom() {
       if (
         this.room &&
