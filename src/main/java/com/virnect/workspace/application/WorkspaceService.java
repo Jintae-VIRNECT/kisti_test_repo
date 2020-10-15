@@ -2359,7 +2359,7 @@ public class WorkspaceService {
 				responseMessage.getCode(), responseMessage.getData() == null ? "" : responseMessage.getData(),
 				responseMessage.getMessage()
 			);
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE_MEMBER_USER_NOT_FOUND);
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
 		}
 
 		if (!responseMessage.getData().isChanged()) {
