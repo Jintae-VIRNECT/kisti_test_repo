@@ -112,11 +112,13 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 			if (Objects.equals(originRequest.getMethod(), HttpMethod.GET)
 				|| originRequest.getHeaders().getContentLength() == -1) {
 				ServerHttpResponse mutateHttpResponse = getServerHttpResponse(exchange, secretKey);
+				mutateHttpResponse.getHeaders().set(HEADER_ENCRYPT_KEY_NAME,"true");
 				return chain.filter(exchange.mutate().response(mutateHttpResponse).build());
 			} else {
 				return DataBufferUtils.join(exchange.getRequest().getBody()).flatMap(dataBuffer -> {
 					ServerHttpRequest mutatedHttpRequest = getServerHttpRequest(exchange, dataBuffer, secretKey);
 					ServerHttpResponse mutateHttpResponse = getServerHttpResponse(exchange, secretKey);
+					mutateHttpResponse.getHeaders().set(HEADER_ENCRYPT_KEY_NAME,"true");
 					return chain.filter(
 						exchange.mutate().request(mutatedHttpRequest).response(mutateHttpResponse).build());
 				});
@@ -190,7 +192,6 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 						Mono<DataBuffer> messageBody = updateBody(getDelegate(), outputMessage);
 						HttpHeaders headers = getDelegate().getHeaders();
 						headers.setContentType(MediaType.APPLICATION_JSON);
-						headers.put(HEADER_ENCRYPT_KEY_NAME, Collections.singletonList("true"));
 						if (headers.containsKey(HttpHeaders.CONTENT_LENGTH)) {
 							messageBody = messageBody.doOnNext(dataBuffer -> {
 								headers.setContentLength(dataBuffer.readableByteCount());
