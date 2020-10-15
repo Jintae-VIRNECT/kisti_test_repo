@@ -20,7 +20,7 @@
         <div class="setting-view__body">
           <device-denied
             :visible.sync="showDenied"
-            :modalLess="true"
+            :modalless="true"
           ></device-denied>
 
           <template v-if="menus[tabIdx].key === 'video'">

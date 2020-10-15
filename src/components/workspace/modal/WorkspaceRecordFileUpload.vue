@@ -7,7 +7,7 @@
     :visible.sync="visible"
     :beforeClose="beforeClose"
     customClass="custom-modal-record-file-upload"
-    :class="{ modalLess: true }"
+    :class="{ modalless: true }"
     :dimClose="false"
   >
     <div class="record-file-upload">
@@ -132,7 +132,7 @@ export default {
   height: 100%;
   background-color: rgba(#121517, 0.5);
 
-  &.modalLess {
+  &.modalless {
     background-color: unset;
   }
 
