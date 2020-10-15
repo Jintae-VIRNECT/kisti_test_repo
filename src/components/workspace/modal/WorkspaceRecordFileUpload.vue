@@ -117,7 +117,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import '~assets/style/vars';
 
 .modal.custom-modal-record-file-upload {

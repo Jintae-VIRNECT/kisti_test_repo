@@ -44,22 +44,28 @@
                 v-if="isHome && onpremise"
                 :text="'선택 업로드'"
                 :imgSrc="require('assets/image/ic_upload.svg')"
-                :customClass="'customClass'"
-                :highlight="hasSelect"
+                :customClass="{
+                  highlight: hasSelect,
+                  'custom-local-record': true,
+                }"
                 @click="upload"
               ></icon-button> -->
               <icon-button
                 :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"
-                :highlight="hasSelect"
-                :customClass="'customClass'"
+                :customClass="{
+                  highlight: hasSelect,
+                  'custom-local-record': true,
+                }"
                 @click="download"
               ></icon-button>
               <icon-button
                 :text="$t('workspace.record_remove')"
                 :imgSrc="require('assets/image/ic_delete.svg')"
-                :customClass="'customClass'"
-                :highlight="hasSelect"
+                :customClass="{
+                  highlight: hasSelect,
+                  'custom-local-record': true,
+                }"
                 @click="deleteItems"
               ></icon-button>
             </div>

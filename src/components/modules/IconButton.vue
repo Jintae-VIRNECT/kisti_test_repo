@@ -1,9 +1,5 @@
 <template>
-  <button
-    class="icon-button"
-    @click="clickListener"
-    :class="[{ highlight: highlight }, customClass]"
-  >
+  <button class="icon-button" @click="clickListener" :class="customClass">
     <img :src="imgSrc" :class="animateClass" />
     {{ text }}
   </button>
@@ -30,7 +26,7 @@ export default {
       default: false,
     },
     customClass: {
-      type: String,
+      type: [String, Object],
       default: '',
     },
   },
@@ -74,7 +70,7 @@ export default {
     margin-right: 4px;
   }
 
-  &.customClass {
+  &.custom-local-record {
     opacity: 0.5;
 
     &:hover {
@@ -85,10 +81,6 @@ export default {
       color: rgba(#d2d2d2, 1);
       background-color: #38383a;
       opacity: 1;
-
-      &:hover {
-        background-color: #575759;
-      }
     }
   }
 }
