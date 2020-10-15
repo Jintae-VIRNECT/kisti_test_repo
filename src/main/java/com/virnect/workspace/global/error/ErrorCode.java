@@ -22,6 +22,7 @@ public enum ErrorCode {
     ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL(1011,"Workspace user account create fail"),
     ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL(1012,"Workspace user account delete fail"),
 	ERR_WORKSPACE_USER_PASSWORD_CHANGE(1013,"Workspace user password change fail"),
+	ERR_WORKSPACE_USER_PASSWORD_CHANGE_MEMBER_USER_NOT_FOUND(1013,"Workspace user password change fail"),
 
     //라이선스 관련 에러
     ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL(2000,"Workspace user license grant fail"),

@@ -2219,17 +2219,25 @@ public class WorkspaceService {
 		MemberUserPasswordChangeRequest changeRequest = new MemberUserPasswordChangeRequest(
 			passwordChangeRequest.getMemberUUID(), passwordChangeRequest.getPassword()
 		);
-		MemberUserPasswordChangeResponse response = userRestService.memberUserPasswordChangeRequest(
-			serviceID, changeRequest
-		).getData();
 
-		if (!response.isChanged()) {
-			log.info("[USER SERVER PASSWORD CHANGE REST RESULT] - {}", response.toString());
+		ApiResponse<MemberUserPasswordChangeResponse> responseMessage = userRestService.memberUserPasswordChangeRequest(
+			serviceID, changeRequest
+		);
+
+		if(responseMessage.getCode() != 200){
+			log.error("[USER SERVER PASSWORD CHANGE REST RESULT] - {}", responseMessage.toString());
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE_MEMBER_USER_NOT_FOUND);
+		}
+
+		if (!responseMessage.getData().isChanged()) {
+			log.info("[USER SERVER PASSWORD CHANGE REST RESULT] - {}", responseMessage.getData().toString());
 			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
 		}
 
 		return new WorkspaceMemberPasswordChangeResponse(
-			passwordChangeRequest.getMasterUUID(), response.getUuid(), response.getPasswordChangedDate()
+			passwordChangeRequest.getMasterUUID(),
+			responseMessage.getData().getUuid(),
+			responseMessage.getData().getPasswordChangedDate()
 		);
 	}
 }
