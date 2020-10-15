@@ -59,7 +59,7 @@ export default {
 	async userAuth(params) {
 		// 아이디 확인
 		try {
-			const { data } = await api('GET_CHECK_EMAIL', {
+			const data = await api('GET_CHECK_EMAIL', {
 				params: params,
 			})
 			return data

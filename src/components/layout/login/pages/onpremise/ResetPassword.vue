@@ -166,15 +166,25 @@ export default {
 				const res = await UserService.userAuth({
 					email: this.resetPass.email,
 				})
-				if (res.result) {
-					this.nextStep('question')
+				if (res.code === 200) {
+					if (res.data.result) {
+						this.nextStep('question')
+					} else throw res
 				} else throw res
 			} catch (e) {
-				this.alertMessage(
-					'ID 불일치',
-					'등록된 ID가 없습니다. 마스터에게 계정 생성을 요청하세요.',
-					'error',
-				)
+				if (e.code === 4011) {
+					this.alertMessage(
+						'비밀번호 찾기 질문/답변 미설정',
+						'등록된 비밀번호 찾기 질문/답면이 없습니다. 마스터에게 비밀번호 초기화를 요청하세요.',
+						'error',
+					)
+				} else {
+					this.alertMessage(
+						'ID 불일치',
+						'등록된 ID가 없습니다. 마스터에게 계정 생성을 요청하세요.',
+						'error',
+					)
+				}
 			}
 		},
 		async checkAnswer() {
@@ -214,11 +224,11 @@ export default {
 					this.confirmWindow(
 						'비밀번호 변경 완료',
 						'기존 로그인된 기기에서 로그아웃 됩니다. 변경된 새 비밀번호로 다시 로그인해 주세요.',
-						true,
+						'확인',
 					)
 				} else throw res
-			} catch (res) {
-				if (res.code === 4009)
+			} catch (e) {
+				if (e.code === 4009)
 					return this.alertMessage(
 						'비밀번호 재설정 실패',
 						'이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.',

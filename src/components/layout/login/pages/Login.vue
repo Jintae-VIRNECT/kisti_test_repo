@@ -168,11 +168,6 @@ export default {
 				Cookies.remove('auto')
 			}
 		},
-		alertWindow(title, msg, btn) {
-			this.$alert(msg, title, {
-				confirmButtonText: btn,
-			})
-		},
 		async handleLogin() {
 			this.loading = true
 			this.$validator.validateAll()
@@ -208,6 +203,20 @@ export default {
 				if (e.code === 2000) {
 					this.loading = false
 					this.message = this.$t('login.accountError.contents')
+				} else if (e.code === 3301) {
+					try {
+						await this.$confirm(
+							'보안 유지를 위해 비밀번호를 재설정 해주시기 바랍니다. 비밀번호 재설정 질문과 답변을 추가하여 비밀번호 분실 시 이용해 주시기 바랍니다.',
+							'비밀번호 재설정 안내',
+							{
+								confirmButtonText: '계정 관리',
+								cancelButtonText: '나중에 하기',
+							},
+						)
+						location.replace(this.$urls.account)
+					} catch (e) {
+						location.replace('/')
+					}
 				} else {
 					this.alertMessage(
 						this.$t('login.networkError.title'),

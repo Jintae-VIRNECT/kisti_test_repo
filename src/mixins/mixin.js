@@ -46,7 +46,7 @@ export default {
 		},
 		async confirmWindow(title, msg, okBtn) {
 			try {
-				let comfirm = await this.$confirm(msg, title, {
+				await this.$alert(msg, title, {
 					confirmButtonText: okBtn,
 				})
 				location.replace('/')
