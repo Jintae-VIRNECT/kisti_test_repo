@@ -178,7 +178,6 @@ export default {
 			}
 			try {
 				let res = await AuthService.login({ params: this.login })
-				let redirectTarget = this.$route.query.continue
 				if (res.code === 200) {
 					const cookieOption = {
 						secure: true,
@@ -191,32 +190,13 @@ export default {
 					}
 					Cookies.set('accessToken', res.data.accessToken, cookieOption)
 					Cookies.set('refreshToken', res.data.refreshToken, cookieOption)
-					if (redirectTarget) {
-						location.href = /^https?:/.test(redirectTarget)
-							? redirectTarget
-							: `//${redirectTarget}`
-					} else {
-						location.href = this.$urls['workstation']
-					}
+
+					this.redirection(res.data)
 				} else throw res
 			} catch (e) {
 				if (e.code === 2000) {
 					this.loading = false
 					this.message = this.$t('login.accountError.contents')
-				} else if (e.code === 3301) {
-					try {
-						await this.$confirm(
-							'보안 유지를 위해 비밀번호를 재설정 해주시기 바랍니다. 비밀번호 재설정 질문과 답변을 추가하여 비밀번호 분실 시 이용해 주시기 바랍니다.',
-							'비밀번호 재설정 안내',
-							{
-								confirmButtonText: '계정 관리',
-								cancelButtonText: '나중에 하기',
-							},
-						)
-						location.replace(this.$urls.account)
-					} catch (e) {
-						location.replace('/')
-					}
 				} else {
 					this.alertMessage(
 						this.$t('login.networkError.title'),
@@ -225,6 +205,32 @@ export default {
 					)
 					this.message = e.message
 					this.loading = false
+				}
+			}
+		},
+		async redirection(res) {
+			let redirectTarget = this.$route.query.continue
+			if (!res.passwordInitialized) {
+				try {
+					await this.$confirm(
+						'보안 유지를 위해 비밀번호를 재설정 해주시기 바랍니다. 비밀번호 재설정 질문과 답변을 추가하여 비밀번호 분실 시 이용해 주시기 바랍니다.',
+						'비밀번호 재설정 안내',
+						{
+							confirmButtonText: '계정 관리',
+							cancelButtonText: '나중에 하기',
+						},
+					)
+					location.replace(this.$urls.account)
+				} catch (e) {
+					location.replace('/')
+				}
+			} else {
+				if (redirectTarget) {
+					location.href = /^https?:/.test(redirectTarget)
+						? redirectTarget
+						: `//${redirectTarget}`
+				} else {
+					location.href = this.$urls['workstation']
 				}
 			}
 		},
