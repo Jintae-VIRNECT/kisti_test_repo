@@ -52,8 +52,8 @@ public class S3FileService implements FileService {
 		String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
 
 		if (!allowExtension.contains(extension)) {
-			log.error("Not Allow File Extension. Request File Extension >> {}", extension);
-			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+			//log.error("Not Allow File Extension. Request File Extension >> {}", extension);
+			//throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
 
 		String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;

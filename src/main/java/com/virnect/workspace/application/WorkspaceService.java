@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -21,7 +22,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -49,9 +49,15 @@ import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoListRequest;
-import com.virnect.workspace.dto.request.MemberAccountCreateInfo;
-import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.onpremise.MemberAccountCreateInfo;
+import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
@@ -116,6 +122,7 @@ public class WorkspaceService {
 	private final HistoryRepository historyRepository;
 	private final MessageSource messageSource;
 	private final LicenseRestService licenseRestService;
+
 	@Value("${serverUrl}")
 	private String serverUrl;
 	@Value("${redirectUrl}")
@@ -2182,24 +2189,147 @@ public class WorkspaceService {
 		return workspace.get();
 	}
 
-	public void settingWorkspaceCustom(
-		String workspaceId, String userId, String title, WorkspaceLogoListRequest logoList, MultipartFile pavicon
+
+	public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
+		String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
 	) {
-		//1. master 유저가 맞는 지 확인
-		Workspace workspace = checkWorkspaceAndUserRole(workspaceId, userId, new String[] {"MASTER"});
+		//1. 권한 체크
+		Workspace workspace = checkWorkspaceAndUserRole(
+			workspaceId, workspaceFaviconUpdateRequest.getUserId(), new String[] {"MASTER"});
 
-		//2. title 변경
-		if (StringUtils.hasText(title)) {
-
+		//2. 파비콘 확장자 체크
+		String extension = FilenameUtils.getExtension(workspaceFaviconUpdateRequest.getFavicon().getOriginalFilename());
+		if (!StringUtils.hasText(extension) || !extension.equalsIgnoreCase("ico")) {
+			log.error(
+				"[UPDATE WORKSAPCE PAVICON] Acceptable Image extension : [{}], Present Image extension : [{}] ",
+				"ico", extension
+			);
+			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
 		}
-		//3. logo 변경
-		if (logoList != null) {
+		//3. 파비콘 업로드
+		try {
+			String favicon= fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
+			workspace.setFavicon(favicon);
+			workspaceRepository.save(workspace);
 
+			WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
+			workspaceFaviconUpdateResponse.setResult(true);
+			workspaceFaviconUpdateResponse.setFavicon(favicon);
+			return workspaceFaviconUpdateResponse;
+		} catch (IOException e) {
+			log.error("[UPDATE WORKSPACE FAVICON] Favicon Image upload fail. Error message >> [{}]", e.getMessage());
+			WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
+			workspaceFaviconUpdateResponse.setResult(false);
+			return workspaceFaviconUpdateResponse;
 		}
-		//4. 파비콘 변경
-		if (pavicon != null) {
+	}
 
+	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest) {
+		//1. 권한 체크
+		Workspace workspace = checkWorkspaceAndUserRole(
+			workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[] {"MASTER"});
+
+
+		//2. 로고 확장자 체크
+		String allowExtension = "jpg,jpeg,gif,png";
+		String defaultExtension = FilenameUtils.getExtension(
+			workspaceLogoUpdateRequest.getDefaultLogo().getOriginalFilename());
+		if (!StringUtils.hasText(defaultExtension) || !allowExtension.contains(defaultExtension.toLowerCase())) {
+			log.error(
+				"[UPDATE WORKSPACE LOGO] Acceptable Image extension : [{}], Present Image extension : [{}] ",
+				allowExtension, defaultExtension
+			);
+			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
 		}
+		try {
+			String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo());
+			workspace.setDefaultLogo(logo);
+		} catch (IOException e) {
+			log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
+			WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+			workspaceLogoUpdateResponse.setResult(false);
+			return workspaceLogoUpdateResponse;
+		}
+
+		if (workspaceLogoUpdateRequest.getGreyLogo() != null) {
+			String greyExtension = FilenameUtils.getExtension(
+				workspaceLogoUpdateRequest.getGreyLogo().getOriginalFilename());
+			if (!StringUtils.hasText(greyExtension) || !allowExtension.contains(greyExtension.toLowerCase())) {
+				log.error(
+					"[UPDATE WORKSPACE LOGO] Acceptable Image extension : [{}], Present Image extension : [{}] ",
+					allowExtension, greyExtension
+				);
+				throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
+			}
+			try {
+				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo());
+				workspace.setGreyLogo(logo);
+			} catch (IOException e) {
+				log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
+				WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+				workspaceLogoUpdateResponse.setResult(false);
+				return workspaceLogoUpdateResponse;
+			}
+		}
+		if (workspaceLogoUpdateRequest.getWhiteLogo() != null) {
+			String whiteExtension = FilenameUtils.getExtension(
+				workspaceLogoUpdateRequest.getWhiteLogo().getOriginalFilename());
+			if (!StringUtils.hasText(whiteExtension) || !allowExtension.contains(whiteExtension.toLowerCase())) {
+				log.error(
+					"[UPDATE WORKSPACE LOGO] Acceptable Image extension : [{}], Present Image extension : [{}] ",
+					allowExtension, whiteExtension
+				);
+				throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
+			}
+			try {
+				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo());
+				workspace.setWhiteLogo(logo);
+			} catch (IOException e) {
+				log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
+				WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+				workspaceLogoUpdateResponse.setResult(false);
+				return workspaceLogoUpdateResponse;
+			}
+		}
+		workspaceRepository.save(workspace);
+
+		WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+		workspaceLogoUpdateResponse.setResult(true);
+		workspaceLogoUpdateResponse.setDefaultLogo(workspace.getDefaultLogo());
+		workspaceLogoUpdateResponse.setGreyLogo(workspace.getGreyLogo());
+		workspaceLogoUpdateResponse.setWhiteLogo(workspace.getWhiteLogo());
+		return workspaceLogoUpdateResponse;
+	}
+
+	public WorkspaceTitleUpdateResponse updateWorkspaceTitle(
+		String workspaceId, WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest
+	) {
+		//1. 권한 체크
+		Workspace workspace = checkWorkspaceAndUserRole(
+			workspaceId, workspaceTitleUpdateRequest.getUserId(), new String[] {"MASTER"});
+
+		//2. 고객사명 변경
+		workspace.setTitle(workspaceTitleUpdateRequest.getTitle());
+		workspaceRepository.save(workspace);
+
+		WorkspaceTitleUpdateResponse workspaceTitleUpdateResponse = new WorkspaceTitleUpdateResponse();
+		workspaceTitleUpdateResponse.setResult(true);
+		workspaceTitleUpdateResponse.setTitle(workspace.getTitle());
+		return workspaceTitleUpdateResponse;
+	}
+
+	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting(String workspaceId) {
+		Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(
+			() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND)
+		);
+		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = new WorkspaceCustomSettingResponse();
+		workspaceCustomSettingResponse.setWorkspaceTitle(workspace.getTitle());
+		workspaceCustomSettingResponse.setDefaultLogo(workspace.getDefaultLogo());
+		workspaceCustomSettingResponse.setGreyLogo(workspace.getGreyLogo());
+		workspaceCustomSettingResponse.setWhiteLogo(workspace.getWhiteLogo());
+		workspaceCustomSettingResponse.setFavicon(workspace.getFavicon());
+
+		return workspaceCustomSettingResponse;
 
 	}
 
@@ -2239,5 +2369,7 @@ public class WorkspaceService {
 			responseMessage.getData().getUuid(),
 			responseMessage.getData().getPasswordChangedDate()
 		);
+
 	}
 }
+

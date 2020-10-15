@@ -13,7 +13,6 @@ import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
-import org.springframework.context.annotation.Profile;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,7 +27,6 @@ import lombok.Setter;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@Profile("!onpremise")
 @Entity
 @Getter
 @Setter
@@ -58,6 +56,21 @@ public class Workspace extends TimeEntity {
 
     @Column(name = "user_id", nullable = false)
     private String userId; // user uuid
+
+    @Column(name = "title", nullable = true)
+    private String title;
+
+    @Column(name = "logo_default", nullable = true)
+    private String DefaultLogo;
+
+    @Column(name = "logo_grey", nullable = true)
+    private String GreyLogo;
+
+    @Column(name = "logo_white", nullable = true)
+    private String WhiteLogo;
+
+    @Column(name = "favicon", nullable = true)
+    private String favicon;
 
     @NotAudited
     @OneToMany(mappedBy = "workspace")

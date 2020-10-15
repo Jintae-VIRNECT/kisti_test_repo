@@ -98,7 +98,7 @@ management:
 ## Minio
 minio:
   access-key: "virnect"
-  secret-key: "virnect0!"
+  secret-key: "Qjsprxm13@$"
   server: "http://192.168.6.3:2838"
   bucket: "virnect-platform"
   resource: "workspace/profile"

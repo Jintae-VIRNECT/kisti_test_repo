@@ -30,11 +30,14 @@ public enum ErrorCode {
     ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN(2002,"Workspace license plan not found"),
     ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE(2003,"Useful workspace license not found"),
 
+    //파일 관련 에러
+    ERR_NOT_ALLOW_FILE_EXTENSION(3000,"Not Allow file extension."),
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004,"Invalid Value"),
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
     ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
+
 
     private int code;
     private String message;

@@ -1,4 +1,4 @@
-package com.virnect.workspace.dto.request;
+package com.virnect.workspace.dto.onpremise;
 
 import java.util.List;
 

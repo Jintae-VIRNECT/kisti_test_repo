@@ -1,4 +1,4 @@
-package com.virnect.workspace.dto.request;
+package com.virnect.workspace.dto.onpremise;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
