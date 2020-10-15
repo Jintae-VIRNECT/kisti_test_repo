@@ -1,14 +1,28 @@
-FROM openjdk:8-jre-slim
+# Build Stage
+FROM openjdk:8 AS builder
+
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+COPY service-client service-client
+COPY service-common service-common
+COPY service-data service-data
+COPY service-java-client service-java-client
+COPY service-server service-server
+COPY virnect.pfx .
+
+RUN chmod +x ./gradlew
+RUN ./gradlew :service-server:build -x test
+
+# Runtime Stage
+FROM openjdk:8-jre-alpine
 
 ENV APP_HOME=/usr/app/
-
 WORKDIR $APP_HOME
 
-#COPY ./build/service-server/libs/RM-Service-*.jar ./RM-Service-2.0.0.jar
-COPY ./virnect.pfx ./virnect.pfx
-COPY ./service-server/build/libs/RM-Service-*.jar ./RM-Service-2.1.0.jar
+COPY --from=builder virnect.pfx .
+COPY --from=builder service-server/build/libs/RM-Service-*.jar ./RM-Service-2.1.0.jar
 
 EXPOSE 8000
-
-## Command executed when container is start up.
-CMD ["java", "-XX:+UseG1GC", "-Xmx300M", "-jar", "RM-Service-2.1.0.jar"]
+CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "-jar", "RM-Service-2.1.0.jar"]
