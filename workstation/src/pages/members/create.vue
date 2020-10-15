@@ -63,6 +63,7 @@
                   <el-input
                     v-model="form.id"
                     :placeholder="$t('members.create.idPlaceholder')"
+                    maxlength="20"
                   />
                 </el-form-item>
               </el-col>
@@ -80,6 +81,7 @@
                   <el-input
                     v-model="form.password"
                     :placeholder="$t('members.create.passwordPlaceholder')"
+                    maxlength="20"
                   />
                 </el-form-item>
               </el-col>
@@ -273,7 +275,8 @@ export default {
       }
       // api 요청
       try {
-        // throw new Error('test error')
+        await workspaceService.createMembers(this.userInfoList)
+
         this.$alert(
           this.$t('members.create.message.successContent'),
           this.$t('members.create.message.successTitle'),

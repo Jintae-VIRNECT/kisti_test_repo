@@ -104,4 +104,12 @@ export default {
   TROUBLES_LIST: ['GET', '/tasks/troubleMemos'],
   // 트러블 메모 상세 조회
   TROUBLE_INFO: ['GET', '/tasks/troubleMemo/{troubleMemoId}'],
+
+  /**
+   * onpremise
+   */
+  // 워크스페이스 멤버 계정 생성
+  MEMBERS_CREATE: ['POST', '/workspaces/{workspaceId}/members/account'],
+  // 워크스페이스 멤버 계정 삭제
+  MEMBER_DELETE: ['POST', '/workspaces/{workspaceId}/members/account'],
 }

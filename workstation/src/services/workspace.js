@@ -213,4 +213,37 @@ export default {
     })
     return new PlansInfo(data)
   },
+  /**
+   * 멤버 생성 (onpremise)
+   * @param {[CreateMember]} userInfoList
+   */
+  async createMembers(userInfoList) {
+    const data = await api('MEMBERS_CREATE', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: {
+        userId: myProfileGetter().uuid,
+        memberAccountCreateRequest: userInfoList,
+      },
+    })
+    store.dispatch('plan/getPlansInfo')
+    return data
+  },
+  /**
+   * 멤버 삭제 (onpremise)
+   * @param {string} uuid
+   * @param {string} password
+   */
+  async deleteMember(uuid, password) {
+    const formData = new FormData()
+    formData.append('deleteUserId', uuid)
+    formData.append('userId', myProfileGetter().uuid)
+    formData.append('userPassword', password)
+
+    const data = await api('MEMBER_DELETE', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: formData,
+    })
+    store.dispatch('plan/getPlansInfo')
+    return data
+  },
 }
