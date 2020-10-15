@@ -41,11 +41,13 @@ export default {
   },
   methods: {
     clickListener() {
-      this.$listeners['click']()
-      this.animateClass = this.animation
-      setTimeout(() => {
-        this.animateClass = ''
-      }, 400)
+      if (typeof this.$listeners['click'] === 'function') {
+        this.$listeners['click']()
+        this.animateClass = this.animation
+        setTimeout(() => {
+          this.animateClass = ''
+        }, 400)
+      }
     },
   },
 }
