@@ -52,10 +52,10 @@ import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateInfo;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
 import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
 import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
@@ -2189,7 +2189,6 @@ public class WorkspaceService {
 		return workspace.get();
 	}
 
-
 	public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
 		String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
 	) {
@@ -2197,18 +2196,15 @@ public class WorkspaceService {
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceFaviconUpdateRequest.getUserId(), new String[] {"MASTER"});
 
-		//2. 파비콘 확장자 체크
+		//2. 파비콘 확장자, 사이즈 체크
+		String allowExtension = "jpg,jpeg,ico,png";
 		String extension = FilenameUtils.getExtension(workspaceFaviconUpdateRequest.getFavicon().getOriginalFilename());
-		if (!StringUtils.hasText(extension) || !extension.equalsIgnoreCase("ico")) {
-			log.error(
-				"[UPDATE WORKSAPCE PAVICON] Acceptable Image extension : [{}], Present Image extension : [{}] ",
-				"ico", extension
-			);
-			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
-		}
+		checkFileSize(workspaceFaviconUpdateRequest.getFavicon().getSize(), 3221225472L);
+		checkFileExtension(extension, allowExtension);
+
 		//3. 파비콘 업로드
 		try {
-			String favicon= fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
+			String favicon = fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
 			workspace.setFavicon(favicon);
 			workspaceRepository.save(workspace);
 
@@ -2224,23 +2220,40 @@ public class WorkspaceService {
 		}
 	}
 
-	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest) {
+	private void checkFileSize(long requestSize, long acceptSize) {
+		if (requestSize < 0 || requestSize > acceptSize) {
+			log.error(
+				"[UPLOAD FILE SIZE CHECK] Acceptable File size : [{}], Present File size : [{}] ",
+				3221225472L, requestSize
+			);
+			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_SIZE);
+		}
+	}
+
+	private void checkFileExtension(String requestExtension, String allowExtension) {
+		if (!StringUtils.hasText(requestExtension) || !allowExtension.contains(requestExtension.toLowerCase())) {
+			log.error(
+				"[UPLOAD FILE EXTENSION CHECK] Acceptable File extension : [{}], Present File extension : [{}] ",
+				allowExtension, requestExtension
+			);
+			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
+		}
+	}
+
+	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(
+		String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest
+	) {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[] {"MASTER"});
 
-
-		//2. 로고 확장자 체크
+		//2. 로고 확장자, 사이즈 체크
 		String allowExtension = "jpg,jpeg,gif,png";
 		String defaultExtension = FilenameUtils.getExtension(
 			workspaceLogoUpdateRequest.getDefaultLogo().getOriginalFilename());
-		if (!StringUtils.hasText(defaultExtension) || !allowExtension.contains(defaultExtension.toLowerCase())) {
-			log.error(
-				"[UPDATE WORKSPACE LOGO] Acceptable Image extension : [{}], Present Image extension : [{}] ",
-				allowExtension, defaultExtension
-			);
-			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
-		}
+		checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3221225472L);
+		checkFileExtension(defaultExtension, allowExtension);
+
 		try {
 			String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo());
 			workspace.setDefaultLogo(logo);
@@ -2254,13 +2267,9 @@ public class WorkspaceService {
 		if (workspaceLogoUpdateRequest.getGreyLogo() != null) {
 			String greyExtension = FilenameUtils.getExtension(
 				workspaceLogoUpdateRequest.getGreyLogo().getOriginalFilename());
-			if (!StringUtils.hasText(greyExtension) || !allowExtension.contains(greyExtension.toLowerCase())) {
-				log.error(
-					"[UPDATE WORKSPACE LOGO] Acceptable Image extension : [{}], Present Image extension : [{}] ",
-					allowExtension, greyExtension
-				);
-				throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
-			}
+			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3221225472L);
+			checkFileExtension(defaultExtension, greyExtension);
+
 			try {
 				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo());
 				workspace.setGreyLogo(logo);
@@ -2274,13 +2283,9 @@ public class WorkspaceService {
 		if (workspaceLogoUpdateRequest.getWhiteLogo() != null) {
 			String whiteExtension = FilenameUtils.getExtension(
 				workspaceLogoUpdateRequest.getWhiteLogo().getOriginalFilename());
-			if (!StringUtils.hasText(whiteExtension) || !allowExtension.contains(whiteExtension.toLowerCase())) {
-				log.error(
-					"[UPDATE WORKSPACE LOGO] Acceptable Image extension : [{}], Present Image extension : [{}] ",
-					allowExtension, whiteExtension
-				);
-				throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
-			}
+			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3221225472L);
+			checkFileExtension(defaultExtension, whiteExtension);
+
 			try {
 				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo());
 				workspace.setWhiteLogo(logo);
