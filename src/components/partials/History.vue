@@ -42,22 +42,34 @@
               <collabo-status :status="history.status"> </collabo-status>
             </div>
             <div class="history__text count">
-              <server-record-count-button
-                :count="history.recordCount"
-                :serialNum="history.serialNum"
-              ></server-record-count-button>
+              <count-button
+                :count="history.serverRecord.length"
+                :images="{
+                  select: require('assets/image/ic_rec_select.svg'),
+                  active: require('assets/image/ic_rec_active.svg'),
+                  default: require('assets/image/ic_rec_default.svg'),
+                }"
+              ></count-button>
             </div>
             <div class="history__text count">
-              <local-record-count-button
-                :count="history.recordCount"
-                :serialNum="history.serialNum"
-              ></local-record-count-button>
+              <count-button
+                :count="history.localRecord.length"
+                :images="{
+                  select: require('assets/image/ic_video_select.svg'),
+                  active: require('assets/image/ic_video_active.svg'),
+                  default: require('assets/image/ic_video_default.svg'),
+                }"
+              ></count-button>
             </div>
             <div class="history__text count">
-              <file-count-button
-                :count="history.recordCount"
-                :serialNum="history.serialNum"
-              ></file-count-button>
+              <count-button
+                :count="history.files.length"
+                :images="{
+                  select: require('assets/image/ic_file_select.svg'),
+                  active: require('assets/image/ic_file_active.svg'),
+                  default: require('assets/image/ic_file_default.svg'),
+                }"
+              ></count-button>
             </div>
           </div>
           <history-info
@@ -74,18 +86,14 @@
 </template>
 
 <script>
-import ServerRecordCountButton from 'ServerRecordCountButton'
-import LocalRecordCountButton from 'LocalRecordCountButton'
-import FileCountButton from 'FileCountButton'
 import CollaboStatus from 'CollaboStatus'
 import HistoryInfo from 'components/modal/HistoryInfo'
+import CountButton from 'CountButton'
 export default {
   name: 'History',
   components: {
+    CountButton,
     CollaboStatus,
-    ServerRecordCountButton,
-    LocalRecordCountButton,
-    FileCountButton,
     HistoryInfo,
   },
   props: {
@@ -234,18 +242,6 @@ export default {
     font-size: 14.9996px;
     text-align: center;
   }
-
-  // &.user-name {
-  //   width: 286px;
-  //   text-align: left;
-
-  //   & > p {
-  //     width: 10.9286rem;
-  //     overflow: hidden;
-  //     white-space: nowrap;
-  //     text-overflow: ellipsis;
-  //   }
-  // }
 
   &.collabo-name {
     width: 300px;
