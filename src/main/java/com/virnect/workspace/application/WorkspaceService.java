@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -48,6 +49,7 @@ import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoListRequest;
 import com.virnect.workspace.dto.request.MemberAccountCreateInfo;
 import com.virnect.workspace.dto.request.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
@@ -109,6 +111,7 @@ public class WorkspaceService {
 	private final HistoryRepository historyRepository;
 	private final MessageSource messageSource;
 	private final LicenseRestService licenseRestService;
+
 
 	@Value("${serverUrl}")
 	private String serverUrl;
@@ -1952,7 +1955,7 @@ public class WorkspaceService {
 				serviceID)
 				.getData();
 
-			if (userInfoRestResponse == null) {
+			if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
 				log.error("[CREATE WORKSPACE MEMBER ACCOUNT] USER SERVER Member Register fail.");
 				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL);
 			}
@@ -2072,7 +2075,7 @@ public class WorkspaceService {
 		//1-1. user-server로 권한 체크
 		UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(
 			memberAccountDeleteRequest.getUserId()).getData();
-		if (userInfoRestResponse == null) {
+		if (userInfoRestResponse == null ||!StringUtils.hasText(userInfoRestResponse.getUuid())) {
 			log.error(
 				"[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER account not found. Request user UUID : [{}]",
 				memberAccountDeleteRequest.getUserId()
@@ -2123,7 +2126,7 @@ public class WorkspaceService {
 		//3. user-server에 멤버 삭제 api 요청 -> 실패시 grant api 요청
 		UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
 			memberAccountDeleteRequest.getDeleteUserId(), serviceID).getData();
-		if (userDeleteRestResponse == null) {
+		if (userDeleteRestResponse == null || !StringUtils.hasText(userDeleteRestResponse.getUserUUID())) {
 			log.error("[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail.");
 			if (myLicenseInfoListResponse.getLicenseInfoList() != null
 				&& !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
@@ -2179,4 +2182,23 @@ public class WorkspaceService {
 		return workspace.get();
 	}
 
+	public void settingWorkspaceCustom(String workspaceId, String userId, String title, WorkspaceLogoListRequest logoList, MultipartFile pavicon) {
+		//1. master 유저가 맞는 지 확인
+		Workspace workspace = checkWorkspaceAndUserRole(workspaceId, userId, new String[]{"MASTER"});
+
+		//2. title 변경
+		if(StringUtils.hasText(title)){
+
+		}
+		//3. logo 변경
+		if(logoList!=null){
+
+		}
+		//4. 파비콘 변경
+		if(pavicon!=null){
+
+		}
+
+
+	}
 }
