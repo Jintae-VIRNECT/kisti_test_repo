@@ -372,6 +372,7 @@ const _ = {
    * @param {Boolean, String} active true / false / 'NONE'
    */
   video: (active, target = null) => {
+    if (_.openRoom) return
     if (!_.publisher) return
     // if (!_.publisher.stream.hasVideo) return
     if (active === 'NONE') {
@@ -398,6 +399,7 @@ const _ = {
     }
   },
   changeProperty: (newValue, target = []) => {
+    if (_.openRoom) return
     const params = {
       type: CAMERA.STATUS,
       status: newValue ? CAMERA_STATUE.CAMERA_OFF : CAMERA_STATUE.CAMERA_NONE,
@@ -421,6 +423,7 @@ const _ = {
    * @param {Boolean} active
    */
   mic: (active, target = null) => {
+    if (_.openRoom) return
     if (_.publisher) {
       _.publisher.publishAudio(active)
     }
