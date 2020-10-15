@@ -52,10 +52,10 @@ import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateInfo;
 import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
 import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
 import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
@@ -2189,7 +2189,6 @@ public class WorkspaceService {
 		return workspace.get();
 	}
 
-
 	public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
 		String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
 	) {
@@ -2208,7 +2207,7 @@ public class WorkspaceService {
 		}
 		//3. 파비콘 업로드
 		try {
-			String favicon= fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
+			String favicon = fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
 			workspace.setFavicon(favicon);
 			workspaceRepository.save(workspace);
 
@@ -2224,11 +2223,12 @@ public class WorkspaceService {
 		}
 	}
 
-	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest) {
+	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(
+		String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest
+	) {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[] {"MASTER"});
-
 
 		//2. 로고 확장자 체크
 		String allowExtension = "jpg,jpeg,gif,png";
@@ -2354,8 +2354,11 @@ public class WorkspaceService {
 			serviceID, changeRequest
 		);
 
-		if(responseMessage.getCode() != 200){
-			log.error("[USER SERVER PASSWORD CHANGE REST RESULT] - {}", responseMessage.toString());
+		if (responseMessage.getCode() != 200) {
+			log.error("[USER SERVER PASSWORD CHANGE REST RESULT] - [code: {}, data:{}, message: {}]",
+				responseMessage.getCode(), responseMessage.getData() == null ? "" : responseMessage.getData(),
+				responseMessage.getMessage()
+			);
 			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE_MEMBER_USER_NOT_FOUND);
 		}
 
