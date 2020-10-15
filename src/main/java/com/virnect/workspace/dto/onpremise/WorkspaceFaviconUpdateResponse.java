@@ -15,10 +15,10 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class WorkspacePaviconUpdateResponse {
+public class WorkspaceFaviconUpdateResponse {
 	@ApiModelProperty(value = "로고 변경 결과", example = "true", position = 0)
 	private Boolean result;
 
 	@ApiModelProperty(value = "파비콘 이미지 URL", example = "", position = 1)
-	private String pavicon = "";
+	private String favicon = "";
 }

@@ -19,11 +19,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @ApiModel
-public class WorkspacePaviconUpdateRequest {
+public class WorkspaceFaviconUpdateRequest {
 	@ApiModelProperty(value = "파비콘 변경 유저 식별자", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608", position = 0)
 	@NotBlank
 	private String userId;
 
 	@ApiModelProperty(value = "파비콘 이미지", required = true, position = 1)
-	private MultipartFile pavicon;
+	private MultipartFile favicon;
 }

@@ -32,6 +32,6 @@ public class WorkspaceCustomSettingResponse {
 	private String whiteLogo = "";
 
 	@ApiModelProperty(value = "워크스페이스 파비콘", example = "", position = 4)
-	private String pavicon = "";
+	private String favicon = "";
 }
 

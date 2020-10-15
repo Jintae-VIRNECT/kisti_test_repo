@@ -40,8 +40,8 @@ import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
 import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
-import com.virnect.workspace.dto.onpremise.WorkspacePaviconUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspacePaviconUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
 import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
 import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
 import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
@@ -582,21 +582,21 @@ public class WorkspaceController {
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 		@ApiImplicitParam(name = "userId", value = "파비콘 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
-		@ApiImplicitParam(name = "pavicon", value = "파비콘 이미지", dataType = "__file", paramType = "form", required = true)
+		@ApiImplicitParam(name = "favicon", value = "파비콘 이미지", dataType = "__file", paramType = "form", required = true)
 	})
-	@PostMapping("/{workspaceId}/pavicon")
-	public ResponseEntity<ApiResponse<WorkspacePaviconUpdateResponse>> updateWorkspacePavicon(
+	@PostMapping("/{workspaceId}/favicon")
+	public ResponseEntity<ApiResponse<WorkspaceFaviconUpdateResponse>> updateWorkspaceFavicon(
 		@PathVariable("workspaceId") String workspaceId,
-		@ModelAttribute WorkspacePaviconUpdateRequest workspacePaviconUpdateRequest
+		@ModelAttribute WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
 	) {
-		if (!StringUtils.hasText(workspaceId) || workspacePaviconUpdateRequest.getPavicon() == null
-			|| !StringUtils.hasText(workspacePaviconUpdateRequest.getUserId())) {
+		if (!StringUtils.hasText(workspaceId) || workspaceFaviconUpdateRequest.getFavicon() == null
+			|| !StringUtils.hasText(workspaceFaviconUpdateRequest.getUserId())) {
 
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		WorkspacePaviconUpdateResponse workspacePaviconUpdateResponse = workspaceService.updateWorkspacePavicon(
-			workspaceId, workspacePaviconUpdateRequest);
-		return ResponseEntity.ok(new ApiResponse<>(workspacePaviconUpdateResponse));
+		WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = workspaceService.updateWorkspaceFavicon(
+			workspaceId, workspaceFaviconUpdateRequest);
+		return ResponseEntity.ok(new ApiResponse<>(workspaceFaviconUpdateResponse));
 	}
 
 	@Profile("onpremise")

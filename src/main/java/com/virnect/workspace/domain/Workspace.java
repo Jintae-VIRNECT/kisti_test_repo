@@ -69,8 +69,8 @@ public class Workspace extends TimeEntity {
     @Column(name = "logo_white", nullable = true)
     private String WhiteLogo;
 
-    @Column(name = "pavicon", nullable = true)
-    private String pavicon;
+    @Column(name = "favicon", nullable = true)
+    private String favicon;
 
     @NotAudited
     @OneToMany(mappedBy = "workspace")
