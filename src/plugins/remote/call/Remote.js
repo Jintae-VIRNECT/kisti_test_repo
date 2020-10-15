@@ -66,7 +66,7 @@ const _ = {
       const connectOption = {
         iceServers,
         wsUri: ws,
-        role: 'PUSLISHER',
+        role: options === false ? 'SUBSCRIBER' : 'PUSLISHER',
       }
 
       await _.session.connect(
@@ -421,8 +421,9 @@ const _ = {
    * @param {Boolean} active
    */
   mic: (active, target = null) => {
-    if (!_.publisher) return
-    _.publisher.publishAudio(active)
+    if (_.publisher) {
+      _.publisher.publishAudio(active)
+    }
 
     const params = {
       isOn: active,

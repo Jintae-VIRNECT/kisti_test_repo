@@ -34,14 +34,15 @@
           >
             {{ $t('workspace.info_remote_member') }}
           </button>
-          <!-- <button
+          <button
+            v-if="isOnpremise"
             class="roominfo-nav__menu"
             :class="{ active: tabview === 'download' }"
             :data-text="$t('button.download')"
             @click="tabChange('download')"
           >
             {{ $t('button.download') }}
-          </button> -->
+          </button>
         </div>
       </section>
       <room-info
@@ -56,7 +57,10 @@
         :sessionId="sessionId"
       ></participants-info>
 
-      <!-- <room-download v-else :sessionId="sessionId"></room-download> -->
+      <room-download
+        v-else-if="isOnpremise"
+        :sessionId="sessionId"
+      ></room-download>
     </div>
   </modal>
 </template>
@@ -68,6 +72,7 @@ import RoomInfo from '../partials/ModalHistoryRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
+import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceHistoryInfo',
@@ -89,6 +94,13 @@ export default {
   computed: {
     participants() {
       return this.room.memberList
+    },
+    isOnpremise() {
+      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
+        return true
+      } else {
+        return false
+      }
     },
   },
   props: {

@@ -67,7 +67,7 @@ const actions = {
    * @param {Object} payload // room info
    */
   setRoomInfo({ commit }, payload) {
-    if (open in payload && payload.open === true) {
+    if ('open' in payload && payload.open === true) {
       commit(CALL_ACTION_SET, ACTION.STREAM_POINTING)
     }
     commit(ROOM_SET, payload)

@@ -180,6 +180,7 @@ import { languageCode } from 'utils/translate'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
+import { USE_TRANSLATE } from 'configs/env.config'
 import {
   localRecTime,
   localRecResOpt,
@@ -199,6 +200,7 @@ export default {
   },
   data() {
     return {
+      initing: false,
       localRecording: false,
       pointing: false,
 
@@ -281,7 +283,7 @@ export default {
     },
     useTranslate() {
       // TODO: KINTEX
-      return true
+      return USE_TRANSLATE
     },
   },
 
@@ -290,16 +292,19 @@ export default {
       this.visibleFlag = flag
     },
     localRecording(flag) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
       this.$localStorage.setAllow('localRecord', !!flag)
     },
     pointing(flag) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       this.$call.control(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
     },
     allowLocalRecord(val, bVal) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       if (val !== bVal) {
         if (val === true) {
@@ -316,6 +321,7 @@ export default {
       }
     },
     allowPointing(val, bVal) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       if (val !== bVal) {
         if (val === true) {
@@ -333,6 +339,7 @@ export default {
     },
 
     recordTarget(target) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       switch (target) {
         case RECORD_TARGET.WORKER:
@@ -407,6 +414,9 @@ export default {
       this.localRecording = this.allowLocalRecord
       this.pointing = this.allowPointing
     }
+    this.$nextTick(() => {
+      this.initing = true
+    })
   },
 }
 </script>

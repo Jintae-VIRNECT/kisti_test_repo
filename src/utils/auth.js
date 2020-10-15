@@ -78,7 +78,10 @@ async function getMyInfo() {
 }
 
 async function getConfigs() {
-  const res = await axios.get(`${location.origin}/configs`)
+  if (window.urls && window.urls['api']) return
+  const res = await axios.get(
+    `${location.origin}/configs?origin=${location.hostname}`,
+  )
 
   const runtimeEnv = res.data.runtime || 'production'
   logger('RUNTIME ENV', res.data.runtime)

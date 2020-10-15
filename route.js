@@ -79,6 +79,7 @@ router.get('/OSS', function(req, res) {
 })
 
 router.get('/configs', function(req, res) {
+  // req.query.origin
   res.header('Content-Type', 'application/json')
   res.send(JSON.stringify(config.getConfigs()))
 })
