@@ -41,7 +41,7 @@ export const startServerRecord = async ({
  * 서버 녹화 중단 요청
  * @query {String} workspaceId 워크스페이스 uuid
  * @query {String} userId 유저 uuid
- * @param {String} id 중단할 녹화 세션 id
+ * @query {String} id 중단할 녹화 세션 id
  */
 export const stopServerRecord = async ({ workspaceId, userId, id }) => {
   const returnVal = await http('STOP_SERVER_RECORD', {
