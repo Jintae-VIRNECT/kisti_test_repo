@@ -45,6 +45,7 @@ import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
+import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
 import com.virnect.workspace.dto.response.MemberListResponse;
 import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
@@ -52,6 +53,7 @@ import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -504,7 +506,25 @@ public class WorkspaceController {
 		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
-	@ApiOperation(value = "워크스페이스 고객사명 변경", tags = "onpremise server only",hidden = true)
+	@Profile("onpremise")
+	@ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정", tags = "onpremise server only")
+	@PostMapping("/{workspaceId}/members/password")
+	public ResponseEntity<ApiResponse<WorkspaceMemberPasswordChangeResponse>> memberPasswordChangeRequest(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestBody WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
+		BindingResult bindingResult
+	) {
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach(
+					objectError -> log.error("[WORKSPACE MEMBER PASSWORD CHANGE] Error message : [{}]", objectError)
+			);
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		WorkspaceMemberPasswordChangeResponse response = workspaceService.memberPasswordChange(passwordChangeRequest, workspaceId);
+		return ResponseEntity.ok(new ApiResponse<>(response));
+	}
+
+	@ApiOperation(value = "워크스페이스 고객사명 변경", tags = "onpremise server only", hidden = true)
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 		@ApiImplicitParam(name = "userId", value = "요청 유저 식별자", dataType = "string", defaultValue = "", paramType = "query", required = true),
@@ -525,7 +545,7 @@ public class WorkspaceController {
 		return ResponseEntity.ok(new ApiResponse<>(null));
 	}
 
-	@ApiOperation(value = "워크스페이스 페이지 요소 조회", tags = "onpremise server only",hidden = true)
+	@ApiOperation(value = "워크스페이스 페이지 요소 조회", tags = "onpremise server only", hidden = true)
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 	})

@@ -57,6 +57,7 @@ import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
+import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
 import com.virnect.workspace.dto.response.MemberListResponse;
 import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
@@ -64,11 +65,14 @@ import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
 import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
 import com.virnect.workspace.dto.rest.MailRequest;
+import com.virnect.workspace.dto.rest.MemberUserPasswordChangeRequest;
+import com.virnect.workspace.dto.rest.MemberUserPasswordChangeResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
@@ -96,6 +100,7 @@ import com.virnect.workspace.infra.file.FileService;
 @Service
 @RequiredArgsConstructor
 public class WorkspaceService {
+	private static final String serviceID = "workspace-server";
 	private final WorkspaceRepository workspaceRepository;
 	private final WorkspaceUserRepository workspaceUserRepository;
 	private final WorkspaceRoleRepository workspaceRoleRepository;
@@ -111,24 +116,16 @@ public class WorkspaceService {
 	private final HistoryRepository historyRepository;
 	private final MessageSource messageSource;
 	private final LicenseRestService licenseRestService;
-
-
 	@Value("${serverUrl}")
 	private String serverUrl;
-
 	@Value("${redirectUrl}")
 	private String redirectUrl;
-
 	@Value("${contactUrl}")
 	private String contactUrl;
-
 	@Value("${accountUrl}")
 	private String accountUrl;
-
 	@Value("${supportUrl}")
 	private String supportUrl;
-
-	private static final String serviceID = "workspace-server";
 
 	/**
 	 * 워크스페이스 생성
@@ -1951,8 +1948,10 @@ public class WorkspaceService {
 			RegisterMemberRequest registerMemberRequest = new RegisterMemberRequest();
 			registerMemberRequest.setEmail(memberAccountCreateInfo.getId());
 			registerMemberRequest.setPassword(memberAccountCreateInfo.getPassword());
-			UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(registerMemberRequest,
-				serviceID)
+			UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(
+				registerMemberRequest,
+				serviceID
+			)
 				.getData();
 
 			if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
@@ -2075,7 +2074,7 @@ public class WorkspaceService {
 		//1-1. user-server로 권한 체크
 		UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(
 			memberAccountDeleteRequest.getUserId()).getData();
-		if (userInfoRestResponse == null ||!StringUtils.hasText(userInfoRestResponse.getUuid())) {
+		if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
 			log.error(
 				"[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER account not found. Request user UUID : [{}]",
 				memberAccountDeleteRequest.getUserId()
@@ -2150,7 +2149,8 @@ public class WorkspaceService {
 
 		//4. workspace-sever 권한 및 소속 해제
 		Optional<Workspace> workspace = workspaceRepository.findByUuid(workspaceId);
-		WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(memberAccountDeleteRequest.getDeleteUserId(), workspace.get());
+		WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(
+			memberAccountDeleteRequest.getDeleteUserId(), workspace.get());
 		workspaceUserPermissionRepository.deleteAllByWorkspaceUser(workspaceUser);
 		workspaceUserRepository.deleteById(workspaceUser.getId());
 
@@ -2182,23 +2182,54 @@ public class WorkspaceService {
 		return workspace.get();
 	}
 
-	public void settingWorkspaceCustom(String workspaceId, String userId, String title, WorkspaceLogoListRequest logoList, MultipartFile pavicon) {
+	public void settingWorkspaceCustom(
+		String workspaceId, String userId, String title, WorkspaceLogoListRequest logoList, MultipartFile pavicon
+	) {
 		//1. master 유저가 맞는 지 확인
-		Workspace workspace = checkWorkspaceAndUserRole(workspaceId, userId, new String[]{"MASTER"});
+		Workspace workspace = checkWorkspaceAndUserRole(workspaceId, userId, new String[] {"MASTER"});
 
 		//2. title 변경
-		if(StringUtils.hasText(title)){
+		if (StringUtils.hasText(title)) {
 
 		}
 		//3. logo 변경
-		if(logoList!=null){
+		if (logoList != null) {
 
 		}
 		//4. 파비콘 변경
-		if(pavicon!=null){
+		if (pavicon != null) {
 
 		}
 
+	}
 
+	/**
+	 * 워크스페이스 멤버 비밀번호 변경
+	 * @param passwordChangeRequest - 비밀번호 변경 요청 정보
+	 * @param workspaceId - 워크스페이스 식별자 정보
+	 * @return - 워크스페이스 멤버 비밀번호 변경 처리 결과
+	 */
+	@Transactional
+	public WorkspaceMemberPasswordChangeResponse memberPasswordChange(
+		WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
+		String workspaceId
+	) {
+		checkWorkspaceAndUserRole(
+			workspaceId, passwordChangeRequest.getMasterUUID(), new String[] {"MASTER"});
+		MemberUserPasswordChangeRequest changeRequest = new MemberUserPasswordChangeRequest(
+			passwordChangeRequest.getMemberUUID(), passwordChangeRequest.getPassword()
+		);
+		MemberUserPasswordChangeResponse response = userRestService.memberUserPasswordChangeRequest(
+			serviceID, changeRequest
+		).getData();
+
+		if (!response.isChanged()) {
+			log.info("[USER SERVER PASSWORD CHANGE REST RESULT] - {}", response.toString());
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
+		}
+
+		return new WorkspaceMemberPasswordChangeResponse(
+			passwordChangeRequest.getMasterUUID(), response.getUuid(), response.getPasswordChangedDate()
+		);
 	}
 }
