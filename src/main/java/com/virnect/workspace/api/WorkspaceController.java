@@ -530,7 +530,7 @@ public class WorkspaceController {
 	}
 
 	@Profile("onpremise")
-	@ApiOperation(value = "워크스페이스 고객사명 변경", tags = "onpremise server only", hidden = true)
+	@ApiOperation(value = "워크스페이스 고객사명 변경", tags = "onpremise server only")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 	})
