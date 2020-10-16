@@ -40,26 +40,26 @@ const mutations = {
   [CALL_MODE_SET](state, mode) {
     state.view = mode
   },
-  [CALL_ACTION_SET](state, mode) {
-    state.action = mode
+  [CALL_ACTION_SET](state, action) {
+    state.action = action
   },
-  [TOOL_DRAWING_COLOR](state, mode) {
-    state.drawColor = mode
+  [TOOL_DRAWING_COLOR](state, color) {
+    state.drawColor = color
   },
-  [TOOL_DRAWING_OPACITY](state, mode) {
-    state.drawOpacity = mode
+  [TOOL_DRAWING_OPACITY](state, opacity) {
+    state.drawOpacity = opacity
   },
-  [TOOL_TEXT_SIZE](state, mode) {
-    state.fontSize = mode
+  [TOOL_TEXT_SIZE](state, size) {
+    state.fontSize = size
   },
-  [TOOL_LINE_WIDTH](state, mode) {
-    state.lineWidth = mode
+  [TOOL_LINE_WIDTH](state, width) {
+    state.lineWidth = width
   },
-  [CALL_MIC](state, mode) {
-    state.mic = mode
+  [CALL_MIC](state, status) {
+    state.mic = status
   },
-  [CALL_SPEAKER](state, mode) {
-    state.speaker = mode
+  [CALL_SPEAKER](state, status) {
+    state.speaker = status
   },
 }
 

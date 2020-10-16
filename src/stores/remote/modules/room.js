@@ -4,8 +4,10 @@ import {
   REMOVE_ROOM_MEMBER,
   ROOM_CLEAR,
   CALL_ACTION_SET,
+  TOOL_DRAWING_COLOR,
 } from '../mutation-types'
 import { ACTION } from 'configs/view.config'
+import { randomColor } from 'utils/callOptions'
 
 function getDefaultRoomInfo() {
   return {
@@ -31,7 +33,6 @@ const mutations = {
     state.maxUserCount = payload.maxUserCount
     state.memberList = payload.memberList
     state.open = !!payload.open
-    // state.open = true
   },
 
   [ADD_ROOM_MEMBER](state, payload) {
@@ -67,8 +68,10 @@ const actions = {
    * @param {Object} payload // room info
    */
   setRoomInfo({ commit }, payload) {
+    // payload.open = true
     if ('open' in payload && payload.open === true) {
       commit(CALL_ACTION_SET, ACTION.STREAM_POINTING)
+      commit(TOOL_DRAWING_COLOR, randomColor)
     }
     commit(ROOM_SET, payload)
   },

@@ -1,5 +1,5 @@
 // Service Options
-export const maxParticipants = 21
+export const maxParticipants = 6
 
 // Tool Options
 export const color = [
@@ -18,6 +18,8 @@ export const color = [
 ]
 export const width = [1, 2, 3, 6, 10]
 export const size = [10, 12, 14, 16, 18]
+
+export const randomColor = color[Date.now() % color.length]
 
 export const reset = {
   color: color[0],
