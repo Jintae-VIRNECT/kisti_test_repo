@@ -19,7 +19,7 @@
           </div>
           <span>{{ data.nickname }}</span>
           <el-button
-            v-if="$isOnpremise"
+            v-if="$isOnpremise && data.userType === 'MEMBER_USER'"
             @click="$emit('change-password')"
           >
             {{ $t('members.password.title') }}
@@ -131,9 +131,7 @@
     <div slot="footer">
       <el-button v-show="canKick" @click="$emit('kick')">
         {{
-          $isOnpremise
-            ? $t('members.delete.title')
-            : $t('members.setting.kick')
+          $isOnpremise ? $t('members.delete.title') : $t('members.setting.kick')
         }}
       </el-button>
       <el-button type="primary" @click="submit">
