@@ -37,7 +37,7 @@ const _ = {
   connect: async (configs, role, options) => {
     try {
       _.account = Store.getters['account']
-      _.openRoom = Store.getters['openRoom']
+      _.openRoom = options === false
 
       Store.commit('callClear')
       OV = new OpenVidu()
