@@ -45,8 +45,8 @@ import confirmMixin from 'mixins/confirm'
 import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 import { checkPermission } from 'utils/deviceCheck'
-import { ROOM_STATUS, COMPANY_CODE } from 'configs/status.config'
-import { TARGET_COMPANY } from 'configs/env.config'
+import { ROOM_STATUS } from 'configs/status.config'
+import { TARGET_COMPANY, COMPANY_CODE } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceCreateRoom',

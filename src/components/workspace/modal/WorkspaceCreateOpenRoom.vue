@@ -30,8 +30,8 @@ import {
   getRoomInfo,
 } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
-import { ROOM_STATUS, COMPANY_CODE } from 'configs/status.config'
-import { TARGET_COMPANY } from 'configs/env.config'
+import { ROOM_STATUS } from 'configs/status.config'
+import { TARGET_COMPANY, COMPANY_CODE } from 'configs/env.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 

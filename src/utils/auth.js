@@ -93,7 +93,9 @@ async function getConfigs() {
   window.urls = res.data
   setConfigs({
     runtimeEnv,
-    targetCompany: 'VIRNECT',
+    // targetCompany: 'KINTEX',
+    // openRoom: true,
+    // useTranslate: true,
   })
 }
 

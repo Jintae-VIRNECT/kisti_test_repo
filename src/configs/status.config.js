@@ -20,8 +20,3 @@ export const ROOM_STATUS = {
   PRIVATE: 'PRIVATE',
   OPEN: 'OPEN',
 }
-
-export const COMPANY_CODE = {
-  VIRNECT: 0,
-  KINTEX: 1,
-}
