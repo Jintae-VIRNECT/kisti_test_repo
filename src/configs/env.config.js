@@ -1,5 +1,5 @@
 export let RUNTIME_ENV = 'production'
-export let TARGET_COMPANY = 'VIRNECT'
+export let TARGET_COMPANY = 0 //'VIRNECT'
 export let OPEN_ROOM = false
 export let USE_TRANSLATE = false
 

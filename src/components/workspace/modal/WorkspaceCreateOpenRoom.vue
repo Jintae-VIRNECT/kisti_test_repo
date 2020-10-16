@@ -117,7 +117,7 @@ export default {
           sessionType: ROOM_STATUS.OPEN,
           participantIds: [],
           workspaceId: this.workspace.uuid,
-          companyCode: COMPANY_CODE[TARGET_COMPANY],
+          companyCode: TARGET_COMPANY,
         })
         // }
         if (info.imageFile) {

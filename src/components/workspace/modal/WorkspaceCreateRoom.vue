@@ -185,7 +185,7 @@ export default {
           participantIds: selectedUserIds,
           workspaceId: this.workspace.uuid,
           sessionType: ROOM_STATUS.PRIVATE,
-          companyCode: COMPANY_CODE[TARGET_COMPANY],
+          companyCode: TARGET_COMPANY,
         })
         // }
         if (info.imageFile) {

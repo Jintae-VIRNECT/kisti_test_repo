@@ -41,3 +41,12 @@ export const getLicense = async function({ userId }) {
   const result = await http('GET_LICENSE', { userId })
   return result
 }
+
+/**
+ * 회사 정보
+ * @param {String} userId
+ */
+export const getCompanyInfo = async function({ userId }) {
+  const returnVal = await http('COMPANY_INFO', { userId })
+  return returnVal
+}

@@ -1,4 +1,4 @@
-import { getAccount, tokenRequest } from 'api/http/account'
+import { getAccount, tokenRequest, getCompanyInfo } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
@@ -84,6 +84,7 @@ async function getConfigs() {
   )
 
   const runtimeEnv = res.data.runtime || 'production'
+  // const runtimeEnv = 'onpremise'
   logger('RUNTIME ENV', res.data.runtime)
   delete res.data.runtime
 
@@ -93,9 +94,23 @@ async function getConfigs() {
   window.urls = res.data
   setConfigs({
     runtimeEnv,
-    // targetCompany: 'KINTEX',
+    // targetCompany: 1,
     // openRoom: true,
     // useTranslate: true,
+  })
+}
+
+export const getCompany = async () => {
+  const data = await getCompanyInfo({ userId: myInfo.uuid })
+
+  debug('COMPANY_CODE::', data.companyCode)
+  debug('USE_TRANSLATE::', data.sessionType === 'OPEN')
+  debug('OPEN_ROOM_FLAG::', data.translation)
+
+  setConfigs({
+    targetCompany: data.companyCode,
+    openRoom: data.sessionType === 'OPEN',
+    useTranslate: data.translation,
   })
 }
 
@@ -131,6 +146,7 @@ class Auth {
     if (Cookies.get('accessToken')) {
       try {
         await getMyInfo()
+        await getCompany()
         isLogin = true
         tokenRenewal()
       } catch (e) {

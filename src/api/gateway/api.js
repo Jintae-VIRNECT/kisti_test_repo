@@ -7,6 +7,7 @@ export default {
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],
+  COMPANY_INFO: ['GET', '/remote/company/{userId}'],
 
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
