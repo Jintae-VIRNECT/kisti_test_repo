@@ -41,8 +41,8 @@ public class FileUploadResponse {
                 ", sessionId='" + sessionId + '\'' +
                 ", userId='" + userId + '\'' +
                 ", name='" + name + '\'' +
-                ", name='" + objectName + '\'' +
-                ", name='" + contentType + '\'' +
+                ", objectName='" + objectName + '\'' +
+                ", contentType='" + contentType + '\'' +
                 ", size='" + size + '\'' +
                 '}';
     }
