@@ -601,18 +601,10 @@ public class WorkspaceController {
 
 	@Profile("onpremise")
 	@ApiOperation(value = "워크스페이스 커스텀 설정 조회", tags = "onpremise server only")
-	@ApiImplicitParams({
-		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
-	})
-	@GetMapping("/{workspaceId}/setting")
+	@GetMapping("/setting")
 	public ResponseEntity<ApiResponse<WorkspaceCustomSettingResponse>> getWorkspaceCustomSetting(
-		@PathVariable("workspaceId") String workspaceId
 	) {
-		if (!StringUtils.hasText(workspaceId)) {
-			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-		}
-		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = workspaceService.getWorkspaceCustomSetting(
-			workspaceId);
+		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = workspaceService.getWorkspaceCustomSetting();
 		return ResponseEntity.ok(new ApiResponse<>(workspaceCustomSettingResponse));
 	}
 }

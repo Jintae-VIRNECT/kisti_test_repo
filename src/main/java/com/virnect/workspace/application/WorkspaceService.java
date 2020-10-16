@@ -33,6 +33,7 @@ import com.virnect.workspace.dao.HistoryRepository;
 import com.virnect.workspace.dao.WorkspacePermissionRepository;
 import com.virnect.workspace.dao.WorkspaceRepository;
 import com.virnect.workspace.dao.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.WorkspaceSettingRepository;
 import com.virnect.workspace.dao.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.dao.WorkspaceUserRepository;
 import com.virnect.workspace.dao.redis.UserInviteRepository;
@@ -40,6 +41,7 @@ import com.virnect.workspace.domain.History;
 import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspacePermission;
 import com.virnect.workspace.domain.WorkspaceRole;
+import com.virnect.workspace.domain.WorkspaceSetting;
 import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.domain.WorkspaceUserPermission;
 import com.virnect.workspace.domain.redis.UserInvite;
@@ -122,6 +124,7 @@ public class WorkspaceService {
 	private final HistoryRepository historyRepository;
 	private final MessageSource messageSource;
 	private final LicenseRestService licenseRestService;
+	private final WorkspaceSettingRepository workspaceSettingRepository;
 
 	@Value("${serverUrl}")
 	private String serverUrl;
@@ -2195,6 +2198,7 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceFaviconUpdateRequest.getUserId(), new String[] {"MASTER"});
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L).orElseThrow(()-> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 파비콘 확장자, 사이즈 체크
 		String allowExtension = "jpg,jpeg,ico,png";
@@ -2205,8 +2209,8 @@ public class WorkspaceService {
 		//3. 파비콘 업로드
 		try {
 			String favicon = fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
-			workspace.setFavicon(favicon);
-			workspaceRepository.save(workspace);
+			workspaceSetting.setFavicon(favicon);
+			workspaceSettingRepository.save(workspaceSetting);
 
 			WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
 			workspaceFaviconUpdateResponse.setResult(true);
@@ -2246,7 +2250,7 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[] {"MASTER"});
-
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L).orElseThrow(()-> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 로고 확장자, 사이즈 체크
 		String allowExtension = "jpg,jpeg,gif,png";
@@ -2257,7 +2261,7 @@ public class WorkspaceService {
 
 		try {
 			String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo());
-			workspace.setDefaultLogo(logo);
+			workspaceSetting.setDefaultLogo(logo);
 		} catch (IOException e) {
 			log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
 			WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
@@ -2273,7 +2277,7 @@ public class WorkspaceService {
 
 			try {
 				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo());
-				workspace.setGreyLogo(logo);
+				workspaceSetting.setGreyLogo(logo);
 			} catch (IOException e) {
 				log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
 				WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
@@ -2289,7 +2293,7 @@ public class WorkspaceService {
 
 			try {
 				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo());
-				workspace.setWhiteLogo(logo);
+				workspaceSetting.setWhiteLogo(logo);
 			} catch (IOException e) {
 				log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
 				WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
@@ -2297,13 +2301,14 @@ public class WorkspaceService {
 				return workspaceLogoUpdateResponse;
 			}
 		}
-		workspaceRepository.save(workspace);
+		//workspaceRepository.save(workspace);
+		workspaceSettingRepository.save(workspaceSetting);
 
 		WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
 		workspaceLogoUpdateResponse.setResult(true);
-		workspaceLogoUpdateResponse.setDefaultLogo(workspace.getDefaultLogo());
-		workspaceLogoUpdateResponse.setGreyLogo(workspace.getGreyLogo());
-		workspaceLogoUpdateResponse.setWhiteLogo(workspace.getWhiteLogo());
+		workspaceLogoUpdateResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
+		workspaceLogoUpdateResponse.setGreyLogo(workspaceSetting.getGreyLogo());
+		workspaceLogoUpdateResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
 		return workspaceLogoUpdateResponse;
 	}
 
@@ -2313,27 +2318,27 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceTitleUpdateRequest.getUserId(), new String[] {"MASTER"});
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L).orElseThrow(()-> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 고객사명 변경
-		workspace.setTitle(workspaceTitleUpdateRequest.getTitle());
-		workspaceRepository.save(workspace);
+		workspaceSetting.setTitle(workspaceTitleUpdateRequest.getTitle());
+		workspaceSettingRepository.save(workspaceSetting);
 
 		WorkspaceTitleUpdateResponse workspaceTitleUpdateResponse = new WorkspaceTitleUpdateResponse();
 		workspaceTitleUpdateResponse.setResult(true);
-		workspaceTitleUpdateResponse.setTitle(workspace.getTitle());
+		workspaceTitleUpdateResponse.setTitle(workspaceSetting.getTitle());
 		return workspaceTitleUpdateResponse;
 	}
 
-	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting(String workspaceId) {
-		Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(
-			() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND)
-		);
+	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting() {
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L).orElseThrow(()-> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+
 		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = new WorkspaceCustomSettingResponse();
-		workspaceCustomSettingResponse.setWorkspaceTitle(workspace.getTitle());
-		workspaceCustomSettingResponse.setDefaultLogo(workspace.getDefaultLogo());
-		workspaceCustomSettingResponse.setGreyLogo(workspace.getGreyLogo());
-		workspaceCustomSettingResponse.setWhiteLogo(workspace.getWhiteLogo());
-		workspaceCustomSettingResponse.setFavicon(workspace.getFavicon());
+		workspaceCustomSettingResponse.setWorkspaceTitle(workspaceSetting.getTitle());
+		workspaceCustomSettingResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
+		workspaceCustomSettingResponse.setGreyLogo(workspaceSetting.getGreyLogo());
+		workspaceCustomSettingResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
+		workspaceCustomSettingResponse.setFavicon(workspaceSetting.getFavicon());
 
 		return workspaceCustomSettingResponse;
 

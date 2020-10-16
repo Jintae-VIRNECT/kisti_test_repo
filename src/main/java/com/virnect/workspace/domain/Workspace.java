@@ -57,21 +57,6 @@ public class Workspace extends TimeEntity {
     @Column(name = "user_id", nullable = false)
     private String userId; // user uuid
 
-    @Column(name = "title", nullable = true)
-    private String title;
-
-    @Column(name = "logo_default", nullable = true)
-    private String DefaultLogo;
-
-    @Column(name = "logo_grey", nullable = true)
-    private String GreyLogo;
-
-    @Column(name = "logo_white", nullable = true)
-    private String WhiteLogo;
-
-    @Column(name = "favicon", nullable = true)
-    private String favicon;
-
     @NotAudited
     @OneToMany(mappedBy = "workspace")
     List<Group> groupList = new ArrayList<>();
