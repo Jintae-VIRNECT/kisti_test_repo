@@ -10,7 +10,7 @@
           @selectMain="selectMain(participant)"
           @kickout="kickout(participant.id)"
         ></participant-video>
-        <article v-if="!openRoom && isLeader" key="append">
+        <article v-if="!openRoom && isLeader && !isMaxLength" key="append">
           <div class="participant-video more" @click="more">
             <p>{{ $t('service.participant_invite') }}</p>
           </div>
@@ -30,6 +30,7 @@
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { kickoutMember } from 'api/http/member'
+import { maxParticipants } from 'utils/callOptions'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
@@ -60,6 +61,13 @@ export default {
         return true
       } else {
         return false
+      }
+    },
+    isMaxLength() {
+      if (this.participants.length < maxParticipants) {
+        return false
+      } else {
+        return true
       }
     },
   },
