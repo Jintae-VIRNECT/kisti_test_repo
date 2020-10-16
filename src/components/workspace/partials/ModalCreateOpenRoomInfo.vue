@@ -122,7 +122,7 @@ export default {
     },
     async startRemote() {
       if (this.btnDisabled) {
-        this.confirmDefault(this.$t('workspace.create_remote_selected_empty'))
+        this.confirmDefault(this.titleValidMessage)
         return
       }
 
@@ -134,7 +134,7 @@ export default {
       })
     },
     checkEmpty() {
-      if (this.title === '') {
+      if (this.title.trim() === '') {
         this.title = `${this.shortName}'s Room`
       }
     },
