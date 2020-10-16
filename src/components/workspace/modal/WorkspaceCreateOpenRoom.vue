@@ -23,7 +23,12 @@ import { mapActions } from 'vuex'
 import OpenRoomInfo from '../partials/ModalCreateOpenRoomInfo'
 
 import { getHistorySingleItem } from 'api/http/history'
-import { createRoom, updateRoomProfile, getRoomInfo } from 'api/http/room'
+import {
+  createRoom,
+  restartRoom,
+  updateRoomProfile,
+  getRoomInfo,
+} from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import { ROOM_STATUS, COMPANY_CODE } from 'configs/status.config'
 import { TARGET_COMPANY } from 'configs/env.config'
@@ -89,16 +94,29 @@ export default {
 
         // const options = await checkPermission()
         const options = false
-
-        const createdRes = await createRoom({
-          title: info.title,
-          description: info.description,
-          leaderId: this.account.uuid,
-          sessionType: ROOM_STATUS.OPEN,
-          participantIds: [],
-          workspaceId: this.workspace.uuid,
-          companyCode: COMPANY_CODE[TARGET_COMPANY],
-        })
+        let createdRes
+        if (this.sessionId && this.sessionId.length > 0) {
+          createdRes = await restartRoom({
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            participantIds: [],
+            workspaceId: this.workspace.uuid,
+            sessionId: this.sessionId,
+            sessionType: ROOM_STATUS.PRIVATE,
+            companyCode: COMPANY_CODE[TARGET_COMPANY],
+          })
+        } else {
+          createdRes = await createRoom({
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            sessionType: ROOM_STATUS.OPEN,
+            participantIds: [],
+            workspaceId: this.workspace.uuid,
+            companyCode: COMPANY_CODE[TARGET_COMPANY],
+          })
+        }
         if (info.imageFile) {
           updateRoomProfile({
             profile: info.imageFile,
