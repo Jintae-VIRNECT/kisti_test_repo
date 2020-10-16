@@ -41,6 +41,7 @@ export default {
         },
       })
       this.$call.video(video)
+      this.$localStorage.setDevice('video', 'isOn', video)
     },
   },
 
