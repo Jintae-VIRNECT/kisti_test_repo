@@ -62,6 +62,9 @@ export default {
   watch: {
     visible(flag) {
       this.visibleFlag = flag
+      if (flag === true && this.sessionId.length > 0) {
+        this.getInfo()
+      }
     },
   },
   methods: {
