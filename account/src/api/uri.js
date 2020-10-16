@@ -42,4 +42,10 @@ module.exports = {
   ADD_PAY_COUPON: ['POST', '/billing/coupon/register'],
   // 상품 조회
   GET_PAYMENT_ITEMS: ['GET', '/billing/product/list'],
+
+  /**
+   * onpremise
+   */
+  // 워크스페이스 커스텀 설정 조회
+  WORKSPACE_GET_SETTING: ['GET', '/workspaces/{workspaceId}/setting'],
 }

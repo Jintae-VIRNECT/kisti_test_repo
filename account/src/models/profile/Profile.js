@@ -20,5 +20,7 @@ export default class Profile extends Model {
     this.qrCode = json.qrCode
     this.userType = json.userType
     this.marketInfoReceive = json.marketInfoReceive
+    this.question = json.question
+    this.answer = json.answer
   }
 }

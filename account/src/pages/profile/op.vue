@@ -79,7 +79,7 @@
           <div class="profile__info">
             <h4>{{ $t('profile_op.account.passwordQuestion') }}</h4>
             <div class="content">
-              <span class="value"></span>
+              <span class="value">{{ me.question }}</span>
             </div>
             <el-button
               type="text"
@@ -110,6 +110,7 @@
     <password-question-modal
       :me="me"
       :visible.sync="visible.passwordQuestionModal"
+      @changedPasswordQuestion="changedPasswordQuestion"
     />
   </div>
 </template>
@@ -168,6 +169,11 @@ export default {
     },
     changedPassword() {
       this.visible.passwordChangeModal = false
+    },
+    changedPasswordQuestion(form) {
+      this.me.question = form.question
+      this.me.answer = form.answer
+      this.visible.passwordQuestionModal = false
     },
   },
   beforeCreate() {
