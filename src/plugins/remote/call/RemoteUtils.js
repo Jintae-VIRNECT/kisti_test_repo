@@ -12,6 +12,7 @@ import {
 import {
   FLASH as FLASH_STATUE,
   CAMERA as CAMERA_STATUS,
+  DEVICE,
 } from 'configs/device.config'
 
 import { getUserInfo } from 'api/http/account'
@@ -25,38 +26,40 @@ export const addSessionEventListener = session => {
     const user = setUserObject(event)
 
     if (user === 'me') return
-    // send default signals
-    // _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
-    // _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
-    // _.sendResolution(null, [event.connection.connectionId])
-    // _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.connection.connectionId])
-    // if (_.account.roleType === ROLE.LEADER) {
-    //   _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
-    //     event.connection.connectionId,
-    //   ])
-    //   _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
-    //     event.connection.connectionId,
-    //   ])
-    //   if (Store.getters['viewForce'] === true) {
-    //     _.mainview(Store.getters['mainView'].id, true, [
-    //       event.connection.connectionId,
-    //     ])
-    //   }
-    //   if (Store.getters['view'] === 'drawing') {
-    //     window.vue.$eventBus.$emit(
-    //       'participantChange',
-    //       event.connection.connectionId,
-    //     )
-    //   }
-    // }
-    // if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
-    //   _.video(
-    //     Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
-    //     [event.connection.connectionId],
-    //   )
-    // } else {
-    //   _.video(Store.getters['video'].isOn, [event.connection.connectionId])
-    // }
+    setTimeout(() => {
+      // send default signals
+      _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
+      _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
+      _.sendResolution(null, [event.connection.connectionId])
+      _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.connection.connectionId])
+      if (_.account.roleType === ROLE.LEADER) {
+        _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
+          event.connection.connectionId,
+        ])
+        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
+          event.connection.connectionId,
+        ])
+        if (Store.getters['viewForce'] === true) {
+          _.mainview(Store.getters['mainView'].id, true, [
+            event.connection.connectionId,
+          ])
+        }
+        if (Store.getters['view'] === 'drawing') {
+          window.vue.$eventBus.$emit(
+            'participantChange',
+            event.connection.connectionId,
+          )
+        }
+      }
+      if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
+        _.video(
+          Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
+          [event.connection.connectionId],
+        )
+      } else {
+        _.video(Store.getters['video'].isOn, [event.connection.connectionId])
+      }
+    }, 300)
   })
   session.on('streamCreated', event => {
     event.stream.onIceStateChanged = state => {
@@ -107,38 +110,6 @@ export const addSessionEventListener = session => {
             ? event.stream.videoActive
             : event.stream.hasVideo,
         })
-      }
-      // next move to connectionCreated
-      _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
-      _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
-      _.sendResolution(null, [event.connection.connectionId])
-      _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.connection.connectionId])
-      if (_.account.roleType === ROLE.LEADER) {
-        _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
-          event.connection.connectionId,
-        ])
-        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
-          event.connection.connectionId,
-        ])
-        if (Store.getters['viewForce'] === true) {
-          _.mainview(Store.getters['mainView'].id, true, [
-            event.connection.connectionId,
-          ])
-        }
-        if (Store.getters['view'] === 'drawing') {
-          window.vue.$eventBus.$emit(
-            'participantChange',
-            event.connection.connectionId,
-          )
-        }
-      }
-      if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
-        _.video(
-          Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
-          [event.connection.connectionId],
-        )
-      } else {
-        _.video(Store.getters['video'].isOn, [event.connection.connectionId])
       }
     })
   })
@@ -446,7 +417,7 @@ const setUserObject = event => {
             ? CAMERA_STATUS.CAMERA_OFF
             : CAMERA_STATUS.CAMERA_NONE,
         })
-        if (!_.openRoom && hasCamera) {
+        if (hasCamera) {
           _.changeProperty(true)
         }
       }
@@ -458,17 +429,15 @@ const setUserObject = event => {
     getUserInfo({
       userId: userObj.id,
     }).then(participant => {
-      Store.commit('updateParticipant', {
+      const params = {
         connectionId: event.connection.connectionId,
         nickname: participant.nickname,
         path: participant.profile,
-      })
-      // const chatObj = {
-      //   name: participant.nickname,
-      //   status: 'invite',
-      //   type: 'system',
-      // }
-      // Store.commit('addChat', chatObj)
+      }
+      if (_.openRoom && deviceType === DEVICE.WEB) {
+        params.status = 'good'
+      }
+      Store.commit('updateParticipant', params)
     })
     return 'participant'
   }
