@@ -127,6 +127,7 @@ public class HistoryRestController implements IHistoryRestAPI {
                 pushSendRequest.setWorkspaceId(roomRequest.getWorkspaceId());
                 pushSendRequest.setUserId(roomRequest.getLeaderId());
                 pushSendRequest.setTargetUserIds(roomRequest.getParticipantIds());
+
                 //set push message invite room contents
                 InviteRoomContents inviteRoomContents = new InviteRoomContents();
                 inviteRoomContents.setSessionId(apiResponse.getData().getSessionId());

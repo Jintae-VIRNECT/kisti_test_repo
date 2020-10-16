@@ -501,73 +501,144 @@ public class SessionService {
         if(room == null) {
             log.info("session destroy and sessionEventHandler is faild. room data is null");
         } else {
-            // Room and Member History 저장
-            // Remote Room History Entity Create
-            RoomHistory roomHistory = RoomHistory.builder()
-                    .sessionId(room.getSessionId())
-                    .title(room.getTitle())
-                    .description(room.getDescription())
-                    .profile(room.getProfile())
-                    .leaderId(room.getLeaderId())
-                    .workspaceId(room.getWorkspaceId())
-                    .maxUserCount(room.getMaxUserCount())
-                    .licenseName(room.getLicenseName())
-                    .build();
+            // check the same session id history room is already exist
+            RoomHistory oldRoomHistory = roomHistoryRepository.findBySessionId(room.getSessionId()).orElse(null);
+            if(oldRoomHistory != null) {
+                log.info("FOUND THE SAME SESSION ID => [{}]", oldRoomHistory.getSessionId());
 
-            // Remote Session Property Entity Create
-            SessionProperty sessionProperty = room.getSessionProperty();
-            SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
-                    .mediaMode(sessionProperty.getMediaMode())
-                    .recordingMode(sessionProperty.getRecordingMode())
-                    .defaultOutputMode(sessionProperty.getDefaultOutputMode())
-                    .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
-                    .recording(sessionProperty.isRecording())
-                    .translation(sessionProperty.isTranslation())
-                    .keepalive(sessionProperty.isKeepalive())
-                    .sessionType(sessionProperty.getSessionType())
-                    .roomHistory(roomHistory)
-                    .build();
+                oldRoomHistory.setTitle(room.getTitle());
+                oldRoomHistory.setDescription(room.getDescription());
+                oldRoomHistory.setProfile(room.getProfile());
+                oldRoomHistory.setMaxUserCount(room.getMaxUserCount());
+                oldRoomHistory.setLicenseName(room.getLicenseName());
 
-            roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+                // Remote Session Property Entity Create
+                SessionProperty sessionProperty = room.getSessionProperty();
+                SessionPropertyHistory sessionPropertyHistory = oldRoomHistory.getSessionPropertyHistory();
+                sessionPropertyHistory.setMediaMode(sessionProperty.getMediaMode());
+                sessionPropertyHistory.setRecordingMode(sessionProperty.getRecordingMode());
+                sessionPropertyHistory.setDefaultOutputMode(sessionProperty.getDefaultOutputMode());
+                sessionPropertyHistory.setDefaultRecordingLayout(sessionProperty.getDefaultRecordingLayout());
+                sessionPropertyHistory.setRecording(sessionProperty.isRecording());
+                sessionPropertyHistory.setTranslation(sessionProperty.isTranslation());
+                sessionPropertyHistory.setKeepalive(sessionProperty.isKeepalive());
+                sessionPropertyHistory.setSessionType(sessionProperty.getSessionType());
+                sessionPropertyHistory.setRoomHistory(oldRoomHistory);
 
-            // Set room member history
-            // Get Member List by Room Session Ids
-            List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
-            // Mapping Member List Data to Member History List
-            for (Member member : memberList) {
-                MemberHistory memberHistory = MemberHistory.builder()
-                        .roomHistory(roomHistory)
-                        .workspaceId(member.getWorkspaceId())
-                        .uuid(member.getUuid())
-                        .memberType(member.getMemberType())
-                        .deviceType(member.getDeviceType())
-                        .sessionId(member.getSessionId())
-                        .startDate(member.getStartDate())
-                        .endDate(member.getEndDate())
-                        .durationSec(member.getDurationSec())
+                oldRoomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+                // Set room member history
+                // Get Member history list and set room null
+                List<MemberHistory> memberHistoryList = oldRoomHistory.getMemberHistories();
+                for (MemberHistory memberHistory: memberHistoryList) {
+                    memberHistory.setRoomHistory(null);
+                    this.memberHistoryRepository.save(memberHistory);
+                }
+
+                // Get Member List by Room Session Ids
+                List<Member> memberList = room.getMembers();
+                //List<Member> memberList = this.getMemberList(room.getWorkspaceId(), room.getSessionId());
+                // Mapping Member List Data to Member History List
+                for (Member member : memberList) {
+                    MemberHistory memberHistory = MemberHistory.builder()
+                            .roomHistory(oldRoomHistory)
+                            .workspaceId(member.getWorkspaceId())
+                            .uuid(member.getUuid())
+                            .memberType(member.getMemberType())
+                            .deviceType(member.getDeviceType())
+                            .sessionId(member.getSessionId())
+                            .startDate(member.getStartDate())
+                            .endDate(member.getEndDate())
+                            .durationSec(member.getDurationSec())
+                            .build();
+                    memberHistoryRepository.save(memberHistory);
+                    oldRoomHistory.getMemberHistories().add(memberHistory);
+
+                    //delete member
+                    memberRepository.delete(member);
+                }
+
+                //set active time do not update active date
+                //oldRoomHistory.setActiveDate(room.getActiveDate());
+
+                //set un active  time
+                LocalDateTime endTime = LocalDateTime.now();
+                oldRoomHistory.setUnactiveDate(endTime);
+
+                //time diff seconds
+                Duration duration = Duration.between(room.getActiveDate(), endTime);
+                Long totalDuration = duration.getSeconds() + oldRoomHistory.getDurationSec();
+                oldRoomHistory.setDurationSec(totalDuration);
+
+                //save room history
+                roomHistoryRepository.save(oldRoomHistory);
+            } else {
+                // Remote Room History Entity Create
+                RoomHistory roomHistory = RoomHistory.builder()
+                        .sessionId(room.getSessionId())
+                        .title(room.getTitle())
+                        .description(room.getDescription())
+                        .profile(room.getProfile())
+                        .leaderId(room.getLeaderId())
+                        .workspaceId(room.getWorkspaceId())
+                        .maxUserCount(room.getMaxUserCount())
+                        .licenseName(room.getLicenseName())
                         .build();
-                memberHistoryRepository.save(memberHistory);
-                roomHistory.getMemberHistories().add(memberHistory);
 
-                //delete member
-                memberRepository.delete(member);
+                // Remote Session Property Entity Create
+                SessionProperty sessionProperty = room.getSessionProperty();
+                SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
+                        .mediaMode(sessionProperty.getMediaMode())
+                        .recordingMode(sessionProperty.getRecordingMode())
+                        .defaultOutputMode(sessionProperty.getDefaultOutputMode())
+                        .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
+                        .recording(sessionProperty.isRecording())
+                        .translation(sessionProperty.isTranslation())
+                        .keepalive(sessionProperty.isKeepalive())
+                        .sessionType(sessionProperty.getSessionType())
+                        .roomHistory(roomHistory)
+                        .build();
+
+                roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+                // Set room member history
+                // Get Member List by Room Session Ids
+                List<Member> memberList = room.getMembers();
+                // Mapping Member List Data to Member History List
+                for (Member member : memberList) {
+                    MemberHistory memberHistory = MemberHistory.builder()
+                            .roomHistory(roomHistory)
+                            .workspaceId(member.getWorkspaceId())
+                            .uuid(member.getUuid())
+                            .memberType(member.getMemberType())
+                            .deviceType(member.getDeviceType())
+                            .sessionId(member.getSessionId())
+                            .startDate(member.getStartDate())
+                            .endDate(member.getEndDate())
+                            .durationSec(member.getDurationSec())
+                            .build();
+                    memberHistoryRepository.save(memberHistory);
+                    roomHistory.getMemberHistories().add(memberHistory);
+
+                    //delete member
+                    memberRepository.delete(member);
+                }
+
+                //set active time
+                roomHistory.setActiveDate(room.getActiveDate());
+
+                //set un active  time
+                LocalDateTime endTime = LocalDateTime.now();
+                roomHistory.setUnactiveDate(endTime);
+
+                //time diff seconds
+                Duration duration = Duration.between(room.getActiveDate(), endTime);
+                roomHistory.setDurationSec(duration.getSeconds());
+
+                //save room history
+                roomHistoryRepository.save(roomHistory);
+
             }
-
-
-            //set active time
-            roomHistory.setActiveDate(room.getActiveDate());
-
-            //set un active  time
-            LocalDateTime endTime = LocalDateTime.now();
-            roomHistory.setUnactiveDate(endTime);
-
-            //time diff seconds
-            Duration duration = Duration.between(room.getActiveDate(), endTime);
-            roomHistory.setDurationSec(duration.getSeconds());
-
-            //save room history
-            roomHistoryRepository.save(roomHistory);
-
             //delete room
             roomRepository.delete(room);
         }
