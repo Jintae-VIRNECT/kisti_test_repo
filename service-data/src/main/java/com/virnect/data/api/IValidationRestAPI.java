@@ -18,9 +18,8 @@ public interface IValidationRestAPI {
             @PathVariable String userId);
 
     @ApiOperation(value = "Service Company Information", notes = "회사별 서비스 정보를 제공합니다.")
-    @GetMapping(value = "company/{workspaceId}/{userId}")
+    @GetMapping(value = "company/{userId}")
     ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(
-            @PathVariable String workspaceId,
             @PathVariable String userId);
 
 
