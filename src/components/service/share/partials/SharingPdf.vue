@@ -42,7 +42,7 @@ import PDFJS from 'pdfjs-dist'
 // PDFJS.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js'
 // PDFJS.GlobalWorkerOptions.workerSrc =
 //   'https://cdn.jsdelivr.net/npm/pdfjs-dist@2.4.456/build/pdf.worker.js'
-// PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker'
+PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker'
 export default {
   name: 'SharingPdf',
   mixins: [toastMixin, confirmMixin],
@@ -118,7 +118,7 @@ export default {
         return
       this.removePdfPage(this.fileInfo.id)
       let startTime = Date.now()
-      PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker'
+      // PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker'
       PDFJS.getDocument(URL.createObjectURL(this.fileData))
         .promise.then(async pdfDocument => {
           this.document = pdfDocument
