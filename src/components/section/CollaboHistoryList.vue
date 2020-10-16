@@ -20,6 +20,7 @@ import History from 'components/partials/History'
 import PaginationTool from 'components/partials/PaginationTool'
 
 import { getHistoryList } from 'api/http/history'
+import { getServerRecordFiles, getFiles } from 'api/http/file'
 
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
@@ -64,14 +65,21 @@ export default {
         this.loading = false
         return
       }
-      this.historyList = list.sort((roomA, roomB) => {
+
+      const sorted = list.sort((roomA, roomB) => {
         return (
           new Date(roomB.activeDate).getTime() -
           new Date(roomA.activeDate).getTime()
         )
       })
-      this.setIndex()
-      this.setLeader()
+
+      await this.setIndex(sorted)
+      await this.setLeader(sorted)
+      await this.setServerRecord(sorted)
+      await this.setFile(sorted)
+
+      this.historyList = sorted
+
       this.loading = false
       this.$eventBus.$emit('scroll:reset:workspace')
     },
@@ -103,20 +111,58 @@ export default {
         return false
       }
     },
-    setIndex() {
+    async setIndex(list) {
       const startIndex = this.pageMeta.currentPage * 7
-      this.historyList.map((history, index) => {
+      let index = 0
+      for (const history of list) {
         history.index = index + startIndex
         history.index++
-      })
+        index++
+      }
     },
-    setLeader() {
-      this.historyList.map(history => {
+    async setLeader(list) {
+      for (const history of list) {
         const leader = history.memberList.find(member => {
           return member.memberType === 'LEADER'
         })
         history.leader = leader
-      })
+      }
+    },
+    async setServerRecord(list) {
+      for (const history of list) {
+        const datas = await getServerRecordFiles({
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+          sessionId: history.sessionId,
+        })
+        console.log('setServerRecord::', datas)
+        history.serverRecord = datas.infos
+      }
+    },
+    async setFile(list) {
+      for (const history of list) {
+        try {
+          const datas = await getFiles({
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+            sessionId: history.sessionId,
+          })
+          const files = datas.fileInfoList.filter(file => {
+            return file.contentType !== 'video/mp4'
+          })
+          const localFiles = datas.fileInfoList.filter(file => {
+            return file.contentType === 'video/mp4'
+          })
+          history.files = files
+          history.localRecord = localFiles
+        } catch (e) {
+          history.files = []
+          history.localRecord = []
+          console.error(e)
+        }
+      }
+      console.log(history.files)
+      console.log(history.localRecord)
     },
   },
 

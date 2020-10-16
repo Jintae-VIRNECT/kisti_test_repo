@@ -3,7 +3,7 @@
     type="button"
     class="count-button"
     :class="{ nodata: count <= 0, normal: count > 0, seleted: selected }"
-    @click="clickListener"
+    @click.stop="clickListener"
   >
     <img :src="imgSrc" />
     <p :class="{ nodata: count <= 0, normal: count > 0, seleted: selected }">
@@ -29,6 +29,10 @@ export default {
       type: Object,
       require: true,
     },
+    hover: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     imgSrc() {
@@ -41,8 +45,16 @@ export default {
       }
     },
   },
+  watch: {
+    hover(after) {
+      if (this.count > 0) {
+        after ? (this.selected = true) : (this.selected = false)
+      }
+    },
+  },
   methods: {
     clickListener() {
+      if (this.count <= 0) return
       if (typeof this.$listeners['click'] === 'function') {
         this.$listeners['click']()
         this.animateClass = this.animation

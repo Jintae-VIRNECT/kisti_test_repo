@@ -17,6 +17,12 @@ export default {
       select: false,
     }
   },
+  props: {
+    mediaUrl: {
+      type: String,
+      default: null,
+    },
+  },
   computed: {
     imgSrc() {
       return this.select
@@ -40,7 +46,7 @@ export default {
 
 <style lang="scss" scoped>
 .play-button {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
 }
 </style>

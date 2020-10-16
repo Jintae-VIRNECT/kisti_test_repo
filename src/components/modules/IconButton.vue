@@ -4,7 +4,7 @@
     @click="clickListener"
     :class="{ active: active }"
   >
-    <img :src="active ? activeImgSrc : imgSrc" :class="animateClass" />
+    <img :src="imgSrc" :class="animateClass" />
     {{ text }}
   </button>
 </template>
@@ -59,27 +59,25 @@ export default {
   margin-left: 0.643em;
   // padding: 0.571em 1.071em 0.571em 0.714em;
   padding: 0.7143rem 1.2857rem 0.7143rem 1.2857rem;
-  color: #0b1f48;
+  color: #757f91;
   font-weight: normal;
   font-size: 0.9286rem;
   line-height: 1.429em;
   background: #edf0f4 0.929em 50%/1.571em no-repeat;
   border-radius: 2px;
+  opacity: 0.5;
 
   &:hover {
-    opacity: 0.8;
+    background-color: #d7e0ec;
+    opacity: 1;
   }
-  &:active {
+  &.active {
+    color: #0b1f48;
     opacity: 1;
   }
   > img {
     height: 1.429em;
     margin-right: 0.2857rem;
-  }
-
-  &.active {
-    color: #ffffff;
-    background: #1665d8 0.929em 50%/1.571em no-repeat;
   }
 }
 </style>
