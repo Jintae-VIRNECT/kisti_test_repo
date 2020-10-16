@@ -2360,16 +2360,11 @@ public class WorkspaceService {
 			serviceID, changeRequest
 		);
 
-		if (responseMessage.getCode() != 200) {
+		if (responseMessage.getCode() != 200 || !responseMessage.getData().isChanged()) {
 			log.error("[USER SERVER PASSWORD CHANGE REST RESULT] - [code: {}, data:{}, message: {}]",
 				responseMessage.getCode(), responseMessage.getData() == null ? "" : responseMessage.getData(),
 				responseMessage.getMessage()
 			);
-			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
-		}
-
-		if (!responseMessage.getData().isChanged()) {
-			log.info("[USER SERVER PASSWORD CHANGE REST RESULT] - {}", responseMessage.getData().toString());
 			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
 		}
 
