@@ -35,7 +35,7 @@ import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 import { getHistorySingleItem } from 'api/http/history'
 import {
   createRoom,
-  restartRoom,
+  // restartRoom,
   updateRoomProfile,
   getRoomInfo,
 } from 'api/http/room'
@@ -166,28 +166,28 @@ export default {
 
         let createdRes
 
-        if (this.sessionId && this.sessionId.length > 0) {
-          createdRes = await restartRoom({
-            title: info.title,
-            description: info.description,
-            leaderId: this.account.uuid,
-            participantIds: selectedUserIds,
-            workspaceId: this.workspace.uuid,
-            sessionId: this.sessionId,
-            sessionType: ROOM_STATUS.PRIVATE,
-            companyCode: COMPANY_CODE[TARGET_COMPANY],
-          })
-        } else {
-          createdRes = await createRoom({
-            title: info.title,
-            description: info.description,
-            leaderId: this.account.uuid,
-            participantIds: selectedUserIds,
-            workspaceId: this.workspace.uuid,
-            sessionType: ROOM_STATUS.PRIVATE,
-            companyCode: COMPANY_CODE[TARGET_COMPANY],
-          })
-        }
+        // if (this.sessionId && this.sessionId.length > 0) {
+        //   createdRes = await restartRoom({
+        //     title: info.title,
+        //     description: info.description,
+        //     leaderId: this.account.uuid,
+        //     participantIds: selectedUserIds,
+        //     workspaceId: this.workspace.uuid,
+        //     sessionId: this.sessionId,
+        //     sessionType: ROOM_STATUS.PRIVATE,
+        //     companyCode: COMPANY_CODE[TARGET_COMPANY],
+        //   })
+        // } else {
+        createdRes = await createRoom({
+          title: info.title,
+          description: info.description,
+          leaderId: this.account.uuid,
+          participantIds: selectedUserIds,
+          workspaceId: this.workspace.uuid,
+          sessionType: ROOM_STATUS.PRIVATE,
+          companyCode: COMPANY_CODE[TARGET_COMPANY],
+        })
+        // }
         if (info.imageFile) {
           updateRoomProfile({
             profile: info.imageFile,
