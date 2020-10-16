@@ -2,16 +2,13 @@
 	<div class="container">
 		<el-row type="flex" justify="center" align="middle" class="row-bg">
 			<el-col>
-				<h2>비밀번호 재설정</h2>
-				<p>
-					계정 ID와 비밀번호 찾기 질문/답변으로 <br />
-					비밀번호를 재설정할 수 있습니다.
-				</p>
+				<h2>{{ $t('onpremise.resetPass.title') }}</h2>
+				<p v-html="$t('onpremise.resetPass.disc')"></p>
 
 				<div class="find-body" v-if="!isQuestionAuth">
 					<p class="input-title must-check">ID</p>
 					<el-input
-						placeholder="ID를 입력해 주세요"
+						:placeholder="$t('onpremise.resetPass.input.placeholder')"
 						clearable
 						type="email"
 						v-model="resetPass.email"
@@ -24,20 +21,20 @@
 							type="primary"
 							:disabled="resetPass.email == ''"
 							@click="checkAuth()"
-							>다음</el-button
+							>{{ $t('onpremise.resetPass.next') }}</el-button
 						>
 					</div>
 					<div class="step-warp" v-else>
 						<p class="input-title must-check">
-							비밀번호 찾기 질문/답변
+							{{ $t('onpremise.resetPass.qna.title') }}
 						</p>
 						<el-select
 							v-model="question"
-							placeholder="원하는 질문을 선택해주세요"
+							:placeholder="$t('onpremise.resetPass.qna.placeholder')"
 							name="question"
 						>
 							<el-option
-								v-for="item in questionList"
+								v-for="item in $t('onpremise.resetPass.questionList')"
 								:key="item"
 								:label="item"
 								:value="item"
@@ -45,7 +42,7 @@
 							</el-option>
 						</el-select>
 						<el-input
-							placeholder="답변을 입력해주세요"
+							:placeholder="$t('onpremise.resetPass.qna.inputPlaceholder')"
 							v-if="question !== ''"
 							v-model="answer"
 							type="text"
@@ -66,7 +63,7 @@
 				<div class="find-wrap" v-else>
 					<div class="find-body">
 						<p class="info-text">
-							비밀번호 변경 완료 후, 변경된 비밀번호로 로그인해 주세요.
+							{{ $t('onpremise.resetPass.change.notice') }}
 						</p>
 						<div class="user-email-holder">
 							<p>
@@ -76,10 +73,10 @@
 						</div>
 
 						<p class="input-title must-check">
-							비밀번호
+							{{ $t('onpremise.resetPass.change.password') }}
 						</p>
 						<el-input
-							placeholder="새 비밀번호를 입력해 주세요"
+							:placeholder="$t('onpremise.resetPass.change.placeholder')"
 							type="password"
 							name="password"
 							show-password
@@ -88,7 +85,7 @@
 							:class="{ 'input-danger': errors.has('password') }"
 						></el-input>
 						<el-input
-							placeholder="새 비밀번호를 재입력해 주세요"
+							:placeholder="$t('onpremise.resetPass.change.placeholderRe')"
 							type="password"
 							v-model="resetPass.comfirmPassword"
 							show-password
@@ -101,10 +98,7 @@
 							@keyup.enter.native="checkPass()"
 						></el-input>
 						<p class="restriction-text">
-							비밀번호는 8-20자 이내로 영문
-							대,소문자/숫자/특수문자(.,!,@,#,$,%)를 3가지 이상 조합하여 입력해
-							주세요. 연속된 숫자 또는 4자 이상의 동일 문자는 비밀번호로 사용할
-							수 없습니다.
+							{{ $t('onpremise.resetPass.change.passRule') }}
 						</p>
 
 						<el-button
@@ -115,7 +109,7 @@
 									resetPass.password.length < 8
 							"
 							@click="checkPass()"
-							>비밀번호 변경</el-button
+							>{{ $t('onpremise.resetPass.change.done') }}</el-button
 						>
 					</div>
 				</div>
@@ -145,19 +139,6 @@ export default {
 				email: null,
 				signUpDate: null,
 			},
-			questionList: [
-				'첫 반려동물의 이름은 무엇입니까?',
-				'10대 시절에 가장 친하게 지냈던 친구의 이름은 무엇입니까?',
-				'처음 배운 요리는 무엇입니까?',
-				'영화관에서 처음으로 관람한 영화는 무엇입니까?',
-				'처음으로 비행기를 타고 방문한 곳은 어디입니까?',
-				'가장 좋아했던 동화책의 제목은 무엇입니까?',
-				'부모님이 처음 만난 도시는 어디입니까?',
-				'처음으로 가보았던 해변의 이름은 무엇입니까?',
-				'처음으로 가보았던 산의 이름은 무엇입니까?',
-				'가장 좋아했던 선생님은 누구였습니까?',
-				'내가 좋아하는 차종은 무엇입니까?',
-			],
 		}
 	},
 	methods: {
@@ -174,14 +155,14 @@ export default {
 			} catch (e) {
 				if (e.code === 4011) {
 					this.alertMessage(
-						'비밀번호 찾기 질문/답변 미설정',
-						'등록된 비밀번호 찾기 질문/답면이 없습니다. 마스터에게 비밀번호 초기화를 요청하세요.',
+						this.$t('onpremise.resetPass.notSet.title'),
+						this.$t('onpremise.resetPass.notSet.disc'),
 						'error',
 					)
 				} else {
 					this.alertMessage(
-						'ID 불일치',
-						'등록된 ID가 없습니다. 마스터에게 계정 생성을 요청하세요.',
+						this.$t('onpremise.resetPass.IdDiscord.title'),
+						this.$t('onpremise.resetPass.IdDiscord.disc'),
 						'error',
 					)
 				}
@@ -201,8 +182,8 @@ export default {
 				} else throw res
 			} catch (e) {
 				this.alertMessage(
-					'비밀번호 찾기 질문/답변 불일치 오류',
-					'입력하신 질문/답변이 일치하지 않습니다. 다시 한 번 확인해 주세요.',
+					this.$t('onpremise.resetPass.answerDiscord.title'),
+					this.$t('onpremise.resetPass.answerDiscord.disc'),
 					'error',
 				)
 			}
@@ -222,22 +203,22 @@ export default {
 				})
 				if (res.code === 200) {
 					this.confirmWindow(
-						'비밀번호 변경 완료',
-						'기존 로그인된 기기에서 로그아웃 됩니다. 변경된 새 비밀번호로 다시 로그인해 주세요.',
-						'확인',
+						this.$t('find.resetPassword.done.title'), // 비밀번호 변경 완료
+						this.$t('find.resetPassword.done.message'), // 기존 로그인된 기기에서 로그아웃 됩니다. 변경된 새 비밀번호로 다시 로그인해 주세요.
+						this.$t('login.accountError.btn'), // 확인
 					)
 				} else throw res
 			} catch (e) {
 				if (e.code === 4009)
 					return this.alertMessage(
-						'비밀번호 재설정 실패',
-						'이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.',
+						this.$t('find.resetPassword.error.title'), // 비밀번호 재설정 실패
+						this.$t('find.resetPassword.error.multiple'), // 이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.
 						'error',
 					)
 				else
 					return this.alertMessage(
-						'비밀번호 재설정 실패',
-						'비밀번호 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요.',
+						this.$t('find.resetPassword.error.title'), // 비밀번호 재설정 실패
+						this.$t('find.resetPassword.error.etc'), // 비밀번호 변경에 실패하였습니다. 잠시 후 다시 이용해 주세요.
 						'error',
 					)
 			}
@@ -265,8 +246,9 @@ export default {
 				} else throw res
 			} catch (e) {
 				this.alertMessage(
-					'비밀번호 입력 오류',
-					'비밀번호는 8~20자 이내로 영문 대,소문자/숫자/특수문자( . , !, @, #, $, % )를 3가지 이상 조합하여 입력해 주세요. 연속된 숫자 또는 4자 이상의 동일 문자는 비밀번호로 사용할 수 없습니다.',
+					this.$t('find.authCode.error.rulePass'), // 비밀번호 입력 오류
+					this.$t('find.authCode.error.rulePassMessage'),
+					// 비밀번호는 8~20자 이내로 영문 대,소문자/숫자/특수문자( . , !, @, #, $, % )를 3가지 이상 조합하여 입력해 주세요. 연속된 숫자 또는 4자 이상의 동일 문자는 비밀번호로 사용할 수 없습니다.
 					'error',
 				)
 			}

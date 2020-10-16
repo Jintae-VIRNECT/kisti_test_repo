@@ -387,7 +387,7 @@ export default {
 				if (e.code === 4009)
 					return this.alertMessage(
 						this.$t('find.resetPassword.error.title'), // 비밀번호 재설정 실패
-						this.$t('find.resetPassword.error.message'), // 이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.
+						this.$t('find.resetPassword.error.multiple'), // 이전과 동일한 비밀번호는 새 비밀번호로 설정할 수 없습니다.
 						'error',
 					)
 				else

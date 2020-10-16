@@ -39,7 +39,9 @@
 						v-model="login.rememberMe"
 						@change="emailRemember(login.email, login.rememberMe)"
 						>{{
-							$env !== 'onpremise' ? $t('login.remember') : 'ID 저장'
+							$env !== 'onpremise'
+								? $t('login.remember')
+								: $t('onpremise.login.remember')
 						}}</el-checkbox
 					>
 					<el-checkbox
@@ -213,11 +215,11 @@ export default {
 			if (!res.passwordInitialized) {
 				try {
 					await this.$confirm(
-						'보안 유지를 위해 비밀번호를 재설정 해주시기 바랍니다. 비밀번호 재설정 질문과 답변을 추가하여 비밀번호 분실 시 이용해 주시기 바랍니다.',
-						'비밀번호 재설정 안내',
+						this.$t('onpremise.login.redirect.disc'),
+						this.$t('onpremise.login.redirect.title'),
 						{
-							confirmButtonText: '계정 관리',
-							cancelButtonText: '나중에 하기',
+							confirmButtonText: this.$t('onpremise.login.redirect.confirm'),
+							cancelButtonText: this.$t('onpremise.login.redirect.cancel'),
 						},
 					)
 					location.replace(this.$urls.account)
