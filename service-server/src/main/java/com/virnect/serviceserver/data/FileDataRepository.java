@@ -71,6 +71,8 @@ public class FileDataRepository {
                     fileUploadResponse.setSessionId(file.getSessionId());
                     fileUploadResponse.setUserId(file.getUuid());
                     fileUploadResponse.setName(file.getName());
+                    fileUploadResponse.setObjectName(file.getObjectName());
+                    fileUploadResponse.setContentType(file.getContentType());
                     fileUploadResponse.setSize(file.getSize());
                     return new DataProcess<>(fileUploadResponse);
                 } else {

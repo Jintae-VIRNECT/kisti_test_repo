@@ -16,5 +16,11 @@ public interface IValidationRestAPI {
             @PathVariable String workspaceId,
             @PathVariable String userId);
 
+    /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
+    @GetMapping(value = "licenses/{workspaceId}/{userId}")
+    ResponseEntity<ApiResponse<LicenseItemResponse>> getLicenseInfo(
+            @PathVariable String workspaceId,
+            @PathVariable String userId);*/
+
 
 }

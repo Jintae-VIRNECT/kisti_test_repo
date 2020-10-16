@@ -15,16 +15,13 @@ import java.util.List;
 @Table(name = "company")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)*/
 public class Company {
-    public Company() {
-
-    }
     /*@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "company_id", nullable = false)
     private Long id;
 
-    @Column(name = "session_id", unique = true)
-    private String sessionId;
+    @Column(name = "company_code", unique = true)
+    private int companyCode;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -88,7 +85,7 @@ public class Company {
 
     @Override
     public String toString() {
-        return "Room{" +
+        return "Company{" +
                 "id=" + id +
                 ", sessionId='" + sessionId + '\'' +
                 ", title='" + title + '\'' +
