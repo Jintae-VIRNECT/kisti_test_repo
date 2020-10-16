@@ -47,5 +47,5 @@ module.exports = {
    * onpremise
    */
   // 워크스페이스 커스텀 설정 조회
-  WORKSPACE_GET_SETTING: ['GET', '/workspaces/{workspaceId}/setting'],
+  WORKSPACE_GET_SETTING: ['GET', '/workspaces/setting'],
 }

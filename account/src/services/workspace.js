@@ -68,9 +68,7 @@ export default {
    * 워크스페이스 세팅 불러오기 (onpremise)
    */
   async getWorkspaceSetting() {
-    const data = await api('WORKSPACE_GET_SETTING', {
-      route: { workspaceId: getMyWorkspaces()[0].uuid },
-    })
+    const data = await api('WORKSPACE_GET_SETTING')
     return new OnPremiseSetting(data)
   },
 }
