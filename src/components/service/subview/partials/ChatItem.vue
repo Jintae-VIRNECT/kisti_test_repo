@@ -229,7 +229,7 @@ export default {
     ...mapActions(['updateChat']),
     async download() {
       const res = await downloadFile({
-        objectName: this.chat.file.fileName,
+        objectName: this.chat.file.objectName,
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
