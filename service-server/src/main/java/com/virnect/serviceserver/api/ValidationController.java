@@ -2,13 +2,17 @@ package com.virnect.serviceserver.api;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.api.IValidationRestAPI;
+import com.virnect.data.constraint.CompanyConstants;
 import com.virnect.data.constraint.LicenseConstants;
 import com.virnect.data.constraint.LicenseItem;
+import com.virnect.data.dao.SessionType;
 import com.virnect.data.dto.feign.LicenseInfoListResponse;
 import com.virnect.data.dto.feign.LicenseInfoResponse;
+import com.virnect.data.dto.response.CompanyInfoResponse;
 import com.virnect.data.dto.response.LicenseItemResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.feign.service.LicenseRestService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +27,7 @@ public class ValidationController implements IValidationRestAPI {
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/licenses";
 
+    private final DataRepository dataRepository;
     private final LicenseRestService licenseRestService;
 
     @Override
@@ -62,6 +67,25 @@ public class ValidationController implements IValidationRestAPI {
                 return ResponseEntity.ok(new ApiResponse<>(licenseItemResponse));
             }
         }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(String workspaceId, String userId) {
+        log.info("REST API: GET {}/{}/{}",
+                REST_PATH,
+                workspaceId != null ? workspaceId : "{}",
+                userId != null ? userId : "{}");
+
+        if (workspaceId.isEmpty() || userId.isEmpty()) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
+        companyInfoResponse.setCompanyCode(CompanyConstants.COMPANY_KINTEX);
+        companyInfoResponse.setSessionType(SessionType.OPEN);
+        companyInfoResponse.setTranslation(true);
+
+        return ResponseEntity.ok(new ApiResponse<>(companyInfoResponse));
     }
 
     /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
