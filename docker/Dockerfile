@@ -22,6 +22,7 @@ COPY --from=builder static static
 COPY --from=builder route.js .
 COPY --from=builder server.js .
 COPY --from=builder package.json .
+COPY --from=builder package-lock.json .
 COPY --from=builder dist dist
 COPY --from=builder translate translate
 
