@@ -200,6 +200,7 @@ var Publisher = /** @class */ (function(_super) {
       var affectedMediaStream = this.stream.displayMyRemote()
         ? this.stream.localMediaStreamWhenSubscribedToRemote
         : this.stream.getMediaStream()
+      if (!affectedMediaStream) return
       affectedMediaStream.getVideoTracks().forEach(function(track) {
         track.enabled = value
       })
