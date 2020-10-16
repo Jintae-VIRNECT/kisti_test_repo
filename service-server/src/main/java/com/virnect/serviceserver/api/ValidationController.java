@@ -70,13 +70,12 @@ public class ValidationController implements IValidationRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(String workspaceId, String userId) {
-        log.info("REST API: GET {}/{}/{}",
+    public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(String userId) {
+        log.info("REST API: GET {}/{}/",
                 REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
                 userId != null ? userId : "{}");
 
-        if (workspaceId.isEmpty() || userId.isEmpty()) {
+        if (userId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
