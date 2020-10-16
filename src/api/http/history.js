@@ -40,33 +40,3 @@ export const getHistorySingleItem = async function({ workspaceId, sessionId }) {
 
   return returnVal
 }
-
-// /**
-//  * 최근 협업 목록중 단일 항목 제거
-//  * @param {String} workspaceId 워크스페이스 id
-//  * @param {Array[String]} sessionIdList 삭제할 히스토리 세션 Id
-//  * @param {String} uuid 유저 id
-//  */
-// export const deleteHistorySingleItem = async function({
-//   workspaceId,
-//   sessionIdList = [],
-//   uuid,
-// }) {
-//   const returnVal = await http('DELETE_HISTORY_ITEM', {
-//     workspaceId,
-//     sessionIdList,
-//     uuid,
-//   })
-
-//   return returnVal
-// }
-// /**
-//  * 최근 협업 목록 모두 삭제
-//  * @param {String} workspaceId 워크스페이스 id
-//  * @param {String} userId 유저 id
-//  */
-// export const deleteAllHistory = async function({ workspaceId, userId }) {
-//   const returnVal = await http('DELETE_HISTORY_ALL', { workspaceId, userId })
-
-//   return returnVal
-// }
