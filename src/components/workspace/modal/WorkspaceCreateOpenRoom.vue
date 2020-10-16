@@ -103,7 +103,7 @@ export default {
             participantIds: [],
             workspaceId: this.workspace.uuid,
             sessionId: this.sessionId,
-            sessionType: ROOM_STATUS.PRIVATE,
+            sessionType: ROOM_STATUS.OPEN,
             companyCode: COMPANY_CODE[TARGET_COMPANY],
           })
         } else {
