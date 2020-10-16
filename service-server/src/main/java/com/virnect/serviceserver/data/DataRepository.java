@@ -595,18 +595,30 @@ public class DataRepository {
                 if (room == null) {
                     return new DataProcess<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
-                for (Member member : room.getMembers()) {
-                    if(member.getUuid().equals(userId)) {
-                        log.info("Room has member Id is {}", member.getUuid());
-                        if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                            return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
-                        } else {
-                            return new DataProcess<>(true);
+
+                if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(userId)) {
+                            log.info("Room has member Id is {}", member.getUuid());
+                            if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                            }
                         }
                     }
+                    return new DataProcess<>(true);
+                } else {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(userId)) {
+                            log.info("Room has member Id is {}", member.getUuid());
+                            if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                            } else {
+                                return new DataProcess<>(true);
+                            }
+                        }
+                    }
+                    return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
                 }
-                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
-                //return new DataProcess<>(true);
             }
         }.asResponseData();
     }
