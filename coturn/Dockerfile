@@ -74,8 +74,8 @@ EXPOSE 5766
 # Relay Ports
 EXPOSE 49152-65535 49152-65535/udp
 
-COPY ./cert/private.pem /etc/ssl/private.pem
-COPY ./cert/cert.pem /etc/ssl/cert.pem
+COPY ./cert/virnect.key /etc/ssl/virnect.key
+COPY ./cert/virnect.crt /etc/ssl/virnect.crt
 
 WORKDIR ${INSTALL_PREFIX}
 
