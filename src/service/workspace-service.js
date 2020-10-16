@@ -1,13 +1,10 @@
 import { api } from 'api/axios'
 
 export default {
-	async customConfig(params) {
+	async customConfig() {
 		// 아이디 확인
 		try {
-			const data = await api('GET_CUSTOM_CONFIG', {
-				route: params,
-				params: params,
-			})
+			const data = await api('GET_CUSTOM_CONFIG')
 			return data
 		} catch (e) {
 			return e

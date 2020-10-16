@@ -1,6 +1,6 @@
 <template>
 	<section>
-		<TheHeader :showSection="showSection" :auth="auth">
+		<TheHeader :showSection="showSection" :auth="auth" :logoImg="logoImg">
 			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
 		</TheHeader>
 		<transition name="app-fade" mode="out-in">
@@ -14,6 +14,10 @@
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
 export default {
+	components: {
+		TheHeader,
+		TheFooter,
+	},
 	props: {
 		auth: Object,
 	},
@@ -26,9 +30,10 @@ export default {
 			qrImg: null,
 		}
 	},
-	components: {
-		TheHeader,
-		TheFooter,
+	computed: {
+		logoImg() {
+			return this.$store.getters.logoImg
+		},
 	},
 	async mounted() {
 		try {

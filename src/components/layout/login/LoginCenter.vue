@@ -14,7 +14,7 @@
 			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
-			<TheHeader :showSection="showSection" :auth="auth">
+			<TheHeader :showSection="showSection" :auth="auth" :logoImg="logoImg">
 				<template slot="subTitle">{{ $t('login.subTitle') }}</template>
 			</TheHeader>
 			<transition name="app-fade" mode="out-in">
@@ -27,6 +27,9 @@
 <script>
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 export default {
+	components: {
+		TheHeader,
+	},
 	props: {
 		showSection: Object,
 		auth: {
@@ -45,8 +48,10 @@ export default {
 			show: false,
 		}
 	},
-	components: {
-		TheHeader,
+	computed: {
+		logoImg() {
+			return this.$store.getters.logoImg
+		},
 	},
 	methods: {
 		loginService() {

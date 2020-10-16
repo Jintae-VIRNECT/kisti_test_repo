@@ -21,6 +21,9 @@ export default {
 		Vue.prototype.$urls = res
 		Vue.prototype.$env = res.env
 		await auth.init({ env: res.env, urls: res })
+		if (res.env === 'onpremise') {
+			store.dispatch('SET_CUSTOM')
+		}
 		next()
 	},
 	data() {

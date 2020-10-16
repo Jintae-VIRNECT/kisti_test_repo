@@ -25,5 +25,5 @@ module.exports = {
 	POST_CHECK_ANSWER: ['POST', '/users/password/identity/check'],
 	PUT_USER_PASSWORD: ['PUT', '/users/find/password'],
 
-	GET_CUSTOM_CONFIG: ['GET', '/workspaces/{workspaceId}/setting'],
+	GET_CUSTOM_CONFIG: ['GET', '/workspaces/setting'],
 }

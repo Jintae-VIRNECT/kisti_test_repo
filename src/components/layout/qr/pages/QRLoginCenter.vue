@@ -53,7 +53,6 @@
 
 <script>
 import AuthService from 'service/auth-service'
-import WorkspaceService from 'service/workspace-service'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import duration from 'dayjs/plugin/duration'
@@ -87,13 +86,6 @@ export default {
 	},
 	methods: {
 		async reset() {
-			// let workspaceId = this.auth.myWorkspaces.filter(e => e.role === 'MASTER')
-			// console.log(workspaceId[0].uuid)
-			// const rere = WorkspaceService.customConfig({
-			// 	workspaceId: workspaceId[0].uuid,
-			// })
-			// console.log(rere)
-
 			const params = {
 				email: this.auth.myInfo.email,
 				userId: this.auth.myInfo.uuid,
