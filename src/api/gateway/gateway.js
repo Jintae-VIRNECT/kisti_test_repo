@@ -10,6 +10,7 @@ import API from './api'
 import { logger, debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
+import networkError from './network.error.json'
 import { cookieClear } from 'utils/auth'
 const timeout = process.env.NODE_ENV === 'production' ? 5000 : 10000
 
@@ -111,20 +112,17 @@ const sender = async function(constant, params, headers = {}, custom) {
     return receiver(response)
   } catch (err) {
     if ('message' in err) {
-      switch (err.message.toLowerCase()) {
-        case 'network error':
-        case `timeout of ${timeout}ms exceeded`:
-          window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
-            position: 'bottom-center',
-            duration: 5000,
-            action: {
-              icon: 'close',
-              onClick: (e, toastObject) => {
-                toastObject.goAway(0)
-              },
+      if (err.message.toLowerCase() in networkError) {
+        window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
+          position: 'bottom-center',
+          duration: 5000,
+          action: {
+            icon: 'close',
+            onClick: (e, toastObject) => {
+              toastObject.goAway(0)
             },
-          })
-          throw err.message
+          },
+        })
       }
       throw err
     }
