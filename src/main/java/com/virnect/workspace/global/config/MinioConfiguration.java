@@ -1,5 +1,17 @@
 package com.virnect.workspace.global.config;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.cert.CertificateException;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -7,6 +19,7 @@ import org.springframework.context.annotation.Profile;
 
 import io.minio.MinioClient;
 import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
 
 /**
  * Project: PF-Admin
@@ -29,10 +42,53 @@ public class MinioConfiguration {
 	private String minioServer;
 
 	@Bean
-	public MinioClient minioClient() {
+	public OkHttpClient okHttpClient() throws
+		NoSuchAlgorithmException,
+		KeyManagementException {
+
+		final TrustManager[] trustAllCerts = new TrustManager[] {
+			new X509TrustManager() {
+				@Override
+				public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws
+					CertificateException {
+				}
+
+				@Override
+				public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws
+					CertificateException {
+				}
+
+				@Override
+				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+					return new java.security.cert.X509Certificate[] {};
+				}
+			}
+		};
+		SSLContext sslContext = SSLContext.getInstance("SSL");
+		sslContext.init(null, trustAllCerts, new SecureRandom());
+		SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+		OkHttpClient.Builder builder = new OkHttpClient.Builder();
+		builder.sslSocketFactory(sslSocketFactory);
+		builder.hostnameVerifier(new HostnameVerifier() {
+			@Override
+			public boolean verify(String s, SSLSession sslSession) {
+				return true;
+			}
+		});
+
+		return builder.build();
+	}
+
+	@Bean
+	public MinioClient minioClient() throws
+		NoSuchAlgorithmException,
+		KeyManagementException {
 		MinioClient minioClient = MinioClient.builder()
+			.httpClient(okHttpClient())
 			.endpoint(HttpUrl.parse(minioServer))
 			.credentials(accessKey, secretKey)
+			//.region("ap-northeast-2")
 			.build();
 		return minioClient;
 	}
