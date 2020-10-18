@@ -22,13 +22,13 @@ import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
-import com.virnect.download.infra.file.donwload.S3FileDownloadService;
+import com.virnect.download.infra.file.donwload.FileDownloadService;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class DownloadService {
-	private final S3FileDownloadService fileUploadService;
+	private final FileDownloadService fileUploadService;
 	private final AppRepository appRepository;
 	private final ProductRepository productRepository;
 	private final ModelMapper modelMapper;
