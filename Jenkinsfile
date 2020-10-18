@@ -53,6 +53,8 @@ pipeline {
           steps {
             sh 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8086:8086 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --restart=always --name=pf-download pf-download'
+            sh 'count=`docker ps -a | grep pf-download-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download-onpremise && docker rm pf-download-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 18086:8086 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-download-onpremise pf-download'
             catchError() {
               sh 'docker image prune -f'
             }

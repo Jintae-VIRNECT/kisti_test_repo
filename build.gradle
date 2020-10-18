@@ -72,6 +72,12 @@ dependencies {
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // minio
+    implementation 'io.minio:minio:7.1.2'
+
+    // feign oktthp
+    implementation 'io.github.openfeign:feign-okhttp'
 }
 
 test {
