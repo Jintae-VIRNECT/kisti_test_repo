@@ -1,7 +1,13 @@
 <template>
   <header class="header">
     <div class="header-workspace">
-      <img class="header-logo" src="~assets/image/logo_symtext.svg" />
+      <img
+        v-if="logo !== false"
+        @error="logoError"
+        class="header-logo"
+        :src="logo"
+      />
+      <img v-else class="header-logo" src="~assets/image/logo_symtext.svg" />
       <template v-if="hasLicense && workspace && workspace.uuid">
         <div class="header-divider"></div>
         <header-nav></header-nav>
@@ -13,6 +19,7 @@
 </template>
 
 <script>
+import { SETTING_LOGO } from 'configs/env.config'
 import HeaderNav from './partials/HeaderWorkspaceNav'
 import HeaderTools from './partials/HeaderWorkspaceTools'
 export default {
@@ -24,9 +31,17 @@ export default {
   data() {
     return {}
   },
-  computed: {},
+  computed: {
+    logo() {
+      return SETTING_LOGO
+    },
+  },
   watch: {},
-  methods: {},
+  methods: {
+    logoError(event) {
+      // event.target.style = 'border:solid 1px #fff;'
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
