@@ -24,6 +24,8 @@ EXPOSE 2838
 COPY --from=builder /go/bin/minio /usr/bin/minio
 COPY --from=builder /go/minio/CREDITS /third_party/
 COPY --from=builder /go/minio/dockerscripts/docker-entrypoint.sh /usr/bin/
+COPY ssl/virnect.crt /root/.minio/certs/public.crt
+COPY ssl/virnect.key /root/.minio/certs/private.key
 
 RUN  \
     apk add --no-cache ca-certificates 'curl>7.61.0' 'su-exec>=0.2' && \
