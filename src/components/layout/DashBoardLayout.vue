@@ -88,7 +88,7 @@ export default {
 }
 .dashboard-layout__contents {
   height: 100%;
-  padding: 68px 22.8571rem 0 22.8571rem;
+  padding: 68px 319.9994px 0 319.9994px;
   background: #f8f8fa;
 }
 </style>
