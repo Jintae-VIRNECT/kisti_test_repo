@@ -4,10 +4,7 @@ import com.virnect.data.ApiResponse;
 import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.dao.*;
 import com.virnect.data.dto.request.*;
-import com.virnect.data.repository.MemberHistoryRepository;
-import com.virnect.data.repository.MemberRepository;
-import com.virnect.data.repository.RoomHistoryRepository;
-import com.virnect.data.repository.RoomRepository;
+import com.virnect.data.repository.*;
 import com.virnect.data.dto.SessionResponse;
 import com.virnect.data.dto.rpc.ClientMetaData;
 import com.virnect.data.error.ErrorCode;
@@ -41,7 +38,36 @@ public class SessionService {
     private final MemberRepository memberRepository;
     private final RoomHistoryRepository roomHistoryRepository;
     private final MemberHistoryRepository memberHistoryRepository;
+    private final CompanyRepository companyRepository;
 
+    //===========================================  Admin Services     =================================================//
+    @Transactional
+    public Company createCompany(CompanyRequest companyRequest) {
+        //log.info("createCompany: " + roomRequest.toString());
+        Company company = Company.builder()
+                .companyCode(companyRequest.getCompanyCode())
+                .workspaceId(companyRequest.getWorkspaceId())
+                .licenseName(companyRequest.getLicenseName())
+                .sessionType(companyRequest.getSessionType())
+                .sttStreaming(companyRequest.isSttStreaming())
+                .sttSync(companyRequest.isSttSync())
+                .transKoKr(companyRequest.isTransKoKr())
+                .transEnUs(companyRequest.isTransEnUs())
+                .transJaJp(companyRequest.isTransJaJp())
+                .transZh(companyRequest.isTransZh())
+                .transEsEs(companyRequest.isTransEsEs())
+                .transFrFr(companyRequest.isTransFrFr())
+                .transPlPl(companyRequest.isTransPlPl())
+                .transRuRu(companyRequest.isTransRuRu())
+                .transUkUa(companyRequest.isTransUkUa())
+                .build();
+
+        return companyRepository.save(company);
+    }
+
+    public Company getCompany(String workspaceId) {
+        return companyRepository.findByWorkspaceId(workspaceId).orElse(null);
+    }
 
     //===========================================  Room Services     =================================================//
     @Transactional
@@ -893,6 +919,8 @@ public class SessionService {
     public void updateMemberHistory(MemberHistory memberHistory) {
         memberHistoryRepository.save(memberHistory);
     }
+
+
 
     /*@Transactional
     public ApiResponse<Boolean> inviteRoom(String workspaceId ,String sessionId, InviteRoomRequest inviteRoomRequest) {

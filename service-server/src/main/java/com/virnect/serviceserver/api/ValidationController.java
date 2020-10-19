@@ -8,10 +8,12 @@ import com.virnect.data.constraint.LicenseItem;
 import com.virnect.data.dao.SessionType;
 import com.virnect.data.dto.feign.LicenseInfoListResponse;
 import com.virnect.data.dto.feign.LicenseInfoResponse;
+import com.virnect.data.dto.feign.UserInfoResponse;
 import com.virnect.data.dto.response.CompanyInfoResponse;
 import com.virnect.data.dto.response.LicenseItemResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.feign.service.LicenseRestService;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ValidationController implements IValidationRestAPI {
     private static final String TAG = ValidationController.class.getSimpleName();
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
-    private static final String REST_PATH = "/remote/licenses";
+    private static final String REST_LICENSE_PATH = "/remote/licenses";
+    private static final String REST_COMPANY_PATH = "/remote/company";
 
     private final DataRepository dataRepository;
     private final LicenseRestService licenseRestService;
@@ -35,7 +38,7 @@ public class ValidationController implements IValidationRestAPI {
             String workspaceId,
             String userId) {
         log.info("REST API: GET {}/{}/{}",
-                REST_PATH,
+                REST_LICENSE_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 userId != null ? userId : "{}");
 
@@ -70,21 +73,39 @@ public class ValidationController implements IValidationRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(String userId) {
+    public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(
+            String workspaceId,
+            String userId) {
         log.info("REST API: GET {}/{}/",
-                REST_PATH,
+                REST_COMPANY_PATH,
                 userId != null ? userId : "{}");
 
         if (userId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
+        // check user is valid
+        DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(userId);
+
+        log.info("COMPANY INFO :: USER INFO :: {}", userInfo.getData().getDescription());
+
+        return ResponseEntity.ok(
+                this.dataRepository.loadCompanyInformation(workspaceId)
+        );
+
+        /*if(userInfo.getData().getDescription().equals("KINTEXT_USER")) {
+            log.info("COMPANY INFO :: USER INFO :: Current user is KINTEXT User");
+            this.dataRepository.loadCompanyInformation(workspaceId);
+        } else {
+
+        }*/
+
+        /*CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
         companyInfoResponse.setCompanyCode(CompanyConstants.COMPANY_KINTEX);
         companyInfoResponse.setSessionType(SessionType.OPEN);
-        companyInfoResponse.setTranslation(true);
+        companyInfoResponse.setTranslation(true);*/
 
-        return ResponseEntity.ok(new ApiResponse<>(companyInfoResponse));
+       //return ResponseEntity.ok(new ApiResponse<>(companyInfoResponse));
     }
 
     /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")

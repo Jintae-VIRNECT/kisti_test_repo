@@ -1,25 +1,47 @@
 package com.virnect.data.dto.response;
 
 import com.virnect.data.dao.SessionType;
+import com.virnect.data.dto.LanguageCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.virnect.data.dao.SessionType.PRIVATE;
 
 @Getter
 @Setter
 @ApiModel
 public class CompanyInfoResponse {
     @ApiModelProperty(value = "Company code", example = "0")
-    private int companyCode;
+    private int companyCode = 0;
 
-    @ApiModelProperty(value = "Enable translation", position = 4, example = "false")
-    private boolean translation;
+    @ApiModelProperty(value = "Workspace Identifier", position = 1, example = "40f9bbee9d85dca7a34a0dd205aae718")
+    private String workspaceId = "";
 
-    @ApiModelProperty(value = "Remote Session Type", position = 5, example = "PRIVATE")
-    private SessionType sessionType;
+    @ApiModelProperty(value = "Workspace Identifier", position = 2, example = "40f9bbee9d85dca7a34a0dd205aae718")
+    private String licenseName = "";
+
+    @ApiModelProperty(value = "Remote Session Type", position = 3, example = "PRIVATE")
+    private SessionType sessionType = PRIVATE;
+
+    @ApiModelProperty(value = "Speech to text Type", position = 5, example = "false")
+    private boolean sttSync = false;
+
+    @ApiModelProperty(value = "Speech to text Type", position = 6, example = "false")
+    private boolean sttStreaming = false;
+
+    @ApiModelProperty(
+            value = "Translation Language codes",
+            position = 7,
+            dataType = "List"
+    )
+    @NotNull
+    private List<LanguageCode> languageCodes = new ArrayList<>();
 }
 
 /*
