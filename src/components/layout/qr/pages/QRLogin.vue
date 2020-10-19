@@ -19,8 +19,11 @@
 								v-for="(list, idx) of $t('qrLoginCenter.loginHowTo')"
 								:key="idx"
 							>
-								<p>
+								<p v-if="!customInfo">
 									<span>{{ idx + 1 }}. </span>{{ list }}
+								</p>
+								<p v-else>
+									<span>{{ idx + 1 }}. </span>{{ nameSet(list) }}
 								</p>
 							</li>
 						</ol>
@@ -36,6 +39,10 @@
 import { QrcodeStream } from 'vue-qrcode-reader'
 
 export default {
+	props: {
+		auth: Object,
+		customInfo: Object,
+	},
 	components: {
 		QrcodeStream,
 	},
@@ -46,6 +53,13 @@ export default {
 		}
 	},
 	methods: {
+		nameSet(txt) {
+			if (this.auth.env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
+			else {
+				let val = txt.replace(/VIRNECT/, this.customInfo.title)
+				return val
+			}
+		},
 		onDecode(result) {
 			this.result = result
 		},

@@ -1,16 +1,16 @@
 import WorkspaceService from 'service/workspace-service'
 export const custom = {
 	state: {
-		logoImg: null,
+		customInfo: null,
 	},
 	getters: {
-		logoImg(state) {
-			return state.logoImg
+		customInfo(state) {
+			return state.customInfo
 		},
 	},
 	mutations: {
 		async SET_CUSTOM(state, custom) {
-			state.logoImg = custom
+			state.customInfo = custom
 		},
 	},
 	actions: {
@@ -25,6 +25,7 @@ export const custom = {
 				default: data.defaultLogo,
 				white: data.whiteLogo,
 				grey: data.greyLogo,
+				title: data.workspaceTitle,
 			}
 			commit('SET_CUSTOM', custom)
 		},

@@ -16,6 +16,7 @@
 					v-model="login.email"
 					name="email"
 					:class="{ 'input-danger': message }"
+					@input="emailRemember(login.email, login.rememberMe)"
 					clearable
 					v-validate="'required'"
 				>

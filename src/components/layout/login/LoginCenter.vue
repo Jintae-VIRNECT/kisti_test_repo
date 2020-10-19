@@ -14,7 +14,7 @@
 			<p>{{ $t('login.needTo.contents') }}</p>
 		</el-dialog>
 		<template v-else>
-			<TheHeader :showSection="showSection" :auth="auth" :logoImg="logoImg">
+			<TheHeader :showSection="showSection" :auth="auth" :logoImg="customInfo">
 				<template slot="subTitle">{{ $t('login.subTitle') }}</template>
 			</TheHeader>
 			<transition name="app-fade" mode="out-in">
@@ -49,8 +49,8 @@ export default {
 		}
 	},
 	computed: {
-		logoImg() {
-			return this.$store.getters.logoImg
+		customInfo() {
+			return this.$store.getters.customInfo
 		},
 	},
 	methods: {

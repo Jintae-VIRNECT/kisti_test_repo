@@ -1,10 +1,10 @@
 <template>
 	<section>
-		<TheHeader :showSection="showSection" :auth="auth" :logoImg="logoImg">
+		<TheHeader :showSection="showSection" :auth="auth">
 			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
 		</TheHeader>
 		<transition name="app-fade" mode="out-in">
-			<router-view :auth="auth" />
+			<router-view :auth="auth" :customInfo="customInfo" />
 		</transition>
 		<TheFooter v-if="$env !== 'onpremise'" />
 	</section>
@@ -31,8 +31,8 @@ export default {
 		}
 	},
 	computed: {
-		logoImg() {
-			return this.$store.getters.logoImg
+		customInfo() {
+			return this.$store.getters.customInfo
 		},
 	},
 	async mounted() {
