@@ -1,0 +1,67 @@
+.board {
+  height: 548px;
+  margin-top: 40px;
+}
+
+.board__header {
+  position: relative;
+  height: 68px;
+  padding: 20px 0px 17px 20px;
+  border-bottom: 1px solid rgb(227, 227, 227);
+}
+
+.board__header--title {
+  margin-right: 10px;
+  color: rgb(11, 31, 72);
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.board__header--description {
+  color: rgb(122, 122, 122);
+  font-weight: normal;
+  font-size: 15px;
+}
+
+.board__header--datepicker {
+  &.datepicker {
+    position: absolute;
+    top: 14px;
+    right: 15px;
+  }
+
+  .vdp-datepicker--input {
+    height: 40px;
+    border: 1px solid #e3e3e3;
+  }
+  .calendar-button {
+    height: 40px;
+    border: 1px solid #e3e3e3;
+  }
+}
+
+// .board__body {
+//   display: flex;
+//   height: 342px;
+// }
+
+.custom-card-chart {
+  width: 100%;
+  height: 410px;
+
+  margin-right: 12px;
+}
+
+.chart-holder {
+  position: relative;
+  width: 1195px;
+  height: 342px;
+  padding-left: 30px;
+}
+
+.board-figures {
+  display: flex;
+  justify-content: space-between;
+  height: 120px;
+  margin-top: 18px;
+}
