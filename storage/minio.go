@@ -3,7 +3,9 @@ package storage
 import (
 	"RM-RecordServer/data"
 	"context"
+	"crypto/tls"
 	"fmt"
+	"net/http"
 	"net/url"
 	"os"
 	"sync"
@@ -30,10 +32,15 @@ func GetClient() *Client {
 		secretKey := viper.GetString("storage.secretKey")
 		useSSL := viper.GetBool("storage.useSSL")
 
-		client, err := minio.New(endpoint, &minio.Options{
+		opt := &minio.Options{
 			Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
 			Secure: useSSL,
-		})
+		}
+		if useSSL == true {
+			opt.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+		}
+
+		client, err := minio.New(endpoint, opt)
 		if err != nil {
 			panic(err)
 		}
