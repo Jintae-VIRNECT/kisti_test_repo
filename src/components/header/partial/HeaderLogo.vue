@@ -1,7 +1,7 @@
 <template>
   <div class="header-logo">
     <img class="header-logo--image" src="~assets/image/logo_symtext.svg" />
-    <div class="header-logo--text">Admin</div>
+    <div class="header-logo--text"></div>
   </div>
 </template>
 
@@ -25,13 +25,13 @@ export default {
 }
 
 .header-logo--text {
-  width: 64.8px;
-  height: 26.4px;
+  width: 106px;
+  height: 26px;
   margin-top: 3px;
   font-weight: 500;
   font-size: 14.4px;
   text-align: center;
-  background: rgb(31, 127, 250);
+  background: rgb(31, 127, 250) url('~assets/image/logo_sub_text.svg');
   border-radius: 2.4px;
 }
 </style>
