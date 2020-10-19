@@ -73,7 +73,6 @@ import com.virnect.workspace.global.error.ErrorCode;
  * DESCRIPTION: workspace service rest api controller
  */
 @Slf4j
-//@Profile("!onpremise")
 @RestController
 @RequestMapping("/workspaces")
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)

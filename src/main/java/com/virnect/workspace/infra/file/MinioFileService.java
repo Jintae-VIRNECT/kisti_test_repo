@@ -68,6 +68,7 @@ public class MinioFileService implements FileService {
 			.object(objectName)
 			.contentType(file.getContentType())
 			.stream(file.getInputStream(), file.getSize(), -1)
+
 			.build();
 		log.info("Upload File Info >> bucket : {}, resource : {}, filename : {}, fileSize(byte) : {}", bucket, resource,
 			uniqueFileName, file.getSize()
@@ -76,7 +77,6 @@ public class MinioFileService implements FileService {
 
 			ObjectWriteResponse response = minioClient.putObject(putObjectArgs);
 			log.info("Minio file upload response : [{}]", response);
-
 			return minioClient.getObjectUrl(bucket, objectName);
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
 			ServerException | XmlParserException exception) {

@@ -16,9 +16,6 @@ import lombok.Setter;
 @Setter
 @ApiModel
 public class WorkspaceCustomSettingResponse {
-	@ApiModelProperty(value = "워크스페이스 식별자", example = "4d6eab0860969a50acbfa4599fbb5ae8", position = 0)
-	private String worksapceId;
-
 	@ApiModelProperty(value = "워크스페이스 고객사명", example = "VIRNECT", position = 1)
 	private String workspaceTitle = "";
 

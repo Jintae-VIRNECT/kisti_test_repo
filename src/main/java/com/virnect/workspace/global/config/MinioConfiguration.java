@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Profile;
 
 import io.minio.MinioClient;
 import lombok.SneakyThrows;
-import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 
 /**
@@ -62,20 +61,11 @@ public class MinioConfiguration {
 				@SneakyThrows
 				@Override
 				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					/*InputStream inputStream = null;//Read it from a file, a byte array or whatever floats your boat
-					KeyStore keystore = KeyStore.getInstance("PKCS12");
-					keystore.load(inputStream, "changeme".toCharArray());
-					X509Certificate[] result = new X509Certificate[2];
-					//The certificate chain contains only one entry in my case
-					result[0] = (X509Certificate) keystore.getCertificateChain(keystore.aliases().nextElement())[0];
-					//Implement getMyCertificateIssuer() according to your needs. In my case, I read it from a JKS keystore from my database
-					result[1] = getMyCertificateIssuer();
-					return result;*/
 					return new java.security.cert.X509Certificate[] {};
 				}
 			}
 		};
-		SSLContext sslContext = SSLContext.getInstance("SSL");
+		SSLContext sslContext = SSLContext.getInstance("TLS");
 		sslContext.init(null, trustAllCerts, new SecureRandom());
 		SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
@@ -97,9 +87,8 @@ public class MinioConfiguration {
 		KeyManagementException {
 		MinioClient minioClient = MinioClient.builder()
 			//.httpClient(okHttpClient())
-			.endpoint(HttpUrl.parse(minioServer))
+			.endpoint(minioServer)
 			.credentials(accessKey,secretKey)
-			//.region("ap-northeast-2")
 			.build();
 		minioClient.ignoreCertCheck();
 		return minioClient;
