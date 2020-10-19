@@ -10,6 +10,7 @@ export default async function({ req, store, redirect, error, $config }) {
     if (context.$config.VIRNECT_ENV === 'onpremise') {
       const whiteList = ['/', '/profile/op', '/profile/certification']
       if (req.url === '/') redirect('/profile/op')
+      if (req.url === '/profile') redirect('/profile/op')
       else if (!whiteList.includes(req.url)) error({ statusCode: 404 })
     }
 
