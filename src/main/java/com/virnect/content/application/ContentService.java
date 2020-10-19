@@ -84,6 +84,7 @@ import com.virnect.content.dto.rest.LicenseInfoResponse;
 import com.virnect.content.dto.rest.MemberInfoDTO;
 import com.virnect.content.dto.rest.MemberListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
+import com.virnect.content.dto.rest.MyLicenseInfoResponse;
 import com.virnect.content.dto.rest.ProcessInfoResponse;
 import com.virnect.content.dto.rest.UserInfoListResponse;
 import com.virnect.content.dto.rest.UserInfoResponse;
@@ -960,54 +961,36 @@ public class ContentService {
 	 * @return
 	 */
 	private LicenseInfoResponse checkLicenseStorage(String workspaceUUID, Long uploadContentSize, String userUUID) {
-/*
-		LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
-
-		LicenseInfoResponse response = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
-
-		//해당 워크스페이스가 라이선스를 가지고 있는 지 체크
-		if (response.getLicenseProductInfoList() == null) {
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND);
-		}
-
-		//해당 워크스페이스가 메이크 제품 라이선스를 가지고 있는 지 체크
-		Boolean makePlanExist = response.getLicenseProductInfoList()
-			.stream()
-			.anyMatch(licenseProductInfoResponse -> licenseProductInfoResponse.getProductName().equals("MAKE"));
-		if (!makePlanExist) {
-			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
-		}
-
-		//해당 유저가 메이크 제품 라이선스를 가지고 있는 지 체크
-		response.getLicenseProductInfoList().stream()
-			.forEach(licenseProductInfoResponse -> {
-				if (licenseProductInfoResponse.getProductName().equals("MAKE")) {
-					Boolean makeUserExist = licenseProductInfoResponse.getLicenseInfoList()
-						.stream()
-						.anyMatch(licenseDetailInfoResponse -> licenseDetailInfoResponse.getUserId().equals(userUUID));
-					if (!makeUserExist) {
-						throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
-					}
-				}
-			});
-*/
 		//업로드 사용자의 MAKE 라이선스 체크
 		MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
 			userUUID, workspaceUUID).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+		if (myLicenseInfoListResponse == null || myLicenseInfoListResponse.getLicenseInfoList() == null
+			|| myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+			log.error("[LICENSE CHECK] User License info is empty.");
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
 		}
-		List<String> userLicenseInfoList = new ArrayList<>();
-		myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-			userLicenseInfoList.add(myLicenseInfoResponse.getProductName());
-			if (myLicenseInfoResponse.getProductName().equals("MAKE") && !myLicenseInfoResponse.getProductPlanStatus()
+
+		boolean haveMakeLicense = false;
+		for (MyLicenseInfoResponse myLicenseInfoResponse : myLicenseInfoListResponse.getLicenseInfoList()) {
+			log.info(
+				"[LICENSE CHECK] User License Info. workspaceUUID : [{}], userUUID : [{}], licenseProduct : [{}], licenseProductStatus : [{}]"
+				, workspaceUUID, userUUID, myLicenseInfoResponse.getProductName(),
+				myLicenseInfoResponse.getProductPlanStatus()
+			);
+			if (myLicenseInfoResponse.getProductName().equals("MAKE") && myLicenseInfoResponse.getProductPlanStatus()
 				.equals("ACTIVE")) {
-				throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
+				haveMakeLicense = true;
 			}
-		});
-		if (!userLicenseInfoList.contains("MAKE")) {
+
+		}
+		if (!haveMakeLicense) {
+			log.error(
+				"[LICENSE CHECK] User haven't active Make license. workspaceUUID : [{}], userUUID : [{}], haveMakeLicense : [{}]",
+				workspaceUUID, userUUID, haveMakeLicense
+			);
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND);
 		}
+
 		//용량 체크
 		LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
 		LicenseInfoResponse response = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
