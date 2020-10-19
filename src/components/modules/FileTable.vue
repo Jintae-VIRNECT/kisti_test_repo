@@ -53,24 +53,19 @@
 
           <play-button class="table__cell" v-if="showPlayButton"></play-button>
         </div>
-        <!-- 만료된 데이터 출력함. -->
+
         <div
           v-for="(data, index) in expiredArray"
-          class="table__row"
+          class="table__row expired"
           :key="index + 99"
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
-            <!-- <toggle-button
-              size="1.714em"
-              :active="selectedArray[index]"
-              :activeSrc="require('assets/image/ic_check.svg')"
-              :inactiveSrc="require('assets/image/ic_uncheck.svg')"
-            ></toggle-button> -->
             <div style="width: 1.74em"></div>
           </div>
           <div
             v-for="(value, key, innerIndex) in data"
-            class="table__cell"
+            class="table__cell expired"
+            :class="{ 'expiration-date': key === 'expirationDate' }"
             :key="innerIndex + workspace.uuid"
           >
             {{ value }}
@@ -187,11 +182,11 @@ export default {
           if (Object.prototype.hasOwnProperty.call(newData, render.column)) {
             newData[render.column] = render.render(newData[render.column])
             if (render.column === 'expirationDate' && data.expired) {
-              newData['expirationDate'] = '만료됨'
+              newData['expirationDate'] = '기간만료'
             }
           }
         })
-        if (newData['expirationDate'] === '만료됨') {
+        if (newData['expirationDate'] === '기간만료') {
           this.expiredArray.push(newData)
           return null
         } else {
@@ -202,11 +197,14 @@ export default {
 
       //만료된 데이터를 뒤로 보냄
       this.renderArray.sort((a, b) => {
-        if (a.expirationDate === '만료됨' && b.expirationDate !== '만료됨') {
+        if (
+          a.expirationDate === '기간만료' &&
+          b.expirationDate !== '기간만료'
+        ) {
           return 1
         } else if (
-          a.expirationDate !== '만료됨' &&
-          b.expirationDate === '만료됨'
+          a.expirationDate !== '기간만료' &&
+          b.expirationDate === '기간만료'
         ) {
           return -1
         } else {
@@ -285,6 +283,13 @@ export default {
     background: #f5f9ff;
     cursor: pointer;
   }
+
+  &.expired {
+    &:hover {
+      background: none;
+      cursor: auto;
+    }
+  }
 }
 
 .table__row .table__cell:nth-child(2) {
@@ -306,6 +311,14 @@ export default {
 
   &.name {
     color: #0b1f48;
+  }
+
+  &.expired {
+    color: #9097a2;
+  }
+
+  &.expiration-date {
+    color: #ff5757;
   }
 }
 .table__cell--toggle {
