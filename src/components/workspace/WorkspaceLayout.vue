@@ -36,16 +36,15 @@ import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 import auth from 'utils/auth'
-import { getLicense } from 'api/http/account'
+import { getLicense, getCompanyInfo } from 'api/http/account'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import FileUpload from './modal/WorkspaceRecordFileUpload'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
-import { USE_TRANSLATE } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -100,8 +99,12 @@ export default {
     workspace(val, oldVal) {
       if (val.uuid && val.uuid !== oldVal.uuid) {
         this.checkPlan(val)
+        this.checkCompany(val.uuid)
       }
     },
+  },
+  computed: {
+    ...mapGetters(['useTranslate']),
   },
   methods: {
     ...mapActions([
@@ -112,6 +115,7 @@ export default {
       'setRecord',
       'setAllow',
       'setTranslate',
+      'setCompanyInfo',
     ]),
     init(authInfo, workspaces) {
       this.updateAccount({
@@ -163,7 +167,7 @@ export default {
         this.setAllow(allow)
       }
       // TODO: KINTEX
-      if (USE_TRANSLATE) {
+      if (this.useTranslate) {
         const translateInfo = this.$localStorage.getItem('translate')
         if (translateInfo) {
           this.setTranslate(translateInfo)
@@ -183,6 +187,17 @@ export default {
       } else {
         this.showPlanOverflow = false
       }
+    },
+    async checkCompany(workspaceId) {
+      const res = await getCompanyInfo({
+        userId: this.account.uuid,
+        workspaceId,
+      })
+      this.setCompanyInfo({
+        targetCompany: res.companyCode,
+        translate: res.sttStreaming || res.sttSync,
+        sessionType: res.sessionType,
+      })
     },
     fileUpload(uuids) {
       this.fileIds = uuids

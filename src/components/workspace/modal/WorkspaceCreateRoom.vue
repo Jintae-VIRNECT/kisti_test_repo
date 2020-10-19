@@ -28,7 +28,7 @@
 
 <script>
 import Modal from 'Modal'
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
@@ -46,7 +46,6 @@ import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 import { checkPermission } from 'utils/deviceCheck'
 import { ROOM_STATUS } from 'configs/status.config'
-import { TARGET_COMPANY, COMPANY_CODE } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -66,6 +65,9 @@ export default {
       loading: false,
       clicked: false,
     }
+  },
+  computed: {
+    ...mapGetters(['targetCompany']),
   },
   props: {
     visible: {
@@ -185,7 +187,7 @@ export default {
           participantIds: selectedUserIds,
           workspaceId: this.workspace.uuid,
           sessionType: ROOM_STATUS.PRIVATE,
-          companyCode: TARGET_COMPANY,
+          companyCode: this.targetCompany,
         })
         // }
         if (info.imageFile) {

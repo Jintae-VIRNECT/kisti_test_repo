@@ -4,10 +4,11 @@ export default {
   TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { type: 'form' }],
   USER_INFO: ['GET', '/users/{userId}'],
+  SETTING_INFO: ['GET', '/workspace/setting'],
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],
-  COMPANY_INFO: ['GET', '/remote/company/{userId}'],
+  COMPANY_INFO: ['GET', '/remote/company/{workspaceId}/{userId}'],
 
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],

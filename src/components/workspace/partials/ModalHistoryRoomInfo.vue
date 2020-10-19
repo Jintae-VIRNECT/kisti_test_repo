@@ -59,13 +59,11 @@
 <script>
 import dayjs from 'dayjs'
 import { ROOM_STATUS } from 'configs/status.config'
-import { OPEN_ROOM } from 'configs/env.config'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ModalRoomInfo',
   computed: {
-    useOpenRoom() {
-      return OPEN_ROOM
-    },
+    ...mapGetters(['useOpenRoom']),
     isOpenRoom() {
       if (
         this.room &&

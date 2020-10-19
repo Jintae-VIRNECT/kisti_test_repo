@@ -2,6 +2,8 @@ import {
   INIT_WORKSPACE,
   CHANGE_WORKSPACE,
   CLEAR_WORKSPACE,
+  SET_COMPANY_INFO,
+  CLEAR_COMPANY_INFO,
 } from '../mutation-types'
 import { PLAN_STATUS } from 'configs/status.config'
 
@@ -16,10 +18,15 @@ const setWorkspaceObj = info => {
     expire: info.productPlanStatus === PLAN_STATUS.INACTIVE,
   }
 }
+const companyInfo = {
+  targetCompany: 0,
+  translate: false,
+  sessionType: 'private',
+}
 
 const state = {
   current: {},
-  workPlan: [],
+  companyInfo: companyInfo,
   workspaceList: [
     // {
     //   planProduct: 'REMOTE',
@@ -71,6 +78,14 @@ const mutations = {
   [CLEAR_WORKSPACE](state) {
     state.current = {}
   },
+  [SET_COMPANY_INFO](state, payload) {
+    for (let key in payload) {
+      state.companyInfo[key] = payload[key]
+    }
+  },
+  [CLEAR_COMPANY_INFO](state) {
+    state.companyInfo = companyInfo
+  },
 }
 
 const getters = {
@@ -80,6 +95,11 @@ const getters = {
   },
   workspace: state => state.current,
   workspaceList: state => state.workspaceList,
+  targetCompany: state => state.companyInfo.targetCompany,
+  useTranslate: state => state.companyInfo.translate,
+  useOpenRoom: state => {
+    return state.companyInfo.sessionType === 'OPEN'
+  },
 }
 
 export default {

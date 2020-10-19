@@ -19,7 +19,7 @@
 
 <script>
 import Modal from 'Modal'
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import OpenRoomInfo from '../partials/ModalCreateOpenRoomInfo'
 
 import { getHistorySingleItem } from 'api/http/history'
@@ -31,7 +31,6 @@ import {
 } from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import { ROOM_STATUS } from 'configs/status.config'
-import { TARGET_COMPANY, COMPANY_CODE } from 'configs/env.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 
@@ -66,6 +65,9 @@ export default {
         this.getInfo()
       }
     },
+  },
+  computed: {
+    ...mapGetters(['targetCompany']),
   },
   methods: {
     ...mapActions(['setRoomInfo', 'roomClear', 'updateAccount']),
@@ -117,7 +119,7 @@ export default {
           sessionType: ROOM_STATUS.OPEN,
           participantIds: [],
           workspaceId: this.workspace.uuid,
-          companyCode: TARGET_COMPANY,
+          companyCode: this.targetCompany,
         })
         // }
         if (info.imageFile) {

@@ -1,13 +1,11 @@
 export let RUNTIME_ENV = 'production'
 export let TARGET_COMPANY = 0 //'VIRNECT'
-export let OPEN_ROOM = false
-export let USE_TRANSLATE = false
+export let SETTING_LOGO = false
 
 export const setConfigs = configs => {
   RUNTIME_ENV = configs.runtimeEnv || RUNTIME_ENV
   TARGET_COMPANY = configs.targetCompany || TARGET_COMPANY
-  OPEN_ROOM = configs.openRoom || OPEN_ROOM
-  USE_TRANSLATE = configs.useTranslate || USE_TRANSLATE
+  SETTING_LOGO = configs.settingLogo || SETTING_LOGO
 }
 
 export const RUNTIME = {
@@ -26,6 +24,4 @@ export const COMPANY_CODE = {
 export default {
   RUNTIME_ENV,
   TARGET_COMPANY,
-  OPEN_ROOM,
-  USE_TRANSLATE,
 }

@@ -104,7 +104,7 @@
 import InputRow from 'InputRow'
 import imageMixin from 'mixins/uploadImage'
 import { ROOM_STATUS } from 'configs/status.config'
-import { OPEN_ROOM } from 'configs/env.config'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ModalRoomInfo',
   mixins: [imageMixin],
@@ -141,9 +141,7 @@ export default {
     }
   },
   computed: {
-    useOpenRoom() {
-      return OPEN_ROOM
-    },
+    ...mapGetters(['useOpenRoom']),
     isOpenRoom() {
       if (
         this.room &&

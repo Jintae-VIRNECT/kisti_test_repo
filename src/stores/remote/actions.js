@@ -11,9 +11,14 @@ export default {
   },
   initWorkspace({ commit }, infoList) {
     commit(types.INIT_WORKSPACE, infoList)
+    commit(types.CLEAR_COMPANY_INFO)
   },
   changeWorkspace({ commit }, workspace) {
     commit(types.CHANGE_WORKSPACE, workspace)
+    commit(types.CLEAR_COMPANY_INFO)
+  },
+  setCompanyInfo({ commit }, info) {
+    commit(types.SET_COMPANY_INFO, info)
   },
   clearWorkspace({ commit }) {
     commit(types.CLEAR_WORKSPACE)

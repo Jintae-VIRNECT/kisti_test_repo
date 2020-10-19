@@ -1,11 +1,11 @@
-import { getAccount, tokenRequest, getCompanyInfo } from 'api/http/account'
+import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
 import { setBaseURL } from 'api/gateway/gateway'
 import axios from 'api/axios'
 import { logger, debug } from 'utils/logger'
-import { setConfigs } from 'configs/env.config'
+import { setConfigs, RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 
 /**
  * 상태
@@ -62,7 +62,7 @@ const tokenRenewal = () => {
   tokenInterval()
 }
 
-async function getMyInfo() {
+const getMyInfo = async () => {
   try {
     const res = await getAccount()
     myInfo = res.userInfo
@@ -77,7 +77,7 @@ async function getMyInfo() {
   }
 }
 
-async function getConfigs() {
+const getConfigs = async () => {
   if (window.urls && window.urls['api']) return
   const res = await axios.get(
     `${location.origin}/configs?origin=${location.hostname}`,
@@ -94,23 +94,18 @@ async function getConfigs() {
   window.urls = res.data
   setConfigs({
     runtimeEnv,
-    // targetCompany: 1,
-    // openRoom: true,
-    // useTranslate: true,
   })
 }
 
-export const getCompany = async () => {
-  const data = await getCompanyInfo({ userId: myInfo.uuid })
-
-  debug('COMPANY_CODE::', data.companyCode)
-  debug('USE_TRANSLATE::', data.sessionType === 'OPEN')
-  debug('OPEN_ROOM_FLAG::', data.translation)
+const getSettings = async () => {
+  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
+  const settings = await getSettingInfo()
+  document.title = `${settings.workspaceTitle} | Remote`
+  const favicon = document.querySelector("link[rel*='icon']")
+  favicon.href = settings.favicon
 
   setConfigs({
-    targetCompany: data.companyCode,
-    openRoom: data.sessionType === 'OPEN',
-    useTranslate: data.translation,
+    settingLogo: settings.whiteLogo,
   })
 }
 
@@ -145,8 +140,7 @@ class Auth {
 
     if (Cookies.get('accessToken')) {
       try {
-        await getMyInfo()
-        await getCompany()
+        await Promise.all([getMyInfo(), getSettings()])
         isLogin = true
         tokenRenewal()
       } catch (e) {

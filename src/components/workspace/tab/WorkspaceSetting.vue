@@ -64,7 +64,7 @@ import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
-import { USE_TRANSLATE } from 'configs/env.config'
+import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceSetting',
   components: {
@@ -90,6 +90,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['useTranslate']),
     menus() {
       const menu = [
         {
@@ -109,8 +110,7 @@ export default {
           text: this.$t('workspace.setting_language'),
         },
       ]
-      // TODO: KINTEX
-      if (USE_TRANSLATE) {
+      if (this.useTranslate) {
         menu.push({
           key: 'translate',
           text: this.$t('workspace.setting_translate'),

@@ -45,7 +45,6 @@ import CreateRoomModal from '../modal/WorkspaceCreateRoom'
 import OpenRoomModal from '../modal/WorkspaceCreateOpenRoom'
 import { mapGetters } from 'vuex'
 import { WORKSPACE_ROLE } from 'configs/status.config'
-import { OPEN_ROOM } from 'configs/env.config'
 export default {
   name: 'WorkspaceWelcome',
   components: {
@@ -60,11 +59,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['expireLicense']),
-    useOpenRoom() {
-      // TODO: KINTEX
-      return OPEN_ROOM
-    },
+    ...mapGetters(['expireLicense', 'useOpenRoom']),
     emptyWorkspace() {
       if (!this.hasLicense || !(this.workspace && this.workspace.uuid)) {
         return true
