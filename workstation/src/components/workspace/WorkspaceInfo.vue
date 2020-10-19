@@ -56,7 +56,7 @@
     <div class="plans">
       <h6>
         <span>{{ $t('workspace.info.planMemberCount') }}</span>
-        <a :href="$url.pay" target="_blank">
+        <a :href="$url.pay" target="_blank" v-if="!$isOnpremise">
           {{ $t('workspace.info.planPurchase') }}
         </a>
       </h6>
@@ -84,7 +84,10 @@
         <el-col :span="4">{{ workspaceInfo.plansCount.view }}</el-col>
       </el-row>
     </div>
-    <el-button @click="addMember" v-if="activeWorkspace.role !== 'MEMBER'">
+    <el-button
+      @click="addMember"
+      v-if="activeWorkspace.role !== 'MEMBER' && !$isOnpremise"
+    >
       {{ $t('workspace.info.addMember') }}
     </el-button>
   </div>
