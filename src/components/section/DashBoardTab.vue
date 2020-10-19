@@ -14,6 +14,10 @@
         ></tab-button>
       </ul>
     </nav>
+    <button @click="refresh" class="dashboard-tab--refresh">
+      <img src="~assets/image/ic_refresh.svg" />
+      <p>새로고침</p>
+    </button>
     <component :is="component" :class="{ fix: fix }"></component>
   </div>
 </template>
@@ -72,6 +76,9 @@ export default {
         this.component = tabName
         this.$emit('tabChange')
       })
+    },
+    refresh() {
+      console.log('refresh')
     },
   },
 }
