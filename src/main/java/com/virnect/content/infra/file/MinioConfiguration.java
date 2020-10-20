@@ -1,5 +1,8 @@
 package com.virnect.content.infra.file;
 
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,7 +31,7 @@ public class MinioConfiguration {
 	private String minioServer;
 
 	@Bean
-	public MinioClient minioClient() {
+	public MinioClient minioClient() throws NoSuchAlgorithmException, KeyManagementException {
 		MinioClient minioClient = MinioClient.builder()
 			.endpoint(minioServer)
 			.credentials(accessKey, secretKey)
