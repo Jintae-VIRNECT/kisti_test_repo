@@ -111,7 +111,7 @@ const sender = async function(constant, params, headers = {}, custom) {
     }
     return receiver(response)
   } catch (err) {
-    if (custom.initing === true) throw err
+    if (custom && custom.initing === true) throw err
     if ('message' in err) {
       if (err.message.toLowerCase() in networkError) {
         window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {

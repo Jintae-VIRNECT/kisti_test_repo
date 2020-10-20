@@ -22,6 +22,7 @@ const companyInfo = {
   targetCompany: 0,
   translate: false,
   sessionType: 'private',
+  languageCodes: [],
 }
 
 const state = {
@@ -100,6 +101,7 @@ const getters = {
   useOpenRoom: state => {
     return state.companyInfo.sessionType === 'OPEN'
   },
+  languageCodes: state => state.companyInfo.languageCodes,
 }
 
 export default {

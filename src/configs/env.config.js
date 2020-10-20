@@ -18,11 +18,6 @@ export const RUNTIME = {
   ONPREMISE: 'onpremise',
 }
 
-export const COMPANY_CODE = {
-  VIRNECT: 0,
-  KINTEX: 1,
-}
-
 export default {
   RUNTIME_ENV,
   TARGET_COMPANY,

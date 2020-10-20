@@ -62,7 +62,6 @@ import { systemClass, systemText } from './chatUtils'
 import { downloadFile } from 'api/http/file'
 import { mapGetters, mapActions } from 'vuex'
 import { translate as doTranslate } from 'plugins/remote/translate'
-import { languageCode } from 'utils/translate'
 import { downloadByURL } from 'utils/file'
 export default {
   name: 'ChatItem',
@@ -94,13 +93,7 @@ export default {
     },
     translateCode() {
       if (this.translate && this.translate.flag && this.translate.code) {
-        const idx = languageCode.findIndex(
-          lang => lang.sttCode === this.translate.code,
-        )
-        if (idx < 0) {
-          return false
-        }
-        return languageCode[idx].code
+        return this.translate.code.split('-')[0]
       } else {
         return false
       }

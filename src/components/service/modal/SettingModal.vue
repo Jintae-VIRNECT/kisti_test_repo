@@ -154,9 +154,9 @@
           </div>
           <r-select
             class="rec-setting__selector"
-            :options="translateOption"
-            value="sttCode"
-            text="name"
+            :options="languageCodes"
+            value="code"
+            text="text"
             :disabled="!useTranslateAllow"
             :selectedValue.sync="translateCode"
           >
@@ -175,8 +175,6 @@ import RRadio from 'RemoteRadio'
 import Tooltip from 'Tooltip'
 
 import toastMixin from 'mixins/toast'
-
-import { languageCode } from 'utils/translate'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
@@ -212,8 +210,7 @@ export default {
       maxRecordInterval: '',
       recordResolution: '',
       useTranslateAllow: false,
-      translateCode: 'ko',
-      translateOption: languageCode,
+      translateCode: 'ko-KR',
     }
   },
   props: {
@@ -236,6 +233,7 @@ export default {
       'allowPointing',
       'translate',
       'useTranslate',
+      'languageCodes',
     ]),
     localRecTimeOpt() {
       const options = localRecTime.map(time => {

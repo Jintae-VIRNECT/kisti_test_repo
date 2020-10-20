@@ -33,10 +33,10 @@
         </div>
         <r-select
           class="setting__r-selecter"
-          :options="radioOption"
+          :options="languageCodes"
           :disabled="!useTranslate"
-          value="sttCode"
-          text="name"
+          value="code"
+          text="text"
           :selectedValue.sync="transCode"
         >
         </r-select>
@@ -49,7 +49,6 @@ import Check from 'Check'
 import RSelect from 'RemoteSelect'
 import Tooltip from 'Tooltip'
 import { mapActions, mapGetters } from 'vuex'
-import { languageCode } from 'utils/translate'
 
 export default {
   name: 'WorkspaceSetTranslate',
@@ -61,12 +60,11 @@ export default {
   data() {
     return {
       useTranslate: false,
-      transCode: 'ko',
-      radioOption: languageCode,
+      transCode: 'ko-KR',
     }
   },
   computed: {
-    ...mapGetters(['translate']),
+    ...mapGetters(['translate', 'languageCodes']),
   },
   watch: {
     useTranslate(flag) {

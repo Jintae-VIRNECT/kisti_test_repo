@@ -43,7 +43,6 @@ import Modal from 'Modal'
 import { mapGetters } from 'vuex'
 import Recorder from 'recorder-js'
 import { stt } from 'plugins/remote/translate'
-import { languageCode } from 'utils/translate'
 import toastMixin from 'mixins/toast'
 
 export default {
@@ -65,16 +64,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['translate']),
-    sttCode() {
-      const idx = languageCode.findIndex(
-        lang => lang.code === this.translate.code,
-      )
-
-      if (idx < 0) return languageCode[0].sttCode
-
-      return languageCode[idx].sttCode
-    },
+    ...mapGetters(['translate', 'languageCodes']),
   },
   props: {
     visible: {
@@ -85,7 +75,6 @@ export default {
 
   watch: {
     visible(flag) {
-      console.log(this.sttCode)
       if (!!flag === true) {
         this.startRecord()
       }
@@ -143,7 +132,7 @@ export default {
       reader.onload = async () => {
         // console.log(reader.result)
         const b64 = reader.result.replace(/^data:.+;base64,/, '')
-        const sendMessage = await stt(b64, this.sttCode)
+        const sendMessage = await stt(b64, this.translate.code)
         const sttTime = Date.now() - startTime
         this.logger('STT Message: ', sendMessage)
         this.logger('STT during time: ', sttTime)

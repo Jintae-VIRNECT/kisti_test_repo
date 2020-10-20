@@ -166,16 +166,9 @@ export default {
       if (allow) {
         this.setAllow(allow)
       }
-      // TODO: KINTEX
-      if (this.useTranslate) {
-        const translateInfo = this.$localStorage.getItem('translate')
-        if (translateInfo) {
-          this.setTranslate(translateInfo)
-        }
-      } else {
-        this.setTranslate({
-          flag: false,
-        })
+      const translateInfo = this.$localStorage.getItem('translate')
+      if (translateInfo) {
+        this.setTranslate(translateInfo)
       }
     },
     showDeviceDenied() {
@@ -193,10 +186,17 @@ export default {
         userId: this.account.uuid,
         workspaceId,
       })
+
+      const languageCodes = res.languageCodes || []
+      this.debug(
+        'TRANSLATE LANGUAGE LIST::',
+        ...languageCodes.map(language => language.text),
+      )
       this.setCompanyInfo({
         targetCompany: res.companyCode,
         translate: res.sttStreaming || res.sttSync,
         sessionType: res.sessionType,
+        languageCodes,
       })
     },
     fileUpload(uuids) {
