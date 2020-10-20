@@ -3,6 +3,7 @@ package api
 import (
 	"RM-RecordServer/data"
 	"RM-RecordServer/recorder"
+	"RM-RecordServer/util"
 	"strconv"
 	"strings"
 	"time"
@@ -144,8 +145,9 @@ func setFilter(c *gin.Context) (*data.Filter, error) {
 		filter.Limit = &tmp
 	}
 	if sort, ok := c.GetQuery("order"); ok {
-		tmp := strings.Join(strings.Split(sort, "."), " ")
-		filter.OrderBy = &tmp
+		tokens := strings.Split(sort, ".")
+		orderBy := strings.Join([]string{util.ToSnakeCase(tokens[0]), tokens[1]}, " ")
+		filter.OrderBy = &orderBy
 		log.Debug("sort:", *filter.OrderBy)
 	}
 	if createdAt, ok := c.GetQueryArray("createdAt"); ok {
