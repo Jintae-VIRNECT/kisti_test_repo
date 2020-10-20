@@ -56,7 +56,7 @@
       @change-password="showMemberPasswordModal = true"
     />
     <member-kick-modal
-      v-if="$isOnpremise"
+      v-if="!$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberKickModal"
       @back="back"

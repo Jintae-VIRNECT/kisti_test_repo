@@ -177,11 +177,13 @@ export default {
       )
     },
     canKick() {
-      return (
+      const hasKickRole =
         this.data.role !== 'MASTER' &&
         this.activeWorkspace.role !== 'MEMBER' &&
         this.activeWorkspace.role !== this.data.role
-      )
+      return this.$isOnpremise
+        ? hasKickRole && this.data.userType === 'MEMBER_USER'
+        : hasKickRole
     },
   },
   methods: {

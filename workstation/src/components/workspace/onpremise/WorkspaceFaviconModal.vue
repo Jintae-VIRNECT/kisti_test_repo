@@ -74,6 +74,7 @@ export default {
       }
     },
     deleteImage() {
+      this.$refs.upload.clearFiles()
       this.file = null
     },
     async submit() {
@@ -100,6 +101,10 @@ export default {
 <style lang="scss">
 #__nuxt .workspace-favicon-modal {
   .preview {
+    img {
+      width: 100%;
+      height: 100%;
+    }
     .area {
       top: 11px;
       left: 15px;
