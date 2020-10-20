@@ -105,7 +105,8 @@ const getSettings = async () => {
   favicon.href = settings.favicon
 
   setConfigs({
-    settingLogo: settings.whiteLogo,
+    whiteLogo: settings.whiteLogo,
+    defaultLogo: settings.defaultLogo,
   })
 }
 

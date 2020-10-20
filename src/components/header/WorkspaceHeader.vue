@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { SETTING_LOGO } from 'configs/env.config'
+import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
 import HeaderNav from './partials/HeaderWorkspaceNav'
 import HeaderTools from './partials/HeaderWorkspaceTools'
 export default {
@@ -29,17 +29,15 @@ export default {
     HeaderTools,
   },
   data() {
-    return {}
+    return {
+      logo: WHITE_LOGO,
+    }
   },
-  computed: {
-    logo() {
-      return SETTING_LOGO
-    },
-  },
+  computed: {},
   watch: {},
   methods: {
-    logoError(event) {
-      // event.target.style = 'border:solid 1px #fff;'
+    logoError() {
+      this.logo = DEFAULT_LOGO
     },
   },
 
