@@ -34,7 +34,7 @@ import com.virnect.process.global.error.ErrorCode;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local", "develop", "staging", "production", "test"})
+@Profile({"staging", "production", "test"})
 @Component
 @RequiredArgsConstructor
 public class AmazonS3UploadService implements FileUploadService {

@@ -30,7 +30,7 @@ import java.util.List;
  * EMAIL: practice1356@gmail.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop"})
+@Profile({"!staging", "!production"})
 @Configuration
 @EnableSwagger2
 @RequiredArgsConstructor
