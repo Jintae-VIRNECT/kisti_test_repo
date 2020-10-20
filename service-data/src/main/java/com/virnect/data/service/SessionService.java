@@ -219,13 +219,20 @@ public class SessionService {
         return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
     }
 
+    /**
+     *
+     * @param workspaceId
+     * @param userId
+     * @return
+     */
     public List<Room> getRoomList(String workspaceId, String userId) {
         List<Room> roomList = new ArrayList<>();
         List<Member> memberList;
         memberList = this.memberRepository.findByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId);
         for(Member member : memberList ) {
             //member status condition added
-            if(member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
+            if (member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
+                    && !member.getRoom().getSessionProperty().getSessionType().equals(SessionType.OPEN)
                     && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
                 roomList.add(member.getRoom());
             }
@@ -251,6 +258,7 @@ public class SessionService {
         for(Member member : memberPage.getContent() ) {
             //member status condition added
             if(member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
+                    && !member.getRoom().getSessionProperty().getSessionType().equals(SessionType.OPEN)
                     && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
                 roomList.add(member.getRoom());
             }

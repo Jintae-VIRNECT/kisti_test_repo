@@ -336,6 +336,7 @@ public class DataRepository {
             @Override
             DataProcess<RoomInfoListResponse> invokeDataProcess() {
                 if(!paging) {
+                    log.info("INVOKE METHOD : loadRoomList :: not paging {} {}", workspaceId, userId);
                     //first add private room
                     List<Room> roomList = sessionService.getRoomList(workspaceId, userId);
                     //send add open room
@@ -343,6 +344,7 @@ public class DataRepository {
 
                     List<RoomInfoResponse> roomInfoList = new ArrayList<>();
                     for (Room room: roomList) {
+                        log.info("INVOKE METHOD : roomList ::");
                         RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
                         roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
                         roomInfoList.add(roomInfoResponse);
@@ -393,7 +395,7 @@ public class DataRepository {
                     }
                     return new DataProcess<>(new RoomInfoListResponse(roomInfoList, pageMeta));
                 } else {
-
+                    log.info("INVOKE METHOD : loadRoomList :: paging");
 
                     Page<Member> memberPage = sessionService.getMemberList(workspaceId, userId, pageable);
 

@@ -8,7 +8,7 @@ import static com.virnect.data.constraint.LicenseConstants.*;
 
 public enum LicenseItem {
     ITEM_PRODUCT(6, COMPANY_VIRNECT, LICENSE_PRODUCT),
-    ITEM_KINTEX(21, COMPANY_KINTEX, LICENSE_UNOFFICIAL),
+    ITEM_KINTEX(22, COMPANY_KINTEX, LICENSE_UNOFFICIAL),
 
     @Deprecated
     ITEM_BASIC(6, COMPANY_VIRNECT, LICENSE_BASIC),
