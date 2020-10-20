@@ -7,7 +7,7 @@
 
       <div class="figure-board__wrapper">
         <p class="figure-board--header">{{ header }}</p>
-        <template v-if="count">
+        <template v-if="count !== null">
           <span class="figure-board--number">{{ count }}</span>
           <span class="figure-board--text">회</span>
         </template>
