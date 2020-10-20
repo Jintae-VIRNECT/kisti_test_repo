@@ -36,7 +36,7 @@
                 activeMemberList.length
               }`
             }}</b>
-            {{ `/ ${isOpenRoom ? room.maxUserCount : room.memberList.length}` }}
+            {{ `/ ${room.maxUserCount}` }}
           </p>
         </div>
         <div class="info__section">
