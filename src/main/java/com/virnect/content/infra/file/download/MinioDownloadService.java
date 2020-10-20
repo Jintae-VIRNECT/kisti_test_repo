@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -41,7 +42,7 @@ import com.virnect.content.global.error.ErrorCode;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local", "develop", "onpremise"})
+@Profile({"local","develop", "onpremise"})
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinioDownloadService implements FileDownloadService {
@@ -119,7 +120,6 @@ public class MinioDownloadService implements FileDownloadService {
 	@Override
 	public String getFilePath(String bucketResource, String fileName) {
 		String objectName = bucketResource + fileName;
-
 		try {
 			return minioClient.getObjectUrl(bucketName, objectName);
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
@@ -131,6 +131,7 @@ public class MinioDownloadService implements FileDownloadService {
 
 	@Override
 	public MultipartFile getMultipartfile(String fileName) {
+
 		String resourcePath = "contents/" + fileName;
 		String objectName = bucketResource + resourcePath;
 
@@ -139,16 +140,16 @@ public class MinioDownloadService implements FileDownloadService {
 			.object(objectName)
 			.build();
 		InputStream inputStream;
-		String objectUrl;
+
 		try {
 			inputStream = minioClient.getObject(getObjectArgs);
-			objectUrl = minioClient.getObjectUrl(bucketName, objectName);
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
-			ServerException | XmlParserException | IOException exception) {
-			log.error(exception.getMessage());
+			ServerException | XmlParserException | IOException e) {
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
+
 		MultipartFile multipartFile = new MultipartFile() {
+
 			@Override
 			public String getName() {
 				return "content";
@@ -171,10 +172,12 @@ public class MinioDownloadService implements FileDownloadService {
 
 			@Override
 			public long getSize() {
+
 				try {
-					return getBytes().length;
-				} catch (IOException e) {
-					log.error("[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert fail. reasone >> ", e.getMessage());
+					InputStream inputStream = minioClient.getObject(getObjectArgs);
+					return IOUtils.toByteArray(inputStream).length;
+				} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+					ServerException | XmlParserException | IOException e) {
 					throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 				}
 			}
@@ -191,12 +194,17 @@ public class MinioDownloadService implements FileDownloadService {
 
 			@Override
 			public void transferTo(File dest) throws IOException, IllegalStateException {
+
+			}
+
+			@Override
+			public void transferTo(Path dest) throws IOException, IllegalStateException {
+
 			}
 		};
-
 		log.info(
 			"[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
-			, objectUrl
+			, getFilePath("contents", fileName)
 			, multipartFile.getContentType()
 			, multipartFile.getSize()
 			, multipartFile.getOriginalFilename()
