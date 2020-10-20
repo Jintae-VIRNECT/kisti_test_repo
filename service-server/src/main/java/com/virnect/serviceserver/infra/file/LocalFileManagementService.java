@@ -8,6 +8,7 @@ import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +18,23 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
 import java.security.InvalidKeyException;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 
 
-@Profile({"local", "onpremise","develop"})
+@Profile({"local", "onpremise", "develop"})
 @Slf4j
 @Component
 public class LocalFileManagementService implements IFileManagementService {
@@ -48,10 +53,58 @@ public class LocalFileManagementService implements IFileManagementService {
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/remote/";
     final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
 
+
+    private static void disableSslVerification() throws NoSuchAlgorithmException, KeyManagementException {
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+        }
+        };
+
+        // Install the all-trusting trust manager
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+        builder.hostnameVerifier((s, sslSession) -> true);
+        builder.build();
+        /*HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+        // Create all-trusting host name verifier
+        HostnameVerifier allHostsValid = new HostnameVerifier() {
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        };
+
+        // Install the all-trusting host verifier
+        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);*/
+    }
+
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
             log.info("Remote storage service is enabled");
+            try {
+                disableSslVerification();
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
+            }
+
             this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
             this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
             this.rootDirPath = this.remoteServiceConfig.remoteStorageProperties.getRootDirPath();
@@ -71,6 +124,8 @@ public class LocalFileManagementService implements IFileManagementService {
                         .endpoint(serverUrl)
                         .credentials(accessKey, secretKey)
                         .build();
+
+                minioClient.ignoreCertCheck();
 
                 boolean isBucketExist = false;
 
@@ -108,6 +163,8 @@ public class LocalFileManagementService implements IFileManagementService {
                 this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
             } catch (MinioException e) {
                 log.info("Bucket error occured:: {}", e.getMessage());
+            } catch (KeyManagementException e) {
+                log.info("KeyManagementException error occured:: {}", e.getMessage());
             }
         } else {
             log.info("Remote storage service is disabled");
