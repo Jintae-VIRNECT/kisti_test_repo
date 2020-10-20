@@ -33,6 +33,7 @@ public class MinioConfiguration {
 			.endpoint(minioServer)
 			.credentials(accessKey, secretKey)
 			.build();
+		minioClient.ignoreCertCheck();
 		return minioClient;
 	}
 }
