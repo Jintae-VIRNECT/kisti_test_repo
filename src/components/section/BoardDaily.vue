@@ -27,7 +27,7 @@
     <div class="board-figures">
       <figure-board
         header="전체 일별 협업 수"
-        :count="48"
+        :count="9999"
         :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
       ></figure-board>
       <figure-board
@@ -38,7 +38,7 @@
       <figure-board
         header="나의 일별 협업 수"
         :onlyMe="true"
-        :count="999999"
+        :count="9999"
         :imgSrc="require('assets/image/figure/ic_figure_chart.svg')"
       ></figure-board>
       <figure-board
@@ -65,10 +65,78 @@ export default {
     FigureBoard,
     Datepicker,
   },
+  data() {
+    return {
+      //dummy datas
+      privateCollaboDatas: [],
+      totalColaboDatas: [],
+    }
+  },
+  methods: {
+    getDummyDataPrivate() {
+      return [
+        0,
+        2,
+        4,
+        5,
+        10,
+        8,
+        2,
+        0,
+        0,
+        4,
+        0,
+        5,
+        6,
+        5,
+        0,
+        1,
+        2,
+        3,
+        4,
+        0,
+        0,
+        0,
+        0,
+        0,
+      ]
+    },
+    getDummyDataTotal() {
+      return [
+        0,
+        2,
+        4,
+        5,
+        10,
+        8,
+        2,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        20,
+        22,
+        25,
+        0,
+        0,
+        0,
+        0,
+        0,
+      ]
+    },
+  },
   mounted() {
+    this.privateCollaboDatas = this.getDummyDataPrivate()
+    this.totalColaboDatas = this.getDummyDataTotal()
+
     const ctx = document.getElementById('chart-dayily').getContext('2d')
 
-    const custom = function(tooltipModel) {
+    const custom = tooltipModel => {
       // Tooltip Element
       let tooltipEl = document.getElementById('chartjs-tooltip')
 
@@ -94,7 +162,7 @@ export default {
         tooltipEl.classList.add('no-transform')
       }
 
-      function getBody(bodyItem) {
+      const getBody = bodyItem => {
         return bodyItem.lines
       }
 
@@ -105,13 +173,12 @@ export default {
 
         let innerHtml = '<thead class="chartjs-tooltip-head">'
 
-        titleLines.forEach(function(title) {
+        titleLines.forEach(title => {
           innerHtml += '<tr><th><p>' + title + '</p></th></tr>'
         })
         innerHtml += '</thead><tbody>'
 
-        bodyLines.forEach(function(body, i) {
-          console.log(tooltipModel)
+        bodyLines.forEach((body, i) => {
           let colors = tooltipModel.labelColors[i]
           let style = 'background:' + colors.backgroundColor
           style += '; border-color:' + colors.borderColor
@@ -131,7 +198,9 @@ export default {
       }
 
       // `this` will be the overall tooltip
-      let position = this._chart.canvas.getBoundingClientRect()
+      let position = document
+        .getElementById('chart-dayily')
+        .getBoundingClientRect()
 
       // Display, position, and set styles for font
       tooltipEl.style.opacity = 1
@@ -179,32 +248,7 @@ export default {
         datasets: [
           {
             label: '개인 협업 내역',
-            data: [
-              0,
-              2,
-              4,
-              5,
-              10,
-              8,
-              2,
-              0,
-              0,
-              4,
-              0,
-              5,
-              6,
-              5,
-              0,
-              1,
-              2,
-              3,
-              4,
-              0,
-              0,
-              0,
-              0,
-              0,
-            ],
+            data: this.privateCollaboDatas,
             borderColor: '#0f75f5',
             borderWidth: 4,
             pointRadius: 0,
@@ -215,32 +259,7 @@ export default {
           },
           {
             label: '전체 협업 내역',
-            data: [
-              0,
-              2,
-              4,
-              5,
-              10,
-              8,
-              2,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              0,
-              20,
-              22,
-              25,
-              0,
-              0,
-              0,
-              0,
-              0,
-            ],
+            data: this.totalColaboDatas,
             borderColor: '#bbc8d9',
             borderWidth: 4,
             pointRadius: 0,
@@ -253,11 +272,11 @@ export default {
       },
       options: {
         hover: {
-          mode: 'nearest',
+          mode: 'index',
           intersect: false,
         },
         tooltips: {
-          mode: 'nearest',
+          mode: 'index',
           intersect: false,
           position: 'average',
           enabled: false,
