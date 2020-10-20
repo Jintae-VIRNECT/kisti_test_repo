@@ -14,7 +14,11 @@
         ></tab-button>
       </ul>
     </nav>
-    <button @click="refresh" class="dashboard-tab--refresh">
+    <button
+      v-if="component === 'board'"
+      @click="refresh"
+      class="dashboard-tab--refresh"
+    >
       <img src="~assets/image/ic_refresh.svg" />
       <p>새로고침</p>
     </button>
