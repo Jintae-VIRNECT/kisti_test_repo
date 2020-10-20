@@ -3,8 +3,7 @@ RELEASE
 New Features
 
 Bug Fixes
-- 컨텐츠 -> 작업 복제 실패(타겟관련) 버그 개선
-- 작업 -> 작업 복제 실패(타겟관련) 버그 개선
+- 작업 검색 에러 개선
 
 Limitation
 
