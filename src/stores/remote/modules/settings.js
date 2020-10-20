@@ -32,7 +32,7 @@ const state = {
 
   translate: {
     flag: false,
-    code: 'ko',
+    code: 'ko-KR',
   },
 
   //stream for local steram(screen stream)
