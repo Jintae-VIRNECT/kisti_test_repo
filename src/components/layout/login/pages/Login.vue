@@ -199,7 +199,10 @@ export default {
 			} catch (e) {
 				if (e.code === 2000) {
 					this.loading = false
-					this.message = this.$t('login.accountError.contents')
+					this.message =
+						this.auth.env !== 'onpremise'
+							? this.$t('login.accountError.contents')
+							: this.$t('onpremise.login.error.discord')
 				} else {
 					this.alertMessage(
 						this.$t('login.networkError.title'),
@@ -225,7 +228,7 @@ export default {
 					)
 					location.replace(this.$urls.account)
 				} catch (e) {
-					location.replace('/')
+					location.replace(this.$urls.workstation)
 				}
 			} else {
 				if (redirectTarget) {

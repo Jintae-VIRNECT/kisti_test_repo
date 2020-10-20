@@ -32,7 +32,6 @@ export default {
 			showSection: {
 				login: false,
 				language: true,
-				// link: this.$env === 'onpremise' ? true : false,
 			},
 		}
 	},

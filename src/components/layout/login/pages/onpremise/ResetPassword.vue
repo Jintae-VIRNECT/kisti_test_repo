@@ -43,7 +43,7 @@
 						</el-select>
 						<el-input
 							:placeholder="$t('onpremise.resetPass.qna.inputPlaceholder')"
-							v-if="question !== ''"
+							v-if="question !== null"
 							v-model="answer"
 							type="text"
 							name="email"
