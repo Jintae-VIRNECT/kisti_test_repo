@@ -2,9 +2,9 @@ export default {
   /* Account */
   LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
   TOKEN: ['POST', '/auth/oauth/token'],
-  ACCOUNT: ['GET', '/users/info', { type: 'form' }],
-  USER_INFO: ['GET', '/users/{userId}'],
-  SETTING_INFO: ['GET', '/workspaces/setting'],
+  ACCOUNT: ['GET', '/123users/info', { type: 'form', initing: true }],
+  USER_INFO: ['GET', '/users/{userId}', { initing: true }],
+  SETTING_INFO: ['GET', '/workspaces/setting', { initing: true }],
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],
