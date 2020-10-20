@@ -19,7 +19,7 @@ import com.amazonaws.services.s3.AmazonS3ClientBuilder;
  * @description
  * @since 2020.05.10
  */
-@Profile({"staging", "production", "test"})
+@Profile({"staging", "production", "test","local"})
 @Configuration
 public class AWSConfiguration {
 

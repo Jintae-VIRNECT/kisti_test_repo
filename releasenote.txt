@@ -3,7 +3,7 @@ RELEASE
 New Features
 
 Bug Fixes
-- 컨텐츠 리스트 조회 search 파라미터 추가 에러 개선
+- 컨텐츠 작업으로 복제 에러
 
 Limitation
 
