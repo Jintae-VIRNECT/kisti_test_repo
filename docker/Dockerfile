@@ -9,5 +9,7 @@ COPY ./build/libs/PF-ProcessManagement-1.0.0.jar ./PF-ProcessManagement-1.0.0.ja
 
 EXPOSE 8079
 
+# VOLUME ["/data/process", "/usr/app/upload"]
+
 ## Command executed when container is start up.
 CMD ["java", "-XX:+UseG1GC", "-Xmx500M", "-jar","PF-ProcessManagement-1.0.0.jar"]
