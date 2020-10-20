@@ -2198,9 +2198,19 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceFaviconUpdateRequest.getUserId(), new String[] {"MASTER"});
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L).orElseThrow(()-> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 파비콘 확장자, 사이즈 체크
+		if (workspaceFaviconUpdateRequest.getFavicon() == null) {
+			String favicon = fileUploadService.getFileUrl("virnect-default-favicon.ico");
+			workspaceSetting.setFavicon(favicon);
+			workspaceSettingRepository.save(workspaceSetting);
+			WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
+			workspaceFaviconUpdateResponse.setResult(true);
+			workspaceFaviconUpdateResponse.setFavicon(favicon);
+			return workspaceFaviconUpdateResponse;
+		}
 		String allowExtension = "jpg,jpeg,ico,png";
 		String extension = FilenameUtils.getExtension(workspaceFaviconUpdateRequest.getFavicon().getOriginalFilename());
 		checkFileSize(workspaceFaviconUpdateRequest.getFavicon().getSize(), 3221225472L);
@@ -2250,9 +2260,24 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[] {"MASTER"});
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L).orElseThrow(()-> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 로고 확장자, 사이즈 체크
+		if(workspaceLogoUpdateRequest.getDefaultLogo()==null){
+			String logoDefault = fileUploadService.getFileUrl("virnect-default-logo.png");
+			String logoWhite = fileUploadService.getFileUrl("virnect-white-logo.png");
+			workspaceSetting.setDefaultLogo(logoDefault);
+			workspaceSetting.setWhiteLogo(logoWhite);
+			workspaceSettingRepository.save(workspaceSetting);
+
+			WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+			workspaceLogoUpdateResponse.setResult(true);
+			workspaceLogoUpdateResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
+			workspaceLogoUpdateResponse.setGreyLogo(workspaceSetting.getGreyLogo());
+			workspaceLogoUpdateResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
+			return workspaceLogoUpdateResponse;
+		}
 		String allowExtension = "jpg,jpeg,gif,png";
 		String defaultExtension = FilenameUtils.getExtension(
 			workspaceLogoUpdateRequest.getDefaultLogo().getOriginalFilename());
@@ -2318,7 +2343,8 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceTitleUpdateRequest.getUserId(), new String[] {"MASTER"});
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L).orElseThrow(()-> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 고객사명 변경
 		workspaceSetting.setTitle(workspaceTitleUpdateRequest.getTitle());
@@ -2331,7 +2357,8 @@ public class WorkspaceService {
 	}
 
 	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting() {
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L).orElseThrow(()-> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = new WorkspaceCustomSettingResponse();
 		workspaceCustomSettingResponse.setWorkspaceTitle(workspaceSetting.getTitle());

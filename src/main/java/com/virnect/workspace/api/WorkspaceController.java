@@ -555,7 +555,7 @@ public class WorkspaceController {
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 		@ApiImplicitParam(name = "userId", value = "로고 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
-		@ApiImplicitParam(name = "defaultLogo",value = "로고 이미지", dataType = "__file", paramType = "form", required = true),
+		@ApiImplicitParam(name = "defaultLogo",value = "로고 이미지(생략 시 기본이미지)", dataType = "__file", paramType = "form", required = false),
 		@ApiImplicitParam(name = "greyLogo",value = "로고 그레이 이미지", dataType = "__file", paramType = "form", required = false),
 		@ApiImplicitParam(name = "whiteLogo",value = "로고 화이트 이미지", dataType = "__file", paramType = "form", required = false),
 	})
@@ -581,16 +581,14 @@ public class WorkspaceController {
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
 		@ApiImplicitParam(name = "userId", value = "파비콘 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
-		@ApiImplicitParam(name = "favicon", value = "파비콘 이미지", dataType = "__file", paramType = "form", required = true)
+		@ApiImplicitParam(name = "favicon", value = "파비콘 이미지(생략 시 기본이미지)", dataType = "__file", paramType = "form", required = false)
 	})
 	@PostMapping("/{workspaceId}/favicon")
 	public ResponseEntity<ApiResponse<WorkspaceFaviconUpdateResponse>> updateWorkspaceFavicon(
 		@PathVariable("workspaceId") String workspaceId,
 		@ModelAttribute WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
 	) {
-		if (!StringUtils.hasText(workspaceId) || workspaceFaviconUpdateRequest.getFavicon() == null
-			|| !StringUtils.hasText(workspaceFaviconUpdateRequest.getUserId())) {
-
+		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(workspaceFaviconUpdateRequest.getUserId())) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = workspaceService.updateWorkspaceFavicon(

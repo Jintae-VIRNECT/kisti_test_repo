@@ -102,9 +102,9 @@ management:
 
 ## Minio
 minio:
-  access-key: "minioadmin"
-  secret-key: "minioadmin"
-  server: "https://192.168.13.34:9000"
+  access-key: "virenct"
+  secret-key: "qjsprxm123"
+  server: "https://192.168.13.135:9000"
   bucket: "virnect-platform"
   resource: "workspace/profile"
   extension: "gif,jpg,jpeg,png"

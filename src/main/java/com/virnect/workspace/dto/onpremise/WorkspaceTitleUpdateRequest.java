@@ -2,6 +2,8 @@ package com.virnect.workspace.dto.onpremise;
 
 import javax.validation.constraints.NotBlank;
 
+import org.hibernate.validator.constraints.Length;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -24,5 +26,6 @@ public class WorkspaceTitleUpdateRequest {
 
 	@ApiModelProperty(value = "고객사명", required = true, position = 1)
 	@NotBlank
+	@Length(max=19, message = "워크스페이스 고객사명은 최대 19자까지 가능합니다.")
 	private String title;
 }

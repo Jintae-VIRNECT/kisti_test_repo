@@ -24,7 +24,7 @@ public class WorkspaceLogoUpdateRequest {
 	@NotBlank
 	private String userId;
 
-	@ApiModelProperty(value = "로고 이미지", required = true, position = 1)
+	@ApiModelProperty(value = "로고 이미지", required = false, position = 1)
 	private MultipartFile defaultLogo;
 
 	@ApiModelProperty(value = "로고 그레이 이미지", required = false, position = 2)
