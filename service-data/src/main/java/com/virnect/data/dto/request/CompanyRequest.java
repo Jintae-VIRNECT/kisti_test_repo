@@ -8,9 +8,7 @@ import lombok.Setter;
 
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Getter
 @Setter
@@ -35,48 +33,39 @@ public class CompanyRequest {
     @Enumerated(EnumType.STRING)
     private SessionType sessionType;
 
-    @ApiModelProperty(value = "Enable Auto Server Recording", position = 4, example = "false")
+    @ApiModelProperty(value = "Enable text translation", position = 4, example = "false")
+    private boolean translation;
+
+    @ApiModelProperty(value = "Enable Speech to text sync", position = 5, example = "false")
     private boolean sttSync;
 
-    @ApiModelProperty(value = "Enable translation", position = 5, example = "false")
+    @ApiModelProperty(value = "Enable Speech to text streaming", position = 6, example = "false")
     private boolean sttStreaming;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 6, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 7, example = "false")
     private boolean transKoKr;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 7, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 8, example = "false")
     private boolean transEnUs;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 8, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 9, example = "false")
     private boolean transJaJp;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 9, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 10, example = "false")
     private boolean transZh;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 10, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 11, example = "false")
     private boolean transFrFr;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 11, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 12, example = "false")
     private boolean transEsEs;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 12, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 13, example = "false")
     private boolean transRuRu;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 13, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 14, example = "false")
     private boolean transUkUa;
 
-    @ApiModelProperty(value = "Enable Translation Language", position = 14, example = "false")
+    @ApiModelProperty(value = "Enable Translation Language", position = 15, example = "false")
     private boolean transPlPl;
-
-    /*@Override
-    public String toString() {
-        return "RoomRequest{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", autoRecording='" + autoRecording + '\'' +
-                ", leaderId='" + leaderId + '\'' +
-                ", workspaceId='" + workspaceId + '\'' +
-                ", participantIds='" + participantIds.toString() + '\'' +
-                '}';
-    }*/
 }

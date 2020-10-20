@@ -92,20 +92,6 @@ public class ValidationController implements IValidationRestAPI {
         return ResponseEntity.ok(
                 this.dataRepository.loadCompanyInformation(workspaceId)
         );
-
-        /*if(userInfo.getData().getDescription().equals("KINTEXT_USER")) {
-            log.info("COMPANY INFO :: USER INFO :: Current user is KINTEXT User");
-            this.dataRepository.loadCompanyInformation(workspaceId);
-        } else {
-
-        }*/
-
-        /*CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
-        companyInfoResponse.setCompanyCode(CompanyConstants.COMPANY_KINTEX);
-        companyInfoResponse.setSessionType(SessionType.OPEN);
-        companyInfoResponse.setTranslation(true);*/
-
-       //return ResponseEntity.ok(new ApiResponse<>(companyInfoResponse));
     }
 
     /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")

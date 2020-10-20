@@ -28,9 +28,6 @@ public class RoomDetailInfoResponse {
     @ApiModelProperty(value = "Remote Session Maximum User Capacity", position = 4, example = "3")
     private int maxUserCount;
 
-    @ApiModelProperty(value = "Remote Session translation", position = 5, example = "false")
-    private boolean translation;
-
     @ApiModelProperty(value = "Remote Session Type", position = 6, example = "PRIVATE")
     private SessionType sessionType;
 
