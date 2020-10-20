@@ -24,19 +24,19 @@
       @dragover.stop.prevent="dragoverHandler"
       @drop.stop.prevent="dropHandler"
     >
+      <input
+        type="file"
+        name="file"
+        ref="inputFile"
+        style="display: none"
+        class="el-input__form-input"
+        accept="*/*"
+        @change="fileUpload($event)"
+      />
       <template v-if="fileList.length === 0">
         <button class="chat-input__form-upload" @click="clickUpload">
           {{ $t('service.file_upload') }}
         </button>
-        <input
-          type="file"
-          name="file"
-          ref="inputFile"
-          style="display: none"
-          class="el-input__form-input"
-          accept="*/*"
-          @change="fileUpload($event)"
-        />
         <textarea
           class="chat-input__form-write"
           v-model="inputText"
@@ -45,7 +45,10 @@
         />
       </template>
       <template v-else>
-        <button class="chat-input__form-remove" @click="fileList = []"></button>
+        <button
+          class="chat-input__form-remove"
+          @click="clearUploadFile"
+        ></button>
         <p class="chat-input__form-filetext">
           {{ fileName }}
         </p>
@@ -235,6 +238,7 @@ export default {
       }
     },
     clearUploadFile() {
+      this.fileList = []
       this.$refs['inputFile'].value = ''
     },
     removeFile(idx) {
