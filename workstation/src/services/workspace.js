@@ -290,7 +290,7 @@ export default {
   async setWorkspaceLogo(logo) {
     const formData = new FormData()
     formData.append('userId', myProfileGetter().uuid)
-    formData.append('defaultLogo', logo)
+    if (logo) formData.append('defaultLogo', logo)
 
     const data = await api('WORKSPACE_SET_LOGO', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
@@ -304,7 +304,7 @@ export default {
   async setWorkspaceFavicon(favicon) {
     const formData = new FormData()
     formData.append('userId', myProfileGetter().uuid)
-    formData.append('favicon ', favicon)
+    if (favicon) formData.append('favicon', favicon)
 
     const data = await api('WORKSPACE_SET_FAVICON', {
       route: { workspaceId: activeWorkspaceGetter().uuid },
