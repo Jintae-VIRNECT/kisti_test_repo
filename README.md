@@ -119,28 +119,26 @@ docker run -it --rm -p 9000:9000 --name httpserver httpserver
 - openvidu-browser-2.14.0.min.js: openvidu에서 제공하는 웹 클라이언트 라이브러리
 - openvidu-browser-dev.js: openvidu-server 수정에 대응된 버전
 
-## MySql 연동
+## Local Test
 
-### Run MySql Docker Container for Test
-
-```
-docker run --name mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=admin -d mysql --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-```
-
-### Create Database
-
-mysql 접속
+### Run MySql & Minio Docker Containers for Test
 
 ```
-docker exec -it mysql /bin/bash
+cd docker/test
+docker-compose up -d
 ```
 
-```
-mysql -uroot -p
-```
-
-database 생성
+### Configuration
 
 ```
-create database remote;
+[database]
+driver = "mysql"
+param = "root:admin@tcp(127.0.0.1:3306)/remote?charset=utf8mb4&parseTime=True&loc=UTC"
+
+[storage]
+endpoint = "127.0.0.1:9000"
+accessKey = "minio"
+secretKey = "minio123"
+useSSL = true
+BucketName = "virnect-remote-recorder"
 ```

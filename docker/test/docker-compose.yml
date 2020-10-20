@@ -1,0 +1,22 @@
+version: "3"
+services:
+  mysql:
+    build:
+      context: ./mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+
+  minio:
+    image: "minio/minio"
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./certs:/root/.minio/certs
+    environment:
+      - MINIO_ACCESS_KEY=minio
+      - MINIO_SECRET_KEY=minio123
+    command:
+      - "server"
+      - "/data"
