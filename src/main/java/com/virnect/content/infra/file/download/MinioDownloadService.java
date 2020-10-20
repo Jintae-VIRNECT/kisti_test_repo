@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
@@ -126,5 +127,80 @@ public class MinioDownloadService implements FileDownloadService {
 			log.error(exception.getMessage());
 			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
+	}
+
+	@Override
+	public MultipartFile getMultipartfile(String fileName) {
+		String resourcePath = "contents/" + fileName;
+		String objectName = bucketResource + resourcePath;
+
+		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+			.bucket(bucketName)
+			.object(objectName)
+			.build();
+		InputStream inputStream;
+		String objectUrl;
+		try {
+			inputStream = minioClient.getObject(getObjectArgs);
+			objectUrl = minioClient.getObjectUrl(bucketName, objectName);
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+			ServerException | XmlParserException | IOException exception) {
+			log.error(exception.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+		MultipartFile multipartFile = new MultipartFile() {
+			@Override
+			public String getName() {
+				return "content";
+			}
+
+			@Override
+			public String getOriginalFilename() {
+				return fileName;
+			}
+
+			@Override
+			public String getContentType() {
+				return "application/octet-stream";
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+
+			@Override
+			public long getSize() {
+				try {
+					return getBytes().length;
+				} catch (IOException e) {
+					log.error("[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert fail. reasone >> ", e.getMessage());
+					throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+				}
+			}
+
+			@Override
+			public byte[] getBytes() throws IOException {
+				return IOUtils.toByteArray(inputStream);
+			}
+
+			@Override
+			public InputStream getInputStream() throws IOException {
+				return inputStream;
+			}
+
+			@Override
+			public void transferTo(File dest) throws IOException, IllegalStateException {
+			}
+		};
+
+		log.info(
+			"[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
+			, objectUrl
+			, multipartFile.getContentType()
+			, multipartFile.getSize()
+			, multipartFile.getOriginalFilename()
+		);
+		return multipartFile;
 	}
 }

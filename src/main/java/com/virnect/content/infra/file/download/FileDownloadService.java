@@ -1,6 +1,7 @@
 package com.virnect.content.infra.file.download;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -15,4 +16,6 @@ public interface FileDownloadService {
 	void copyFileS3ToLocal(String fileName);
 
 	String getFilePath(String bucketResource, String fileName);
+
+	MultipartFile getMultipartfile(String fileName);
 }

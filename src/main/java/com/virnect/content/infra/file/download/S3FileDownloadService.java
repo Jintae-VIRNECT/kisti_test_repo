@@ -3,6 +3,7 @@ package com.virnect.content.infra.file.download;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
@@ -93,9 +95,66 @@ public class S3FileDownloadService implements FileDownloadService {
 		}
 	}
 
+	public MultipartFile getMultipartfile(String fileName) {
+		String resourcePath = "contents/" + fileName;
+		String key = bucketResource + resourcePath;
+		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
+		S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
+		S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
+		MultipartFile multipartFile = new MultipartFile() {
+			@Override
+			public String getName() {
+				return "content";
+			}
+
+			@Override
+			public String getOriginalFilename() {
+				return fileName;
+			}
+
+			@Override
+			public String getContentType() {
+				return s3Object.getObjectMetadata().getContentType();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+
+			@Override
+			public long getSize() {
+				return s3Object.getObjectMetadata().getContentLength();
+			}
+
+			@Override
+			public byte[] getBytes() throws IOException {
+				return IOUtils.toByteArray(s3ObjectInputStream);
+			}
+
+			@Override
+			public InputStream getInputStream() throws IOException {
+				return s3ObjectInputStream;
+			}
+
+			@Override
+			public void transferTo(File dest) throws IOException, IllegalStateException {
+			}
+		};
+		log.info(
+			"[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
+			, amazonS3Client.getUrl(bucketName, key).toExternalForm()
+			, multipartFile.getContentType()
+			, multipartFile.getSize()
+			, multipartFile.getOriginalFilename()
+		);
+		return multipartFile;
+	}
+
 	@Override
 	public String getFilePath(String bucketResource, String fileName) {
 		String objectName = bucketResource + fileName;
+		S3Object s3Object = amazonS3Client.getObject(bucketName, fileName);
 		return amazonS3Client.getUrl(bucketName, objectName).toExternalForm();
 	}
 }
