@@ -11,7 +11,7 @@
 					:placeholder="
 						$env !== 'onpremise'
 							? $t('login.emailPlaceholder')
-							: 'ID를 입력해 주세요'
+							: $t('onpremise.resetPass.input.placeholder')
 					"
 					v-model="login.email"
 					name="email"
