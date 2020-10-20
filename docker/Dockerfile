@@ -5,7 +5,7 @@ COPY . .
 
 ARG NODE_ENV=production
 
-RUN yarn install
+RUN yarn install --production=false
 RUN yarn build \
 && rm -rf node_modules
 
@@ -22,7 +22,7 @@ COPY --from=builder server.js .
 COPY --from=builder package.json .
 COPY --from=builder dist dist
 
-RUN yarn install --production
+RUN yarn install --production=true
 
 EXPOSE 8883
 CMD ["yarn", "start"]
