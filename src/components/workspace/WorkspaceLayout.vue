@@ -194,7 +194,7 @@ export default {
       )
       this.setCompanyInfo({
         targetCompany: res.companyCode,
-        translate: res.sttStreaming || res.sttSync,
+        translate: res.translation,
         sessionType: res.sessionType,
         languageCodes,
       })
