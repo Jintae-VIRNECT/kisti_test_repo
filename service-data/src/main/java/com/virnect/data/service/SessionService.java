@@ -712,13 +712,28 @@ public class SessionService {
     @Transactional
     public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+        if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+            Member member = Member.builder()
+                    .room(room)
+                    .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
+                    .workspaceId(room.getWorkspaceId())
+                    .uuid(clientMetaData.getClientData())
+                    .sessionId(room.getSessionId())
+                    .build();
 
-        for (Member member:room.getMembers()) {
-            if(member.getUuid().equals(clientMetaData.getClientData())) {
-                member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                member.setConnectionId(connectionId);
-                member.setMemberStatus(MemberStatus.LOAD);
+            member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+            member.setConnectionId(connectionId);
+            member.setMemberStatus(MemberStatus.LOAD);
+
+            room.getMembers().add(member);
+        } else {
+            for (Member member : room.getMembers()) {
+                if (member.getUuid().equals(clientMetaData.getClientData())) {
+                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                    member.setConnectionId(connectionId);
+                    member.setMemberStatus(MemberStatus.LOAD);
+                }
             }
         }
         roomRepository.save(room);
