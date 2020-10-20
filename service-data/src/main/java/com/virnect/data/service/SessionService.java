@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -713,8 +714,11 @@ public class SessionService {
     public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
         if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-            for (Member member : room.getMembers()) {
-                if (member.getUuid().equals(clientMetaData.getClientData())) {
+            //List<Member> memberList = room.getMembers();
+            for(ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext();){
+                Member member = it.next();
+
+                if(member.getUuid().equals(clientMetaData.getClientData())) {
                     member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
                     member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
                     member.setConnectionId(connectionId);
@@ -731,11 +735,54 @@ public class SessionService {
                     newMember.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
                     newMember.setConnectionId(connectionId);
                     newMember.setMemberStatus(MemberStatus.LOAD);
-
-                    room.getMembers().add(newMember);
+                    it.add(newMember);
                 }
             }
 
+
+            /*room.getMembers().stream().map(member -> {
+                if(member.getUuid().equals(clientMetaData.getClientData())) {
+                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                    member.setConnectionId(connectionId);
+                    member.setMemberStatus(MemberStatus.LOAD);
+                } else {
+                    member = Member.builder()
+                            .room(room)
+                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
+                            .workspaceId(room.getWorkspaceId())
+                            .uuid(clientMetaData.getClientData())
+                            .sessionId(room.getSessionId())
+                            .build();
+
+                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                    member.setConnectionId(connectionId);
+                    member.setMemberStatus(MemberStatus.LOAD);
+                }
+                return null;
+            }).collect(Collectors.toList());*/
+            /*for (Member member : memberList) {
+                if (member.getUuid().equals(clientMetaData.getClientData())) {
+                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                    member.setConnectionId(connectionId);
+                    member.setMemberStatus(MemberStatus.LOAD);
+                } else {
+                    newMember = Member.builder()
+                            .room(room)
+                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
+                            .workspaceId(room.getWorkspaceId())
+                            .uuid(clientMetaData.getClientData())
+                            .sessionId(room.getSessionId())
+                            .build();
+
+                    newMember.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                    newMember.setConnectionId(connectionId);
+                    newMember.setMemberStatus(MemberStatus.LOAD);
+                }
+            }
+            if (newMember != null)
+                room.getMembers().add(newMember);*/
         } else {
             for (Member member : room.getMembers()) {
                 if (member.getUuid().equals(clientMetaData.getClientData())) {
