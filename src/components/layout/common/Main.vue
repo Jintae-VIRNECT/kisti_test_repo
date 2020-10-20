@@ -20,7 +20,7 @@ export default {
 		console.log('%cprocess env: %s', environmentCss, res.env)
 		Vue.prototype.$urls = res
 		Vue.prototype.$env = res.env
-		await auth.init({ env: res.env, urls: res })
+		await auth.init({ env: res.env, urls: res, timeout: res.timeout })
 		if (res.env === 'onpremise') {
 			store.dispatch('SET_CUSTOM')
 		}

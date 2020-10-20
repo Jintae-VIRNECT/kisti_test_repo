@@ -44,6 +44,7 @@ class Config {
 			)
 			urlConfig = data.propertySources[0].source
 			envConfig = res.data.propertySources[0].source
+			urlConfig.timeout = res.data.propertySources[0].source.API_TIMEOUT
 			urlConfig.env = data.profiles[0]
 		}
 		return this
