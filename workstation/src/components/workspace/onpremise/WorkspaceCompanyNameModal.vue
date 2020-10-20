@@ -30,7 +30,7 @@
           required
           :label="$t('workspace.onpremiseSetting.company.companyName')"
         >
-          <el-input v-model="form.companyName" />
+          <el-input v-model="form.companyName" :maxlength="20" />
         </el-form-item>
         <p
           class="caution"
