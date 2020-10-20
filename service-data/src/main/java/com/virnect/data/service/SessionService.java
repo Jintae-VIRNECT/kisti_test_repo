@@ -49,6 +49,7 @@ public class SessionService {
                 .workspaceId(companyRequest.getWorkspaceId())
                 .licenseName(companyRequest.getLicenseName())
                 .sessionType(companyRequest.getSessionType())
+                .translation(companyRequest.isTranslation())
                 .sttStreaming(companyRequest.isSttStreaming())
                 .sttSync(companyRequest.isSttSync())
                 .transKoKr(companyRequest.isTransKoKr())
@@ -93,7 +94,6 @@ public class SessionService {
                 .defaultOutputMode("COMPOSED")
                 .defaultRecordingLayout("BEST_FIT")
                 .recording(true)
-                .translation(roomRequest.isTranslation())
                 .keepalive(roomRequest.isKeepAlive())
                 .sessionType(roomRequest.getSessionType())
                 .room(room)
@@ -313,7 +313,6 @@ public class SessionService {
                     .defaultOutputMode(sessionProperty.getDefaultOutputMode())
                     .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
                     .recording(sessionProperty.isRecording())
-                    .translation(sessionProperty.isTranslation())
                     .keepalive(sessionProperty.isKeepalive())
                     .sessionType(sessionProperty.getSessionType())
                     .roomHistory(roomHistory)
@@ -402,7 +401,6 @@ public class SessionService {
             sessionPropertyHistory.setDefaultOutputMode(sessionProperty.getDefaultOutputMode());
             sessionPropertyHistory.setDefaultRecordingLayout(sessionProperty.getDefaultRecordingLayout());
             sessionPropertyHistory.setRecording(sessionProperty.isRecording());
-            sessionPropertyHistory.setTranslation(sessionProperty.isTranslation());
             sessionPropertyHistory.setKeepalive(sessionProperty.isKeepalive());
             sessionPropertyHistory.setSessionType(sessionProperty.getSessionType());
             sessionPropertyHistory.setRoomHistory(oldRoomHistory);
@@ -476,7 +474,6 @@ public class SessionService {
                     .defaultOutputMode(sessionProperty.getDefaultOutputMode())
                     .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
                     .recording(sessionProperty.isRecording())
-                    .translation(sessionProperty.isTranslation())
                     .keepalive(sessionProperty.isKeepalive())
                     .sessionType(sessionProperty.getSessionType())
                     .roomHistory(roomHistory)
@@ -554,7 +551,6 @@ public class SessionService {
                 sessionPropertyHistory.setDefaultOutputMode(sessionProperty.getDefaultOutputMode());
                 sessionPropertyHistory.setDefaultRecordingLayout(sessionProperty.getDefaultRecordingLayout());
                 sessionPropertyHistory.setRecording(sessionProperty.isRecording());
-                sessionPropertyHistory.setTranslation(sessionProperty.isTranslation());
                 sessionPropertyHistory.setKeepalive(sessionProperty.isKeepalive());
                 sessionPropertyHistory.setSessionType(sessionProperty.getSessionType());
                 sessionPropertyHistory.setRoomHistory(oldRoomHistory);
@@ -627,7 +623,6 @@ public class SessionService {
                         .defaultOutputMode(sessionProperty.getDefaultOutputMode())
                         .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
                         .recording(sessionProperty.isRecording())
-                        .translation(sessionProperty.isTranslation())
                         .keepalive(sessionProperty.isKeepalive())
                         .sessionType(sessionProperty.getSessionType())
                         .roomHistory(roomHistory)

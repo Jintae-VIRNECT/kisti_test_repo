@@ -30,6 +30,9 @@ public class Company extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private SessionType sessionType;
 
+    @Column(name = "translation", nullable = false)
+    private boolean translation;
+
     @Column(name = "stt_sync", nullable = false)
     private boolean sttSync;
 
@@ -69,6 +72,7 @@ public class Company extends BaseTimeEntity {
                    String workspaceId,
                    String licenseName,
                    SessionType sessionType,
+                   Boolean translation,
                    Boolean sttSync,
                    Boolean sttStreaming,
                    Boolean transKoKr,
@@ -85,6 +89,7 @@ public class Company extends BaseTimeEntity {
         this.workspaceId = workspaceId;
         this.licenseName = licenseName;
         this.sessionType = sessionType;
+        this.translation = translation;
         this.sttSync = sttSync;
         this.sttStreaming = sttStreaming;
 

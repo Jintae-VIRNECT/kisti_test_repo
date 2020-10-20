@@ -35,9 +35,6 @@ public class SessionPropertyHistory extends BaseTimeEntity {
     @Column(name = "recording", nullable = false)
     private boolean recording;
 
-    @Column(name = "translation", nullable = false)
-    private boolean translation;
-
     @Column(name = "keepalive", nullable = false)
     private boolean keepalive;
 
@@ -55,7 +52,6 @@ public class SessionPropertyHistory extends BaseTimeEntity {
                                   String defaultOutputMode,
                                   String defaultRecordingLayout,
                                   boolean recording,
-                                  boolean translation,
                                   boolean keepalive,
                                   SessionType sessionType,
                                   RoomHistory roomHistory
@@ -67,7 +63,6 @@ public class SessionPropertyHistory extends BaseTimeEntity {
         this.defaultOutputMode = defaultOutputMode;
         this.defaultRecordingLayout = defaultRecordingLayout;
         this.recording = recording;
-        this.translation = translation;
         this.keepalive = keepalive;
         this.sessionType = sessionType;
         this.roomHistory = roomHistory;
@@ -82,7 +77,6 @@ public class SessionPropertyHistory extends BaseTimeEntity {
                 ", defaultOutputMode='" + defaultOutputMode + '\'' +
                 ", defaultRecordingLayout='" + defaultRecordingLayout + '\'' +
                 ", recording='" + recording + '\'' +
-                ", translation='" + translation + '\'' +
                 ", keepalive='" + keepalive + '\'' +
                 ", sessionType='" + sessionType + '\'' +
                 '}';

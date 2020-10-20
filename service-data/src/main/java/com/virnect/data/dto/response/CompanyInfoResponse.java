@@ -29,6 +29,9 @@ public class CompanyInfoResponse {
     @ApiModelProperty(value = "Remote Session Type", position = 3, example = "PRIVATE")
     private SessionType sessionType = PRIVATE;
 
+    @ApiModelProperty(value = "Enable text translation", position = 4, example = "false")
+    private boolean translation;
+
     @ApiModelProperty(value = "Speech to text Type", position = 5, example = "false")
     private boolean sttSync = false;
 

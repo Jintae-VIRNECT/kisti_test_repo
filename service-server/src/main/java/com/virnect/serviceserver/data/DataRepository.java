@@ -484,7 +484,6 @@ public class DataRepository {
                         //RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
                         resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
                         resultResponse.setSessionType(room.getSessionProperty().getSessionType());
-                        resultResponse.setTranslation(room.getSessionProperty().isTranslation());
 
                         // Get Member List by Room Session ID
                         // Mapping Member List Data to Member Information List
@@ -637,7 +636,6 @@ public class DataRepository {
                         // mapping data
                         RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
                         resultResponse.setSessionType(room.getSessionProperty().getSessionType());
-                        resultResponse.setTranslation(room.getSessionProperty().isTranslation());
                         // Get Member List by Room Session ID
                         // Mapping Member List Data to Member Information List
                         List<MemberInfoResponse> memberInfoList = sessionService.getMemberList(resultResponse.getSessionId())
