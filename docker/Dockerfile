@@ -1,13 +1,11 @@
 # Build Stage
 FROM node:alpine AS builder
 
-COPY package.json .
-COPY workstation workstation
-COPY WC-Modules WC-Modules
+COPY . .
 
 ARG NODE_ENV=production
 
-RUN yarn install
+RUN yarn install --production=false
 RUN yarn workspace workstation build:$NODE_ENV \
 && rm -rf node_modules
 
@@ -20,7 +18,7 @@ WORKDIR $APP_HOME
 COPY --from=builder package.json .
 COPY --from=builder workstation workstation
 
-RUN yarn install --production
+RUN yarn install --production=true
 
 EXPOSE 8878
 CMD ["yarn", "workspace", "workstation", "deploy"]
