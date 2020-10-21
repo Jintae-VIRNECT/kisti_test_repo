@@ -14,7 +14,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { downloadFileUrl } from 'api/http/file'
+import { downloadFile } from 'api/http/file'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 
@@ -56,7 +56,7 @@ export default {
     async download() {
       this.zip = new JSZip()
       for (let file of this.fileList) {
-        const res = await downloadFileUrl({
+        const res = await downloadFile({
           objectName: file.objectName,
           sessionId: this.roomInfo.sessionId,
           workspaceId: this.workspace.uuid,
