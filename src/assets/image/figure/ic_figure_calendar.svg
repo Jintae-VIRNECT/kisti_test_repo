@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="34px" viewBox="0 0 34 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>32A4DEC5-F751-44D1-81AF-338BCCC135D7@1x</title>
+    <defs>
+        <path d="M13.3333333,15.8 L10.8888889,15.8 L10.8888889,18.2 L13.3333333,18.2 L13.3333333,15.8 Z M18.2222222,15.8 L15.7777778,15.8 L15.7777778,18.2 L18.2222222,18.2 L18.2222222,15.8 Z M23.1111111,15.8 L20.6666667,15.8 L20.6666667,18.2 L23.1111111,18.2 L23.1111111,15.8 Z M25.5555556,7.4 L24.3333333,7.4 L24.3333333,5 L21.8888889,5 L21.8888889,7.4 L12.1111111,7.4 L12.1111111,5 L9.66666667,5 L9.66666667,7.4 L8.44444444,7.4 C7.08777778,7.4 6.01222222,8.48 6.01222222,9.8 L6,26.6 C6,27.92 7.08777778,29 8.44444444,29 L25.5555556,29 C26.9,29 28,27.92 28,26.6 L28,9.8 C28,8.48 26.9,7.4 25.5555556,7.4 Z M25.5555556,26.6 L8.44444444,26.6 L8.44444444,13.4 L25.5555556,13.4 L25.5555556,26.6 Z" id="path-1"></path>
+    </defs>
+    <g id="Design" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-361.000000, -657.000000)">
+            <g id="dashboard_date" transform="translate(320.000000, 614.000000)">
+                <g id="icon_date" transform="translate(41.000000, 43.000000)">
+                    <rect id="tr" x="0" y="0" width="34" height="34"></rect>
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="icon/action/date_range_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,67 +1,123 @@
+/*eslint no-unused-vars: "error"*/
+
 import http from 'api/gateway'
+import dummyServerRecord from './dummyServerRecord'
+import dummyFile from './dummyFile'
+
+//서버 녹화파일 / 로컬 녹화 파일 / 첨부파일 API 전부
 
 /**
- * 파일서버에 파일 전송
- *
- * @param {File}   file 전송할 파일 객체
- * @param {String} sessionId 파일이 전송된 협업 방 id
- * @param {String} workspaceId 파일이 전송된 워크스테이션 id
+ * 모든 서버 녹화 파일을 불러오는 API
+ * @param {*} workspaceId
+ * @param {*} userId
+ * @param {*} sessionId
  */
-export const sendFile = async ({ file, sessionId, workspaceId }) => {
-  const returnVal = await http('SEND_FILE', { file, sessionId, workspaceId })
-  return returnVal
-}
-/**
- * 파일 업로드
- *
- * @param {File}   file
- * @param {String} sessionId
- * @param {String} workspaceId
- * @param {String} userId
- */
-export const uploadFile = async ({ file, sessionId, workspaceId, userId }) => {
-  const returnVal = await http('FILE_UPLOAD', {
-    file,
-    sessionId,
-    workspaceId,
-    userId,
-  })
-  return returnVal
-}
-/**
- * 파일 다운로드
- *
- * @param {Path} sessionId
- * @param {Path} workspaceId
- * @param {String} userId
- * @param {String} objectName
- */
-export const downloadFile = async ({
-  objectName,
-  sessionId,
+export const getServerRecordFiles = async ({
   workspaceId,
   userId,
+  sessionId,
 }) => {
-  const returnVal = await http('FILE_DOWNLOAD', {
-    objectName,
-    sessionId,
+  // const returnVal = await http('SERVER_RECORD_FILES', {
+  //   workspaceId,
+  //   userId,
+  //   sessionId,
+  // })
+  // return returnVal
+
+  const returnVal = dummyServerRecord
+  return returnVal
+}
+
+/**
+ * 모든 서버 녹화 파일을 삭제하는 API
+ * @param {*} param0
+ */
+export const deleteServerRecordFilesAll = async ({ workspaceId, userId }) => {
+  const returnVal = await http('DELETE_SERVER_RECORD_FILES_ALL', {
     workspaceId,
     userId,
   })
   return returnVal
 }
+
 /**
- * 파일 목록
- *
- * @param {Query} workspaceId
- * @param {Query} userId
- * @param {Query} fileName
+ * 특정 서버 녹화 파일을 삭제하는 API
+ * @param {*} param0
  */
-export const getFileList = async ({ sessionId, workspaceId, userId }) => {
-  const returnVal = await http('FILE_LIST', {
-    sessionId,
+export const deleteServerRecordFileItem = async ({
+  workspaceId,
+  userId,
+  id,
+}) => {
+  const returnVal = await http('DELETE_SERVER_RECORD_FILES_ITEM', {
     workspaceId,
     userId,
+    id,
+  })
+  return returnVal
+}
+
+/**
+ * 특정 서버 녹화파일을 다운로드 하기위한 URL을 반환하는 API
+ * @param {*} param0
+ */
+export const getServerRecordFileUrl = async ({ workspaceId, userId, id }) => {
+  const returnVal = await http('SERVER_RECORD_FILE_URL', {
+    workspaceId,
+    userId,
+    id,
+  })
+  return returnVal
+}
+
+/**
+ * 모든 파일 목록을 반환하는 API
+ * @param {*} param0
+ */
+export const getFiles = async ({
+  workspaceId,
+  userId,
+  sessionId,
+  opts = {},
+}) => {
+  // const returnVal = await http('FILES', {
+  //   workspaceId,
+  //   userId,
+  //   sessionId,
+  //   ...opts,
+  // })
+  // return returnVal
+  const returnVal = dummyFile
+  return returnVal
+}
+
+/**
+ * 특정 파일을 삭제하는 API
+ * @param {*} param0
+ */
+export const deleteFileItem = async ({
+  objectName,
+  workspaceId,
+  userId,
+  sessionId,
+}) => {
+  const returnVal = await http('DELETE_FILE_ITEM', {
+    objectName,
+    workspaceId,
+    userId,
+    sessionId,
+  })
+  return returnVal
+}
+
+/**
+ * 특정 파일의 다운로드 URL을 반환하는 API
+ * @param {*} param0
+ */
+export const getFileDownloadUrl = async ({ workspaceId, sessionId }) => {
+  const returnVal = await http('FILE_ITEM_DOWNLOAD_URL', {
+    workspaceId,
+    sessionId,
   })
   return returnVal
 }

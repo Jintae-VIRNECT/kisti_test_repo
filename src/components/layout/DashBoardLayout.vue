@@ -1,9 +1,11 @@
 <template>
   <div class="dashboard-layout">
     <dash-board-header></dash-board-header>
+
     <div class="dashboard-layout__contents">
       <dash-board-tab ref="tabSection" @tabChange="tabChange"></dash-board-tab>
     </div>
+
     <dash-board-footer></dash-board-footer>
   </div>
 </template>
@@ -84,11 +86,11 @@ export default {
 .dashboard-layout {
   position: relative;
   width: 100%;
-  height: 110vh;
+  height: 100%;
 }
 .dashboard-layout__contents {
   height: 100%;
-  padding: 68px 22.8571rem 0 22.8571rem;
+  padding: 68px 319.9994px 134px 319.9994px;
   background: #f8f8fa;
 }
 </style>

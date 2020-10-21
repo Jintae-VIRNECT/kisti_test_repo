@@ -24,7 +24,9 @@
             class="history__row"
             v-for="(history, index) in historys"
             :key="index"
-            @click="openHistoryInfo(history.sessionId)"
+            @click="showHistory(history.sessionId)"
+            @mouseover="hover = true"
+            @mouseleave="hover = false"
           >
             <div class="history__text index">
               <p>{{ history.index }}</p>
@@ -42,28 +44,58 @@
               <collabo-status :status="history.status"> </collabo-status>
             </div>
             <div class="history__text count">
-              <server-record-count-button
-                :count="history.recordCount"
-                :serialNum="history.serialNum"
-              ></server-record-count-button>
+              <count-button
+                :count="history.serverRecord.length"
+                :images="{
+                  select: require('assets/image/ic_rec_select.svg'),
+                  active: require('assets/image/ic_rec_active.svg'),
+                  default: require('assets/image/ic_rec_default.svg'),
+                }"
+                @click="showServerRecord(history)"
+              ></count-button>
             </div>
             <div class="history__text count">
-              <local-record-count-button
-                :count="history.recordCount"
-                :serialNum="history.serialNum"
-              ></local-record-count-button>
+              <count-button
+                :count="history.localRecord.length"
+                :images="{
+                  select: require('assets/image/ic_video_select.svg'),
+                  active: require('assets/image/ic_video_active.svg'),
+                  default: require('assets/image/ic_video_default.svg'),
+                }"
+                @click="showLocalRecord(history)"
+              ></count-button>
             </div>
             <div class="history__text count">
-              <file-count-button
-                :count="history.recordCount"
-                :serialNum="history.serialNum"
-              ></file-count-button>
+              <count-button
+                :count="history.files.length"
+                :images="{
+                  select: require('assets/image/ic_file_select.svg'),
+                  active: require('assets/image/ic_file_active.svg'),
+                  default: require('assets/image/ic_file_default.svg'),
+                }"
+                @click="showFile(history)"
+              ></count-button>
             </div>
           </div>
           <history-info
             :sessionId="sessionId"
-            :visible.sync="showHistoryInfo"
+            :visible.sync="historyInfo"
           ></history-info>
+          <server-record-info
+            :title="historyTitle"
+            :fileList="fileList"
+            :visible.sync="serverRecord"
+          ></server-record-info>
+          <local-record-info
+            :title="historyTitle"
+            :fileList="fileList"
+            :visible.sync="localRecord"
+          ></local-record-info>
+          <attach-file-info
+            :title="historyTitle"
+            :fileList="fileList"
+            :visible.sync="file"
+          ></attach-file-info>
         </template>
         <span v-else class="history__body--nodata"
           >검색된 결과가 없습니다.</span
@@ -74,19 +106,24 @@
 </template>
 
 <script>
-import ServerRecordCountButton from 'ServerRecordCountButton'
-import LocalRecordCountButton from 'LocalRecordCountButton'
-import FileCountButton from 'FileCountButton'
 import CollaboStatus from 'CollaboStatus'
+import CountButton from 'CountButton'
+
 import HistoryInfo from 'components/modal/HistoryInfo'
+
+import ServerRecordInfo from 'components/modal/ServerRecordInfo'
+import LocalRecordInfo from 'components/modal/LocalRecordInfo'
+import AttachFileInfo from 'components/modal/AttachFileInfo'
+
 export default {
   name: 'History',
   components: {
+    CountButton,
     CollaboStatus,
-    ServerRecordCountButton,
-    LocalRecordCountButton,
-    FileCountButton,
     HistoryInfo,
+    ServerRecordInfo,
+    LocalRecordInfo,
+    AttachFileInfo,
   },
   props: {
     historys: {
@@ -97,7 +134,18 @@ export default {
   data() {
     return {
       sessionId: '',
-      showHistoryInfo: false,
+      historyInfo: false,
+      historyTitle: '',
+
+      //modal flag
+      file: false,
+      serverRecord: false,
+      localRecord: false,
+
+      //modal data
+      fileList: [],
+
+      hover: false,
     }
   },
   computed: {
@@ -106,12 +154,6 @@ export default {
     },
   },
   methods: {
-    showList() {},
-    openHistoryInfo(sessionId) {
-      console.log(sessionId)
-      this.sessionId = sessionId
-      this.showHistoryInfo = true
-    },
     date(activeDate) {
       return this.$dayjs(activeDate + '+00:00')
         .local()
@@ -124,6 +166,25 @@ export default {
           lastWeek: 'YYYY.MM.DD',
           sameElse: 'YYYY.MM.DD',
         })
+    },
+    showHistory(sessionId) {
+      this.sessionId = sessionId
+      this.historyInfo = true
+    },
+    showServerRecord(history) {
+      this.serverRecord = true
+      this.fileList = history.serverRecord
+      this.historyTitle = history.title
+    },
+    showLocalRecord(history) {
+      this.localRecord = true
+      this.fileList = history.localRecord
+      this.historyTitle = history.title
+    },
+    showFile(history) {
+      this.file = true
+      this.fileList = history.files
+      this.historyTitle = history.title
     },
   },
 }
@@ -234,18 +295,6 @@ export default {
     font-size: 14.9996px;
     text-align: center;
   }
-
-  // &.user-name {
-  //   width: 286px;
-  //   text-align: left;
-
-  //   & > p {
-  //     width: 10.9286rem;
-  //     overflow: hidden;
-  //     white-space: nowrap;
-  //     text-overflow: ellipsis;
-  //   }
-  // }
 
   &.collabo-name {
     width: 300px;

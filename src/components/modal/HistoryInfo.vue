@@ -23,7 +23,7 @@
       <div class="history-info__row">
         <div class="history-info-table-column__header">협업 설명</div>
         <div class="history-info-table-column__info">
-          {{ room.description }}
+          <p>{{ room.description }}</p>
         </div>
       </div>
       <div class="history-info__row">
@@ -100,7 +100,6 @@ export default {
     dateTimeFormat(dateTime) {
       return dayjs(dateTime + '+00:00').format('YYYY.MM.DD HH:mm')
     },
-
     dateFormat(date) {
       return dayjs(date + '+00:00').format('YYYY.MM.DD')
     },
@@ -208,9 +207,16 @@ export default {
   align-items: center;
   width: 100%;
   padding-left: 30px;
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 16px;
+
+  & > p {
+    width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   &.time {
     color: rgb(15, 117, 245);
   }
