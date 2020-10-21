@@ -121,16 +121,16 @@ export default {
     resetTypedDate() {
       this.typedDate = false
     },
-    formattedValue(date) {
-      this.setCalendar({
-        name: this.pickerName,
-        date: date,
-      })
-      // this.$eventBus.$emit('update::datepicker', {
-      //   pickerName: this.pickerName,
-      //   date: date,
-      // })
-    },
+    // formattedValue(date) {
+    // this.setCalendar({
+    //   name: this.pickerName,
+    //   date: date,
+    // })
+    // this.$eventBus.$emit('update::datepicker', {
+    //   pickerName: this.pickerName,
+    //   date: date,
+    // })
+    // },
   },
   methods: {
     ...mapActions(['setCalendar']),
