@@ -2213,7 +2213,7 @@ public class WorkspaceService {
 		}
 		String allowExtension = "jpg,jpeg,ico,png";
 		String extension = FilenameUtils.getExtension(workspaceFaviconUpdateRequest.getFavicon().getOriginalFilename());
-		checkFileSize(workspaceFaviconUpdateRequest.getFavicon().getSize(), 3221225472L);
+		checkFileSize(workspaceFaviconUpdateRequest.getFavicon().getSize(), 3145728L);
 		checkFileExtension(extension, allowExtension);
 
 		//3. 파비콘 업로드
@@ -2238,7 +2238,7 @@ public class WorkspaceService {
 		if (requestSize < 0 || requestSize > acceptSize) {
 			log.error(
 				"[UPLOAD FILE SIZE CHECK] Acceptable File size : [{}], Present File size : [{}] ",
-				3221225472L, requestSize
+				3145728L, requestSize
 			);
 			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_SIZE);
 		}
@@ -2281,7 +2281,7 @@ public class WorkspaceService {
 		String allowExtension = "jpg,jpeg,gif,png";
 		String defaultExtension = FilenameUtils.getExtension(
 			workspaceLogoUpdateRequest.getDefaultLogo().getOriginalFilename());
-		checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3221225472L);
+		checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
 		checkFileExtension(defaultExtension, allowExtension);
 
 		try {
@@ -2297,7 +2297,7 @@ public class WorkspaceService {
 		if (workspaceLogoUpdateRequest.getGreyLogo() != null) {
 			String greyExtension = FilenameUtils.getExtension(
 				workspaceLogoUpdateRequest.getGreyLogo().getOriginalFilename());
-			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3221225472L);
+			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
 			checkFileExtension(defaultExtension, greyExtension);
 
 			try {
@@ -2313,7 +2313,7 @@ public class WorkspaceService {
 		if (workspaceLogoUpdateRequest.getWhiteLogo() != null) {
 			String whiteExtension = FilenameUtils.getExtension(
 				workspaceLogoUpdateRequest.getWhiteLogo().getOriginalFilename());
-			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3221225472L);
+			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
 			checkFileExtension(defaultExtension, whiteExtension);
 
 			try {
