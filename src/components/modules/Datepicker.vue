@@ -73,9 +73,6 @@ export default {
     toggleCalendar() {
       this.$eventBus.$emit('toggle::calendar', this.pickerName)
     },
-    selected(date) {
-      console.log(date)
-    },
   },
   mounted() {},
 }
