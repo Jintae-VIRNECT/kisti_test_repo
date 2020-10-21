@@ -80,6 +80,7 @@
                 <el-form-item prop="password" required>
                   <el-input
                     v-model="form.password"
+                    show-password
                     :placeholder="$t('members.create.passwordPlaceholder')"
                     maxlength="20"
                   />

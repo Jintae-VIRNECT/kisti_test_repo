@@ -102,7 +102,10 @@ export default {
         this.showMe = false
       } catch (e) {
         this.$message.error({
-          message: e,
+          message:
+            e.code === 3000
+              ? this.$t('common.message.notAllowFileExtension')
+              : e,
           duration: 2000,
           showClose: true,
         })

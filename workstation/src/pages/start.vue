@@ -100,6 +100,14 @@ export default {
           : null,
         userId: this.myProfile.uuid,
       }
+      if (!form.name) {
+        form.name = this.$t('workspace.setting.namePlaceholder', {
+          nickname: this.myProfile.nickname,
+        })
+      }
+      if (!form.description) {
+        form.description = form.name
+      }
 
       //  API 요청
       try {
