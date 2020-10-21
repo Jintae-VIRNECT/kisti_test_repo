@@ -38,13 +38,13 @@
       <figure-board
         header="나의 일별 협업 수"
         :onlyMe="true"
-        :count="9999"
+        :count="dailyData ? dailyData.count : 0"
         :imgSrc="require('assets/image/figure/ic_figure_chart.svg')"
       ></figure-board>
       <figure-board
         header="나의 일별 협업 시간"
         :onlyMe="true"
-        :time="999999"
+        :time="dailyData ? dailyData.time : 0"
         :imgSrc="require('assets/image/figure/ic_figure_date_time.svg')"
       ></figure-board>
     </div>
@@ -57,8 +57,13 @@ import Datepicker from 'Datepicker'
 import Chart from 'chart.js'
 import ChartLegend from 'Legend'
 import FigureBoard from 'FigureBoard'
+
+import { hourLabels } from 'utils/chartDatas'
+import chartMixin from 'mixins/chart'
+
 export default {
   name: 'BoardDaily',
+  mixins: [chartMixin],
   components: {
     Card,
     ChartLegend,
@@ -70,37 +75,31 @@ export default {
       //dummy datas
       privateCollaboDatas: [],
       totalColaboDatas: [],
+
+      dailyChart: null,
     }
   },
-  methods: {
-    getDummyDataPrivate() {
-      return [
-        0,
-        2,
-        4,
-        5,
-        10,
-        8,
-        2,
-        0,
-        0,
-        4,
-        0,
-        5,
-        6,
-        5,
-        0,
-        1,
-        2,
-        3,
-        4,
-        0,
-        0,
-        0,
-        0,
-        0,
-      ]
+  props: {
+    dailyData: {
+      type: Object, //count, time, set
+      default: () => {
+        return {}
+      },
+      require: true,
     },
+  },
+  watch: {
+    dailyData: {
+      handler(data) {
+        if (this.dailyChart) {
+          this.dailyChart.data.datasets[0].data = data.set
+          this.dailyChart.update()
+        }
+      },
+    },
+    deep: true,
+  },
+  methods: {
     getDummyDataTotal() {
       return [
         0,
@@ -119,9 +118,9 @@ export default {
         0,
         0,
         0,
-        20,
-        22,
-        25,
+        10,
+        10,
+        9,
         0,
         0,
         0,
@@ -131,197 +130,99 @@ export default {
     },
   },
   mounted() {
-    this.privateCollaboDatas = this.getDummyDataPrivate()
-    this.totalColaboDatas = this.getDummyDataTotal()
+    //todo TotalData
 
-    const ctx = document.getElementById('chart-dayily').getContext('2d')
+    this.$nextTick(() => {
+      const ctx = document.getElementById('chart-dayily').getContext('2d')
 
-    const custom = tooltipModel => {
-      // Tooltip Element
-      let tooltipEl = document.getElementById('chartjs-tooltip')
+      this.totalColaboDatas = this.getDummyDataTotal()
 
-      // Create element on first render
-      if (!tooltipEl) {
-        tooltipEl = document.createElement('div')
-        tooltipEl.id = 'chartjs-tooltip'
-        tooltipEl.innerHTML = '<table></table>'
-        document.body.appendChild(tooltipEl)
-      }
-
-      // Hide if no tooltip
-      if (tooltipModel.opacity === 0) {
-        tooltipEl.style.opacity = 0
-        return
-      }
-
-      // Set caret Position
-      tooltipEl.classList.remove('above', 'below', 'no-transform')
-      if (tooltipModel.yAlign) {
-        tooltipEl.classList.add(tooltipModel.yAlign)
-      } else {
-        tooltipEl.classList.add('no-transform')
-      }
-
-      const getBody = bodyItem => {
-        return bodyItem.lines
-      }
-
-      // Set Text
-      if (tooltipModel.body) {
-        let titleLines = tooltipModel.title || []
-        let bodyLines = tooltipModel.body.map(getBody)
-
-        let innerHtml = '<thead class="chartjs-tooltip-head">'
-
-        titleLines.forEach(title => {
-          innerHtml += '<tr><th><p>' + title + '</p></th></tr>'
-        })
-        innerHtml += '</thead><tbody>'
-
-        bodyLines.forEach((body, i) => {
-          let colors = tooltipModel.labelColors[i]
-          let style = 'background:' + colors.backgroundColor
-          style += '; border-color:' + colors.borderColor
-          style += '; border-width: 1px'
-          let span =
-            '<span class="tooil-tip-legend" style="display:inline-block; background:#fff; border-radius: 50%; border: 3px solid' +
-            colors.borderColor +
-            '"></span><span style="' +
-            style +
-            '"></span>'
-          innerHtml += '<tr><td>' + span + body + '</td></tr>'
-        })
-        innerHtml += '</tbody>'
-
-        let tableRoot = tooltipEl.querySelector('table')
-        tableRoot.innerHTML = innerHtml
-      }
-
-      // `this` will be the overall tooltip
-      let position = document
-        .getElementById('chart-dayily')
-        .getBoundingClientRect()
-
-      // Display, position, and set styles for font
-      tooltipEl.style.opacity = 1
-      tooltipEl.style.position = 'absolute'
-      tooltipEl.style.left =
-        position.left + window.pageXOffset + tooltipModel.caretX + 'px'
-      tooltipEl.style.top =
-        position.top + window.pageYOffset + tooltipModel.caretY + -100 + 'px'
-      tooltipEl.style.fontSize = tooltipModel.bodyFontSize + 'px'
-      tooltipEl.style.fontStyle = tooltipModel._bodyFontStyle
-      tooltipEl.style.padding =
-        tooltipModel.yPadding + 'px ' + tooltipModel.xPadding + 'px'
-      tooltipEl.style.pointerEvents = 'none'
-    }
-
-    let myChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: [
-          '00',
-          '01',
-          '02',
-          '03',
-          '04',
-          '05',
-          '06',
-          '07',
-          '08',
-          '09',
-          '10',
-          '11',
-          '12',
-          '13',
-          '14',
-          '15',
-          '16',
-          '17',
-          '18',
-          '19',
-          '20',
-          '21',
-          '22',
-          '23',
-        ],
-        datasets: [
-          {
-            label: '개인 협업 내역',
-            data: this.privateCollaboDatas,
-            borderColor: '#0f75f5',
-            borderWidth: 4,
-            pointRadius: 0,
-            pointBackgroundColor: '#fff',
-            borderJoinStyle: 'bevel',
-            lineTension: 0,
-            fill: false,
-          },
-          {
-            label: '전체 협업 내역',
-            data: this.totalColaboDatas,
-            borderColor: '#bbc8d9',
-            borderWidth: 4,
-            pointRadius: 0,
-            pointBackgroundColor: '#fff',
-            borderJoinStyle: 'bevel',
-            lineTension: 0,
-            fill: false,
-          },
-        ],
-      },
-      options: {
-        hover: {
-          mode: 'index',
-          intersect: false,
-        },
-        tooltips: {
-          mode: 'index',
-          intersect: false,
-          position: 'average',
-          enabled: false,
-          custom: custom,
-          titleFontSize: '15',
-          bodyFontSize: '14',
-          displayColors: false,
-          backgroundColor: '#516277',
-          bodyFontStyle: 'bold',
-          callbacks: {
-            title: function() {
-              return '시간별 완료 협업'
-            },
-            label: function(tooltipItem) {
-              return Number(tooltipItem.yLabel) + '건'
-            },
-          },
-        },
-        legend: {
-          display: false,
-        },
-        scales: {
-          xAxes: [
+      const custom = this.customTooltips(
+        'chart-dayily',
+        'chartjs-tooltip',
+        'inner',
+      )
+      this.dailyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: hourLabels,
+          datasets: [
             {
-              gridLines: {
-                display: false,
-              },
+              label: '개인 협업 내역',
+              data: this.dailyData ? this.dailyData.set : [],
+              borderColor: '#0f75f5',
+              borderWidth: 4,
+              pointRadius: 0,
+              pointBackgroundColor: '#fff',
+              borderJoinStyle: 'bevel',
+              lineTension: 0,
+              fill: false,
             },
-          ],
-          yAxes: [
             {
-              ticks: {
-                beginAtZero: true,
-                min: 0,
-                stepSize: 4,
-              },
-              gridLines: {
-                borderDash: [1, 2],
-              },
+              label: '전체 협업 내역',
+              data: this.totalColaboDatas,
+              borderColor: '#bbc8d9',
+              borderWidth: 4,
+              pointRadius: 0,
+              pointBackgroundColor: '#fff',
+              borderJoinStyle: 'bevel',
+              lineTension: 0,
+              fill: false,
             },
           ],
         },
-      },
+        options: {
+          hover: {
+            mode: 'index',
+            intersect: false,
+          },
+          tooltips: {
+            mode: 'index',
+            intersect: false,
+            position: 'average',
+            enabled: false,
+            custom: custom,
+            titleFontSize: '15',
+            bodyFontSize: '14',
+            displayColors: false,
+            backgroundColor: '#516277',
+            bodyFontStyle: 'bold',
+            callbacks: {
+              title: function() {
+                return '시간별 완료 협업'
+              },
+              label: function(tooltipItem) {
+                return Number(tooltipItem.yLabel) + '건'
+              },
+            },
+          },
+          legend: {
+            display: false,
+          },
+          scales: {
+            xAxes: [
+              {
+                gridLines: {
+                  display: false,
+                },
+              },
+            ],
+            yAxes: [
+              {
+                ticks: {
+                  beginAtZero: true,
+                  min: 0,
+                  stepSize: 4,
+                },
+                gridLines: {
+                  borderDash: [1, 2],
+                },
+              },
+            ],
+          },
+        },
+      })
     })
-    console.log(myChart)
   },
 }
 </script>
