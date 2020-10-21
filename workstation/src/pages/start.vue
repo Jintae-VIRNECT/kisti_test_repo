@@ -63,6 +63,11 @@ import workspaceSerivce from '@/services/workspace'
 
 export default {
   layout: 'noSidebar',
+  middleware({ store, redirect }) {
+    if (store.getters['auth/myWorkspaces'].length) {
+      redirect('/')
+    }
+  },
   data() {
     return {
       file: null,
