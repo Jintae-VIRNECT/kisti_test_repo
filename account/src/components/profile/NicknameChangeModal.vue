@@ -9,7 +9,7 @@
     <div>
       <p
         v-html="
-          $config.VIRNECT_ENV === 'onpremise'
+          $isOnpremise
             ? $t('profile_op.nicknameChangeModal.desc')
             : $t('profile.nicknameChangeModal.desc')
         "

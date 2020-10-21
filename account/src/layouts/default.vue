@@ -41,8 +41,7 @@ export default {
   },
   data() {
     return {
-      sideMenus:
-        this.$config.VIRNECT_ENV !== 'onpremise' ? sideMenus : sideMenus_op,
+      sideMenus: this.$isOnpremise ? sideMenus_op : sideMenus,
       showSection: {
         login: false,
         lang: false,

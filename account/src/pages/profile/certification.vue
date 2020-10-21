@@ -4,7 +4,7 @@
       <el-card class="virnect-login-form">
         <p
           v-html="
-            $config.VIRNECT_ENV === 'onpremise'
+            $isOnpremise
               ? $t('certification.desc_op')
               : $t('certification.desc')
           "
@@ -39,7 +39,7 @@
           </el-form-item>
         </el-form>
       </el-card>
-      <div class="bottom" v-if="$config.VIRNECT_ENV !== 'onpremise'">
+      <div class="bottom" v-if="!$isOnpremise">
         <a :href="findPasswordUrl" target="_blank">
           {{ $t('certification.forgetPassword') }}
         </a>
@@ -70,7 +70,7 @@ export default {
       try {
         await profileService.certification(this.form)
         this.$router.push(
-          this.$config.VIRNECT_ENV === 'onpremise' ? '/profile/op' : '/profile',
+          this.$isOnpremise ? '/profile/op' : '/profile',
         )
       } catch (e) {
         console.error(e)
