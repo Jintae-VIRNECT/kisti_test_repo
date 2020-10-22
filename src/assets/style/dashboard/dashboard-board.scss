@@ -1,6 +1,7 @@
 .board {
   height: 548px;
-  margin-top: 40px;
+  margin-top: 34px;
+  margin-bottom: 65px;
 }
 
 .board__header {
@@ -54,14 +55,16 @@
 
 .chart-holder {
   position: relative;
-  width: 1195px;
-  height: 342px;
+  // width: 85.3571rem;
+  // height: 24.4286rem;
+  margin: auto;
+  padding-right: 38px;
   padding-left: 30px;
 }
 
 .board-figures {
   display: flex;
   justify-content: space-between;
-  height: 120px;
-  margin-top: 18px;
+  height: 8.5714rem;
+  margin-top: 1.2857rem;
 }
