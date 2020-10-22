@@ -1,6 +1,7 @@
 RELEASE
 
 New Features
+- 서버 ssl 적용
 
 Bug Fixes
 - 작업 검색 에러 개선
