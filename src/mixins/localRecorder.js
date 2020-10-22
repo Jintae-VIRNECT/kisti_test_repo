@@ -173,7 +173,11 @@ export default {
 
       config.maxTime = this.localRecord.time
       config.interval = this.localRecord.interval
-      if (this.localRecord.time < this.localRecord.interval) {
+
+      if (
+        Number.parseInt(this.localRecord.time, 10) <
+        Number.parseInt(this.localRecord.interval, 10)
+      ) {
         config.interval = this.localRecord.time
       }
       config.roomTitle = this.roomInfo.title
