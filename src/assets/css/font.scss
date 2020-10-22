@@ -1,0 +1,102 @@
+@charset "utf-8";
+
+// Noto-sans font set
+$noto-sans-weight-thin: 100 !default;
+$noto-sans-weight-light: 300 !default;
+$noto-sans-weight-regular: 400 !default;
+$noto-sans-weight-medium: 500 !default;
+$noto-sans-weight-bold: 700 !default;
+$noto-sans-weight-map: (
+    "Thin": $noto-sans-weight-thin,
+    "Light": $noto-sans-weight-light,
+    "Regular": $noto-sans-weight-regular,
+    "Medium": $noto-sans-weight-medium,
+    "Bold": $noto-sans-weight-bold
+) !default;
+$noto-sans-family: "NotoSansKR" !default;
+$noto-sans-style: normal !default;
+$noto-sans-path: "~assets/fonts/NotoSansCJKkr/" !default;
+$noto-sans-prefix: "NotoSansCJKkr-" !default;
+
+@each $name, $weight in $noto-sans-weight-map {
+    $noto-sans-weight: to-upper-case(str-slice($name, 1, 1)) +
+        str-slice($name, 2);
+    $noto-sans-src: $noto-sans-path + $noto-sans-prefix + $noto-sans-weight;
+
+    @font-face {
+        font-weight: $weight;
+        font-family: $noto-sans-family;
+        font-style: $noto-sans-style;
+        -webkit-font-smoothing: antialiased;
+        src: url(unquote("#{$noto-sans-src}.eot"));
+        src: local(※),
+            url(unquote("#{$noto-sans-src}.woff")) format("font-woff"),
+            url(unquote("#{$noto-sans-src}.woff2")) format("woff2"),
+            url(unquote("#{$noto-sans-src}.otf")) format("opentype");
+        font-display: auto;
+    }
+}
+
+// Roboto font set
+$roboto-weight-light: 300 !default;
+$roboto-weight-regular: 400 !default;
+$roboto-weight-medium: 500 !default;
+$roboto-weight-bold: 700 !default;
+$roboto-weight-map: (
+    "Light": $roboto-weight-light,
+    "Regular": $roboto-weight-regular,
+    "Medium": $roboto-weight-medium,
+    "Bold": $roboto-weight-bold
+) !default;
+$roboto-family: "Roboto" !default;
+$roboto-style: normal !default;
+$roboto-path: "~assets/fonts/Roboto/" !default;
+$roboto-prefix: "roboto-" !default;
+
+@each $name, $weight in $roboto-weight-map {
+    $roboto-weight: to-upper-case(str-slice($name, 1, 1)) + str-slice($name, 2);
+    $roboto-src: $roboto-path + $roboto-prefix + $roboto-weight;
+
+    @font-face {
+        font-weight: $weight;
+        font-family: $roboto-family;
+        font-style: $roboto-style;
+        -webkit-font-smoothing: antialiased;
+        src: url(unquote("#{$roboto-src}.eot"));
+        src: local(※), url(unquote("#{$roboto-src}.woff")) format("font-woff"),
+            url(unquote("#{$roboto-src}.woff2")) format("woff2");
+        font-display: auto;
+    }
+}
+
+// Poppins font set
+$poppins-weight-light: 300 !default;
+$poppins-weight-regular: 400 !default;
+$poppins-weight-medium: 500 !default;
+$poppins-weight-semibold: 600 !default;
+$poppins-weight-map: (
+    "Light": $poppins-weight-light,
+    "Regular": $poppins-weight-regular,
+    "SemiBold": $poppins-weight-semibold
+) !default;
+$poppins-family: "Poppins" !default;
+$poppins-style: normal !default;
+$poppins-path: "~assets/fonts/Poppins/" !default;
+$poppins-prefix: "poppins-" !default;
+
+@each $name, $weight in $poppins-weight-map {
+    $poppins-weight: to-upper-case(str-slice($name, 1, 1)) +
+        str-slice($name, 2);
+    $poppins-src: $poppins-path + $poppins-prefix + $poppins-weight;
+
+    @font-face {
+        font-weight: $weight;
+        font-family: $poppins-family;
+        font-style: $poppins-style;
+        -webkit-font-smoothing: antialiased;
+        src: url(unquote("#{$poppins-src}.eot"));
+        src: local(※), url(unquote("#{$poppins-src}.woff")) format("font-woff"),
+            url(unquote("#{$poppins-src}.woff2")) format("woff2");
+        font-display: auto;
+    }
+}
