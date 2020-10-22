@@ -8,7 +8,9 @@ const env = dotenv.parse(fs.readFileSync(filePath))
 const config = require('../configs/runtime')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
-	mode: process.env.NODE_ENV === 'local' ? 'development' : 'production',
+	mode: /local|onpremise/.test(process.env.NODE_ENV)
+		? 'development'
+		: 'production',
 	devtool: 'cheap-module-eval-source-map',
 	devServer: {
 		host: env.LOCAL_HOST,

@@ -9,7 +9,7 @@ export const lang = {
 		},
 	},
 	mutations: {
-		CHANGE_LANG(state, locale) {
+		async CHANGE_LANG(state, locale) {
 			state.lang = locale
 			if (locale === 'ko') {
 				document.documentElement.lang = 'ko'

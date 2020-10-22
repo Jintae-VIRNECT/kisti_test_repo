@@ -54,4 +54,39 @@ export default {
 			console.error(e)
 		}
 	},
+
+	// onpremise //
+	async userAuth(params) {
+		// 아이디 확인
+		try {
+			const data = await api('GET_CHECK_EMAIL', {
+				params: params,
+			})
+			return data
+		} catch (e) {
+			return e
+		}
+	},
+	async userCheckAnswer(params) {
+		// 질문확인
+		try {
+			const { data } = await api('POST_CHECK_ANSWER', {
+				params: params,
+			})
+			return data
+		} catch (e) {
+			return e
+		}
+	},
+	async putUserPassChange(params) {
+		//비번변경
+		try {
+			const data = await api('PUT_USER_PASSWORD', {
+				params: params,
+			})
+			return data
+		} catch (e) {
+			return e
+		}
+	},
 }

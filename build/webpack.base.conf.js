@@ -3,7 +3,8 @@
 const { join, resolve, posix } = require('path')
 const webpack = require('webpack')
 const glob = require('glob')
-const MODE = process.env.VIRNECT_ENV
+const MODE =
+	process.env.NODE_ENV === 'develop' ? 'development' : process.env.NODE_ENV
 const isProduction = MODE === 'production'
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
@@ -50,7 +51,9 @@ const styleLoaderOptions = {
 		sourceMap: !isProduction,
 	},
 }
-const cssOptions = [{ loader: 'css-loader', options: { sourceMap: true } }]
+const cssOptions = [
+	{ loader: 'css-loader', options: { sourceMap: !isProduction } },
+]
 
 const sassOptions = [
 	...cssOptions,
@@ -94,7 +97,7 @@ const config = {
 			service: join(__dirname, '../src/service'),
 			mixins: join(__dirname, '../src/mixins'),
 			languages: join(__dirname, '../src/languages'),
-			// config: join(__dirname, '../src/config'),
+			configs: join(__dirname, '../configs'),
 			router: join(__dirname, '../src/router'),
 			stores: join(__dirname, '../src/stores'),
 			element: join(__dirname, '../theme/'),
@@ -203,11 +206,6 @@ const config = {
 		hints: false,
 	},
 	plugins: [
-		new webpack.DefinePlugin({
-			'process.env': {
-				VIRNECT_ENV: '"production"',
-			},
-		}),
 		new webpack.optimize.ModuleConcatenationPlugin(),
 		extractSASS,
 		extractCSS,

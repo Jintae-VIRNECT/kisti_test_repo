@@ -2,7 +2,8 @@
 RELEASE
 
 New Features
-config 적용
+1.2.24.0
+구축형 대응 적용
 
 Bug Fixes
 -

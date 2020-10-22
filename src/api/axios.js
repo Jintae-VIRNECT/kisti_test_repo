@@ -2,29 +2,33 @@ import Axios from 'axios'
 import https from 'https'
 import Cookies from 'js-cookie'
 import URI from 'api/uri'
+const env = process.env.NODE_ENV
+const isProduction = /production|staging/.test(process.env.NODE_ENV)
 
 export async function getUrls() {
-	const res = await Axios.get(`${location.origin}/urls`)
+	const res = await Axios.get(
+		`${location.origin}/urls?origin=${location.hostname}`,
+	)
 	window.urls = res.data
 	window.env = res.data.env
-	setBaseURL(res.data.api)
+	setBaseURL(res.data)
 	return res.data
 }
 
 const axios = Axios.create({
-	timeout: window.env === 'production' ? 2000 : 1000,
 	headers: {
 		'Content-Type': 'application/json',
 	},
 	httpsAgent: new https.Agent({
 		rejectUnauthorized: false,
 	}),
-	withCredentials: window.env === ('production' || 'staging') ? true : false,
+	withCredentials: isProduction,
 })
 
 const setBaseURL = baseURL => {
-	axios.defaults['baseURL'] = baseURL
-	axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
+	axios.defaults.timeout = baseURL.timeout
+	axios.defaults['baseURL'] = baseURL.api
+	axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL.api
 }
 
 /**
@@ -33,6 +37,9 @@ const setBaseURL = baseURL => {
  * @param {Object} option
  */
 export async function api(name, option = {}) {
+	if (!isProduction) {
+		console.log(axios.defaults)
+	}
 	if (!URI[name]) {
 		throw new Error(`API not found '${name}'`)
 	}
@@ -68,6 +75,9 @@ export async function api(name, option = {}) {
 		const { code, data, message } = response.data
 
 		if (code === 200) {
+			if (/local|develop|onpremise/.test(env)) {
+				console.log(data)
+			}
 			return {
 				code: code,
 				data: data,
@@ -85,6 +95,9 @@ export async function api(name, option = {}) {
 		}
 	} catch (e) {
 		console.error(`URL: ${uri}`)
+		if (/local|develop|onpremise/.test(env)) {
+			console.error(e)
+		}
 		throw e
 	}
 }
