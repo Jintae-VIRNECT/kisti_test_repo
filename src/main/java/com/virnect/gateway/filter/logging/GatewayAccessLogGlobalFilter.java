@@ -42,8 +42,8 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 			.port(request.getLocalAddress().getPort())
 			.method(request.getMethod().name())
 			.uri(request.getURI().toString())
-			.protocol("")
-			.user(generateUserInfo(request));
+			.protocol("");
+			// .user(generateUserInfo(request));
 
 		return chain.filter(exchange).then(Mono.fromRunnable(() -> {
 			String responseStatus = String.format("%d %s", response.getRawStatusCode(),
