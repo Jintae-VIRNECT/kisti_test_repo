@@ -43,10 +43,10 @@ $roboto-weight-regular: 400 !default;
 $roboto-weight-medium: 500 !default;
 $roboto-weight-bold: 700 !default;
 $roboto-weight-map: (
-    "Light": $roboto-weight-light,
-    "Regular": $roboto-weight-regular,
-    "Medium": $roboto-weight-medium,
-    "Bold": $roboto-weight-bold
+    "light": $roboto-weight-light,
+    "regular": $roboto-weight-regular,
+    "medium": $roboto-weight-medium,
+    "bold": $roboto-weight-bold
 ) !default;
 $roboto-family: "Roboto" !default;
 $roboto-style: normal !default;
@@ -75,9 +75,9 @@ $poppins-weight-regular: 400 !default;
 $poppins-weight-medium: 500 !default;
 $poppins-weight-semibold: 600 !default;
 $poppins-weight-map: (
-    "Light": $poppins-weight-light,
-    "Regular": $poppins-weight-regular,
-    "SemiBold": $poppins-weight-semibold
+    "light": $poppins-weight-light,
+    "regular": $poppins-weight-regular,
+    "semibold": $poppins-weight-semibold
 ) !default;
 $poppins-family: "Poppins" !default;
 $poppins-style: normal !default;
