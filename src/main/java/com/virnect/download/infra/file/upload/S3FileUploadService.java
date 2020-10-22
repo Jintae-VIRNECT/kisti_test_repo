@@ -23,19 +23,19 @@ import com.virnect.download.global.error.ErrorCode;
 
 @Slf4j
 @Service
-@Profile(value = {"develop", "staging", "production"})
+@Profile({"staging", "production"})
 @RequiredArgsConstructor
 public class S3FileUploadService implements FileUploadService {
 	private final AmazonS3 amazonS3Client;
 
-	@Value("${cloud.aws.s3.bucket.name}")
+	@Value("${cloud.aws.s3.bucket.name:virnect-download}")
 	private String bucketName;
-	@Value("${file.upload-path}")
+	@Value("${file.upload-path:app/}")
 	private String fileUploadPath;
 	@Value("#{'${file.allowed-extension}'.split(',')}")
 	private List<String> allowedExtension;
 
-	@Value("${cloud.aws.cdn}")
+	@Value("${cloud.aws.cdn:https://file.virnect.com}")
 	private String cdnUrl;
 
 	@Override
