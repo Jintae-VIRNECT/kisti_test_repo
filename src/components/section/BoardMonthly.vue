@@ -232,6 +232,17 @@ export default {
   transition: all 0.1s ease;
   pointer-events: none;
 
+  .chartjs-tooltip-head {
+    color: white;
+    font-weight: 400;
+    font-size: 15px;
+    text-align: left;
+
+    p {
+      padding-left: 6px;
+    }
+  }
+
   table {
     position: relative;
     width: 100%;
