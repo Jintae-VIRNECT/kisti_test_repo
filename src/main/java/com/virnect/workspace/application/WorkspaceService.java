@@ -1,17 +1,27 @@
 package com.virnect.workspace.application;
 
-import java.io.IOException;
-import java.text.DecimalFormat;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.virnect.workspace.dao.*;
+import com.virnect.workspace.dao.redis.UserInviteRepository;
+import com.virnect.workspace.domain.*;
+import com.virnect.workspace.domain.redis.UserInvite;
+import com.virnect.workspace.domain.rest.LicenseProductStatus;
+import com.virnect.workspace.domain.rest.LicenseStatus;
+import com.virnect.workspace.dto.MemberInfoDTO;
+import com.virnect.workspace.dto.UserInfoDTO;
+import com.virnect.workspace.dto.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
+import com.virnect.workspace.dto.onpremise.*;
+import com.virnect.workspace.dto.request.*;
+import com.virnect.workspace.dto.response.*;
+import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.constant.*;
+import com.virnect.workspace.global.error.ErrorCode;
+import com.virnect.workspace.global.util.RandomStringTokenUtil;
+import com.virnect.workspace.infra.file.FileService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,83 +36,12 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.workspace.dao.HistoryRepository;
-import com.virnect.workspace.dao.WorkspacePermissionRepository;
-import com.virnect.workspace.dao.WorkspaceRepository;
-import com.virnect.workspace.dao.WorkspaceRoleRepository;
-import com.virnect.workspace.dao.WorkspaceSettingRepository;
-import com.virnect.workspace.dao.WorkspaceUserPermissionRepository;
-import com.virnect.workspace.dao.WorkspaceUserRepository;
-import com.virnect.workspace.dao.redis.UserInviteRepository;
-import com.virnect.workspace.domain.History;
-import com.virnect.workspace.domain.Workspace;
-import com.virnect.workspace.domain.WorkspacePermission;
-import com.virnect.workspace.domain.WorkspaceRole;
-import com.virnect.workspace.domain.WorkspaceSetting;
-import com.virnect.workspace.domain.WorkspaceUser;
-import com.virnect.workspace.domain.WorkspaceUserPermission;
-import com.virnect.workspace.domain.redis.UserInvite;
-import com.virnect.workspace.domain.rest.LicenseProductStatus;
-import com.virnect.workspace.domain.rest.LicenseStatus;
-import com.virnect.workspace.dto.MemberInfoDTO;
-import com.virnect.workspace.dto.UserInfoDTO;
-import com.virnect.workspace.dto.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateInfo;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
-import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
-import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
-import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
-import com.virnect.workspace.dto.request.MemberKickOutRequest;
-import com.virnect.workspace.dto.request.MemberUpdateRequest;
-import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
-import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
-import com.virnect.workspace.dto.response.MemberListResponse;
-import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
-import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
-import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserLicenseInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
-import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
-import com.virnect.workspace.dto.rest.MailRequest;
-import com.virnect.workspace.dto.rest.MemberUserPasswordChangeRequest;
-import com.virnect.workspace.dto.rest.MemberUserPasswordChangeResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
-import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
-import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
-import com.virnect.workspace.dto.rest.RegisterMemberRequest;
-import com.virnect.workspace.dto.rest.UserDeleteRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoAccessCheckRequest;
-import com.virnect.workspace.dto.rest.UserInfoAccessCheckResponse;
-import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
-import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.constant.LicenseProduct;
-import com.virnect.workspace.global.constant.Mail;
-import com.virnect.workspace.global.constant.MailSender;
-import com.virnect.workspace.global.constant.Permission;
-import com.virnect.workspace.global.constant.RedirectPath;
-import com.virnect.workspace.global.constant.Role;
-import com.virnect.workspace.global.constant.UUIDType;
-import com.virnect.workspace.global.error.ErrorCode;
-import com.virnect.workspace.global.util.RandomStringTokenUtil;
-import com.virnect.workspace.infra.file.FileService;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -2198,8 +2137,9 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceFaviconUpdateRequest.getUserId(), new String[] {"MASTER"});
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
+        WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
+                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 파비콘 확장자, 사이즈 체크
 		if (workspaceFaviconUpdateRequest.getFavicon() == null) {
@@ -2260,11 +2200,12 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[] {"MASTER"});
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
+        WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
+                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 로고 확장자, 사이즈 체크
-		if(workspaceLogoUpdateRequest.getDefaultLogo()==null){
+		if (workspaceLogoUpdateRequest.getDefaultLogo() == null) {
 			String logoDefault = fileUploadService.getFileUrl("virnect-default-logo.png");
 			String logoWhite = fileUploadService.getFileUrl("virnect-white-logo.png");
 			workspaceSetting.setDefaultLogo(logoDefault);
@@ -2343,8 +2284,9 @@ public class WorkspaceService {
 		//1. 권한 체크
 		Workspace workspace = checkWorkspaceAndUserRole(
 			workspaceId, workspaceTitleUpdateRequest.getUserId(), new String[] {"MASTER"});
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
-			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+        List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
+        WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
+                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		//2. 고객사명 변경
 		workspaceSetting.setTitle(workspaceTitleUpdateRequest.getTitle());
@@ -2357,7 +2299,9 @@ public class WorkspaceService {
 	}
 
 	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting() {
-		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+		List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
+
+		WorkspaceSetting workspaceSetting = workspaceSettingList.stream().findFirst()
 			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
 
 		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = new WorkspaceCustomSettingResponse();
@@ -2368,7 +2312,6 @@ public class WorkspaceService {
 		workspaceCustomSettingResponse.setFavicon(workspaceSetting.getFavicon());
 
 		return workspaceCustomSettingResponse;
-
 	}
 
 	/**
