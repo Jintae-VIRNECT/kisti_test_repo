@@ -37,14 +37,13 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 	) {
 		ServerHttpRequest request = exchange.getRequest();
 		ServerHttpResponse response = exchange.getResponse();
-		HttpRequest httpRequest = (HttpRequest)request;
 
 		GatewayAccessLog gatewayAccessLog = new GatewayAccessLog()
 			.address(fetchAddressFromRequest(request))
 			.port(request.getLocalAddress().getPort())
-			.method(httpRequest.method().name())
-			.uri(httpRequest.uri())
-			.protocol(httpRequest.protocolVersion().text())
+			.method(request.getMethod().name())
+			.uri(request.getURI().toString())
+			.protocol("")
 			.user(generateUserInfo(request));
 
 		return chain.filter(exchange).then(Mono.fromRunnable(() -> {
