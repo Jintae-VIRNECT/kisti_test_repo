@@ -1,7 +1,7 @@
 <template>
   <div>
     <header>
-      <the-header :showSection="showSection" :auth="auth">
+      <the-header :logoImg="logoImg" :showSection="showSection" :auth="auth">
         <template slot="subTitle">{{ $t('menu.account') }}</template>
       </the-header>
     </header>
@@ -15,7 +15,8 @@
 <script>
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import TheSidebar from '@/components/TheSidebar'
-import { sideMenus } from '@/models/layout'
+import { sideMenus, sideMenus_op } from '@/models/layout'
+import { mapGetters } from 'vuex'
 
 export default {
   middleware: 'default',
@@ -25,15 +26,22 @@ export default {
   },
   head() {
     return {
-      title: `VIRNECT | ${this.$t('menu.account')}`,
+      title: `${this.title} | ${this.$t('menu.account')}`,
       htmlAttrs: {
         lang: this.$i18n.locale,
       },
+      link: [
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          href: this.favicon,
+        },
+      ],
     }
   },
   data() {
     return {
-      sideMenus,
+      sideMenus: this.$isOnpremise ? sideMenus_op : sideMenus,
       showSection: {
         login: false,
         lang: false,
@@ -43,8 +51,18 @@ export default {
     }
   },
   computed: {
-    auth() {
-      return this.$store.getters['auth/auth']
+    ...mapGetters({
+      auth: 'auth/auth',
+      title: 'layout/title',
+      logo: 'layout/logo',
+      favicon: 'layout/favicon',
+    }),
+    logoImg() {
+      return {
+        default: this.logo,
+        x2: this.logo,
+        x3: this.logo,
+      }
     },
   },
   beforeMount() {

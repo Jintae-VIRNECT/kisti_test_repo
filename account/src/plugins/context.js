@@ -9,6 +9,7 @@ export default function(con, inject) {
   store = con.store
   url = con.$config.URLS
 
+  inject('isOnpremise', con.$config.VIRNECT_ENV === 'onpremise')
   inject('url', url)
   inject(
     'defaultWorkspaceProfile',
