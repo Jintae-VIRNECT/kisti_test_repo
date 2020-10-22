@@ -1,11 +1,9 @@
 @charset 'utf-8';
-@import "./font.scss";
+@import "~WC-Modules/assets/css/font.scss";
 $noto: "NotoSansKR", "Noto Sans";
 $poppins: "Poppins";
 $roboto: "Roboto";
 $mont: "Montserrat";
-$alter: "Montserrat Alternates";
-$nanum: "NanumSquare";
 
 @mixin spacing() {
     letter-spacing: 1.2px;
