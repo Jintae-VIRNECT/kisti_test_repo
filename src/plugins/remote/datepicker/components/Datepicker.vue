@@ -418,6 +418,12 @@ export default {
       }
       this.selectedDate = date
       this.setPageDate(date)
+
+      this.setCalendar({
+        name: this.pickerName,
+        status: false,
+        date: this.selectedDate,
+      })
     },
     /**
      * Sets the date that the calendar should open on
