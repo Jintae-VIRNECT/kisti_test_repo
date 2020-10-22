@@ -1,9 +1,10 @@
 RELEASE
 
 New Features
+- 서버 ssl 적용
 
 Bug Fixes
-- 컨텐츠 작업으로 복제 에러
+- 컨텐츠를 작업으로 복제하기 에러 개선
 
 Limitation
 
