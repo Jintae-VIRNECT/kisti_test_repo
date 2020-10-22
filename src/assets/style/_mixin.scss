@@ -63,7 +63,9 @@
     #{$attr}: $color_state_normal;
   }
   &.bad {
-    // #{$attr}: $color_state_bad;
+    #{$attr}: $color_state_bad;
+  }
+  &.disconnected {
     #{$attr}: #ff4141;
   }
 }

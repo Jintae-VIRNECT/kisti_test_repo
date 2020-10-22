@@ -70,7 +70,7 @@ export const addSessionEventListener = session => {
       ) {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
-          status: 'bad',
+          status: 'disconnected',
         })
       } else if (state === 'connected') {
         Store.commit('updateParticipant', {
