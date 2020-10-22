@@ -33,9 +33,9 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-		log.warn("[GATEWAY EXCEPTION HANDLER] : " + ex);
-		String message = "";
+		log.error("[GATEWAY EXCEPTION HANDLER] : {}" + ex.getMessage(), ex);
 
+		String message = "";
 		// Gateway Security Related Exception Handling
 		if (ex.getClass() == GatewaySecurityException.class) {
 			message = errorMessage(((GatewaySecurityException)ex).getErrorCode());
