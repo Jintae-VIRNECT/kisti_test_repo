@@ -9,13 +9,12 @@ import org.springframework.context.annotation.Bean;
 @EnableDiscoveryClient
 @SpringBootApplication
 public class WorkspaceApplication {
+	public static void main(String[] args) {
+		SpringApplication.run(WorkspaceApplication.class, args);
+	}
 
-    public static void main(String[] args) {
-        SpringApplication.run(WorkspaceApplication.class, args);
-    }
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
+	@Bean
+	public ModelMapper modelMapper() {
+		return new ModelMapper();
+	}
 }

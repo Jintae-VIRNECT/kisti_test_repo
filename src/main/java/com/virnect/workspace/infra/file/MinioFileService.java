@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import io.minio.MinioClient;
+import io.minio.ObjectWriteResponse;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
 import io.minio.errors.ErrorResponseException;
@@ -34,7 +35,7 @@ import com.virnect.workspace.global.error.ErrorCode;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop","onpremise"})
+@Profile({"local", "develop", "onpremise"})
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -55,8 +56,8 @@ public class MinioFileService implements FileService {
 		String extension = FilenameUtils.getExtension(file.getOriginalFilename()).toLowerCase();
 
 		if (!allowExtension.contains(extension)) {
-			log.error("Not Allow File Extension. Request File Extension >> {}", extension);
-			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+			//log.error("Not Allow File Extension. Request File Extension >> {}", extension);
+			//throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
 
 		String uniqueFileName = UUID.randomUUID().toString().replace("-", "") + "." + extension;
@@ -67,15 +68,19 @@ public class MinioFileService implements FileService {
 			.object(objectName)
 			.contentType(file.getContentType())
 			.stream(file.getInputStream(), file.getSize(), -1)
+
 			.build();
 		log.info("Upload File Info >> bucket : {}, resource : {}, filename : {}, fileSize(byte) : {}", bucket, resource,
 			uniqueFileName, file.getSize()
 		);
 		try {
-			minioClient.putObject(putObjectArgs);
+
+			ObjectWriteResponse response = minioClient.putObject(putObjectArgs);
+			log.info("Minio file upload response : [{}]", response);
 			return minioClient.getObjectUrl(bucket, objectName);
 		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
 			ServerException | XmlParserException exception) {
+			log.error(exception.getClass().toString());
 			log.error(exception.getMessage());
 			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
 		}
@@ -113,3 +118,4 @@ public class MinioFileService implements FileService {
 		}
 	}
 }
+
