@@ -1,11 +1,14 @@
 <template>
   <div class="dashboard-layout">
     <dash-board-header></dash-board-header>
-
-    <div class="dashboard-layout__contents">
-      <dash-board-tab ref="tabSection" @tabChange="tabChange"></dash-board-tab>
-    </div>
-
+    <vue2-scrollbar classes="dashboard-wrapper">
+      <div class="dashboard-layout__contents">
+        <dash-board-tab
+          ref="tabSection"
+          @tabChange="tabChange"
+        ></dash-board-tab>
+      </div>
+    </vue2-scrollbar>
     <dash-board-footer></dash-board-footer>
   </div>
 </template>
@@ -87,10 +90,36 @@ export default {
   position: relative;
   width: 100%;
   height: 100%;
-}
-.dashboard-layout__contents {
-  height: 100%;
-  padding: 68px 319.9994px 134px 319.9994px;
+  overflow: hidden;
   background: #f8f8fa;
+  > .vue-scrollbar__wrapper {
+    height: 100%;
+    margin-right: 0px;
+    margin-bottom: 0px;
+
+    > .vue-scrollbar__area {
+      height: 100%;
+      transition: none;
+    }
+  }
+}
+.dashboard-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  margin-top: $header_height;
+  margin-right: 0;
+  padding-bottom: 0;
+}
+
+.dashboard-layout__contents {
+  position: relative;
+  // height: calc(100% - #{$header_height});
+  margin-top: $header_height;
+  padding: 0px 319.9994px 171px 319.9994px;
+  overflow: hidden;
 }
 </style>
