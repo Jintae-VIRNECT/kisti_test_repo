@@ -17,7 +17,10 @@ export default class Workspace extends Model {
     this.pinNumber = json.pinNumber
     this.name = json.name
     this.description = json.description
-    this.profile = json.profile
+    this.profile =
+      json.profile === 'default'
+        ? require('assets/images/workspace-profile.png')
+        : json.profile
     this.role = json.role
     this.updatedDate = json.updatedDate
     this.createdDate = json.createdDate

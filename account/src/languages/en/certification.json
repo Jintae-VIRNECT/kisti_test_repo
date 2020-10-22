@@ -1,6 +1,7 @@
 {
   "certification": {
     "desc": "Please enter your password to keep your information secured",
+    "desc_op": "Please enter your <br> password to secure your account information.",
     "password": "Password",
     "passwordPlaceholder": "Enter your password",
     "forgetPassword": "Forgot your password?",
