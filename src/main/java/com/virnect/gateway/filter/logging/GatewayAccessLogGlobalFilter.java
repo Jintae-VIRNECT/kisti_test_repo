@@ -1,5 +1,7 @@
 package com.virnect.gateway.filter.logging;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -16,7 +18,6 @@ import org.springframework.web.server.ServerWebExchange;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import io.netty.handler.codec.http.HttpRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -59,7 +60,13 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 	}
 
 	private String fetchJwtTokenFromRequest(ServerHttpRequest request) {
-		String bearerToken = request.getHeaders().get("Authorization").get(0);
+		List<String> bearerTokenList = Optional.ofNullable(request.getHeaders().get("Authorization"))
+			.orElse(new ArrayList<>());
+		if (bearerTokenList.isEmpty()) {
+			return null;
+		}
+		String bearerToken = bearerTokenList.get(0);
+
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
 			int tokenSize = bearerToken.length();
 			return bearerToken.substring(7, tokenSize);
@@ -75,6 +82,9 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 
 	private String generateUserInfo(ServerHttpRequest request) {
 		String jwt = fetchJwtTokenFromRequest(request);
+		if (jwt == null) {
+			return "-";
+		}
 		Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
 		Claims body = claims.getBody();
 		if (body.containsKey("uuid") && body.containsKey("email") && body.containsKey("country")) {
