@@ -34,7 +34,7 @@
 
 .vdp-datepicker__calendar {
   position: absolute;
-  z-index: 100;
+  z-index: 8;
   width: 20rem;
   height: 21.6429rem;
   background: #fff;
@@ -111,8 +111,9 @@
     display: inline-block;
 
     //nomal
-    width: 11%;
+    width: 28px;
     height: 28px;
+
     margin: 3px;
 
     &.wide {
@@ -126,7 +127,7 @@
     color: #545454;
     font-weight: 500;
     font-size: 14px;
-    // line-height: 23.0004px;
+    line-height: 24px;
     text-align: center;
     vertical-align: middle;
     border: 1px solid transparent;
