@@ -35,6 +35,14 @@ public class SessionProperty extends BaseTimeEntity {
     @Column(name = "recording", nullable = false)
     private boolean recording;
 
+    @Column(name = "keepalive", nullable = false)
+    private boolean keepalive;
+
+    @Column(name = "session_type", nullable = false)
+    //@Enumerated(EnumType.STRING)
+    private SessionType sessionType;
+
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
@@ -45,6 +53,8 @@ public class SessionProperty extends BaseTimeEntity {
                            String defaultOutputMode,
                            String defaultRecordingLayout,
                            boolean recording,
+                           boolean keepalive,
+                           SessionType sessionType,
                            Room room
 
 
@@ -54,6 +64,8 @@ public class SessionProperty extends BaseTimeEntity {
         this.defaultOutputMode = defaultOutputMode;
         this.defaultRecordingLayout = defaultRecordingLayout;
         this.recording = recording;
+        this.keepalive = keepalive;
+        this.sessionType = sessionType;
         this.room = room;
     }
 
@@ -66,6 +78,8 @@ public class SessionProperty extends BaseTimeEntity {
                 ", defaultOutputMode='" + defaultOutputMode + '\'' +
                 ", defaultRecordingLayout='" + defaultRecordingLayout + '\'' +
                 ", recording='" + recording + '\'' +
+                ", keepalive='" + keepalive + '\'' +
+                ", sessionType='" + sessionType + '\'' +
                 '}';
     }
 }

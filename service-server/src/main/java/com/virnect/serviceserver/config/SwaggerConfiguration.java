@@ -24,7 +24,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.util.ArrayList;
 import java.util.List;
 
-@Profile({"local", "develop"})
+@Profile({"!staging", "!production"})
 @Configuration
 @EnableSwagger2
 @RequiredArgsConstructor

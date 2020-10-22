@@ -45,6 +45,7 @@ public enum  ErrorCode {
     ERR_ROOM_CREATE_FAIL(4019, "Room Create fail"),
     ERR_ROOM_PROCESS_FAIL(4020, "Current Room request is failed"),
     ERR_ROOM_MEMBER_MAX_COUNT(4021, "Current Room member is over the limit"),
+    ERR_ROOM_LICENSE_COMPANY_CODE(4022, "Can not find license for company code"),
 
     // error code for service validation
     ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
@@ -72,6 +73,7 @@ public enum  ErrorCode {
     ERR_FILE_GET_SIGNED_EXCEPTION(7009, "Get Pre signed url has an exception"),
     ERR_FILE_DOWNLOAD_EXCEPTION(7010, "File download has an exception"),
     ERR_FILE_COVERT_FAILED(7011, "File converting is failed"),
+    ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
 
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),

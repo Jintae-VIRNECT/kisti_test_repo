@@ -30,7 +30,6 @@ import org.kurento.jsonrpc.server.JsonRpcConfigurer;
 import org.kurento.jsonrpc.server.JsonRpcHandlerRegistry;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.modelmapper.spi.MatchingStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +40,12 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 import javax.net.ssl.*;
 import java.io.IOException;
@@ -58,6 +58,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+
+//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 //@EnableWebSecurity
 @Import({ JsonRpcConfiguration.class })
@@ -73,13 +75,11 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     //ng serve --host 0.0.0.0 --ssl true
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
-    //public static final String WS_PATH = "/openvidu";
-    //public static final String WS_PATH = "/remoteservice";
     public static final String WS_PATH = "/remote/websocket";
     public static String wsUrl;
     public static String wssUrl;
     public static String httpUrl;
-    //public static String WS_GATEWAY_PATH = "wss://stgapi.virnect.com:8000";
+    public static String storageUrl;
 
     @Autowired
     RemoteServiceConfig config;
@@ -386,6 +386,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
                 + "   * RemoteService Server: " + httpUrl + "\n" + "\n"
                 + "   * RemoteService Dashboard: " + dashboardUrl + "\n" + "\n"
                 + "   * RemoteService Websocket: " + websocket + "\n" + "\n"
+                + "   * RemoteService Storage Server: " + storageUrl + "\n" + "\n"
                 + "   * RemoteService Temp Directory: " + System.getProperty("java.io.tmpdir") + "\n" + "\n"
                 + "----------------------------------------------------\n";
         // @formatter:on

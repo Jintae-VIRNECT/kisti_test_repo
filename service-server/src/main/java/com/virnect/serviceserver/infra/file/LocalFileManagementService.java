@@ -3,45 +3,48 @@ package com.virnect.serviceserver.infra.file;
 import com.google.common.io.Files;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.serviceserver.config.RemoteServiceConfig;
 import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.OkHttpClient;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.security.InvalidKeyException;
+import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 
-@Profile({ "local", "develop" })
+
+@Profile({"local", "onpremise", "develop"})
 @Slf4j
 @Component
 public class LocalFileManagementService implements IFileManagementService {
 
-    @Value("${minio.bucket}")
     private String fileBucketName;
-    @Value("${minio.resource}")
     private String profileBucketName;
-    @Value("${minio.access-key}")
-    private String accessKey;
-    @Value("${minio.secret-key}")
-    private String secretKey;
-    @Value("${minio.server}")
-    private String serverUrl;
-    @Value("${minio.dir}")
     private String rootDirPath;
+
+    @Autowired
+    private RemoteServiceConfig remoteServiceConfig;
 
     private List<String> fileAllowExtensionList = new ArrayList<>();
 
@@ -50,43 +53,121 @@ public class LocalFileManagementService implements IFileManagementService {
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/remote/";
     final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
 
+
+    private static void disableSslVerification() throws NoSuchAlgorithmException, KeyManagementException {
+        // Create a trust manager that does not validate certificate chains
+        TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
+            @Override
+            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+            }
+
+            @Override
+            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+
+            }
+
+            @Override
+            public X509Certificate[] getAcceptedIssuers() {
+                return new X509Certificate[0];
+            }
+        }
+        };
+
+        // Install the all-trusting trust manager
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+        OkHttpClient.Builder builder = new OkHttpClient.Builder();
+        builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
+        builder.hostnameVerifier((s, sslSession) -> true);
+        builder.build();
+        /*HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+
+        // Create all-trusting host name verifier
+        HostnameVerifier allHostsValid = new HostnameVerifier() {
+            public boolean verify(String hostname, SSLSession session) {
+                return true;
+            }
+        };
+
+        // Install the all-trusting host verifier
+        HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);*/
+    }
+
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
-        try {
-            fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
-            fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
-            fileAllowExtensionList.addAll(FILE_VIDEO_ALLOW_EXTENSION);
-
-            log.info(LOG_MESSAGE_TAG + "{}", "LocalFileUploadService initialised");
-            log.info(LOG_MESSAGE_TAG + "LocalFileUploadService allow extension {}", fileAllowExtensionList);
-            minioClient = MinioClient.builder().endpoint(serverUrl).credentials(accessKey, secretKey).build();
-
-            boolean isBucketExist = false;
-
-            // create file bucket
-            isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(fileBucketName).build());
-            if (isBucketExist) {
-                log.info("Bucket {} is already exist.", fileBucketName);
-            } else {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(fileBucketName).build());
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            log.info("Remote storage service is enabled");
+            try {
+                disableSslVerification();
+            } catch (KeyManagementException e) {
+                e.printStackTrace();
             }
-            // set bucket lifecycle
-            String lifeCycle = "<LifecycleConfiguration>" + "<Rule>" + "<ID>expire-bucket</ID>" + "<Prefix></Prefix>"
-                    + "<Status>Disabled</Status>" + "<Expiration>" + "<Days>7</Days>" + "</Expiration>" + "</Rule>"
-                    + "</LifecycleConfiguration>";
 
-            minioClient.setBucketLifeCycle(
-                    SetBucketLifeCycleArgs.builder().bucket(fileBucketName).config(lifeCycle).build());
+            this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
+            this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
+            this.rootDirPath = this.remoteServiceConfig.remoteStorageProperties.getRootDirPath();
 
-            // create file bucket
-            isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(profileBucketName).build());
-            if (isBucketExist) {
-                log.info("Bucket {} is already exist.", profileBucketName);
-            } else {
-                minioClient.makeBucket(MakeBucketArgs.builder().bucket(profileBucketName).build());
+            String accessKey = this.remoteServiceConfig.remoteStorageProperties.getAccessKey();
+            String secretKey = this.remoteServiceConfig.remoteStorageProperties.getSecretKey();
+            String serverUrl = this.remoteServiceConfig.remoteStorageProperties.getServerUrl();
+
+            try {
+                fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
+                fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
+                fileAllowExtensionList.addAll(FILE_VIDEO_ALLOW_EXTENSION);
+
+                log.info(LOG_MESSAGE_TAG + "{}", "LocalFileUploadService initialised");
+                log.info(LOG_MESSAGE_TAG + "LocalFileUploadService allow extension {}", fileAllowExtensionList);
+                minioClient = MinioClient.builder()
+                        .endpoint(serverUrl)
+                        .credentials(accessKey, secretKey)
+                        .build();
+
+                minioClient.ignoreCertCheck();
+
+                boolean isBucketExist = false;
+
+                //create file bucket
+                isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(fileBucketName).build());
+                if (isBucketExist) {
+                    log.info("Bucket {} is already exist.", fileBucketName);
+                } else {
+                    minioClient.makeBucket(MakeBucketArgs.builder().bucket(fileBucketName).build());
+                }
+                // set bucket lifecycle
+                String lifeCycle =
+                        "<LifecycleConfiguration>" +
+                                "<Rule>" +
+                                "<ID>expire-bucket</ID>" +
+                                "<Prefix></Prefix>" +
+                                "<Status>Disabled</Status>" +
+                                "<Expiration>" +
+                                "<Days>7</Days>" +
+                                "</Expiration>"
+                                + "</Rule>" +
+                                "</LifecycleConfiguration>";
+
+                minioClient.setBucketLifeCycle(SetBucketLifeCycleArgs.builder().bucket(fileBucketName).config(lifeCycle).build());
+
+                //create file bucket
+                isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(profileBucketName).build());
+                if (isBucketExist) {
+                    log.info("Bucket {} is already exist.", profileBucketName);
+                } else {
+                    minioClient.makeBucket(MakeBucketArgs.builder().bucket(profileBucketName).build());
+                }
+            } catch (ConnectException e) {
+                log.info("Bucket ConnectException error occured:: {}", e.getMessage());
+                this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
+            } catch (MinioException e) {
+                log.info("Bucket error occured:: {}", e.getMessage());
+            } catch (KeyManagementException e) {
+                log.info("KeyManagementException error occured:: {}", e.getMessage());
             }
-        } catch (MinioException e) {
-            log.info("Bucket error occured:: {}", e.getMessage());
+        } else {
+            log.info("Remote storage service is disabled");
         }
     }
 

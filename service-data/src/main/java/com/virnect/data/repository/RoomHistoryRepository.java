@@ -17,6 +17,4 @@ public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long> 
     Page<RoomHistory> findByTitleIsContaining(final String title, Pageable pageable);
 
     List<RoomHistory> findByTitleIsContaining(final String title);
-
-
 }

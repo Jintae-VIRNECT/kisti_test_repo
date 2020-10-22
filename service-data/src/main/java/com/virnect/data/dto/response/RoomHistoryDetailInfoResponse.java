@@ -1,5 +1,6 @@
 package com.virnect.data.dto.response;
 
+import com.virnect.data.dao.SessionType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -24,21 +25,24 @@ public class RoomHistoryDetailInfoResponse {
     @ApiModelProperty(value = "Remote Session Profile Image URL", position = 3, example = "default")
     private String profile;
 
-    @ApiModelProperty(value = "Remote Session Creation Date", position = 4, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "Remote Session Type", position = 4, example = "PRIVATE")
+    private SessionType sessionType;
+
+    @ApiModelProperty(value = "Remote Session Creation Date", position = 5, example = "2020-01-20T14:05:30")
     private LocalDateTime createdDate;
 
-    @ApiModelProperty(value = "Remote Session Update Date", position = 5, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "Remote Session Update Date", position = 6, example = "2020-01-20T14:05:30")
     private LocalDateTime updatedDate;
 
-    @ApiModelProperty(value = "Remote Session Activation Date", position = 6, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "Remote Session Activation Date", position = 7, example = "2020-01-20T14:05:30")
     private LocalDateTime activeDate;
 
-    @ApiModelProperty(value = "Remote Session UnActivation Date", position = 7, example = "2020-01-20T14:05:30")
+    @ApiModelProperty(value = "Remote Session UnActivation Date", position = 8, example = "2020-01-20T14:05:30")
     private LocalDateTime unactiveDate;
 
-    @ApiModelProperty(value = "Remote Session Duration time", position = 8, example = "3600")
+    @ApiModelProperty(value = "Remote Session Duration time", position = 9, example = "3600")
     private Long durationSec;
 
-    @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 9)
+    @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 10)
     private List<MemberInfoResponse> memberList;
 }

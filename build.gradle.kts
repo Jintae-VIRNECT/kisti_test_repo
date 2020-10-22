@@ -83,13 +83,15 @@ project(":service-data") {
 project(":service-common") {
 
 }
-project(":service-kms") {
+
+/*project(":service-kms") {
     dependencies {
         //implementation(project(":service-kms"))
         implementation(project(":service-client"))
         implementation(project(":service-java-client"))
     }
-}
+}*/
+
 project(":service-client") {
 
 }
