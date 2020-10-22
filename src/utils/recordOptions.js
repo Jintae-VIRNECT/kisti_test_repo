@@ -14,7 +14,17 @@ export const LCOAL_RECORD_STAUTS = {
 }
 
 // Service Options
-export const localRecTime = ['1', '5', '10', '15', '30', '45', '60']
+export const localRecTime = [
+  '1',
+  '5',
+  '10',
+  '15',
+  '30',
+  '45',
+  '60',
+  '90',
+  '120',
+]
 
 export const localRecResOpt = [
   {
@@ -31,7 +41,7 @@ export const localRecResOpt = [
   },
 ]
 
-export const localRecInterval = ['1', '5', '10']
+export const localRecInterval = ['1', '5', '10', '20']
 
 /**
  *
