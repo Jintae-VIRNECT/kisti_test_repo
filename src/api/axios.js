@@ -10,12 +10,12 @@ export async function getUrls() {
 	)
 	window.urls = res.data
 	window.env = res.data.env
+	axios.defaults.timeout = res.data.timeout
 	setBaseURL(res.data.api)
 	return res.data
 }
 
 const axios = Axios.create({
-	timeout: window.env === 'production' ? 3000 : 2000,
 	headers: {
 		'Content-Type': 'application/json',
 	},
