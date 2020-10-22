@@ -1,14 +1,14 @@
 <template>
   <section class="tab-board">
-    <board-daily :dailyData="myDaily"> </board-daily>
-    <board-monthly :myData="myMonthly"> </board-monthly>
+    <board-daily :daily="daily"> </board-daily>
+    <board-monthly :monthly="monthly"> </board-monthly>
   </section>
 </template>
 
 <script>
 import BoardDaily from 'components/section/BoardDaily'
 import BoardMonthly from 'components/section/BoardMonthly'
-import { getMyHistoryData } from 'utils/chartDatas'
+import { getDailyData, getMonthlyData } from 'utils/chartDatas'
 import { mapGetters } from 'vuex'
 export default {
   name: 'TabBoard',
@@ -18,56 +18,72 @@ export default {
   },
   data() {
     return {
-      myDaily: null,
-      myMonthly: null,
+      daily: null,
+      monthly: null,
+      now: new Date(),
     }
   },
   computed: {
     ...mapGetters(['calendars']),
-    dayCalendar() {
-      const index = this.calendars.findIndex(cal => cal.name === 'daily')
-      if (index < 0) return {}
-      return this.calendars[index]
-    },
   },
   watch: {
-    async workspace(val) {
-      console.log('workspace changed::', val)
-      await this.getMyData()
+    async workspace() {
+      await this.getDailyData()
+      await this.getMonthlyData()
     },
     calendars: {
-      handler(cal) {
-        console.log(cal[0])
-        this.initMy()
-        this.initTotal()
+      handler() {
+        if (this.workspace.uuid && this.account.uuid) {
+          this.initDaily()
+          this.initMonthly()
+        }
       },
       deep: true,
     },
   },
   methods: {
-    async initMy() {
+    async initDaily() {
       const index = this.calendars.findIndex(cal => cal.name === 'daily')
       if (index < 0) return null
-      await this.getMyData(this.calendars[index].date)
+      if (this.calendars[index].status) return null
+
+      await this.getDailyData(this.calendars[index].date)
     },
-    async initTotal() {
-      console.log('initTotal')
-    },
-    async getMyData(day) {
-      const result = await getMyHistoryData({
+    async getDailyData(day) {
+      const result = await getDailyData({
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
         date: day ? day : new Date(),
       })
-      this.myDaily = result.daily
-      this.myMonthly = result.monthly
+      this.daily = result
+    },
+    async initMonthly() {
+      const index = this.calendars.findIndex(cal => cal.name === 'monthly')
+      if (index < 0) return null
+      if (this.calendars[index].status) return null
+
+      await this.getMonthlyData(this.calendars[index].date)
+    },
+    async getMonthlyData(month) {
+      const result = await getMonthlyData({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        date: month ? month : new Date(),
+      })
+      this.monthly = result
+    },
+    async refresh() {
+      this.initDaily()
+      this.initMonthly()
     },
   },
 
   async mounted() {
     console.log('mounted')
-    // this.myData.daily = {}
-    // this.myData.monthly = {}
+    this.$eventBus.$on('refresh:chart', this.refresh)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('refresh:chart')
   },
 }
 </script>
