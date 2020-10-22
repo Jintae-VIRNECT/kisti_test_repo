@@ -37,6 +37,16 @@ export const getDays = date => {
   return days
 }
 
+export const getDailyData = async ({ workspaceId, userId, date }) => {
+  console.log({ workspaceId, userId, date })
+  const result = {
+    total: {},
+    my: {},
+  }
+
+  result.my = await getMyHistoryData({ workspaceId, userId, date })
+}
+
 //개인 데이터
 export const getMyHistoryData = async ({ workspaceId, userId, date }) => {
   console.log({ workspaceId, userId, date })
@@ -84,31 +94,31 @@ export const getMyHistoryData = async ({ workspaceId, userId, date }) => {
     }
   })
 
-  const dayMap = new Map()
-  const days = getDays(date)
+  // const dayMap = new Map()
+  // const days = getDays(date)
 
-  days.forEach(day => {
-    dayMap.set(day, 0)
-  })
+  // days.forEach(day => {
+  //   dayMap.set(day, 0)
+  // })
 
-  const forDay = datas.roomHistoryInfoList.filter(history => {
-    const activeDate = dayjs(history.activeDate)
-    const sameMonth = dayjs(activeDate).isSame(targetDate, 'month')
-    if (sameMonth) {
-      const day = Number.parseInt(
-        dayjs(history.activeDate + '+00:00')
-          .utc()
-          .local()
-          .format('DD'),
-        10,
-      )
-      dayMap.set(day, dayMap.get(day) + 1)
+  // const forDay = datas.roomHistoryInfoList.filter(history => {
+  //   const activeDate = dayjs(history.activeDate)
+  //   const sameMonth = dayjs(activeDate).isSame(targetDate, 'month')
+  //   if (sameMonth) {
+  //     const day = Number.parseInt(
+  //       dayjs(history.activeDate + '+00:00')
+  //         .utc()
+  //         .local()
+  //         .format('DD'),
+  //       10,
+  //     )
+  //     dayMap.set(day, dayMap.get(day) + 1)
 
-      return history
-    }
-  })
+  //     return history
+  //   }
+  // })
 
-  console.log('forDay::', forDay)
+  // console.log('forDay::', forDay)
   console.log('dayMap::', dayMap)
 
   //일일협업 개인 협업 내역 차트 데이터
@@ -116,9 +126,9 @@ export const getMyHistoryData = async ({ workspaceId, userId, date }) => {
   result.daily.time = forHour.reduce(sumOfTime, 0)
   result.daily.set = [...timeMap.values()]
 
-  result.monthly.count = forDay.length
-  result.monthly.time = forDay.reduce(sumOfTime, 0)
-  result.monthly.set = [...dayMap.values()]
+  // result.monthly.count = forDay.length
+  // result.monthly.time = forDay.reduce(sumOfTime, 0)
+  // result.monthly.set = [...dayMap.values()]
 
   console.log(result)
   return result

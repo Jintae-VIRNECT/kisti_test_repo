@@ -8,7 +8,6 @@
       :useUtc="true"
       :minimumView="minimumView"
       :maximumView="maximumView"
-      @selected="selected"
     >
     </vue-datepicker>
     <button @click="toggleCalendar" class="calendar-button">
