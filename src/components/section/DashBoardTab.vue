@@ -82,7 +82,7 @@ export default {
       })
     },
     refresh() {
-      console.log('refresh')
+      this.$eventBus.$emit('refresh:chart')
     },
   },
 }
