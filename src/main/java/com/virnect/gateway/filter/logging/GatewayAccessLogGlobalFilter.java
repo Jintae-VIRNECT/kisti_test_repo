@@ -18,13 +18,11 @@ import org.springframework.web.server.ServerWebExchange;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 @Order(-1)
 public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 	static private final String USER_INFO_FORMAT = "[%s,%s,%s]";
@@ -81,17 +79,19 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 	}
 
 	private String generateUserInfo(ServerHttpRequest request) {
-		String jwt = fetchJwtTokenFromRequest(request);
-		if (jwt == null) {
-			return "-";
-		}
-		Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
-		Claims body = claims.getBody();
-		if (body.containsKey("uuid") && body.containsKey("email") && body.containsKey("country")) {
-			String uuid = body.get("uuid", String.class);
-			String email = body.get("email", String.class);
-			String country = body.get("country", String.class);
-			return String.format(USER_INFO_FORMAT, uuid, email, country);
+		try {
+			log.info("secretKey: {}", secretKey);
+			String jwt = fetchJwtTokenFromRequest(request);
+			Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
+			Claims body = claims.getBody();
+			if (body.containsKey("uuid") && body.containsKey("email") && body.containsKey("country")) {
+				String uuid = body.get("uuid", String.class);
+				String email = body.get("email", String.class);
+				String country = body.get("country", String.class);
+				return String.format(USER_INFO_FORMAT, uuid, email, country);
+			}
+		} catch (Exception e) {
+			log.error("{}", e.getMessage(), e);
 		}
 		return "-";
 	}
