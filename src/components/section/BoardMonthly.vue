@@ -12,6 +12,7 @@
           :minimumView="'month'"
           :maximumView="'month'"
           :format="'yyyy-MM'"
+          :initValue="today"
         ></datepicker>
       </div>
       <div class="chart-legend">
@@ -40,13 +41,13 @@
       <figure-board
         header="나의 월별 협업 수"
         :onlyMe="true"
-        :count="999999"
+        :count="monthly ? monthly.my.count : 0"
         :imgSrc="require('assets/image/figure/ic_figure_chart.svg')"
       ></figure-board>
       <figure-board
         header="나의 월별 협업 시간"
         :onlyMe="true"
-        :time="999999"
+        :time="monthly ? monthly.my.time : 0"
         :imgSrc="require('assets/image/figure/ic_figure_date_time.svg')"
       ></figure-board>
     </div>
@@ -67,7 +68,8 @@ export default {
   mixins: [chartMixin],
   data() {
     return {
-      ctx: null,
+      monthlyChart: null,
+      today: new Date(),
     }
   },
   components: {
@@ -76,11 +78,33 @@ export default {
     FigureBoard,
     Datepicker,
   },
+  props: {
+    monthly: {
+      type: Object, //my,total - count, time, set
+      default: () => {
+        return {}
+      },
+      require: true,
+    },
+  },
+
+  watch: {
+    monthly: {
+      handler(data) {
+        if (this.monthlyChart) {
+          this.monthlyChart.data.datasets[0].data = data.my.set
+          this.monthlyChart.update()
+        }
+      },
+    },
+    deep: true,
+  },
 
   mounted() {
-    this.ctx = document.getElementById('chart-month').getContext('2d')
-    this.setRoundedBar()
+    console.log('board monthly mounted')
+    const ctx = document.getElementById('chart-month').getContext('2d')
 
+    this.setRoundedBar()
     const custom = this.customTooltips('chart-month', 'chartjs-noarrow')
 
     const chartData = {
@@ -90,20 +114,46 @@ export default {
         datasets: [
           {
             label: '개인 협업 내역',
-            data: [5, 3, 0],
+            data: this.monthly ? this.monthly.my.set : [],
             backgroundColor: '#0f75f5',
             barThickness: 10,
           },
           {
             label: '전체 협업 내역',
-            data: [1, 2, 3],
+            data: [
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+              12,
+            ],
             backgroundColor: '#bbc8d9',
             barThickness: 10,
           },
         ],
       },
       options: {
-        responsive: true,
+        maintainAspectRatio: false,
+        aspectRatio: 5,
         barRoundness: 1.2,
         hover: {
           mode: 'index',
@@ -151,8 +201,7 @@ export default {
       },
     }
 
-    let myChart = new Chart(this.ctx, chartData)
-    console.log(myChart)
+    this.monthlyChart = new Chart(ctx, chartData)
   },
   methods: {
     //temp

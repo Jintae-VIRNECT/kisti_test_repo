@@ -37,18 +37,42 @@ export const getDays = date => {
   return days
 }
 
-//개인 데이터
-export const getMyHistoryData = async ({ workspaceId, userId, date }) => {
+export const getDailyData = async ({ workspaceId, userId, date }) => {
+  console.log({ workspaceId, userId, date })
+  const result = {
+    total: {},
+    my: {},
+  }
+
+  //@To-do : 전체 일별 협업수, 전체 일별 협업 시간 불러와야함.
+  result.my = await getMyDailyData({ workspaceId, userId, date })
+  // result.total = await getTotalDailyData({ workspaceId, userId, date })
+
+  return result
+}
+
+export const getMonthlyData = async ({ workspaceId, userId, date }) => {
+  console.log({ workspaceId, userId, date })
+  const result = {
+    total: {},
+    my: {},
+  }
+
+  //@To-do : 전체 월별 협업수, 전체 월별 협업 시간 불러와야함.
+  result.my = await getMyMonthlyData({ workspaceId, userId, date })
+  // result.total = await getTotalMonthlyData({ workspaceId, userId, date })
+
+  return result
+}
+
+/**
+ * 개인 일별 데이터
+ * @param {*} param0
+ */
+const getMyDailyData = async ({ workspaceId, userId, date }) => {
   console.log({ workspaceId, userId, date })
 
-  const result = {
-    daily: {},
-    monthly: {},
-  }
-
-  const sumOfTime = (sum, history) => {
-    return sum + history.durationSec
-  }
+  const result = {}
 
   const timeMap = new Map()
 
@@ -75,18 +99,42 @@ export const getMyHistoryData = async ({ workspaceId, userId, date }) => {
         .utc()
         .local()
         .hour()
-
       timeMap.set(
-        hour > 10 ? hour.toString() : '0' + hour.toString(),
-        timeMap.get(hour > 10 ? hour.toString() : '0' + hour.toString()) + 1,
+        hour >= 10 ? hour.toString() : '0' + hour.toString(),
+        timeMap.get(hour >= 10 ? hour.toString() : '0' + hour.toString()) + 1,
       )
       return history
     }
   })
+  //일일협업 개인 협업 내역 차트 데이터
+  result.count = forHour.length
+  result.time = forHour.reduce(sumOfTime, 0)
+  result.set = [...timeMap.values()]
+
+  return result
+}
+
+/**
+ * 개인 월별 데이터
+ * @param {*} param0
+ */
+const getMyMonthlyData = async ({ workspaceId, userId, date }) => {
+  console.log({ workspaceId, userId, date })
+
+  const result = {}
+
+  const targetDate = dayjs(date)
+  const datas = await getHistoryList({
+    page: 0,
+    paging: false,
+    size: 1,
+    sort: 'createdDate,desc',
+    userId: userId,
+    workspaceId: workspaceId,
+  })
 
   const dayMap = new Map()
   const days = getDays(date)
-
   days.forEach(day => {
     dayMap.set(day, 0)
   })
@@ -103,23 +151,17 @@ export const getMyHistoryData = async ({ workspaceId, userId, date }) => {
         10,
       )
       dayMap.set(day, dayMap.get(day) + 1)
-
       return history
     }
   })
 
-  console.log('forDay::', forDay)
-  console.log('dayMap::', dayMap)
+  result.count = forDay.length
+  result.time = forDay.reduce(sumOfTime, 0)
+  result.set = [...dayMap.values()]
 
-  //일일협업 개인 협업 내역 차트 데이터
-  result.daily.count = forHour.length
-  result.daily.time = forHour.reduce(sumOfTime, 0)
-  result.daily.set = [...timeMap.values()]
-
-  result.monthly.count = forDay.length
-  result.monthly.time = forDay.reduce(sumOfTime, 0)
-  result.monthly.set = [...dayMap.values()]
-
-  console.log(result)
   return result
+}
+
+const sumOfTime = (sum, history) => {
+  return sum + history.durationSec
 }

@@ -11,6 +11,7 @@
           :pickerName="'daily'"
           :minimumView="'day'"
           :maximumView="'day'"
+          :initValue="today"
         ></datepicker>
       </div>
       <div class="chart-legend">
@@ -22,7 +23,7 @@
         ></chart-legend>
       </div>
       <div class="chart-holder">
-        <canvas id="chart-dayily" width="1145" height="230"></canvas></div
+        <canvas id="chart-dayily" width="1250"></canvas></div
     ></card>
     <div class="board-figures">
       <figure-board
@@ -38,13 +39,13 @@
       <figure-board
         header="나의 일별 협업 수"
         :onlyMe="true"
-        :count="dailyData ? dailyData.count : 0"
+        :count="daily ? daily.my.count : 0"
         :imgSrc="require('assets/image/figure/ic_figure_chart.svg')"
       ></figure-board>
       <figure-board
         header="나의 일별 협업 시간"
         :onlyMe="true"
-        :time="dailyData ? dailyData.time : 0"
+        :time="daily ? daily.my.time : 0"
         :imgSrc="require('assets/image/figure/ic_figure_date_time.svg')"
       ></figure-board>
     </div>
@@ -73,15 +74,14 @@ export default {
   data() {
     return {
       //dummy datas
-      privateCollaboDatas: [],
       totalColaboDatas: [],
-
       dailyChart: null,
+      today: new Date(),
     }
   },
   props: {
-    dailyData: {
-      type: Object, //count, time, set
+    daily: {
+      type: Object, //my,total - count, time, set
       default: () => {
         return {}
       },
@@ -89,10 +89,10 @@ export default {
     },
   },
   watch: {
-    dailyData: {
+    daily: {
       handler(data) {
         if (this.dailyChart) {
-          this.dailyChart.data.datasets[0].data = data.set
+          this.dailyChart.data.datasets[0].data = data.my.set
           this.dailyChart.update()
         }
       },
@@ -131,6 +131,7 @@ export default {
   },
   mounted() {
     //todo TotalData
+    console.log('board daily mounted')
 
     this.$nextTick(() => {
       const ctx = document.getElementById('chart-dayily').getContext('2d')
@@ -149,7 +150,7 @@ export default {
           datasets: [
             {
               label: '개인 협업 내역',
-              data: this.dailyData ? this.dailyData.set : [],
+              data: this.daily ? this.daily.my.set : [],
               borderColor: '#0f75f5',
               borderWidth: 4,
               pointRadius: 0,
@@ -172,6 +173,8 @@ export default {
           ],
         },
         options: {
+          maintainAspectRatio: false,
+          aspectRatio: 5,
           hover: {
             mode: 'index',
             intersect: false,

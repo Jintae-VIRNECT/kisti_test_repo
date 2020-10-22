@@ -23,8 +23,11 @@ export default {
 
 <style lang="scss">
 .header {
-  position: fixed;
-  z-index: 999;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 8;
   display: flex;
   // flex-direction: row;
   // justify-content: space-between;

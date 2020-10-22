@@ -8,7 +8,7 @@
       :useUtc="true"
       :minimumView="minimumView"
       :maximumView="maximumView"
-      @selected="selected"
+      :value="initValue"
     >
     </vue-datepicker>
     <button @click="toggleCalendar" class="calendar-button">
@@ -47,6 +47,10 @@ export default {
     format: {
       type: String,
       default: 'yyyy-MM-dd',
+    },
+    initValue: {
+      type: Date,
+      default: null,
     },
   },
   computed: {
