@@ -45,6 +45,30 @@
         "updateSuccess": "The Workspace details are updated.",
         "updateFail": "Failed to setting up the Workspace details please try again later."
       }
+    },
+    "onpremiseSetting": {
+      "title": "Web Service Settings",
+      "desc": "Change the customer's name, logo, and Favicon shown in the Web service. It does not apply to installed programs.",
+      "company": {
+        "title": "Change customer's name",
+        "desc": "If you change the customer name, you will be exposed to the customer name instead of 'VIRNECT' in the Web Services tab / Service Title / Notification phrase.",
+        "tooltip": "Customer name change area",
+        "companyName": "Customer name",
+        "caution": "Changes can be made to a combination of Korean, English, numbers, and special characters (.!,@,#,$,%-,_,&) up to 20 characters."
+      },
+      "logo": {
+        "title": "Change Logo",
+        "desc": "If you want to change your logo, please register your logo image. The VIRNECT logo is shown instead of the VIRNECT logo in your web service.",
+        "tooltip": "Logo Change Area",
+        "caution": "Up to 3MB JPG and PNG files can be uploaded. <br>* Recommended size: 170 (lateral) * 32 (longitudinal, fixed)px / 72 DPI"
+      },
+      "favicon": {
+        "title": "Change the Favicon",
+        "desc": "If you want to change the Favicon, please register the Favicon image. Web service Favicon will be changed.",
+        "tooltip": "Favicon Change Area",
+        "caution": "Up to 3MB of ICO, JPG, and PNG files can be uploaded. <br>* Recommended size: 32 (lateral) * 32 (longitudinal, fixed)px / 72 DPI",
+        "upload": "Upload Image"
+      }
     }
   }
 }
