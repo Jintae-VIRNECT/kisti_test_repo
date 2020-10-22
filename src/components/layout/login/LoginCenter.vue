@@ -73,7 +73,7 @@ export default {
 
 		// 로그인 필요 다이얼로그
 		const needNotLogin =
-			redirectTarget && redirectTarget.match(this.$urls['www'] !== null)
+			redirectTarget && redirectTarget.match(this.$urls.www)[0]
 		if (redirectTarget && !needNotLogin) {
 			this.show = true
 			this.loginService()

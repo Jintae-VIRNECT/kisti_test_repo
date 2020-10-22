@@ -10,12 +10,12 @@ export async function getUrls() {
 	)
 	window.urls = res.data
 	window.env = res.data.env
-	setBaseURL(res.data.api)
+	setBaseURL(res.data)
 	return res.data
 }
 
 const axios = Axios.create({
-	timeout: window.env === 'production' ? 3000 : 2000,
+	// timeout: window.env === 'production' ? 3000 : 30000,
 	headers: {
 		'Content-Type': 'application/json',
 	},
@@ -26,8 +26,9 @@ const axios = Axios.create({
 })
 
 const setBaseURL = baseURL => {
-	axios.defaults['baseURL'] = baseURL
-	axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
+	axios.defaults.timeout = baseURL.timeout
+	axios.defaults['baseURL'] = baseURL.api
+	axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL.api
 }
 
 /**
@@ -36,6 +37,7 @@ const setBaseURL = baseURL => {
  * @param {Object} option
  */
 export async function api(name, option = {}) {
+	console.log(axios.defaults)
 	if (!URI[name]) {
 		throw new Error(`API not found '${name}'`)
 	}
