@@ -16,6 +16,7 @@
         placeholder ? placeholder : $t('workspace.create_remote_name_input')
       "
       v-model="inputText"
+      @input="inputChange"
       :maxlength="count"
       @focusout="$emit('focusOut')"
     />
@@ -28,6 +29,7 @@
         placeholder ? placeholder : $t('workspace.create_remote_name_input')
       "
       v-model="inputText"
+      @input="inputChange"
       :maxlength="count"
     />
     <slot v-else></slot>
@@ -104,6 +106,15 @@ export default {
     value(val) {
       if (val !== this.inputText) {
         this.inputText = val
+      }
+    },
+  },
+  methods: {
+    inputChange(event) {
+      if (event.target.value.trim() === '') {
+        this.inputText = ''
+      } else {
+        this.inputText = event.target.value
       }
     },
   },

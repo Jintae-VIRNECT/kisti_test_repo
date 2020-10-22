@@ -26,14 +26,23 @@
       >
         {{ $t('workspace.create_room') }}
       </button>
+      <button
+        v-if="useOpenRoom && !emptyWorkspace && !expireLicense"
+        class="btn workspace-welcome__open"
+        @click="createOpenRoom"
+      >
+        {{ $t('workspace.create_open_room') }}
+      </button>
     </div>
     <create-room-modal :visible.sync="visible"></create-room-modal>
+    <open-room-modal :visible.sync="openVisible"></open-room-modal>
   </section>
 </template>
 
 <script>
 import Role from 'Role'
 import CreateRoomModal from '../modal/WorkspaceCreateRoom'
+import OpenRoomModal from '../modal/WorkspaceCreateOpenRoom'
 import { mapGetters } from 'vuex'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 export default {
@@ -41,14 +50,16 @@ export default {
   components: {
     Role,
     CreateRoomModal,
+    OpenRoomModal,
   },
   data() {
     return {
       visible: false,
+      openVisible: false,
     }
   },
   computed: {
-    ...mapGetters(['expireLicense']),
+    ...mapGetters(['expireLicense', 'useOpenRoom']),
     emptyWorkspace() {
       if (!this.hasLicense || !(this.workspace && this.workspace.uuid)) {
         return true
@@ -81,6 +92,9 @@ export default {
   methods: {
     async createRoom() {
       this.visible = !this.visible
+    },
+    createOpenRoom() {
+      this.openVisible = !this.openVisible
     },
   },
 

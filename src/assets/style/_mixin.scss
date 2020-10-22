@@ -65,6 +65,9 @@
   &.bad {
     #{$attr}: $color_state_bad;
   }
+  &.disconnected {
+    #{$attr}: #ff4141;
+  }
 }
 
 @mixin border-gradient($start_color, $end_color) {

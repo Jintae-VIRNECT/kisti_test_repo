@@ -14,3 +14,9 @@ export const PLAN_STATUS = {
   INACTIVE: 'INACTIVE',
   EXCEEDED: 'EXCEEDED',
 }
+
+export const ROOM_STATUS = {
+  PUBLIC: 'PUBLIC',
+  PRIVATE: 'PRIVATE',
+  OPEN: 'OPEN',
+}

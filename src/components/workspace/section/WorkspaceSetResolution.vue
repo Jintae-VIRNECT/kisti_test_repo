@@ -66,7 +66,7 @@ export default {
       this.$localStorage.setRecord('resolution', resolution)
     },
   },
-  mounted() {
+  created() {
     if (this.localRecord.resolution) {
       this.recordResolution = this.localRecord.resolution
     }

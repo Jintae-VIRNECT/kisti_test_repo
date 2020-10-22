@@ -2,6 +2,8 @@ import http from 'api/gateway'
 
 /**
  * 서버 녹화 시작 요청
+ * @query {String} workspaceId 워크스페이스 uuid
+ * @query {String} userId 유저 uuid
  * @param {Number} framerate 영상 프레임 레이트
  * @param {String} recordingFilename 파일 명
  * @param {Number} recordingTimeLimit 녹화 시간
@@ -11,6 +13,8 @@ import http from 'api/gateway'
  * @param {Object} metaData 메타 데이터
  */
 export const startServerRecord = async ({
+  workspaceId,
+  userId,
   framerate = 20,
   recordingFilename,
   recordingTimeLimit = 5,
@@ -20,6 +24,8 @@ export const startServerRecord = async ({
   metaData = {},
 }) => {
   const returnVal = await http('START_SERVER_RECORD', {
+    workspaceId,
+    userId,
     framerate,
     recordingFilename,
     recordingTimeLimit,
@@ -33,10 +39,14 @@ export const startServerRecord = async ({
 
 /**
  * 서버 녹화 중단 요청
- * @param {String} id 중단할 녹화 세션 id
+ * @query {String} workspaceId 워크스페이스 uuid
+ * @query {String} userId 유저 uuid
+ * @query {String} id 중단할 녹화 세션 id
  */
-export const stopServerRecord = async ({ id }) => {
+export const stopServerRecord = async ({ workspaceId, userId, id }) => {
   const returnVal = await http('STOP_SERVER_RECORD', {
+    workspaceId,
+    userId,
     id,
   })
   return returnVal

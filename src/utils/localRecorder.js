@@ -161,7 +161,7 @@ export default class LocalRecorder {
 
       if (this.maxTime === null) {
         debug(logType, 'this.maxTime is null')
-        this.maxTime = 60
+        this.maxTime = 120
       }
 
       if (this.totalPlayTime >= this.maxTime) {

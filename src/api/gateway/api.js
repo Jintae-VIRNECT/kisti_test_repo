@@ -2,11 +2,13 @@ export default {
   /* Account */
   LOGIN: ['POST', 'https://192.168.6.3:8073/auth/signin'],
   TOKEN: ['POST', '/auth/oauth/token'],
-  ACCOUNT: ['GET', '/users/info', { type: 'form' }],
-  USER_INFO: ['GET', '/users/{userId}'],
+  ACCOUNT: ['GET', '/users/info', { type: 'form', initing: true }],
+  USER_INFO: ['GET', '/users/{userId}', { initing: true }],
+  SETTING_INFO: ['GET', '/workspaces/setting', { initing: true }],
 
   /* LICENSE */
-  GET_LICENSE: ['GET', '/licenses/plan/{userId}'],
+  GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],
+  COMPANY_INFO: ['GET', '/remote/company/{workspaceId}/{userId}'],
 
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
@@ -23,7 +25,11 @@ export default {
 
   /* Workspace - Room */
   ROOM_LIST: ['GET', '/remote/room?workspaceId={workspaceId}'],
-  CREATE_ROOM: ['POST', '/remote/room'],
+  CREATE_ROOM: ['POST', '/remote/room?companyCode={companyCode}'],
+  RESTART_ROOM: [
+    'POST',
+    '/remote/history?companyCode={companyCode}&sessionId={sessionId}',
+  ],
   UPDATE_ROOM_PROFILE: [
     'POST',
     '/remote/file/{workspaceId}/{sessionId}/profile',
@@ -62,8 +68,14 @@ export default {
   FILE_LIST: ['GET', '/remote/file'],
 
   /* SERVER RECORD */
-  START_SERVER_RECORD: ['POST', '/remote/recorder/recording'],
-  STOP_SERVER_RECORD: ['DELETE', '/remote/recorder/recording/{id}'],
+  START_SERVER_RECORD: [
+    'POST',
+    '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings',
+  ],
+  STOP_SERVER_RECORD: [
+    'DELETE',
+    '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings/{id}',
+  ],
 }
 
 export const wsUri = {

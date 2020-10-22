@@ -118,6 +118,7 @@ export default {
         return
       this.removePdfPage(this.fileInfo.id)
       let startTime = Date.now()
+      // PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker'
       PDFJS.getDocument(URL.createObjectURL(this.fileData))
         .promise.then(async pdfDocument => {
           this.document = pdfDocument

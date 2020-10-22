@@ -9,7 +9,7 @@
     <div class="rec-setting">
       <template v-if="isLeader">
         <p class="rec-setting--header">{{ $t('service.setting_pointing') }}</p>
-        <div class="rec-setting__row underbar">
+        <div class="rec-setting__row">
           <p class="rec-setting__text">
             {{ $t('service.setting_pointing_participant') }}
           </p>
@@ -21,14 +21,12 @@
         </div>
       </template>
 
-      <div class="rec-setting__row">
-        <p class="rec-setting--header" :class="{ disable: recording }">
-          {{ $t('service.setting_local_record') }}
-        </p>
-        <p v-if="recording" class="rec-setting--warning">
-          {{ $t('service.setting_local_record_warning') }}
-        </p>
-      </div>
+      <p class="rec-setting--header" :class="{ disable: recording }">
+        {{ $t('service.setting_local_record') }}
+      </p>
+      <p v-if="recording" class="rec-setting--warning">
+        {{ $t('service.setting_local_record_warning') }}
+      </p>
 
       <div class="rec-setting__row" :class="{ disable: recording }">
         <p class="rec-setting__text">
@@ -113,7 +111,7 @@
         </r-select>
       </div>
       <div
-        class="rec-setting__row checkbox"
+        class="rec-setting__row"
         v-if="isLeader"
         :class="{ disable: recording }"
       >
@@ -125,6 +123,46 @@
           :value.sync="localRecording"
         ></r-check>
       </div>
+      <template v-if="useTranslate">
+        <p class="rec-setting--header">
+          {{ $t('service.setting_translate') }}
+        </p>
+        <div class="rec-setting__row">
+          <p class="rec-setting__text">
+            {{ $t('service.setting_translate_use') }}
+          </p>
+          <r-check
+            :text="$t('service.setting_translate_use_allow')"
+            :value.sync="useTranslateAllow"
+          ></r-check>
+        </div>
+        <div class="rec-setting__row">
+          <div class="rec-setting__text custom">
+            <p>{{ $t('service.setting_translate_language') }}</p>
+            <tooltip
+              customClass="tooltip-guide"
+              :content="$t('service.setting_translate_language_tooltip')"
+              placement="right"
+              effect="blue"
+            >
+              <img
+                slot="body"
+                class="setting__tooltip--icon"
+                src="~assets/image/ic_tool_tip.svg"
+              />
+            </tooltip>
+          </div>
+          <r-select
+            class="rec-setting__selector"
+            :options="languageCodes"
+            value="code"
+            text="text"
+            :disabled="!useTranslateAllow"
+            :selectedValue.sync="translateCode"
+          >
+          </r-select>
+        </div>
+      </template>
     </div>
   </modal>
 </template>
@@ -159,6 +197,7 @@ export default {
   },
   data() {
     return {
+      initing: false,
       localRecording: false,
       pointing: false,
 
@@ -170,6 +209,8 @@ export default {
       maxRecordTime: '',
       maxRecordInterval: '',
       recordResolution: '',
+      useTranslateAllow: false,
+      translateCode: 'ko-KR',
     }
   },
   props: {
@@ -185,7 +226,15 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['view', 'localRecord', 'allowLocalRecord', 'allowPointing']),
+    ...mapGetters([
+      'view',
+      'localRecord',
+      'allowLocalRecord',
+      'allowPointing',
+      'translate',
+      'useTranslate',
+      'languageCodes',
+    ]),
     localRecTimeOpt() {
       const options = localRecTime.map(time => {
         return {
@@ -237,16 +286,19 @@ export default {
       this.visibleFlag = flag
     },
     localRecording(flag) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
       this.$localStorage.setAllow('localRecord', !!flag)
     },
     pointing(flag) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       this.$call.control(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
     },
     allowLocalRecord(val, bVal) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       if (val !== bVal) {
         if (val === true) {
@@ -263,6 +315,7 @@ export default {
       }
     },
     allowPointing(val, bVal) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       if (val !== bVal) {
         if (val === true) {
@@ -280,6 +333,7 @@ export default {
     },
 
     recordTarget(target) {
+      if (this.initing === false) return
       if (!this.isCurrentView) return
       switch (target) {
         case RECORD_TARGET.WORKER:
@@ -305,6 +359,12 @@ export default {
     recordResolution(resolution) {
       this.changeSetting('resolution', resolution)
     },
+    translateCode(code) {
+      this.changeTranslate('code', code)
+    },
+    useTranslateAllow(flag) {
+      this.changeTranslate('flag', flag)
+    },
   },
   methods: {
     ...mapActions([
@@ -312,12 +372,20 @@ export default {
       'setScreenStream',
       'setLocalRecordTarget',
       'addChat',
+      'setTranslate',
     ]),
     changeSetting(item, setting) {
       const param = {}
       param[item] = setting
       this.setRecord(param)
       this.$localStorage.setRecord(item, setting)
+      // this.showToast()
+    },
+    changeTranslate(item, setting) {
+      const param = {}
+      param[item] = setting
+      this.setTranslate(param)
+      this.$localStorage.setTranslate(item, setting)
       // this.showToast()
     },
 
@@ -331,12 +399,18 @@ export default {
   },
 
   created() {
-    if (this.account.roleType !== ROLE.LEADER) return
-    this.localRecording = this.allowLocalRecord
-    this.pointing = this.allowPointing
+    this.translateCode = this.translate.code
+    this.useTranslateAllow = this.translate.flag
     this.maxRecordTime = this.localRecord.time
     this.maxRecordInterval = this.localRecord.interval
     this.recordResolution = this.localRecord.resolution
+    if (this.account.roleType === ROLE.LEADER) {
+      this.localRecording = this.allowLocalRecord
+      this.pointing = this.allowPointing
+    }
+    this.$nextTick(() => {
+      this.initing = true
+    })
   },
 }
 </script>

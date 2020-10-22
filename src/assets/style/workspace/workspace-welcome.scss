@@ -61,3 +61,15 @@
     background-color: $color_primary;
   }
 }
+
+.btn.workspace-welcome__open {
+  margin-left: 1.143rem;
+  background-color: #009174;
+  &:hover,
+  &:active {
+    background-color: #006853;
+  }
+  &:focus {
+    background-color: #005545;
+  }
+}

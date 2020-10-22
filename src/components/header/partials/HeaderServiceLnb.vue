@@ -67,6 +67,7 @@ export default {
       'view',
       'shareFile',
       'viewForce',
+      'openRoom',
     ]),
     hasLeader() {
       const idx = this.participants.findIndex(
@@ -91,7 +92,12 @@ export default {
       }
     },
     hasLeader(hear, bHear) {
-      if (!hear && hear !== bHear && this.participants.length > 0) {
+      if (
+        !this.openRoom &&
+        !hear &&
+        hear !== bHear &&
+        this.participants.length > 0
+      ) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         this.setView(VIEW.STREAM)
       }
@@ -321,6 +327,17 @@ export default {
   created() {
     this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
+
+    if (this.openRoom) {
+      this.menus = [
+        {
+          text: this.$t('service.stream'),
+          key: VIEW.STREAM,
+          icon: require('assets/image/call/gnb_ic_shareframe.svg'),
+          notice: false,
+        },
+      ]
+    }
   },
 }
 </script>

@@ -7,9 +7,9 @@
     ></profile>
     <div class="chat-item__body" :class="[chat.type, { hidden: hideProfile }]">
       <div class="chat-item__body--chatbox">
-        <span class="chat-item__body--name" v-if="!hideProfile">{{
-          chat.name
-        }}</span>
+        <span class="chat-item__body--name" v-if="!hideProfile">
+          {{ chat.name }}
+        </span>
         <div v-if="isFile" class="chat-item__file">
           <div class="chat-item__file--wrapper">
             <!-- <div class="chat-item__file--icon" :class="extension"></div> -->
@@ -19,11 +19,30 @@
           </div>
           <p class="chat-item__file--size">{{ fileSize }}</p>
         </div>
-        <p
-          class="chat-item__body--text"
-          :class="subClass"
-          v-html="chatText"
-        ></p>
+        <div class="chat-item__body--textbox">
+          <p
+            class="chat-item__body--text"
+            :class="[
+              subClass,
+              { inactive: isTranslate ? translateActive : false },
+            ]"
+            v-html="chatText"
+          ></p>
+          <p
+            v-if="isTranslate"
+            class="chat-item__body--text"
+            :class="{ inactive: !translateActive }"
+            v-html="chatTranslateText"
+          ></p>
+        </div>
+        <button
+          v-if="isTranslate"
+          class="chat-item__translate--button"
+          :class="{ active: translateActive }"
+          @click="translateActive = !translateActive"
+        >
+          {{ $t('service.translate') }}
+        </button>
         <button v-if="isFile" class="chat-item__file--button" @click="download">
           <span class="button-text">{{ $t('button.download') }}</span>
         </button>
@@ -41,14 +60,19 @@ import FileSaver from 'file-saver'
 import linkifyHtml from 'linkifyjs/html'
 import { systemClass, systemText } from './chatUtils'
 import { downloadFile } from 'api/http/file'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
+import { translate as doTranslate } from 'plugins/remote/translate'
+import { downloadByURL } from 'utils/file'
 export default {
   name: 'ChatItem',
   components: {
     Profile,
   },
   data() {
-    return {}
+    return {
+      translateText: '',
+      translateActive: false,
+    }
   },
   props: {
     beforeChat: Object,
@@ -56,7 +80,24 @@ export default {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['roomInfo']),
+    ...mapGetters(['roomInfo', 'translate']),
+    isTranslate() {
+      if (
+        this.translateText.length > 0 &&
+        this.translateText !== this.chat.text
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
+    translateCode() {
+      if (this.translate && this.translate.flag && this.translate.code) {
+        return this.translate.code.split('-')[0]
+      } else {
+        return false
+      }
+    },
     isFile() {
       if (this.chat.file) {
         return true
@@ -118,12 +159,15 @@ export default {
       } else {
         return ''
       }
+      ext = ext.toLowerCase()
 
       if (ext === 'avi' || ext === 'mp4') {
         ext = 'video'
       }
 
-      ext = ext.toLowerCase()
+      if (!['pdf', 'txt', 'jpg', 'png', 'mp3', 'video'].includes(ext)) {
+        ext = 'file'
+      }
 
       return ext
     },
@@ -147,6 +191,20 @@ export default {
       })
       return chatText ? chatText.replace(/\n/gi, '<br>') : ''
     },
+    chatTranslateText() {
+      if (this.chat.type === 'system') {
+        return systemText(this.chat.status, this.chat.name)
+      }
+      let chatText = this.translateText ? this.translateText : ''
+      if (typeof chatText === 'object') {
+        return ''
+      }
+      chatText = linkifyHtml(chatText, {
+        defaultProtocol: 'https',
+        className: 'chat-url',
+      })
+      return chatText ? chatText.replace(/\n/gi, '<br>') : ''
+    },
     fileSize() {
       let size = this.chat.file.size
       const mb = 1048576
@@ -160,20 +218,35 @@ export default {
       }
     },
   },
-  watch: {},
   methods: {
+    ...mapActions(['updateChat']),
     async download() {
       const res = await downloadFile({
-        fileName: this.chat.file.fileName,
+        objectName: this.chat.file.objectName,
         sessionId: this.roomInfo.sessionId,
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
       })
-      // FileSaver.saveAs(file.fileUrl, file.fileName)
+      downloadByURL(res)
+      // FileSaver.saveAs(res)
+    },
+    async doTranslateText() {
+      try {
+        if (this.translateCode === false) return
+        const response = await doTranslate(this.chat.text, this.translateCode)
+        this.translateText = response
+        this.translateActive = true
+      } catch (err) {
+        console.error(`${err.message} (${err.code})`)
+      }
     },
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    if (this.chat.type === 'opponent' && this.translate.flag) {
+      this.doTranslateText()
+    }
+  },
 }
 </script>

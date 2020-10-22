@@ -77,6 +77,11 @@ export default {
 .profile-image {
   position: relative;
   margin: 0 auto;
+  mask: url('~assets/image/icon_bg.svg') no-repeat;
+  mask-size: 100%;
+  -webkit-mask: url('~assets/image/icon_bg.svg') no-repeat;
+  -webkit-mask-size: 100%;
+  overflow: hidden;
   @include image();
 }
 .profile-image__image {

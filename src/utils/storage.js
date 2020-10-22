@@ -82,6 +82,15 @@ const setAllow = (i, v) => {
   localStorage.setItem('allow', allow)
 }
 
+const setTranslate = (i, v) => {
+  let allow = parsingItem(originLocalStorage.getItem('translate'))
+  if (!allow) {
+    allow = {}
+  }
+  allow[i] = v
+  localStorage.setItem('translate', allow)
+}
+
 //로컬 스토리지
 export const localStorage = {
   ...window.localStorage,
@@ -90,6 +99,7 @@ export const localStorage = {
   setDevice: (d, i, v) => setDevice(d, i, v),
   setRecord: (i, v) => setRecord(i, v),
   setAllow: (i, v) => setAllow(i, v),
+  setTranslate: (i, v) => setTranslate(i, v),
   removeItem: k => originLocalStorage.removeItem(k),
   clear: () => originLocalStorage.clear(),
   key: () => originLocalStorage.key(),

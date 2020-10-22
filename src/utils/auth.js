@@ -1,10 +1,11 @@
-import { getAccount, tokenRequest } from 'api/http/account'
+import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
 import { setBaseURL } from 'api/gateway/gateway'
 import axios from 'api/axios'
 import { logger, debug } from 'utils/logger'
+import { setConfigs, RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 
 /**
  * 상태
@@ -61,7 +62,7 @@ const tokenRenewal = () => {
   tokenInterval()
 }
 
-async function getMyInfo() {
+const getMyInfo = async () => {
   try {
     const res = await getAccount()
     myInfo = res.userInfo
@@ -76,17 +77,37 @@ async function getMyInfo() {
   }
 }
 
-async function getUrls() {
-  const res = await axios.get(`${location.origin}/urls`)
+const getConfigs = async () => {
+  if (window.urls && window.urls['api']) return
+  const res = await axios.get(
+    `${location.origin}/configs?origin=${location.hostname}`,
+  )
 
-  logger('RUN ENV', res.data.runtime)
+  const runtimeEnv = res.data.runtime || 'production'
+  // const runtimeEnv = 'onpremise'
+  logger('RUNTIME ENV', res.data.runtime)
   delete res.data.runtime
 
   debug('URLS::', res.data)
 
-  setBaseURL(res.data.api)
+  setBaseURL(res.data['api'])
   window.urls = res.data
-  return res.data
+  setConfigs({
+    runtimeEnv,
+  })
+}
+
+const getSettings = async () => {
+  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
+  const settings = await getSettingInfo()
+  document.title = `${settings.workspaceTitle} | Remote`
+  const favicon = document.querySelector("link[rel*='icon']")
+  favicon.href = settings.favicon
+
+  setConfigs({
+    whiteLogo: settings.whiteLogo,
+    defaultLogo: settings.defaultLogo,
+  })
 }
 
 export const cookieClear = () => {
@@ -116,11 +137,11 @@ class Auth {
   }
 
   async init() {
-    await getUrls()
+    await getConfigs()
 
     if (Cookies.get('accessToken')) {
       try {
-        await getMyInfo()
+        await Promise.all([getMyInfo(), getSettings()])
         isLogin = true
         tokenRenewal()
       } catch (e) {

@@ -20,7 +20,7 @@
         <div class="setting-view__body">
           <device-denied
             :visible.sync="showDenied"
-            :modalLess="true"
+            :modalless="true"
           ></device-denied>
 
           <template v-if="menus[tabIdx].key === 'video'">
@@ -46,6 +46,9 @@
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
           </template>
+          <template v-else-if="menus[tabIdx].key === 'translate'">
+            <set-translate></set-translate>
+          </template>
         </div>
       </div>
     </div>
@@ -55,17 +58,20 @@
 import SetVideo from '../section/WorkspaceSetVideo'
 import SetAudio from '../section/WorkspaceSetAudio'
 import SetLanguage from '../section/WorkspaceSetLanguage'
+import SetTranslate from '../section/WorkspaceSetTranslate'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetResolution from '../section/WorkspaceSetResolution'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
+import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceSetting',
   components: {
     SetVideo,
     SetAudio,
     SetLanguage,
+    SetTranslate,
     SetRecord,
     SetResolution,
     MicTest,
@@ -84,8 +90,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['useTranslate']),
     menus() {
-      return [
+      const menu = [
         {
           key: 'video',
           text: this.$t('workspace.setting_video'),
@@ -103,6 +110,13 @@ export default {
           text: this.$t('workspace.setting_language'),
         },
       ]
+      if (this.useTranslate) {
+        menu.push({
+          key: 'translate',
+          text: this.$t('workspace.setting_translate'),
+        })
+      }
+      return menu
     },
   },
   methods: {

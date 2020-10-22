@@ -41,3 +41,21 @@ export const getLicense = async function({ userId }) {
   const result = await http('GET_LICENSE', { userId })
   return result
 }
+
+/**
+ * 회사 정보
+ * @param {String} userId
+ * @param {String} workspaceId
+ */
+export const getCompanyInfo = async function({ userId, workspaceId }) {
+  const returnVal = await http('COMPANY_INFO', { userId, workspaceId })
+  return returnVal
+}
+
+/**
+ * 커스텀 설정 조회 (onpremise only)
+ */
+export const getSettingInfo = async function() {
+  const returnVal = await http('SETTING_INFO')
+  return returnVal
+}

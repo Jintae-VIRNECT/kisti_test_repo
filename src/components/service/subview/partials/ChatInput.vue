@@ -24,9 +24,6 @@
       @dragover.stop.prevent="dragoverHandler"
       @drop.stop.prevent="dropHandler"
     >
-      <button class="chat-input__form-upload" @click="clickUpload">
-        {{ $t('service.file_upload') }}
-      </button>
       <input
         type="file"
         name="file"
@@ -36,12 +33,35 @@
         accept="*/*"
         @change="fileUpload($event)"
       />
-      <textarea
-        class="chat-input__form-write"
-        v-model="inputText"
-        :placeholder="$t('service.chat_input')"
-        @keydown.enter.exact="doSend($event)"
-      />
+      <template v-if="fileList.length === 0">
+        <button class="chat-input__form-upload" @click="clickUpload">
+          {{ $t('service.file_upload') }}
+        </button>
+        <textarea
+          class="chat-input__form-write"
+          v-model="inputText"
+          :placeholder="$t('service.chat_input')"
+          @keydown.enter.exact="doSend($event)"
+        />
+      </template>
+      <template v-else>
+        <button
+          class="chat-input__form-remove"
+          @click="clearUploadFile"
+        ></button>
+        <p class="chat-input__form-filetext">
+          {{ fileName }}
+        </p>
+      </template>
+
+      <!-- <button
+        class="chat-input__form-button"
+        style="right: 6rem;"
+        @click="doTranslate"
+        v-if="translate.flag"
+      >
+        {{ '번역' }}
+      </button> -->
 
       <button class="chat-input__form-button" @click="doSend()">
         {{ $t('button.send') }}
@@ -54,21 +74,30 @@
 import { mapGetters } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
+import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
-  components: {},
   data() {
     return {
+      viewTrans: false,
       fileList: [],
       inputText: '',
+      fileName: '',
     }
   },
   props: {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['chatList', 'roomInfo']),
+    ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate']),
+    isOnpremise() {
+      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   watch: {
     fileList: {
@@ -83,6 +112,13 @@ export default {
     },
   },
   methods: {
+    doTranslate() {
+      if (!this.mic.isOn) {
+        this.toastDefault('마이크가 활성화 되어있지 않습니다.')
+        return
+      }
+      this.viewTrans = !this.viewTrans
+    },
     async doSend(e) {
       if (e) {
         e.preventDefault()
@@ -100,6 +136,7 @@ export default {
 
           this.$call.sendFile({
             fileName: res.name,
+            objectName: res.objectName,
             mimeType: file.filedata.type,
             size: res.size,
             fileDownloadUrl: res.path,
@@ -109,14 +146,16 @@ export default {
         this.clearUploadFile()
         this.fileList = []
       } else if (this.inputText.length > 0) {
-        this.$call.sendChat(this.inputText)
+        this.$call.sendChat(this.inputText, this.translate.code)
       }
 
       this.inputText = ''
     },
     clickUpload() {
-      this.unsupport()
-      return
+      if (!this.isOnpremise) {
+        this.unsupport()
+        return
+      }
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE
         this.toastDefault(this.$t('service.file_upload_maxnum'))
@@ -157,7 +196,8 @@ export default {
 
           docItem.filedata = file
           docItem.loaded = 0
-          this.inputText = file.name
+          this.fileName = file.name
+          // this.inputText = file.name
 
           const oReader = new FileReader()
           oReader.onload = event => {
@@ -190,7 +230,7 @@ export default {
           docItem.fileData = file
           this.fileList = []
           this.fileList.push(docItem)
-          this.inputText = file.name
+          this.fileName = file.name
           // this.toastDefault(this.$t('service.file_type_notsupport'))
           // this.clearUploadFile()
           // return false
@@ -198,6 +238,7 @@ export default {
       }
     },
     clearUploadFile() {
+      this.fileList = []
       this.$refs['inputFile'].value = ''
     },
     removeFile(idx) {
@@ -213,8 +254,10 @@ export default {
       // console.log(event);
     },
     dropHandler(event) {
-      this.unsupport()
-      return
+      if (!this.isOnpremise) {
+        this.unsupport()
+        return
+      }
       const file = event.dataTransfer.files[0]
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE
