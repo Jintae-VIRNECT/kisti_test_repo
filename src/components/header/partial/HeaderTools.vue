@@ -20,7 +20,7 @@ export default {
 <style lang="scss">
 .header-tools {
   position: absolute;
-  right: 320px;
+  right: 22.8571rem;
   display: flex;
   padding: 16px;
 
