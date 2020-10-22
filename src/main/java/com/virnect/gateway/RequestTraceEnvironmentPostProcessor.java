@@ -29,11 +29,11 @@ public class RequestTraceEnvironmentPostProcessor implements EnvironmentPostProc
 		if (Boolean
 			.parseBoolean(environment.getProperty("spring.sleuth.enabled", "true"))) {
 			map.put("logging.pattern.level", "%5p [" + hostIP + "] [${spring.zipkin.service.name:"
-				+ "${spring.application.name:}},%X{traceId:-},%X{spanId:-}][%X{uuid:-},%X{email:-}]");
+				+ "${spring.application.name:}},%X{traceId:-},%X{spanId:-}]");
 		} else {
 			map.put(
 				"logging.pattern.level",
-				"%5p [" + hostIP + "] [${spring.application.name:}},%X{traceId:-},%X{spanId:-}][%X{uuid:-},%X{email:-}]"
+				"%5p [" + hostIP + "] [${spring.application.name:}},%X{traceId:-},%X{spanId:-}]"
 			);
 		}
 		addOrReplace(environment.getPropertySources(), map);
