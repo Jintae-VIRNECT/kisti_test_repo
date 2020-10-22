@@ -92,6 +92,7 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 			}
 		} catch (Exception e) {
 			log.error("{}", e.getMessage(), e);
+			return "-";
 		}
 		return "-";
 	}
