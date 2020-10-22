@@ -1,4 +1,4 @@
-package com.virnect.gateway.filter.security;
+package com.virnect.gateway.filter.security.jwt;
 
 import java.util.Arrays;
 import java.util.Base64;
