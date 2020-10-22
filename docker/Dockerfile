@@ -16,6 +16,7 @@ ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
 
 COPY --from=builder ssl ssl
+COPY --from=builder server server
 COPY --from=builder route.js .
 COPY --from=builder server.js .
 COPY --from=builder package.json .
