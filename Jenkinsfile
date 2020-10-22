@@ -7,49 +7,14 @@ pipeline {
   }
 
   stages {
-    stage('Pre-Build') {
-      parallel {
-        stage('Develop Branch') {
-          when {
-            branch 'develop'
-          }
-          steps {
-            catchError() {
-              sh 'yarn cache clean'
-              sh 'rm -f yarn.lock'
-              sh 'yarn install'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-
-        stage('Staging Branch') {
-          when {
-            branch 'staging'
-          }
-          steps {
-            catchError() {
-              sh 'yarn cache clean'
-              sh 'rm -f yarn.lock'
-              sh 'yarn install'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-      }
-    }
-
     stage('Build') {
       parallel {
-
-
         stage('Develop Branch') {
           when {
             branch 'develop'
           }
           steps {
-            sh 'yarn workspace workstation build:develop'
-            sh 'docker build -t pf-webworkstation .'
+            sh 'docker build -t pf-webworkstation --build-arg NODE_ENV=develop -f docker/Dockerfile .'
           }
         }
 
@@ -59,8 +24,7 @@ pipeline {
           }
           steps {
             sh 'git checkout $GIT_TAG'
-            sh 'yarn workspace workstation build:staging'
-            sh 'docker build -t pf-webworkstation:${GIT_TAG} .'
+            sh 'docker build -t pf-webworkstation:${GIT_TAG} --build-arg NODE_ENV=production -f docker/Dockerfile .'
           }
         }
       }
@@ -81,7 +45,11 @@ pipeline {
           steps {
             sh 'count=`docker ps | grep pf-webworkstation | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8878:8878 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=pf-webworkstation pf-webworkstation'
-            sh 'docker image prune -a -f'
+            sh 'count=`docker ps | grep pf-webworkstation-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation-onpremise && docker rm pf-webworkstation-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 18878:8878 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-webworkstation-onpremise pf-webworkstation'
+            catchError {
+              sh 'docker image prune -f'
+            }
           }
         }
 
@@ -91,42 +59,40 @@ pipeline {
           }
 
           steps {
-            catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-webworkstation:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-webworkstation:${GIT_TAG}").push("latest")
-                }
+            script {
+              docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                docker.image("pf-webworkstation:${GIT_TAG}").push("${GIT_TAG}")
+                docker.image("pf-webworkstation:${GIT_TAG}").push("latest")
               }
+            }
 
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-qa',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-webworkstation| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8878:8878 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -a -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-qa',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps | grep pf-webworkstation| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8878:8878 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
             }
           }
         }
@@ -137,44 +103,42 @@ pipeline {
           }
 
           steps {
-            catchError() {
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-prod',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-webworkstation| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8878:8878 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -a -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-prod',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps | grep pf-webworkstation| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-webworkstation && docker rm pf-webworkstation; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8878:8878 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
+            }
 
-              script {
-                 def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                 def payload = """
-                  {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                  """                             
+            script {
+                def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                def payload = """
+                {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+                """                             
 
-                  sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-              }
+                sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
             }
           }
         }

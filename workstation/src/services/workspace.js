@@ -6,6 +6,7 @@ import WorkspaceInfo from '@/models/workspace/WorkspaceInfo'
 import Member from '@/models/workspace/Member'
 import MemberActivity from '@/models/workspace/MemberActivity'
 import PlansInfo from '@/models/workspace/PlansInfo'
+import OnPremiseSetting from '@/models/workspace/OnPremiseSetting'
 
 function activeWorkspaceGetter() {
   return store.getters['auth/activeWorkspace']
@@ -212,5 +213,103 @@ export default {
       route: { workspaceId: activeWorkspaceGetter().uuid },
     })
     return new PlansInfo(data)
+  },
+  /**
+   * 멤버 생성 (onpremise)
+   * @param {[CreateMember]} userInfoList
+   */
+  async createMembers(userInfoList) {
+    const data = await api('MEMBERS_CREATE', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: {
+        userId: myProfileGetter().uuid,
+        memberAccountCreateRequest: userInfoList,
+      },
+    })
+    store.dispatch('plan/getPlansInfo')
+    return data
+  },
+  /**
+   * 멤버 삭제 (onpremise)
+   * @param {string} uuid
+   * @param {string} password
+   */
+  async deleteMember(uuid, password) {
+    const data = await api('MEMBER_DELETE', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: {
+        userId: myProfileGetter().uuid,
+        userPassword: password,
+        deleteUserId: uuid,
+      },
+    })
+    store.dispatch('plan/getPlansInfo')
+    return data
+  },
+  /**
+   * 멤버 비밀번호 변경 (onpremise)
+   * @param {string} uuid
+   * @param {string} password
+   */
+  async changeMembersPassword(uuid, password) {
+    const data = await api('MEMBER_CHANGE_PASSWORD', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: {
+        masterUUID: myProfileGetter().uuid,
+        memberUUID: uuid,
+        password: password,
+      },
+    })
+    return data
+  },
+  /**
+   * 워크스페이스 세팅 불러오기 (onpremise)
+   */
+  async getWorkspaceSetting() {
+    const data = await api('WORKSPACE_GET_SETTING')
+    return new OnPremiseSetting(data)
+  },
+  /**
+   * 워크스페이스 타이틀 설정 (onpremise)
+   */
+  async setWorkspaceTitle(title) {
+    const workspaceId = activeWorkspaceGetter().uuid
+    const data = await api('WORKSPACE_SET_TITLE', {
+      route: { workspaceId },
+      params: {
+        title,
+        workspaceId,
+        userId: myProfileGetter().uuid,
+      },
+    })
+    return data
+  },
+  /**
+   * 워크스페이스 로고 설정 (onpremise)
+   */
+  async setWorkspaceLogo(logo) {
+    const formData = new FormData()
+    formData.append('userId', myProfileGetter().uuid)
+    if (logo) formData.append('defaultLogo', logo)
+
+    const data = await api('WORKSPACE_SET_LOGO', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: formData,
+    })
+    return data
+  },
+  /**
+   * 워크스페이스 파비콘 설정 (onpremise)
+   */
+  async setWorkspaceFavicon(favicon) {
+    const formData = new FormData()
+    formData.append('userId', myProfileGetter().uuid)
+    if (favicon) formData.append('favicon', favicon)
+
+    const data = await api('WORKSPACE_SET_FAVICON', {
+      route: { workspaceId: activeWorkspaceGetter().uuid },
+      params: formData,
+    })
+    return data
   },
 }

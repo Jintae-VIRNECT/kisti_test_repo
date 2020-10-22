@@ -53,11 +53,24 @@
       :visible.sync="showMemberSettingModal"
       @updated="updated"
       @kick="kick"
+      @change-password="showMemberPasswordModal = true"
     />
     <member-kick-modal
+      v-if="!$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberKickModal"
       @back="back"
+      @kicked="kicked"
+    />
+    <member-password-modal
+      v-if="$isOnpremise"
+      :data="myInfo"
+      :visible.sync="showMemberPasswordModal"
+    />
+    <member-delete-modal
+      v-if="$isOnpremise"
+      :data="myInfo"
+      :visible.sync="showMemberDeleteModal"
       @kicked="kicked"
     />
   </el-card>
@@ -66,6 +79,8 @@
 <script>
 import MemberSettingModal from '@/components/member/MemberSettingModal'
 import MemberKickModal from '@/components/member/MemberKickModal'
+import MemberPasswordModal from '@/components/member/MemberPasswordModal'
+import MemberDeleteModal from '@/components/member/MemberDeleteModal'
 import { mapGetters } from 'vuex'
 import plans from '@/models/workspace/plans'
 
@@ -73,6 +88,8 @@ export default {
   components: {
     MemberSettingModal,
     MemberKickModal,
+    MemberPasswordModal,
+    MemberDeleteModal,
   },
   props: {
     data: Object,
@@ -82,6 +99,8 @@ export default {
       myInfo: this.data,
       showMemberSettingModal: false,
       showMemberKickModal: false,
+      showMemberPasswordModal: false,
+      showMemberDeleteModal: false,
       plans: Object.values(plans).reduce((o, n) => {
         o[n.value] = n
         return o
@@ -117,11 +136,16 @@ export default {
     },
     kicked() {
       this.showMemberKickModal = false
+      this.showMemberDeleteModal = false
       this.showMemberSettingModal = false
       this.$emit('refresh')
     },
     kick() {
-      this.showMemberKickModal = true
+      if (this.$isOnpremise) {
+        this.showMemberDeleteModal = true
+      } else {
+        this.showMemberKickModal = true
+      }
     },
     back() {
       this.showMemberSettingModal = true

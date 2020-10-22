@@ -1,7 +1,17 @@
 <template>
   <nav class="the-sidebar">
     <div class="the-sidebar__inner">
-      <div class="the-sidebar__logo">
+      <!-- onpremise -->
+      <div v-if="$isOnpremise" class="the-sidebar__logo">
+        <a
+          @click="$router.push('/')"
+          :style="
+            `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
+          "
+        />
+      </div>
+      <!-- 일반 -->
+      <div v-else class="the-sidebar__logo">
         <el-tooltip
           popper-class="the-sidebar__tooltip"
           effect="dark"
@@ -69,10 +79,7 @@ export default {
       activeWorkspace: 'auth/activeWorkspace',
     }),
     hideWorkspaceSetting() {
-      return (
-        this.$config.VIRNECT_ENV === 'onpremise' &&
-        this.activeWorkspace.role !== 'MASTER'
-      )
+      return this.$isOnpremise && this.activeWorkspace.role !== 'MASTER'
     },
   },
   methods: {

@@ -4,7 +4,7 @@
       <h3>
         <span>{{ $t('home.profile.title') }}</span>
       </h3>
-      <a :href="profileUpdatePage" target="_blank">
+      <a :href="`${$url.account}/profile`" target="_blank">
         {{ $t('home.profile.link') }}
       </a>
     </div>
@@ -37,14 +37,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
 
 export default {
   data() {
     return {
-      profileUpdatePage: `${urls.account[this.$config.VIRNECT_ENV]}/profile`,
       profile: {},
       plans: Object.values(plans).reduce((o, n) => {
         o[n.value] = n

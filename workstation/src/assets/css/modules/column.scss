@@ -41,7 +41,8 @@
   }
 }
 
-.column-role {
+.column-role,
+.member-role-select .el-select__tags > span {
   & > .el-tag {
     height: 24px;
     padding: 0 12px;
@@ -64,6 +65,8 @@
 .column-links {
   overflow: visible;
   & > a {
+    display: inline-block;
+    height: 28px;
     margin-right: 8px;
     padding: 2px 10px 6px 5px;
     color: #314366;

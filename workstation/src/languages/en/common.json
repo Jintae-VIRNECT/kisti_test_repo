@@ -12,7 +12,12 @@
     "graph": "Graph",
     "list": "List",
     "numbersUnit": "",
-    "paymentCenter": "Payment Center"
+    "paymentCenter": "Payment Center",
+    "back": "Back",
+    "message": {
+      "notAllowFileExtension": "Unsupported file type."
+    },
+    "update": "Update"
   },
   "menu": {
     "home": "Workspace Home"
