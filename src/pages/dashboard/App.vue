@@ -1,7 +1,5 @@
 <template>
-  <div id="app">
-    <dash-board-layout />
-  </div>
+  <dash-board-layout />
 </template>
 
 <script>
