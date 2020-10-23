@@ -116,6 +116,7 @@ export default {
     view(val) {
       if (val === VIEW.AR) {
         this.$refs['arVideo'].play()
+        this.optimizeVideoSize()
       } else {
         this.$refs['arVideo'].pause()
       }
