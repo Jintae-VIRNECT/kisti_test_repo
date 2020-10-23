@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -15,10 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-
-import com.amazonaws.services.s3.model.GetObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.minio.GetObjectArgs;
 import io.minio.MinioClient;
@@ -44,7 +42,7 @@ import com.virnect.content.global.error.ErrorCode;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local","develop","onpremise"})
+@Profile({"local","develop", "onpremise"})
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinioDownloadService implements FileDownloadService {
@@ -117,5 +115,100 @@ public class MinioDownloadService implements FileDownloadService {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public String getFilePath(String bucketResource, String fileName) {
+		String objectName = bucketResource + fileName;
+		try {
+			return minioClient.getObjectUrl(bucketName, objectName);
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+			ServerException | XmlParserException | IOException exception) {
+			log.error(exception.getMessage());
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+	}
+
+	@Override
+	public MultipartFile getMultipartfile(String fileName) {
+
+		String resourcePath = "contents/" + fileName;
+		String objectName = bucketResource + resourcePath;
+
+		GetObjectArgs getObjectArgs = GetObjectArgs.builder()
+			.bucket(bucketName)
+			.object(objectName)
+			.build();
+		InputStream inputStream;
+
+		try {
+			inputStream = minioClient.getObject(getObjectArgs);
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+			ServerException | XmlParserException | IOException e) {
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+		}
+
+		MultipartFile multipartFile = new MultipartFile() {
+
+			@Override
+			public String getName() {
+				return "content";
+			}
+
+			@Override
+			public String getOriginalFilename() {
+				return fileName;
+			}
+
+			@Override
+			public String getContentType() {
+				return "application/octet-stream";
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return false;
+			}
+
+			@Override
+			public long getSize() {
+
+				try {
+					InputStream inputStream = minioClient.getObject(getObjectArgs);
+					return IOUtils.toByteArray(inputStream).length;
+				} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+					ServerException | XmlParserException | IOException e) {
+					throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+				}
+			}
+
+			@Override
+			public byte[] getBytes() throws IOException {
+				return IOUtils.toByteArray(inputStream);
+			}
+
+			@Override
+			public InputStream getInputStream() throws IOException {
+				return inputStream;
+			}
+
+			@Override
+			public void transferTo(File dest) throws IOException, IllegalStateException {
+
+			}
+
+			@Override
+			public void transferTo(Path dest) throws IOException, IllegalStateException {
+
+			}
+		};
+		log.info(
+			"[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
+			, getFilePath("contents", fileName)
+			, multipartFile.getContentType()
+			, multipartFile.getSize()
+			, multipartFile.getOriginalFilename()
+		);
+		return multipartFile;
 	}
 }
