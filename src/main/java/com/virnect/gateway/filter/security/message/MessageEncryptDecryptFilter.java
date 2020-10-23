@@ -89,7 +89,6 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 	@Override
 	public GatewayFilter apply(Config config) {
 		return new OrderedGatewayFilter(((exchange, chain) -> {
-			log.info("Message Encrypt Decrypt Filter Active");
 			ServerHttpRequest originRequest = exchange.getRequest();
 			HttpHeaders httpHeaders = originRequest.getHeaders();
 
@@ -102,6 +101,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				return chain.filter(exchange);
 			}
 
+			log.info("Message Encrypt Decrypt Filter Start");
 			String deviceAuthKey = Objects.requireNonNull(httpHeaders.get(HEADER_DEVICE_AUTH_KEY_NAME)).get(0);
 			log.info("[DEVICE_AUTH_KEY] - {}", deviceAuthKey);
 			Map<String, String> deviceAuth = redisTemplate.opsForHash().entries("DeviceAuth:" + deviceAuthKey);
@@ -116,6 +116,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				return DataBufferUtils.join(exchange.getRequest().getBody()).flatMap(dataBuffer -> {
 					ServerHttpRequest mutatedHttpRequest = getServerHttpRequest(exchange, dataBuffer, secretKey);
 					ServerHttpResponse mutateHttpResponse = getServerHttpResponse(exchange, secretKey);
+					log.info("Message Encrypt Decrypt Filter End.");
 					return chain.filter(
 						exchange.mutate().request(mutatedHttpRequest).response(mutateHttpResponse).build());
 				});
