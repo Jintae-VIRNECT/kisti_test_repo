@@ -1,15 +1,17 @@
 package com.virnect.process.application.user;
 
-import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
-import com.virnect.process.dto.rest.response.user.UserInfoResponse;
-import com.virnect.process.global.common.ApiResponse;
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
+import com.virnect.process.dto.rest.response.user.UserInfoListResponse;
+import com.virnect.process.dto.rest.response.user.UserInfoResponse;
+import com.virnect.process.global.common.ApiResponse;
 
 /**
  * Project: PF-ProcessManagement
@@ -22,12 +24,16 @@ import java.util.List;
 @FeignClient(name = "user-server")
 public interface UserRestService {
 
-    @GetMapping("/users/{userUUID}")
-    ApiResponse<UserInfoResponse> getUserInfoByUserUUID(@PathVariable("userUUID") String userUUID);
+	@GetMapping("/users/{userUUID}")
+	ApiResponse<UserInfoResponse> getUserInfoByUserUUID(@PathVariable("userUUID") String userUUID);
 
-    @GetMapping("/users")
-    ApiResponse<UserInfoListResponse> getUserInfoSearch(@RequestParam(value = "search", required = false) String search, @RequestParam(value = "paging") boolean paging);
+	@GetMapping("/users")
+	ApiResponse<UserInfoListResponse> getUserInfoSearch(
+		@RequestParam(value = "search", required = false) String search, @RequestParam(value = "paging") boolean paging
+	);
 
-    @GetMapping("/users/list")
-    ApiResponse<UserInfoListResponse> getUserInfoSearchNickName(@RequestParam(name = "search", required = false) String search, @RequestBody List<String> workspaceUserIdList);
+	@PostMapping("/users/list")
+	ApiResponse<UserInfoListResponse> getUserInfoSearchNickName(
+		@RequestParam(name = "search", required = false) String search, @RequestBody List<String> workspaceUserIdList
+	);
 }

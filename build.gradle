@@ -90,6 +90,12 @@ dependencies {
 
     // Configuration
     implementation 'org.springframework.cloud:spring-cloud-config-client'
+
+    // Minio
+    implementation 'io.minio:minio:7.1.0'
+
+    // feign oktthp
+    implementation 'io.github.openfeign:feign-okhttp'
 }
 
 test {
@@ -127,4 +133,26 @@ sourceSets {
 licenseReport {
     renderers = [new InventoryMarkdownReportRenderer()]
     filters = [new LicenseBundleNormalizer(), new ExcludeTransitiveDependenciesFilter()]
+}
+
+// separate jar into app and library layers
+task moveLib {
+    doLast {
+        def unpackDir = "$buildDir/unpack"
+        ant.move(file: "${unpackDir}/app/BOOT-INF/lib", toFile: "${unpackDir}/lib")
+    }
+}
+
+task unpackJar(type: Copy) {
+    def unpackDir = "$buildDir/unpack"
+
+    delete unpackDir
+    from zipTree(jar.getArchiveFile())
+    into "$unpackDir/app"
+
+    finalizedBy moveLib
+}
+
+build {
+    finalizedBy unpackJar
 }
