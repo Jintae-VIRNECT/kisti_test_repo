@@ -8,11 +8,9 @@ import com.google.gson.JsonParser;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.constraint.LicenseConstants;
 import com.virnect.data.constraint.LicenseItem;
+import com.virnect.data.constraint.TranslationItem;
 import com.virnect.data.dao.*;
-import com.virnect.data.dto.CoturnResponse;
-import com.virnect.data.dto.PageMetadataResponse;
-import com.virnect.data.dto.SessionResponse;
-import com.virnect.data.dto.SessionTokenResponse;
+import com.virnect.data.dto.*;
 import com.virnect.data.dto.feign.*;
 import com.virnect.data.dto.request.*;
 import com.virnect.data.dto.response.*;
@@ -26,8 +24,6 @@ import com.virnect.serviceserver.core.Participant;
 import com.virnect.serviceserver.feign.service.LicenseRestService;
 import com.virnect.serviceserver.feign.service.UserRestService;
 import com.virnect.serviceserver.feign.service.WorkspaceRestService;
-import com.virnect.serviceserver.infra.file.Default;
-import com.virnect.serviceserver.infra.file.LocalFileManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -37,9 +33,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -65,6 +60,8 @@ public class DataRepository {
     public void setSessionService(SessionService sessionService) {
         this.sessionService = sessionService;
     }
+
+
 
     public DataProcess<UserInfoResponse> checkUserValidation(String userId) {
         return new RepoDecoder<ApiResponse<UserInfoResponse>, UserInfoResponse>(RepoDecoderType.FETCH) {
@@ -116,6 +113,104 @@ public class DataRepository {
                 }
             }
         }.asResponseData();
+    }
+
+    public ApiResponse<CompanyResponse> generateCompany(CompanyRequest companyRequest) {
+        return new RepoDecoder<Company, CompanyResponse>(RepoDecoderType.CREATE) {
+            @Override
+            Company loadFromDatabase() {
+                return null;
+            }
+
+            @Override
+            DataProcess<CompanyResponse> invokeDataProcess() {
+                Company company = sessionService.createCompany(companyRequest);
+
+                CompanyResponse companyResponse = new CompanyResponse();
+                companyResponse.setWorkspaceId(company.getWorkspaceId());
+                companyResponse.setLicenseName(company.getLicenseName());
+                companyResponse.setSessionType(company.getSessionType());
+
+                return new DataProcess<>(companyResponse);
+
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
+        return new RepoDecoder<Company, CompanyInfoResponse>(RepoDecoderType.READ) {
+            @Override
+            Company loadFromDatabase() {
+                return sessionService.getCompany(workspaceId);
+            }
+
+            @Override
+            DataProcess<CompanyInfoResponse> invokeDataProcess() {
+                Company company = loadFromDatabase();
+                CompanyInfoResponse companyInfoResponse;
+                if(company != null) {
+                    companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
+                    //
+                    if(company.isTransKoKr()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_KR.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_KR.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                    if(company.isTransEnUs()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_EN.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_EN.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                    if(company.isTransJaJp()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_JP.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_JP.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                    if(company.isTransZh()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_ZH.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_ZH.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                    if(company.isTransFrFr()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_FR.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_FR.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                    if(company.isTransEsEs()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_ES.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_ES.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                    if(company.isTransRuRu()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_RU.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_RU.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                    if(company.isTransUkUa()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_UK.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_UK.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                    if(company.isTransPlPl()) {
+                        LanguageCode languageCode = new LanguageCode();
+                        languageCode.setText(TranslationItem.LANGUAGE_PL.getLanguage());
+                        languageCode.setCode(TranslationItem.LANGUAGE_PL.getLanguageCode());
+                        companyInfoResponse.getLanguageCodes().add(languageCode);
+                    }
+                } else {
+                    companyInfoResponse = new CompanyInfoResponse();
+                }
+                return new DataProcess<>(companyInfoResponse);
+            }
+        }.asApiResponse();
     }
 
     public ApiResponse<RoomResponse> generateRoom(
@@ -241,11 +336,24 @@ public class DataRepository {
             @Override
             DataProcess<RoomInfoListResponse> invokeDataProcess() {
                 if(!paging) {
-                    //roomList = this.roomRepository.findByWorkspaceId(workspaceId);
-                    List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(workspaceId, userId)
+                    log.info("INVOKE METHOD : loadRoomList :: not paging {} {}", workspaceId, userId);
+                    //first add private room
+                    List<Room> roomList = sessionService.getRoomList(workspaceId, userId);
+                    //send add open room
+                    roomList.addAll(sessionService.getRoomList(workspaceId));
+
+                    List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+                    for (Room room: roomList) {
+                        log.info("INVOKE METHOD : roomList ::");
+                        RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+                        roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        roomInfoList.add(roomInfoResponse);
+                    }
+
+                    /*List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(workspaceId, userId)
                             .stream()
                             .map(room -> modelMapper.map(room, RoomInfoResponse.class))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
 
                     // Page Metadata Empty
                     PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -274,7 +382,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -287,12 +395,26 @@ public class DataRepository {
                     }
                     return new DataProcess<>(new RoomInfoListResponse(roomInfoList, pageMeta));
                 } else {
+                    log.info("INVOKE METHOD : loadRoomList :: paging");
+
                     Page<Member> memberPage = sessionService.getMemberList(workspaceId, userId, pageable);
 
-                    List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(memberPage)
+                    //first add private room
+                    List<Room> roomList = sessionService.getRoomList(memberPage);
+                    //send add open room
+                    roomList.addAll(sessionService.getRoomList(workspaceId));
+
+                    List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+                    for (Room room: roomList) {
+                        RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+                        roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        roomInfoList.add(roomInfoResponse);
+                    }
+
+                    /*List<RoomInfoResponse> roomInfoList = sessionService.getRoomList(memberPage)
                             .stream()
                             .map(room -> modelMapper.map(room, RoomInfoResponse.class))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
 
                     // Page Metadata
                     PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -323,7 +445,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -361,6 +483,7 @@ public class DataRepository {
                         // mapping data
                         //RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
                         resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        resultResponse.setSessionType(room.getSessionProperty().getSessionType());
 
                         // Get Member List by Room Session ID
                         // Mapping Member List Data to Member Information List
@@ -368,8 +491,6 @@ public class DataRepository {
                                 .stream()
                                 .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
-
-
 
                         //remove members who is evicted
                         memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
@@ -382,7 +503,7 @@ public class DataRepository {
                             //todo://user infomation does not have role and role id change to workspace member info
                             WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                             memberInfoResponse.setRole(workspaceMemberData.getRole());
-                            memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                             memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                             memberInfoResponse.setName(workspaceMemberData.getName());
                             memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -398,32 +519,55 @@ public class DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<ResultResponse> removeRoom(String workspaceId, String sessionId, String userId) {
-        return new RepoDecoder<Void, ResultResponse>(RepoDecoderType.DELETE) {
+    public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
+        return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
             @Override
-            Void loadFromDatabase() {
-                return null;
+            Room loadFromDatabase() {
+                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
+                return sessionService.getRoom(workspaceId, sessionId);
             }
 
             @Override
-            DataProcess<ResultResponse> invokeDataProcess() {
-                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
-                Room room = sessionService.getRoom(workspaceId, sessionId);
-                Member member = sessionService.getMember(workspaceId, sessionId, userId);
+            DataProcess<RoomDeleteResponse> invokeDataProcess() {
+                Room room = loadFromDatabase();
+                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", room.getMembers().size());
+                DataProcess<RoomDeleteResponse> dataProcess = null;
+                try {
+                    dataProcess = new DataProcess<>(RoomDeleteResponse.class);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    e.printStackTrace();
+                }
+                log.info("ROOM INFO DELETE BY dataProcess => [{}]", dataProcess.data.toString());
 
                 if(room == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                } else if(member == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                } else {
-                    if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
-                    }
-                    sessionService.removeRoom(room);
-                    ResultResponse resultResponse = new ResultResponse();
-                    resultResponse.setResult(true);
-                    return new DataProcess<>(resultResponse);
+                    dataProcess.setErrorCode(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return dataProcess;
                 }
+
+                //check request user has valid permission
+                if(!room.getLeaderId().equals(userId)) {
+                    dataProcess.setErrorCode(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                    return dataProcess;
+                }
+
+                //List<Member> members = room.getMembers();
+                List<Member> members = sessionService.getMemberList(room.getWorkspaceId(), room.getSessionId());
+                for (Member member: members) {
+                    log.info("ROOM INFO DELETE BY dataProcess => [{}]", member.getUuid());
+                    if(member.getUuid().equals(room.getLeaderId())
+                            && member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                        dataProcess.setErrorCode(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                        return dataProcess;
+                    }
+                }
+
+                sessionService.removeRoom(room);
+                //sessionService.removeRoom(workspaceId, sessionId);
+                return new DataProcess<>(new RoomDeleteResponse(
+                        sessionId,
+                        true,
+                        LocalDateTime.now()
+                ));
             }
         }.asApiResponse();
     }
@@ -491,6 +635,7 @@ public class DataRepository {
                     if(room.getLeaderId().equals(modifyRoomInfoRequest.getUuid())) {
                         // mapping data
                         RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        resultResponse.setSessionType(room.getSessionProperty().getSessionType());
                         // Get Member List by Room Session ID
                         // Mapping Member List Data to Member Information List
                         List<MemberInfoResponse> memberInfoList = sessionService.getMemberList(resultResponse.getSessionId())
@@ -506,7 +651,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -548,18 +693,30 @@ public class DataRepository {
                 if (room == null) {
                     return new DataProcess<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
-                for (Member member : room.getMembers()) {
-                    if(member.getUuid().equals(userId)) {
-                        log.info("Room has member Id is {}", member.getUuid());
-                        if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                            return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
-                        } else {
-                            return new DataProcess<>(true);
+
+                if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(userId)) {
+                            log.info("Room has member Id is {}", member.getUuid());
+                            if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                            }
                         }
                     }
+                    return new DataProcess<>(true);
+                } else {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(userId)) {
+                            log.info("Room has member Id is {}", member.getUuid());
+                            if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                            } else {
+                                return new DataProcess<>(true);
+                            }
+                        }
+                    }
+                    return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
                 }
-                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
-                //return new DataProcess<>(true);
             }
         }.asResponseData();
     }
@@ -677,6 +834,15 @@ public class DataRepository {
 
                 sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
                 return new DataProcess<>(true);
+
+                /*if(!Objects.equals(clientMetaData.getRoleType(), MemberType.LEADER.name())
+                || !Objects.equals(clientMetaData.getRoleType(), MemberType.EXPERT.name())
+                || !Objects.equals(clientMetaData.getRoleType(), MemberType.WORKER.name())
+                ) {
+                    return new DataProcess<>(false);
+                } else {
+
+                }*/
             }
         }.asResponseData();
     }
@@ -807,6 +973,34 @@ public class DataRepository {
                 return new DataProcess<>("");
             }
         }.asResponseData();
+    }
+
+    public DataProcess<List<String>> getConnectionIds(String workspaceId, String sessionId) {
+        return new RepoDecoder<Room, List<String>>(RepoDecoderType.READ) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
+            }
+
+            @Override
+            DataProcess<List<String>> invokeDataProcess() {
+                Room room = loadFromDatabase();
+                List<Member> memberList = room.getMembers();
+
+                //Do not use collection method removeIf with Data Access Object
+                //memberList.removeIf(member -> member.getUuid().equals(room.getLeaderId()));
+
+                List<String> connectionIds = new ArrayList<>();
+                for (Member member: memberList) {
+                    if(member.getConnectionId() != null &&
+                            !member.getUuid().equals(room.getLeaderId())) {
+                        connectionIds.add(member.getConnectionId());
+                    }
+                }
+                return new DataProcess<>(connectionIds);
+            }
+        }.asResponseData();
+
     }
 
     public ApiResponse<ResultResponse> kickFromRoom(String workspaceId, String sessionId, KickRoomRequest kickRoomRequest) {
@@ -1082,6 +1276,25 @@ public class DataRepository {
         }.asApiResponse();
     }
 
+    public ApiResponse<MemberSecessionResponse> deleteMember(String userId) {
+        return new RepoDecoder<List<MemberHistory>, MemberSecessionResponse>(RepoDecoderType.DELETE) {
+            @Override
+            List<MemberHistory> loadFromDatabase() {
+                return sessionService.getMemberHistoryList(userId);
+            }
+
+            @Override
+            DataProcess<MemberSecessionResponse> invokeDataProcess() {
+                List<MemberHistory> historyList = loadFromDatabase();
+                for (MemberHistory memberHistory: historyList) {
+                    memberHistory.setMemberType(MemberType.SECESSION);
+                    sessionService.updateMemberHistory(memberHistory);
+                }
+                return new DataProcess<>(new MemberSecessionResponse(userId, true, LocalDateTime.now()));
+            }
+        }.asApiResponse();
+    }
+
     //========================================= ROOM HISTORY INFORMATION RELATION ===========================================//
     public ApiResponse<RoomHistoryInfoListResponse> loadRoomHistoryInfoList(
             String workspaceId,
@@ -1098,21 +1311,26 @@ public class DataRepository {
             DataProcess<RoomHistoryInfoListResponse> invokeDataProcess() {
                 if (!paging) {
                     // get all member history by uuid
-                    //List<MemberHistory> memberHistoryList = historyService.getMemberHistoryList(workspaceId, userId);
-
                     PageRequest pageRequest = new PageRequest();
                     Page<MemberHistory> memberPage = historyService.getMemberHistoryList(workspaceId, userId, pageRequest.of());
 
                     List<RoomHistory> roomHistoryList = new ArrayList<>();
                     memberPage.getContent().forEach(memberHistory -> {
-                        //if (memberHistory.getRoomHistory() != null) {
                         roomHistoryList.add(memberHistory.getRoomHistory());
-                        //}
                     });
 
-                    List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
+
+                    List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
+                    for(RoomHistory roomHistory: roomHistoryList) {
+                        RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+                        roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+                        roomHistoryInfoList.add(roomHistoryInfoResponse);
+                    }
+
+
+                    /*List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
                             .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                            .collect(Collectors.toList());
+                            .collect(Collectors.toList());*/
 
                     // find specific member has room history
                     /*List<RoomHistory> roomHistoryList = new ArrayList<>();
@@ -1156,7 +1374,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -1197,22 +1415,15 @@ public class DataRepository {
                     // find specific member has room history
                     List<RoomHistory> roomHistoryList = new ArrayList<>();
                     memberPage.getContent().forEach(memberHistory -> {
-                        //if (memberHistory.getRoomHistory() != null) {
                         roomHistoryList.add(memberHistory.getRoomHistory());
-                        //}
                     });
 
-                    List<RoomHistoryInfoResponse> roomHistoryInfoList = roomHistoryList.stream()
-                            .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                            .collect(Collectors.toList());
-
-            /*List<RoomHistoryInfoResponse> roomHistoryInfoList = roomPage.stream()
-                    .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                    .collect(Collectors.toList());*/
-
-            /*List<RoomHistoryInfoResponse> roomHistoryInfoList = roomPage.stream()
-                    .map(roomHistory -> modelMapper.map(roomHistory, RoomHistoryInfoResponse.class))
-                    .collect(Collectors.toList());*/
+                    List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
+                    for(RoomHistory roomHistory: roomHistoryList) {
+                        RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+                        roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+                        roomHistoryInfoList.add(roomHistoryInfoResponse);
+                    }
 
                     // Page Metadata
                     PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -1247,7 +1458,7 @@ public class DataRepository {
                                 //todo://user infomation does not have role and role id change to workspace member info
                                 WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                                 memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                                 memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                                 memberInfoResponse.setName(workspaceMemberData.getName());
                                 memberInfoResponse.setNickName(workspaceMemberData.getNickName());
@@ -1292,6 +1503,7 @@ public class DataRepository {
                 } else {
                     // mapping data
                     RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(roomHistory, RoomHistoryDetailInfoResponse.class);
+                    resultResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
                     // Get Member List by Room Session ID
                     // Mapping Member List Data to Member Information List
@@ -1311,7 +1523,7 @@ public class DataRepository {
                             //todo://user infomation does not have role and role id change to workspace member info
                             WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                             memberInfoResponse.setRole(workspaceMemberData.getRole());
-                            memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                             memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                             memberInfoResponse.setName(workspaceMemberData.getName());
                             memberInfoResponse.setNickName(workspaceMemberData.getNickName());

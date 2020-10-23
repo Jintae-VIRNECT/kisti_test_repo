@@ -12,9 +12,11 @@ import com.virnect.data.dto.request.RoomProfileUpdateRequest;
 import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.data.FileDataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
@@ -32,17 +34,23 @@ public class FileRestController implements IFileRestAPI {
 
     private final FileDataRepository fileDataRepository;
 
+    @Autowired
+    private RemoteServiceConfig remoteServiceConfig;
+
     @Override
     public ResponseEntity<ApiResponse<FileUploadResponse>> fileUploadRequestHandler(@Valid FileUploadRequest fileUploadRequest, BindingResult result) {
         log.info("REST API: POST {}/upload", REST_PATH);
-        if(result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            if (result.hasErrors()) {
+                result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            ApiResponse<FileUploadResponse> apiResponse = this.fileDataRepository.uploadFile(fileUploadRequest);
+            //log.info("[FILE UPLOAD RESPONSE] :: {}", apiResponse.getData().toString());
+            return ResponseEntity.ok(apiResponse);
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
-        ApiResponse<FileUploadResponse> apiResponse = this.fileDataRepository.uploadFile(fileUploadRequest);
-        //log.info("[FILE UPLOAD RESPONSE] :: {}", apiResponse.getData().toString());
-
-        return ResponseEntity.ok(apiResponse);
     }
 
     @Override
@@ -51,14 +59,18 @@ public class FileRestController implements IFileRestAPI {
                 REST_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}");
-        if(result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            if (result.hasErrors()) {
+                result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
 
-        return ResponseEntity.ok(
-                this.fileDataRepository.uploadProfile(workspaceId, sessionId, roomProfileUpdateRequest)
-        );
+            return ResponseEntity.ok(
+                    this.fileDataRepository.uploadProfile(workspaceId, sessionId, roomProfileUpdateRequest)
+            );
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
     }
 
     @Override
@@ -67,13 +79,16 @@ public class FileRestController implements IFileRestAPI {
                 REST_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}");
-
-        if(userId == null && objectName == null) {
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            if (userId == null && objectName == null) {
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            ResponseEntity<byte[]> responseEntity = this.fileDataRepository.downloadFile(workspaceId, sessionId, userId, objectName).getData();
+            //eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
+            return responseEntity;
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
-        ResponseEntity<byte[]> responseEntity = this.fileDataRepository.downloadFile(workspaceId, sessionId, userId, objectName).getData();
-        //eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
-        return responseEntity;
     }
 
     @Override
@@ -82,13 +97,16 @@ public class FileRestController implements IFileRestAPI {
                 REST_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}");
-
-        if(userId == null && objectName == null) {
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            if (userId == null && objectName == null) {
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            return ResponseEntity.ok(
+                    this.fileDataRepository.downloadFileUrl(workspaceId, sessionId, userId, objectName)
+            );
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
-        return ResponseEntity.ok(
-                this.fileDataRepository.downloadFileUrl(workspaceId, sessionId, userId, objectName)
-        );
     }
 
     @Override
@@ -102,9 +120,13 @@ public class FileRestController implements IFileRestAPI {
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
                 userId != null ? userId : "{}");
-        return ResponseEntity.ok(
-                this.fileDataRepository.getFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.of())
-        );
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            return ResponseEntity.ok(
+                    this.fileDataRepository.getFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.of())
+            );
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
     }
 
     @Override
@@ -114,11 +136,15 @@ public class FileRestController implements IFileRestAPI {
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
                 objectName != null ? objectName : "{}");
-        if (userId == null || objectName == null) {
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            if (userId == null || objectName == null) {
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            return ResponseEntity.ok(
+                    this.fileDataRepository.removeFile(workspaceId, sessionId, userId, objectName)
+            );
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
-        return ResponseEntity.ok(
-                this.fileDataRepository.removeFile(workspaceId, sessionId, userId, objectName)
-        );
     }
 }

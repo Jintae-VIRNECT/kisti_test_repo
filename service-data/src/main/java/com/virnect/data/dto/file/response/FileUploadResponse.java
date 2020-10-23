@@ -16,19 +16,22 @@ public class FileUploadResponse {
     @ApiModelProperty(value = "Workspace id")
     private String workspaceId;
 
-    @ApiModelProperty(value = "Seesion id")
+    @ApiModelProperty(value = "Seesion id", position = 1)
     private String sessionId;
 
-    @ApiModelProperty(value = "User id")
+    @ApiModelProperty(value = "User id", position = 2)
     private String userId;
 
-    @ApiModelProperty(value = "file name")
+    @ApiModelProperty(value = "file name", position = 3)
     private String name;
 
-    /*@ApiModelProperty(value = "file path")
-    private String path;*/
+    @ApiModelProperty(value = "object name", position = 4, example = "2020-08-28_fjxqMrTwIcVmxFIjgfRC")
+    private String objectName;
 
-    @ApiModelProperty(value = "file size")
+    @ApiModelProperty(value = "content type", position = 5, example = "image/png")
+    private String contentType;
+
+    @ApiModelProperty(value = "file size", position = 6)
     private Long size;
 
     @Override
@@ -38,7 +41,8 @@ public class FileUploadResponse {
                 ", sessionId='" + sessionId + '\'' +
                 ", userId='" + userId + '\'' +
                 ", name='" + name + '\'' +
-                //", path='" + path + '\'' +
+                ", objectName='" + objectName + '\'' +
+                ", contentType='" + contentType + '\'' +
                 ", size='" + size + '\'' +
                 '}';
     }

@@ -26,13 +26,22 @@ $ ./gradlew clean build
 
 ```
 $ ./gradlew bootJar (@deprecated)
-$ ./gradlew :service-server:clean :service-server:build -x test -Dspring.profiles=local
+
+#below command is deprecated
+$ ./gradlew :service-server:clean :service-server:build -x test -Dspring.profiles=local (@deprecated)
+
+#currnet command is activated
+$ ./gradlew :service-server:clean :service-server:build -x test -DVIRNECT_ENV=local
 ```
 
 ## Running the application
 
 ```shell script
-java -Dspring.profiles.active=${profile env value} -jar ${RM-Service-v2.0.0.jar}
+#below command is deprecated
+java -Dspring.profiles.active=${profile env value} -jar ${RM-Service-v2.0.0.jar} (@deprecated)
+
+#currnet command is activated
+java -DVIRNECT_ENV=${VIRNECT_ENV} -jar ${RM-Service-v2.0.0.jar}
 ```
 
 ## Running the application with jar

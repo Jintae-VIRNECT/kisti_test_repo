@@ -53,10 +53,17 @@ public interface ISessionRestAPI {
      * 6. register other users as a worker(participant), if the request contains other user information.
      * 7. return session id and token
      */
-    @ApiOperation(value = "Initialize a Remote Room", notes = "Generate Remote Session")
+    /*@ApiOperation(value = "Initialize a Remote Room", notes = "Generate Remote Session")
     @PostMapping(value = "room")
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestBody @Valid RoomRequest roomRequest,
+            BindingResult result);*/
+
+    @ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "Generate Remote Session")
+    @PostMapping(value = "room")
+    ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
+            @RequestBody @Valid RoomRequest roomRequest,
+            @RequestParam(name = "companyCode") int companyCode,
             BindingResult result);
 
     /*@PostMapping(value = "room", consumes = )
@@ -88,7 +95,7 @@ public interface ISessionRestAPI {
 
     @ApiOperation(value = "Delete Specific Room", notes = "특정 원격협업 방을 삭제하는 API 입니다.")
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/{userId}")
-    ResponseEntity<ApiResponse<ResultResponse>> deleteRoomById(
+    ResponseEntity<ApiResponse<RoomDeleteResponse>> deleteRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @PathVariable("userId") String userId);

@@ -7,9 +7,7 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 /**
  * Room Domain Model Class
@@ -46,11 +44,11 @@ public class Room extends BaseTimeEntity {
     @Column(name = "leader_id", nullable = false)
     private String leaderId;
 
-    @Column(name = "maxUserCount", nullable = false)
-    private int maxUserCount;
-
     @Column(name = "workspace_id", nullable = false)
     private String workspaceId;
+
+    @Column(name = "maxUserCount", nullable = false)
+    private int maxUserCount;
 
     @Column(name = "room_status", nullable = false)
     private RoomStatus roomStatus;
@@ -62,6 +60,8 @@ public class Room extends BaseTimeEntity {
     private LocalDateTime activeDate;
 
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    //@ElementCollection
+    //private Set<Member> members = new HashSet<>();
     private List<Member> members = new ArrayList<>();
     //private Collection<Member> Member;
 

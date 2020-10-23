@@ -13,7 +13,6 @@ import com.virnect.data.service.FileService;
 import com.virnect.data.service.SessionService;
 import com.virnect.serviceserver.infra.file.Default;
 import com.virnect.serviceserver.infra.file.IFileManagementService;
-import com.virnect.serviceserver.infra.file.LocalFileManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -39,7 +38,6 @@ public class FileDataRepository {
 
     private final SessionService sessionService;
     private final FileService fileService;
-    //private final LocalFileManagementService localFileManagementService;
     private final IFileManagementService fileManagementService;
 
     private final ModelMapper modelMapper;
@@ -73,6 +71,8 @@ public class FileDataRepository {
                     fileUploadResponse.setSessionId(file.getSessionId());
                     fileUploadResponse.setUserId(file.getUuid());
                     fileUploadResponse.setName(file.getName());
+                    fileUploadResponse.setObjectName(file.getObjectName());
+                    fileUploadResponse.setContentType(file.getContentType());
                     fileUploadResponse.setSize(file.getSize());
                     return new DataProcess<>(fileUploadResponse);
                 } else {

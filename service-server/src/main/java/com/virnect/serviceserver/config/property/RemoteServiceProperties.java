@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.config.property;
 
 import com.virnect.serviceserver.ServiceServerApplication;
 import com.virnect.serviceserver.cdr.CDREventName;
@@ -9,9 +9,6 @@ import org.apache.http.message.BasicHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -57,9 +54,6 @@ public class RemoteServiceProperties extends PropertyService {
     protected RemoteServiceProperties newRemoteServiceProperties() {
         return new RemoteServiceProperties();
     }
-
-    /*@Value("#{'${spring.profiles.active:}'.length() > 0 ? '${spring.profiles.active:}'.split(',') : \"default\"}")
-    protected String springProfile;*/
 
     // Config properties
     private String dotenvPath;
@@ -282,7 +276,7 @@ public class RemoteServiceProperties extends PropertyService {
         return this.isTurnadminAvailable;
     }
 
-    protected void checkConfigurationProperties(boolean loadDotenv) {
+    public void checkConfigurationProperties(boolean loadDotenv) {
         /*if (loadDotenv) {
             dotenvPath = getValue("DOTENV_PATH");
             this.populatePropertySourceFromDotenv();
@@ -470,11 +464,8 @@ public class RemoteServiceProperties extends PropertyService {
     }
 
     public List<String> checkCoturnUris() {
-
         String property = "service.coturn_uris";
-
         return asCoturnUris(property, getValue(property));
-
     }
 
     public List<String> asCoturnUris(String property, String CoturnUris) {
@@ -634,7 +625,4 @@ public class RemoteServiceProperties extends PropertyService {
         }
         return ip;
     }
-
-
-
 }
