@@ -282,6 +282,23 @@ export default {
   },
 
   watch: {
+    isCurrentView(val) {
+      if (val === true) {
+        this.initing = false
+        this.translateCode = this.translate.code
+        this.useTranslateAllow = this.translate.flag
+        this.maxRecordTime = this.localRecord.time
+        this.maxRecordInterval = this.localRecord.interval
+        this.recordResolution = this.localRecord.resolution
+        if (this.account.roleType === ROLE.LEADER) {
+          this.localRecording = this.allowLocalRecord
+          this.pointing = this.allowPointing
+        }
+        this.$nextTick(() => {
+          this.initing = true
+        })
+      }
+    },
     visible(flag) {
       this.visibleFlag = flag
     },
