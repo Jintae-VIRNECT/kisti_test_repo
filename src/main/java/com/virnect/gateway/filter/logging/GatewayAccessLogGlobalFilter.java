@@ -13,6 +13,7 @@ import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
@@ -59,17 +60,14 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 
 		return chain.filter(exchange).then(Mono.fromRunnable(() -> {
 			String responseStatus = String.format("%d %s", response.getRawStatusCode(),
-				HttpStatus.valueOf(response.getRawStatusCode()).name()
+				HttpStatus.valueOf(String.valueOf(response.getStatusCode())).name()
 			);
 
 			gatewayAccessLog
-				.status(responseStatus);
-
-			if (!request.getURI().toString().contains("ws") && !request.getURI().toString().contains("wss")) {
-				gatewayAccessLog.contentType(response.getHeaders().getContentType().toString())
-					.contentLength(response.getHeaders().getContentLength());
-			}
-
+				.status(responseStatus)
+				.contentType(
+					Optional.ofNullable(response.getHeaders().getContentType()).orElse(new MediaType("-","-")).toString())
+				.contentLength(response.getHeaders().getContentLength());
 			gatewayAccessLog.log();
 		}));
 	}
