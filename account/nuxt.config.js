@@ -25,7 +25,6 @@ module.exports = async () => {
           content: 'Virnect Platform',
         },
       ],
-      link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
     },
     /**
      * Plugins

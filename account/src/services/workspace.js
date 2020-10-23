@@ -2,6 +2,7 @@ import { api } from '@/plugins/axios'
 import { store } from '@/plugins/context'
 import Workspace from '@/models/workspace/Workspace'
 import Plan from '@/models/workspace/Plan'
+import OnPremiseSetting from '@/models/workspace/OnPremiseSetting'
 import profileServices from '@/services/profile'
 
 function getMyWorkspaces() {
@@ -62,5 +63,12 @@ export default {
       list: myPlanInfoList.map(plan => new Plan(plan)),
       total: pageMeta.totalElements,
     }
+  },
+  /**
+   * 워크스페이스 세팅 불러오기 (onpremise)
+   */
+  async getWorkspaceSetting() {
+    const data = await api('WORKSPACE_GET_SETTING')
+    return new OnPremiseSetting(data)
   },
 }

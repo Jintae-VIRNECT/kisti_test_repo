@@ -7,7 +7,13 @@
     :before-close="handleClose"
   >
     <div>
-      <p v-html="$t('profile.imageChangeModal.desc')"></p>
+      <p
+        v-html="
+          $isOnpremise
+            ? $t('profile_op.imageChangeModal.desc')
+            : $t('profile.imageChangeModal.desc')
+        "
+      />
       <el-upload
         ref="upload"
         action="#"
