@@ -64,6 +64,7 @@
         />
         <template v-if="!isMe">
           <img
+            v-if="participant.hasAudio"
             :src="
               participant.audio
                 ? require('assets/image/ic_mic_on.svg')
@@ -160,6 +161,7 @@ export default {
       'viewForce',
       'view',
       'initing',
+      'openRoom',
     ]),
     showProfile() {
       if (!this.participant.hasVideo) {
@@ -248,11 +250,13 @@ export default {
     ...mapActions(['setMainView', 'addChat']),
     participantInited(name, oldName) {
       if (this.participant.me || this.initing === true) return
-      if (name !== oldName && this.inited === false) {
+      if (name !== oldName && name.length > 0 && this.inited === false) {
         this.inited = true
-        this.toastDefault(
-          this.$t('service.chat_invite', { name: this.participant.nickname }),
-        )
+        if (!this.openRoom || this.iamLeader) {
+          this.toastDefault(
+            this.$t('service.chat_invite', { name: this.participant.nickname }),
+          )
+        }
         const chatObj = {
           name: name,
           status: 'invite',
@@ -285,7 +289,26 @@ export default {
       this.btnActive = val
     },
     changeMain() {
-      if (!this.participant.hasVideo) return
+      if (this.openRoom) {
+        if (!this.participant.hasCamera) {
+          this.toastDefault(this.$t('service.participant_no_stream'))
+          return
+        }
+        if (!this.participant.hasVideo) {
+          if (
+            this.account.roleType === ROLE.LEADER &&
+            this.openRoom &&
+            this.participant.cameraStatus === CAMERA.CAMERA_OFF
+          ) {
+            this.requestVideo()
+            return
+          }
+          return
+        } else {
+          this.$call.mainview(this.participant.id, true)
+        }
+        return
+      }
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {
           if (this.participant.hasArFeature === false) {
@@ -335,7 +358,7 @@ export default {
       if (this.participant.permission === true) {
         // 메인뷰 변경
 
-        this.forceMain()
+        this.$emit('selectMain')
       } else {
         // 퍼미션 요청
         this.$eventBus.$on('startAr', this.getPermission)
@@ -348,7 +371,7 @@ export default {
         // this.forceMain()
         // this.$call.stopArFeature()
         this.$nextTick(() => {
-          this.forceMain()
+          this.$emit('selectMain')
           // this.$call.startArFeature(this.participant.id)
         })
       } else {
@@ -389,9 +412,16 @@ export default {
         },
       )
     },
+    requestVideo() {
+      if (this.participant.cameraStatus === CAMERA.CAMREA_NONE) {
+        this.toastDefault(this.$t('service.participant_no_stream'))
+        return
+      }
+      this.$call.mainview(this.participant.id, true)
+    },
   },
   beforeDestroy() {
-    if (this.$call.session) {
+    if ((!this.openRoom || this.iamLeader) && this.$call.session) {
       this.toastDefault(
         this.$t('service.chat_leave', { name: this.participant.nickname }),
       )

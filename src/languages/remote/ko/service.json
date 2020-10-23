@@ -7,6 +7,8 @@
     "stream_connecting": "영상 연결 중…",
     "stream_no_video": "출력 할 영상이 없습니다.",
     "stream_no_worker": "접속중인 작업자가 없습니다.",
+    "stream_choose_stream": "공유할 참가자 영상을 선택해 주세요.",
+    "stream_no_stream": "공유된 영상이 없습니다.",
     "stream_stop": "영상을 정지하였습니다.",
     "stream_background": "작업자의 Remote App이<br />백그라운드 상태입니다.",
     "stream_stoped": "참가자의 영상이 일시정지 상태입니다.",
@@ -41,6 +43,7 @@
     "participant_sharing": "선택한 영상을 모든 참가자와 공유하시겠습니까? \n공유 시, 포인팅 기능을 사용할 수 있습니다.",
     "participant_sharing_cannot_change": "전체 공유 상태에서는 다른 영상을 선택할 수 없습니다.​",
     "participant_invite": "추가 초대하기",
+    "participant_no_stream": "영상을 공유할 수 없는 참가자 입니다.",
 
     "invite_title": "협업 참가 요청",
     "invite_selected": "선택한 멤버 (<em>{num}</em>/{max})",
@@ -109,6 +112,11 @@
     "setting_save": "변경사항을 저장했습니다.",
     "setting_record_stream": "영상 녹화",
     "setting_record_screen": "화면 녹화",
+    "setting_translate": "번역 설정",
+    "setting_translate_use": "번역 사용",
+    "setting_translate_use_allow": "번역 사용 허용",
+    "setting_translate_language": "번역 언어 설정",
+    "setting_translate_language_tooltip": "채팅 시, 번역 받을 국가언어를 설정해주세요.",
 
     "flash_none": "플래시가 없는 기기입니다.",
     "flash_no_permission": "상대방이 플래시 제어 허가 요청을 거절하였습니다.",
@@ -165,6 +173,7 @@
     "file_upload_maxsize": "첨부 가능한 용량을 초과하였습니다.",
     "file_image_notsupport": "해당 이미지는 지원하지 않습니다.",
     "file_type_notsupport": "지원하지 않는 파일 형식입니다.",
+    "translate": "번역",
 
     "record_local": "로컬 녹화",
     "record_local_setting": "로컬 녹화 설정",

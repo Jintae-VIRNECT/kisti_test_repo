@@ -1,5 +1,9 @@
 <template>
-  <div class="widecard" :style="{ height: height }" :class="customClass">
+  <div
+    class="widecard"
+    :style="{ height: height }"
+    :class="{ ...customClass, open: isOpenRoom }"
+  >
     <div class="card-item">
       <profile
         :image="history.profile"
@@ -65,6 +69,7 @@
 <script>
 import Profile from 'Profile'
 import Popover from 'Popover'
+import { ROOM_STATUS } from 'configs/status.config'
 export default {
   name: 'History',
   components: {
@@ -100,6 +105,17 @@ export default {
     }
   },
   computed: {
+    isOpenRoom() {
+      if (
+        this.history &&
+        this.history.sessionType &&
+        this.history.sessionType === ROOM_STATUS.OPEN
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
     date() {
       // console.log(
       //   this.$dayjs(this.history.activeDate)
@@ -164,6 +180,13 @@ export default {
 
   &:hover {
     background-color: $color_darkgray_500;
+  }
+  &.open {
+    background-color: #203531;
+    border-color: #0a4338;
+    &:hover {
+      background-color: #1d4e44;
+    }
   }
   .card-item {
     flex: 1 1 0;

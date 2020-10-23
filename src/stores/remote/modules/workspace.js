@@ -2,14 +2,11 @@ import {
   INIT_WORKSPACE,
   CHANGE_WORKSPACE,
   CLEAR_WORKSPACE,
+  SET_COMPANY_INFO,
+  CLEAR_COMPANY_INFO,
 } from '../mutation-types'
 import { PLAN_STATUS } from 'configs/status.config'
 
-const expireCheck = (time, planStatus) => {
-  if (process.env.NODE_ENV !== 'production') return true
-  const diff = new Date(time).getTime() - Date.now()
-  return diff > 0 || planStatus === PLAN_STATUS.INACTIVE
-}
 const setWorkspaceObj = info => {
   return {
     uuid: info.workspaceId,
@@ -17,13 +14,20 @@ const setWorkspaceObj = info => {
     profile: info.workspaceProfile,
     renewalDate: info.renewalDate,
     role: info.role,
-    expire: !expireCheck(info.renewalDate, info.productPlanStatus),
+    planStatus: info.productPlanStatus,
+    expire: info.productPlanStatus === PLAN_STATUS.INACTIVE,
   }
+}
+const companyInfo = {
+  targetCompany: 0,
+  translate: false,
+  sessionType: 'private',
+  languageCodes: [],
 }
 
 const state = {
   current: {},
-  workPlan: [],
+  companyInfo: companyInfo,
   workspaceList: [
     // {
     //   planProduct: 'REMOTE',
@@ -61,6 +65,10 @@ const mutations = {
         if (idx > -1) {
           state.current = state.workspaceList[idx]
         }
+      } else {
+        if (state.workspaceList.length === 1) {
+          state.current = state.workspaceList[0]
+        }
       }
     }
   },
@@ -71,6 +79,14 @@ const mutations = {
   [CLEAR_WORKSPACE](state) {
     state.current = {}
   },
+  [SET_COMPANY_INFO](state, payload) {
+    for (let key in payload) {
+      state.companyInfo[key] = payload[key]
+    }
+  },
+  [CLEAR_COMPANY_INFO](state) {
+    state.companyInfo = companyInfo
+  },
 }
 
 const getters = {
@@ -80,6 +96,12 @@ const getters = {
   },
   workspace: state => state.current,
   workspaceList: state => state.workspaceList,
+  targetCompany: state => state.companyInfo.targetCompany,
+  useTranslate: state => state.companyInfo.translate,
+  useOpenRoom: state => {
+    return state.companyInfo.sessionType === 'OPEN'
+  },
+  languageCodes: state => state.companyInfo.languageCodes,
 }
 
 export default {

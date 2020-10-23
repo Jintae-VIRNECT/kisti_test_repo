@@ -11,9 +11,14 @@ export default {
   },
   initWorkspace({ commit }, infoList) {
     commit(types.INIT_WORKSPACE, infoList)
+    commit(types.CLEAR_COMPANY_INFO)
   },
   changeWorkspace({ commit }, workspace) {
     commit(types.CHANGE_WORKSPACE, workspace)
+    commit(types.CLEAR_COMPANY_INFO)
+  },
+  setCompanyInfo({ commit }, info) {
+    commit(types.SET_COMPANY_INFO, info)
   },
   clearWorkspace({ commit }) {
     commit(types.CLEAR_WORKSPACE)
@@ -117,6 +122,19 @@ export default {
    */
   setAllow({ commit }, payload) {
     commit(types.SETTINGS.SET_ALLOW, payload)
+  },
+  /**
+   * set Allow
+   * @param {*} param0
+   * @param {Object} payload
+   */
+  setTranslate({ commit }, payload) {
+    if ('flag' in payload) {
+      commit(types.SETTINGS.SET_TRANSLATE_FLAG, payload['flag'])
+    }
+    if ('code' in payload) {
+      commit(types.SETTINGS.SET_TRANSLATE_CODE, payload['code'])
+    }
   },
 
   /**

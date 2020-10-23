@@ -5,7 +5,7 @@ const config = require('./server/config')
 const url = require('url')
 
 function IsAllowBrowser(req) {
-  const userAgent = req.headers['user-agent']
+  const userAgent = req.headers['user-agent'] || ''
   const isChrome = userAgent.includes('Chrome')
   const isChromeMobile =
     userAgent.includes('CriOS') || userAgent.includes('mobileApp')
@@ -19,7 +19,7 @@ function IsAllowBrowser(req) {
 }
 
 function IsMobileBrowser(req) {
-  const userAgent = req.headers['user-agent']
+  const userAgent = req.headers['user-agent'] || ''
   const isChromeMobile =
     userAgent.includes('Mobile') ||
     userAgent.includes('CriOS') ||
@@ -78,9 +78,10 @@ router.get('/OSS', function(req, res) {
   res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
 })
 
-router.get('/urls', function(req, res) {
+router.get('/configs', function(req, res) {
+  // req.query.origin
   res.header('Content-Type', 'application/json')
-  res.send(JSON.stringify(config.getUrls()))
+  res.send(JSON.stringify(config.getConfigs()))
 })
 
 router.get('/pdf.worker', function(req, res) {

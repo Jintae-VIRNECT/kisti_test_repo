@@ -39,15 +39,33 @@
               {{ $t('workspace.record_file_title') }}
             </div>
             <div class="table__tools">
+              <!-- Remote Dashboard 적용전까지 주석처리 -->
+              <!-- <icon-button
+                v-if="isHome && onpremise"
+                :text="'선택 업로드'"
+                :imgSrc="require('assets/image/ic_upload.svg')"
+                :customClass="{
+                  highlight: hasSelect,
+                  'custom-local-record': true,
+                }"
+                @click="upload"
+              ></icon-button> -->
               <icon-button
                 :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"
-                :highlight="hasSelect"
+                :customClass="{
+                  highlight: hasSelect,
+                  'custom-local-record': true,
+                }"
                 @click="download"
               ></icon-button>
               <icon-button
                 :text="$t('workspace.record_remove')"
                 :imgSrc="require('assets/image/ic_delete.svg')"
+                :customClass="{
+                  highlight: hasSelect,
+                  'custom-local-record': true,
+                }"
                 @click="deleteItems"
               ></icon-button>
             </div>
@@ -64,6 +82,7 @@ import IconButton from 'IconButton'
 import IDBHelper from 'utils/idbHelper'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'LocalRecordList',
@@ -87,6 +106,12 @@ export default {
     },
     hasSelect() {
       return this.selectedArray.some(select => select)
+    },
+    isHome() {
+      return this.$route.path === '/home'
+    },
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
     },
   },
   components: {
@@ -157,6 +182,20 @@ export default {
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
+    },
+
+    async upload() {
+      const uuids = []
+
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          uuids.push(this.datas[index].uuid)
+        }
+      })
+
+      if (uuids.length > 0) {
+        this.$eventBus.$emit('fileupload:show', uuids)
+      }
     },
 
     async getList() {

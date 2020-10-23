@@ -28,18 +28,24 @@
 
 <script>
 import Modal from 'Modal'
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import CreateRoomInfo from '../partials/ModalCreateRoomInfo'
 import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 
 import { getHistorySingleItem } from 'api/http/history'
-import { createRoom, updateRoomProfile, getRoomInfo } from 'api/http/room'
+import {
+  createRoom,
+  // restartRoom,
+  updateRoomProfile,
+  getRoomInfo,
+} from 'api/http/room'
 import { ROLE } from 'configs/remote.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 import { checkPermission } from 'utils/deviceCheck'
+import { ROOM_STATUS } from 'configs/status.config'
 
 export default {
   name: 'WorkspaceCreateRoom',
@@ -59,6 +65,9 @@ export default {
       loading: false,
       clicked: false,
     }
+  },
+  computed: {
+    ...mapGetters(['targetCompany']),
   },
   props: {
     visible: {
@@ -143,7 +152,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission()
+        const options = await checkPermission(true)
 
         const selectedUser = []
         const selectedUserIds = []
@@ -157,13 +166,30 @@ export default {
           selectedUserIds.push(select.uuid)
         }
 
-        const createdRes = await createRoom({
+        let createdRes
+
+        // if (this.sessionId && this.sessionId.length > 0) {
+        //   createdRes = await restartRoom({
+        //     title: info.title,
+        //     description: info.description,
+        //     leaderId: this.account.uuid,
+        //     participantIds: selectedUserIds,
+        //     workspaceId: this.workspace.uuid,
+        //     sessionId: this.sessionId,
+        //     sessionType: ROOM_STATUS.PRIVATE,
+        //     companyCode: COMPANY_CODE[TARGET_COMPANY],
+        //   })
+        // } else {
+        createdRes = await createRoom({
           title: info.title,
           description: info.description,
           leaderId: this.account.uuid,
           participantIds: selectedUserIds,
           workspaceId: this.workspace.uuid,
+          sessionType: ROOM_STATUS.PRIVATE,
+          companyCode: this.targetCompany,
         })
+        // }
         if (info.imageFile) {
           updateRoomProfile({
             profile: info.imageFile,
@@ -182,16 +208,15 @@ export default {
           sessionId: createdRes.sessionId,
           workspaceId: this.workspace.uuid,
         })
-
-        this.setRoomInfo({
-          ...roomInfo,
-          leaderId: this.account.uuid,
-        })
         window.urls['token'] = createdRes.token
         window.urls['coturn'] = createdRes.coturn
         window.urls['wss'] = createdRes.wss
 
-        this.setRoomInfo(roomInfo)
+        this.setRoomInfo({
+          ...roomInfo,
+          leaderId: this.account.uuid,
+          open: false,
+        })
         if (connRes) {
           this.$eventBus.$emit('popover:close')
 

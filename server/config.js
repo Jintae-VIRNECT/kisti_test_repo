@@ -34,8 +34,14 @@ module.exports = {
   getAsString(key) {
     return String(envConfig[key])
   },
+  getAsBoolean(key) {
+    return Boolean(envConfig[key])
+  },
   getPort() {
     return process.env.PORT || String(envConfig['PORT'])
+  },
+  getEnv() {
+    return env
   },
   getUrls() {
     // const urls = {}
@@ -43,9 +49,13 @@ module.exports = {
     // Object.keys(urlsConfig).forEach(key => {
     //   urls[key] = urlsConfig[key][env]
     // })
+    // urlConfig['console'] = '/account'
+    return urlConfig
+  },
+  getConfigs() {
     return {
-      runtime: env,
-      ...urlConfig,
+      ...this.getUrls(),
+      runtime: this.getEnv(),
     }
   },
 }

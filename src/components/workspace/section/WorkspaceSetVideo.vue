@@ -159,7 +159,7 @@ export default {
       this.debug('call::capability::', capability)
     },
   },
-  mounted() {
+  created() {
     this.initStream()
     this.videoId = this.video['deviceId']
     this.videoQuality = this.video['quality']

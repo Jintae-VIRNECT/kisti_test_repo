@@ -28,6 +28,7 @@ const _ = {
   resolution: null,
   currentZoomLevel: 1,
   maxZoomLevel: 1,
+  openRoom: false,
   /**
    * join session
    * @param {Object} configs {coturn, wss, token}
@@ -36,6 +37,8 @@ const _ = {
   connect: async (configs, role, options) => {
     try {
       _.account = Store.getters['account']
+      _.openRoom = options === false
+
       Store.commit('callClear')
       OV = new OpenVidu()
       if (process.env.NODE_ENV === 'production') {
@@ -63,7 +66,7 @@ const _ = {
       const connectOption = {
         iceServers,
         wsUri: ws,
-        role: 'PUSLISHER',
+        role: options === false ? 'SUBSCRIBER' : 'PUSLISHER',
       }
 
       await _.session.connect(
@@ -76,61 +79,92 @@ const _ = {
         roleType: role,
       })
       _.account.roleType = role
-      const settingInfo = Store.getters['settingInfo']
+      if (options !== false) {
+        const settingInfo = Store.getters['settingInfo']
 
-      const publishOptions = {
-        audioSource: options.audioSource,
-        videoSource: options.videoSource,
-        publishAudio: settingInfo.micOn,
-        publishVideo: settingInfo.videoOn,
-        resolution: settingInfo.quality,
-        // resolution: '1920x1080', // FHD
-        // resolution: '3840x2160', // 4K
-        frameRate: 30,
-        insertMode: 'PREPEND',
-        mirror: false,
-      }
-      debug('call::publish::', publishOptions)
-
-      _.publisher = OV.initPublisher('', publishOptions)
-      _.publisher.on('streamCreated', () => {
-        logger('room', 'publish success')
-        const mediaStream = _.publisher.stream.mediaStream
-        Store.commit('updateParticipant', {
-          connectionId: _.publisher.stream.connection.connectionId,
-          stream: mediaStream,
-          hasVideo: _.publisher.stream.hasVideo,
-          video: _.publisher.stream.videoActive,
-          audio: _.publisher.stream.audioActive,
-        })
-        if (_.publisher.stream.hasVideo) {
-          const track = mediaStream.getVideoTracks()[0]
-          const settings = track.getSettings()
-          const capability = track.getCapabilities()
-          logger('call', `resolution::${settings.width}X${settings.height}`)
-          debug('call::setting::', settings)
-          debug('call::capability::', capability)
-          if ('zoom' in capability) {
-            track.applyConstraints({
-              advanced: [{ zoom: capability['zoom'].min }],
-            })
-            _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
-            _.minZoomLevel = parseInt(capability.zoom.min)
-          }
-          _.video(_.publisher.stream.videoActive)
-          _.sendResolution({
-            width: settings.width,
-            height: settings.height,
-            orientation: '',
-          })
+        const publishOptions = {
+          audioSource: options.audioSource,
+          videoSource: options.videoSource,
+          publishAudio: settingInfo.micOn,
+          publishVideo: settingInfo.videoOn,
+          resolution: settingInfo.quality,
+          // resolution: '1920x1080', // FHD
+          // resolution: '3840x2160', // 4K
+          frameRate: 30,
+          insertMode: 'PREPEND',
+          mirror: false,
         }
-      })
+        debug('call::publish::', publishOptions)
 
-      _.session.publish(_.publisher)
+        _.publisher = OV.initPublisher('', publishOptions)
+        _.publisher.onIceStateChanged(state => {
+          if (
+            state === 'failed' ||
+            state === 'disconnected' ||
+            state === 'closed'
+          ) {
+            Store.commit('updateParticipant', {
+              connectionId: _.publisher.stream.connection.connectionId,
+              status: 'bad',
+            })
+          } else if (state === 'connected') {
+            Store.commit('updateParticipant', {
+              connectionId: _.publisher.stream.connection.connectionId,
+              status: 'good',
+            })
+          } else {
+            Store.commit('updateParticipant', {
+              connectionId: _.publisher.stream.connection.connectionId,
+              status: 'normal',
+            })
+          }
+          logger('ice state change', state)
+        })
+        _.publisher.on('streamCreated', () => {
+          logger('room', 'publish success')
+          const mediaStream = _.publisher.stream.mediaStream
+          Store.commit('updateParticipant', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            stream: mediaStream,
+            hasVideo: _.publisher.stream.hasVideo,
+            video: _.publisher.stream.videoActive,
+            audio: _.publisher.stream.audioActive,
+          })
+          if (_.publisher.stream.hasVideo) {
+            const track = mediaStream.getVideoTracks()[0]
+            const settings = track.getSettings()
+            const capability = track.getCapabilities()
+            logger('call', `resolution::${settings.width}X${settings.height}`)
+            debug('call::setting::', settings)
+            debug('call::capability::', capability)
+            if ('zoom' in capability) {
+              track.applyConstraints({
+                advanced: [{ zoom: capability['zoom'].min }],
+              })
+              _.maxZoomLevel = parseInt(
+                capability.zoom.max / capability.zoom.min,
+              )
+              _.minZoomLevel = parseInt(capability.zoom.min)
+            }
+            _.video(_.publisher.stream.videoActive)
+            _.sendResolution({
+              width: settings.width,
+              height: settings.height,
+              orientation: '',
+            })
+          }
+        })
+
+        _.session.publish(_.publisher)
+      }
       return true
     } catch (err) {
-      console.error(err)
-      return false
+      if (err && err.message && err.message.length > 0) {
+        console.error(`${err.message} (${err.code})`)
+      } else {
+        console.error(err)
+      }
+      throw err
     }
   },
   /**
@@ -138,11 +172,15 @@ const _ = {
    * chatting
    * @param {String} text
    */
-  sendChat: text => {
+  sendChat: (text, code = 'ko-KR') => {
     if (!_.session) return
     if (text.trim().length === 0) return
+    const params = {
+      text: text.trim(),
+      languageCode: code,
+    }
     _.session.signal({
-      data: text.trim(),
+      data: JSON.stringify(params),
       to: null,
       type: SIGNAL.CHAT,
     })
@@ -331,15 +369,40 @@ const _ = {
    * @BROADCATE
    * @TARGET
    * my video stream control
+   * @param {Boolean, String} active true / false / 'NONE'
    */
   video: (active, target = null) => {
+    if (_.openRoom) return
     if (!_.publisher) return
-    if (!_.publisher.stream.hasVideo) return
-    _.publisher.publishVideo(active)
+    // if (!_.publisher.stream.hasVideo) return
+    if (active === 'NONE') {
+      active = CAMERA_STATUE.CAMERA_NONE
+    } else {
+      _.publisher.publishVideo(active)
+      active = active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF
+    }
 
     const params = {
       type: CAMERA.STATUS,
-      status: active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF,
+      status: active,
+      currentZoomLevel: _.currentZoomLevel,
+      maxZoomLevel: _.maxZoomLevel,
+    }
+    try {
+      _.session.signal({
+        data: JSON.stringify(params),
+        to: target,
+        type: SIGNAL.CAMERA,
+      })
+    } catch (err) {
+      return false
+    }
+  },
+  changeProperty: (newValue, target = []) => {
+    if (_.openRoom) return
+    const params = {
+      type: CAMERA.STATUS,
+      status: newValue ? CAMERA_STATUE.CAMERA_OFF : CAMERA_STATUE.CAMERA_NONE,
       currentZoomLevel: _.currentZoomLevel,
       maxZoomLevel: _.maxZoomLevel,
     }
@@ -360,22 +423,14 @@ const _ = {
    * @param {Boolean} active
    */
   mic: (active, target = null) => {
-    if (!_.publisher) return
-    _.publisher.publishAudio(active)
+    if (_.openRoom) return
+    if (_.publisher) {
+      _.publisher.publishAudio(active)
+    }
 
     const params = {
       isOn: active,
     }
-    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', target)
-    // let custom = []
-    // for (let a of target) {
-    //   custom.push({
-    //     connectionId: a.connectionId,
-    //     // creationTime: a.creationTime,
-    //     // data: a.data,
-    //   })
-    // }
-    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', custom)
     try {
       _.session.signal({
         data: JSON.stringify(params),

@@ -7,7 +7,7 @@
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
     customClass="custom-modal"
-    :class="{ modalLess: modalLess }"
+    :class="{ modalless: modalless }"
   >
     <div class="device-denied">
       <div class="device-denied--header">
@@ -46,7 +46,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    modalLess: {
+    modalless: {
       type: Boolean,
       default: false,
     },
@@ -72,7 +72,7 @@ export default {
 
 /* custom Modal.vue */
 .modal.custom-modal {
-  &.modalLess {
+  &.modalless {
     background-color: unset;
   }
 

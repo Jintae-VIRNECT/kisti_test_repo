@@ -52,6 +52,10 @@ export default {
       lottieOption: {
         animationData,
         loop: false,
+        autoplay: true,
+        rendererSettings: {
+          progressiveLoad: true,
+        },
       },
       pointList: [],
       idle: true,

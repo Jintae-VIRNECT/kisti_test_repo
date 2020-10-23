@@ -1,7 +1,13 @@
 <template>
   <header class="header">
     <div class="header-service">
-      <img class="header-logo" src="~assets/image/logo_symtext.svg" />
+      <img
+        v-if="logo !== false"
+        @error="logoError"
+        class="header-logo"
+        :src="logo"
+      />
+      <img v-else class="header-logo" src="~assets/image/logo_symtext.svg" />
       <header-lnb></header-lnb>
 
       <header-tools></header-tools>
@@ -10,6 +16,7 @@
 </template>
 
 <script>
+import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
 import HeaderLnb from './partials/HeaderServiceLnb'
 import HeaderTools from './partials/HeaderServiceTools'
 export default {
@@ -19,11 +26,17 @@ export default {
     HeaderTools,
   },
   data() {
-    return {}
+    return {
+      logo: WHITE_LOGO,
+    }
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    logoError() {
+      this.logo = DEFAULT_LOGO
+    },
+  },
 
   /* Lifecycles */
   mounted() {},

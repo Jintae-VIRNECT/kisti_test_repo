@@ -1,8 +1,8 @@
 .participants {
-  position: absolute;
-  bottom: 2.143rem;
+  flex: 0;
   width: calc(100% - #{$subview_width});
   height: $video_height;
+  margin-bottom: 2.143rem;
   padding: 0 8%;
   transition: all 0.3s;
   &.shareview {

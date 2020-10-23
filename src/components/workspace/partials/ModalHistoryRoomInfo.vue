@@ -20,6 +20,14 @@
       </template>
     </div>
     <div class="roominfo-view__footer">
+      <div class="roominfo-view__data" v-if="useOpenRoom">
+        <span class="data-title">{{ $t('workspace.info_mode') }}</span>
+        <span class="data-value">{{
+          isOpenRoom
+            ? $t('workspace.info_mode_open')
+            : $t('workspace.info_mode_collabo')
+        }}</span>
+      </div>
       <div class="roominfo-view__data">
         <span class="data-title">{{ $t('workspace.info_remote_date') }}</span>
         <span class="data-value">{{ room.activeDate | dateFormat }}</span>
@@ -50,9 +58,24 @@
 
 <script>
 import dayjs from 'dayjs'
+import { ROOM_STATUS } from 'configs/status.config'
+import { mapGetters } from 'vuex'
 export default {
   name: 'ModalRoomInfo',
-  components: {},
+  computed: {
+    ...mapGetters(['useOpenRoom']),
+    isOpenRoom() {
+      if (
+        this.room &&
+        this.room.sessionType &&
+        this.room.sessionType === ROOM_STATUS.OPEN
+      ) {
+        return true
+      } else {
+        return false
+      }
+    },
+  },
   props: {
     room: {
       type: Object,

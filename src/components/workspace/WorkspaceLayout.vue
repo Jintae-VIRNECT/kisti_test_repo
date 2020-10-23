@@ -22,6 +22,10 @@
       ></cookie-policy>
       <record-list :visible.sync="showList"></record-list>
       <device-denied :visible.sync="showDenied"></device-denied>
+      <file-upload
+        :fileIds="fileIds"
+        :visible.sync="showFileUpload"
+      ></file-upload>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
   </section>
@@ -32,13 +36,14 @@ import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 import auth from 'utils/auth'
-import { getLicense } from 'api/http/account'
+import { getLicense, getCompanyInfo } from 'api/http/account'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
-import { mapActions } from 'vuex'
+import FileUpload from './modal/WorkspaceRecordFileUpload'
+import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 
 export default {
@@ -73,6 +78,7 @@ export default {
     RecordList,
     DeviceDenied,
     PlanOverflow,
+    FileUpload,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
@@ -85,14 +91,20 @@ export default {
       license: true,
       showDenied: false,
       showPlanOverflow: false,
+      showFileUpload: false,
+      fileIds: [],
     }
   },
   watch: {
     workspace(val, oldVal) {
       if (val.uuid && val.uuid !== oldVal.uuid) {
         this.checkPlan(val)
+        this.checkCompany(val.uuid)
       }
     },
+  },
+  computed: {
+    ...mapGetters(['useTranslate']),
   },
   methods: {
     ...mapActions([
@@ -102,6 +114,8 @@ export default {
       'setDevices',
       'setRecord',
       'setAllow',
+      'setTranslate',
+      'setCompanyInfo',
     ]),
     init(authInfo, workspaces) {
       this.updateAccount({
@@ -152,16 +166,42 @@ export default {
       if (allow) {
         this.setAllow(allow)
       }
+      const translateInfo = this.$localStorage.getItem('translate')
+      if (translateInfo) {
+        this.setTranslate(translateInfo)
+      }
     },
     showDeviceDenied() {
       this.showDenied = true
     },
     async checkPlan(workspace) {
-      if (workspace.productPlanStatus === PLAN_STATUS.EXCEEDED) {
+      if (workspace.planStatus === PLAN_STATUS.EXCEEDED) {
         this.showPlanOverflow = true
       } else {
         this.showPlanOverflow = false
       }
+    },
+    async checkCompany(workspaceId) {
+      const res = await getCompanyInfo({
+        userId: this.account.uuid,
+        workspaceId,
+      })
+
+      const languageCodes = res.languageCodes || []
+      this.debug(
+        'TRANSLATE LANGUAGE LIST::',
+        ...languageCodes.map(language => language.text),
+      )
+      this.setCompanyInfo({
+        targetCompany: res.companyCode,
+        translate: res.translation,
+        sessionType: res.sessionType,
+        languageCodes,
+      })
+    },
+    fileUpload(uuids) {
+      this.fileIds = uuids
+      this.showFileUpload = true
     },
   },
 
@@ -175,11 +215,13 @@ export default {
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
+    this.$eventBus.$on('fileupload:show', this.fileUpload)
   },
   beforeDestroy() {
     this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')
+    this.$eventBus.$off('fileupload:show')
   },
 }
 </script>

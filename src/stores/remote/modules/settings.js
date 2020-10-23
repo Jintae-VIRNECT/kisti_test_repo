@@ -30,6 +30,11 @@ const state = {
   videoDevice: null,
   language: null,
 
+  translate: {
+    flag: false,
+    code: 'ko-KR',
+  },
+
   //stream for local steram(screen stream)
   screenStream: null,
 
@@ -54,6 +59,13 @@ const mutations = {
   },
   [SETTINGS.SET_ALLOW](state, allow) {
     Object.assign(state.allow, allow)
+  },
+
+  [SETTINGS.SET_TRANSLATE_FLAG](state, flag) {
+    state.translate.flag = flag
+  },
+  [SETTINGS.SET_TRANSLATE_CODE](state, code) {
+    state.translate.code = code
   },
 
   // [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
@@ -87,6 +99,8 @@ const getters = {
   allowLocalRecord: state => state.allow.localRecord,
   allowPointing: state => state.allow.pointing,
   language: state => state.language,
+
+  translate: state => state.translate,
 
   //screen stream for local recording
   screenStream: state => state.screenStream,

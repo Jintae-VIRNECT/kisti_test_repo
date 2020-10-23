@@ -7,6 +7,8 @@
     "stream_connecting": "Connecting video...",
     "stream_no_video": "No video to output.",
     "stream_no_worker": "No participants connected.",
+    "stream_choose_stream": "Select a participant's video to share.",
+    "stream_no_stream": "No video is shared.",
     "stream_stop": "Livestreaming stopped.",
     "stream_background": "The worker's Remote APP is <br />running in background.",
     "stream_stoped": "The participant's livestreaming is on hold.",
@@ -41,6 +43,7 @@
     "participant_sharing": "Would you like to share selected video with every participants? \nThe pointing feature cannot be used during sharing.",
     "participant_sharing_cannot_change": "Cannot select other video while in sharing mode.",
     "participant_invite": "Add",
+    "participant_no_stream": "Cannot share video with this participant.",
 
     "invite_title": "Request for Collabo",
     "invite_selected": "Selected member (<em>{num}</em>/{max})",
@@ -109,6 +112,11 @@
     "setting_save": "Saved the changes.",
     "setting_record_stream": "Recording videos",
     "setting_record_screen": "Recording screens",
+    "setting_translate": "Translation settings",
+    "setting_translate_use": "Use translation",
+    "setting_translate_use_allow": "Use translation allow",
+    "setting_translate_language": "Translation language settings",
+    "setting_translate_language_tooltip": "Set the texting translation language.",
 
     "flash_none": "The device does not have a flashlight.",
     "flash_no_permission": "The other person has refused your request for flashlight access.",
@@ -165,6 +173,7 @@
     "file_upload_maxsize": "Exceeded the attachable file size.",
     "file_image_notsupport": "Does not support this image format.",
     "file_type_notsupport": "Does not support this file format.",
+    "translate": "Translate",
 
     "record_local": "Local recording",
     "record_local_setting": "Local recording settings",

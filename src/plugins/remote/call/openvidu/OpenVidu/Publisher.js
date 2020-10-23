@@ -200,6 +200,7 @@ var Publisher = /** @class */ (function(_super) {
       var affectedMediaStream = this.stream.displayMyRemote()
         ? this.stream.localMediaStreamWhenSubscribedToRemote
         : this.stream.getMediaStream()
+      if (!affectedMediaStream) return
       affectedMediaStream.getVideoTracks().forEach(function(track) {
         track.enabled = value
       })
@@ -255,6 +256,13 @@ var Publisher = /** @class */ (function(_super) {
     value = value !== undefined ? value : true
     this.isSubscribedToRemote = value
     this.stream.subscribeToMyRemote(value)
+  }
+  /**
+   * ::CUSTOMIZED::
+   * @param {Fuction} cb ice state changed event
+   */
+  Publisher.prototype.onIceStateChanged = function(cb) {
+    this.stream.onIceStateChanged = cb
   }
   /**
    * See [[EventDispatcher.on]]

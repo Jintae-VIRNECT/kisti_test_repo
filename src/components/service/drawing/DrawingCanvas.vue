@@ -350,6 +350,8 @@ export default {
 
       const scale = canvasSize.width / this.origin.width
 
+      // let zoom = canvas.getZoom()
+
       this.origin.scale = scale
       this.scaleWidth = this.tools.lineWidth / scale
       this.scaleFont = this.tools.fontSize / scale
@@ -382,7 +384,7 @@ export default {
       this.$nextTick(() => {
         setTimeout(() => {
           this.optimizeCanvasSize()
-        }, 100)
+        }, 1000)
       })
     },
   },

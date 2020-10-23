@@ -66,6 +66,12 @@ var Subscriber = /** @class */ (function(_super) {
    * @param value `true` to subscribe to the audio stream, `false` to unsubscribe from it
    */
   Subscriber.prototype.subscribeToAudio = function(value) {
+    if (
+      !this.stream ||
+      !this.stream.getMediaStream() ||
+      !this.stream.getMediaStream().getAudioTracks()
+    )
+      return false
     this.stream
       .getMediaStream()
       .getAudioTracks()
