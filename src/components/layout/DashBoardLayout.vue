@@ -110,7 +110,6 @@ export default {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
-  margin-top: $header_height;
   margin-right: 0;
   padding-bottom: 0;
 }
