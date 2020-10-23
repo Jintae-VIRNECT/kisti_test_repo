@@ -431,16 +431,6 @@ const _ = {
     const params = {
       isOn: active,
     }
-    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', target)
-    // let custom = []
-    // for (let a of target) {
-    //   custom.push({
-    //     connectionId: a.connectionId,
-    //     // creationTime: a.creationTime,
-    //     // data: a.data,
-    //   })
-    // }
-    // console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', custom)
     try {
       _.session.signal({
         data: JSON.stringify(params),
