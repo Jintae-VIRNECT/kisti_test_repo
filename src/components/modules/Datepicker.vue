@@ -90,8 +90,8 @@ export default {
 }
 .custom-date-picker {
   &.vdp-datepicker {
-    width: 143px;
-    height: 42px;
+    width: 10.2143rem;
+    height: 3rem;
     .vdp-wrapper {
       // width: 143px;
       height: 42px;
@@ -99,22 +99,22 @@ export default {
 
     .vdp-datepicker--input {
       position: relative;
-      width: 143px;
+      width: 10.2143rem;
       padding: 10.0002px 0 14px 20.0004px;
       border-right: none;
       border-radius: 4px 0px 0px 4px;
     }
     .vdp-datepicker__calendar {
-      top: 43px;
-      right: -42px;
+      top: 3.0714rem;
+      right: -3rem;
     }
   }
 }
 
 .calendar-button {
-  width: 42px;
-  height: 42px;
-  padding-top: 3px;
+  width: 3rem;
+  height: 3rem;
+  padding-top: 0.2143rem;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(227, 227, 227);
   border-radius: 0px 4px 4px 0px;

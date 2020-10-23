@@ -2,8 +2,8 @@
   direction: rtl;
 }
 .vdp-wrapper {
-  width: 143px;
-  height: 42px;
+  width: 10.2143rem;
+  height: 3rem;
 }
 
 .vdp-datepicker {
@@ -25,7 +25,7 @@
 .vdp-datepicker--input {
   width: 100%;
   height: 100%;
-  padding: 12.0002px 0 1rem 20.0004px;
+  padding: 0.8572rem 0 1rem 1.4286rem;
   background: #ffffff;
   border: 1px solid rgb(227, 227, 227);
   // border-right: none;
@@ -81,12 +81,12 @@
     }
     .prev.disabled {
       &:after {
-        border-right: 10.0002px solid #ddd;
+        border-right: 0.7143rem solid #ddd;
       }
     }
     .next.disabled {
       &:after {
-        border-left: 10.0002px solid #ddd;
+        border-left: 0.7143rem solid #ddd;
       }
     }
     .up {
@@ -111,23 +111,23 @@
     display: inline-block;
 
     //nomal
-    width: 28px;
-    height: 28px;
+    width: 2rem;
+    height: 2rem;
 
-    margin: 3px;
+    margin: 0.2143rem;
 
     &.wide {
       width: 13%;
-      height: 28px;
-      margin: 3px 0px;
+      height: 2rem;
+      margin: 0.2143rem 0px;
     }
 
     // margin: 5px;
     // padding: 0 5px;
     color: #545454;
     font-weight: 500;
-    font-size: 14px;
-    line-height: 24px;
+    font-size: 1rem;
+    line-height: 1.7143rem;
     text-align: center;
     vertical-align: middle;
     border: 1px solid transparent;
@@ -153,11 +153,11 @@
     }
     &.month {
       width: 23%;
-      height: 64px;
+      height: 4.5714rem;
       // margin: 20px;
-      margin: 8px 2px 2px 2px;
+      margin: 0.5714rem 0.1429rem 0.1429rem 0.1429rem;
       // line-height: 23.0004px;
-      padding-top: 18px;
+      padding-top: 1.2857rem;
     }
   }
   .cell.selected {
@@ -176,11 +176,11 @@
     }
 
     &.highlight-start {
-      border-radius: 100px 0 0 100px;
+      border-radius: 7.1429rem 0 0 7.1429rem;
     }
 
     &.highlight-end {
-      border-radius: 0 100px 100px 0;
+      border-radius: 0 7.1429rem 7.1429rem 0;
     }
 
     &.highlight-start.highlight-end {
@@ -197,15 +197,15 @@
     background: #5c98f0;
 
     &.highlight-start {
-      border-radius: 100px 0 0 100px;
+      border-radius: 7.1429rem 0 0 7.1429rem;
     }
 
     &.highlight-end {
-      border-radius: 0 100px 100px 0;
+      border-radius: 0 7.1429rem 7.1429rem 0;
     }
 
     &.highlight-start.highlight-end {
-      border-radius: 100px;
+      border-radius: 7.1429rem;
     }
   }
   .cell.highlighted.disabled {
@@ -218,7 +218,7 @@
     }
   }
   .cell.day-header {
-    margin-top: 19px;
+    margin-top: 1.3571rem;
     margin-bottom: 0px;
     color: #23355a;
     font-size: normal;
@@ -235,7 +235,7 @@
 
   & > .day__body {
     // padding-left: 6.0004px;
-    margin-left: 16px;
+    margin-left: 1.1429rem;
   }
 }
 .vdp-datepicker__clear-button {
