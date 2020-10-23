@@ -2,13 +2,17 @@
 RELEASE
 
 New Features
-- eureka instance host ip 서버 로그 포맷에 추가
-- PF-Config 서버 연동, 환경 설정 정보 동기화 기능 추가
+- 로깅 포맷 변경
+  1. 기존 Netty Access Log 비활성화
+  2. 기존 LoggingGatewayFilterFactory 삭제
+  3. 신규 GatewayAccessLogFilter 반영
+    - 리퀘스트 로그 항목에 사용자 정보 추가 (uuid,email,country)
 
 Bug Fixes
-- API 메시지 암호화 및 복호화 필터 로직 수정
+- 없음
 
 Limitation
-- JVM 모니터링 기능 추가 (내부 인프라에서만 가능)
+- API 암복호화 응답 헤더에 encrypt , apiName 추가
+  encrypt 필드는 응답이 암호화되었는지 여부, apiName은 현재 호출한 API request url 값을 가짐
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

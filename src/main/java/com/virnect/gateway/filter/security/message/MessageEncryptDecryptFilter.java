@@ -55,6 +55,7 @@ import com.virnect.gateway.error.GatewaySecurityException;
 public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<MessageEncryptDecryptFilter.Config> {
 	private static final String HEADER_ENCRYPT_KEY_NAME = "encrypt";
 	private static final String HEADER_DEVICE_AUTH_KEY_NAME = "deviceAuthKey";
+	private static final String HEADER_API_NAME = "apiName";
 	private static final String SECRET_KEY_NAME = "secretKey";
 	private final Map<String, MessageBodyDecoder> messageBodyDecoders;
 	private final Map<String, MessageBodyEncoder> messageBodyEncoders;
@@ -88,7 +89,6 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 	@Override
 	public GatewayFilter apply(Config config) {
 		return new OrderedGatewayFilter(((exchange, chain) -> {
-			log.info("Message Encrypt Decrypt Filter Active");
 			ServerHttpRequest originRequest = exchange.getRequest();
 			HttpHeaders httpHeaders = originRequest.getHeaders();
 
@@ -101,6 +101,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				return chain.filter(exchange);
 			}
 
+			log.info("Message Encrypt Decrypt Filter Start");
 			String deviceAuthKey = Objects.requireNonNull(httpHeaders.get(HEADER_DEVICE_AUTH_KEY_NAME)).get(0);
 			log.info("[DEVICE_AUTH_KEY] - {}", deviceAuthKey);
 			Map<String, String> deviceAuth = redisTemplate.opsForHash().entries("DeviceAuth:" + deviceAuthKey);
@@ -115,6 +116,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				return DataBufferUtils.join(exchange.getRequest().getBody()).flatMap(dataBuffer -> {
 					ServerHttpRequest mutatedHttpRequest = getServerHttpRequest(exchange, dataBuffer, secretKey);
 					ServerHttpResponse mutateHttpResponse = getServerHttpResponse(exchange, secretKey);
+					log.info("Message Encrypt Decrypt Filter End.");
 					return chain.filter(
 						exchange.mutate().request(mutatedHttpRequest).response(mutateHttpResponse).build());
 				});
@@ -162,8 +164,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 
 	private ServerHttpResponse getServerHttpResponse(ServerWebExchange exchange, String secretKey) {
 		ServerHttpResponse originResponse = exchange.getResponse();
-
-		return new ServerHttpResponseDecorator(originResponse) {
+		ServerHttpResponse mutatedResponse = new ServerHttpResponseDecorator(originResponse) {
 			@Override
 			public Mono<Void> writeWith(Publisher<? extends DataBuffer> body) {
 				HttpHeaders httpHeaders = new HttpHeaders();
@@ -245,6 +246,11 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				return builder.headers(headers -> headers.putAll(httpHeaders)).body(Flux.from(body)).build();
 			}
 		};
+
+		// Additional Header value
+		mutatedResponse.getHeaders().set(HEADER_ENCRYPT_KEY_NAME, "true");
+		mutatedResponse.getHeaders().set(HEADER_API_NAME, exchange.getRequest().getURI().getRawPath());
+		return mutatedResponse;
 	}
 
 	public static class Config {

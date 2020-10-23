@@ -26,7 +26,7 @@ import springfox.documentation.swagger.web.UiConfigurationBuilder;
  * @description
  * @since 2020.04.10
  */
-@Profile({"local", "develop"})
+@Profile({"!staging", "!production"})
 @Controller
 @RequiredArgsConstructor
 public class SwaggerController {
