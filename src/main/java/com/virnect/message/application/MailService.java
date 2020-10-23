@@ -1,11 +1,12 @@
 package com.virnect.message.application;
 
+import org.springframework.context.annotation.Profile;
 import org.thymeleaf.context.Context;
 
 import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.List;
-
+@Profile("!onpremise")
 public interface MailService {
     void sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context);
 

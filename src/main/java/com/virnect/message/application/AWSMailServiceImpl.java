@@ -5,6 +5,8 @@ import com.amazonaws.services.simpleemail.model.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
@@ -34,6 +36,7 @@ import java.util.Properties;
 @Slf4j
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+@Profile("!onpremise")
 public class AWSMailServiceImpl implements MailService {
     private final AmazonSimpleEmailServiceAsyncClient amazonSimpleEmailServiceAsyncClient;
     private final SpringTemplateEngine springTemplateEngine;
