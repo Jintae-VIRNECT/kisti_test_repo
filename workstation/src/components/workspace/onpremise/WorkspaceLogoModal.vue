@@ -178,11 +178,13 @@ export default {
         })
         this.showMe = false
       } catch (e) {
+        const message =
+          {
+            3000: this.$t('common.message.notAllowFileExtension'),
+            3001: this.$t('common.message.notAllowFileSize'),
+          }[e.code] || e
         this.$message.error({
-          message:
-            e.code === 3000
-              ? this.$t('common.message.notAllowFileExtension')
-              : e,
+          message,
           duration: 2000,
           showClose: true,
         })

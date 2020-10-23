@@ -21,7 +21,7 @@
       <span>{{ $t('workspace.master') }}</span>
       <span class="count">1</span>
       <div class="users">
-        <el-tooltip :content="workspaceInfo.master.name">
+        <el-tooltip :content="workspaceInfo.master.nickname">
           <div class="avatar">
             <div
               class="image"
@@ -37,7 +37,7 @@
         <el-tooltip
           v-for="user in workspaceInfo.managers"
           :key="user.uuid"
-          :content="user.name"
+          :content="user.nickname"
         >
           <div class="avatar">
             <div
