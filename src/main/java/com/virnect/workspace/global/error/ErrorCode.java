@@ -18,6 +18,10 @@ public enum ErrorCode {
     ERR_INCORRECT_USER_LICENSE_INFO(1007,"Users must have at least 1 plan."),
     ERR_NOMORE_JOIN_WORKSPACE(1008,"No more join the workspace"),
     ERR_WORKSPACE_NOT_FOUND(1009, "Workspace not found"),
+    ERR_WORKSPACE_USER_NOT_FOUND(1010, "Workspace User not found"),
+    ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL(1011,"Workspace user account create fail"),
+    ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL(1012,"Workspace user account delete fail"),
+	ERR_WORKSPACE_USER_PASSWORD_CHANGE(1013,"Workspace user password change fail. Workspace Member Type User Not found"),
 
     //라이선스 관련 에러
     ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL(2000,"Workspace user license grant fail"),
@@ -25,11 +29,15 @@ public enum ErrorCode {
     ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN(2002,"Workspace license plan not found"),
     ERR_NOT_FOUND_USEFUL_WORKSPACE_LICENSE(2003,"Useful workspace license not found"),
 
+    //파일 관련 에러
+    ERR_NOT_ALLOW_FILE_EXTENSION(3000,"Not Allow file extension."),
+    ERR_NOT_ALLOW_FILE_SIZE(3001,"Not Allow file size."),
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004,"Invalid Value"),
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
     ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
+
 
     private int code;
     private String message;

@@ -5,6 +5,7 @@ import java.util.Locale;
 
 import javax.validation.Valid;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -35,16 +36,28 @@ import com.virnect.workspace.application.WorkspaceService;
 import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
+import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
+import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
+import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
 import com.virnect.workspace.dto.response.MemberListResponse;
 import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -453,5 +466,142 @@ public class WorkspaceController {
 		}
 		WorkspaceSecessionResponse responseMessage = workspaceService.deleteAllWorkspaceInfo(workspaceUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
+	}
+
+	@Profile("onpremise")
+	@ApiOperation(value = "워크스페이스 멤버 계정 생성", tags = "onpremise server only")
+	@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+	@PostMapping("/{workspaceId}/members/account")
+	public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> createWorkspaceMemberAccount(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestBody @Valid MemberAccountCreateRequest memberAccountCreateRequest, BindingResult bindingResult
+	) {
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors()
+				.forEach(
+					objectError -> log.error("[CREATE WORKSPACE MEMBER ACCOUNT] Error message : [{}]", objectError));
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		WorkspaceMemberInfoListResponse response = workspaceService.createWorkspaceMemberAccount(
+			workspaceId,
+			memberAccountCreateRequest
+		);
+		return ResponseEntity.ok(new ApiResponse<>(response));
+	}
+
+	@Profile("onpremise")
+	@ApiOperation(value = "워크스페이스 멤버 계정 삭제 및 내보내기", tags = "onpremise server only")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true)
+	})
+	@DeleteMapping("/{workspaceId}/members/account")
+	public ResponseEntity<ApiResponse<Boolean>> removeWorkspaceMemberAccount(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestBody @Valid MemberAccountDeleteRequest memberAccountDeleteRequest, BindingResult bindingResult
+	) {
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors()
+				.forEach(
+					objectError -> log.error(
+						"[DELETE WORKSPACE MEMBER ACCOUNT] Parameter Error message : [{}]", objectError));
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		Boolean response = workspaceService.deleteWorkspaceMemberAccount(workspaceId, memberAccountDeleteRequest);
+		return ResponseEntity.ok(new ApiResponse<>(response));
+	}
+
+	@Profile("onpremise")
+	@ApiOperation(value = "워크스페이스 멤버 비밀번호 재설정", tags = "onpremise server only")
+	@PostMapping("/{workspaceId}/members/password")
+	public ResponseEntity<ApiResponse<WorkspaceMemberPasswordChangeResponse>> memberPasswordChangeRequest(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestBody WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
+		BindingResult bindingResult
+	) {
+		if (bindingResult.hasErrors()) {
+			bindingResult.getAllErrors().forEach(
+					objectError -> log.error("[WORKSPACE MEMBER PASSWORD CHANGE] Error message : [{}]", objectError)
+			);
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		WorkspaceMemberPasswordChangeResponse response = workspaceService.memberPasswordChange(passwordChangeRequest, workspaceId);
+		return ResponseEntity.ok(new ApiResponse<>(response));
+	}
+
+	@Profile("onpremise")
+	@ApiOperation(value = "워크스페이스 고객사명 변경", tags = "onpremise server only")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+	})
+	@PostMapping("/{workspaceId}/title")
+	public ResponseEntity<ApiResponse<WorkspaceTitleUpdateResponse>> updateWorkspaceTitle(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestBody @Valid WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest, BindingResult bindingResult
+	) {
+		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
+			bindingResult.getAllErrors()
+				.forEach(
+					objectError -> log.error("[UPDATE WORKSPACE TITLE] Parameter Error Message : [{}]", objectError));
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		WorkspaceTitleUpdateResponse workspaceTitleUpdateResponse = workspaceService.updateWorkspaceTitle(
+			workspaceId, workspaceTitleUpdateRequest);
+		return ResponseEntity.ok(new ApiResponse<>(workspaceTitleUpdateResponse));
+
+	}
+
+	@Profile("onpremise")
+	@ApiOperation(value = "워크스페이스 로고 변경", tags = "onpremise server only")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+		@ApiImplicitParam(name = "userId", value = "로고 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
+		@ApiImplicitParam(name = "defaultLogo",value = "로고 이미지(생략 시 기본이미지)", dataType = "__file", paramType = "form", required = false),
+		@ApiImplicitParam(name = "greyLogo",value = "로고 그레이 이미지", dataType = "__file", paramType = "form", required = false),
+		@ApiImplicitParam(name = "whiteLogo",value = "로고 화이트 이미지", dataType = "__file", paramType = "form", required = false),
+	})
+	@PostMapping("/{workspaceId}/logo")
+	public ResponseEntity<ApiResponse<WorkspaceLogoUpdateResponse>> updateWorkspaceLogo(
+		@PathVariable("workspaceId") String workspaceId,
+		@ModelAttribute @Valid WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest, BindingResult bindingResult
+	) {
+		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
+			bindingResult.getAllErrors()
+				.forEach(
+					objectError -> log.error("[UPDATE WORKSPACE LOGO] Parameter Error Message : [{}]", objectError));
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = workspaceService.updateWorkspaceLogo(
+			workspaceId, workspaceLogoUpdateRequest);
+		return ResponseEntity.ok(new ApiResponse<>(workspaceLogoUpdateResponse));
+
+	}
+
+	@Profile("onpremise")
+	@ApiOperation(value = "워크스페이스 파비콘 변경", tags = "onpremise server only")
+	@ApiImplicitParams({
+		@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+		@ApiImplicitParam(name = "userId", value = "파비콘 변경 유저 식별자", dataType = "string", paramType = "form", required = true, example = "498b1839dc29ed7bb2ee90ad6985c608"),
+		@ApiImplicitParam(name = "favicon", value = "파비콘 이미지(생략 시 기본이미지)", dataType = "__file", paramType = "form", required = false)
+	})
+	@PostMapping("/{workspaceId}/favicon")
+	public ResponseEntity<ApiResponse<WorkspaceFaviconUpdateResponse>> updateWorkspaceFavicon(
+		@PathVariable("workspaceId") String workspaceId,
+		@ModelAttribute WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
+	) {
+		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(workspaceFaviconUpdateRequest.getUserId())) {
+			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
+		WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = workspaceService.updateWorkspaceFavicon(
+			workspaceId, workspaceFaviconUpdateRequest);
+		return ResponseEntity.ok(new ApiResponse<>(workspaceFaviconUpdateResponse));
+	}
+
+	@Profile("onpremise")
+	@ApiOperation(value = "워크스페이스 커스텀 설정 조회", tags = "onpremise server only")
+	@GetMapping("/setting")
+	public ResponseEntity<ApiResponse<WorkspaceCustomSettingResponse>> getWorkspaceCustomSetting(
+	) {
+		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = workspaceService.getWorkspaceCustomSetting();
+		return ResponseEntity.ok(new ApiResponse<>(workspaceCustomSettingResponse));
 	}
 }

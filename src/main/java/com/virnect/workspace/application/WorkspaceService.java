@@ -5,12 +5,14 @@ import java.text.DecimalFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
@@ -31,6 +33,7 @@ import com.virnect.workspace.dao.HistoryRepository;
 import com.virnect.workspace.dao.WorkspacePermissionRepository;
 import com.virnect.workspace.dao.WorkspaceRepository;
 import com.virnect.workspace.dao.WorkspaceRoleRepository;
+import com.virnect.workspace.dao.WorkspaceSettingRepository;
 import com.virnect.workspace.dao.WorkspaceUserPermissionRepository;
 import com.virnect.workspace.dao.WorkspaceUserRepository;
 import com.virnect.workspace.dao.redis.UserInviteRepository;
@@ -38,6 +41,7 @@ import com.virnect.workspace.domain.History;
 import com.virnect.workspace.domain.Workspace;
 import com.virnect.workspace.domain.WorkspacePermission;
 import com.virnect.workspace.domain.WorkspaceRole;
+import com.virnect.workspace.domain.WorkspaceSetting;
 import com.virnect.workspace.domain.WorkspaceUser;
 import com.virnect.workspace.domain.WorkspaceUserPermission;
 import com.virnect.workspace.domain.redis.UserInvite;
@@ -47,24 +51,43 @@ import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.UserInfoDTO;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
+import com.virnect.workspace.dto.onpremise.MemberAccountCreateInfo;
+import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
+import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
+import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
+import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
 import com.virnect.workspace.dto.response.MemberListResponse;
 import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
 import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
 import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
 import com.virnect.workspace.dto.rest.MailRequest;
+import com.virnect.workspace.dto.rest.MemberUserPasswordChangeRequest;
+import com.virnect.workspace.dto.rest.MemberUserPasswordChangeResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoListResponse;
 import com.virnect.workspace.dto.rest.MyLicenseInfoResponse;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
+import com.virnect.workspace.dto.rest.RegisterMemberRequest;
+import com.virnect.workspace.dto.rest.UserDeleteRestResponse;
+import com.virnect.workspace.dto.rest.UserInfoAccessCheckRequest;
+import com.virnect.workspace.dto.rest.UserInfoAccessCheckResponse;
 import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
 import com.virnect.workspace.dto.rest.UserInfoRestResponse;
 import com.virnect.workspace.dto.rest.WorkspaceLicensePlanInfoResponse;
@@ -85,6 +108,7 @@ import com.virnect.workspace.infra.file.FileService;
 @Service
 @RequiredArgsConstructor
 public class WorkspaceService {
+	private static final String serviceID = "workspace-server";
 	private final WorkspaceRepository workspaceRepository;
 	private final WorkspaceUserRepository workspaceUserRepository;
 	private final WorkspaceRoleRepository workspaceRoleRepository;
@@ -100,19 +124,16 @@ public class WorkspaceService {
 	private final HistoryRepository historyRepository;
 	private final MessageSource messageSource;
 	private final LicenseRestService licenseRestService;
+	private final WorkspaceSettingRepository workspaceSettingRepository;
 
 	@Value("${serverUrl}")
 	private String serverUrl;
-
 	@Value("${redirectUrl}")
 	private String redirectUrl;
-
 	@Value("${contactUrl}")
 	private String contactUrl;
-
 	@Value("${accountUrl}")
 	private String accountUrl;
-
 	@Value("${supportUrl}")
 	private String supportUrl;
 
@@ -1915,4 +1936,476 @@ public class WorkspaceService {
 
 		return new WorkspaceSecessionResponse(workspaceUUID, true, LocalDateTime.now());
 	}
+
+	@Transactional
+	public WorkspaceMemberInfoListResponse createWorkspaceMemberAccount(
+		String workspaceId, MemberAccountCreateRequest memberAccountCreateRequest
+	) {
+		//1. 요청한 사람의 권한 체크
+		Workspace workspace = checkWorkspaceAndUserRole(
+			workspaceId, memberAccountCreateRequest.getUserId(), new String[] {"MASTER", "MANAGER"});
+
+		List<String> responseLicense = new ArrayList<>();
+		List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
+
+		for (MemberAccountCreateInfo memberAccountCreateInfo : memberAccountCreateRequest.getMemberAccountCreateRequest()) {
+			//1-1. 사용자에게 최소 1개 이상의 라이선스를 부여했는지 체크
+			userLicenseValidCheck(memberAccountCreateInfo.getPlanRemote(), memberAccountCreateInfo.getPlanMake(),
+				memberAccountCreateInfo.getPlanView()
+			);
+
+			//2. user-server 멤버 정보 등록 api 요청
+			RegisterMemberRequest registerMemberRequest = new RegisterMemberRequest();
+			registerMemberRequest.setEmail(memberAccountCreateInfo.getId());
+			registerMemberRequest.setPassword(memberAccountCreateInfo.getPassword());
+			UserInfoRestResponse userInfoRestResponse = userRestService.registerMemberRequest(
+				registerMemberRequest,
+				serviceID
+			)
+				.getData();
+
+			if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
+				log.error("[CREATE WORKSPACE MEMBER ACCOUNT] USER SERVER Member Register fail.");
+				throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_CREATE_FAIL);
+			}
+			log.info(
+				"[CREATE WORKSPACE MEMBER ACCOUNT] USER SERVER account register success. Create UUID : [{}], Create Date : [{}]",
+				userInfoRestResponse.getUuid(), userInfoRestResponse.getCreatedDate()
+			);
+
+			//3. license-server grant api 요청 -> 실패시 user-server 롤백 api 요청
+			if (memberAccountCreateInfo.getPlanRemote()) {
+				MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
+					workspaceId, userInfoRestResponse.getUuid(), "REMOTE").getData();
+				if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
+					log.error(
+						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
+						userInfoRestResponse.getUuid(), "REMOTE"
+					);
+					UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
+						userInfoRestResponse.getUuid(), serviceID).getData();
+					log.error(
+						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
+						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
+					);
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+				}
+				log.info(
+					"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
+					userInfoRestResponse.getUuid(), myLicenseInfoResponse.getProductName()
+				);
+				responseLicense.add("REMOTE");
+			}
+			if (memberAccountCreateInfo.getPlanMake()) {
+				MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
+					workspaceId, userInfoRestResponse.getUuid(), "MAKE").getData();
+				if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
+					log.error(
+						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
+						userInfoRestResponse.getUuid(), "REMOTE"
+					);
+					UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
+						userInfoRestResponse.getUuid(), serviceID).getData();
+					log.error(
+						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
+						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
+					);
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+				}
+				log.info(
+					"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
+					userInfoRestResponse.getUuid(), myLicenseInfoResponse.getProductName()
+				);
+				responseLicense.add("MAKE");
+			}
+			if (memberAccountCreateInfo.getPlanView()) {
+				MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
+					workspaceId, userInfoRestResponse.getUuid(), "VIEW").getData();
+				if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
+					log.error(
+						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail. Request User UUID : [{}], Product License : [{}]",
+						userInfoRestResponse.getUuid(), "REMOTE"
+					);
+					UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
+						userInfoRestResponse.getUuid(), serviceID).getData();
+					log.error(
+						"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant fail >>>> USER SERVER account delete process. Request User UUID : [{}], Delete Date : [{}]",
+						userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
+					);
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
+				}
+				log.info(
+					"[CREATE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license grant success. Request User UUID : [{}], Product License : [{}]",
+					userInfoRestResponse.getUuid(), myLicenseInfoResponse.getProductName()
+				);
+				responseLicense.add("VIEW");
+			}
+
+			//4. workspace 권한 및 소속 부여
+			WorkspaceUser newWorkspaceUser = WorkspaceUser.builder()
+				.userId(userInfoRestResponse.getUuid())
+				.workspace(workspace)
+				.build();
+			WorkspacePermission permission = workspacePermissionRepository.findById(1L).get();
+			WorkspaceRole role = workspaceRoleRepository.findByRole(memberAccountCreateInfo.getRole());
+			WorkspaceUserPermission newWorkspaceUserPermission = WorkspaceUserPermission.builder()
+				.workspaceUser(newWorkspaceUser)
+				.workspacePermission(permission)
+				.workspaceRole(role)
+				.build();
+
+			workspaceUserRepository.save(newWorkspaceUser);
+			workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
+
+			log.info(
+				"[CREATE WORKSPACE MEMBER ACCOUNT] Workspace add user success. Request User UUID : [{}], Role : [{}], JoinDate : [{}]",
+				userInfoRestResponse.getUuid(), role.getRole(), newWorkspaceUser.getCreatedDate()
+			);
+
+			//5. response
+			MemberInfoDTO memberInfoResponse = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
+			memberInfoResponse.setRole(newWorkspaceUserPermission.getWorkspaceRole().getRole());
+			memberInfoResponse.setRoleId(newWorkspaceUserPermission.getWorkspaceRole().getId());
+			memberInfoResponse.setJoinDate(newWorkspaceUser.getCreatedDate());
+			memberInfoResponse.setLicenseProducts(responseLicense.toArray(new String[responseLicense.size()]));
+			memberInfoDTOList.add(memberInfoResponse);
+		}
+
+		return new WorkspaceMemberInfoListResponse(memberInfoDTOList);
+	}
+
+	@Transactional
+	public boolean deleteWorkspaceMemberAccount(
+		String workspaceId, MemberAccountDeleteRequest memberAccountDeleteRequest
+	) {
+		//1. 요청한 사람의 권한 체크
+		checkWorkspaceAndUserRole(workspaceId, memberAccountDeleteRequest.getUserId(), new String[] {"MASTER"});
+
+		//1-1. user-server로 권한 체크
+		UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(
+			memberAccountDeleteRequest.getUserId()).getData();
+		if (userInfoRestResponse == null || !StringUtils.hasText(userInfoRestResponse.getUuid())) {
+			log.error(
+				"[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER account not found. Request user UUID : [{}]",
+				memberAccountDeleteRequest.getUserId()
+			);
+			throw new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR);
+		}
+		UserInfoAccessCheckRequest userInfoAccessCheckRequest = new UserInfoAccessCheckRequest();
+		userInfoAccessCheckRequest.setEmail(userInfoRestResponse.getEmail());
+		userInfoAccessCheckRequest.setPassword(memberAccountDeleteRequest.getUserPassword());
+		UserInfoAccessCheckResponse userInfoAccessCheckResponse = userRestService.userInfoAccessCheckRequest(
+			memberAccountDeleteRequest.getUserId(), userInfoAccessCheckRequest).getData();
+		if (userInfoAccessCheckResponse == null || !userInfoAccessCheckResponse.isAccessCheckResult()) {
+			log.error(
+				"[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER account invalid. Request user UUID : [{}]",
+				memberAccountDeleteRequest.getUserId()
+			);
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+		}
+
+		//2. license-sever revoke api 요청
+		MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
+			workspaceId, memberAccountDeleteRequest.getDeleteUserId()).getData();
+
+		if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
+			.isEmpty()) {
+			myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+				Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
+					workspaceId,
+					memberAccountDeleteRequest.getDeleteUserId(),
+					myLicenseInfoResponse.getProductName()
+				).getData();
+				if (!revokeResult) {
+					log.error(
+						"[DELETE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license revoke fail. Request user UUID : [{}], Product License [{}]",
+						memberAccountDeleteRequest.getUserId(),
+						myLicenseInfoResponse.getProductName()
+					);
+					throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
+				}
+				log.info(
+					"[DELETE WORKSPACE MEMBER ACCOUNT] LICENSE SERVER license revoke success. Request user UUID : [{}], Product License [{}]",
+					memberAccountDeleteRequest.getUserId(),
+					myLicenseInfoResponse.getProductName()
+				);
+			});
+		}
+
+		//3. user-server에 멤버 삭제 api 요청 -> 실패시 grant api 요청
+		UserDeleteRestResponse userDeleteRestResponse = userRestService.userDeleteRequest(
+			memberAccountDeleteRequest.getDeleteUserId(), serviceID).getData();
+		if (userDeleteRestResponse == null || !StringUtils.hasText(userDeleteRestResponse.getUserUUID())) {
+			log.error("[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail.");
+			if (myLicenseInfoListResponse.getLicenseInfoList() != null
+				&& !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+				myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+					MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(
+						workspaceId, memberAccountDeleteRequest.getDeleteUserId(),
+						myLicenseInfoResponse.getProductName()
+					).getData();
+					log.error(
+						"[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user fail. >>>> LICENSE SERVER license revoke process. Request user UUID : [{}], Product License [{}]",
+						memberAccountDeleteRequest.getDeleteUserId(), grantResult.getProductName()
+					);
+				});
+			}
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ACCOUNT_DELETE_FAIL);
+		}
+		log.info(
+			"[DELETE WORKSPACE MEMBER ACCOUNT] USER SERVER delete user success. Request user UUID : [{}],Delete Date [{}]",
+			userDeleteRestResponse.getUserUUID(), userDeleteRestResponse.getDeletedDate()
+		);
+
+		//4. workspace-sever 권한 및 소속 해제
+		Optional<Workspace> workspace = workspaceRepository.findByUuid(workspaceId);
+		WorkspaceUser workspaceUser = workspaceUserRepository.findByUserIdAndWorkspace(
+			memberAccountDeleteRequest.getDeleteUserId(), workspace.get());
+		workspaceUserPermissionRepository.deleteAllByWorkspaceUser(workspaceUser);
+		workspaceUserRepository.deleteById(workspaceUser.getId());
+
+		log.info(
+			"[DELETE WORKSPACE MEMBER ACCOUNT] Workspace delete user success. Request User UUID : [{}], Delete User UUID : [{}], DeleteDate : [{}]",
+			memberAccountDeleteRequest.getUserId(), memberAccountDeleteRequest.getDeleteUserId(), LocalDateTime.now()
+		);
+		return true;
+	}
+
+	private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, String[] role) {
+		Optional<Workspace> workspace = workspaceRepository.findByUuid(workspaceId);
+		workspace.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+
+		Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_UserIdAndWorkspaceUser_Workspace(
+			userId, workspace.get());
+		workspaceUserPermission.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+
+		log.info(
+			"[CHECK WORKSPACE USER ROLE] Acceptable User Workspace Role : {}, Present User Role : [{}]",
+			Arrays.toString(role),
+			workspaceUserPermission.get().getWorkspaceRole().getRole()
+		);
+		if (!Arrays.asList(role)
+			.stream()
+			.anyMatch(workspaceUserPermission.get().getWorkspaceRole().getRole()::equals)) {
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+		}
+		return workspace.get();
+	}
+
+	public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
+		String workspaceId, WorkspaceFaviconUpdateRequest workspaceFaviconUpdateRequest
+	) {
+		//1. 권한 체크
+		Workspace workspace = checkWorkspaceAndUserRole(
+			workspaceId, workspaceFaviconUpdateRequest.getUserId(), new String[] {"MASTER"});
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+
+		//2. 파비콘 확장자, 사이즈 체크
+		if (workspaceFaviconUpdateRequest.getFavicon() == null) {
+			String favicon = fileUploadService.getFileUrl("virnect-default-favicon.ico");
+			workspaceSetting.setFavicon(favicon);
+			workspaceSettingRepository.save(workspaceSetting);
+			WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
+			workspaceFaviconUpdateResponse.setResult(true);
+			workspaceFaviconUpdateResponse.setFavicon(favicon);
+			return workspaceFaviconUpdateResponse;
+		}
+		String allowExtension = "jpg,jpeg,ico,png";
+		String extension = FilenameUtils.getExtension(workspaceFaviconUpdateRequest.getFavicon().getOriginalFilename());
+		checkFileSize(workspaceFaviconUpdateRequest.getFavicon().getSize(), 3145728L);
+		checkFileExtension(extension, allowExtension);
+
+		//3. 파비콘 업로드
+		try {
+			String favicon = fileUploadService.upload(workspaceFaviconUpdateRequest.getFavicon());
+			workspaceSetting.setFavicon(favicon);
+			workspaceSettingRepository.save(workspaceSetting);
+
+			WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
+			workspaceFaviconUpdateResponse.setResult(true);
+			workspaceFaviconUpdateResponse.setFavicon(favicon);
+			return workspaceFaviconUpdateResponse;
+		} catch (IOException e) {
+			log.error("[UPDATE WORKSPACE FAVICON] Favicon Image upload fail. Error message >> [{}]", e.getMessage());
+			WorkspaceFaviconUpdateResponse workspaceFaviconUpdateResponse = new WorkspaceFaviconUpdateResponse();
+			workspaceFaviconUpdateResponse.setResult(false);
+			return workspaceFaviconUpdateResponse;
+		}
+	}
+
+	private void checkFileSize(long requestSize, long acceptSize) {
+		if (requestSize < 0 || requestSize > acceptSize) {
+			log.error(
+				"[UPLOAD FILE SIZE CHECK] Acceptable File size : [{}], Present File size : [{}] ",
+				3145728L, requestSize
+			);
+			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_SIZE);
+		}
+	}
+
+	private void checkFileExtension(String requestExtension, String allowExtension) {
+		if (!StringUtils.hasText(requestExtension) || !allowExtension.contains(requestExtension.toLowerCase())) {
+			log.error(
+				"[UPLOAD FILE EXTENSION CHECK] Acceptable File extension : [{}], Present File extension : [{}] ",
+				allowExtension, requestExtension
+			);
+			throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_EXTENSION);
+		}
+	}
+
+	public WorkspaceLogoUpdateResponse updateWorkspaceLogo(
+		String workspaceId, WorkspaceLogoUpdateRequest workspaceLogoUpdateRequest
+	) {
+		//1. 권한 체크
+		Workspace workspace = checkWorkspaceAndUserRole(
+			workspaceId, workspaceLogoUpdateRequest.getUserId(), new String[] {"MASTER"});
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+
+		//2. 로고 확장자, 사이즈 체크
+		if(workspaceLogoUpdateRequest.getDefaultLogo()==null){
+			String logoDefault = fileUploadService.getFileUrl("virnect-default-logo.png");
+			String logoWhite = fileUploadService.getFileUrl("virnect-white-logo.png");
+			workspaceSetting.setDefaultLogo(logoDefault);
+			workspaceSetting.setWhiteLogo(logoWhite);
+			workspaceSettingRepository.save(workspaceSetting);
+
+			WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+			workspaceLogoUpdateResponse.setResult(true);
+			workspaceLogoUpdateResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
+			workspaceLogoUpdateResponse.setGreyLogo(workspaceSetting.getGreyLogo());
+			workspaceLogoUpdateResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
+			return workspaceLogoUpdateResponse;
+		}
+		String allowExtension = "jpg,jpeg,gif,png";
+		String defaultExtension = FilenameUtils.getExtension(
+			workspaceLogoUpdateRequest.getDefaultLogo().getOriginalFilename());
+		checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
+		checkFileExtension(defaultExtension, allowExtension);
+
+		try {
+			String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getDefaultLogo());
+			workspaceSetting.setDefaultLogo(logo);
+		} catch (IOException e) {
+			log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
+			WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+			workspaceLogoUpdateResponse.setResult(false);
+			return workspaceLogoUpdateResponse;
+		}
+
+		if (workspaceLogoUpdateRequest.getGreyLogo() != null) {
+			String greyExtension = FilenameUtils.getExtension(
+				workspaceLogoUpdateRequest.getGreyLogo().getOriginalFilename());
+			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
+			checkFileExtension(defaultExtension, greyExtension);
+
+			try {
+				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo());
+				workspaceSetting.setGreyLogo(logo);
+			} catch (IOException e) {
+				log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
+				WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+				workspaceLogoUpdateResponse.setResult(false);
+				return workspaceLogoUpdateResponse;
+			}
+		}
+		if (workspaceLogoUpdateRequest.getWhiteLogo() != null) {
+			String whiteExtension = FilenameUtils.getExtension(
+				workspaceLogoUpdateRequest.getWhiteLogo().getOriginalFilename());
+			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
+			checkFileExtension(defaultExtension, whiteExtension);
+
+			try {
+				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo());
+				workspaceSetting.setWhiteLogo(logo);
+			} catch (IOException e) {
+				log.error("[UPDATE WORKSPACE LOGO] Logo Image upload fail. Error message >> [{}]", e.getMessage());
+				WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+				workspaceLogoUpdateResponse.setResult(false);
+				return workspaceLogoUpdateResponse;
+			}
+		}
+		//workspaceRepository.save(workspace);
+		workspaceSettingRepository.save(workspaceSetting);
+
+		WorkspaceLogoUpdateResponse workspaceLogoUpdateResponse = new WorkspaceLogoUpdateResponse();
+		workspaceLogoUpdateResponse.setResult(true);
+		workspaceLogoUpdateResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
+		workspaceLogoUpdateResponse.setGreyLogo(workspaceSetting.getGreyLogo());
+		workspaceLogoUpdateResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
+		return workspaceLogoUpdateResponse;
+	}
+
+	public WorkspaceTitleUpdateResponse updateWorkspaceTitle(
+		String workspaceId, WorkspaceTitleUpdateRequest workspaceTitleUpdateRequest
+	) {
+		//1. 권한 체크
+		Workspace workspace = checkWorkspaceAndUserRole(
+			workspaceId, workspaceTitleUpdateRequest.getUserId(), new String[] {"MASTER"});
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+
+		//2. 고객사명 변경
+		workspaceSetting.setTitle(workspaceTitleUpdateRequest.getTitle());
+		workspaceSettingRepository.save(workspaceSetting);
+
+		WorkspaceTitleUpdateResponse workspaceTitleUpdateResponse = new WorkspaceTitleUpdateResponse();
+		workspaceTitleUpdateResponse.setResult(true);
+		workspaceTitleUpdateResponse.setTitle(workspaceSetting.getTitle());
+		return workspaceTitleUpdateResponse;
+	}
+
+	public WorkspaceCustomSettingResponse getWorkspaceCustomSetting() {
+		WorkspaceSetting workspaceSetting = workspaceSettingRepository.findById(1L)
+			.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_UNEXPECTED_SERVER_ERROR));
+
+		WorkspaceCustomSettingResponse workspaceCustomSettingResponse = new WorkspaceCustomSettingResponse();
+		workspaceCustomSettingResponse.setWorkspaceTitle(workspaceSetting.getTitle());
+		workspaceCustomSettingResponse.setDefaultLogo(workspaceSetting.getDefaultLogo());
+		workspaceCustomSettingResponse.setGreyLogo(workspaceSetting.getGreyLogo());
+		workspaceCustomSettingResponse.setWhiteLogo(workspaceSetting.getWhiteLogo());
+		workspaceCustomSettingResponse.setFavicon(workspaceSetting.getFavicon());
+
+		return workspaceCustomSettingResponse;
+
+	}
+
+	/**
+	 * 워크스페이스 멤버 비밀번호 변경
+	 * @param passwordChangeRequest - 비밀번호 변경 요청 정보
+	 * @param workspaceId - 워크스페이스 식별자 정보
+	 * @return - 워크스페이스 멤버 비밀번호 변경 처리 결과
+	 */
+	@Transactional
+	public WorkspaceMemberPasswordChangeResponse memberPasswordChange(
+		WorkspaceMemberPasswordChangeRequest passwordChangeRequest,
+		String workspaceId
+	) {
+		checkWorkspaceAndUserRole(
+			workspaceId, passwordChangeRequest.getMasterUUID(), new String[] {"MASTER"});
+		MemberUserPasswordChangeRequest changeRequest = new MemberUserPasswordChangeRequest(
+			passwordChangeRequest.getMemberUUID(), passwordChangeRequest.getPassword()
+		);
+
+		ApiResponse<MemberUserPasswordChangeResponse> responseMessage = userRestService.memberUserPasswordChangeRequest(
+			serviceID, changeRequest
+		);
+
+		if (responseMessage.getCode() != 200 || !responseMessage.getData().isChanged()) {
+			log.error("[USER SERVER PASSWORD CHANGE REST RESULT] - [code: {}, data:{}, message: {}]",
+				responseMessage.getCode(), responseMessage.getData() == null ? "" : responseMessage.getData(),
+				responseMessage.getMessage()
+			);
+			throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_PASSWORD_CHANGE);
+		}
+
+		return new WorkspaceMemberPasswordChangeResponse(
+			passwordChangeRequest.getMasterUUID(),
+			responseMessage.getData().getUuid(),
+			responseMessage.getData().getPasswordChangedDate()
+		);
+
+	}
 }
+

@@ -1,15 +1,17 @@
 package com.virnect.workspace.dao;
 
-import com.virnect.workspace.domain.Workspace;
-import com.virnect.workspace.domain.WorkspaceRole;
-import com.virnect.workspace.domain.WorkspaceUser;
-import com.virnect.workspace.domain.WorkspaceUserPermission;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import com.virnect.workspace.domain.Workspace;
+import com.virnect.workspace.domain.WorkspaceRole;
+import com.virnect.workspace.domain.WorkspaceUser;
+import com.virnect.workspace.domain.WorkspaceUserPermission;
 
 /**
  * Project: PF-Workspace
@@ -33,4 +35,5 @@ public interface WorkspaceUserPermissionRepository extends JpaRepository<Workspa
     long countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String WorkspaceRole);
 
     List<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String role);
+    Optional<WorkspaceUserPermission> findByWorkspaceUser_UserIdAndWorkspaceUser_Workspace(String userId, Workspace workspace);
 }
