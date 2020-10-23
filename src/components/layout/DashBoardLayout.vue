@@ -116,9 +116,9 @@ export default {
 
 .dashboard-layout__contents {
   position: relative;
-  // height: calc(100% - #{$header_height});
-  // margin-top: $header_height;
-  padding: 68px 319.9994px 171px 319.9994px;
+  min-width: $content_min_width;
+  margin: 4.8571rem 22.8571rem 0px 22.8571rem;
+  padding-bottom: 12.2143rem;
   overflow: hidden;
 }
 </style>

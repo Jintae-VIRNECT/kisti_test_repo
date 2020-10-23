@@ -6,16 +6,16 @@
 
 .board__header {
   position: relative;
-  height: 68px;
-  padding: 20px 0px 17px 20px;
+  height: 4.8571rem;
+  padding: 1.4286rem 0px 1.2143rem 1.4286rem;
   border-bottom: 1px solid rgb(227, 227, 227);
 }
 
 .board__header--title {
-  margin-right: 10px;
+  margin-right: 0.7143rem;
   color: rgb(11, 31, 72);
   font-weight: 500;
-  font-size: 20px;
+  font-size: 1.4286rem;
 }
 
 .board__header--description {
@@ -27,17 +27,17 @@
 .board__header--datepicker {
   &.datepicker {
     position: absolute;
-    top: 14px;
-    right: 15px;
+    top: 1rem;
+    right: 1.0714rem;
   }
 
   .vdp-datepicker--input {
-    height: 40px;
-    border: 1px solid #e3e3e3;
+    height: 2.8571rem;
+    border: 0.0714rem solid #e3e3e3;
   }
   .calendar-button {
-    height: 40px;
-    border: 1px solid #e3e3e3;
+    height: 2.8571rem;
+    border: 0.0714rem solid #e3e3e3;
   }
 }
 
@@ -58,13 +58,13 @@
   // width: 85.3571rem;
   // height: 24.4286rem;
   margin: auto;
-  padding-right: 38px;
-  padding-left: 30px;
+  padding-right: 2.7143rem;
+  padding-left: 2.1429rem;
 }
 
 .board-figures {
   display: flex;
-  justify-content: space-between;
+  gap: 0px 1.1429rem;
   height: 8.5714rem;
   margin-top: 1.2857rem;
 }

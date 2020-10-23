@@ -18,8 +18,8 @@ export default {
 <style lang="scss">
 .header-workspace-lnb {
   position: relative;
-  width: 540px;
-  height: 40px;
+  width: 38.5714rem;
+  height: 2.8571rem;
   margin: auto 0;
   text-align: left;
   background: rgb(69, 69, 69);
@@ -49,16 +49,4 @@ export default {
     }
   }
 }
-
-// .header-workspace-lnb {
-//   &::after {
-//     position: absolute;
-//     top: 9px;
-//     right: 12px;
-//     width: 24px;
-//     height: 24px;
-//     background: url(~assets/image/ic_dropdown.svg) 50% no-repeat;
-//     content: '';
-//   }
-// }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <card customClass="custom-card-figure-board">
+  <card customClass="custom-figure-board">
     <div class="figure-board">
       <div class="figure-board--icon" :class="{ 'only-me': onlyMe }">
         <img :src="imgSrc" alt="" />
@@ -68,6 +68,12 @@ export default {
 </script>
 
 <style lang="scss">
+.custom-figure-board {
+  width: 100%;
+  // width: 21.5rem;
+  min-height: 8.5714rem;
+}
+
 .figure-board {
   display: flex;
   width: 100%;
@@ -96,11 +102,6 @@ export default {
     width: 2.4286rem;
     height: 2.4286rem;
   }
-}
-
-.custom-card-figure-board {
-  width: 21.8571rem;
-  min-height: 8.5714rem;
 }
 
 .figure-board--header {

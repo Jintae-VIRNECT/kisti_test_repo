@@ -14,24 +14,24 @@ export default {
 <style lang="scss">
 .header-logo {
   display: flex;
-  padding: 16px 0px;
+  padding: 1.1429rem 0rem;
 }
 
 .header-logo--image {
-  width: 133.19px;
-  height: 31.2px;
-  margin-right: 12px;
-  border-radius: 0px;
+  width: 9.5136rem;
+  height: 2.2286rem;
+  margin-right: 0.8571rem;
+  border-radius: 0rem;
 }
 
 .header-logo--text {
-  width: 106px;
-  height: 26px;
-  margin-top: 3px;
+  width: 7.5714rem;
+  height: 1.8571rem;
+  margin-top: 0.2143rem;
   font-weight: 500;
-  font-size: 14.4px;
+  font-size: 1.0286rem;
   text-align: center;
   background: rgb(31, 127, 250) url('~assets/image/logo_sub_text.svg');
-  border-radius: 2.4px;
+  border-radius: 0.1714rem;
 }
 </style>

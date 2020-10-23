@@ -1,8 +1,10 @@
 <template>
   <div class="header">
-    <header-logo></header-logo>
-    <div class="header-divider"></div>
-    <header-nav></header-nav>
+    <div style="display:flex">
+      <header-logo></header-logo>
+      <div class="header-divider"></div>
+      <header-nav></header-nav>
+    </div>
     <header-tools></header-tools>
   </div>
 </template>
@@ -20,27 +22,4 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.header {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
-  z-index: 8;
-  display: flex;
-  // flex-direction: row;
-  // justify-content: space-between;
-  width: 100%;
-  height: 68px;
-  padding: 0px 320px;
-  background: #252525;
-}
-
-.header-divider {
-  width: 1px;
-  height: 1.571rem;
-  margin: auto 30px;
-  background-color: rgba(#d8d8d8, 0.2);
-}
-</style>
+<style lang="scss" src="assets/style/header.scss"></style>

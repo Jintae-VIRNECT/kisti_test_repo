@@ -1,15 +1,18 @@
 /* Layout */
 $header_height: 4.8571rem;
 
-/* Layout - Workspace */
-$welcome_height: 17.143rem; //156px + 64px + 64px
+/* Layout content */
+$content_min_width: 64.2857rem;
 
-/* Layout - Service */
-$subview_width: 25.714rem;
-$video_height: 7.143rem;
-$videolist_height: $video_height + 4.286rem;
-$share_width: 14.286rem;
-$tool_height: 5.714rem;
+// /* Layout - Workspace */
+// $welcome_height: 17.143rem; //156px + 64px + 64px
+
+// /* Layout - Service */
+// $subview_width: 25.714rem;
+// $video_height: 7.143rem;
+// $videolist_height: $video_height + 4.286rem;
+// $share_width: 14.286rem;
+// $tool_height: 5.714rem;
 
 /* Primary Color */
 $color_primary_dark: #005561;

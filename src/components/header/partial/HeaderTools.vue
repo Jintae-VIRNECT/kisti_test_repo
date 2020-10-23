@@ -19,16 +19,17 @@ export default {
 
 <style lang="scss">
 .header-tools {
-  position: absolute;
-  right: 22.8571rem;
+  // position: absolute;
+  // right: 22.8571rem;
   display: flex;
-  padding: 16px;
+  // margin-left: 250px;
+  padding: 1.1429rem;
 
   > .tooltip,
   > .popover--wrapper {
-    margin-left: 30px;
+    margin-left: 2.1429rem;
     > .profile {
-      margin: 0px 2.002px 2.002px 13.006px;
+      margin: 0rem 0.143rem 0.143rem 0.929rem;
       cursor: pointer;
       &:hover {
         opacity: 0.8;

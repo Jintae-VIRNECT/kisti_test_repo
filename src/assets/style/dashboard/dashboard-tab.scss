@@ -90,12 +90,12 @@
 }
 .dashboard-tab--refresh {
   position: absolute;
-  top: 15px;
-  right: 0px;
+  top: 1.0714rem;
+  right: 0rem;
   display: flex;
-  width: 108px;
-  height: 42px;
-  padding: 7px 11px 9px 11px;
+  width: 7.7143rem;
+  height: 3rem;
+  padding: 0.5rem 0.7857rem 0.6429rem 0.7857rem;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(227, 227, 227);
   border-radius: 4px;
@@ -103,14 +103,14 @@
   & > p {
     color: rgb(117, 127, 145);
     font-weight: 500;
-    font-size: 15px;
-    line-height: 24px;
+    font-size: 1.0714rem;
+    line-height: 1.7143rem;
   }
 
   & > img {
-    width: 24px;
-    height: 24px;
-    margin-right: 6px;
+    width: 1.7143rem;
+    height: 1.7143rem;
+    margin-right: 0.4286rem;
   }
 }
 
