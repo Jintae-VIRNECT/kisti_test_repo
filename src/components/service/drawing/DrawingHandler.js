@@ -210,10 +210,10 @@ export default {
       canvas.on('mouse:wheel', opt => {
         if (canvas.onDrag === true) return
         const delta = opt.e.deltaY
-        let zoom = canvas.getZoom()
+        let zoom = canvas.getZoom() // / this.origin.scale
         zoom *= 0.999 ** delta
-        if (zoom > 5) zoom = 5
-        if (zoom < 1) zoom = 1
+        if (zoom > 5 * this.origin.scale) zoom = 5 * this.origin.scale
+        if (zoom < 1 * this.origin.scale) zoom = 1 * this.origin.scale
         canvas.zoomToPoint({ x: opt.e.offsetX, y: opt.e.offsetY }, zoom)
         this.cursor.canvas.zoomToPoint(
           { x: opt.e.offsetX, y: opt.e.offsetY },
@@ -223,7 +223,7 @@ export default {
         opt.e.stopPropagation()
         const vpt = canvas.viewportTransform
         const cursorVpt = this.cursor.canvas.viewportTransform
-        if (zoom < 400 / 1000) {
+        if (this.origin.scale === 1 && zoom < 400 / 1000) {
           vpt[4] = 200 - (1000 * zoom) / 2
           vpt[5] = 200 - (1000 * zoom) / 2
           cursorVpt[4] = 200 - (1000 * zoom) / 2
