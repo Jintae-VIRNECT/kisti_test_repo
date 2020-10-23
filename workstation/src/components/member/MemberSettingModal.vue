@@ -18,6 +18,12 @@
             />
           </div>
           <span>{{ data.nickname }}</span>
+          <el-button
+            v-if="$isOnpremise && canKick"
+            @click="$emit('change-password')"
+          >
+            {{ $t('members.password.title') }}
+          </el-button>
         </dd>
         <dt>{{ $t('members.setting.email') }}</dt>
         <dd>{{ data.email }}</dd>
@@ -42,16 +48,10 @@
                   <img src="~assets/images/icon/ic-error.svg" />
                 </el-tooltip>
               </template>
-              <el-select v-model="form.role" :disabled="!canChangeRole">
-                <el-option
-                  class="column-role"
-                  v-for="role in roles"
-                  :key="role.value"
-                  :value="role.value"
-                >
-                  <el-tag :class="role.value">{{ $t(role.label) }}</el-tag>
-                </el-option>
-              </el-select>
+              <member-role-select
+                v-model="form.role"
+                :disabled="!canChangeRole"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -130,16 +130,19 @@
     </div>
     <div slot="footer">
       <el-button v-show="canKick" @click="$emit('kick')">
-        {{ $t('members.setting.kick') }}
+        {{
+          $isOnpremise ? $t('members.delete.title') : $t('members.setting.kick')
+        }}
       </el-button>
       <el-button type="primary" @click="submit">
-        {{ $t('members.setting.submit') }}
+        {{ $t('common.update') }}
       </el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
+import MemberRoleSelect from '@/components/member/MemberRoleSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import workspaceService from '@/services/workspace'
@@ -149,6 +152,9 @@ import plans from '@/models/workspace/plans'
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 
 export default {
+  components: {
+    MemberRoleSelect,
+  },
   mixins: [modalMixin],
   props: {
     data: Object,
@@ -171,11 +177,12 @@ export default {
       )
     },
     canKick() {
-      return (
-        this.data.role !== 'MASTER' &&
-        this.activeWorkspace.role !== 'MEMBER' &&
-        this.activeWorkspace.role !== this.data.role
-      )
+      return this.$isOnpremise
+        ? this.activeWorkspace.role === 'MASTER' &&
+            this.data.userType === 'MEMBER_USER'
+        : this.data.role !== 'MASTER' &&
+            this.activeWorkspace.role !== 'MEMBER' &&
+            this.activeWorkspace.role !== this.data.role
     },
   },
   methods: {
@@ -240,12 +247,25 @@ export default {
     margin-bottom: 20px;
   }
   .column-user {
+    display: flex;
+
     .avatar {
+      flex: none;
       width: 28px;
       height: 28px;
+      margin: 0;
     }
-    span {
+    & > span {
+      flex: auto;
       font-size: 18px;
+      overflow-wrap: anywhere;
+    }
+    .el-button {
+      height: 34px;
+      padding: 0 20px;
+      span {
+        margin-left: 0;
+      }
     }
   }
   .el-divider {

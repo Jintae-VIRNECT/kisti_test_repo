@@ -78,7 +78,7 @@
             {{ $t('contents.info.delete') }}
           </el-button>
           <el-button @click="update" :disabled="!isDirty" type="primary">
-            {{ $t('contents.info.update') }}
+            {{ $t('common.update') }}
           </el-button>
         </div>
       </el-col>

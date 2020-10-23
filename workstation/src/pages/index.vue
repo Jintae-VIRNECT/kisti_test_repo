@@ -15,7 +15,7 @@
               <workspace-info />
             </el-card>
           </el-row>
-          <el-row>
+          <el-row v-if="!$isOnpremise">
             <plans-used
               i18nGroup="home.plansInfo.arStorage"
               :info="plansInfo.storage"
@@ -37,16 +37,20 @@
             <h5>{{ $t('home.banner.main') }}</h5>
             <p>{{ $t('home.banner.desc') }}</p>
           </el-card>
-          <current-member-list />
+          <current-member-list v-if="!$isOnpremise" />
           <current-contents-list />
           <current-result-list />
         </el-col>
         <!-- 오른쪽 -->
         <el-col class="container__right">
           <user-profile-card />
-          <download-center />
-          <guide-list />
-          <a :href="`${$url.www}/support/faq`" target="_blank">
+          <download-center v-if="!$isOnpremise" />
+          <guide-list v-if="!$isOnpremise" />
+          <a
+            v-if="!$isOnpremise"
+            :href="`${$url.www}/support/faq`"
+            target="_blank"
+          >
             <el-card class="faq-banner">
               <h6>
                 <span>{{ $t('home.faq.title') }}</span>

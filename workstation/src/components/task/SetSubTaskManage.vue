@@ -88,7 +88,7 @@
 
     <template slot="footer">
       <el-button @click="submit" type="primary">
-        {{ $t('task.manage.update') }}
+        {{ $t('common.update') }}
       </el-button>
     </template>
   </el-dialog>

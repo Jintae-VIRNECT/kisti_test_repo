@@ -28,11 +28,7 @@
         </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="memberSearch" />
-          <el-button
-            type="primary"
-            @click="showAddModal = true"
-            v-if="canAddMember"
-          >
+          <el-button type="primary" @click="addMember" v-if="canAddMember">
             {{ $t('members.allMembers.addMember') }}
           </el-button>
         </el-col>
@@ -44,7 +40,10 @@
           v-for="member in membersList"
           :key="member.uuid"
         >
-          <member-profile-card :data="member" @refresh="searchMembers" />
+          <member-profile-card
+            :data="member"
+            @refresh="searchMembers(searchParams)"
+          />
         </el-col>
       </el-row>
       <searchbar-page
@@ -105,6 +104,13 @@ export default {
       this.membersList = list
       this.membersTotal = total
       this.loading = false
+    },
+    addMember() {
+      if (this.$isOnpremise) {
+        this.$router.push('/members/create')
+      } else {
+        this.showAddModal = true
+      }
     },
   },
   beforeMount() {

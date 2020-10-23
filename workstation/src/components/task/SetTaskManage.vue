@@ -234,7 +234,7 @@ export default {
       return {
         new: 'common.next',
         add: 'common.next',
-        edit: 'task.manage.update',
+        edit: 'common.update',
       }[this.type]
     },
   },

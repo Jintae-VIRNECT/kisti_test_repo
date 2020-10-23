@@ -63,6 +63,11 @@ import workspaceSerivce from '@/services/workspace'
 
 export default {
   layout: 'noSidebar',
+  middleware({ store, redirect }) {
+    if (store.getters['auth/myWorkspaces'].length) {
+      redirect('/')
+    }
+  },
   data() {
     return {
       file: null,
@@ -94,6 +99,14 @@ export default {
           ? uploadFiles[uploadFiles.length - 1].raw
           : null,
         userId: this.myProfile.uuid,
+      }
+      if (!form.name) {
+        form.name = this.$t('workspace.setting.namePlaceholder', {
+          nickname: this.myProfile.nickname,
+        })
+      }
+      if (!form.description) {
+        form.description = form.name
       }
 
       //  API 요청

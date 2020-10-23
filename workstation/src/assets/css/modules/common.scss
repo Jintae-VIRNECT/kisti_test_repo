@@ -8,6 +8,7 @@ main {
   min-width: $container-width;
   min-height: calc(100vh - #{$header-height});
   margin-top: $header-height;
+  color: $font-color-content;
   background: #fafbfc;
 }
 .container {

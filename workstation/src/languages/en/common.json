@@ -7,14 +7,17 @@
     "yes": "Yes",
     "no": "No",
     "confirm": "Confirm",
+    "update": "Update",
     "download": "Download",
     "delete": "Delete",
     "graph": "Graph",
     "list": "List",
     "numbersUnit": "",
-    "paymentCenter": "Payment Center"
-  },
-  "menu": {
-    "home": "Workspace Home"
+    "paymentCenter": "Payment Center",
+    "back": "Back",
+    "message": {
+      "notAllowFileExtension": "Unsupported file type.",
+      "notAllowFileSize": "Unsupported file size."
+    }
   }
 }

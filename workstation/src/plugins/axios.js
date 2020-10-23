@@ -54,6 +54,7 @@ export async function api(name, option = {}) {
       throw new Error(`${code}: ${message}`)
     } else {
       const error = new Error(`${code}: ${message}`)
+      if (code) error.code = code
       console.error(error)
       throw error
     }
