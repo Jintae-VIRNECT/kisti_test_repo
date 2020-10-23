@@ -38,8 +38,11 @@
 								v-for="(list, idx) of $t('qrLoginCenter.centerHowTo')"
 								:key="idx"
 							>
-								<p>
+								<p v-if="!customInfo">
 									<span>{{ idx + 1 }}. </span>{{ list }}
+								</p>
+								<p v-else>
+									<span>{{ idx + 1 }}. </span>{{ nameSet(list) }}
 								</p>
 							</li>
 						</ol>
@@ -58,7 +61,8 @@ import utc from 'dayjs/plugin/utc'
 import duration from 'dayjs/plugin/duration'
 export default {
 	props: {
-		myInfo: Object,
+		auth: Object,
+		customInfo: Object,
 	},
 	data() {
 		return {
@@ -85,10 +89,17 @@ export default {
 		},
 	},
 	methods: {
+		nameSet(txt) {
+			if (this.auth.env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
+			else {
+				let val = txt.replace(/VIRNECT/, this.customInfo.title)
+				return val
+			}
+		},
 		async reset() {
 			const params = {
-				email: this.$props.myInfo.email,
-				userId: this.$props.myInfo.uuid,
+				email: this.auth.myInfo.email,
+				userId: this.auth.myInfo.uuid,
 			}
 			try {
 				let otp = await AuthService.qrOtp({ params: params })
@@ -115,17 +126,14 @@ export default {
 				const diff = this.deadline - dayjs().unix()
 				this.remainTime = parseInt(dayjs.duration({ second: diff }).$ms / 1000)
 				if (this.remainTime <= 0) {
-					// console.log('만료')d
 					this.isExpire = true
 					clearInterval(this.runnerID)
 				}
 			}, 1000)
 		},
 	},
-	watch: {
-		async myInfo() {
-			this.reset()
-		},
+	mounted() {
+		this.reset()
 	},
 }
 </script>

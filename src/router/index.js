@@ -4,8 +4,7 @@ import Router from 'vue-router'
 Vue.use(Router)
 
 import App from '@/App'
-import HomeRouter from './partials/home'
-import QRRouter from './partials/qr'
+import MainRouter from './main'
 import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
 import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'
 
@@ -13,11 +12,9 @@ const router = new Router({
 	name: 'router',
 	mode: 'history',
 	routes: [
-		HomeRouter,
-		QRRouter,
+		MainRouter,
 		{
-			path: '/',
-			name: 'app',
+			path: '',
 			component: App,
 		},
 		{

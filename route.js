@@ -11,6 +11,8 @@ const config = require('./configs/runtime')
 router.get('/urls', (req, res) => {
 	res.header('Content-Type', 'application/json')
 	res.send(JSON.stringify(config.urlConfig))
+	// res.send(req.query.origin)
+	// console.log(req.query.origin)
 })
 
 router.get('/healthcheck', (req, res) => {
