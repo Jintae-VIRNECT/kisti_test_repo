@@ -1,4 +1,4 @@
-package com.virnect.gateway.filter.security;
+package com.virnect.gateway.filter.security.jwt;
 
 import java.util.Arrays;
 import java.util.Base64;
@@ -79,14 +79,6 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.forEach((entry -> log.info("[AUTHENTICATE_REQUEST] [HEADER] [{}] => {} ", entry.getKey(),
 				Arrays.toString(entry.getValue().toArray())
 			)));
-
-		// MDC Request User Information Logging
-		MDC.put("email", body.get("email", String.class));
-		MDC.put("uuid", body.get("uuid", String.class));
-		MDC.put("ip", body.get("ip", String.class));
-		MDC.put("country", body.get("country", String.class));
-		MDC.put("countryCode", body.get("countryCode", String.class));
-
 		return chain.filter(exchange.mutate().request(authenticateRequest).build());
 	}
 
