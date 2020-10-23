@@ -3,7 +3,7 @@ import https from 'https'
 import Cookies from 'js-cookie'
 import URI from 'api/uri'
 const env = process.env.NODE_ENV
-const isProduction = /production|staging/.test(process.env.NODE_ENV)
+const isProduction = /production|staging/.test(env)
 
 export async function getUrls() {
 	const res = await Axios.get(
@@ -29,6 +29,7 @@ const setBaseURL = baseURL => {
 	axios.defaults.timeout = baseURL.timeout
 	axios.defaults['baseURL'] = baseURL.api
 	axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL.api
+	return baseURL
 }
 
 /**
@@ -37,9 +38,6 @@ const setBaseURL = baseURL => {
  * @param {Object} option
  */
 export async function api(name, option = {}) {
-	if (!isProduction) {
-		console.log(axios.defaults)
-	}
 	if (!URI[name]) {
 		throw new Error(`API not found '${name}'`)
 	}

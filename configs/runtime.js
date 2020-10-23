@@ -19,6 +19,7 @@ const localUrls = {
 	remote: 'https://localhost:8886',
 	pay: 'https://192.168.13.72:7070',
 	env: 'local',
+	timeout: 30000,
 }
 
 class Config {
