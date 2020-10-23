@@ -45,7 +45,7 @@
       </div>
 
       <div class="theme">
-        <h5>{{ $t('workspace.onpremiseSetting.logo.lightTheme') }}</h5>
+        <h5>{{ $t('workspace.onpremiseSetting.logo.darkTheme') }}</h5>
         <el-upload
           ref="whiteLogoUpload"
           action="#"
