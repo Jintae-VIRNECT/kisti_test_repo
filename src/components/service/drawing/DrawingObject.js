@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import { DRAWING } from 'configs/remote.config'
 import { fabric } from 'plugins/remote/fabric.custom'
+import { hexToRGBA } from 'utils/color'
 export default {
   data() {
     return {
@@ -22,7 +23,7 @@ export default {
       const object = new fabric.IText('', {
         left: left,
         top: top,
-        fill: this.tools.color,
+        fill: hexToRGBA(this.tools.color, this.tools.opacity),
         fontFamily: this.fontFamily,
         fontStyle: this.fontStyle,
         fontWeight: this.fontWeight,
@@ -52,7 +53,7 @@ export default {
           const cloneObj = new fabric.IText('', {
             left: left,
             top: top,
-            fill: this.tools.color,
+            fill: hexToRGBA(this.tools.color, this.tools.opacity),
             fontFamily: this.fontFamily,
             fontStyle: this.fontStyle,
             fontWeight: this.fontWeight,
