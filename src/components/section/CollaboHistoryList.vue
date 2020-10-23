@@ -5,7 +5,9 @@
       <span class="collabo-history-list__header--description">
         최근 협업 기록을 보여줍니다.
       </span>
-      <button class="collabo-history-list__header--excel">EXCEL</button>
+      <button @click="getExcelData" class="collabo-history-list__header--excel">
+        EXCEL
+      </button>
     </div>
     <history :historys="historyList"></history>
     <pagination-tool
@@ -19,11 +21,13 @@
 import History from 'components/partials/History'
 import PaginationTool from 'components/partials/PaginationTool'
 
-import { getHistoryList } from 'api/http/history'
+import { getHistoryList, getHistorySingleItem } from 'api/http/history'
 import { getServerRecordFiles, getFiles } from 'api/http/file'
 
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
+
+import { exportExcel } from 'utils/excel'
 
 export default {
   name: 'CollaboHistoryList',
@@ -163,6 +167,37 @@ export default {
       }
       console.log(history.files)
       console.log(history.localRecord)
+    },
+    async getExcelData() {
+      try {
+        let merged = []
+
+        const historys = await getHistoryList({
+          page: 0,
+          paging: false,
+          size: 1,
+          sort: 'createdDate,desc',
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+        })
+
+        this.setIndex(historys.roomHistoryInfoList)
+        this.setLeader(historys.roomHistoryInfoList)
+        this.setServerRecord(historys.roomHistoryInfoList)
+        this.setFile(historys.roomHistoryInfoList)
+
+        for (const history of historys.roomHistoryInfoList) {
+          const room = await getHistorySingleItem({
+            workspaceId: this.workspace.uuid,
+            sessionId: history.sessionId,
+          })
+          merged.push({ history, room })
+        }
+        exportExcel(merged)
+      } catch (err) {
+        console.error(err)
+        return false
+      }
     },
   },
 
