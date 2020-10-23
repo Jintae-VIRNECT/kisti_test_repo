@@ -1,16 +1,24 @@
-FROM node:alpine
-ENV APP_HOME=/usr/app
-ENV PORT=8833
+# Build Stage
+FROM node:alpine AS builder
 
+COPY . .
+
+ARG NODE_ENV=production
+
+RUN yarn install --production=false
+RUN yarn workspace download build:$NODE_ENV \
+&& rm -rf node_modules
+
+# Runtime Stage
+FROM node:alpine
+
+ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
 
+COPY --from=builder package.json .
+COPY --from=builder download download
 
-ADD ./download $APP_HOME/download
-ADD ./WC-Modules $APP_HOME/WC-Modules
-ADD ./package.json $APP_HOME/package.json
+RUN yarn install --production=true
 
-RUN yarn install --production
-
-EXPOSE $PORT
-
+EXPOSE 8833
 CMD ["yarn", "workspace", "download", "deploy"]
