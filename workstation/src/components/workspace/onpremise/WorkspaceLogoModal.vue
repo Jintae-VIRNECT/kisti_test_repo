@@ -8,10 +8,23 @@
   >
     <div>
       <p>{{ $t('workspace.onpremiseSetting.logo.desc') }}</p>
+
+      <div class="theme">
+        <h5>{{ $t('workspace.onpremiseSetting.logo.lightTheme') }}</h5>
+        <el-upload
+          ref="logoUpload"
+          action="#"
+          :auto-upload="false"
+          :on-change="logoImageSelected"
+          :show-file-list="false"
+        >
+          {{ $t('workspace.onpremiseSetting.favicon.upload') }}
+        </el-upload>
+      </div>
       <div class="preview">
         <div class="area">
           <span class="editable">
-            <img :src="file || defaultlogo" />
+            <img :src="logoFile || defaultlogo" />
           </span>
           <span class="sub-title">
             <el-divider direction="vertical" />
@@ -30,28 +43,57 @@
           {{ $t('workspace.onpremiseSetting.logo.tooltip') }}
         </div>
       </div>
+
+      <div class="theme">
+        <h5>{{ $t('workspace.onpremiseSetting.logo.lightTheme') }}</h5>
+        <el-upload
+          ref="whiteLogoUpload"
+          action="#"
+          :auto-upload="false"
+          :on-change="whiteLogoImageSelected"
+          :show-file-list="false"
+        >
+          {{ $t('workspace.onpremiseSetting.favicon.upload') }}
+        </el-upload>
+      </div>
+      <div class="preview dark">
+        <div class="area">
+          <span class="editable">
+            <img :src="whiteLogoFile || defaultWhiteLogo" />
+          </span>
+          <span class="sub-title">
+            <el-divider direction="vertical" />
+            <div class="avatar">
+              <div
+                class="image"
+                :style="
+                  `background-image: url('${activeWorkspace.profile}'), url('${$defaultWorkspaceProfile}')`
+                "
+              />
+            </div>
+            {{ activeWorkspace.name }}
+          </span>
+        </div>
+        <div class="tooltip">
+          {{ $t('workspace.onpremiseSetting.logo.tooltip') }}
+        </div>
+      </div>
+
       <p
         class="caution"
         v-html="$t('workspace.onpremiseSetting.logo.caution')"
       />
     </div>
     <div slot="footer">
-      <el-upload
-        ref="upload"
-        action="#"
-        :auto-upload="false"
-        :on-change="imageSelected"
-        :show-file-list="false"
+      <el-button
+        type="text"
+        @click="deleteImage"
+        :disabled="!logoFile && !whiteLogoFile"
       >
-        <el-button type="info">
-          {{ $t('workspace.onpremiseSetting.favicon.upload') }}
-        </el-button>
-      </el-upload>
-      <el-button type="text" @click="deleteImage" :disabled="!file">
         {{ $t('common.delete') }}
       </el-button>
       <el-button type="primary" @click="submit">
-        {{ $t('common.update') }}
+        {{ $t('workspace.onpremiseSetting.logo.submit') }}
       </el-button>
     </div>
   </el-dialog>
@@ -61,44 +103,79 @@
 import { mapGetters } from 'vuex'
 import modalMixin from '@/mixins/modal'
 import workspaceService from '@/services/workspace'
+import axios from 'axios'
 
 export default {
   mixins: [modalMixin],
   data() {
     return {
       defaultlogo: require('assets/images/logo/logo-gnb-ci.png'),
-      file: null,
+      defaultWhiteLogo: require('assets/images/logo/logo-gnb-ci-white.png'),
+      logoFile: null,
+      whiteLogoFile: null,
     }
   },
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
       logo: 'layout/logo',
+      whiteLogo: 'layout/whiteLogo',
     }),
   },
   methods: {
     opened() {
-      this.file = this.logo
+      this.logoFile = this.logo
+      this.whiteLogoFile = this.whiteLogo
     },
-    imageSelected(file) {
+    logoImageSelected(file) {
       const reader = new FileReader()
       reader.readAsDataURL(file.raw)
       reader.onload = () => {
-        this.file = reader.result
+        this.logoFile = reader.result
+      }
+    },
+    whiteLogoImageSelected(file) {
+      const reader = new FileReader()
+      reader.readAsDataURL(file.raw)
+      reader.onload = () => {
+        this.whiteLogoFile = reader.result
       }
     },
     deleteImage() {
-      this.$refs.upload.clearFiles()
-      this.file = null
+      this.$refs.logoUpload.clearFiles()
+      this.$refs.whiteLogoUpload.clearFiles()
+      this.logoFile = null
+      this.whiteLogoFile = null
+    },
+    async urlToFile(url) {
+      const { data } = await axios({
+        url,
+        method: 'GET',
+        responseType: 'blob',
+      })
+      return new File([data], 'img.png', { type: data.type })
     },
     async submit() {
       try {
-        const { uploadFiles } = this.$refs.upload
-        const raw = uploadFiles.length
-          ? uploadFiles[uploadFiles.length - 1].raw
+        const logoUploadFiles = this.$refs.logoUpload.uploadFiles
+        let logoRaw = logoUploadFiles.length
+          ? logoUploadFiles[logoUploadFiles.length - 1].raw
           : null
-        await workspaceService.setWorkspaceLogo(raw)
-        this.$store.commit('layout/SET_LOGO', this.file)
+        const whiteLogoUploadFiles = this.$refs.whiteLogoUpload.uploadFiles
+        let whiteLogoRaw = whiteLogoUploadFiles.length
+          ? whiteLogoUploadFiles[whiteLogoUploadFiles.length - 1].raw
+          : null
+
+        if (!logoRaw && this.logoFile)
+          logoRaw = await this.urlToFile(this.logoFile)
+        if (!whiteLogoRaw && this.whiteLogoFile)
+          whiteLogoRaw = await this.urlToFile(this.whiteLogoFile)
+
+        await workspaceService.setWorkspaceLogo(logoRaw, whiteLogoRaw)
+        this.$store.commit('layout/SET_LOGO', {
+          logo: this.logoFile,
+          whiteLogo: this.whiteLogoFile,
+        })
         this.showMe = false
       } catch (e) {
         this.$message.error({
@@ -117,6 +194,20 @@ export default {
 
 <style lang="scss">
 #__nuxt .workspace-logo-modal {
+  .theme {
+    margin-top: 28px;
+    text-align: right;
+    h5 {
+      float: left;
+      font-weight: 500;
+      font-size: 16px;
+    }
+    .el-upload {
+      color: #0052cc;
+      font-weight: 500;
+      font-size: 12px;
+    }
+  }
   .preview {
     height: 60px;
 
@@ -143,9 +234,27 @@ export default {
       }
     }
   }
+  .preview.dark {
+    background: #242427;
+    .area {
+      background: transparent;
+    }
+    .area:after {
+      background: linear-gradient(90deg, rgba(0, 0, 0, 0), #242427);
+    }
+    .el-divider {
+      opacity: 0.5;
+    }
+    .avatar {
+      background: none;
+    }
+    .sub-title {
+      color: #f1f1f1;
+    }
+  }
   .caution {
-    margin-top: 8px;
-    margin-bottom: 76px;
+    margin-top: 30px;
+    margin-bottom: 30px;
   }
 }
 </style>

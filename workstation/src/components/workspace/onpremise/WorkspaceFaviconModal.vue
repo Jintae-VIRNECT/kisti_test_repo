@@ -40,7 +40,7 @@
         {{ $t('common.delete') }}
       </el-button>
       <el-button type="primary" @click="submit">
-        {{ $t('common.update') }}
+        {{ $t('workspace.onpremiseSetting.favicon.submit') }}
       </el-button>
     </div>
   </el-dialog>

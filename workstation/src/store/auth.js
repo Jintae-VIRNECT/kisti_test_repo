@@ -54,6 +54,7 @@ export default {
         await auth.init({
           env: context.$config.VIRNECT_ENV,
           urls: context.$url,
+          timeout: context.$config.API_TIMEOUT,
         }),
       )
     },
