@@ -60,7 +60,7 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 
 		return chain.filter(exchange).then(Mono.fromRunnable(() -> {
 			String responseStatus = String.format("%d %s", response.getRawStatusCode(),
-				HttpStatus.valueOf(String.valueOf(response.getStatusCode())).name()
+				HttpStatus.valueOf(response.getRawStatusCode()).name()
 			);
 
 			gatewayAccessLog
