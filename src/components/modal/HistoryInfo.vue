@@ -69,10 +69,11 @@
 
 <script>
 import Modal from 'Modal'
-import dayjs from 'dayjs'
 import ProfileList from 'ProfileList'
 import CollaboStatus from 'CollaboStatus'
 import { getHistorySingleItem } from 'api/http/history'
+
+import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 export default {
   name: 'HistoryInfo',
   components: {
@@ -98,18 +99,10 @@ export default {
   },
   filters: {
     dateTimeFormat(dateTime) {
-      return dayjs(dateTime + '+00:00').format('YYYY.MM.DD HH:mm')
-    },
-    dateFormat(date) {
-      return dayjs(date + '+00:00').format('YYYY.MM.DD')
-    },
-    timeFormat(time) {
-      return dayjs(time + '+00:00').format('HH:mm:ss')
+      return dateTimeFormat(dateTime)
     },
     durationFormat(time) {
-      return dayjs(time * 1000)
-        .utc()
-        .format('HH:mm')
+      return durationFormat(time)
     },
   },
   computed: {
