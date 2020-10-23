@@ -26,7 +26,7 @@ public class AppUploadRequest {
 	private String operationSystem;
 	@ApiModelProperty(value = "앱 제품 정보(REMOTE,MAKE,VIEW)", position = 1, example = "REMOTE")
 	private String productName;
-	@ApiModelProperty(value = "앱 구동 디바이스 타입(ex: MOBILE, PC, REALWARE)", position = 2, example = "MOBILE")
+	@ApiModelProperty(value = "앱 구동 디바이스 타입(ex: MOBILE, PC, REALWEAR)", position = 2, example = "MOBILE")
 	@NotBlank(message = "앱 구동 디바이스 타입 정보는 반드시 입력되어야 합니다.")
 	private String deviceType;
 	@ApiModelProperty(value = "업로드 앱 파일", dataType = "__file", position = 3, hidden = true)
