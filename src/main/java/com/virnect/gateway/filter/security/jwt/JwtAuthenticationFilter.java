@@ -59,11 +59,15 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 		if (isAuthenticateSkipUrl) {
 			return chain.filter(exchange);
 		}
+
+		log.info("JWT Authentication Filter Start");
 		String jwt = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()))
 			.orElseThrow(() -> new MalformedJwtException("JWT Token not exist"));
 		Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
 		Claims body = claims.getBody();
-		log.info("[AUTHENTICATION TOKEN] : [{}]", body.toString());
+
+		log.info("[AUTHENTICATION TOKEN]: {}", body.toString());
+
 		ServerHttpRequest authenticateRequest = exchange.getRequest().mutate()
 			.header("X-jwt-uuid", body.get("uuid", String.class))
 			.header("X-jwt-email", body.get("email", String.class))
@@ -74,11 +78,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.header("X-jwt-jwtId", body.get("jwtId", String.class))
 			.build();
 
-		authenticateRequest.getHeaders()
-			.entrySet()
-			.forEach((entry -> log.info("[AUTHENTICATE_REQUEST] [HEADER] [{}] => {} ", entry.getKey(),
-				Arrays.toString(entry.getValue().toArray())
-			)));
+		log.info("JWT Authentication Filter end");
 		return chain.filter(exchange.mutate().request(authenticateRequest).build());
 	}
 

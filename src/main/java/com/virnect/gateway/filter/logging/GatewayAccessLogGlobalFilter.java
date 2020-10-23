@@ -104,8 +104,7 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 				String country = body.get("country", String.class);
 				return String.format(USER_INFO_FORMAT, uuid, email, country);
 			}
-		} catch (Exception e) {
-			log.info("{}", e.getMessage());
+		} catch (Exception ignored) {
 		}
 		return String.format(USER_INFO_FORMAT, "-", "-", "-");
 	}
