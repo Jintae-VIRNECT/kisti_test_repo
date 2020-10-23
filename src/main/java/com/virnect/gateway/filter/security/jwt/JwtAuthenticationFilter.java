@@ -1,12 +1,10 @@
 package com.virnect.gateway.filter.security.jwt;
 
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -78,8 +76,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.header("X-jwt-jwtId", body.get("jwtId", String.class))
 			.build();
 
-		log.info("JWT Authentication Filter end");
-		return chain.filter(exchange.mutate().request(authenticateRequest).build());
+		return chain.filter(exchange.mutate().request(authenticateRequest).build())
+			.then(Mono.fromRunnable(() -> log.info("JWT Authentication Filter end")));
 	}
 
 	private String getJwtTokenFromRequest(ServerHttpRequest request) {
