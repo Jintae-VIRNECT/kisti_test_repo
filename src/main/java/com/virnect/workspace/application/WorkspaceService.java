@@ -2239,7 +2239,7 @@ public class WorkspaceService {
 			String greyExtension = FilenameUtils.getExtension(
 				workspaceLogoUpdateRequest.getGreyLogo().getOriginalFilename());
 			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
-			checkFileExtension(defaultExtension, greyExtension);
+			checkFileExtension(greyExtension, allowExtension);
 
 			try {
 				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getGreyLogo());
@@ -2255,7 +2255,7 @@ public class WorkspaceService {
 			String whiteExtension = FilenameUtils.getExtension(
 				workspaceLogoUpdateRequest.getWhiteLogo().getOriginalFilename());
 			checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
-			checkFileExtension(defaultExtension, whiteExtension);
+			checkFileExtension(whiteExtension, allowExtension);
 
 			try {
 				String logo = fileUploadService.upload(workspaceLogoUpdateRequest.getWhiteLogo());
