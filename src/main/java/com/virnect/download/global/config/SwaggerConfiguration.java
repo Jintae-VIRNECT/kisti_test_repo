@@ -33,7 +33,7 @@ import com.virnect.download.global.error.ErrorResponseMessage;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop"})
+@Profile({"!staging", "!production"})
 @Configuration
 @EnableSwagger2
 @RequiredArgsConstructor

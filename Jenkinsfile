@@ -7,40 +7,6 @@ pipeline {
   }
 
   stages {
-    stage('Pre-Build') {
-      parallel {
-        stage('Develop Branch') {
-          when {
-            branch 'develop'
-          }
-          steps {
-            catchError() {
-              sh 'chmod +x ./gradlew'
-              sh './gradlew clean'
-              sh './gradlew cleanQuerydslSourcesDir'
-              sh './gradlew build -x test'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-
-        stage('Staging Branch') {
-          when {
-            branch 'staging'
-          }
-          steps {
-            catchError() {
-              sh 'chmod +x ./gradlew'
-              sh './gradlew clean'
-              sh './gradlew cleanQuerydslSourcesDir'
-              sh './gradlew build -x test'
-              sh 'cp docker/Dockerfile ./'
-            }
-          }
-        }
-      }
-    }
-
     stage('Build') {
       parallel {
         stage('Develop Branch') {
@@ -48,9 +14,7 @@ pipeline {
             branch 'develop'
           }
           steps {
-            catchError() {
-              sh 'docker build -t pf-download .'
-            }
+            sh 'docker build -t pf-download -f docker/Dockerfile .'
           }
         }
 
@@ -61,7 +25,7 @@ pipeline {
           steps {
             catchError() {
               sh 'git checkout ${GIT_TAG}'
-              sh 'docker build -t pf-download:${GIT_TAG} .'
+              sh 'docker build -t pf-download:${GIT_TAG} -f docker/Dockerfile .'
             }
           }
         }
@@ -87,10 +51,12 @@ pipeline {
             branch 'develop'
           }
           steps {
+            sh 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 8086:8086 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --restart=always --name=pf-download pf-download'
+            sh 'count=`docker ps -a | grep pf-download-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download-onpremise && docker rm pf-download-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'docker run -p 18086:8086 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-download-onpremise pf-download'
             catchError() {
-              sh 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
-              sh 'docker run -p 8086:8086 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -e eureka.instance.ip-address=`hostname -I | awk  \'{print $1}\'` -d --restart=always --name=pf-download pf-download'
-              sh 'docker image prune -a -f'
+              sh 'docker image prune -f'
             }
           }
         }
@@ -100,42 +66,40 @@ pipeline {
             branch 'staging'
           }
           steps {
-            catchError() {
-              script {
-                docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
-                  docker.image("pf-download:${GIT_TAG}").push("${GIT_TAG}")
-                  docker.image("pf-download:${GIT_TAG}").push("latest")
-                }
+            script {
+              docker.withRegistry("https://$aws_ecr_address", 'ecr:ap-northeast-2:aws-ecr-credentials') {
+                docker.image("pf-download:${GIT_TAG}").push("${GIT_TAG}")
+                docker.image("pf-download:${GIT_TAG}").push("latest")
               }
+            }
 
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-qa',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-download:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -a -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-qa',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
             }
           }
         }
@@ -147,44 +111,43 @@ pipeline {
 
           }
           steps {
-            catchError() {
-              script {
-                sshPublisher(
-                  continueOnError: false, failOnError: true,
-                  publishers: [
-                    sshPublisherDesc(
-                      configName: 'aws-bastion-deploy-prod',
-                      verbose: true,
-                      transfers: [
-                        sshTransfer(
-                          execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker pull $aws_ecr_address/pf-download:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
-                        ),
-                        sshTransfer(
-                          execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
-                        ),
-                        sshTransfer(
-                          execCommand: 'docker image prune -a -f'
-                        )
-                      ]
-                    )
-                  ]
-                )
-              }
 
-               script {
-                  def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
-                  def payload = """
-                  {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                  """                             
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-bastion-deploy-prod',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'docker image prune -f'
+                      )
+                    ]
+                  )
+                ]
+              )
+            }
 
-                  sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
-              }
+            script {
+              def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+              def payload = """
+              {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
+              """                             
+
+              sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
             }
           }
         }
