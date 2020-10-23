@@ -15,16 +15,17 @@ final class GatewayAccessLog {
 	static final DateTimeFormatter DATE_TIME_FORMATTER =
 		DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z", Locale.KOREA);
 	static final String COMMON_LOG_FORMAT =
-		"{} - {} [{}] [{}] \"{} {} {}\" {} {} {} {} ms";
+		"{} - {} [{}] [{}] \"{} {} [{}]\" {} {} {} ms [{}]";
 	static final String MISSING = "-";
 	final String zonedDateTime;
-	String address;
+	String address = MISSING;
 	CharSequence method;
 	CharSequence uri;
-	String protocol;
+	String protocol = MISSING;
 	String user = MISSING;
 	CharSequence status;
-	String contentType;
+	String contentType = MISSING;
+	String userAgent = MISSING;
 	long contentLength;
 	long startTime = System.currentTimeMillis();
 	int port;
@@ -68,13 +69,18 @@ final class GatewayAccessLog {
 		return this;
 	}
 
-	GatewayAccessLog user(String user){
+	GatewayAccessLog user(String user) {
 		this.user = user;
 		return this;
 	}
 
-	GatewayAccessLog contentType(String contentType){
+	GatewayAccessLog contentType(String contentType) {
 		this.contentType = contentType;
+		return this;
+	}
+
+	GatewayAccessLog userAgent(String userAgent) {
+		this.userAgent = userAgent;
 		return this;
 	}
 
@@ -83,8 +89,8 @@ final class GatewayAccessLog {
 	}
 
 	void log() {
-		LOGGER.info(COMMON_LOG_FORMAT, address, user, zonedDateTime,
-			method, uri, protocol, status, (contentLength > -1 ? contentLength : MISSING), port, duration()
+		LOGGER.info(COMMON_LOG_FORMAT, address, user, zonedDateTime, contentType,
+			method, uri, status, (contentLength > -1 ? contentLength : MISSING), port, duration(), userAgent
 		);
 	}
 }

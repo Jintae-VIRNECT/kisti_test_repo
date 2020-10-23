@@ -1,12 +1,16 @@
 package com.virnect.gateway.filter.logging;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -23,11 +27,16 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @Component
-@Order(-1)
-public class GatewayAccessLogGlobalFilter implements GlobalFilter {
+@Order(-4)
+public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 	static private final String USER_INFO_FORMAT = "[%s,%s,%s]";
 	@Value("${jwt.secret}")
 	private String secretKey;
+
+	@PostConstruct
+	protected void init() {
+		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+	}
 
 	@Override
 	public Mono<Void> filter(
@@ -36,14 +45,17 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 	) {
 		ServerHttpRequest request = exchange.getRequest();
 		ServerHttpResponse response = exchange.getResponse();
-
 		GatewayAccessLog gatewayAccessLog = new GatewayAccessLog()
 			.address(fetchAddressFromRequest(request))
 			.port(request.getLocalAddress().getPort())
 			.method(request.getMethod().name())
 			.uri(request.getURI().toString())
-			.protocol("");
-			// .user(generateUserInfo(request));
+			.protocol("protocol")
+			.user(generateUserInfo(request));
+
+		if (request.getHeaders().get("user-agent") != null && request.getHeaders().get("user-agent").size() > 0) {
+			gatewayAccessLog.userAgent(request.getHeaders().get("user-agent").get(0));
+		}
 
 		return chain.filter(exchange).then(Mono.fromRunnable(() -> {
 			String responseStatus = String.format("%d %s", response.getRawStatusCode(),
@@ -80,7 +92,6 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 
 	private String generateUserInfo(ServerHttpRequest request) {
 		try {
-			log.info("secretKey: {}", secretKey);
 			String jwt = fetchJwtTokenFromRequest(request);
 			Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
 			Claims body = claims.getBody();
@@ -91,9 +102,13 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter {
 				return String.format(USER_INFO_FORMAT, uuid, email, country);
 			}
 		} catch (Exception e) {
-			log.error("{}", e.getMessage(), e);
-			return "-";
+			log.info("{}", e.getMessage());
 		}
-		return "-";
+		return String.format(USER_INFO_FORMAT, "-", "-", "-");
+	}
+
+	@Override
+	public int getOrder() {
+		return -5;
 	}
 }
