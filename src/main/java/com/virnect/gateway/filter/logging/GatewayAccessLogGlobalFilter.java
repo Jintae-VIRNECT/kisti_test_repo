@@ -61,6 +61,7 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 			String responseStatus = String.format("%d %s", response.getRawStatusCode(),
 				HttpStatus.valueOf(response.getRawStatusCode()).name()
 			);
+
 			gatewayAccessLog
 				.status(responseStatus);
 
