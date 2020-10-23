@@ -62,9 +62,13 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 				HttpStatus.valueOf(response.getRawStatusCode()).name()
 			);
 			gatewayAccessLog
-				.status(responseStatus)
-				.contentType(response.getHeaders().getContentType().toString())
-				.contentLength(response.getHeaders().getContentLength());
+				.status(responseStatus);
+
+			if (!request.getURI().toString().contains("ws") && !request.getURI().toString().contains("wss")) {
+				gatewayAccessLog.contentType(response.getHeaders().getContentType().toString())
+					.contentLength(response.getHeaders().getContentLength());
+			}
+
 			gatewayAccessLog.log();
 		}));
 	}
