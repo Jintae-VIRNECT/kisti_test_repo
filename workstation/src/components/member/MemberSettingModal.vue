@@ -19,7 +19,7 @@
           </div>
           <span>{{ data.nickname }}</span>
           <el-button
-            v-if="$isOnpremise && data.userType === 'MEMBER_USER'"
+            v-if="$isOnpremise && canKick"
             @click="$emit('change-password')"
           >
             {{ $t('members.password.title') }}

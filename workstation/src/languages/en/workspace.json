@@ -59,15 +59,19 @@
       "logo": {
         "title": "Change Logo",
         "desc": "If you want to change your logo, please register your logo image. The VIRNECT logo is shown instead of the VIRNECT logo in your web service.",
+        "lightTheme": "Light theme",
+        "darkTheme": "Dark theme",
         "tooltip": "Logo Change Area",
-        "caution": "Up to 3MB JPG and PNG files can be uploaded. <br>* Recommended size: 170 (lateral) * 32 (longitudinal, fixed)px / 72 DPI"
+        "caution": "Up to 3MB JPG and PNG files can be uploaded. <br>* Recommended size: 170 (lateral) * 32 (longitudinal, fixed)px / 72 DPI",
+        "submit": "Register"
       },
       "favicon": {
         "title": "Change the Favicon",
         "desc": "If you want to change the Favicon, please register the Favicon image. Web service Favicon will be changed.",
         "tooltip": "Favicon Change Area",
         "caution": "Up to 3MB of ICO, JPG, and PNG files can be uploaded. <br>* Recommended size: 32 (lateral) * 32 (longitudinal, fixed)px / 72 DPI",
-        "upload": "Upload Image"
+        "upload": "Upload Image",
+        "submit": "Register"
       }
     }
   }

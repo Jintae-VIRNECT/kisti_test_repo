@@ -16,7 +16,8 @@
     "numbersUnit": "개",
     "paymentCenter": "결제센터",
     "message": {
-      "notAllowFileExtension": "지원하지 않는 파일 형식입니다."
+      "notAllowFileExtension": "지원하지 않는 파일 형식입니다.",
+      "notAllowFileSize": "지원하지 않는 파일 크기입니다."
     }
   }
 }

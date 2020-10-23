@@ -191,11 +191,7 @@ export default {
             trigger: ['blur', 'change'],
             validator: (rule, value, callback) => {
               let err
-              let typeCount = 0
               if (!/^.{4,20}$/.test(value)) err = new Error()
-              if (/[0-9]/.test(value)) typeCount++
-              if (/[a-zA-Z]/.test(value)) typeCount++
-              if (typeCount < 2) err = new Error()
 
               callback(err)
             },

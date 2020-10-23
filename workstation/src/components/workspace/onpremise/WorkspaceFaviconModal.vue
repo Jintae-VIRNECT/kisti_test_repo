@@ -40,7 +40,7 @@
         {{ $t('common.delete') }}
       </el-button>
       <el-button type="primary" @click="submit">
-        {{ $t('common.update') }}
+        {{ $t('workspace.onpremiseSetting.favicon.submit') }}
       </el-button>
     </div>
   </el-dialog>
@@ -87,11 +87,13 @@ export default {
         this.$store.commit('layout/SET_FAVICON', this.file)
         this.showMe = false
       } catch (e) {
+        const message =
+          {
+            3000: this.$t('common.message.notAllowFileExtension'),
+            3001: this.$t('common.message.notAllowFileSize'),
+          }[e.code] || e
         this.$message.error({
-          message:
-            e.code === 3000
-              ? this.$t('common.message.notAllowFileExtension')
-              : e,
+          message,
           duration: 2000,
           showClose: true,
         })

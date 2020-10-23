@@ -14,6 +14,9 @@ export default {
     logo(state) {
       return state.logo
     },
+    whiteLogo(state) {
+      return state.whiteLogo
+    },
     favicon(state) {
       return state.favicon
     },
@@ -22,8 +25,9 @@ export default {
     SET_TITLE(state, str) {
       state.title = str
     },
-    SET_LOGO(state, img) {
-      state.logo = img || defaultSetting.logo
+    SET_LOGO(state, { logo, whiteLogo }) {
+      state.logo = logo || defaultSetting.logo
+      state.whiteLogo = whiteLogo || defaultSetting.whiteLogo
     },
     SET_FAVICON(state, img) {
       state.favicon = img || defaultSetting.favicon
@@ -33,8 +37,11 @@ export default {
     async getWorkspaceSetting({ commit }) {
       const setting = await workspaceService.getWorkspaceSetting()
       commit('SET_TITLE', setting.title)
-      commit('SET_LOGO', setting.logo)
       commit('SET_FAVICON', setting.favicon)
+      commit('SET_LOGO', {
+        logo: setting.logo,
+        whiteLogo: setting.whiteLogo,
+      })
       return setting
     },
   },

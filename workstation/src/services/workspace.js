@@ -271,6 +271,7 @@ export default {
   },
   /**
    * 워크스페이스 타이틀 설정 (onpremise)
+   * @param {string} title
    */
   async setWorkspaceTitle(title) {
     const workspaceId = activeWorkspaceGetter().uuid
@@ -286,11 +287,17 @@ export default {
   },
   /**
    * 워크스페이스 로고 설정 (onpremise)
+   * @param {File} logo
+   * @param {File} whiteLogo
    */
-  async setWorkspaceLogo(logo) {
+  async setWorkspaceLogo(logo, whiteLogo) {
     const formData = new FormData()
     formData.append('userId', myProfileGetter().uuid)
     if (logo) formData.append('defaultLogo', logo)
+    if (whiteLogo) {
+      formData.append('whiteLogo', whiteLogo)
+      formData.append('greyLogo', whiteLogo)
+    }
 
     const data = await api('WORKSPACE_SET_LOGO', {
       route: { workspaceId: activeWorkspaceGetter().uuid },

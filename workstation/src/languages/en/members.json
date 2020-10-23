@@ -85,7 +85,7 @@
       "caution": {
         "canModify": "When creating an account, the registered password and account information can be changed by the logged-in user.",
         "createId": "Enter your ID and password to create a new workspace member account. \n<u>You must assign at least one plan you have when creating an account</u>.",
-        "validId": "<u>ID</u> is a combination of alphanumeric characters and must be set to 4 to 20 characters.",
+        "validId": "<u>ID</u> consists of 4-20 characters consisting of alphabets, numbers, and special characters.",
         "validPassword": "<u>Password</u> should be within 8-20 characters in uppercase and lowercase letters/numbers/special characters (.,!,@,#,$,%)"
       },
       "createMember": "Create account",

@@ -10,6 +10,8 @@ export default class OnPremiseSetting extends Model {
     this.title = json.workspaceTitle || 'VIRNECT'
     this.logo =
       json.defaultLogo || require('assets/images/logo/logo-gnb-ci.png')
+    this.whiteLogo =
+      json.whiteLogo || require('assets/images/logo/logo-gnb-ci-white.png')
     this.favicon = json.favicon || require('assets/images/logo/favicon.png')
   }
 }
