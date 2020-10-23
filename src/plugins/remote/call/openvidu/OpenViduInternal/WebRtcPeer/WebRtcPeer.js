@@ -323,10 +323,6 @@ var WebRtcPeer = /** @class */ (function() {
     var _this = this
     this.pc.oniceconnectionstatechange = function() {
       var iceConnectionState = _this.pc.iceConnectionState
-      console.log(
-        '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Ice Connection State Changed',
-        iceConnectionState,
-      )
       // ::CUSTOMIZED::
       if (_this.onIceStateChanged) {
         _this.onIceStateChanged(iceConnectionState)

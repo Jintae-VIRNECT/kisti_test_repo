@@ -852,7 +852,6 @@ var Stream = /** @class */ (function(_super) {
    */
   Stream.prototype.initWebRtcPeerSend = function(reconnect, cb = false) {
     var _this = this
-    console.log('>>>>>>>>>>>>>>>>>>>initWebRtcPeerSend')
     return new Promise(async function(resolve, reject) {
       if (!reconnect) {
         _this.initHarkEvents() // Init hark events for the local stream
