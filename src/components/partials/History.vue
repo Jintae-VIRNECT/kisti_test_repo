@@ -3,19 +3,61 @@
     <div class="history">
       <div class="history__header">
         <div class="history__header--text index">
-          No
+          <span
+            @click="setSort('index')"
+            :class="{ active: sort.column === 'index' }"
+            >No</span
+          >
         </div>
         <div class="history__header--text collabo-name">
-          협업명
+          <span
+            @click="setSort('collabo-name')"
+            :class="{ active: sort.column === 'collabo-name' }"
+            >협업명</span
+          >
         </div>
         <div class="history__header--text leader-name">
-          리더
+          <span
+            @click="setSort('leader-name')"
+            :class="{ active: sort.column === 'leader-name' }"
+            >리더</span
+          >
         </div>
-        <div class="history__header--text start-date">협업 시작일</div>
-        <div class="history__header--text state">상태</div>
-        <div class="history__header--text count">서버 녹화</div>
-        <div class="history__header--text count">로컬 녹화</div>
-        <div class="history__header--text count">첨부 파일</div>
+        <div class="history__header--text start-date">
+          <span
+            @click="setSort('start-date')"
+            :class="{ active: sort.column === 'start-date' }"
+            >협업 시작일</span
+          >
+        </div>
+        <div class="history__header--text state">
+          <span
+            @click="setSort('state')"
+            :class="{ active: sort.column === 'state' }"
+            >상태</span
+          >
+        </div>
+        <div class="history__header--text count">
+          <span
+            @click="setSort('server-count')"
+            :class="{ active: sort.column === 'server-count' }"
+            >서버 녹화</span
+          >
+        </div>
+        <div class="history__header--text count">
+          <span
+            @click="setSort('local-count')"
+            :class="{ active: sort.column === 'local-count' }"
+            >로컬 녹화</span
+          >
+        </div>
+        <div class="history__header--text count">
+          <span
+            @click="setSort('file-count')"
+            :class="{ active: sort.column === 'file-count' }"
+            >첨부 파일</span
+          >
+        </div>
       </div>
 
       <div class="history__body" :class="{ nodata: !listExists }">
@@ -35,7 +77,9 @@
               <p>{{ history.title }}</p>
             </div>
             <div class="history__text leader-name">
-              <p>{{ history.leader.nickName }}</p>
+              <p>
+                {{ history.leader.nickName }}
+              </p>
             </div>
             <div class="history__text start-date">
               {{ date(history.activeDate) }}
@@ -115,6 +159,8 @@ import ServerRecordInfo from 'components/modal/ServerRecordInfo'
 import LocalRecordInfo from 'components/modal/LocalRecordInfo'
 import AttachFileInfo from 'components/modal/AttachFileInfo'
 
+import { mapActions } from 'vuex'
+
 export default {
   name: 'History',
   components: {
@@ -146,6 +192,7 @@ export default {
       fileList: [],
 
       hover: false,
+      sort: { column: '', direction: '' },
     }
   },
   computed: {
@@ -154,6 +201,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setSearch']),
     date(activeDate) {
       return this.$dayjs(activeDate + '+00:00')
         .local()
@@ -185,6 +233,28 @@ export default {
       this.file = true
       this.fileList = history.files
       this.historyTitle = history.title
+    },
+    setSort(column) {
+      if (this.sort.column === column) {
+        if (this.sort.direction === '') {
+          this.sort.direction = 'asc'
+        } else if (this.sort.direction === 'asc') {
+          this.sort.direction = 'desc'
+        } else if (this.sort.direction === 'desc') {
+          this.sort.direction = ''
+          this.sort.column = ''
+        }
+      } else {
+        this.sort.column = column
+        this.sort.direction = 'asc'
+      }
+
+      this.setSearch({
+        sort: {
+          column: this.sort.column,
+          direction: this.sort.direction,
+        },
+      })
     },
   },
 }
@@ -227,15 +297,23 @@ export default {
   font-weight: 500;
   font-size: 0.8571rem;
   text-align: center;
-  &:hover {
-    cursor: pointer;
-  }
-  &::after {
-    display: inline-block;
-    width: 14px;
-    height: 10px;
-    background: url(~assets/image/ic_list_up.svg) center/100% no-repeat;
-    content: '';
+
+  & > span {
+    &:hover {
+      cursor: pointer;
+    }
+
+    &.active {
+      font-weight: bold;
+    }
+
+    &::after {
+      display: inline-block;
+      width: 14px;
+      height: 10px;
+      background: url(~assets/image/ic_list_up.svg) center/100% no-repeat;
+      content: '';
+    }
   }
 
   &.index {

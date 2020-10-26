@@ -80,8 +80,7 @@ export default {
     },
   },
   computed: {
-    // ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
-    ...mapGetters(['account', 'workspace', 'hasLicense']),
+    ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
     isMobileChrome() {
       const userAgent = navigator.userAgent
       const isChromeMobile =
@@ -90,15 +89,15 @@ export default {
         userAgent.includes('mobileApp')
       return isChromeMobile
     },
-    // isScreenDesktop() {
-    //   return 'desktop' === this.deviceType
-    // },
-    // isScreenTablet() {
-    //   return 'tablet' === this.deviceType
-    // },
-    // isScreenMobile() {
-    //   return 'mobile' === this.deviceType
-    // },
+    isScreenDesktop() {
+      return 'desktop' === this.deviceType
+    },
+    isScreenTablet() {
+      return 'tablet' === this.deviceType
+    },
+    isScreenMobile() {
+      return 'mobile' === this.deviceType
+    },
   },
   methods: {
     unsupport() {

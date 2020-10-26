@@ -8,7 +8,7 @@
           :options="searchOpts"
           value="value"
           text="text"
-          :selectedValue.sync="searchTarget"
+          :selectedValue.sync="collaboSatus"
           :greyarrow="true"
           :sahdow="false"
         ></d-select>
@@ -19,25 +19,20 @@
           class="collabo-search-bar--input"
           type="text"
           placeholder="협업명 / 멤버를 입력해주세요"
+          v-on:input="searchText = $event.target.value"
         />
       </div>
       <div class="collabo-search-bar__condition padding">
         <datepicker
           :pickerName="'search-from'"
-          :highlighted="highlighted"
+          :highlighted="date"
         ></datepicker>
         <span class="collabo-search-bar__condition--tilde"></span>
-        <datepicker
-          :pickerName="'search-to'"
-          :highlighted="highlighted"
-        ></datepicker>
-        <check-box
-          :text="'기간 검색 사용'"
-          :value.sync="enableDate"
-        ></check-box>
+        <datepicker :pickerName="'search-to'" :highlighted="date"></datepicker>
+        <check-box :text="'기간 검색 사용'" :value.sync="useDate"></check-box>
       </div>
     </div>
-    <button class="collabo-search-bar--submit">
+    <button @click="doSearch" class="collabo-search-bar--submit">
       <!-- <img src="~assets/image/ic_search.svg" /> -->
       <span>검색하기</span>
     </button>
@@ -49,7 +44,7 @@ import Datepicker from 'Datepicker'
 import CheckBox from 'CheckBox'
 import DSelect from 'DashBoardSelect'
 import { collabo } from 'utils/collabo'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'CollaboSearchBar',
   components: {
@@ -59,9 +54,10 @@ export default {
   },
   data() {
     return {
-      searchTarget: null,
-      enableDate: false,
-      highlighted: {
+      collaboSatus: null,
+      searchText: '',
+      useDate: false,
+      date: {
         from: null,
         to: null,
       },
@@ -105,17 +101,63 @@ export default {
       },
       deep: true,
     },
+    collaboSatus: {
+      handler(status) {
+        this.setSearch({ status: status })
+      },
+    },
+    searchText: {
+      handler(searchText) {
+        this.setSearch({
+          input: {
+            text: searchText,
+            target: ['title', 'memberList[].nickName'],
+          },
+        })
+      },
+    },
+    useDate: {
+      handler(useDate) {
+        this.setSearch({
+          useDate: { useDate: useDate },
+        })
+      },
+    },
   },
   methods: {
+    ...mapActions(['setSearch']),
     fromDate() {
       const index = this.calendars.findIndex(cal => cal.name === 'search-from')
       if (index < 0) return null
-      this.highlighted.from = new Date(this.calendars[index].date)
+      this.date.from = new Date(this.calendars[index].date)
+      this.setSearch({
+        date: {
+          from: this.date.from,
+          to: this.date.to,
+        },
+      })
     },
     toDate() {
       const index = this.calendars.findIndex(cal => cal.name === 'search-to')
       if (index < 0) return null
-      this.highlighted.to = new Date(this.calendars[index].date)
+      this.date.to = new Date(this.calendars[index].date)
+      this.setSearch({
+        date: {
+          from: this.date.from,
+          to: this.date.to,
+        },
+      })
+    },
+    doSearch() {
+      console.log('검색하삼')
+
+      //날짜 사용하는지 체크
+      //날짜 사용하면 날짜 적용한 리스트 다시 로드함
+
+      //필터적용
+
+      //페이징
+      //그리고 sort는 sort만(새로운 데이터 X, 기존데이터 변경만)
     },
   },
 }
