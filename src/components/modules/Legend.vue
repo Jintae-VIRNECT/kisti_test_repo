@@ -33,17 +33,17 @@ export default {
 <style lang="scss">
 .legend {
   position: relative;
-  margin-right: 22px;
+  margin-right: 1.5714rem;
 
   &.round {
     &::before {
       position: absolute;
-      top: 5px;
-      left: 6px;
-      width: 5px;
-      height: 5px;
+      top: 0.3571rem;
+      left: 0.4286rem;
+      width: 0.3571rem;
+      height: 0.3571rem;
       background-color: #ffffff;
-      border: 4px solid #0f75f5;
+      border: 0.2857rem solid #0f75f5;
       border-radius: 50%;
       content: '';
     }
@@ -52,10 +52,10 @@ export default {
   &.square {
     &::before {
       position: absolute;
-      top: 5px;
-      left: 6px;
-      width: 12px;
-      height: 12px;
+      top: 0.3571rem;
+      left: 0.4286rem;
+      width: 0.8571rem;
+      height: 0.8571rem;
       background-color: #0f75f5;
       content: '';
     }
@@ -63,10 +63,10 @@ export default {
 }
 
 .legend--text {
-  padding-left: 25px;
+  padding-left: 1.7857rem;
   color: rgb(122, 122, 122);
   font-weight: normal;
-  font-size: 14px;
+  font-size: 1rem;
   letter-spacing: 0px;
 }
 </style>

@@ -24,7 +24,7 @@
         ></chart-legend>
       </div>
       <div class="chart-holder">
-        <canvas id="chart-month" width="1145" height="230"></canvas>
+        <canvas id="chart-month" width="1250"></canvas>
       </div>
     </card>
     <div class="board-figures">
@@ -163,8 +163,8 @@ export default {
           position: 'average',
           enabled: false,
           custom: custom,
-          titleFontSize: '15',
-          bodyFontSize: '14',
+          titleFontSize: '15rem',
+          bodyFontSize: '14rem',
           displayColors: false,
           backgroundColor: '#516277',
           bodyFontStyle: 'bold',
@@ -219,8 +219,8 @@ export default {
 <style lang="scss">
 #chartjs-noarrow {
   position: absolute;
-  width: 128px;
-  height: 80px;
+  width: 9.1429rem;
+  height: 6.4286rem;
   color: white;
   background: #3b3b3b;
   border: 1px solid rgb(52, 65, 81);
@@ -235,11 +235,11 @@ export default {
   .chartjs-tooltip-head {
     color: white;
     font-weight: 400;
-    font-size: 15px;
+    font-size: 1.0714rem;
     text-align: left;
 
     p {
-      padding-left: 6px;
+      padding-left: 0.4286rem;
     }
   }
 
@@ -249,18 +249,18 @@ export default {
   }
 
   .tooil-tip-legend {
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    margin-left: 5px;
+    width: 0.7143rem;
+    height: 0.7143rem;
+    margin-right: 0.3571rem;
+    margin-left: 0.3571rem;
     border-radius: 50%;
   }
 }
 .chart-legend {
   display: flex;
   align-items: center;
-  height: 68px;
-  padding-left: 30px;
+  height: 4.7143rem;
+  padding-left: 2.1429rem;
 
   & > .legend.square.grey {
     &::before {

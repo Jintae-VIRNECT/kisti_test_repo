@@ -82,7 +82,7 @@ export default {
 }
 
 .figure-board__wrapper {
-  margin-left: 21px;
+  margin-left: 1.5rem;
 }
 
 .figure-board--icon {

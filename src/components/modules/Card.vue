@@ -19,8 +19,8 @@ export default {
 
 <style lang="scss">
 .card {
-  min-width: 300px;
-  min-height: 310px;
+  min-width: 21.4286rem;
+  min-height: 22.1429rem;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(227, 227, 227);
   border-radius: 4px;

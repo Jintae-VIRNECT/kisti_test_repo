@@ -231,36 +231,43 @@ export default {
 
 <style lang="scss">
 .collabo-history-list {
-  margin-top: 41px;
+  margin-top: 2.9286rem;
 }
 .collabo-history-list__header {
   position: relative;
-  height: 54px;
+  height: 3.8571rem;
 }
 
 .collabo-history-list__header--title {
-  margin-right: 10px;
+  margin-right: 0.7143rem;
   color: rgb(11, 31, 72);
   font-weight: 500;
-  font-size: 22px;
+  font-size: 1.5714rem;
 }
 
 .collabo-history-list__header--description {
   color: rgb(122, 122, 122);
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
 }
 .collabo-history-list__header--excel {
   position: absolute;
   right: 0px;
-  width: 89px;
-  height: 42px;
+  width: 6.3571rem;
+  height: 3rem;
   color: rgb(15, 117, 245);
   font-weight: 500;
-  font-size: 15px;
-  line-height: 20px;
+  font-size: 1.0714rem;
+  line-height: 1.4286rem;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(227, 227, 227);
   border-radius: 2px;
+  transition: 0.3s;
+  &:hover {
+    background-color: #f3f3f3;
+  }
+  &:active {
+    background-color: #e6e6e6;
+  }
 }
 </style>

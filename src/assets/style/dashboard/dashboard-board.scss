@@ -1,7 +1,7 @@
 .board {
-  height: 548px;
-  margin-top: 34px;
-  margin-bottom: 65px;
+  height: 39.1429rem;
+  margin-top: 2.4286rem;
+  margin-bottom: 4.6429rem;
 }
 
 .board__header {
@@ -21,7 +21,7 @@
 .board__header--description {
   color: rgb(122, 122, 122);
   font-weight: normal;
-  font-size: 15px;
+  font-size: 1.0714rem;
 }
 
 .board__header--datepicker {
@@ -48,13 +48,14 @@
 
 .custom-card-chart {
   width: 100%;
-  height: 410px;
+  height: 29.2857rem;
 
-  margin-right: 12px;
+  margin-right: 0.8571rem;
 }
 
 .chart-holder {
   position: relative;
+  height: 17.8571rem;
   // width: 85.3571rem;
   // height: 24.4286rem;
   margin: auto;

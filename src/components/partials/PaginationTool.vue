@@ -95,14 +95,14 @@ export default {
 .pagination-tool {
   display: flex;
   margin: auto;
-  margin-top: 22px;
+  margin-top: 1.5714rem;
 }
 
 .pagination-tool__container {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 38.0002px;
+  height: 2.7143rem;
 
   margin: auto;
   background-color: #ffffff;

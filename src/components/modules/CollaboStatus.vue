@@ -54,8 +54,8 @@ export default {
 }
 
 .collabo-status--dot {
-  width: 8px;
-  height: 8px;
+  width: 0.5714rem;
+  height: 0.5714rem;
   background-color: #757f91;
   border-radius: 50%;
 
@@ -65,9 +65,9 @@ export default {
 }
 
 .collabo-status--text {
-  padding-left: 10px;
+  padding-left: 0.7143rem;
   color: rgb(11, 31, 72);
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
 }
 </style>

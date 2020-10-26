@@ -85,8 +85,8 @@ export default {
 .datepicker {
   display: flex;
 
-  width: 185px;
-  height: 42px;
+  width: 13.2143rem;
+  height: 3rem;
 }
 .custom-date-picker {
   &.vdp-datepicker {
@@ -100,7 +100,7 @@ export default {
     .vdp-datepicker--input {
       position: relative;
       width: 10.2143rem;
-      padding: 10.0002px 0 14px 20.0004px;
+      padding: 0.7143rem 0 1rem 1.4286rem;
       border-right: none;
       border-radius: 4px 0px 0px 4px;
     }

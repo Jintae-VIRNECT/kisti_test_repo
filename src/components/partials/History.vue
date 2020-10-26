@@ -268,7 +268,7 @@ export default {
 }
 
 .history__body {
-  height: 448px;
+  height: 32rem;
   background-color: #ffffff;
   &.nodata {
     display: flex;
@@ -309,38 +309,38 @@ export default {
 
     &::after {
       display: inline-block;
-      width: 14px;
-      height: 10px;
+      width: 1rem;
+      height: 0.7143rem;
       background: url(~assets/image/ic_list_up.svg) center/100% no-repeat;
       content: '';
     }
   }
 
   &.index {
-    width: 100px;
+    width: 7.1429rem;
   }
 
   &.collabo-name {
-    width: 300px;
+    width: 21.4286rem;
     text-align: left;
   }
 
   &.leader-name {
-    width: 200px;
+    width: 14.2857rem;
     text-align: left;
   }
 
   &.start-date {
-    width: 170px;
+    width: 12.1429rem;
   }
 
   &.state {
-    width: 120px;
+    width: 8.5714rem;
     text-align: left;
   }
 
   &.count {
-    width: 120px;
+    width: 8.5714rem;
   }
 }
 
@@ -367,19 +367,20 @@ export default {
   }
 
   &.index {
-    width: 100px;
+    width: 7.1429rem;
     color: #757f91;
     font-weight: 500;
-    font-size: 14.9996px;
+    font-size: 1.0714rem;
     text-align: center;
   }
 
   &.collabo-name {
-    width: 300px;
+    width: 21.4286rem;
     text-align: left;
 
     & > p {
-      width: 286px;
+      // width: 20.4286rem;
+      width: 100%;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -387,21 +388,21 @@ export default {
   }
 
   &.leader-name {
-    width: 200px;
+    width: 14.2857rem;
     text-align: left;
   }
 
   &.start-date {
-    width: 170px;
+    width: 12.1429rem;
   }
 
   &.state {
-    width: 120px;
+    width: 8.5714rem;
     text-align: left;
   }
 
   &.count {
-    width: 120px;
+    width: 8.5714rem;
   }
 }
 

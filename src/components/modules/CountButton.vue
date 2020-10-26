@@ -75,7 +75,7 @@ export default {
   width: 5.8571rem;
   height: 2.8571rem;
   margin: 0 auto;
-  padding: 0px 12px;
+  padding: 0px 0.8571rem;
   color: #757f91;
   font-weight: 500;
   font-size: 1.0714rem;

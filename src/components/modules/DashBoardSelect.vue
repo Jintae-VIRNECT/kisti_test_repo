@@ -135,7 +135,7 @@ export default {
   // color: rgba($color_text, 0.76);
   color: #757f91;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 1.1429rem;
   line-height: 1.429rem;
   white-space: nowrap;
   text-align: left;
@@ -217,7 +217,7 @@ export default {
 }
 .select-optionbox {
   position: relative;
-  padding: 6px 0;
+  padding: 0.4286rem 0;
 }
 .select-option {
   width: 100%;
@@ -225,7 +225,7 @@ export default {
   // color: rgba($color_text, 0.5);
   color: #757f91;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 1.1429rem;
   line-height: 1.429rem;
   text-align: left;
   &:last-child {

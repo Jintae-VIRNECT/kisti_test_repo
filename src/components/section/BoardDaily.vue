@@ -185,8 +185,8 @@ export default {
             position: 'average',
             enabled: false,
             custom: custom,
-            titleFontSize: '15',
-            bodyFontSize: '14',
+            titleFontSize: '15rem',
+            bodyFontSize: '14rem',
             displayColors: false,
             backgroundColor: '#516277',
             bodyFontStyle: 'bold',
@@ -233,8 +233,8 @@ export default {
 <style lang="scss">
 #chartjs-tooltip {
   position: absolute;
-  width: 128px;
-  height: 80px;
+  width: 9.1429rem;
+  height: 5.7143rem;
   // min-height: 40px;
   color: white;
   background: #3b3b3b;
@@ -254,13 +254,13 @@ export default {
     thead {
       color: rgb(255, 255, 255);
       font-weight: 400;
-      font-size: 15px;
+      font-size: 1.0714rem;
     }
 
     &::after {
       position: absolute;
-      top: 73px;
-      right: 50px;
+      top: 5.2143rem;
+      right: 3.5714rem;
       z-index: 999;
       width: 0;
       height: 0;
@@ -272,18 +272,18 @@ export default {
   }
 
   .tooil-tip-legend {
-    width: 10px;
-    height: 10px;
-    margin-right: 5px;
-    margin-left: 5px;
+    width: 0.7143rem;
+    height: 0.7143rem;
+    margin-right: 0.3571rem;
+    margin-left: 0.3571rem;
   }
 }
 
 .chart-legend {
   display: flex;
   align-items: center;
-  height: 68px;
-  padding-left: 30px;
+  height: 4.8571rem;
+  padding-left: 2.1429rem;
 
   & > .legend.round.grey {
     &::before {

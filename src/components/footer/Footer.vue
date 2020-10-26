@@ -23,7 +23,7 @@ export default {}
   & > p {
     color: #656f84;
     font-weight: 500;
-    font-size: 12px;
+    font-size: 0.8571rem;
     text-align: center;
 
     > strong {
