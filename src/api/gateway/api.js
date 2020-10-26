@@ -58,4 +58,7 @@ export default {
 
   /* USER */
   USER_LIST: ['GET'],
+
+  /* WORKSPACE - MEMBER */
+  MEMBER_INFO: ['GET', '/workspaces/{workspaceId}/members/info'],
 }

@@ -23,9 +23,12 @@ import PaginationTool from 'components/partials/PaginationTool'
 
 import { getHistoryList, getHistorySingleItem } from 'api/http/history'
 import { getServerRecordFiles, getFiles } from 'api/http/file'
+import { getMemberInfo } from 'api/http/member'
 
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/filter'
+
+import { WORKSPACE_ROLE } from 'configs/status.config'
 
 import { exportExcel } from 'utils/excel'
 
@@ -53,7 +56,14 @@ export default {
       loading: false,
     }
   },
-  computed: {},
+  computed: {
+    // list() {
+    //   return this.getFilter(this.historyList, [
+    //     'title',
+    //     'memberList[].nickName',
+    //   ])
+    // },
+  },
   watch: {
     workspace(val, oldVal) {
       if (val.uuid !== oldVal.uuid && val.uuid) {
@@ -63,6 +73,15 @@ export default {
   },
   methods: {
     async init(page = 0) {
+      //check for master
+      const memberInfo = await getMemberInfo({
+        userId: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+      if (memberInfo.role === WORKSPACE_ROLE.MASTER) {
+        console.log('role :: ', WORKSPACE_ROLE.MASTER)
+      }
+
       this.loading = true
       const list = await this.getHistory(page)
       if (list === false) {
