@@ -2,7 +2,7 @@ import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
-import { setBaseURL } from 'api/gateway/gateway'
+import { setHttpOptions } from 'api/gateway/gateway'
 import axios from 'api/axios'
 import { logger, debug } from 'utils/logger'
 import { setConfigs, RUNTIME_ENV, RUNTIME } from 'configs/env.config'
@@ -88,9 +88,12 @@ const getConfigs = async () => {
   logger('RUNTIME ENV', res.data.runtime)
   delete res.data.runtime
 
+  const timeout = res.data.timeout || 5000
+  delete res.data.timeout
+
   debug('URLS::', res.data)
 
-  setBaseURL(res.data['api'])
+  setHttpOptions(res.data['api'], timeout)
   window.urls = res.data
   setConfigs({
     runtimeEnv,
