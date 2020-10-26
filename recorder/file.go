@@ -31,11 +31,51 @@ type RecordingFileInfo struct {
 	MetaData    interface{}
 }
 
-func ListRecordingFiles(ctx context.Context, filter *data.Filter, onlyLocalStorage bool) ([]RecordingFileInfo, int, error) {
-	if db != nil && onlyLocalStorage == false {
-		return queryFromDB(ctx, filter)
+func getStoragePath(info RecordingFileInfo) string {
+	return strings.Join([]string{info.WorkspaceID.String(), info.SessionID.String(), info.RecordingID.String()}, "/")
+}
+
+func ListRecordingFiles(ctx context.Context, filter *data.Filter) ([]RecordingFileInfo, int, error) {
+	return queryFromDB(ctx, filter)
+}
+
+func ListRecordingFilesOnLocalStorage(ctx context.Context) ([]RecordingFileInfo, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	infos := []RecordingFileInfo{}
+
+	root := viper.GetString("record.dir")
+	if _, err := os.Stat(root); os.IsNotExist(err) {
+		log.Error(err)
+		return infos, err
 	}
-	return []RecordingFileInfo{}, 0, ErrInternalError
+
+	recDirs, err := ioutil.ReadDir(root)
+	if err != nil {
+		return infos, err
+	}
+
+	for _, recDir := range recDirs {
+		recordingID := data.RecordingID(recDir.Name())
+		recordings := mainRecorder.findRecordings(&recordingID, nil, nil)
+		if len(recordings) > 0 {
+			log.Debugf("skip file: recordingId:%s is now recording", recordingID)
+			continue
+		}
+
+		info, err := readInfoFile(ctx, recordingID)
+		if err != nil {
+			if os.IsNotExist(err) {
+				log.Debug("skip file:", recordingID, "(empty directory)")
+			} else {
+				log.Warn(err, " file:", recordingID)
+			}
+			continue
+		}
+		infos = append(infos, info)
+	}
+
+	return infos, nil
 }
 
 func RemoveRecordingFileAll(ctx context.Context, workspaceID data.WorkspaceID) (int, error) {
@@ -46,8 +86,7 @@ func RemoveRecordingFileAll(ctx context.Context, workspaceID data.WorkspaceID) (
 
 	for _, info := range infos {
 		log.Infof("delete file. recordingId:%s filename:%s", info.RecordingID, info.Filename)
-		f := []string{info.WorkspaceID.String(), info.SessionID.String(), info.RecordingID.String()}
-		storagePath := strings.Join(f, "/")
+		storagePath := getStoragePath(info)
 		err = storage.GetClient().Remove(ctx, storagePath)
 		if err != nil {
 			log.Warn(err)
@@ -71,7 +110,7 @@ func RemoveRecordingFile(ctx context.Context, filter *data.Filter) error {
 		return ErrNotFoundRecordingID
 	}
 
-	storagePath := strings.Join([]string{infos[0].WorkspaceID.String(), infos[0].SessionID.String(), infos[0].RecordingID.String()}, "/")
+	storagePath := getStoragePath(infos[0])
 	err = storage.GetClient().Remove(ctx, storagePath)
 	if err != nil {
 		log.Warn(err)
@@ -81,15 +120,6 @@ func RemoveRecordingFile(ctx context.Context, filter *data.Filter) error {
 
 	log.Infof("delete recording id:%s, filename:%s", infos[0].RecordingID, infos[0].Filename)
 	return nil
-}
-
-func GetRecordingFilePath(ctx context.Context, recordingID data.RecordingID) (string, error) {
-	info, err := readInfoFile(ctx, recordingID)
-	if err != nil {
-		return "", err
-	}
-
-	return info.FullPath, nil
 }
 
 func GetRecordingFileDownloadUrl(ctx context.Context, filter *data.Filter) (string, error) {
@@ -102,7 +132,7 @@ func GetRecordingFileDownloadUrl(ctx context.Context, filter *data.Filter) (stri
 		return "", ErrNotFoundRecordingID
 	}
 
-	target := strings.Join([]string{infos[0].WorkspaceID.String(), infos[0].SessionID.String(), infos[0].RecordingID.String()}, "/")
+	target := getStoragePath(infos[0])
 	url, err := storage.GetClient().GetPresignedUrl(ctx, target, infos[0].Filename)
 	if err != nil {
 		return "", err
@@ -206,4 +236,22 @@ func readInfoFile(ctx context.Context, recordingID data.RecordingID) (RecordingF
 	}
 
 	return info, nil
+}
+
+func upload(ctx context.Context, info RecordingFileInfo) error {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+	storagePath := getStoragePath(info)
+	if err := storage.GetClient().Upload(ctx, info.FullPath, storagePath); err != nil {
+		log.Error(err)
+		return err
+	}
+	if err := insertIntoDB(ctx, info); err != nil {
+		log.Error(err)
+		if err = storage.GetClient().Remove(ctx, storagePath); err != nil {
+			log.Error(err)
+		}
+		return err
+	}
+
+	return nil
 }

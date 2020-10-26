@@ -5,9 +5,7 @@ import (
 	"RM-RecordServer/database"
 	"RM-RecordServer/dockerclient"
 	"RM-RecordServer/logger"
-	"RM-RecordServer/storage"
 	"context"
-	"strings"
 	"sync"
 	"time"
 
@@ -158,32 +156,29 @@ type recording struct {
 func (r *recording) stop(ctx context.Context, reason Reason) {
 	r.timeout.Stop()
 
+	// local storage에는 녹화 파일이 성공적으로 생성되었으니
+	//   1. stop recording에 대한 응답.
+	//   2. storage로 upload 진행.
+	//   3. 만약 upload에 실패하면, 추후에 다시 upload 진행
+	// 참고: curl로 1G upload 하는데 21s 소요됨.
 	go func() {
 		logEntry := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 		newCtx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
 		dockerclient.StopContainer(newCtx, r.containerID)
 
-		r.upload(newCtx)
+		info, err := readInfoFile(ctx, r.id)
+		if err != nil {
+			logEntry.Error(err)
+			return
+		}
 
-		filePath, _ := GetRecordingFilePath(ctx, r.id)
-		removeLocalFile(ctx, filePath)
+		if err := upload(newCtx, info); err != nil {
+			logEntry.Error("upload fail. err", err)
+			return
+		}
+
+		removeLocalFile(ctx, info.FullPath)
 	}()
-}
-
-func (r *recording) upload(ctx context.Context) {
-	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
-	info, err := readInfoFile(ctx, r.id)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	storagePath := strings.Join([]string{r.workspaceID.String(), r.sessionID.String(), r.id.String()}, "/")
-	err = storage.GetClient().Upload(ctx, info.FullPath, storagePath)
-	if err != nil {
-		log.Error(err)
-		return
-	}
-	insertIntoDB(ctx, info)
 }
 
 var mainRecorder = recorder{
@@ -198,6 +193,7 @@ func Init() {
 		db = database.NewTable(driver, param)
 	}
 
+	go garbageCollector()
 	go mainRecorder.timeoutHandler()
 
 	log := logger.NewLogger()
@@ -342,4 +338,33 @@ func restoreRecordingFromContainer(ctx context.Context) {
 			container.UserID, container.ID, recordingTimeLimit)
 	}
 	log.Info("End: Restore Recording From Container")
+}
+
+func garbageCollector() {
+	log := logger.NewLogger()
+	logEntry := logrus.NewEntry(log)
+	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
+
+	period := time.Duration(1) * time.Minute // 1 min
+	ticker := time.NewTicker(period)
+	defer ticker.Stop()
+
+	for range ticker.C {
+		list, err := ListRecordingFilesOnLocalStorage(ctx)
+		if err != nil {
+			log.Error(err)
+			continue
+		}
+
+		for _, info := range list {
+			logger.Info("upload file. recordingId:", info.RecordingID, " file:", info.Filename, " create:", info.CreateAt)
+
+			if err := upload(ctx, info); err != nil {
+				logEntry.Error("upload fail. err", err)
+				continue
+			}
+
+			removeLocalFile(ctx, info.FullPath)
+		}
+	}
 }

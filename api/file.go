@@ -82,7 +82,7 @@ func ListRecordingFiles(c *gin.Context) {
 	}
 	log.Debugf("filter: %+v", filter)
 
-	list, totalPages, err := recorder.ListRecordingFiles(c.Request.Context(), filter, false)
+	list, totalPages, err := recorder.ListRecordingFiles(c.Request.Context(), filter)
 	if err != nil {
 		log.Error(err)
 		sendResponseWithError(c, NewErrorInternalServer(err))

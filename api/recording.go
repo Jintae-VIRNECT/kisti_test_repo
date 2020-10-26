@@ -112,7 +112,7 @@ func StartRecording(c *gin.Context) {
 	diskUsageLimit := viper.GetFloat64("record.diskUsageLimit")
 	if diskUsageLimit > 0 {
 		usageSum := 0
-		infos, _, _ := recorder.ListRecordingFiles(c.Request.Context(), nil, true)
+		infos, _ := recorder.ListRecordingFilesOnLocalStorage(c.Request.Context())
 		for _, info := range infos {
 			usageSum += info.Size
 		}
