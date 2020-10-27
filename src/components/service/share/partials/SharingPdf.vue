@@ -111,7 +111,6 @@ export default {
   methods: {
     ...mapActions(['addPdfPage', 'removePdfPage', 'removeFile', 'addHistory']),
     init() {
-      console.log(PDFJS)
       if (
         this.docPages.length !== 0 &&
         this.docPages.length === this.totalPages
@@ -123,7 +122,6 @@ export default {
       const loadingTask = PDFJS.getDocument(URL.createObjectURL(this.fileData))
       loadingTask.promise
         .then(async pdfDocument => {
-          console.log(pdfDocument)
           this.document = pdfDocument
           // 페이지 별 로드처리
           for (let index = 1; index <= pdfDocument.numPages; index++) {
