@@ -1,15 +1,11 @@
 <template>
-  <dash-board-layout />
+  <router-view></router-view>
 </template>
 
 <script>
-import DashBoardLayout from 'components/layout/DashBoardLayout'
-
 export default {
   name: 'App',
-  components: {
-    DashBoardLayout,
-  },
+  components: {},
 }
 </script>
 

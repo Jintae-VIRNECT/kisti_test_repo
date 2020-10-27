@@ -159,11 +159,13 @@ const errorHandler = function(err) {
   }
 }
 
-export const setBaseURL = baseURL => {
+export const setHttpOptions = (baseURL, timeout) => {
   axios.defaults.baseURL = baseURL
   axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
+  axios.defaults.timeout = timeout || 5000
 
   debug('BASE_URL::', baseURL)
+  debug('TIMEOUT::', timeout)
 }
 
 export default sender

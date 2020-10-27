@@ -80,8 +80,8 @@ module.exports = {
         res.send(true)
       })
 
-      app.get('/urls', bodyParser.json(), function(req, res) {
-        const a = configService.getUrls()
+      app.get('/configs', bodyParser.json(), function(req, res) {
+        const a = configService.getConfigs()
         a.console = '/account'
         a.runtime = 'local'
         res.json(a)

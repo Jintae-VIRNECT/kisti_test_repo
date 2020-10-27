@@ -23,14 +23,7 @@ import auth from 'utils/auth'
 export default {
   name: 'DashBoardLayout',
 
-  // async beforeRouteEnter(to, from, next) {},
-
-  components: {
-    DashBoardHeader,
-    DashBoardFooter,
-    DashBoardTab,
-  },
-  async beforeCreate() {
+  async beforeRouteEnter(to, from, next) {
     const authInfo = await auth.init()
     if (!auth.isLogin) {
       auth.login()
@@ -40,14 +33,26 @@ export default {
         plan => plan.planProduct === 'REMOTE',
       )
       if (workspaces.length === 0) {
-        this.license = false
-        this.init(authInfo)
+        next(vm => {
+          vm.license = false
+          vm.init(authInfo)
+        })
       } else {
-        this.license = true
-        this.init(authInfo, workspaces)
+        next(vm => {
+          vm.license = true
+          vm.init(authInfo, workspaces)
+        })
       }
     }
+    console.log('end of beforeRouteEnter')
   },
+
+  components: {
+    DashBoardHeader,
+    DashBoardFooter,
+    DashBoardTab,
+  },
+
   methods: {
     ...mapActions([
       'updateAccount',

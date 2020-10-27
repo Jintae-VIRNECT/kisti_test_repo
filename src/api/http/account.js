@@ -41,3 +41,11 @@ export const getLicense = async function({ userId }) {
   const result = await http('GET_LICENSE', { userId })
   return result
 }
+
+/**
+ * 커스텀 설정 조회 (onpremise only)
+ */
+export const getSettingInfo = async function() {
+  const returnVal = await http('SETTING_INFO')
+  return returnVal
+}

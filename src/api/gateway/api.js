@@ -5,6 +5,7 @@ export default {
   TOKEN: ['POST', '/auth/oauth/token'],
   ACCOUNT: ['GET', '/users/info', { type: 'form' }],
   USER_INFO: ['GET', '/users/{userId}'],
+  SETTING_INFO: ['GET', '/workspaces/setting', { initing: true }],
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}'],

@@ -1,31 +1,26 @@
-// import DashboardLayout from '@/components/layout/DashBoardLayout'
-import Contents from '@/components/contents/Contents'
-
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-const Dashboard = () => import('components/contents/Dashboard')
-const FileManage = () => import('components/contents/FileManage')
+const DashboardComponent = () => import('components/layout/DashBoardLayout')
 
 Vue.use(VueRouter)
 
 export default new VueRouter({
+  name: 'router',
+  mode: 'history',
   routes: [
     {
       path: '/',
-      component: Contents,
-      redirect: '/',
-      children: [
-        {
-          path: '/',
-          name: 'dashboard',
-          component: Dashboard,
-        },
-        {
-          path: 'filemanage',
-          name: 'filemanage',
-          component: FileManage,
-        },
-      ],
+      name: 'main',
+      redirect: { name: 'dashboard' },
+    },
+    {
+      path: '/home',
+      name: 'dashboard',
+      component: DashboardComponent,
+    },
+    {
+      path: '*',
+      redirect: 'dashboard',
     },
   ],
 })
