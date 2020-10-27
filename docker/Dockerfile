@@ -6,7 +6,7 @@ COPY . .
 ARG NODE_ENV=production
 
 RUN npm --production=false install
-RUN npm run build:$NODE_ENV \
+RUN npm run build \
 && rm -rf node_modules
 
 # Runtime Stage
