@@ -682,16 +682,24 @@ public class SessionService {
     @Transactional
     public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
         if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-            Member member = Member.builder()
-                    .room(room)
-                    .memberType(joinRoomRequest.getMemberType())
-                    .uuid(joinRoomRequest.getUuid())
-                    .workspaceId(room.getWorkspaceId())
-                    .sessionId(room.getSessionId())
-                    .build();
+            Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(
+                    room.getWorkspaceId(),
+                    room.getWorkspaceId(),
+                    joinRoomRequest.getUuid()
+            ).orElse(null);
+            if (member == null) {
+                Member newMember = Member.builder()
+                        .room(room)
+                        .memberType(joinRoomRequest.getMemberType())
+                        .uuid(joinRoomRequest.getUuid())
+                        .workspaceId(room.getWorkspaceId())
+                        .sessionId(room.getSessionId())
+                        .build();
 
-            room.getMembers().add(member);
-            roomRepository.save(room);
+                room.getMembers().add(newMember);
+                roomRepository.save(room);
+            }
+
             //memberRepository.save(member);
 
             /*for (Member member: room.getMembers()) {
@@ -896,23 +904,32 @@ public class SessionService {
             if (room.getMembers().isEmpty()) {
                 log.info("session leave and sessionEventHandler is here: room members empty");
             } else {
-                for (Member member : room.getMembers()) {
-                    if (member.getUuid().equals(clientMetaData.getClientData())) {
-                        //set status unload
-                        member.setMemberStatus(MemberStatus.UNLOAD);
-                        //set connection id to empty
-                        member.setConnectionId("");
-                        //set end time
-                        LocalDateTime endTime = LocalDateTime.now();
-                        member.setEndDate(endTime);
+                if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(clientMetaData.getClientData())) {
+                            room.getMembers().remove(member);
+                            roomRepository.save(room);
+                        }
+                    }
+                } else {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(clientMetaData.getClientData())) {
+                            //set status unload
+                            member.setMemberStatus(MemberStatus.UNLOAD);
+                            //set connection id to empty
+                            member.setConnectionId("");
+                            //set end time
+                            LocalDateTime endTime = LocalDateTime.now();
+                            member.setEndDate(endTime);
 
-                        //time diff seconds
-                        Long totalDuration = member.getDurationSec();
-                        Duration duration = Duration.between(member.getStartDate(), endTime);
-                        member.setDurationSec(totalDuration + duration.getSeconds());
+                            //time diff seconds
+                            Long totalDuration = member.getDurationSec();
+                            Duration duration = Duration.between(member.getStartDate(), endTime);
+                            member.setDurationSec(totalDuration + duration.getSeconds());
 
-                        //save member
-                        memberRepository.save(member);
+                            //save member
+                            memberRepository.save(member);
+                        }
                     }
                 }
                 //log.info("session leave and sessionEventHandler is here: room members not found");
