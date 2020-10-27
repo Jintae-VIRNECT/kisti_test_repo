@@ -489,7 +489,7 @@ public class SessionRestController implements ISessionRestAPI {
             BindingResult result
     ) {
         log.info("REST API: POST {}/{}/{}/join {}", REST_PATH,
-                workspaceId != null ? workspaceId.toString() : "{}",
+                workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
                 joinRoomRequest != null ? joinRoomRequest.toString() : "{}");
         if (result.hasErrors()) {
