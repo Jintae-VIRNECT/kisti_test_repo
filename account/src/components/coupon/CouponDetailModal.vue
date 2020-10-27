@@ -113,6 +113,7 @@ export default {
     border-bottom: none;
     img {
       width: 28px;
+      height: 28px;
     }
   }
   .el-table--border::after,
