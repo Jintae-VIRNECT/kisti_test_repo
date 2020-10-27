@@ -1,18 +1,17 @@
 package com.virnect.workspace;
 
-import java.util.Optional;
-
+import com.virnect.workspace.dao.WorkspaceSettingRepository;
+import com.virnect.workspace.domain.WorkspaceSetting;
+import com.virnect.workspace.infra.file.FileService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.workspace.dao.WorkspaceSettingRepository;
-import com.virnect.workspace.domain.WorkspaceSetting;
-import com.virnect.workspace.infra.file.FileService;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Project: PF-Workspace
@@ -29,13 +28,17 @@ public class WorkspaceRunner implements ApplicationRunner {
 	private final WorkspaceSettingRepository workspaceSettingRepository;
 	private final FileService fileService;
 
+	/**
+	 * 워크스페이스 메타데이터 체크(파비콘, 로고, 프로필)
+	 * @param args
+	 */
 	@Override
 	public void run(ApplicationArguments args) {
 		String logoDefault = fileService.getFileUrl("virnect-default-logo.png");
 		String logoWhite = fileService.getFileUrl("virnect-white-logo.png");
 		String favicon = fileService.getFileUrl("virnect-default-favicon.ico");
-		Optional<WorkspaceSetting> workspaceSetting = workspaceSettingRepository.findById(1L);
-		if (!workspaceSetting.isPresent()) {
+		List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
+		if (workspaceSettingList.isEmpty()) {
 			WorkspaceSetting newWorkspaceSetting = WorkspaceSetting.builder()
 				.title("VIRNECT")
 				.defaultLogo(logoDefault)
@@ -48,9 +51,12 @@ public class WorkspaceRunner implements ApplicationRunner {
 			);
 			return;
 		}
+		Optional<WorkspaceSetting> workspaceSetting = workspaceSettingList.stream().findFirst();
 		log.info("[WORKSPACE DEFAULT SETTING] TITLE : [{}], LOGO : [{}], FAVICON : [{}]",
 			workspaceSetting.get().getTitle(),
 			workspaceSetting.get().getDefaultLogo(), workspaceSetting.get().getFavicon()
 		);
 	}
 }
+
+
