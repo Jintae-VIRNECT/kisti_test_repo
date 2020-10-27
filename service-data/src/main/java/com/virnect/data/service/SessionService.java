@@ -682,8 +682,31 @@ public class SessionService {
     @Transactional
     public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
         if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-            for (ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext(); ) {
+            Member member = Member.builder()
+                    .room(room)
+                    .memberType(joinRoomRequest.getMemberType())
+                    .uuid(joinRoomRequest.getUuid())
+                    .workspaceId(room.getWorkspaceId())
+                    .sessionId(room.getSessionId())
+                    .build();
+
+            room.getMembers().add(member);
+            roomRepository.save(room);
+            //memberRepository.save(member);
+
+            /*for (Member member: room.getMembers()) {
+                if (member.getUuid().equals(joinRoomRequest.getUuid())) {
+                    log.debug("Room has member Id is {}", member.getUuid());
+                    member.setMemberType(joinRoomRequest.getMemberType());
+                    member.setDeviceType(joinRoomRequest.getDeviceType());
+                    member.setMemberStatus(MemberStatus.LOAD);
+                    //save member
+                    memberRepository.save(member);
+                }
+            }*/
+            /*for (ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext(); ) {
                 //Member member = it.next();
+                it.next()
                 log.info("NEW getParticipants Id is {}", joinRoomRequest.getUuid());
                 Member member = Member.builder()
                         .room(room)
@@ -698,7 +721,7 @@ public class SessionService {
                 //member.setMemberStatus(MemberStatus.UNLOAD);
                 //memberRepository.save(member);
                 it.add(member);
-            }
+            }*/
         }
         roomRepository.save(room);
         //else {
@@ -836,7 +859,7 @@ public class SessionService {
                 }
             }*/
         //}
-        roomRepository.save(room);
+        //roomRepository.save(room);
     }
 
     /**
