@@ -731,7 +731,7 @@ public class SessionService {
                 it.add(member);
             }*/
         }
-        roomRepository.save(room);
+        //roomRepository.save(room);
         //else {
             //Private
             /*for (Member member: room.getMembers()) {
@@ -905,12 +905,8 @@ public class SessionService {
                 log.info("session leave and sessionEventHandler is here: room members empty");
             } else {
                 if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-                    for (Member member : room.getMembers()) {
-                        if (member.getUuid().equals(clientMetaData.getClientData())) {
-                            room.getMembers().remove(member);
-                            roomRepository.save(room);
-                        }
-                    }
+                    room.getMembers().removeIf(member -> member.getUuid().equals(clientMetaData.getClientData()));
+                    roomRepository.save(room);
                 } else {
                     for (Member member : room.getMembers()) {
                         if (member.getUuid().equals(clientMetaData.getClientData())) {
