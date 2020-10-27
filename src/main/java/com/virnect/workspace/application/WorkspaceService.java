@@ -1418,7 +1418,7 @@ public class WorkspaceService {
         if (workspaceUpdateRequest.getProfile() != null) {
             String oldProfile = workspace.getProfile();
             //기존 프로필 이미지 삭제
-            if (StringUtils.hasText(oldProfile) && !oldProfile.contains("workspace-profile.png")) {
+            if (StringUtils.hasText(oldProfile)) {
                 this.fileUploadService.delete(oldProfile);
             }
             //새 프로필 이미지 등록
@@ -1866,9 +1866,11 @@ public class WorkspaceService {
         historyRepository.deleteAllHistoryInfoByWorkspace(workspace);
 
         // workspace profile 삭제 (기본 이미지인 경우 제외)
-        if (!workspace.getProfile().equals("default")) {
+       /* if (!workspace.getProfile().equals("default")) {
             fileUploadService.delete(workspace.getProfile());
-        }
+        }*/
+        //file service로 default 이미지 체크 옮김
+        fileUploadService.delete(workspace.getProfile());
 
         // workspace 삭제
         workspaceRepository.delete(workspace);
