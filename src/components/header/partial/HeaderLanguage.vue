@@ -1,8 +1,8 @@
 <template>
   <popover
     placement="bottom-end"
-    trigger="click"
     width="92"
+    trigger="click"
     popperClass="popover-language"
   >
     <button class="language-button" slot="reference"></button>
@@ -33,15 +33,14 @@ export default {
 
 <style lang="scss">
 .language-button {
-  width: 34px;
-  height: 34px;
+  width: 2.4286rem;
+  height: 2.4286rem;
   background: url('~assets/image/ic_language.svg') 50% no-repeat;
 }
 
 .popover-language {
-  width: 100%;
-  min-width: 94px;
-  height: 92px;
+  min-width: 6.7143rem;
+  height: 6.5714rem;
   background: rgb(255, 255, 255);
   > .popover--body {
     padding: 7px 0;
@@ -50,8 +49,8 @@ export default {
 
 .popover-language__button {
   width: 100%;
-  height: 38px;
-  padding: 8px 0;
+  height: 2.7143rem;
+  padding: 0.5714rem 0;
   text-align: center;
 
   &:hover {
@@ -62,7 +61,7 @@ export default {
     width: 100%;
     color: #0b1f48;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 1.0714rem;
     background: transparent;
 
     &:active {
