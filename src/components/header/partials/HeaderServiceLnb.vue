@@ -126,7 +126,6 @@ export default {
       // leader
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {
-          // TODO: MESSAGE
           this.serviceConfirmTitle(
             this.$t('service.ar_exit'),
             this.$t('service.ar_exit_description'),
