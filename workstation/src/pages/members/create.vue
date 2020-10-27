@@ -192,6 +192,7 @@ export default {
             validator: (rule, value, callback) => {
               let err
               if (!/^.{4,20}$/.test(value)) err = new Error()
+              if (!/^[ㄱ-힣]$/.test(value)) err = new Error()
 
               callback(err)
             },
