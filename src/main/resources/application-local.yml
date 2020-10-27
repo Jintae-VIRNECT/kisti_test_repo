@@ -54,7 +54,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-
+    enabled: false
 
 ## Mail send rediect Url
 serverUrl: "http://localhost:8082"
@@ -102,9 +102,9 @@ management:
 
 ## Minio
 minio:
-  access-key: "virenct"
-  secret-key: "qjsprxm123"
-  server: "https://192.168.13.135:9000"
+  access-key: "virnect"
+  secret-key: "Qjsprxm13@$"
+  server: "https://192.168.6.3:2838"
   bucket: "virnect-platform"
   resource: "workspace/profile"
   extension: "gif,jpg,jpeg,png"

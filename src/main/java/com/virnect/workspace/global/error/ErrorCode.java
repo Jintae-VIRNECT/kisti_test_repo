@@ -32,6 +32,7 @@ public enum ErrorCode {
     //파일 관련 에러
     ERR_NOT_ALLOW_FILE_EXTENSION(3000,"Not Allow file extension."),
     ERR_NOT_ALLOW_FILE_SIZE(3001,"Not Allow file size."),
+    ERR_NOT_FOUND_FILE(3002,"Not Found file."),
     // 공통 에러
     ERR_API_AUTHENTICATION(8003, "Authentication Error"),
     ERR_INVALID_VALUE(8004,"Invalid Value"),

@@ -19,6 +19,9 @@ ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 ARG buildDir=build/unpack
 
+RUN mkdir -p metadata
+ADD metadata /usr/app/metadata
+
 COPY --from=builder virnect.pfx .
 COPY --from=builder ${buildDir}/lib BOOT-INF/lib
 COPY --from=builder ${buildDir}/app .
