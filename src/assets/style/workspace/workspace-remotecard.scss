@@ -124,6 +124,9 @@
     width: 2rem;
     height: 2rem;
     margin-left: 0.857rem;
+    > .profile {
+      width: auto;
+    }
   }
   > .profilelist-user__expend {
     width: 2rem;
