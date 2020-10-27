@@ -43,7 +43,7 @@ export default {
       width: 0.3571rem;
       height: 0.3571rem;
       background-color: #ffffff;
-      border: 0.2857rem solid #0f75f5;
+      border: 4px solid #0f75f5;
       border-radius: 50%;
       content: '';
     }
