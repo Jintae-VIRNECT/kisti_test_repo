@@ -674,18 +674,46 @@ public class SessionService {
         }
     }
 
+    /**
+     *
+     * @param room
+     * @param joinRoomRequest
+     */
     @Transactional
     public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
-        for (Member member: room.getMembers()) {
-            if(member.getUuid().equals(joinRoomRequest.getUuid())) {
-                log.debug("Room has member Id is {}", member.getUuid());
-                member.setMemberType(joinRoomRequest.getMemberType());
-                member.setDeviceType(joinRoomRequest.getDeviceType());
-                member.setMemberStatus(MemberStatus.LOAD);
-                //save member
-                memberRepository.save(member);
+        if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+            for (ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext(); ) {
+                //Member member = it.next();
+                log.info("NEW getParticipants Id is {}", joinRoomRequest.getUuid());
+                Member member = Member.builder()
+                        .room(room)
+                        .memberType(joinRoomRequest.getMemberType())
+                        .uuid(joinRoomRequest.getUuid())
+                        .workspaceId(room.getWorkspaceId())
+                        .sessionId(room.getSessionId())
+                        .build();
+
+                //member.setMemberType(joinRoomRequest.getMemberType());
+                //member.setDeviceType(joinRoomRequest.getDeviceType());
+                //member.setMemberStatus(MemberStatus.UNLOAD);
+                //memberRepository.save(member);
+                it.add(member);
             }
         }
+        roomRepository.save(room);
+        //else {
+            //Private
+            /*for (Member member: room.getMembers()) {
+                if(member.getUuid().equals(joinRoomRequest.getUuid())) {
+                    log.debug("Room has member Id is {}", member.getUuid());
+                    member.setMemberType(joinRoomRequest.getMemberType());
+                    member.setDeviceType(joinRoomRequest.getDeviceType());
+                    member.setMemberStatus(MemberStatus.LOAD);
+                    //save member
+                    memberRepository.save(member);
+                }
+            }*/
+        //}
     }
 
     /*@Transactional
@@ -710,12 +738,27 @@ public class SessionService {
         return ErrorCode.ERR_SUCCESS;
     }*/
 
+    /**
+     * final step.
+     * @param sessionId
+     * @param connectionId
+     * @param clientMetaData
+     */
     @Transactional
     public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-        if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-            //List<Member> memberList = room.getMembers();
-            for(ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext();){
+        for (Member member : room.getMembers()) {
+            if (member.getUuid().equals(clientMetaData.getClientData())) {
+                member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                member.setConnectionId(connectionId);
+                member.setMemberStatus(MemberStatus.LOAD);
+            }
+        }
+        roomRepository.save(room);
+
+        //if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+            /*for(ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext();) {
                 Member member = it.next();
 
                 if(member.getUuid().equals(clientMetaData.getClientData())) {
@@ -737,7 +780,7 @@ public class SessionService {
                     newMember.setMemberStatus(MemberStatus.LOAD);
                     it.add(newMember);
                 }
-            }
+            }*/
 
 
             /*room.getMembers().stream().map(member -> {
@@ -783,16 +826,16 @@ public class SessionService {
             }
             if (newMember != null)
                 room.getMembers().add(newMember);*/
-        } else {
-            for (Member member : room.getMembers()) {
+        //} else {
+            /*for (Member member : room.getMembers()) {
                 if (member.getUuid().equals(clientMetaData.getClientData())) {
                     member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
                     member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
                     member.setConnectionId(connectionId);
                     member.setMemberStatus(MemberStatus.LOAD);
                 }
-            }
-        }
+            }*/
+        //}
         roomRepository.save(room);
     }
 
