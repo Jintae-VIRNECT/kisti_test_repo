@@ -31,12 +31,15 @@ import reactor.core.publisher.Mono;
  */
 
 @Slf4j
-@Profile(value = {"staging", "production"})
+@Profile(value = {"develop", "staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements GlobalFilter {
 	@Value("${jwt.secret}")
 	private String secretKey;
+
+	@Value("${spring.profiles.active:none}")
+	private String serverMode;
 
 	@PostConstruct
 	protected void init() {
@@ -52,9 +55,14 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			requestUrlPath.startsWith("/licenses/allocate/check") ||
 			requestUrlPath.startsWith("/licenses/allocate") ||
 			requestUrlPath.startsWith("/licenses/deallocate") ||
+			requestUrlPath.contains("/licenses/deallocate") ||
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
 
 		if (isAuthenticateSkipUrl) {
+			return chain.filter(exchange);
+		}
+
+		if ((serverMode.equals("develop") || serverMode.equals("onpremise")) && requestUrlPath.contains("/v2/api-docs")) {
 			return chain.filter(exchange);
 		}
 
