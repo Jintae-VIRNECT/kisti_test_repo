@@ -130,6 +130,9 @@ export default {
         }
         return datas.roomHistoryInfoList
       } catch (err) {
+        this.confirmDefault(
+          '서버 응답이 올바르지 않습니다.​\n 잠시 후, 다시 시도해 주세요.​',
+        )
         console.error(err)
         return false
       }

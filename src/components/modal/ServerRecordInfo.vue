@@ -50,8 +50,11 @@ import IconButton from 'components/modules/IconButton'
 import FileSaver from 'file-saver'
 import { downloadRecordFile, deleteRecordFile } from 'api/remote/record'
 
+import confirmMixin from 'mixins/confirm'
+
 export default {
   name: 'ServerRecordInfo',
+  mixins: [confirmMixin],
   components: {
     FileTable,
     IconButton,
@@ -122,7 +125,16 @@ export default {
       }
     },
     async deleteItems() {
-      for (const file of this.selectedFiles) {
+      const deleteFiles = []
+      const errorFiles = []
+
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          deleteFiles.push(this.fileList[index])
+        }
+      })
+
+      for (const file of deleteFiles) {
         const recordingId = file.recordingId
         try {
           await deleteRecordFile({
@@ -130,9 +142,16 @@ export default {
           })
         } catch (e) {
           console.error(e)
+          errorFiles.push(file.filename)
         }
       }
-      this.$eventBus.$emit('load::record-list')
+      if (errorFiles.length > 0) {
+        this.confirmDefault(
+          `이미 삭제되었거나 존재하지 않은 파일입니다.\n <p> ${errorFiles.join(
+            '\n',
+          )}</p>`,
+        )
+      }
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
@@ -210,7 +229,6 @@ export default {
   },
 
   mounted() {
-    // this.initSelectedArray()
     this.$eventBus.$on('table:selectedarray', this.refreshSelectedArray)
   },
   beforeDestroy() {

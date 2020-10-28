@@ -48,10 +48,13 @@ import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
 import FileSaver from 'file-saver'
-import { downloadRecordFile, deleteRecordFile } from 'api/remote/record'
+import { downloadRecordFile } from 'api/remote/record'
+
+import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'AttachFileInfo',
+  mixins: [confirmMixin],
   components: {
     FileTable,
     IconButton,
@@ -123,17 +126,35 @@ export default {
       }
     },
     async deleteItems() {
-      for (const file of this.selectedFiles) {
-        const recordingId = file.recordingId
+      const deleteFiles = []
+      const errorFiles = []
+
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          deleteFiles.push(this.fileList[index])
+        }
+      })
+
+      for (const file of deleteFiles) {
+        console.log(file)
         try {
-          await deleteRecordFile({
-            id: recordingId,
-          })
+          throw 'delete file'
+          // await deleteRecordFile({
+          //   id: recordingId,
+          // })
         } catch (e) {
           console.error(e)
+          errorFiles.push(file.name)
         }
       }
-      this.$eventBus.$emit('load::record-list')
+      console.log(errorFiles)
+      if (errorFiles.length > 0) {
+        this.confirmDefault(
+          `이미 삭제되었거나 존재하지 않은 파일입니다.\n <p> ${errorFiles.join(
+            '\n',
+          )}</p>`,
+        )
+      }
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
@@ -167,16 +188,13 @@ export default {
     },
     beforeClose() {
       this.$emit('update:visible', false)
-      this.$eventBus.$emit('close::record-list')
     },
   },
 
   mounted() {
-    // this.initSelectedArray()
     this.$eventBus.$on('table:selectedarray', this.refreshSelectedArray)
   },
   beforeDestroy() {
-    // this.selectedArray = []
     this.$eventBus.$off('table:selectedarray')
   },
 }
