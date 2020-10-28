@@ -13,3 +13,4 @@ logs/*
 .vscode/*
 *.md
 releasenote.txt
+yarn.lock
