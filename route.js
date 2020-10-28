@@ -5,27 +5,27 @@ const config = require('./server/config')
 const url = require('url')
 
 function IsAllowBrowser(req) {
-  const userAgent = req.headers['user-agent'] || ''
-  const isChrome = userAgent.includes('Chrome')
-  const isChromeMobile =
-    userAgent.includes('CriOS') || userAgent.includes('mobileApp')
-  const isEdge = userAgent.includes('Edg') || userAgent.includes('Edge')
-  const isSamsung = userAgent.includes('SamsungBrowser')
-
-  const findSafari = userAgent.includes('Safari')
-  const isSafari = !isChrome && !isChromeMobile && findSafari ? true : false
-
-  return (isChrome || isEdge || isChromeMobile) && !isSafari && !isSamsung
+  // const userAgent = req.headers['user-agent'] || ''
+  // const isChrome = userAgent.includes('Chrome')
+  // const isChromeMobile =
+  //   userAgent.includes('CriOS') || userAgent.includes('mobileApp')
+  // const isEdge = userAgent.includes('Edg') || userAgent.includes('Edge')
+  // const isSamsung = userAgent.includes('SamsungBrowser')
+  // const findSafari = userAgent.includes('Safari')
+  // const isSafari = !isChrome && !isChromeMobile && findSafari ? true : false
+  // return (isChrome || isEdge || isChromeMobile) && !isSafari && !isSamsung
+  return true
 }
 
 function IsMobileBrowser(req) {
-  const userAgent = req.headers['user-agent'] || ''
-  const isChromeMobile =
-    userAgent.includes('Mobile') ||
-    userAgent.includes('CriOS') ||
-    userAgent.includes('mobileApp')
+  // const userAgent = req.headers['user-agent'] || ''
+  // const isChromeMobile =
+  //   userAgent.includes('Mobile') ||
+  //   userAgent.includes('CriOS') ||
+  //   userAgent.includes('mobileApp')
 
-  return isChromeMobile
+  // return isChromeMobile
+  return true
 }
 
 router.get('/healthcheck', function(req, res) {
