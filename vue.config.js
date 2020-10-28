@@ -43,6 +43,7 @@ module.exports = {
         configs: path.join(__dirname, '/src/configs'),
         stores: path.join(__dirname, '/src/stores'),
         routers: path.join(__dirname, '/src/routers'),
+        languages: path.join(__dirname, '/src/languages'),
       },
     },
   },
