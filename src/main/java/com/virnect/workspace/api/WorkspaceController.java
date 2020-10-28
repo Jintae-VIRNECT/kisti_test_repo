@@ -1,28 +1,16 @@
 package com.virnect.workspace.api;
 
-import java.util.List;
-import java.util.Locale;
-
-import javax.validation.Valid;
-
-import org.springframework.context.annotation.Profile;
-import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
-
+import com.virnect.workspace.application.WorkspaceService;
+import com.virnect.workspace.dto.UserInfoDTO;
+import com.virnect.workspace.dto.WorkspaceInfoDTO;
+import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
+import com.virnect.workspace.dto.onpremise.*;
+import com.virnect.workspace.dto.request.*;
+import com.virnect.workspace.dto.response.*;
+import com.virnect.workspace.exception.WorkspaceException;
+import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.common.PageRequest;
+import com.virnect.workspace.global.error.ErrorCode;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -30,40 +18,18 @@ import io.swagger.annotations.ApiParam;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.workspace.application.WorkspaceService;
-import com.virnect.workspace.dto.UserInfoDTO;
-import com.virnect.workspace.dto.WorkspaceInfoDTO;
-import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
-import com.virnect.workspace.dto.onpremise.MemberAccountCreateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceCustomSettingResponse;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceLogoUpdateResponse;
-import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceFaviconUpdateResponse;
-import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateRequest;
-import com.virnect.workspace.dto.onpremise.WorkspaceTitleUpdateResponse;
-import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
-import com.virnect.workspace.dto.request.MemberKickOutRequest;
-import com.virnect.workspace.dto.request.MemberUpdateRequest;
-import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
-import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
-import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
-import com.virnect.workspace.dto.response.MemberListResponse;
-import com.virnect.workspace.dto.response.WorkspaceHistoryListResponse;
-import com.virnect.workspace.dto.response.WorkspaceInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceLicenseInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceMemberInfoListResponse;
-import com.virnect.workspace.dto.response.WorkspaceMemberPasswordChangeResponse;
-import com.virnect.workspace.dto.response.WorkspaceSecessionResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
-import com.virnect.workspace.exception.WorkspaceException;
-import com.virnect.workspace.global.common.ApiResponse;
-import com.virnect.workspace.global.common.PageRequest;
-import com.virnect.workspace.global.error.ErrorCode;
+import javax.validation.Valid;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * Project: PF-Workspace
@@ -149,9 +115,8 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(userId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceInfoListResponse> apiResponse = this.workspaceService.getUserWorkspaces(
-			userId, pageRequest);
-		return ResponseEntity.ok(apiResponse);
+		WorkspaceInfoListResponse workspaceInfoListResponse = workspaceService.getUserWorkspaces(userId, pageRequest);
+		return ResponseEntity.ok(new ApiResponse<>(workspaceInfoListResponse));
 	}
 
 	@ApiOperation(

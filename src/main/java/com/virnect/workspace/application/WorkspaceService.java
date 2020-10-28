@@ -25,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -158,35 +160,23 @@ public class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return - 소속된 워크스페이스 정보
      */
-    public ApiResponse<WorkspaceInfoListResponse> getUserWorkspaces(
+    @Cacheable(value = "userWorkspaces", key = "#userId", unless = "#result==null")
+    public WorkspaceInfoListResponse getUserWorkspaces(
             String userId, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
-        String sortName = pageRequest.of().getSort().toString().split(":")[0].trim();
-        String sortDirection = pageRequest.of().getSort().toString().split(":")[1].trim();
+        Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.findByWorkspaceUser_UserId(
+                userId, pageRequest.of());
 
-        if (sortName.equalsIgnoreCase("role")) {
-            sortName = "workspaceRole";
-            String sort = sortName + "," + sortDirection;
-            pageRequest.setSort(sort);
-        }
-
-        Pageable pageable = pageRequest.of();
         List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceList = new ArrayList<>();
 
-        Page<WorkspaceUserPermission> workspaceUserPermissionPage = this.workspaceUserPermissionRepository.findByWorkspaceUser_UserId(
-                userId, pageable);
-
         for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
-
             WorkspaceUser workspaceUser = workspaceUserPermission.getWorkspaceUser();
             Workspace workspace = workspaceUser.getWorkspace();
 
-            WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(
-                    workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
+            WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
             workspaceInfo.setJoinDate(workspaceUser.getCreatedDate());
 
-            UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId())
-                    .getData();
+            UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
             workspaceInfo.setMasterName(userInfoRestResponse.getName());
             workspaceInfo.setMasterProfile(userInfoRestResponse.getProfile());
             workspaceInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
@@ -198,10 +188,10 @@ public class WorkspaceService {
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         pageMetadataResponse.setTotalElements(workspaceUserPermissionPage.getTotalElements());
         pageMetadataResponse.setTotalPage(workspaceUserPermissionPage.getTotalPages());
-        pageMetadataResponse.setCurrentPage(pageable.getPageNumber());
-        pageMetadataResponse.setCurrentSize(pageable.getPageSize());
+        pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber());
+        pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
 
-        return new ApiResponse<>(new WorkspaceInfoListResponse(workspaceList, pageMetadataResponse));
+        return new WorkspaceInfoListResponse(workspaceList, pageMetadataResponse);
     }
 
     /**
@@ -845,6 +835,7 @@ public class WorkspaceService {
             return redirectView;
         }*/
 
+
         //라이선스 플랜 - 라이선스 플랜 보유 체크, 멤버 제한 수 체크
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
                 workspaceId).getData();
@@ -965,6 +956,7 @@ public class WorkspaceService {
                 .workspaceRole(workspaceRole)
                 .workspacePermission(workspacePermission)
                 .build();
+
         this.workspaceUserPermissionRepository.save(newWorkspaceUserPermission);
 
         //MAIL 발송
@@ -1262,6 +1254,7 @@ public class WorkspaceService {
 
     }
 
+    @CacheEvict(value = "userWorkspaces", key = "#userId")
     private void updateUserPermission(
             Workspace workspace, String requestUserId, String responseUserId, WorkspaceRole workspaceRole,
             UserInfoRestResponse masterUser, UserInfoRestResponse user, Locale locale
@@ -1463,6 +1456,7 @@ public class WorkspaceService {
         return new ApiResponse<>(userInfoDTO);
     }
 
+    @CacheEvict(value = "userWorkspaces", key = "#userId")
     @Transactional
     public ApiResponse<Boolean> kickOutMember(
             String workspaceId, MemberKickOutRequest memberKickOutRequest, Locale locale
@@ -1558,6 +1552,7 @@ public class WorkspaceService {
         return new ApiResponse<>(true);
     }
 
+    @CacheEvict(value = "userWorkspaces", key = "#userId")
     public ApiResponse<Boolean> exitWorkspace(String workspaceId, String userId, Locale locale) {
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
@@ -1598,42 +1593,6 @@ public class WorkspaceService {
                 .workspace(workspace)
                 .build();
         this.historyRepository.save(history);
-
-        return new ApiResponse<>(true);
-    }
-
-    public ApiResponse<Boolean> testSetMember(String workspaceId, WorkspaceInviteRequest workspaceInviteRequest) {
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
-                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        List<String> emailList = new ArrayList<>();
-        workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> {
-            emailList.add(userInfo.getEmail());
-        });
-        InviteUserInfoRestResponse responseUserList = this.userRestService.getUserInfoByEmailList(
-                emailList.stream().toArray(String[]::new)).getData();
-
-        responseUserList.getInviteUserInfoList().forEach(inviteUserResponse -> {
-            if (!workspace.getUserId().equals(inviteUserResponse.getUserUUID())) {
-                //workspaceUser set
-                WorkspaceUser workspaceUser = WorkspaceUser.builder()
-                        .userId(inviteUserResponse.getUserUUID())
-                        .workspace(workspace)
-                        .build();
-                this.workspaceUserRepository.save(workspaceUser);
-
-                //workspaceUserPermission set
-                WorkspaceRole workspaceRole = this.workspaceRoleRepository.findByRole("MEMBER");
-                WorkspacePermission workspacePermission = WorkspacePermission.builder()
-                        .id(Permission.ALL.getValue())
-                        .build();
-                WorkspaceUserPermission workspaceUserPermission = WorkspaceUserPermission.builder()
-                        .workspaceRole(workspaceRole)
-                        .workspaceUser(workspaceUser)
-                        .workspacePermission(workspacePermission)
-                        .build();
-                this.workspaceUserPermissionRepository.save(workspaceUserPermission);
-            }
-        });
 
         return new ApiResponse<>(true);
     }
