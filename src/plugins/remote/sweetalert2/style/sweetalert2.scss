@@ -517,6 +517,13 @@ body {
       font-size: 1.286em;
       white-space: pre-line;
       text-align: center;
+      > p {
+        margin-top: 15px;
+        color: rgb(117, 127, 145);
+        font-weight: 500;
+        font-size: 14px;
+        text-align: center;
+      }
       > em {
         color: #6bb4f9;
       }
