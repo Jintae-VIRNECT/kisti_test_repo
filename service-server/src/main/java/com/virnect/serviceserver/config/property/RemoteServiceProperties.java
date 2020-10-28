@@ -92,13 +92,15 @@ public class RemoteServiceProperties extends PropertyService {
 
     // Service KMS properties
     //private List<String> kmsUrisList;
-    @Value("service.kms_uris")
-    private List<String> kmsUris;
+    //@Value("service.kms_uris")
+    private List<String> kmsUrisConference;
+    private List<String> kmsUrisStreaming;
 
     // Service Coturn properties
     private String coturnUsername;
     private String coturnCredential;
-    private List<String> coturnUrisList;
+    private List<String> coturnUrisConference;
+    private List<String> coturnUrisSteaming;
     private String coturnIp;
 
     // Service Coturn Redis database properties
@@ -215,9 +217,12 @@ public class RemoteServiceProperties extends PropertyService {
         return this.remoteServiceStreamsVideoMinSendBandwidth;
     }
 
-    public List<String> getKmsUris() {
-        //return kmsUrisList;
-        return kmsUris;
+    public List<String> getKmsUrisConference() {
+        return kmsUrisConference;
+    }
+
+    public List<String> getKmsUrisStreaming() {
+        return kmsUrisStreaming;
     }
 
     public String getCoturnUsername() {
@@ -228,8 +233,12 @@ public class RemoteServiceProperties extends PropertyService {
         return this.coturnCredential;
     }
 
-    public List<String> getCoturnUrisList() {
-        return this.coturnUrisList;
+    public List<String> getCoturnUrisConference() {
+        return this.coturnUrisConference;
+    }
+
+    public List<String> getCoturnUrisSteaming() {
+        return this.coturnUrisSteaming;
     }
 
     public String getCoturnDatabaseIp() { return this.coturnRedisIp; }
@@ -245,6 +254,7 @@ public class RemoteServiceProperties extends PropertyService {
     public String getCoturnDatabaseConnectTimeout() { return this.coturnRedisConnectTimeout; }
 
     public String getCoturnIp() {
+        log.info("getCoturnIp : {}", coturnIp);
         return this.coturnIp;
     }
 
@@ -286,13 +296,16 @@ public class RemoteServiceProperties extends PropertyService {
         checkDomainOrPublicIp();
         populateSpringServerPort();
 
-        coturnUsername = getValue("service.coturn_name");
-        coturnCredential = getValue("service.coturn_credential");
-        coturnUrisList = checkCoturnUris();
+        coturnUsername = getValue("service.coturn-name");
+        coturnCredential = getValue("service.coturn-credential");
+        coturnUrisConference = checkCoturnUris("service.coturn-uris-conference");
+        ServiceServerApplication.coturnConferenceUris = new ArrayList<>(coturnUrisConference);
+        coturnUrisSteaming = checkCoturnUris("service.coturn-uris-streaming");
+        ServiceServerApplication.coturnStreamingUris = new ArrayList<>(coturnUrisSteaming);
 
-        coturnRedisDbname = getValue("service.coturn_redis_dbname");
-        coturnRedisPassword = getValue("service.coturn_redis_password");
-        coturnRedisConnectTimeout = getValue("service.coturn_redis_connect_timeout");
+        coturnRedisDbname = getValue("service.coturn-redis-dbname");
+        coturnRedisPassword = getValue("service.coturn-redis-password");
+        coturnRedisConnectTimeout = getValue("service.coturn-redis-connect-timeout");
 
         //remoteServiceSecret = asNonEmptyString("service.remote_secret");
         remoteServiceSecret = asNonEmptyString("service.remote_secret");
@@ -318,8 +331,10 @@ public class RemoteServiceProperties extends PropertyService {
         remoteServiceSessionsGarbageInterval = asNonNegativeInteger("service.remote_sessions_garbage_interval");
         remoteServiceSessionsGarbageThreshold = asNonNegativeInteger("service.remote_sessions_garbage_threshold");
 
-        //kmsUrisList = checkKmsUris();
-        kmsUris = checkKmsUris();
+        kmsUrisConference = checkKmsUris("service.kms-uris-conference");
+        ServiceServerApplication.mediaConferenceUris = new ArrayList<>(kmsUrisConference);
+        kmsUrisStreaming = checkKmsUris("service.kms-uris-streaming");
+        ServiceServerApplication.mediaStreamingUris = new ArrayList<>(kmsUrisStreaming);
 
         /**
          * check later...
@@ -347,8 +362,11 @@ public class RemoteServiceProperties extends PropertyService {
     }
 
     private void checkCoturnIp() {
+        log.info("checkCoturnIp");
         String property = "COTURN_IP";
         coturnIp = asOptionalIPv4OrIPv6(property);
+
+        log.info("checkCoturnIp: {}", coturnIp);
 
         if (coturnIp == null || this.coturnIp.isEmpty()) {
             try {
@@ -463,8 +481,7 @@ public class RemoteServiceProperties extends PropertyService {
         log.info("calculateWssUrl : {}", ServiceServerApplication.wssUrl);
     }
 
-    public List<String> checkCoturnUris() {
-        String property = "service.coturn_uris";
+    public List<String> checkCoturnUris(String property) {
         return asCoturnUris(property, getValue(property));
     }
 
@@ -485,12 +502,8 @@ public class RemoteServiceProperties extends PropertyService {
         return coturnUrisArray;
     }
 
-    public List<String> checkKmsUris() {
-
-        String property = "service.kms_uris";
-
+    public List<String> checkKmsUris(String property) {
         return asKmsUris(property, getValue(property));
-
     }
 
     public List<String> asKmsUris(String property, String kmsUris) {
