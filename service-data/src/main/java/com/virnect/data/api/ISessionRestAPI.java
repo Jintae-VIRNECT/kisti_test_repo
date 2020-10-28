@@ -41,6 +41,7 @@ public interface ISessionRestAPI {
             @RequestHeader(name = "client", required = false) String client,
             @PathVariable(name = "userId") String userId,
             @RequestBody @Valid RoomRequest roomRequest,
+            @RequestParam(name = "companyCode") int companyCode,
             BindingResult result);
 
 
