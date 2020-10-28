@@ -2,7 +2,13 @@
 
 remote 서비스의 서버 녹화 기능을 제공한다.
 
+## Architecture
+
 ![architecture](./images/architecture.png)
+
+## Basic Flow
+
+![basic-flow](./images/basic-flow.png)
 
 ## Prerequisites
 
@@ -140,5 +146,5 @@ endpoint = "127.0.0.1:9000"
 accessKey = "minio"
 secretKey = "minio123"
 useSSL = true
-BucketName = "virnect-remote-recorder"
+bucketName = "virnect-remote-recorder"
 ```
