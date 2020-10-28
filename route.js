@@ -27,7 +27,7 @@ function IsMobileBrowser(req) {
   //   userAgent.includes('mobileApp')
 
   // return isChromeMobile
-  return true
+  return false
 }
 
 router.get('/healthcheck', function(req, res) {
