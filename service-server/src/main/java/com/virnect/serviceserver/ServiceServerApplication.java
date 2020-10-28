@@ -14,10 +14,7 @@ import com.virnect.serviceserver.coturn.CoturnCredentialsServiceFactory;
 import com.virnect.serviceserver.kurento.core.KurentoParticipantEndpointConfig;
 import com.virnect.serviceserver.kurento.core.KurentoSessionEventsHandler;
 import com.virnect.serviceserver.kurento.core.KurentoSessionManager;
-import com.virnect.serviceserver.kurento.kms.DummyLoadManager;
-import com.virnect.serviceserver.kurento.kms.FixedOneKmsManager;
-import com.virnect.serviceserver.kurento.kms.KmsManager;
-import com.virnect.serviceserver.kurento.kms.LoadManager;
+import com.virnect.serviceserver.kurento.kms.*;
 import com.virnect.serviceserver.recording.DummyRecordingDownloader;
 import com.virnect.serviceserver.recording.RecordingDownloader;
 import com.virnect.serviceserver.recording.service.RecordingManager;
@@ -25,6 +22,7 @@ import com.virnect.serviceserver.rpc.RpcHandler;
 import com.virnect.serviceserver.rpc.RpcNotificationService;
 import com.virnect.serviceserver.utils.*;
 import com.virnect.serviceserver.webhook.CDRLoggerWebhook;
+import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
 import org.kurento.jsonrpc.server.JsonRpcConfigurer;
 import org.kurento.jsonrpc.server.JsonRpcHandlerRegistry;
@@ -80,6 +78,10 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public static String wssUrl;
     public static String httpUrl;
     public static String storageUrl;
+    public static List<String> mediaConferenceUris;
+    public static List<String> mediaStreamingUris;
+    public static List<String> coturnConferenceUris;
+    public static List<String> coturnStreamingUris;
 
     @Autowired
     RemoteServiceConfig config;
@@ -118,9 +120,12 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         if (remoteServiceConfig.getKmsUris().isEmpty()) {
             throw new IllegalArgumentException("'KMS_URIS' should contain at least one KMS url");
         }
-        String firstKmsWsUri = remoteServiceConfig.getKmsUris().get(0);
-        log.info("RemoteService Server using one KMS: {}", firstKmsWsUri);
-        return new FixedOneKmsManager();
+
+        for (String kmsWsUri: remoteServiceConfig.getKmsUris()) {
+            log.info("RemoteService Server using one KMS: {}", kmsWsUri);
+        }
+        return new FixedKmsManager();
+        //return new FixedOneKmsManager();
     }
 
     @Bean
@@ -277,8 +282,8 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");
-        //SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
-        SpringApplication.run(ServiceServerApplication.class, args);
+        SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
+        //SpringApplication.run(ServiceServerApplication.class, args);
 
         //disableSslVerification();
     }
@@ -379,11 +384,16 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         String dashboardUrl = httpUrl + "/dashboard/";
         String websocket = wsUrl + WS_PATH + "/";
 
+
         // @formatter:off
         String msg = "\n\n----------------------------------------------------\n" + "\n"
                 + "   RemoteService is ready!\n"
                 + "   ---------------------------\n" + "\n"
                 + "   * RemoteService Server: " + httpUrl + "\n" + "\n"
+                + "   * RemoteService Media Server Conference list: " + mediaConferenceUris.toString() + "\n" + "\n"
+                + "   * RemoteService Media Server Streaming list: " + mediaStreamingUris.toString() + "\n" + "\n"
+                + "   * RemoteService Coturn Server Conference list: " + coturnConferenceUris.toString() + "\n" + "\n"
+                + "   * RemoteService Coturn Server Streaming list: " + coturnStreamingUris.toString() + "\n" + "\n"
                 + "   * RemoteService Dashboard: " + dashboardUrl + "\n" + "\n"
                 + "   * RemoteService Websocket: " + websocket + "\n" + "\n"
                 + "   * RemoteService Storage Server: " + storageUrl + "\n" + "\n"

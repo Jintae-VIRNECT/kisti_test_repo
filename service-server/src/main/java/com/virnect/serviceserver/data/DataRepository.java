@@ -290,12 +290,22 @@ public class DataRepository {
                     roomResponse.setSessionId(finalSessionResponse.getId());
                     roomResponse.setToken(finalSessionTokenResponse.getToken());
                     roomResponse.setWss(ServiceServerApplication.wssUrl);
-                    for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisList()) {
-                        CoturnResponse coturnResponse = new CoturnResponse();
-                        coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                        coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                        coturnResponse.setUrl(coturnUrl);
-                        roomResponse.getCoturn().add(coturnResponse);
+                    if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
+                            CoturnResponse coturnResponse = new CoturnResponse();
+                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                            coturnResponse.setUrl(coturnUrl);
+                            roomResponse.getCoturn().add(coturnResponse);
+                        }
+                    } else {
+                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+                            CoturnResponse coturnResponse = new CoturnResponse();
+                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                            coturnResponse.setUrl(coturnUrl);
+                            roomResponse.getCoturn().add(coturnResponse);
+                        }
                     }
                     return new DataProcess<>(roomResponse);
                 } else {
@@ -764,12 +774,23 @@ public class DataRepository {
                 roomResponse.setToken(sessionTokenResponse.getToken());
 
                 roomResponse.setWss(ServiceServerApplication.wssUrl);
-                for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisList()) {
-                    CoturnResponse coturnResponse = new CoturnResponse();
-                    coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                    coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                    coturnResponse.setUrl(coturnUrl);
-                    roomResponse.getCoturn().add(coturnResponse);
+
+                if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                    for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
+                        CoturnResponse coturnResponse = new CoturnResponse();
+                        coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                        coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                        coturnResponse.setUrl(coturnUrl);
+                        roomResponse.getCoturn().add(coturnResponse);
+                    }
+                } else {
+                    for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+                        CoturnResponse coturnResponse = new CoturnResponse();
+                        coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                        coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                        coturnResponse.setUrl(coturnUrl);
+                        roomResponse.getCoturn().add(coturnResponse);
+                    }
                 }
                 return new DataProcess<>(roomResponse);
 
