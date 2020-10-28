@@ -139,7 +139,11 @@ public class RemoteServiceConfig {
 	}
 
 	public List<String> getKmsUris() {
-		return this.remoteServiceProperties.getKmsUris();
+		// add all kms uris
+		List<String> kmsUris = new ArrayList<>();
+		kmsUris.addAll(this.remoteServiceProperties.getKmsUrisConference());
+		kmsUris.addAll(this.remoteServiceProperties.getKmsUrisStreaming());
+		return kmsUris;
 	}
 
 	public boolean isCdrEnabled() {
