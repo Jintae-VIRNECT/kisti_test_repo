@@ -4,16 +4,17 @@
     width="92"
     trigger="click"
     popperClass="popover-language"
+    :scrollHide="true"
   >
     <button class="language-button" slot="reference"></button>
     <div>
       <div class="popover-language__button">
-        <button>
+        <button @click="changeLange('ko')">
           KOREA
         </button>
       </div>
       <div class="popover-language__button">
-        <button>
+        <button @click="changeLange('en')">
           ENGLISH
         </button>
       </div>
@@ -27,6 +28,14 @@ export default {
   name: 'HeaderLanguage',
   components: {
     Popover,
+  },
+  methods: {
+    changeLange(lang) {
+      console.log(lang)
+      this.$nextTick(() => {
+        this.$eventBus.$emit('popover:close')
+      })
+    },
   },
 }
 </script>
