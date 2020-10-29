@@ -1,7 +1,7 @@
 <template>
   <button
     class="play-button"
-    @click="clickListener"
+    @click.stop="clickListener"
     @mouseover="select = true"
     @mouseleave="select = false"
   >
