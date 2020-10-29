@@ -7,6 +7,7 @@ import App from '@/App'
 import MainRouter from './main'
 import PageNotFound from 'WC-Modules/vue/components/errors/CommonError'
 import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'
+import BrowserNotSupport from 'WC-Modules/vue/components/errors/BrowserNotSupport'
 
 const router = new Router({
 	name: 'router',
@@ -26,6 +27,11 @@ const router = new Router({
 			path: '/504',
 			name: 'NetworkError',
 			component: NetworkError,
+		},
+		{
+			path: '/nobrowser',
+			name: 'BrowserNotSupport',
+			component: BrowserNotSupport,
 		},
 	],
 })
