@@ -35,7 +35,7 @@ Vue.config.productionTip = false
 
 Vue.use(VeeValidate)
 Vue.use(ElementUI, {
-	messages: (key, value) => i18n.t(key, value),
+	i18n: (key, value) => i18n.t(key, value),
 })
 Vue.use(VueQrcodeReader)
 
