@@ -78,7 +78,11 @@ export default {
         await this.$api(uri, {
           route: { uuid: app.uuid },
         })
-        window.open(downloadUrl)
+        if (typeof window.open == 'function') {
+          window.open(downloadUrl)
+        } else {
+          window.location.href = downloadUrl
+        }
       } catch (e) {
         this.$message.error({
           message: e,
