@@ -35,13 +35,6 @@ export default {
     '/remote/recorder/workspaces/{workspaceId}/users/{userId}/files/{id}/url',
   ],
 
-  //서버녹화 파일 URL로 파일 다운로드 시도하는 API...이이이이잌
-  // SERVER_RECORD_FILE_URL: [
-  //   'GET',
-  //   'https://192.168.6.3:8073/remote/recorder/file/download/{id}',
-  //   { type: 'application/octet-stream', responseType: 'blob' },
-  // ],
-
   /* ATTACH & LOCAL RECORD FILE */
   FILES: ['GET', '/remote/file'],
 
