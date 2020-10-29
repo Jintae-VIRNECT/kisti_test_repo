@@ -23,7 +23,7 @@ import reactor.core.publisher.Mono;
  */
 
 @Slf4j
-// @Profile({"local", "develop"})
+@Profile({"local", "develop"})
 @Component
 public class HttpsToHttpFilter implements GlobalFilter, Ordered {
 	private static final int HTTPS_TO_HTTP_FILTER_ORDER = 10099;
