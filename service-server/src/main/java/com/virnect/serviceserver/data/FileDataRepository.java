@@ -42,6 +42,23 @@ public class FileDataRepository {
 
     private final ModelMapper modelMapper;
 
+    /**
+     * Generate directory path to upload file
+     *
+     * @param args string argument array
+     * @return Directory path with args
+     * @see StringBuilder#toString()
+     */
+    private String generateDirPath(String... args) {
+        StringBuilder stringBuilder;
+        stringBuilder = new StringBuilder();
+        for (String argument: args) {
+            stringBuilder.append(argument).append("/");
+        }
+        //log.info("ROOM generateDirPath, {}", stringBuilder.toString());
+        return stringBuilder.toString();
+    }
+
     public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest) {
         return new RepoDecoder<File, FileUploadResponse>(RepoDecoderType.CREATE) {
             @Override
@@ -96,17 +113,15 @@ public class FileDataRepository {
             DataProcess<RoomProfileUpdateResponse> invokeDataProcess() {
                 log.info("ROOM INFO UPDATE PROFILE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
                 RoomProfileUpdateResponse profileUpdateResponse = new RoomProfileUpdateResponse();
-                StringBuilder stringBuilder;
-                stringBuilder = new StringBuilder();
-                stringBuilder.append(workspaceId).append("/").append(sessionId).append("/");
                 String profileUrl = Default.ROOM_PROFILE.getValue();
-
                 Room room = loadFromDatabase();
                 if(room != null) {
                     if(room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
                         if (roomProfileUpdateRequest.getProfile() != null) {
                             try {
-                                profileUrl = fileManagementService.uploadProfile(roomProfileUpdateRequest.getProfile(), stringBuilder.toString());
+                                profileUrl = fileManagementService.uploadProfile(
+                                        roomProfileUpdateRequest.getProfile(),
+                                        null);
                                 fileManagementService.deleteProfile(room.getProfile());
                             } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                                 log.info("{}", exception.getMessage());

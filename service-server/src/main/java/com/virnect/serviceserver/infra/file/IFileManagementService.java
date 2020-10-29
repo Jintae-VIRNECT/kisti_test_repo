@@ -55,7 +55,7 @@ public interface IFileManagementService {
      * 업로드 된 프로필 파일 삭제 요청
      * @param url - 업로드된 파일 url
      */
-    boolean deleteProfile(final String url);
+    void deleteProfile(final String url) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     /**
      * 업로드 요청 파일 확장자 추출

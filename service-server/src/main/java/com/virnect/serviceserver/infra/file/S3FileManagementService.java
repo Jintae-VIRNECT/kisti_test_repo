@@ -122,10 +122,9 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public boolean deleteProfile(String url) {
+    public void deleteProfile(String url) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         if (Default.ROOM_PROFILE.isValueEquals(url)) {
             log.info("기본 이미지는 삭제하지 않습니다.");
-            return false;
         } else {
             if (url != null) {
                 /*
@@ -140,7 +139,6 @@ public class S3FileManagementService implements IFileManagementService {
                 amazonS3Client.deleteObject(publicBucketName, key);
                 log.info(key + " 파일이 AWS S3(" + resourceEndPoint + ")에서 삭제되었습니다.");
             }
-            return true;
         }
     }
 
