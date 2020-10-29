@@ -7,7 +7,7 @@
         :style="[innerWidth, innerHeight]"
         @click="clickHander"
       >
-        <div class="modal--header">
+        <div v-if="showHeader" class="modal--header">
           <p class="modal--title" v-html="title">Modal Header</p>
           <button
             v-if="true === showClose"
@@ -68,6 +68,10 @@ export default {
       require: true,
     },
     title: String,
+    showHeader: {
+      type: Boolean,
+      default: true,
+    },
     showClose: {
       type: Boolean,
       default: true,
