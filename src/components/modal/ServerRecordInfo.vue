@@ -9,6 +9,7 @@
   >
     <div class="file-list">
       <file-table
+        @play="openPlayModal"
         :showToggleHeader="true"
         :showPlayButton="true"
         :headers="headers"
@@ -47,8 +48,11 @@ import Modal from 'components/modules/Modal'
 import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
-import FileSaver from 'file-saver'
-import { downloadRecordFile, deleteRecordFile } from 'api/remote/record'
+// import FileSaver from 'file-saver'
+import {
+  getServerRecordFileUrl,
+  deleteServerRecordFileItem,
+} from 'api/http/file'
 
 import confirmMixin from 'mixins/confirm'
 
@@ -100,25 +104,45 @@ export default {
   },
   watch: {
     async visible(flag) {
-      // this.initSelectedArray()
       this.visibleFlag = flag
     },
   },
 
   methods: {
+    async openPlayModal(index) {
+      const file = this.fileList[index]
+
+      const url = await getServerRecordFileUrl({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        id: file.recordingId,
+      })
+
+      this.$eventBus.$emit('open::player', url)
+    },
     async download() {
-      for (const file of this.selectedFiles) {
+      const downloadFiles = []
+
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          downloadFiles.push(this.fileList[index])
+        }
+      })
+      console.log(downloadFiles)
+      for (const file of downloadFiles) {
         try {
-          const data = await downloadRecordFile({
+          console.log(file)
+          const data = await getServerRecordFileUrl({
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
             id: file.recordingId,
           })
 
-          FileSaver.saveAs(
-            new Blob([data], {
-              type: data.type,
-            }),
-            file.filename,
-          )
+          const a = document.createElement('a')
+          a.href = data
+          a.setAttribute('type', 'application/octet-stream')
+          a.setAttribute('download', file.filename)
+          a.click()
         } catch (e) {
           console.error(e)
         }
@@ -135,10 +159,11 @@ export default {
       })
 
       for (const file of deleteFiles) {
-        const recordingId = file.recordingId
         try {
-          await deleteRecordFile({
-            id: recordingId,
+          await deleteServerRecordFileItem({
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+            id: file.recordingId,
           })
         } catch (e) {
           console.error(e)

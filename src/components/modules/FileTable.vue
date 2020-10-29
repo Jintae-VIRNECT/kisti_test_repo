@@ -51,7 +51,11 @@
             {{ value }}
           </div>
 
-          <play-button class="table__cell" v-if="showPlayButton"></play-button>
+          <play-button
+            class="table__cell"
+            v-if="showPlayButton"
+            @click="getPlayIndex(index)"
+          ></play-button>
         </div>
 
         <div
@@ -150,6 +154,9 @@ export default {
     },
   },
   methods: {
+    getPlayIndex(index) {
+      this.$emit('play', index)
+    },
     toggleItem(event, index) {
       const toggleData = !this.selectedArray[index]
       this.selectedArray.splice(index, 1, toggleData)
