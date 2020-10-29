@@ -8,16 +8,17 @@ const axios = require('axios')
 let envConfig = {}
 let urlConfig = {}
 
+const localIp = '192.168.13.72'
+
 const localUrls = {
-	www: 'https://192.168.13.72:9010',
-	console: 'https://192.168.13.72:8888',
+	www: `https://${localIp}:9010`,
+	console: `https://${localIp}:8888`,
 	api: 'https://192.168.6.3:8073',
-	// api: 'http://192.168.13.34:8085',
 	accout: 'https://localhost:8822',
 	workstation: 'https://localhost:8878',
 	download: 'https://localhost:8833',
 	remote: 'https://localhost:8886',
-	pay: 'https://192.168.13.72:7070',
+	pay: `https://${localIp}:7070`,
 	env: 'local',
 	timeout: 30000,
 }
