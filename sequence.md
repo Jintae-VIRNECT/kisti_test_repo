@@ -2,10 +2,10 @@
 sequenceDiagram
     participant Client
     participant RecordServer
-    participant ServiceServer
     participant DockerDeamon
-    participant RecordingContainer
+    participant RecordServer_Agent
     participant WebServer
+    participant ServiceServer
     participant MediaServer
     participant Minio
     participant Mysql
@@ -15,16 +15,18 @@ sequenceDiagram
         ServiceServer->>RecordServer: Response
     end
     RecordServer-->>DockerDeamon: Start Container<br>(Layout Page URL)
-    DockerDeamon-->>RecordingContainer: Start Container<br>(Layout Page URL)
+    DockerDeamon-->>RecordServer_Agent: Start Container<br>(Layout Page URL, token)
     RecordServer->>Client: Response Start Recording
-    RecordingContainer->>WebServer: Get Layout Page
-    WebServer->>RecordingContainer: 200 OK
-    RecordingContainer->>MediaServer: Join...
+    RecordServer_Agent->>WebServer: Get Layout Page
+    WebServer->>RecordServer_Agent: 200 OK
+    RecordServer_Agent->>ServiceServer: Join...
+    ServiceServer->>MediaServer: Join...
     opt Recording
-        MediaServer-->>RecordingContainer: Video/Audio
+        MediaServer-->>RecordServer_Agent: Video/Audio
     end
     Client->>RecordServer: Request Stop Recording
-    RecordServer-->>RecordingContainer: Stop Recording
+    RecordServer-->>DockerDeamon: Stop Recording
+    DockerDeamon-->>RecordServer_Agent: Stop Recording
     RecordServer->>Client: Response Stop Recording
     RecordServer-->>Minio: Upload Recording File
     RecordServer-->>Mysql: Insert Recording File Info
