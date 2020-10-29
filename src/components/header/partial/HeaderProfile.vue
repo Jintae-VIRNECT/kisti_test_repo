@@ -4,6 +4,7 @@
     width="21.429rem"
     trigger="click"
     popperClass="popover-profile"
+    :scrollHide="true"
   >
     <profile
       slot="reference"
