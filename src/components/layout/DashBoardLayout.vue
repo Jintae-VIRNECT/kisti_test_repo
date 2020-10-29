@@ -10,6 +10,7 @@
       </div>
     </vue2-scrollbar>
     <dash-board-footer></dash-board-footer>
+    <player :url="url" :visible.sync="showPlayer"></player>
   </div>
 </template>
 
@@ -20,6 +21,9 @@ import DashBoardTab from 'components/section/DashBoardTab'
 import { mapActions } from 'vuex'
 import { getLicense } from 'api/http/account'
 import auth from 'utils/auth'
+
+import Player from 'components/modal/Player'
+
 export default {
   name: 'DashBoardLayout',
 
@@ -50,6 +54,14 @@ export default {
     DashBoardHeader,
     DashBoardFooter,
     DashBoardTab,
+    Player,
+  },
+
+  data() {
+    return {
+      showPlayer: false,
+      url: null,
+    }
   },
 
   methods: {
@@ -83,6 +95,16 @@ export default {
       // this.scrollTop()
       console.log('tabChanged')
     },
+    openPlayer(url) {
+      this.showPlayer = true
+      this.url = url
+    },
+  },
+  mounted() {
+    this.$eventBus.$on('open::player', this.openPlayer)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('open::player')
   },
 }
 </script>
