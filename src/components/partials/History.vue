@@ -95,7 +95,7 @@
                   active: require('assets/image/ic_rec_active.svg'),
                   default: require('assets/image/ic_rec_default.svg'),
                 }"
-                @click="showServerRecord(history)"
+                @click="showServerRecord(history, index)"
               ></count-button>
             </div>
             <div class="history__text count">
@@ -106,7 +106,7 @@
                   active: require('assets/image/ic_video_active.svg'),
                   default: require('assets/image/ic_video_default.svg'),
                 }"
-                @click="showLocalRecord(history)"
+                @click="showLocalRecord(history, index)"
               ></count-button>
             </div>
             <div class="history__text count">
@@ -117,7 +117,7 @@
                   active: require('assets/image/ic_file_active.svg'),
                   default: require('assets/image/ic_file_default.svg'),
                 }"
-                @click="showFile(history)"
+                @click="showFile(history, index)"
               ></count-button>
             </div>
           </div>
@@ -190,10 +190,24 @@ export default {
 
       //modal data
       fileList: [],
+      currentIndex: null,
 
       hover: false,
       sort: { column: '', direction: '' },
     }
+  },
+  watch: {
+    historys() {
+      if (this.currentIndex !== null) {
+        if (this.file) {
+          this.fileList = this.historys[this.currentIndex].files
+        } else if (this.serverRecord) {
+          this.fileList = this.historys[this.currentIndex].serverRecord
+        } else if (this.localRecord) {
+          this.fileList = this.historys[this.currentIndex].localRecord
+        }
+      }
+    },
   },
   computed: {
     listExists() {
@@ -219,20 +233,23 @@ export default {
       this.sessionId = sessionId
       this.historyInfo = true
     },
-    showServerRecord(history) {
+    showServerRecord(history, index) {
       this.serverRecord = true
       this.fileList = history.serverRecord
       this.historyTitle = history.title
+      this.currentIndex = index
     },
-    showLocalRecord(history) {
+    showLocalRecord(history, index) {
       this.localRecord = true
       this.fileList = history.localRecord
       this.historyTitle = history.title
+      this.currentIndex = index
     },
-    showFile(history) {
+    showFile(history, index) {
       this.file = true
       this.fileList = history.files
       this.historyTitle = history.title
+      this.currentIndex = index
     },
     setSort(column) {
       if (this.sort.column === column) {

@@ -177,6 +177,7 @@ export default {
           )}</p>`,
         )
       }
+      this.$eventBus.$emit('reload::list')
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray

@@ -224,11 +224,14 @@ export default {
   },
 
   mounted() {
+    this.$eventBus.$on('reload::list', this.init)
     if (this.workspace.uuid) {
       this.init()
     }
   },
-  beforeDestroy() {},
+  beforeDestroy() {
+    this.$eventBus.$off('reload::list')
+  },
 }
 </script>
 
