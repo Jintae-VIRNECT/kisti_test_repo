@@ -1,7 +1,7 @@
 <template>
   <el-select
     class="member-role-select"
-    :class="val[0]"
+    :class="[val[0], disabled ? 'disabled' : null]"
     v-model="val"
     multiple
     @change="changed"
@@ -49,6 +49,11 @@ export default {
 
 <style lang="scss">
 #__nuxt .member-role-select {
+  cursor: pointer;
+  &.disabled {
+    cursor: not-allowed;
+  }
+
   .el-tag__close {
     display: none;
   }

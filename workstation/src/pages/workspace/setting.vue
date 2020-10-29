@@ -259,7 +259,6 @@ export default {
   }
   .el-input__inner {
     height: 38px;
-    line-height: 38px;
   }
   .el-textarea__inner {
     height: 80px;
