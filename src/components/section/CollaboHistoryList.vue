@@ -9,7 +9,7 @@
         EXCEL
       </button>
     </div>
-    <history :historys="historyList"></history>
+    <history :isMaster="isMaster" :historys="historyList"></history>
     <pagination-tool
       @current-page="getHistoryPage"
       :totalPage="pageMeta.totalPage"
@@ -45,6 +45,7 @@ export default {
       modalVisible: false,
       fileList: [],
       historyList: [],
+      isMaster: false,
       pageMeta: {
         currentPage: 0,
         currentSize: 0,
@@ -80,6 +81,7 @@ export default {
       })
       if (memberInfo.role === WORKSPACE_ROLE.MASTER) {
         console.log('role :: ', WORKSPACE_ROLE.MASTER)
+        this.isMaster = true
       }
 
       this.loading = true

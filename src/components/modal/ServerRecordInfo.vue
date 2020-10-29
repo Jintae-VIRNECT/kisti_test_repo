@@ -31,6 +31,7 @@
               @click="download"
             ></icon-button>
             <icon-button
+              v-if="deletable"
               :text="'선택 삭제'"
               :imgSrc="require('assets/image/ic_delete.svg')"
               :active="hasSelect"
@@ -76,6 +77,10 @@ export default {
     fileList: {
       type: Array,
       default: () => [],
+    },
+    deletable: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {

@@ -129,16 +129,19 @@
             :title="historyTitle"
             :fileList="fileList"
             :visible.sync="serverRecord"
+            :deletable="isMaster"
           ></server-record-info>
           <local-record-info
             :title="historyTitle"
             :fileList="fileList"
             :visible.sync="localRecord"
+            :deletable="isMaster"
           ></local-record-info>
           <attach-file-info
             :title="historyTitle"
             :fileList="fileList"
             :visible.sync="file"
+            :deletable="isMaster"
           ></attach-file-info>
         </template>
         <span v-else class="history__body--nodata"
@@ -175,6 +178,10 @@ export default {
     historys: {
       type: Array,
       default: () => {},
+    },
+    isMaster: {
+      type: Boolean,
+      default: false,
     },
   },
   data() {
