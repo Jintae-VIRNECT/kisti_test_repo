@@ -8,6 +8,7 @@ COPY settings.gradle .
 COPY src src
 COPY virnect.pfx .
 COPY virnect_2.pfx .
+COPY safari.pfx .
 
 RUN chmod +x ./gradlew
 RUN ./gradlew build -x test
@@ -21,6 +22,7 @@ ARG buildDir=build/unpack
 
 COPY --from=builder virnect.pfx .
 COPY --from=builder virnect_2.pfx .
+COPY --from=builder safari.pfx .
 COPY --from=builder ${buildDir}/lib BOOT-INF/lib
 COPY --from=builder ${buildDir}/app .
 
