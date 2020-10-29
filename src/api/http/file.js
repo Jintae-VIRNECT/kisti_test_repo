@@ -1,7 +1,6 @@
 /*eslint no-unused-vars: "error"*/
 
 import http from 'api/gateway'
-import dummyServerRecord from './dummyServerRecord'
 import dummyFile from './dummyFile'
 
 //서버 녹화파일 / 로컬 녹화 파일 / 첨부파일 API 전부
@@ -17,14 +16,11 @@ export const getServerRecordFiles = async ({
   userId,
   sessionId,
 }) => {
-  // const returnVal = await http('SERVER_RECORD_FILES', {
-  //   workspaceId,
-  //   userId,
-  //   sessionId,
-  // })
-  // return returnVal
-
-  const returnVal = dummyServerRecord
+  const returnVal = await http('SERVER_RECORD_FILES', {
+    workspaceId,
+    userId,
+    sessionId,
+  })
   return returnVal
 }
 
