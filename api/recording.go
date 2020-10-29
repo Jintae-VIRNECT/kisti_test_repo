@@ -6,6 +6,8 @@ import (
 	"RM-RecordServer/util"
 	"encoding/json"
 	"fmt"
+	"path/filepath"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -23,8 +25,8 @@ type StartRecordingRequest struct {
 	Framerate int `json:"framerate,omitempty" binding:"min=1,max=30" mininum:"1" maxinum:"30" default:"20" example:"20"`
 	// recording time
 	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" binding:"min=5,max=60" mininum:"5" maxinum:"60" default:"5" example:"5"`
-	// recording filename without extension
-	RecordingFilename string `json:"recordingFilename,omitempty" example:"2020-08-05_10:00:00"`
+	// recording filename
+	RecordingFilename string `json:"recordingFilename,omitempty" example:"2020-08-05_10:00:00.mp4"`
 	// meta data in json format
 	MetaData interface{} `json:"metaData,omitempty"`
 }
@@ -123,8 +125,20 @@ func StartRecording(c *gin.Context) {
 		}
 	}
 
-	resolution, _ := convertResolution(req.Resolution)
+	resolution, err := convertResolution(req.Resolution)
 	log.Debug("resolution:", resolution)
+	if err != nil {
+		log.Error(err)
+		sendResponseWithError(c, NewErrorInvalidRequestParameter(err))
+		return
+	}
+
+	err = checkFileFormat(req.RecordingFilename)
+	if err != nil {
+		log.Error(err)
+		sendResponseWithError(c, NewErrorInvalidRequestParameter(err))
+		return
+	}
 
 	// The actual recording time is shorter than the requested limit. So, give me about 10 seconds.
 	timeLimit := req.RecordingTimeLimit*60 + 10
@@ -161,6 +175,21 @@ func convertResolution(resolution string) (string, error) {
 		return "1920x1080", nil
 	default:
 		return "", fmt.Errorf("not supported resolution: %s", resolution)
+	}
+}
+
+func checkFileFormat(filename string) error {
+	format := filepath.Ext(filename)
+	if len(format) == 0 {
+		return nil
+	}
+	switch strings.TrimLeft(format, ".") {
+	case "mp4":
+		return nil
+	case "wmv":
+		return nil
+	default:
+		return fmt.Errorf("not supported format: %s", format)
 	}
 }
 

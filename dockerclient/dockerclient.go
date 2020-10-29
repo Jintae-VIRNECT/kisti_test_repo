@@ -8,6 +8,7 @@ import (
 	"errors"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	docker "github.com/fsouza/go-dockerclient"
@@ -19,10 +20,9 @@ type ContainerParam struct {
 	RecordingID data.RecordingID
 	Token       string
 	VideoID     string
-	VideoName   string
+	Filename    string
 	Resolution  string
 	Framerate   int
-	VideoFormat string
 	LayoutURL   string
 	TimeLimit   int
 	SessionID   data.SessionID
@@ -173,8 +173,17 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 		return "", ErrContainerInternal
 	}
 
+	token := strings.Split(param.Filename, ".")
+	videoName := token[0]
+	videoFormat := ""
+	if len(token) == 1 {
+		videoFormat = viper.GetString("record.defaultVideoFormat")
+	} else {
+		videoFormat = token[1]
+	}
+
 	// make recording json
-	filename := filepath.Join(viper.GetString("record.dirOnDocker"), param.RecordingID.String(), param.VideoName) + "." + param.VideoFormat
+	filename := filepath.Join(viper.GetString("record.dirOnDocker"), param.RecordingID.String(), videoName) + "." + videoFormat
 	recordingJson, err := json.Marshal(
 		&recordingJson{
 			RecordingID: param.RecordingID,
@@ -206,8 +215,8 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 			"RESOLUTION=" + param.Resolution,
 			"FRAMERATE=" + strconv.Itoa(int(param.Framerate)),
 			"VIDEO_ID=" + param.VideoID,
-			"VIDEO_NAME=" + param.VideoName,
-			"VIDEO_FORMAT=" + param.VideoFormat,
+			"VIDEO_NAME=" + videoName,
+			"VIDEO_FORMAT=" + videoFormat,
 			"RECORDING_JSON=" + string(recordingJson),
 		},
 		Labels: map[string]string{
