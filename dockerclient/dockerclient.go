@@ -82,7 +82,7 @@ func garbageCollector() {
 			}
 			now := time.Now().UTC().Unix()
 			filter := map[string][]string{
-				"label": []string{"recordingId"},
+				"ancestor": []string{viper.GetString("record.dockerImage")},
 			}
 			cons, err := cli.ListContainers(docker.ListContainersOptions{All: true, Filters: filter})
 			for _, c := range cons {

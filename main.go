@@ -3,6 +3,7 @@ package main
 import (
 	"RM-RecordServer/api"
 	"RM-RecordServer/data"
+	"RM-RecordServer/dockerclient"
 	_ "RM-RecordServer/docs"
 	"RM-RecordServer/eurekaclient"
 	"RM-RecordServer/logger"
@@ -44,6 +45,9 @@ func main() {
 
 	// initialize recorder
 	recorder.Init()
+
+	// initialize docker client
+	dockerclient.Init()
 
 	// initialize storage
 	storageClient := storage.GetClient()
