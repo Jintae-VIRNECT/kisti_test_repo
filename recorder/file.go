@@ -32,7 +32,7 @@ type RecordingFileInfo struct {
 }
 
 func getStoragePath(info RecordingFileInfo) string {
-	return strings.Join([]string{info.WorkspaceID.String(), info.SessionID.String(), info.RecordingID.String()}, "/")
+	return strings.Join([]string{info.WorkspaceID.String(), info.SessionID.String(), info.RecordingID.String(), info.Filename}, "/")
 }
 
 func ListRecordingFiles(ctx context.Context, filter *data.Filter) ([]RecordingFileInfo, int, error) {

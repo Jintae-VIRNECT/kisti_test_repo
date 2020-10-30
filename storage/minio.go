@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"path"
-	"strings"
 	"sync"
 	"time"
 
@@ -86,7 +84,7 @@ func (c *Client) Upload(ctx context.Context, src string, target string) error {
 	_, err = c.minioClient.PutObject(
 		ctx,
 		c.bucketName,
-		strings.Join([]string{target, path.Base(src)}, "/"),
+		target,
 		file,
 		fileStat.Size(),
 		minio.PutObjectOptions{
@@ -115,7 +113,7 @@ func (c *Client) GetPresignedUrl(ctx context.Context, target string, filename st
 	reqParams.Set(key, value)
 
 	expirationTime := time.Second * 24 * 60 * 60 // 1 day
-	presignedURL, err := c.minioClient.PresignedGetObject(context.Background(), c.bucketName, strings.Join([]string{target, filename}, "/"), expirationTime, reqParams)
+	presignedURL, err := c.minioClient.PresignedGetObject(context.Background(), c.bucketName, target, expirationTime, reqParams)
 	if err != nil {
 		log.Error(err)
 		return "", err
