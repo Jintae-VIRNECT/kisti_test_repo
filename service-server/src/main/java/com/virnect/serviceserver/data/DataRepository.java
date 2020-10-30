@@ -315,6 +315,79 @@ public class DataRepository {
         }.asApiResponse();
     }
 
+    public ApiResponse<RoomResponse> generateRoom(
+            String preSessionId,
+            RoomRequest roomRequest,
+            LicenseItem licenseItem,
+            String session,
+            String sessionToken
+    ) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        SessionResponse sessionResponse = null;
+        try {
+            sessionResponse = objectMapper.readValue(session, SessionResponse.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        SessionTokenResponse sessionTokenResponse = null;
+        try {
+            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        assert sessionResponse != null;
+        assert sessionTokenResponse != null;
+
+        SessionResponse finalSessionResponse = sessionResponse;
+        SessionTokenResponse finalSessionTokenResponse = sessionTokenResponse;
+        return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.CREATE) {
+            @Override
+            Room loadFromDatabase() {
+                return null;
+            }
+
+            @Override
+            DataProcess<RoomResponse> invokeDataProcess() {
+                log.info("createRoom: " + roomRequest.toString());
+                RoomHistory roomHistory = historyService.getRoomHistory(roomRequest.getWorkspaceId(), preSessionId);
+                if(roomHistory == null) {
+                    return new DataProcess<>(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND);
+                } else {
+                    log.info("REDIAL ROOM::#generateRoom::re-generate room by history::session_id => [{}]", preSessionId);
+                    Room room = sessionService.createRoom(roomRequest, roomHistory.getProfile(), licenseItem, finalSessionResponse);
+                    if(room != null) {
+                        RoomResponse roomResponse = new RoomResponse();
+                        //not set session create at property
+                        roomResponse.setSessionId(finalSessionResponse.getId());
+                        roomResponse.setToken(finalSessionTokenResponse.getToken());
+                        roomResponse.setWss(ServiceServerApplication.wssUrl);
+                        if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                            for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
+                                CoturnResponse coturnResponse = new CoturnResponse();
+                                coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                                coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                                coturnResponse.setUrl(coturnUrl);
+                                roomResponse.getCoturn().add(coturnResponse);
+                            }
+                        } else {
+                            for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+                                CoturnResponse coturnResponse = new CoturnResponse();
+                                coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                                coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                                coturnResponse.setUrl(coturnUrl);
+                                roomResponse.getCoturn().add(coturnResponse);
+                            }
+                        }
+                        return new DataProcess<>(roomResponse);
+                    } else {
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
+                    }
+                }
+            }
+        }.asApiResponse();
+    }
+
     public DataProcess<Boolean> generateRoomSession(String sessionId) {
         return new RepoDecoder<Room, Boolean>(RepoDecoderType.UPDATE) {
             @Override
