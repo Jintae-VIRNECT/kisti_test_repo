@@ -15,15 +15,15 @@
         :columns="columns"
         :datas="fileList"
         :renderOpts="getRenderOpts()"
-        :emptyText="'데이터가 없습니다.'"
+        :emptyText="''"
       >
         <div class="table__header">
           <div class="table__title">
-            첨부 파일
+            {{ $t('file.attach_file') }}
           </div>
           <div class="table__tools">
             <icon-button
-              :text="'선택 다운로드'"
+              :text="$t('button.select_download')"
               :imgSrc="require('assets/image/ic_down_off.svg')"
               :active="hasSelect"
               :activeImgSrc="require('assets/image/ic_down_on.svg')"
@@ -31,7 +31,7 @@
             ></icon-button>
             <icon-button
               v-if="deletable"
-              :text="'선택 삭제'"
+              :text="$t('button.select_delete')"
               :imgSrc="require('assets/image/ic_delete.svg')"
               :active="hasSelect"
               @click="deleteItems"
@@ -90,14 +90,10 @@ export default {
   computed: {
     headers() {
       return [
-        '파일명',
-        '파일 용량',
-        '업로드 멤버',
-        '다운로드 기간',
-        // this.$t('workspace.record_filename'),
-        // this.$t('workspace.record_time'),
-        // this.$t('workspace.record_size'),
-        // this.$t('workspace.record_remote'),
+        this.$t('file.name'),
+        this.$t('file.size'),
+        this.$t('file.upload_member'),
+        this.$t('file.download_period'),
       ]
     },
     hasSelect() {
@@ -155,7 +151,7 @@ export default {
       console.log(errorFiles)
       if (errorFiles.length > 0) {
         this.confirmDefault(
-          `이미 삭제되었거나 존재하지 않은 파일입니다.\n <p> ${errorFiles.join(
+          `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
             '\n',
           )}</p>`,
         )

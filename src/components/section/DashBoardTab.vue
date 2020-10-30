@@ -20,7 +20,7 @@
       class="dashboard-tab--refresh"
     >
       <img src="~assets/image/ic_refresh.svg" />
-      <p>새로고침</p>
+      <p>{{ $t('button.refresh') }}</p>
     </button>
     <component :is="component" :class="{ fix: fix }"></component>
   </div>
@@ -56,13 +56,11 @@ export default {
       return [
         {
           name: 'board',
-          text: '대시보드',
-          // text: this.$t('workspace.history'),
+          text: this.$t('common.dashboard'),
         },
         {
           name: 'collabo',
-          text: '협업내역',
-          // text: this.$t('workspace.remote'),
+          text: this.$t('common.collabo_list'),
         },
       ]
     },

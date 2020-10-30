@@ -7,7 +7,7 @@
   >
     <img :src="imgSrc" />
     <p :class="{ nodata: count <= 0, normal: count > 0, seleted: selected }">
-      {{ count }}건
+      {{ $t('list.count', { count: count }) }}
     </p>
   </button>
 </template>

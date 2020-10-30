@@ -1,9 +1,11 @@
 <template>
   <section class="collabo-history-list">
     <div class="collabo-history-list__header">
-      <span class="collabo-history-list__header--title">협업 내역 목록</span>
+      <span class="collabo-history-list__header--title">{{
+        $t('list.title')
+      }}</span>
       <span class="collabo-history-list__header--description">
-        최근 협업 기록을 보여줍니다.
+        {{ $t('list.title_description') }}
       </span>
       <button @click="getExcelData" class="collabo-history-list__header--excel">
         EXCEL
@@ -132,9 +134,7 @@ export default {
         }
         return datas.roomHistoryInfoList
       } catch (err) {
-        this.confirmDefault(
-          '서버 응답이 올바르지 않습니다.​\n 잠시 후, 다시 시도해 주세요.​',
-        )
+        this.confirmDefault(this.$t('confirm.server_no_response'))
         console.error(err)
         return false
       }
@@ -163,7 +163,6 @@ export default {
           userId: this.account.uuid,
           sessionId: history.sessionId,
         })
-        console.log('setServerRecord::', datas)
         history.serverRecord = datas.infos
       }
     },
@@ -217,7 +216,22 @@ export default {
           })
           merged.push({ history, room })
         }
-        exportExcel(merged)
+
+        // 'No,협업명,협업내용,리더,참가자,시작시간,종료시간,진행시간,서버녹화,로컬녹화,첨부파일'
+        const header = [
+          'No',
+          this.$t('excel.room_title'),
+          this.$t('excel.room_description'),
+          this.$t('excel.room_leader'),
+          this.$t('excel.room_member_list'),
+          this.$t('excel.room_active_date'),
+          this.$t('excel.room_unactive_date'),
+          this.$t('excel.room_duration_sec'),
+          this.$t('excel.file_server_record'),
+          this.$t('excel.file_local_record'),
+          this.$t('excel.file_attach_file'),
+        ]
+        exportExcel(merged, header)
       } catch (err) {
         console.error(err)
         return false

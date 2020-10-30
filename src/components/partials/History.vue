@@ -13,49 +13,50 @@
           <span
             @click="setSort('collabo-name')"
             :class="{ active: sort.column === 'collabo-name' }"
-            >협업명</span
           >
+            {{ $t('list.room_title') }}
+          </span>
         </div>
         <div class="history__header--text leader-name">
           <span
             @click="setSort('leader-name')"
             :class="{ active: sort.column === 'leader-name' }"
-            >리더</span
+            >{{ $t('list.room_leader') }}</span
           >
         </div>
         <div class="history__header--text start-date">
           <span
             @click="setSort('start-date')"
             :class="{ active: sort.column === 'start-date' }"
-            >협업 시작일</span
+            >{{ $t('list.room_active_date') }}</span
           >
         </div>
         <div class="history__header--text state">
           <span
             @click="setSort('state')"
             :class="{ active: sort.column === 'state' }"
-            >상태</span
+            >{{ $t('list.room_status') }}</span
           >
         </div>
         <div class="history__header--text count">
           <span
             @click="setSort('server-count')"
             :class="{ active: sort.column === 'server-count' }"
-            >서버 녹화</span
+            >{{ $t('list.room_server_record') }}</span
           >
         </div>
         <div class="history__header--text count">
           <span
             @click="setSort('local-count')"
             :class="{ active: sort.column === 'local-count' }"
-            >로컬 녹화</span
+            >{{ $t('list.room_local_record') }}</span
           >
         </div>
         <div class="history__header--text count">
           <span
             @click="setSort('file-count')"
             :class="{ active: sort.column === 'file-count' }"
-            >첨부 파일</span
+            >{{ $t('list.room_attach_file') }}</span
           >
         </div>
       </div>
@@ -144,9 +145,9 @@
             :deletable="isMaster"
           ></attach-file-info>
         </template>
-        <span v-else class="history__body--nodata"
-          >검색된 결과가 없습니다.</span
-        >
+        <span v-else class="history__body--nodata">{{
+          $t('list.no_data')
+        }}</span>
       </div>
     </div>
   </section>
@@ -228,10 +229,8 @@ export default {
         .local()
         .calendar(null, {
           sameDay: 'A h:mm',
-          // lastDay: this.$t('date.lastday'),
-          // nextDay: this.$t('date.nextday'),
-          lastDay: '어제',
-          nextDay: '내일',
+          lastDay: this.$t('date.lastday'),
+          nextDay: this.$t('date.nextday'),
           lastWeek: 'YYYY.MM.DD',
           sameElse: 'YYYY.MM.DD',
         })

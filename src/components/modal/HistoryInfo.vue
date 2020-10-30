@@ -8,10 +8,12 @@
     :showClose="true"
     customClass="modal-history-info"
   >
-    <p class="history-info--header">협업 상세 내용</p>
+    <p class="history-info--header">{{ $t('room.room_info') }}</p>
     <div class="history-info-table">
       <div class="history-info__row">
-        <div class="history-info-table-column__header">협업 명</div>
+        <div class="history-info-table-column__header">
+          {{ $t('room.title') }}
+        </div>
         <div class="history-info-table-column__info">
           <span>{{ room.title }}</span>
           <collabo-status
@@ -21,17 +23,23 @@
         </div>
       </div>
       <div class="history-info__row">
-        <div class="history-info-table-column__header">협업 설명</div>
+        <div class="history-info-table-column__header">
+          {{ $t('room.description') }}
+        </div>
         <div class="history-info-table-column__info">
           <p>{{ room.description }}</p>
         </div>
       </div>
       <div class="history-info__row">
-        <div class="history-info-table-column__header">리더</div>
+        <div class="history-info-table-column__header">
+          {{ $t('room.leader') }}
+        </div>
         <div class="history-info-table-column__info">{{ leader.nickName }}</div>
       </div>
       <div class="history-info__row">
-        <div class="history-info-table-column__header">참가 멤버</div>
+        <div class="history-info-table-column__header">
+          {{ $t('room.member_list') }}
+        </div>
         <div class="history-info-table-column__info member-list">
           <profile-list
             :users="room.memberList"
@@ -46,19 +54,25 @@
         </div>
       </div>
       <div class="history-info__row">
-        <div class="history-info-table-column__header">시작 시간</div>
+        <div class="history-info-table-column__header">
+          {{ $t('room.active_date') }}
+        </div>
         <div class="history-info-table-column__info time">
           {{ room.activeDate | dateTimeFormat }}
         </div>
       </div>
       <div class="history-info__row">
-        <div class="history-info-table-column__header">종료 시간</div>
+        <div class="history-info-table-column__header">
+          {{ $t('room.unactive_date') }}
+        </div>
         <div class="history-info-table-column__info time">
           {{ room.unactiveDate | dateTimeFormat }}
         </div>
       </div>
       <div class="history-info__row">
-        <div class="history-info-table-column__header">진행 시간</div>
+        <div class="history-info-table-column__header">
+          {{ $t('room.duration_sec') }}
+        </div>
         <div class="history-info-table-column__info time">
           {{ room.durationSec | durationFormat }}
         </div>

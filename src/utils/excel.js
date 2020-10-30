@@ -1,6 +1,6 @@
 import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 
-export const exportExcel = datas => {
+export const exportExcel = (datas, header) => {
   const deepGet = (obj, keys) =>
     keys.reduce((xs, x) => {
       return xs && xs[x] !== null && xs[x] !== undefined ? xs[x] : null
@@ -8,8 +8,7 @@ export const exportExcel = datas => {
 
   let csvString = ''
 
-  const headerString =
-    'No,협업명,협업내용,리더,참가자,시작시간,종료시간,진행시간,서버녹화,로컬녹화,첨부파일'
+  const headerString = header.join(',')
 
   csvString = csvString + headerString + '\r\n'
 

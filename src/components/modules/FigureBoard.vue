@@ -9,13 +9,17 @@
         <p class="figure-board--header">{{ header }}</p>
         <template v-if="count !== null">
           <span class="figure-board--number">{{ count }}</span>
-          <span class="figure-board--text">회</span>
+          <span class="figure-board--text">{{
+            $t('chart.collabo_count')
+          }}</span>
         </template>
         <template v-else>
           <span class="figure-board--number">{{ hour }}</span>
-          <span class="figure-board--text">시간</span>
+          <span class="figure-board--text">{{ $t('chart.collabo_hour') }}</span>
           <span class="figure-board--number">{{ min }}</span>
-          <span class="figure-board--text">분</span>
+          <span class="figure-board--text">{{
+            $t('chart.collabo_minute')
+          }}</span>
         </template>
       </div>
     </div>

@@ -2,9 +2,11 @@
   <section class="board">
     <card :customClass="'custom-card-chart'">
       <div name="header" class="board__header">
-        <span class="board__header--title">일일 협업</span>
+        <span class="board__header--title">{{
+          $t('chart.daily_collabo_title')
+        }}</span>
         <span class="board__header--description">
-          설정한 날짜의 일일 협업 내용을 보여줍니다.
+          {{ $t('chart.daily_collabo_description') }}
         </span>
         <datepicker
           class="board__header--datepicker"
@@ -15,9 +17,12 @@
         ></datepicker>
       </div>
       <div class="chart-legend">
-        <chart-legend text="개인 협업 내역" shape="round"></chart-legend>
         <chart-legend
-          text="전체 협업 내역"
+          :text="$t('chart.my_collabo_list')"
+          shape="round"
+        ></chart-legend>
+        <chart-legend
+          :text="$t('chart.total_collabo_list')"
           shape="round"
           customClass="grey"
         ></chart-legend>
@@ -27,23 +32,23 @@
     ></card>
     <div class="board-figures">
       <figure-board
-        header="전체 일별 협업 수"
+        :header="$t('chart.daily_my_collabo_count')"
         :count="9999"
         :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
       ></figure-board>
       <figure-board
-        header="전체 일별 협업 시간"
+        :header="$t('chart.daily_total_collabo_time')"
         :time="999999"
         :imgSrc="require('assets/image/figure/ic_figure_date_all.svg')"
       ></figure-board>
       <figure-board
-        header="나의 일별 협업 수"
+        :header="$t('chart.daily_my_collabo_count')"
         :onlyMe="true"
         :count="daily ? daily.my.count : 0"
         :imgSrc="require('assets/image/figure/ic_figure_chart.svg')"
       ></figure-board>
       <figure-board
-        header="나의 일별 협업 시간"
+        :header="$t('chart.daily_my_collabo_time')"
         :onlyMe="true"
         :time="daily ? daily.my.time : 0"
         :imgSrc="require('assets/image/figure/ic_figure_date_time.svg')"
@@ -149,7 +154,7 @@ export default {
           labels: hourLabels,
           datasets: [
             {
-              label: '개인 협업 내역',
+              label: this.$t('chart.my_collabo_list'),
               data: this.daily ? this.daily.my.set : [],
               borderColor: '#0f75f5',
               borderWidth: 4,
@@ -161,7 +166,7 @@ export default {
               hoverBorderWidth: 4,
             },
             {
-              label: '전체 협업 내역',
+              label: this.$t('chart.total_collabo_list'),
               data: this.totalColaboDatas,
               borderColor: '#bbc8d9',
               borderWidth: 4,
@@ -193,11 +198,13 @@ export default {
             backgroundColor: '#516277',
             bodyFontStyle: 'bold',
             callbacks: {
-              title: function() {
-                return '시간별 완료 협업'
+              title: () => {
+                return this.$t('chart.collabo_count_by_time')
               },
-              label: function(tooltipItem) {
-                return Number(tooltipItem.yLabel) + '건'
+              label: tooltipItem => {
+                return this.$t('chart.count', {
+                  count: Number(tooltipItem.yLabel),
+                })
               },
             },
           },

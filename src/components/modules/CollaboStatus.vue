@@ -24,11 +24,11 @@ export default {
     collaboText() {
       switch (this.status) {
         case collabo.PROGRESS:
-          return '진행중'
+          return this.$t('status.progress')
         case collabo.FINISHED:
-          return '종료'
+          return this.$t('status.finished')
         default:
-          return '알수없음'
+          return this.$t('status.unknown')
       }
     },
     getClass() {

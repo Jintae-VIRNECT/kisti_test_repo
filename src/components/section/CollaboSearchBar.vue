@@ -2,7 +2,9 @@
   <section class="collabo-search-bar">
     <div class="collabo-search-bar__wrapper">
       <div class="collabo-search-bar__condition">
-        <label class="collabo-search-bar--label">협업 상태</label>
+        <label class="collabo-search-bar--label">{{
+          $t('search.collabo_status')
+        }}</label>
         <d-select
           class="collabo-search-bar__status--list"
           :options="searchOpts"
@@ -14,11 +16,13 @@
         ></d-select>
       </div>
       <div class="collabo-search-bar__condition">
-        <label class="collabo-search-bar--label">검색어</label>
+        <label class="collabo-search-bar--label">
+          {{ $t('search.text') }}</label
+        >
         <input
           class="collabo-search-bar--input"
           type="text"
-          placeholder="협업명 / 멤버를 입력해주세요"
+          :placeholder="$t('search.placeholder')"
           v-on:input="searchText = $event.target.value"
         />
       </div>
@@ -29,12 +33,14 @@
         ></datepicker>
         <span class="collabo-search-bar__condition--tilde"></span>
         <datepicker :pickerName="'search-to'" :highlighted="date"></datepicker>
-        <check-box :text="'기간 검색 사용'" :value.sync="useDate"></check-box>
+        <check-box
+          :text="$t('search.use_date_search')"
+          :value.sync="useDate"
+        ></check-box>
       </div>
     </div>
     <button @click="doSearch" class="collabo-search-bar--submit">
-      <!-- <img src="~assets/image/ic_search.svg" /> -->
-      <span>검색하기</span>
+      <span>{{ $t('search.execute') }}</span>
     </button>
   </section>
 </template>
@@ -67,27 +73,18 @@ export default {
     ...mapGetters(['calendars']),
 
     searchOpts() {
-      //@Todo i18n
-      //i18n을 위해 남겨둔 코드
-      // const options = search.map(opt => {
-      //   return {
-      //     value: opt,
-      //     text: 'i18n',
-      //   }
-      // })
-      // return options
       return [
         {
           value: collabo.ALL,
-          text: '전체',
+          text: this.$t('status.all'),
         },
         {
           value: collabo.PROGRESS,
-          text: '진행중',
+          text: this.$t('status.progress'),
         },
         {
           value: collabo.FINISHED,
-          text: '종료',
+          text: this.$t('status.finished'),
         },
       ]
     },

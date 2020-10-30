@@ -1,21 +1,27 @@
 <template>
   <popover
     placement="bottom-end"
-    width="92"
+    width="5.1429rem"
     trigger="click"
     popperClass="popover-language"
     :scrollHide="true"
   >
     <button class="language-button" slot="reference"></button>
     <div>
-      <div class="popover-language__button">
-        <button @click="changeLange('ko')">
-          KOREA
+      <div
+        class="popover-language__button"
+        :class="{ selected: isSelected('ko') }"
+      >
+        <button @click="changeLang('ko')">
+          KOR
         </button>
       </div>
-      <div class="popover-language__button">
-        <button @click="changeLange('en')">
-          ENGLISH
+      <div
+        class="popover-language__button"
+        :class="{ selected: isSelected('en') }"
+      >
+        <button @click="changeLang('en')">
+          ENG
         </button>
       </div>
     </div>
@@ -24,18 +30,34 @@
 
 <script>
 import Popover from 'Popover'
+import langMixin from 'mixins/language'
+
 export default {
   name: 'HeaderLanguage',
+  mixins: [langMixin],
   components: {
     Popover,
   },
+  data() {
+    return {
+      defaultLanguage: null,
+    }
+  },
   methods: {
-    changeLange(lang) {
-      console.log(lang)
+    changeLang(lang) {
+      this.mx_changeLang(lang)
+      this.defaultLanguage = lang
+
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
       })
     },
+    isSelected(lang) {
+      return this.defaultLanguage === lang
+    },
+  },
+  mounted() {
+    this.defaultLanguage = this.mx_getLangCode()
   },
 }
 </script>
@@ -48,7 +70,7 @@ export default {
 }
 
 .popover-language {
-  min-width: 6.7143rem;
+  min-width: 5.1429rem;
   height: 6.5714rem;
   background: rgb(255, 255, 255);
   > .popover--body {
@@ -66,13 +88,19 @@ export default {
     background: #e3e7ed;
   }
 
+  &.selected {
+    background-color: #e3e7ed;
+    > button {
+      text-decoration: underline;
+    }
+  }
+
   > button {
     width: 100%;
     color: #0b1f48;
     font-weight: 500;
     font-size: 1.0714rem;
     background: transparent;
-
     &:active {
       font-weight: 500;
     }
