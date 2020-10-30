@@ -99,6 +99,7 @@ export default {
         this.participants.length > 0
       ) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
+        this.showImage({})
         this.setView(VIEW.STREAM)
       }
     },
@@ -118,7 +119,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setView', 'addChat']),
+    ...mapActions(['setView', 'addChat', 'showImage']),
     ...mapMutations(['updateParticipant']),
     goTab(type) {
       if (type === this.view) return

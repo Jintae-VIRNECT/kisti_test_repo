@@ -84,7 +84,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['showImage', 'addHistory']),
+    ...mapActions(['showImage', 'addHistory', 'setView']),
     participantChange(connectionId) {
       if (this.account.roleType !== ROLE.LEADER) return
       if (this.shareFile && this.shareFile.id) {
@@ -138,6 +138,12 @@ export default {
     },
     getImage(receive) {
       const data = JSON.parse(receive.data)
+
+      if (data.type === DRAWING.END_DRAWING) {
+        this.showImage({})
+        this.setView(VIEW.STREAM)
+        return
+      }
 
       if (
         ![DRAWING.FIRST_FRAME, DRAWING.FRAME, DRAWING.LAST_FRAME].includes(
