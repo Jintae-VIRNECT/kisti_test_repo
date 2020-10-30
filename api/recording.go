@@ -25,7 +25,7 @@ type StartRecordingRequest struct {
 	Framerate int `json:"framerate,omitempty" binding:"min=1,max=30" mininum:"1" maxinum:"30" default:"20" example:"20"`
 	// recording time
 	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" binding:"min=5,max=60" mininum:"5" maxinum:"60" default:"5" example:"5"`
-	// recording filename
+	// recording filename. the supported file extensions are 'mp4', 'wmv'.
 	RecordingFilename string `json:"recordingFilename,omitempty" example:"2020-08-05_10:00:00.mp4"`
 	// meta data in json format
 	MetaData interface{} `json:"metaData,omitempty"`
