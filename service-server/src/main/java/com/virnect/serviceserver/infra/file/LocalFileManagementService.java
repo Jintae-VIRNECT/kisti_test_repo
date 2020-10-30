@@ -277,19 +277,20 @@ public class LocalFileManagementService implements IFileManagementService {
     @Override
     public String uploadProfile(MultipartFile file, String dirPath)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        // 1. 빈 파일 여부 확인
+
+        // check file is null
         if (file.getSize() == 0) {
             throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
         }
 
-        // 2. 확장자 검사
+        // check file extension
         String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
         if (!FILE_IMAGE_ALLOW_EXTENSION.contains(fileExtension)) {
             log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
             throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
 
-        // 3. 파일 용량 검사
+        // check file size
         if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) {
             throw new RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT);
         }
@@ -305,15 +306,12 @@ public class LocalFileManagementService implements IFileManagementService {
 
         log.info("{}, {}, {}", rootDirPath, dirPath, fileExtension);
 
-        // 4. file upload
-        // Create a InputStream for object upload.
+        // file upload with create a InputStream for object upload.
         String fileUrl;
         StringBuilder objectPath = new StringBuilder();
         try {
             String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-            // objectPath.append(dirPath).append(PROFILE_DIRECTORY).append("/").append(objectName);
             objectPath.append(dirPath).append("/").append(objectName).append(".").append(fileExtension);
-            // filePath = fileName + file.getOriginalFilename();
             // Create headers
             Map<String, String> headers = new HashMap<>();
             headers.put("Content-Type", file.getContentType());
@@ -321,7 +319,8 @@ public class LocalFileManagementService implements IFileManagementService {
                     .headers(headers)
                     .stream(file.getInputStream(), file.getInputStream().available(), -1)
                     .contentType(file.getContentType()).build());
-            // 5. get file url
+
+            // get file url
             fileUrl = minioClient.getObjectUrl(fileBucketName, objectPath.toString());
             log.info("SAVE PROFILE FILE_URL: {}, {}", fileUrl, file.getContentType());
 

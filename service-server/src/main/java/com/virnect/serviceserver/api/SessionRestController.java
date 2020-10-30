@@ -291,7 +291,6 @@ public class SessionRestController implements ISessionRestAPI {
             }
         }
 
-        //ApiResponse<RoomResponse> apiResponse;
         if(roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
             // check room request member count is over
             if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getData().getUserCapacity()) {

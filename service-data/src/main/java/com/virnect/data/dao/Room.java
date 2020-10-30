@@ -74,7 +74,6 @@ public class Room extends BaseTimeEntity {
     public Room(String sessionId,
                 String title,
                 String description,
-                String profile,
                 String leaderId,
                 String workspaceId,
                 String licenseName,
@@ -84,7 +83,6 @@ public class Room extends BaseTimeEntity {
         this.sessionId = sessionId;
         this.title = title;
         this.description = description;
-        this.profile = profile;
         this.leaderId = leaderId;
         this.workspaceId = workspaceId;
         this.licenseName = licenseName;
