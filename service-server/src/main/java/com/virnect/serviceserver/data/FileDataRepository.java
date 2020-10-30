@@ -2,6 +2,7 @@ package com.virnect.serviceserver.data;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dao.File;
+import com.virnect.data.dao.RecordFile;
 import com.virnect.data.dao.Room;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.file.request.FileUploadRequest;
@@ -12,6 +13,7 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.service.FileService;
 import com.virnect.data.service.SessionService;
 import com.virnect.serviceserver.infra.file.Default;
+import com.virnect.serviceserver.infra.file.FileType;
 import com.virnect.serviceserver.infra.file.IFileManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -68,13 +70,11 @@ public class FileDataRepository {
 
             @Override
             DataProcess<FileUploadResponse> invokeDataProcess() {
-                StringBuilder stringBuilder;
-                stringBuilder = new StringBuilder();
-                stringBuilder.append(fileUploadRequest.getWorkspaceId()).append("/").append(fileUploadRequest.getSessionId()).append("/");
-
+                // upload to file storage
+                String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
                 String objectName;
                 try {
-                    objectName = fileManagementService.upload(fileUploadRequest.getFile(), stringBuilder.toString());
+                    objectName = fileManagementService.upload(fileUploadRequest.getFile(), bucketPath, FileType.FILE);
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     log.info("{}", exception.getMessage());
                     return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
@@ -82,21 +82,47 @@ public class FileDataRepository {
 
                 File file = fileService.registerFile(fileUploadRequest, objectName);
                 if (file != null) {
-                    //fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
-                    FileUploadResponse fileUploadResponse = new FileUploadResponse();
-                    fileUploadResponse.setWorkspaceId(file.getWorkspaceId());
-                    fileUploadResponse.setSessionId(file.getSessionId());
-                    fileUploadResponse.setUserId(file.getUuid());
-                    fileUploadResponse.setName(file.getName());
-                    fileUploadResponse.setObjectName(file.getObjectName());
-                    fileUploadResponse.setContentType(file.getContentType());
-                    fileUploadResponse.setSize(file.getSize());
+                    FileUploadResponse fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
                     return new DataProcess<>(fileUploadResponse);
                 } else {
                     return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
                 }
             }
         }.asApiResponse();
+    }
+
+    public ApiResponse<FileUploadResponse> uploadRecordFile(FileUploadRequest fileUploadRequest) {
+        return new RepoDecoder<File, FileUploadResponse>(RepoDecoderType.CREATE) {
+            @Override
+            File loadFromDatabase() {
+                return null;
+            }
+
+            @Override
+            DataProcess<FileUploadResponse> invokeDataProcess() {
+                // upload to file storage
+                String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
+                String objectName;
+                try {
+                    objectName = fileManagementService.upload(fileUploadRequest.getFile(), bucketPath, FileType.RECORD);
+                } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+                    log.info("{}", exception.getMessage());
+                    return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
+                }
+
+                // save record file information
+                RecordFile recordFile = fileService.registerRecordFile(fileUploadRequest, objectName);
+
+                // create response
+                if (recordFile != null) {
+                    FileUploadResponse fileUploadResponse = modelMapper.map(recordFile, FileUploadResponse.class);
+                    return new DataProcess<>(fileUploadResponse);
+                } else {
+                    return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
+                }
+            }
+        }.asApiResponse();
+
     }
 
     public ApiResponse<RoomProfileUpdateResponse> uploadProfile(

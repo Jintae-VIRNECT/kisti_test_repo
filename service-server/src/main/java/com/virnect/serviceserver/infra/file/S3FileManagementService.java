@@ -49,12 +49,7 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String upload(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        return null;
-    }
-
-    @Override
-    public String upload(MultipartFile file, String dirPath)
+    public String upload(MultipartFile file, String dirPath, FileType fileType)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return null;
     }

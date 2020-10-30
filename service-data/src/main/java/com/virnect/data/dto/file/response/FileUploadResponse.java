@@ -20,7 +20,7 @@ public class FileUploadResponse {
     private String sessionId;
 
     @ApiModelProperty(value = "User id", position = 2)
-    private String userId;
+    private String uuid;
 
     @ApiModelProperty(value = "file name", position = 3)
     private String name;
@@ -39,7 +39,7 @@ public class FileUploadResponse {
         return "FileUploadResponse{" +
                 "workspaceId='" + workspaceId + '\'' +
                 ", sessionId='" + sessionId + '\'' +
-                ", userId='" + userId + '\'' +
+                ", uuid='" + uuid + '\'' +
                 ", name='" + name + '\'' +
                 ", objectName='" + objectName + '\'' +
                 ", contentType='" + contentType + '\'' +
