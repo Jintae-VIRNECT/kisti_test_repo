@@ -181,6 +181,8 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	} else {
 		videoFormat = token[1]
 	}
+	codecParam := viper.GetString(strings.Join([]string{"format", videoFormat}, "."))
+	log.Debug("codec parameter:", codecParam)
 
 	// make recording json
 	filename := filepath.Join(viper.GetString("record.dirOnDocker"), param.RecordingID.String(), videoName) + "." + videoFormat
@@ -217,6 +219,7 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 			"VIDEO_ID=" + param.VideoID,
 			"VIDEO_NAME=" + videoName,
 			"VIDEO_FORMAT=" + videoFormat,
+			"CODEC_PARAMETER=" + codecParam,
 			"RECORDING_JSON=" + string(recordingJson),
 		},
 		Labels: map[string]string{

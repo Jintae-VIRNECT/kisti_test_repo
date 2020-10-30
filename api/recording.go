@@ -179,18 +179,15 @@ func convertResolution(resolution string) (string, error) {
 }
 
 func checkFileFormat(filename string) error {
-	format := filepath.Ext(filename)
-	if len(format) == 0 {
+	ext := strings.TrimLeft(filepath.Ext(filename), ".")
+	if len(ext) == 0 {
 		return nil
 	}
-	switch strings.TrimLeft(format, ".") {
-	case "mp4":
-		return nil
-	case "wmv":
-		return nil
-	default:
-		return fmt.Errorf("not supported format: %s", format)
+	if ok := viper.IsSet(strings.Join([]string{"format", ext}, ".")); ok == false {
+		return fmt.Errorf("not supported format: %s", ext)
 	}
+
+	return nil
 }
 
 // @Summary Stop Recording

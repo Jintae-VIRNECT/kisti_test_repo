@@ -173,7 +173,7 @@ func (r *recording) stop(ctx context.Context, reason Reason) {
 		}
 
 		if err := upload(newCtx, info); err != nil {
-			logEntry.Error("upload fail. err", err)
+			logEntry.Error("upload fail. err:", err)
 			return
 		}
 
@@ -359,7 +359,7 @@ func garbageCollector() {
 			logger.Info("upload file. recordingId:", info.RecordingID, " file:", info.Filename, " create:", info.CreateAt)
 
 			if err := upload(ctx, info); err != nil {
-				logEntry.Error("upload fail. err", err)
+				logEntry.Error("upload fail. err:", err)
 				continue
 			}
 
