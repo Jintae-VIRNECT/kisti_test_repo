@@ -122,19 +122,19 @@ export default {
           companyCode: this.targetCompany,
         })
         // }
+        const connRes = await this.$call.connect(
+          createdRes,
+          ROLE.LEADER,
+          options,
+        )
         if (info.imageFile) {
-          updateRoomProfile({
+          await updateRoomProfile({
             profile: info.imageFile,
             sessionId: createdRes.sessionId,
             uuid: this.account.uuid,
             workspaceId: this.workspace.uuid,
           })
         }
-        const connRes = await this.$call.connect(
-          createdRes,
-          ROLE.LEADER,
-          options,
-        )
 
         const roomInfo = await getRoomInfo({
           sessionId: createdRes.sessionId,
