@@ -89,24 +89,6 @@ public class FileRestController implements IFileRestAPI {
     }
 
     @Override
-    public ResponseEntity<byte[]> fileDownloadRequestHandler(String workspaceId, String sessionId, String userId, String objectName) throws IOException {
-        log.info("REST API: GET {}/download/{}/{}",
-                REST_FILE_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sessionId != null ? sessionId : "{}");
-        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
-            if (userId == null && objectName == null) {
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            ResponseEntity<byte[]> responseEntity = this.fileDataRepository.downloadFile(workspaceId, sessionId, userId, objectName).getData();
-            //eventPublisher.publishEvent(new ContentDownloadHitEvent(content));
-            return responseEntity;
-        } else {
-            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
-        }
-    }
-
-    @Override
     public ResponseEntity<ApiResponse<FilePreSignedResponse>> fileDownloadUrlRequestHandler(String workspaceId, String sessionId, String userId, String objectName) throws IOException {
         log.info("REST API: GET {}/download/url/{}/{}",
                 REST_FILE_PATH,
