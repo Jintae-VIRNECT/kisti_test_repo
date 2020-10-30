@@ -138,7 +138,9 @@ export default {
       }
     },
     titleValidMessage() {
-      if (this.title.length < 2) {
+      if (this.selection.length < 1) {
+        return this.$t('workspace.create_remote_selected_empty')
+      } else if (this.title.length < 2) {
         return this.$t('workspace.remote_name_valid1')
       } else {
         return this.$t('workspace.remote_name_valid2')
