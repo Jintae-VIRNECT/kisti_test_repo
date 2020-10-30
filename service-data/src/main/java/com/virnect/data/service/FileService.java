@@ -1,8 +1,10 @@
 package com.virnect.data.service;
 
 import com.virnect.data.dao.File;
+import com.virnect.data.dao.RecordFile;
 import com.virnect.data.dto.file.request.FileUploadRequest;
 import com.virnect.data.repository.FileRepository;
+import com.virnect.data.repository.RecordFileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ public class FileService {
     private static final String TAG = FileService.class.getSimpleName();
 
     private final FileRepository fileRepository;
+    private final RecordFileRepository recordFileRepository;
 
     @Transactional
     public File registerFile(FileUploadRequest fileUploadRequest, String objectName) {
@@ -34,7 +37,23 @@ public class FileService {
                 .contentType(fileUploadRequest.getFile().getContentType())
                 .size(fileUploadRequest.getFile().getSize())
                 .build();
+
         return fileRepository.save(file);
+    }
+
+    @Transactional
+    public RecordFile registerRecordFile(FileUploadRequest fileUploadRequest, String objectName) {
+        RecordFile recordFile = RecordFile.builder()
+                .workspaceId(fileUploadRequest.getWorkspaceId())
+                .sessionId(fileUploadRequest.getSessionId())
+                .uuid(fileUploadRequest.getUserId())
+                .name(fileUploadRequest.getFile().getOriginalFilename())
+                .objectName(objectName)
+                .contentType(fileUploadRequest.getFile().getContentType())
+                .size(fileUploadRequest.getFile().getSize())
+                .build();
+
+        return recordFileRepository.save(recordFile);
     }
 
     public File getFileByName(String workspaceId, String sessionId, String name) {

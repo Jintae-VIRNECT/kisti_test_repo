@@ -1,23 +1,21 @@
 package com.virnect.data.dao;
 
-
 import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-//@DynamicUpdate
 @Entity
 @Getter
 @Setter
 @Audited
-@Table(name = "files")
+@Table(name = "record_files")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class File extends BaseTimeEntity {
+public class RecordFile extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "file_id")
+    @Column(name = "record_file_id")
     private Long id;
 
     @Column(name = "workspace_id", nullable = false)
@@ -38,17 +36,12 @@ public class File extends BaseTimeEntity {
     @Column(name = "content_type", nullable = false)
     private String contentType;
 
-    /*@Column(name = "path", nullable = false, unique = true)
-    private String path;*/
-
     @Column(name = "size", nullable = false)
     private Long size;
 
     @Column(name = "expiration_at")
     private LocalDateTime expirationDate;
 
-    //@Lob
-    //@Enumerated(EnumType.STRING)
     @Column(name = "deleted", nullable = false)
     private boolean deleted;
 
@@ -58,13 +51,8 @@ public class File extends BaseTimeEntity {
     @Column(name = "download_hits")
     private Long downloadHits;
 
-    /*@ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "type_id")
-    private Type type;*/
-
-
     @Builder
-    public File(
+    public RecordFile(
             String workspaceId,
             String sessionId,
             String uuid,
@@ -72,7 +60,8 @@ public class File extends BaseTimeEntity {
             String objectName,
             String contentType,
             Long size
-            ) {
+    ) {
+        init();
         this.workspaceId = workspaceId;
         this.sessionId = sessionId;
         this.uuid = uuid;
@@ -80,7 +69,9 @@ public class File extends BaseTimeEntity {
         this.objectName = objectName;
         this.contentType = contentType;
         this.size = size;
+    }
 
+    private void init() {
         // default setting
         this.downloadHits = 0L;
         this.deleted = false;

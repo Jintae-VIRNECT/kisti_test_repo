@@ -12,18 +12,26 @@ import org.springframework.stereotype.Component;
 public class RemoteStorageProperties extends PropertyService {
 
     //Local File Config properties
-    private String fileBucketName;
+    private String bucketName;
     private String profileBucketName;
+    private String fileBucketName;
+    private String recordBucketName;
     private String accessKey;
     private String secretKey;
     private String serverUrl;
-    private String rootDirPath;
     private boolean serviceEnabled;
+
+    public String getBucketName() {
+        return this.bucketName;
+    }
 
     public String getFileBucketName() {
         return this.fileBucketName;
     }
 
+    public String getRecordBucketName() {
+        return this.recordBucketName;
+    }
 
     public String getProfileBucketName() {
         return profileBucketName;
@@ -41,10 +49,6 @@ public class RemoteStorageProperties extends PropertyService {
         return serverUrl;
     }
 
-    public String getRootDirPath() {
-        return rootDirPath;
-    }
-
     public boolean isServiceEnabled() {
         return serviceEnabled;
     }
@@ -56,19 +60,21 @@ public class RemoteStorageProperties extends PropertyService {
 
 
     public void checkStorageProperties() {
+        this.bucketName = getValue("minio.bucket-name");
         this.fileBucketName = getValue("minio.bucket-file-name");
         this.profileBucketName = getValue("minio.bucket-profile-name");
+        this.recordBucketName = getValue("minio.bucket-record-name");
         this.accessKey = getValue("minio.access-key");
         this.secretKey = getValue("minio.secret-key");
-        this.rootDirPath = getValue("minio.dir");
         this.serverUrl = getValue("minio.serverUrl");
         this.serviceEnabled = asBoolean("minio.enabled");
 
+        log.info("checkFileServiceProperties {}", bucketName);
         log.info("checkFileServiceProperties {}", fileBucketName);
         log.info("checkFileServiceProperties {}", profileBucketName);
+        log.info("checkFileServiceProperties {}", recordBucketName);
         log.info("checkFileServiceProperties {}", accessKey);
         log.info("checkFileServiceProperties {}", secretKey);
-        log.info("checkFileServiceProperties {}", rootDirPath);
         log.info("checkFileServiceProperties {}", serverUrl);
         log.info("checkFileServiceProperties {}", serviceEnabled);
 

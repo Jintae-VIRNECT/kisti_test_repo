@@ -19,23 +19,15 @@ public interface IFileManagementService {
     List<String> FILE_DOCUMENT_ALLOW_EXTENSION = Arrays.asList("doc", "ppt", "xls", "dot", "docx", "xlsx", "pptx", "pdf");
     List<String> FILE_VIDEO_ALLOW_EXTENSION = Arrays.asList("mp4", "webm");
 
-
     /**
-     * 파일 업로드 처리
-     * @param file - 파일 업로드 요청
-     * @return - 업로드된 파일 url
-     */
-    String upload(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
-
-
-    /**
-     * 파일 업로드 처리
+     * File Upload
+     *
      * @param file - 업로드 요청 파일
      * @param dirPath - 파일 저장경로
      * @return - 업로드된 파일 url
      * @throws IOException
      */
-    String upload(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+    String upload(MultipartFile file, String dirPath, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     String uploadProfile(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
