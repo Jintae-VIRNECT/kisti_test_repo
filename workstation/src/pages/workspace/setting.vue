@@ -262,6 +262,7 @@ export default {
   }
   .el-textarea__inner {
     height: 80px;
+    line-height: inherit;
   }
   .el-textarea .el-input__count {
     background: none;
