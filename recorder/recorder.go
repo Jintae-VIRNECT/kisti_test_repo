@@ -30,6 +30,7 @@ type RecordingParam struct {
 type RecordingInfo struct {
 	RecordingID string
 	Duration    int
+	TimeLimit   int
 }
 
 type Reason int
@@ -75,7 +76,8 @@ func (r *recorder) timeoutHandler() {
 	}
 }
 
-func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID, userID string, containerID string, createTime time.Time, timer *time.Timer) *recording {
+func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID,
+	userID string, containerID string, createTime time.Time, timeLimit int, timer *time.Timer) *recording {
 	r.mapMux.Lock()
 	defer r.mapMux.Unlock()
 
@@ -86,6 +88,7 @@ func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.Ses
 		userID,
 		containerID,
 		createTime,
+		timeLimit,
 		timer,
 	}
 	r.recordingMap[recordingID] = rec
@@ -158,6 +161,7 @@ type recording struct {
 	creator     string
 	containerID string
 	createTime  time.Time
+	timeLimit   int
 	timeout     *time.Timer
 }
 
@@ -230,6 +234,7 @@ func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, 
 		SessionID:   param.SessionID,
 		WorkspaceID: param.WorkspaceID,
 		UserID:      param.UserID,
+		CreateTime:  param.CreateTime,
 		MetaData:    param.MetaData,
 	}
 
@@ -238,12 +243,12 @@ func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, 
 		return recordingID, ErrInternalError
 	}
 
-	timeout := time.Duration(param.TimeLimit) * time.Second
+	timeout := time.Duration(param.TimeLimit)*time.Second + 10 // recording docker 내부에서 2s 지연이 발생하므로 TimeLimit에 10s정도 더해준다.
 	timer := time.AfterFunc(timeout, func() {
 		mainRecorder.timeoutCh <- recordingTimeoutEvent{recordingID, param.WorkspaceID}
 	})
 
-	mainRecorder.addRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, param.CreateTime, timer)
+	mainRecorder.addRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, param.CreateTime, param.TimeLimit, timer)
 	return recordingID, nil
 }
 
@@ -282,20 +287,21 @@ func StopRecordingBySessionID(ctx context.Context, workspaceID data.WorkspaceID,
 	return recordingIDs, nil
 }
 
-func RestoreRecording(ctx context.Context, recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID, userID string, containerID string, createTime time.Time, recordingTimeLimit int64) {
-	logger.Infof("RestoreRecording: recordingId:%s workspaceId:%s userId:%s containerID:%s recordingTimeLimit:%d)", recordingID, workspaceID, userID, containerID, recordingTimeLimit)
+func RestoreRecording(ctx context.Context, recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID,
+	userID string, containerID string, createTime time.Time, timeLimit int, recordingTimeLeft int64) {
+	logger.Infof("RestoreRecording: recordingId:%s workspaceId:%s userId:%s containerID:%s recordingTimeLeft:%d)", recordingID, workspaceID, userID, containerID, recordingTimeLeft)
 
-	if recordingTimeLimit <= 0 {
+	if recordingTimeLeft <= 0 {
 		dockerclient.StopContainer(ctx, containerID)
 		return
 	}
 
-	timeout := time.Duration(recordingTimeLimit) * time.Second
+	timeout := time.Duration(recordingTimeLeft) * time.Second
 	timer := time.AfterFunc(timeout, func() {
 		mainRecorder.timeoutCh <- recordingTimeoutEvent{recordingID, workspaceID}
 	})
 
-	mainRecorder.addRecording(recordingID, sessionID, workspaceID, userID, containerID, createTime, timer)
+	mainRecorder.addRecording(recordingID, sessionID, workspaceID, userID, containerID, createTime, timeLimit, timer)
 }
 
 func ListRecordingIDs(ctx context.Context, workspaceID data.WorkspaceID, sessionID data.SessionID) []RecordingInfo {
@@ -317,6 +323,7 @@ func ListRecordingIDs(ctx context.Context, workspaceID data.WorkspaceID, session
 		info := RecordingInfo{
 			RecordingID: r.id.String(),
 			Duration:    duration,
+			TimeLimit:   r.timeLimit,
 		}
 		recordings = append(recordings, info)
 	}
@@ -345,12 +352,16 @@ func restoreRecordingFromContainer(ctx context.Context) {
 	now := time.Now().UTC().Unix()
 
 	for _, container := range constainers {
-		recordingTimeLimit := container.EndTime - now
+		recordingTimeLeft := container.EndTime - now
 		RestoreRecording(ctx,
 			data.RecordingID(container.RecordingID),
 			data.SessionID(container.SessionID),
 			data.WorkspaceID(container.WorkspaceID),
-			container.UserID, container.ID, time.Unix(container.CreateTime, 0), recordingTimeLimit)
+			container.UserID,
+			container.ID,
+			time.Unix(container.CreateTime, 0),
+			container.TimeLimit,
+			recordingTimeLeft)
 	}
 	log.Info("End: Restore Recording From Container")
 }

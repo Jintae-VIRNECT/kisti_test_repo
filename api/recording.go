@@ -35,6 +35,7 @@ type StartRecordingRequest struct {
 type RecordingInfo struct {
 	RecordingID string `json:"recordingId"`
 	Duration    int    `json:"duration"`
+	TimeLimit   int    `json:"timeLimit"`
 }
 
 type StartRecordingResponse struct {
@@ -147,7 +148,7 @@ func StartRecording(c *gin.Context) {
 	}
 
 	// The actual recording time is shorter than the requested limit. So, give me about 10 seconds.
-	timeLimit := req.RecordingTimeLimit*60 + 10
+	timeLimit := req.RecordingTimeLimit * 60
 
 	param := recorder.RecordingParam{
 		SessionID:   data.SessionID(req.SessionID),
@@ -271,7 +272,7 @@ func ListRecordings(c *gin.Context) {
 
 	body := ListRecordingResponse{make([]RecordingInfo, 0)}
 	for _, r := range recorder.ListRecordingIDs(c.Request.Context(), workspaceID, sessionID) {
-		body.Recordings = append(body.Recordings, RecordingInfo{r.RecordingID, r.Duration})
+		body.Recordings = append(body.Recordings, RecordingInfo{r.RecordingID, r.Duration, r.TimeLimit})
 	}
 
 	sendResponseWithSuccess(c, body)

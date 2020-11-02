@@ -46,6 +46,7 @@ type ContainerLabel struct {
 	UserID      string
 	CreateTime  int64
 	EndTime     int64
+	TimeLimit   int
 }
 
 type recordingJson struct {
@@ -132,6 +133,7 @@ func ListContainers(ctx context.Context) []ContainerLabel {
 	for _, c := range cons {
 		createTime, _ := strconv.ParseInt(c.Labels["createTime"], 10, 64)
 		endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
+		timeLimit, _ := strconv.ParseInt(c.Labels["timeLimit"], 10, 64)
 		containers = append(containers, ContainerLabel{
 			ID:          c.ID,
 			RecordingID: c.Labels["recordingId"],
@@ -139,6 +141,7 @@ func ListContainers(ctx context.Context) []ContainerLabel {
 			WorkspaceID: c.Labels["workspaceId"],
 			UserID:      c.Labels["userId"],
 			CreateTime:  createTime,
+			TimeLimit:   int(timeLimit),
 			EndTime:     endTime,
 		})
 	}
@@ -238,6 +241,7 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 			"workspaceId": param.WorkspaceID.String(),
 			"userID":      param.UserID,
 			"createTime":  strconv.FormatInt(param.CreateTime.Unix(), 10),
+			"timeLimit":   strconv.FormatInt(int64(param.TimeLimit), 10),
 			"endTime":     strconv.FormatInt(endTime, 10),
 		},
 	}
