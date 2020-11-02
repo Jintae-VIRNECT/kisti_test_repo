@@ -73,6 +73,17 @@ const setRecord = (i, v) => {
   localStorage.setItem('recordInfo', recordInfo)
 }
 
+const setServerRecord = (i, v) => {
+  let serverRecordInfo = parsingItem(
+    originLocalStorage.getItem('serverRecordInfo'),
+  )
+  if (!serverRecordInfo) {
+    serverRecordInfo = {}
+  }
+  serverRecordInfo[i] = v
+  localStorage.setItem('serverRecordInfo', serverRecordInfo)
+}
+
 const setAllow = (i, v) => {
   let allow = parsingItem(originLocalStorage.getItem('allow'))
   if (!allow) {
@@ -98,6 +109,7 @@ export const localStorage = {
   setItem: (k, v) => originLocalStorage.setItem(k, stringifyItem(v)),
   setDevice: (d, i, v) => setDevice(d, i, v),
   setRecord: (i, v) => setRecord(i, v),
+  setServerRecord: (i, v) => setServerRecord(i, v),
   setAllow: (i, v) => setAllow(i, v),
   setTranslate: (i, v) => setTranslate(i, v),
   removeItem: k => originLocalStorage.removeItem(k),

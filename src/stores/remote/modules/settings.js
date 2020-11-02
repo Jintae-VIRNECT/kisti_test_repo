@@ -1,6 +1,6 @@
 //Definition of workspace store
 import { SETTINGS, TOGGLE_CHAT } from '../mutation-types'
-import { RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
+import { RECORD_TARGET, LOCAL_RECORD_STATUS } from 'utils/recordOptions'
 import { resolution } from 'utils/settingOptions'
 
 const state = {
@@ -22,6 +22,10 @@ const state = {
     interval: '1',
     resolution: '480p',
   },
+  serverRecordInfo: {
+    time: '30',
+    resolution: '720p',
+  },
   allow: {
     pointing: true,
     localRecord: true,
@@ -35,11 +39,11 @@ const state = {
     code: 'ko-KR',
   },
 
-  //stream for local steram(screen stream)
+  //stream for local stream(screen stream)
   screenStream: null,
 
   localRecordTarget: RECORD_TARGET.WORKER,
-  localRecordStatus: LCOAL_RECORD_STAUTS.STOP,
+  localRecordStatus: LOCAL_RECORD_STATUS.STOP,
 
   chatBox: false,
 }
@@ -56,6 +60,9 @@ const mutations = {
   },
   [SETTINGS.SET_RECORD](state, recordInfo) {
     Object.assign(state.localRecordInfo, recordInfo)
+  },
+  [SETTINGS.SET_SERVER_RECORD](state, recordInfo) {
+    Object.assign(state.serverRecordInfo, recordInfo)
   },
   [SETTINGS.SET_ALLOW](state, allow) {
     Object.assign(state.allow, allow)
@@ -83,7 +90,7 @@ const mutations = {
     state.localRecordTarget = localRecordTarget
   },
 
-  [SETTINGS.SET_LCOAL_RECORD_STAUTS](state, localRecordStatus) {
+  [SETTINGS.SET_LOCAL_RECORD_STATUS](state, localRecordStatus) {
     state.localRecordStatus = localRecordStatus
   },
 
@@ -96,6 +103,7 @@ const getters = {
   speaker: state => state.speaker,
   video: state => state.video,
   localRecord: state => state.localRecordInfo,
+  serverRecord: state => state.serverRecordInfo,
   allowLocalRecord: state => state.allow.localRecord,
   allowPointing: state => state.allow.pointing,
   language: state => state.language,
