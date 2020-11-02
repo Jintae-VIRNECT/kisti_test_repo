@@ -93,3 +93,12 @@ export const downloadByURL = async file => {
 const proxyUrl = (url, baseUrl) => {
   return url.replace(/^((http[s]?|ftp):\/\/)([^/]+)/, baseUrl)
 }
+
+const convertProxyUrl = (url) =>{
+  if ('minio' in URLS) {
+    return proxyUrl(url, URLS['minio'])
+  }
+  else {
+    return url
+  }
+}

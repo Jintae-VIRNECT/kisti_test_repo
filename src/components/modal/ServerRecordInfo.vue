@@ -48,6 +48,7 @@
 import Modal from 'components/modules/Modal'
 import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
+// import { URLS } from 'configs/env.config'
 
 // import FileSaver from 'file-saver'
 import {
@@ -56,6 +57,7 @@ import {
 } from 'api/http/file'
 
 import confirmMixin from 'mixins/confirm'
+import { convertProxyUrl } from 'utils/file'
 
 export default {
   name: 'ServerRecordInfo',
@@ -119,7 +121,8 @@ export default {
         id: file.recordingId,
       })
 
-      this.$eventBus.$emit('open::player', url)
+      // this.$eventBus.$emit('open::player', url)
+      this.$eventBus.$emit('open::player', convertProxyUrl(url))
     },
     async download() {
       const downloadFiles = []
@@ -133,14 +136,15 @@ export default {
       for (const file of downloadFiles) {
         try {
           console.log(file)
-          const data = await getServerRecordFileUrl({
+          const url = await getServerRecordFileUrl({
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
             id: file.recordingId,
           })
 
           const a = document.createElement('a')
-          a.href = data
+          // a.href = url
+          a.href = convertProxyUrl(url)
           a.setAttribute('type', 'application/octet-stream')
           a.setAttribute('download', file.filename)
           a.click()
