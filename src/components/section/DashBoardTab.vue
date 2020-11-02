@@ -40,7 +40,7 @@ export default {
   },
   data() {
     return {
-      component: 'board',
+      component: 'collabo',
     }
   },
   computed: {
@@ -54,10 +54,11 @@ export default {
     },
     tabComponents() {
       return [
-        {
-          name: 'board',
-          text: this.$t('common.dashboard'),
-        },
+        //hide after server record test
+        // {
+        //   name: 'board',
+        //   text: this.$t('common.dashboard'),
+        // },
         {
           name: 'collabo',
           text: this.$t('common.collabo_list'),
