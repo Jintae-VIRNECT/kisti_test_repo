@@ -54,6 +54,9 @@ const _ = {
       }
 
       const iceServers = configs.coturn || window.urls.coturn
+      for (let ice of iceServers) {
+        ice['urls'] = ice['url']
+      }
       // const iceServers = window.urls.coturn
       const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
