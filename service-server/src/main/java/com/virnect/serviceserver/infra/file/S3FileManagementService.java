@@ -163,7 +163,7 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String filePreSignedUrl(String objectPathToName, int expiry)
+    public String filePreSignedUrl(String dirPath, String objectName, int expiry, FileType fileType)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         return null;
     }

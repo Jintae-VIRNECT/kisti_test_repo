@@ -245,9 +245,12 @@ public class FileDataRepository {
                     stringBuilder.append(workspaceId).append("/")
                             .append(sessionId).append("/")
                             .append(file.getObjectName());
+
+                    // upload to file storage
+                    String bucketPath = generateDirPath(workspaceId, sessionId);
+
                     int expiry = 60 * 60 *24; //one day
-                    //String url = localFileDownloadService.filePreSignedUrl(stringBuilder.toString(), expiry);
-                    String url = fileManagementService.filePreSignedUrl(stringBuilder.toString(), expiry);
+                    String url = fileManagementService.filePreSignedUrl(bucketPath, objectName, expiry, FileType.FILE);
                     FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
                     filePreSignedResponse.setWorkspaceId(file.getWorkspaceId());
                     filePreSignedResponse.setSessionId(file.getSessionId());

@@ -83,7 +83,7 @@ public interface IFileManagementService {
 
     byte[] fileDownload(final String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
-    String filePreSignedUrl(final String objectPathToName, int expiry) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+    String filePreSignedUrl(final String dirPath, final String objectName, int expiry, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     void copyFileS3ToLocal(String fileName);
 }

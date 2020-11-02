@@ -222,7 +222,6 @@ public class LocalFileManagementService implements IFileManagementService {
             }
 
             case RECORD: {
-                objectPath = new StringBuilder();
                 try {
                     objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
                     minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
@@ -474,12 +473,28 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String filePreSignedUrl(String objectPathToName, int expiry)
+    public String filePreSignedUrl(String dirPath, String objectName, int expiry, FileType fileType)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
-            String url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET)
-                    .bucket(bucketName).object(objectPathToName).expiry(expiry).build());
-            log.info("filePreSignedUrl:: {}", url);
+            StringBuilder objectPath = new StringBuilder();
+            String url = null;
+            switch (fileType) {
+                case FILE: {
+                    objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
+                    url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET)
+                            .bucket(bucketName).object(objectPath.toString()).expiry(expiry).build());
+                    log.info("DOWNLOAD FILE::#filePreSignedUrl::file result::[{}]", url);
+                    break;
+                }
+
+                case RECORD: {
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET)
+                            .bucket(bucketName).object(objectPath.toString()).expiry(expiry).build());
+                    log.info("DOWNLOAD FILE::#filePreSignedUrl::record result::[{}]", url);
+                    break;
+                }
+            }
             return url;
         } catch (MinioException e) {
             log.info("Download error occurred:: {}", e.getMessage());

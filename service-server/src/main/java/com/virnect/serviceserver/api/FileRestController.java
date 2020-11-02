@@ -40,7 +40,7 @@ public class FileRestController implements IFileRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<FileUploadResponse>> fileUploadRequestHandler(@Valid FileUploadRequest fileUploadRequest, BindingResult result) {
-        log.info("REST API: POST {}/upload", REST_FILE_PATH);
+        log.info("REST API::POST::#fileUploadRequestHandler::{}/upload", REST_FILE_PATH);
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
             if (result.hasErrors()) {
                 result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
@@ -55,7 +55,7 @@ public class FileRestController implements IFileRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<FileUploadResponse>> recordFileUploadRequestHandler(@Valid FileUploadRequest fileUploadRequest, BindingResult result) {
-        log.info("REST API: POST {}/upload", REST_RECORD_PATH);
+        log.info("REST API::POST#recordFileUploadRequestHandler::{}/upload", REST_RECORD_PATH);
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
             if (result.hasErrors()) {
                 result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
@@ -70,7 +70,7 @@ public class FileRestController implements IFileRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> profileUploadRequestHandler(@Valid RoomProfileUpdateRequest roomProfileUpdateRequest, String workspaceId, String sessionId, BindingResult result) {
-        log.info("REST API: POST {}/{}/{}/profile",
+        log.info("REST API::POST::#profileUploadRequestHandler::{}/{}/{}/profile",
                 REST_FILE_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}");
@@ -90,7 +90,7 @@ public class FileRestController implements IFileRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<FilePreSignedResponse>> fileDownloadUrlRequestHandler(String workspaceId, String sessionId, String userId, String objectName) throws IOException {
-        log.info("REST API: GET {}/download/url/{}/{}",
+        log.info("REST API::GET::#fileDownloadUrlRequestHandler::{}/download/url/{}/{}",
                 REST_FILE_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}");
@@ -113,7 +113,27 @@ public class FileRestController implements IFileRestAPI {
             String userId,
             boolean deleted,
             PageRequest pageRequest) {
-        log.info("REST API: GET {}/{}/{}/{}", REST_FILE_PATH,
+        log.info("REST API::GET::#getFileList::{}/{}/{}/{}", REST_FILE_PATH,
+                workspaceId != null ? workspaceId : "{}",
+                sessionId != null ? sessionId : "{}",
+                userId != null ? userId : "{}");
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            return ResponseEntity.ok(
+                    this.fileDataRepository.getFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.of())
+            );
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<FileInfoListResponse>> getDetailFileList(
+            String workspaceId,
+            String sessionId,
+            String userId,
+            boolean deleted,
+            PageRequest pageRequest) {
+        log.info("REST API::GET::#getDetailFileList::{}/{}/{}/{}", REST_FILE_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
                 userId != null ? userId : "{}");
@@ -128,7 +148,7 @@ public class FileRestController implements IFileRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<FileDeleteResponse>> deleteFileRequestHandler(String workspaceId, String sessionId, String userId, String objectName) {
-        log.info("REST API: GET {}/{}/{}/{}",
+        log.info("REST API::GET::#deleteFileRequestHandler::{}/{}/{}/{}",
                 REST_FILE_PATH,
                 workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
