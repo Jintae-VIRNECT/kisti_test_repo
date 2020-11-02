@@ -100,6 +100,22 @@ public interface IFileRestAPI {
             @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
             @ApiIgnore PageRequest pageRequest);
 
+    @ApiOperation(value = "Load Room File Detail Information List", notes = "원격협업에서 등록된 파일 목록을 상세 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "1"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+            @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
+    })
+    @GetMapping(value = "file/info")
+    ResponseEntity<ApiResponse<FileInfoListResponse>> getDetailFileList(
+            @RequestParam(value = "workspaceId") String workspaceId,
+            @RequestParam(value = "sessionId", required = false, defaultValue = "false") String sessionId,
+            @RequestParam(name = "userId") String userId,
+            @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
+            @ApiIgnore PageRequest pageRequest);
+
+
     @ApiOperation(value = "Delete the specific file", notes = "파일을 삭제")
     @DeleteMapping(value = "file/{workspaceId}/{sessionId}")
     ResponseEntity<ApiResponse<FileDeleteResponse>> deleteFileRequestHandler(
