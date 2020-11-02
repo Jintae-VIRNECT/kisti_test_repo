@@ -43,6 +43,10 @@ export default {
     '/remote/room/{workspaceId}/{sessionId}/exit?userId={userId}',
   ],
   UPDATE_ROOM_INFO: ['POST', '/remote/room/{workspaceId}/{sessionId}/info'],
+  REMOVE_ROOM_PROFILE: [
+    'DELETE',
+    '/remote/file/{workspaceId}/{sessionId}/profile',
+  ],
 
   /* CALL */
   INVITE_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/member'],

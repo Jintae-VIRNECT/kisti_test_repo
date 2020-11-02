@@ -167,12 +167,8 @@ export default {
         this.showRoomInfo = !this.showRoomInfo
       })
     },
-    updateInfo(info) {
-      if ('title' in info) {
-        this.title = info.title
-      } else {
-        this.$emit('init')
-      }
+    updateInfo() {
+      this.$emit('init')
     },
     join() {
       this.$emit('join', {

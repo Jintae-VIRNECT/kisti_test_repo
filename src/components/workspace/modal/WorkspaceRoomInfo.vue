@@ -34,6 +34,15 @@
           >
             {{ $t('workspace.info_remote_member') }}
           </button>
+          <button
+            v-if="isOnpremise"
+            class="roominfo-nav__menu"
+            :class="{ active: tabview === 'download' }"
+            :data-text="$t('button.download')"
+            @click="tabChange('download')"
+          >
+            {{ $t('button.download') }}
+          </button>
         </div>
       </section>
       <room-info
@@ -45,24 +54,35 @@
       ></room-info>
 
       <participants-info
-        v-else
+        v-else-if="tabview === 'user'"
         :participants="memberList"
         :isLeader="isLeader"
         :sessionId="sessionId"
         @kickout="kickout"
       ></participants-info>
+      <room-download
+        v-else-if="isOnpremise"
+        :sessionId="sessionId"
+      ></room-download>
     </div>
   </modal>
 </template>
 
 <script>
 import Modal from 'Modal'
-import { getRoomInfo, updateRoomInfo, updateRoomProfile } from 'api/http/room'
+import {
+  getRoomInfo,
+  updateRoomInfo,
+  removeRoomProfile,
+  updateRoomProfile,
+} from 'api/http/room'
 import { kickoutMember } from 'api/http/member'
 import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
+import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
 import confirmMixin from 'mixins/confirm'
+import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceRoomInfo',
@@ -72,6 +92,7 @@ export default {
     Profile,
     RoomInfo,
     ParticipantsInfo,
+    RoomDownload,
   },
   data() {
     return {
@@ -87,6 +108,13 @@ export default {
         return this.room.memberList
       } else {
         return []
+      }
+    },
+    isOnpremise() {
+      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
+        return true
+      } else {
+        return false
       }
     },
   },
@@ -133,20 +161,32 @@ export default {
     },
     async update(params) {
       try {
-        if ('image' in params && params['image'] !== null) {
-          await updateRoomProfile({
+        if (
+          'image' in params &&
+          params['image'] !== null &&
+          params['image'] !== 'default'
+        ) {
+          const profile = await updateRoomProfile({
             profile: params.image,
             sessionId: params.sessionId,
             uuid: this.account.uuid,
             workspaceId: this.workspace.uuid,
           })
           delete params['image']
+          this.$emit('updatedInfo', profile)
+        } else if (
+          this.room.profile !== 'default' &&
+          (params['image'] === 'default' || !params['image'])
+        ) {
+          await removeRoomProfile({
+            sessionId: params.sessionId,
+            workspaceId: this.workspace.uuid,
+          })
         }
         const updateRtn = await updateRoomInfo(params)
         if (updateRtn) {
           this.$emit('updatedInfo', params)
-          this.initRemote()
-          // this.$emit('update:visible', false)
+          this.$emit('update:visible', false)
         }
       } catch (err) {
         // 에러처리
