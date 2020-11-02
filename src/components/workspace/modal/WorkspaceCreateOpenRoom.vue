@@ -11,6 +11,7 @@
     <div class="openroom">
       <open-room-info
         :roomInfo="roomInfo"
+        :btnLoading="clicked"
         @startRemote="startRemote"
       ></open-room-info>
     </div>
@@ -140,9 +141,6 @@ export default {
           sessionId: createdRes.sessionId,
           workspaceId: this.workspace.uuid,
         })
-        window.urls['token'] = createdRes.token
-        window.urls['coturn'] = createdRes.coturn
-        window.urls['wss'] = createdRes.wss
 
         this.setRoomInfo({
           ...roomInfo,

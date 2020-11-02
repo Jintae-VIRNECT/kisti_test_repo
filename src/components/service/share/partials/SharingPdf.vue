@@ -5,9 +5,6 @@
     </button>
 
     <p class="sharing-image__name">{{ fileData.name }}</p>
-    <button class="sharing-image__remove" @click.stop="deleteImage">
-      {{ $t('service.file_remove') }}
-    </button>
     <div
       class="sharing-image__loading"
       v-if="docPages.length === 0 || docPages.length !== totalPages"
@@ -31,6 +28,9 @@
       style=" z-index: -999;display: none; width: 100%; height: 100%;"
       ref="backCanvas"
     ></canvas>
+    <button class="sharing-image__remove" @click.stop="deleteImage">
+      {{ $t('service.file_remove') }}
+    </button>
   </li>
 </template>
 

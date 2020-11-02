@@ -5,7 +5,13 @@ import jwtDecode from 'jwt-decode'
 import { setHttpOptions } from 'api/gateway/gateway'
 import axios from 'api/axios'
 import { logger, debug } from 'utils/logger'
-import { setConfigs, RUNTIME_ENV, RUNTIME } from 'configs/env.config'
+import {
+  setConfigs,
+  setUrls,
+  RUNTIME_ENV,
+  RUNTIME,
+  URLS,
+} from 'configs/env.config'
 
 /**
  * 상태
@@ -98,6 +104,7 @@ const getConfigs = async () => {
   setConfigs({
     runtimeEnv,
   })
+  setUrls(res.data)
 }
 
 const getSettings = async () => {
@@ -159,8 +166,7 @@ class Auth {
   }
   login() {
     cookieClear()
-    const url = window.urls.console
-    location.href = `${url}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
   logout() {
@@ -168,8 +174,7 @@ class Auth {
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    const url = window.urls.console
-    location.href = `${url}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
 }

@@ -24,6 +24,11 @@
           VIRNECT Workstation
         </button>
       </div>
+      <div class="popover-profile__link" v-if="dashboardLink">
+        <button @click="link(dashboardLink)">
+          Remote Dashboard
+        </button>
+      </div>
       <div class="popover-profile__link">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
@@ -40,6 +45,7 @@ import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
+import { URLS } from 'configs/env.config'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -49,7 +55,14 @@ export default {
   computed: {
     ...mapGetters(['account']),
     urlLink() {
-      return window.urls.workstation
+      return URLS['workstation']
+    },
+    dashboardLink() {
+      if ('dashboard' in URLS) {
+        return false
+      } else {
+        return URLS['dashboard']
+      }
     },
   },
   methods: {
