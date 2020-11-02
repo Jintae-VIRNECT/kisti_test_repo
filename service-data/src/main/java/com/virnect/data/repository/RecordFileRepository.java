@@ -10,13 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RecordFileRepository extends JpaRepository<RecordFile, Long> {
-    /*Optional<File> findByWorkspaceIdAndSessionIdAndName(final String workspaceId, final String sessionId, final String name);
+    Page<RecordFile> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId, Pageable pageable);
 
-    Optional<File> findByWorkspaceIdAndSessionIdAndObjectName(final String workspaceId, final String sessionId, final String objectName);
-
-    List<File> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
-
-    Page<File> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId, Pageable pageable);
-
-    Page<File> findByWorkspaceIdAndSessionIdAndDeletedIsTrue(final String workspaceId, final String sessionId, Pageable pageable);*/
+    Page<RecordFile> findByWorkspaceIdAndSessionIdAndDeletedIsTrue(final String workspaceId, final String sessionId, Pageable pageable);
 }

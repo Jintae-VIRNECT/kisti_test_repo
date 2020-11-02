@@ -1,9 +1,11 @@
 package com.virnect.data.dto.request;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 
 import java.util.Objects;
 
+@Slf4j
 public final class PageRequest {
     private final static int PAGE_DEFAULT_SIZE = 20;
     private final static int PAGE_MAZ_SIZE = 50;
@@ -30,6 +32,29 @@ public final class PageRequest {
         this.sort = sort;
     }
 
+    public org.springframework.data.domain.PageRequest ofSortBy() {
+        String strSort = Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate, DESC" : this.sort;
+        String[] sortQuery = strSort.split(",");
+        String properties = sortQuery[0];
+        String sort = sortQuery[1].toUpperCase();
+
+        if (properties == null || properties.isEmpty()) {
+            properties = "createdDate";
+        }
+
+        if(sort.equalsIgnoreCase("ASC")) {
+            log.info("PAGING::#ofSortBy::sorting::[{}]", strSort);
+            return org.springframework.data.domain.PageRequest.of(page, size, Sort.by(properties).ascending());
+        } else if(sort.equalsIgnoreCase("DESC")) {
+            log.info("PAGING::#ofSortBy::sorting::[{}]", strSort);
+            return org.springframework.data.domain.PageRequest.of(page, size, Sort.by(properties).descending());
+        } else {
+            //default decening
+            log.info("PAGING::#ofSortBy::default sorting::[{}]", strSort);
+            return org.springframework.data.domain.PageRequest.of(page, size, Sort.by(properties).descending());
+        }
+    }
+
     public org.springframework.data.domain.PageRequest of() {
         String strSort = Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate, DESC" : this.sort;
         String[] sortQuery = strSort.split(",");
@@ -43,6 +68,8 @@ public final class PageRequest {
         if (properties == null || properties.isEmpty()) {
             properties = "createdDate";
         }
+
+        log.info("PAGING::#of::sorting::[{}]", strSort);
 
         return org.springframework.data.domain.PageRequest.of(page, size, Sort.Direction.valueOf(sort), properties);
 

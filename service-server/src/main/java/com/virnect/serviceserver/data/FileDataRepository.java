@@ -5,13 +5,16 @@ import com.virnect.data.dao.File;
 import com.virnect.data.dao.RecordFile;
 import com.virnect.data.dao.Room;
 import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.feign.UserInfoResponse;
 import com.virnect.data.dto.file.request.FileUploadRequest;
+import com.virnect.data.dto.file.request.RecordFileUploadRequest;
 import com.virnect.data.dto.file.response.*;
 import com.virnect.data.dto.request.RoomProfileUpdateRequest;
 import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.service.FileService;
 import com.virnect.data.service.SessionService;
+import com.virnect.serviceserver.feign.service.UserRestService;
 import com.virnect.serviceserver.infra.file.Default;
 import com.virnect.serviceserver.infra.file.FileType;
 import com.virnect.serviceserver.infra.file.IFileManagementService;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +41,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FileDataRepository {
     private static final String TAG = FileDataRepository.class.getSimpleName();
+
+    private final UserRestService userRestService;
 
     private final SessionService sessionService;
     private final FileService fileService;
@@ -91,7 +97,7 @@ public class FileDataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<FileUploadResponse> uploadRecordFile(FileUploadRequest fileUploadRequest) {
+    public ApiResponse<FileUploadResponse> uploadRecordFile(RecordFileUploadRequest recordFileUploadRequest) {
         return new RepoDecoder<File, FileUploadResponse>(RepoDecoderType.CREATE) {
             @Override
             File loadFromDatabase() {
@@ -101,17 +107,17 @@ public class FileDataRepository {
             @Override
             DataProcess<FileUploadResponse> invokeDataProcess() {
                 // upload to file storage
-                String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
+                String bucketPath = generateDirPath(recordFileUploadRequest.getWorkspaceId(), recordFileUploadRequest.getSessionId());
                 String objectName;
                 try {
-                    objectName = fileManagementService.upload(fileUploadRequest.getFile(), bucketPath, FileType.RECORD);
+                    objectName = fileManagementService.upload(recordFileUploadRequest.getFile(), bucketPath, FileType.RECORD);
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     log.info("{}", exception.getMessage());
                     return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
                 }
 
                 // save record file information
-                RecordFile recordFile = fileService.registerRecordFile(fileUploadRequest, objectName);
+                RecordFile recordFile = fileService.registerRecordFile(recordFileUploadRequest, objectName);
 
                 // create response
                 if (recordFile != null) {
@@ -284,7 +290,6 @@ public class FileDataRepository {
             @Override
             DataProcess<FileInfoListResponse> invokeDataProcess() {
                 log.info("getFileInfoList");
-                //File file = fileService.getFile(workspaceId,sessionId)
                 Page<File> filePage = loadFromDatabase();
 
                 for (File file: filePage.toList()) {
@@ -300,14 +305,63 @@ public class FileDataRepository {
                 PageMetadataResponse pageMeta = PageMetadataResponse.builder()
                         .currentPage(pageable.getPageNumber())
                         .currentSize(pageable.getPageSize())
+                        .numberOfElements(filePage.getNumberOfElements())
                         .totalPage(filePage.getTotalPages())
                         .totalElements(filePage.getNumberOfElements())
+                        .last(filePage.isLast())
                         .build();
 
                 return new DataProcess<>(new FileInfoListResponse(fileInfoList, pageMeta));
             }
         }.asApiResponse();
     }
+
+    public ApiResponse<FileDetailInfoListResponse> getRecordFileInfoList(
+            String workspaceId,
+            String sessionId,
+            String userId,
+            boolean deleted,
+            Pageable pageable
+    ) {
+        return new RepoDecoder<Page<RecordFile>, FileDetailInfoListResponse>(RepoDecoderType.READ) {
+            @Override
+            Page<RecordFile> loadFromDatabase() {
+                return fileService.getRecordFileList(workspaceId, sessionId, pageable, deleted);
+            }
+
+            @Override
+            DataProcess<FileDetailInfoListResponse> invokeDataProcess() {
+                log.info("getRecordFileInfoList");
+                Page<RecordFile> recordFilePage = loadFromDatabase();
+
+                List<FileDetailInfoResponse> fileDetailInfoList = new ArrayList<>();
+                for (RecordFile recordFile: recordFilePage.toList()) {
+                    log.info("getRecordFileInfoList : {}", recordFile.getObjectName());
+                    ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(recordFile.getUuid());
+                    FileUserInfoResponse fileUserInfoResponse = modelMapper.map(feignResponse.getData(), FileUserInfoResponse.class);
+
+                    FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(recordFile, FileDetailInfoResponse.class);
+                    log.info("getRecordFileInfoList : {}", fileUserInfoResponse.toString());
+                    fileDetailInfoResponse.setFileUserInfo(fileUserInfoResponse);
+                    fileDetailInfoList.add(fileDetailInfoResponse);
+                }
+
+                // Page Metadata
+                PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+                        .currentPage(pageable.getPageNumber())
+                        .currentSize(pageable.getPageSize())
+                        .numberOfElements(recordFilePage.getNumberOfElements())
+                        .totalPage(recordFilePage.getTotalPages())
+                        .totalElements(recordFilePage.getTotalElements())
+                        .last(recordFilePage.isLast())
+                        .build();
+
+                return new DataProcess<>(new FileDetailInfoListResponse(fileDetailInfoList, pageMeta));
+            }
+        }.asApiResponse();
+    }
+
+
 
     public ApiResponse<FileDeleteResponse> removeFile(String workspaceId,
                                                       String sessionId,
