@@ -51,6 +51,9 @@ public class RecordFile extends BaseTimeEntity {
     @Column(name = "download_hits")
     private Long downloadHits;
 
+    @Column(name = "duration_sec", nullable = false)
+    private Long durationSec;
+
     @Builder
     public RecordFile(
             String workspaceId,
@@ -59,7 +62,8 @@ public class RecordFile extends BaseTimeEntity {
             String name,
             String objectName,
             String contentType,
-            Long size
+            Long size,
+            Long durationSec
     ) {
         init();
         this.workspaceId = workspaceId;
@@ -69,6 +73,7 @@ public class RecordFile extends BaseTimeEntity {
         this.objectName = objectName;
         this.contentType = contentType;
         this.size = size;
+        this.durationSec = durationSec;
     }
 
     private void init() {

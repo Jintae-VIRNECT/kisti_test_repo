@@ -3,6 +3,7 @@ package com.virnect.data.service;
 import com.virnect.data.dao.File;
 import com.virnect.data.dao.RecordFile;
 import com.virnect.data.dto.file.request.FileUploadRequest;
+import com.virnect.data.dto.file.request.RecordFileUploadRequest;
 import com.virnect.data.repository.FileRepository;
 import com.virnect.data.repository.RecordFileRepository;
 import lombok.AccessLevel;
@@ -42,15 +43,16 @@ public class FileService {
     }
 
     @Transactional
-    public RecordFile registerRecordFile(FileUploadRequest fileUploadRequest, String objectName) {
+    public RecordFile registerRecordFile(RecordFileUploadRequest recordFileUploadRequest, String objectName) {
         RecordFile recordFile = RecordFile.builder()
-                .workspaceId(fileUploadRequest.getWorkspaceId())
-                .sessionId(fileUploadRequest.getSessionId())
-                .uuid(fileUploadRequest.getUserId())
-                .name(fileUploadRequest.getFile().getOriginalFilename())
+                .workspaceId(recordFileUploadRequest.getWorkspaceId())
+                .sessionId(recordFileUploadRequest.getSessionId())
+                .uuid(recordFileUploadRequest.getUserId())
+                .name(recordFileUploadRequest.getFile().getOriginalFilename())
                 .objectName(objectName)
-                .contentType(fileUploadRequest.getFile().getContentType())
-                .size(fileUploadRequest.getFile().getSize())
+                .contentType(recordFileUploadRequest.getFile().getContentType())
+                .size(recordFileUploadRequest.getFile().getSize())
+                .durationSec(recordFileUploadRequest.getDurationSec())
                 .build();
 
         return recordFileRepository.save(recordFile);
@@ -69,6 +71,13 @@ public class FileService {
             return this.fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId, pageable);
         else
             return this.fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
+    }
+
+    public Page<RecordFile> getRecordFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {
+        if(isDeleted)
+            return this.recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId, pageable);
+        else
+            return this.recordFileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
     }
 
     @Transactional

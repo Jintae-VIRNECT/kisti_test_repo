@@ -3,12 +3,11 @@ package com.virnect.serviceserver.api;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.api.IFileRestAPI;
 import com.virnect.data.dto.file.request.FileUploadRequest;
-import com.virnect.data.dto.file.response.FileDeleteResponse;
-import com.virnect.data.dto.file.response.FileInfoListResponse;
-import com.virnect.data.dto.file.response.FilePreSignedResponse;
-import com.virnect.data.dto.file.response.FileUploadResponse;
+import com.virnect.data.dto.file.request.RecordFileUploadRequest;
+import com.virnect.data.dto.file.response.*;
 import com.virnect.data.dto.request.PageRequest;
 import com.virnect.data.dto.request.RoomProfileUpdateRequest;
+import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
@@ -54,14 +53,14 @@ public class FileRestController implements IFileRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<FileUploadResponse>> recordFileUploadRequestHandler(@Valid FileUploadRequest fileUploadRequest, BindingResult result) {
+    public ResponseEntity<ApiResponse<FileUploadResponse>> recordFileUploadRequestHandler(@Valid RecordFileUploadRequest recordFileUploadRequest, BindingResult result) {
         log.info("REST API::POST#recordFileUploadRequestHandler::{}/upload", REST_RECORD_PATH);
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
             if (result.hasErrors()) {
                 result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
-            ApiResponse<FileUploadResponse> apiResponse = this.fileDataRepository.uploadRecordFile(fileUploadRequest);
+            ApiResponse<FileUploadResponse> apiResponse = this.fileDataRepository.uploadRecordFile(recordFileUploadRequest);
             return ResponseEntity.ok(apiResponse);
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
@@ -86,6 +85,18 @@ public class FileRestController implements IFileRestAPI {
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+    }
+
+
+    @Override
+    public ResponseEntity<ApiResponse<ResultResponse>> profileDeleteRequestHandler(String workspaceId, String sessionId) {
+        log.info("REST API::DELETE::#profileDeleteRequestHandler::{}/{}/{}/profile",
+                REST_FILE_PATH,
+                workspaceId != null ? workspaceId : "{}",
+                sessionId != null ? sessionId : "{}");
+        return ResponseEntity.ok(
+                this.fileDataRepository.deleteProfile(workspaceId, sessionId)
+        );
     }
 
     @Override
@@ -119,7 +130,7 @@ public class FileRestController implements IFileRestAPI {
                 userId != null ? userId : "{}");
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
             return ResponseEntity.ok(
-                    this.fileDataRepository.getFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.of())
+                    this.fileDataRepository.getFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.ofSortBy())
             );
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
@@ -127,7 +138,7 @@ public class FileRestController implements IFileRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<FileInfoListResponse>> getDetailFileList(
+    public ResponseEntity<ApiResponse<FileDetailInfoListResponse>> getDetailFileList(
             String workspaceId,
             String sessionId,
             String userId,
@@ -139,7 +150,7 @@ public class FileRestController implements IFileRestAPI {
                 userId != null ? userId : "{}");
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
             return ResponseEntity.ok(
-                    this.fileDataRepository.getFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.of())
+                    this.fileDataRepository.getRecordFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.ofSortBy())
             );
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
