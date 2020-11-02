@@ -8,6 +8,7 @@ import {
   FLASH,
   VIDEO,
   AR_FEATURE,
+  FILE,
 } from 'configs/remote.config'
 import {
   DEVICE,
@@ -195,6 +196,7 @@ const _ = {
    */
   sendFile: params => {
     if (!_.session) return
+    params.type = FILE.UPLOADED
 
     //파일 관련 정보 전송하기
     _.session.signal({
