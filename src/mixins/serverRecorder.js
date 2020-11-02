@@ -1,5 +1,6 @@
 import { startServerRecord, stopServerRecord } from 'api/http/record'
 import { mapGetters } from 'vuex'
+import { RECORD_INFO } from 'configs/env.config'
 
 export default {
   data() {
@@ -19,13 +20,13 @@ export default {
         let today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
 
         const options = {
-          iceServers: window.urls['coturn'],
+          iceServers: RECORD_INFO['coturn'],
           role: 'PUBLISHER',
-          wsUri: window.urls['wss'],
+          wsUri: RECORD_INFO['wss'],
         }
 
         const token = `${
-          window.urls['token']
+          RECORD_INFO['token']
         }&recorder=true&options=${JSON.stringify(options)}`
 
         const result = await startServerRecord({

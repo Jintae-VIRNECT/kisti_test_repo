@@ -10,7 +10,7 @@ import {
   AR_FEATURE,
   FILE,
 } from 'configs/remote.config'
-import { URLS } from 'configs/remote.config'
+import { URLS, setRecordInfo } from 'configs/env.config'
 import {
   DEVICE,
   FLASH as FLASH_STATUE,
@@ -62,6 +62,12 @@ const _ = {
       // const iceServers = URLS.coturn
       const ws = configs.wss || `${URLS['wsapi']}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+
+      setRecordInfo({
+        token: configs['token'],
+        coturn: iceServers,
+        wss: ws,
+      })
 
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'

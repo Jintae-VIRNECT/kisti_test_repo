@@ -209,9 +209,6 @@ export default {
           sessionId: createdRes.sessionId,
           workspaceId: this.workspace.uuid,
         })
-        window.urls['token'] = createdRes.token
-        window.urls['coturn'] = createdRes.coturn
-        window.urls['wss'] = createdRes.wss
 
         this.setRoomInfo({
           ...roomInfo,

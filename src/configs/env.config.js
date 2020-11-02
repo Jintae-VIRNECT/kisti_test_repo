@@ -22,8 +22,10 @@ export let URLS = {}
 export const setUrls = urls => {
   URLS = urls
 }
-export const addUrl = (key, value) => {
-  URLS[key] = value
+
+export let RECORD_INFO = {}
+export const setRecordInfo = info => {
+  RECORD_INFO = info
 }
 
 export default {
