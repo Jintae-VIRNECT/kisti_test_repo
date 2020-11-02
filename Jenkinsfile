@@ -48,7 +48,7 @@ pipeline {
             sh 'count=`docker ps | grep rm-dashboard | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard && docker rm rm-dashboard; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 9989:9989 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=rm-dashboard rm-dashboard'
             sh 'count=`docker ps | grep rm-dashboard-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard-onpremise && docker rm rm-dashboard-onpremise; else echo "Not Running STOP&DELETE"; fi;'
-            sh 'docker run -p 19989:9989 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-dashboard-onpremise rm-dashboard-onpremise'
+            sh 'docker run -p 19989:9989 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-dashboard-onpremise rm-dashboard'
             catchError {
               sh 'docker image prune -f'
             }            
