@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { URLS } from 'configs/env.config'
 
 /**
  * convert base64 to blob
@@ -39,6 +40,25 @@ export const downloadByDataURL = async (url, fileName) => {
   a.click()
   window.URL.revokeObjectURL(dataUrl)
 }
+export const getFile = url => {
+  return new Promise(resolve => {
+    var xhr = new XMLHttpRequest()
+
+    xhr.addEventListener('load', function() {
+      if (xhr.status == 200) {
+        resolve(xhr.response)
+      }
+    })
+
+    if ('minio' in URLS) {
+      xhr.open('GET', proxyUrl(url, URLS['minio']))
+    } else {
+      xhr.open('GET', url)
+    }
+    xhr.responseType = 'blob'
+    xhr.send(null)
+  })
+}
 
 export const downloadByURL = async file => {
   // let a = document.createElement('a')
@@ -62,6 +82,14 @@ export const downloadByURL = async file => {
     a.click()
     window.URL.revokeObjectURL(xhr.response)
   }
-  xhr.open('GET', file.url)
+  if ('minio' in URLS) {
+    xhr.open('GET', proxyUrl(file.url, URLS['minio']))
+  } else {
+    xhr.open('GET', file.url)
+  }
   xhr.send()
+}
+
+const proxyUrl = (url, baseUrl) => {
+  return url.replace(/^((http[s]?|ftp):\/\/)([^/]+)/, baseUrl)
 }
