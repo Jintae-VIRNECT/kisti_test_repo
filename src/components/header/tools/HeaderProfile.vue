@@ -24,6 +24,11 @@
           VIRNECT Workstation
         </button>
       </div>
+      <div class="popover-profile__link" v-if="dashboardLink">
+        <button @click="link(dashboardLink)">
+          Remote Dashboard
+        </button>
+      </div>
       <div class="popover-profile__link">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
@@ -50,6 +55,13 @@ export default {
     ...mapGetters(['account']),
     urlLink() {
       return window.urls.workstation
+    },
+    dashboardLink() {
+      if ('dashboard' in window.urls) {
+        return false
+      } else {
+        return window.urls['dashboard']
+      }
     },
   },
   methods: {
