@@ -94,7 +94,7 @@ const proxyUrl = (url, baseUrl) => {
   return url.replace(/^((http[s]?|ftp):\/\/)([^/]+)/, baseUrl)
 }
 
-const convertProxyUrl = (url) =>{
+export const convertProxyUrl = (url) =>{
   if ('minio' in URLS) {
     return proxyUrl(url, URLS['minio'])
   }
