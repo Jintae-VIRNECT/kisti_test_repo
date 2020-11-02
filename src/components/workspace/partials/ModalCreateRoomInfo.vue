@@ -166,6 +166,7 @@ export default {
         title: this.title,
         description: this.description,
         imageFile: this.imageFile,
+        imageUrl: this.imageURL,
         open: false,
       })
     },

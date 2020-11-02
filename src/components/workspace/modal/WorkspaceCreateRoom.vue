@@ -169,7 +169,12 @@ export default {
 
         let createdRes
 
-        if (this.sessionId && this.sessionId.length > 0) {
+        if (
+          this.sessionId &&
+          this.sessionId.length > 0 &&
+          info.imageUrl &&
+          info.imageUrl !== 'default'
+        ) {
           createdRes = await restartRoom({
             title: info.title,
             description: info.description,
