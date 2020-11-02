@@ -31,11 +31,6 @@ router.get('/healthcheck', function(req, res) {
   res.send('200')
 })
 
-router.get('/urls', function(req, res) {
-  res.header('Content-Type', 'application/json')
-  res.send(JSON.stringify(config.getUrls()))
-})
-
 router.get('/configs', function(req, res) {
   // req.query.origin
   res.header('Content-Type', 'application/json')
