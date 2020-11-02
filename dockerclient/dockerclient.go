@@ -29,6 +29,7 @@ type ContainerParam struct {
 	SessionID   data.SessionID
 	WorkspaceID data.WorkspaceID
 	UserID      string
+	CreateTime  time.Time
 	MetaData    interface{}
 }
 
@@ -43,6 +44,7 @@ type ContainerLabel struct {
 	SessionID   string
 	WorkspaceID string
 	UserID      string
+	CreateTime  int64
 	EndTime     int64
 }
 
@@ -128,6 +130,7 @@ func ListContainers(ctx context.Context) []ContainerLabel {
 	}
 	cons, err := cli.ListContainers(docker.ListContainersOptions{Filters: filter})
 	for _, c := range cons {
+		createTime, _ := strconv.ParseInt(c.Labels["createTime"], 10, 64)
 		endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
 		containers = append(containers, ContainerLabel{
 			ID:          c.ID,
@@ -135,6 +138,7 @@ func ListContainers(ctx context.Context) []ContainerLabel {
 			SessionID:   c.Labels["sessionId"],
 			WorkspaceID: c.Labels["workspaceId"],
 			UserID:      c.Labels["userId"],
+			CreateTime:  createTime,
 			EndTime:     endTime,
 		})
 	}
@@ -212,8 +216,7 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	url := param.LayoutURL + "?sessionId=" + param.SessionID.String() + "&token=" + param.Token
 	log.Info("url:", url)
 
-	now := time.Now().UTC().Unix()
-	endTime := now + int64(param.TimeLimit)
+	endTime := param.CreateTime.Unix() + int64(param.TimeLimit)
 	createOpt := docker.CreateContainerOptions{}
 	createOpt.Name = param.RecordingID.String()
 	createOpt.Config = &docker.Config{
@@ -234,6 +237,7 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 			"sessionId":   param.SessionID.String(),
 			"workspaceId": param.WorkspaceID.String(),
 			"userID":      param.UserID,
+			"createTime":  strconv.FormatInt(param.CreateTime.Unix(), 10),
 			"endTime":     strconv.FormatInt(endTime, 10),
 		},
 	}

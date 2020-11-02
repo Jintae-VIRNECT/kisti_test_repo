@@ -23,7 +23,13 @@ type RecordingParam struct {
 	Framerate   int
 	TimeLimit   int
 	Filename    string
+	CreateTime  time.Time
 	MetaData    interface{}
+}
+
+type RecordingInfo struct {
+	RecordingID string
+	Duration    int
 }
 
 type Reason int
@@ -69,7 +75,7 @@ func (r *recorder) timeoutHandler() {
 	}
 }
 
-func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID, userID string, containerID string, timer *time.Timer) *recording {
+func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID, userID string, containerID string, createTime time.Time, timer *time.Timer) *recording {
 	r.mapMux.Lock()
 	defer r.mapMux.Unlock()
 
@@ -79,6 +85,7 @@ func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.Ses
 		workspaceID,
 		userID,
 		containerID,
+		createTime,
 		timer,
 	}
 	r.recordingMap[recordingID] = rec
@@ -150,6 +157,7 @@ type recording struct {
 	workspaceID data.WorkspaceID
 	creator     string
 	containerID string
+	createTime  time.Time
 	timeout     *time.Timer
 }
 
@@ -235,7 +243,7 @@ func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, 
 		mainRecorder.timeoutCh <- recordingTimeoutEvent{recordingID, param.WorkspaceID}
 	})
 
-	mainRecorder.addRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, timer)
+	mainRecorder.addRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, param.CreateTime, timer)
 	return recordingID, nil
 }
 
@@ -274,7 +282,7 @@ func StopRecordingBySessionID(ctx context.Context, workspaceID data.WorkspaceID,
 	return recordingIDs, nil
 }
 
-func RestoreRecording(ctx context.Context, recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID, userID string, containerID string, recordingTimeLimit int64) {
+func RestoreRecording(ctx context.Context, recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID, userID string, containerID string, createTime time.Time, recordingTimeLimit int64) {
 	logger.Infof("RestoreRecording: recordingId:%s workspaceId:%s userId:%s containerID:%s recordingTimeLimit:%d)", recordingID, workspaceID, userID, containerID, recordingTimeLimit)
 
 	if recordingTimeLimit <= 0 {
@@ -287,17 +295,33 @@ func RestoreRecording(ctx context.Context, recordingID data.RecordingID, session
 		mainRecorder.timeoutCh <- recordingTimeoutEvent{recordingID, workspaceID}
 	})
 
-	mainRecorder.addRecording(recordingID, sessionID, workspaceID, userID, containerID, timer)
+	mainRecorder.addRecording(recordingID, sessionID, workspaceID, userID, containerID, createTime, timer)
 }
 
-func ListRecordingIDs(workspaceID data.WorkspaceID) []string {
-	var recordingIDs []string
-	recordings := mainRecorder.findRecordings(nil, &workspaceID, nil)
-	for _, r := range recordings {
-		recordingIDs = append(recordingIDs, r.id.String())
+func ListRecordingIDs(ctx context.Context, workspaceID data.WorkspaceID, sessionID data.SessionID) []RecordingInfo {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	var recordings []RecordingInfo
+
+	log.Debug("sessionId:", sessionID)
+	now := time.Now().UTC()
+	for _, r := range mainRecorder.findRecordings(nil, &workspaceID, nil) {
+		if len(sessionID) > 0 && sessionID != r.sessionID {
+			continue
+		}
+		var duration int
+		duration = int(now.Sub(r.createTime).Seconds()) - 2 // recording docker 내부에 실제 recording이 되기 전에 2s 대기하는 시간(sleep 2)이 존재한다.
+		if duration < 0 {
+			duration = 0
+		}
+		info := RecordingInfo{
+			RecordingID: r.id.String(),
+			Duration:    duration,
+		}
+		recordings = append(recordings, info)
 	}
 
-	return recordingIDs
+	return recordings
 }
 
 func ExistRecordingID(recordingID data.RecordingID, workspaceID data.WorkspaceID) bool {
@@ -326,7 +350,7 @@ func restoreRecordingFromContainer(ctx context.Context) {
 			data.RecordingID(container.RecordingID),
 			data.SessionID(container.SessionID),
 			data.WorkspaceID(container.WorkspaceID),
-			container.UserID, container.ID, recordingTimeLimit)
+			container.UserID, container.ID, time.Unix(container.CreateTime, 0), recordingTimeLimit)
 	}
 	log.Info("End: Restore Recording From Container")
 }
