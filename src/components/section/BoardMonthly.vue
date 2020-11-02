@@ -215,7 +215,7 @@ export default {
     getMonth() {
       const dayList = []
       for (let i = 1; i <= 31; i++) {
-        dayList.push(i + '일')
+        dayList.push(i + this.$t('chart.collabo_day'))
       }
       return dayList
     },
