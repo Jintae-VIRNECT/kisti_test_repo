@@ -6,7 +6,6 @@
   font-family: $font_family;
   font-style: normal;
 
-  // src:  /* IE9 Compat Modes */ url("/src/assets/font/notokr/NotoSansCJKkr-Light.eot");
   src:  /* IE9 Compat Modes */ url("~assets/font/notokr/NotoSansCJKkr-Light.eot");
   src: local("Noto Sans KR Light"), local("NotoSansKR-Light"),
     /* IE6-IE8 */ url("~assets/font/notokr/NotoSansCJKkr-Light.eot?#iefix")
