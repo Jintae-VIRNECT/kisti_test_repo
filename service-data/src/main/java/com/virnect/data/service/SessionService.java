@@ -1078,6 +1078,12 @@ public class SessionService {
         roomRepository.save(room);
     }
 
+
+    @Transactional
+    public void updateRoom(Room room) {
+        roomRepository.save(room);
+    }
+
     @Transactional
     public void updateMember(Room room, List<String> userIds) {
         for (String userId: userIds) {

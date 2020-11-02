@@ -68,6 +68,12 @@ public interface IFileRestAPI {
             @PathVariable("sessionId") String sessionId,
             BindingResult result);
 
+    @ApiOperation(value = "Delete a Remote Room profile image file", notes = "원격협업 방 프로필을 삭제합니다.")
+    @DeleteMapping(value = "file/{workspaceId}/{sessionId}/profile")
+    ResponseEntity<ApiResponse<ResultResponse>> profileDeleteRequestHandler(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId);
+
     @ApiOperation(value = "Get URL to download ", notes = "파일 다운로드 URL을 받습니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),

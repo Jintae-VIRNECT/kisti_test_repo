@@ -2,6 +2,7 @@ package com.virnect.serviceserver.data;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dao.File;
+import com.virnect.data.dao.MemberHistory;
 import com.virnect.data.dao.RecordFile;
 import com.virnect.data.dao.Room;
 import com.virnect.data.dto.PageMetadataResponse;
@@ -10,6 +11,7 @@ import com.virnect.data.dto.file.request.FileUploadRequest;
 import com.virnect.data.dto.file.request.RecordFileUploadRequest;
 import com.virnect.data.dto.file.response.*;
 import com.virnect.data.dto.request.RoomProfileUpdateRequest;
+import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.service.FileService;
@@ -167,6 +169,37 @@ public class FileDataRepository {
                     } else {
                         return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     }
+                } else {
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<ResultResponse> deleteProfile(
+            String workspaceId,
+            String sessionId
+    ) {
+        return new RepoDecoder<Room, ResultResponse>(RepoDecoderType.DELETE) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
+            }
+
+            @Override
+            DataProcess<ResultResponse> invokeDataProcess() {
+                Room room = loadFromDatabase();
+                ResultResponse resultResponse = new ResultResponse();
+                if(room != null) {
+                    try {
+                        fileManagementService.deleteProfile(room.getProfile());
+                        sessionService.updateRoom(room, Default.ROOM_PROFILE.getValue());
+                    } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+                        exception.printStackTrace();
+                    }
+                    resultResponse.setResult(true);
+                    return new DataProcess<>(resultResponse);
+
                 } else {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
                 }

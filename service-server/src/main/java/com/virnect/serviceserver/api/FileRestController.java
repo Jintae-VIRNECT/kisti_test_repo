@@ -7,6 +7,7 @@ import com.virnect.data.dto.file.request.RecordFileUploadRequest;
 import com.virnect.data.dto.file.response.*;
 import com.virnect.data.dto.request.PageRequest;
 import com.virnect.data.dto.request.RoomProfileUpdateRequest;
+import com.virnect.data.dto.response.ResultResponse;
 import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
@@ -84,6 +85,18 @@ public class FileRestController implements IFileRestAPI {
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+    }
+
+
+    @Override
+    public ResponseEntity<ApiResponse<ResultResponse>> profileDeleteRequestHandler(String workspaceId, String sessionId) {
+        log.info("REST API::DELETE::#profileDeleteRequestHandler::{}/{}/{}/profile",
+                REST_FILE_PATH,
+                workspaceId != null ? workspaceId : "{}",
+                sessionId != null ? sessionId : "{}");
+        return ResponseEntity.ok(
+                this.fileDataRepository.deleteProfile(workspaceId, sessionId)
+        );
     }
 
     @Override
