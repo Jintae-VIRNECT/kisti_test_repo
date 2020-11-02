@@ -10,6 +10,13 @@ export const setConfigs = configs => {
   DEFAULT_LOGO = configs.defaultLogo || DEFAULT_LOGO
 }
 
+export let URLS = {}
+export const setUrls = urls => {
+  URLS = {
+    ...urls,
+  }
+}
+
 export const RUNTIME = {
   LOCAL: 'local',
   DEVELOP: 'develop',
