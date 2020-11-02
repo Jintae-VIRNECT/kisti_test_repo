@@ -13,6 +13,7 @@
         :roomInfo="roomInfo"
         :selection="selection"
         :nouser="users.length === 0"
+        :btnLoading="clicked"
         @startRemote="startRemote"
       ></create-room-info>
       <create-room-invite

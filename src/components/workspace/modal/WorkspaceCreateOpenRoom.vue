@@ -11,6 +11,7 @@
     <div class="openroom">
       <open-room-info
         :roomInfo="roomInfo"
+        :btnLoading="clicked"
         @startRemote="startRemote"
       ></open-room-info>
     </div>

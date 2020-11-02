@@ -56,7 +56,7 @@
     </input-row>
     <button
       class="btn large createroom-info__button"
-      :class="{ disabled: btnDisabled }"
+      :class="{ disabled: btnDisabled, 'btn-loading': btnLoading }"
       @click="startRemote"
     >
       {{ $t('button.start') }}
@@ -108,6 +108,10 @@ export default {
       default: () => {
         return {}
       },
+    },
+    btnLoading: {
+      type: Boolean,
+      defalut: false,
     },
   },
   watch: {
