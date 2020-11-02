@@ -27,7 +27,7 @@
 import Modal from 'Modal'
 import ProgressBar from 'ProgressBar'
 
-import { uploadFile } from 'api/http/file'
+import { uploadRecordFile } from 'api/http/file'
 import IDBHelper from 'utils/idbHelper'
 import confirmMixin from 'mixins/confirm'
 
@@ -89,11 +89,12 @@ export default {
           }
           const file = new File([chunk.blob], chunk.fileName)
           this.currentFile = chunk.fileName
-          await uploadFile({
+          await uploadRecordFile({
             file: file,
             sessionId: chunk.sessionId,
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
+            durationSec: Math.trunc(chunk.playTime),
           })
           this.uploaded++
         }
