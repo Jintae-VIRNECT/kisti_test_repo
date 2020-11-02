@@ -45,6 +45,7 @@ import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
+import { URLS } from 'configs/env.config'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -54,13 +55,13 @@ export default {
   computed: {
     ...mapGetters(['account']),
     urlLink() {
-      return window.urls.workstation
+      return URLS['workstation']
     },
     dashboardLink() {
-      if ('dashboard' in window.urls) {
+      if ('dashboard' in URLS) {
         return false
       } else {
-        return window.urls['dashboard']
+        return URLS['dashboard']
       }
     },
   },

@@ -18,6 +18,14 @@ export const RUNTIME = {
   ONPREMISE: 'onpremise',
 }
 
+export let URLS = {}
+export const setUrls = urls => {
+  URLS = urls
+}
+export const addUrl = (key, value) => {
+  URLS[key] = value
+}
+
 export default {
   RUNTIME_ENV,
   TARGET_COMPANY,

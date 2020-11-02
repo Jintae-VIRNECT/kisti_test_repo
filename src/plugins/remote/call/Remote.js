@@ -10,6 +10,7 @@ import {
   AR_FEATURE,
   FILE,
 } from 'configs/remote.config'
+import { URLS } from 'configs/remote.config'
 import {
   DEVICE,
   FLASH as FLASH_STATUE,
@@ -54,12 +55,12 @@ const _ = {
         deviceType: DEVICE.WEB,
       }
 
-      const iceServers = configs.coturn || window.urls.coturn
+      const iceServers = configs.coturn || URLS['coturn']
       for (let ice of iceServers) {
         ice['urls'] = ice['url']
       }
-      // const iceServers = window.urls.coturn
-      const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
+      // const iceServers = URLS.coturn
+      const ws = configs.wss || `${URLS['wsapi']}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
 
       if (!iceServers) {
