@@ -2,7 +2,6 @@ package database
 
 import (
 	"RM-RecordServer/data"
-	"RM-RecordServer/logger"
 	"time"
 
 	"github.com/biezhi/gorm-paginator/pagination"
@@ -39,7 +38,6 @@ func NewTable(dbDriver string, parameter string) *RecordingFileDB {
 		panic("failed to connect database: " + err.Error())
 	}
 
-	logger.Debug(viper.GetBool("general.devMode"))
 	if viper.GetBool("general.devMode") {
 		db.LogMode(true)
 	}

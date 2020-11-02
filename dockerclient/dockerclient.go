@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -57,13 +58,19 @@ type recordingJson struct {
 }
 
 func Init() {
-	go garbageCollector()
-}
-
-func garbageCollector() {
 	log := logger.NewLogger()
 	logEntry := logrus.NewEntry(log)
 	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
+
+	if err := DownloadDockerImage(ctx); err != nil {
+		e := fmt.Errorf("not found docker image: %s", viper.GetString("record.dockerImage"))
+		panic(e)
+	}
+	go garbageCollector(ctx)
+}
+
+func garbageCollector(ctx context.Context) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 
 	period := viper.GetInt("general.garbageCollectPeriod")
 	if period == 0 {

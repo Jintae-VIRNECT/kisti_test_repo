@@ -200,7 +200,6 @@ func Init() {
 	logEntry := logrus.NewEntry(log)
 	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
 
-	downloadDockerImage(ctx)
 	restoreRecordingFromContainer(ctx)
 }
 
@@ -312,13 +311,6 @@ func ExistRecordingID(recordingID data.RecordingID, workspaceID data.WorkspaceID
 
 func GetNumCurrentRecordings() int {
 	return mainRecorder.size()
-}
-
-func downloadDockerImage(ctx context.Context) {
-	err := dockerclient.DownloadDockerImage(ctx)
-	if err != nil {
-		panic(err)
-	}
 }
 
 func restoreRecordingFromContainer(ctx context.Context) {
