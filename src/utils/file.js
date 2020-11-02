@@ -40,6 +40,25 @@ export const downloadByDataURL = async (url, fileName) => {
   a.click()
   window.URL.revokeObjectURL(dataUrl)
 }
+export const getFile = url => {
+  return new Promise(resolve => {
+    var xhr = new XMLHttpRequest()
+
+    xhr.addEventListener('load', function() {
+      if (xhr.status == 200) {
+        resolve(xhr.response)
+      }
+    })
+
+    if ('minio' in URLS) {
+      xhr.open('GET', proxyUrl(url, URLS['minio']))
+    } else {
+      xhr.open('GET', url)
+    }
+    xhr.responseType = 'blob'
+    xhr.send(null)
+  })
+}
 
 export const downloadByURL = async file => {
   // let a = document.createElement('a')

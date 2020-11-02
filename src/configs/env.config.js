@@ -20,7 +20,9 @@ export const RUNTIME = {
 
 export let URLS = {}
 export const setUrls = urls => {
-  URLS = urls
+  URLS = {
+    ...urls,
+  }
 }
 
 export let RECORD_INFO = {}
