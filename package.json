@@ -4,12 +4,15 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "start:develop": "set CONFIG_SERVER=http://192.168.6.3:6383 && set VIRNECT_ENV=develop && set NODE_ENV=develop && node server.js",
     "start": "node server.js",
+    "start:develop": "set CONFIG_SERVER=http://192.168.6.3:6383 && set VIRNECT_ENV=develop && set NODE_ENV=develop && node server.js",
+    "start:staging": "set CONFIG_SERVER=https://stgconfig.virnect.com && set VIRNECT_ENV=staging && set NODE_ENV=production && node server.js",
+    "start:op":"set CONFIG_SERVER=http://192.168.6.3:6383 && set VIRNECT_ENV=onpremise && set NODE_ENV=production && node server.js",
+    "start:production":"set CONFIG_SERVER=https://config.virnect.com && set VIRNECT_ENV=production && set NODE_ENV=production && node server.js",
     "build": "vue-cli-service build",
+    "build:develop":"vue-cli-service build --mode development",
     "test:unit": "vue-cli-service test:unit",
-    "lint": "vue-cli-service lint",
-    "build:develop":"vue-cli-service build --mode development"
+    "lint": "vue-cli-service lint"
   },
   "dependencies": {
     "axios": "^0.20.0",
