@@ -566,13 +566,8 @@ public class WorkspaceService {
         //초대요청 라이선스
         int requestRemote = 0, requestMake = 0, requestView = 0;
         for (WorkspaceInviteRequest.UserInfo userInfo : workspaceInviteRequest.getUserInfoList()) {
-            //초대받은 사람의 유저의 권한은 매니저 또는 멤버만 가능하도록 체크x
-            if (userInfo.getRole().equals("MASTER")) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-            }
             //초대받는 사람에게 부여되는 라이선스는 최소 1개 이상이도록 체크
             userLicenseValidCheck(userInfo.getPlanRemote(), userInfo.getPlanMake(), userInfo.getPlanView());
-
             if (userInfo.getPlanRemote()) {
                 requestRemote++;
             }
@@ -644,11 +639,16 @@ public class WorkspaceService {
         //라이선스 플랜 타입 구하기 -- basic, pro..(한 워크스페이스에서 다른 타입의 라이선스 플랜을 동시에 가지고 있을 수 없으므로, 아무 플랜이나 잡고 타입을 구함.)
         String licensePlanType = workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
                 .stream()
-                .map(licenseProductInfoResponse -> licenseProductInfoResponse.getLicenseType())
+                .map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getLicenseType)
                 .collect(Collectors.toList())
                 .get(0);
 
-        // 요청한 사람이 마스터유저 또는 매니저유저인지 체크
+        /**
+         * 권한체크
+         * 초대하는 사람 권한 - 마스터, 매니저만 가능
+         * 초대받는 사람 권한 - 매니저, 멤버만 가능
+         * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.
+         */
         Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
@@ -656,15 +656,21 @@ public class WorkspaceService {
         if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
+        workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
+            log.debug("[WORKSPACE INVITE USER] Invite request user role >> [{}], response user role >> [{}]",
+                    workspaceUserPermission.getWorkspaceRole().getRole(), userInfo.getRole());
+            if (userInfo.getRole().equalsIgnoreCase("MASTER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+            if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && userInfo.getRole().equalsIgnoreCase("MANAGER")) {
+                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
+            }
+        });
 
         // 초대할 유저의 계정 유효성 체크(user 서비스)
-        List<String> emailList = new ArrayList<>();
-        workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> emailList.add(userInfo.getEmail()));
-        InviteUserInfoRestResponse responseUserList = this.userRestService.getUserInfoByEmailList(
-                emailList.stream().toArray(String[]::new)).getData();
-
-        // 유효하지 않은 이메일을 가진 사용자가 포함되어 있는 경우.
-        if (emailList.size() != responseUserList.getInviteUserInfoList().size()) {
+        String[] inviteEmails = workspaceInviteRequest.getUserInfoList().stream().map(WorkspaceInviteRequest.UserInfo::getEmail).toArray(String[]::new);
+        InviteUserInfoRestResponse responseUserList = userRestService.getUserInfoByEmailList(inviteEmails).getData();
+        if (inviteEmails.length != responseUserList.getInviteUserInfoList().size()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_USER_EXIST);
         }
         //TODO : 서브유저로 등록되어 있는 사용자가 포함되어 있는 경우.
@@ -673,87 +679,84 @@ public class WorkspaceService {
         UserInfoRestResponse materUser = this.userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
 
         Long duration = Duration.ofDays(7).getSeconds();
-        responseUserList.getInviteUserInfoList().stream().forEach(inviteUserResponse -> {
+        responseUserList.getInviteUserInfoList().forEach(inviteUserResponse -> workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
             //이미 이 워크스페이스에 소속되어 있는 경우
-            if (this.workspaceUserRepository.findByUserIdAndWorkspace(inviteUserResponse.getUserUUID(), workspace)
-                    != null) {
+            if (workspaceUserRepository.findByUserIdAndWorkspace(inviteUserResponse.getUserUUID(), workspace)!= null) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ALREADY_EXIST);
             }
-            workspaceInviteRequest.getUserInfoList().stream().forEach(userInfo -> {
-                if (inviteUserResponse.getEmail().equals(userInfo.getEmail())) {
-                    //redis 긁어서 이미 초대한 정보 있는지 확인하고, 있으면 시간과 초대 정보 업데이트
-                    UserInvite userInvite = this.userInviteRepository.findById(
-                            inviteUserResponse.getUserUUID() + "-" + workspaceId).orElse(null);
-                    if (userInvite != null) {
-                        userInvite.setRole(userInfo.getRole());
-                        userInvite.setPlanRemote(userInfo.getPlanRemote());
-                        userInvite.setPlanMake(userInfo.getPlanMake());
-                        userInvite.setPlanView(userInfo.getPlanView());
-                        userInvite.setUpdatedDate(LocalDateTime.now());
-                        userInvite.setExpireTime(duration);
-                        this.userInviteRepository.save(userInvite);
-                        log.debug(
-                                "[WORKSPACE INVITE USER] Worksapce Invite Info Redis Update >> {}", userInvite.toString());
-                    } else {
-                        UserInvite newUserInvite = UserInvite.builder()
-                                .inviteId(inviteUserResponse.getUserUUID() + "-" + workspaceId)
-                                .responseUserId(inviteUserResponse.getUserUUID())
-                                .responseUserEmail(inviteUserResponse.getEmail())
-                                .responseUserName(inviteUserResponse.getName())
-                                .responseUserNickName(inviteUserResponse.getNickname())
-                                .requestUserId(materUser.getUuid())
-                                .requestUserEmail(materUser.getEmail())
-                                .requestUserName(materUser.getName())
-                                .requestUserNickName(materUser.getNickname())
-                                .workspaceId(workspace.getUuid())
-                                .workspaceName(workspace.getName())
-                                .role(userInfo.getRole())
-                                .planRemote(userInfo.getPlanRemote())
-                                .planMake(userInfo.getPlanMake())
-                                .planView(userInfo.getPlanView())
-                                .planRemoteType(licensePlanType)
-                                .planMakeType(licensePlanType)
-                                .planViewType(licensePlanType)
-                                .invitedDate(LocalDateTime.now())
-                                .updatedDate(null)
-                                .expireTime(duration)
-                                .build();
-                        this.userInviteRepository.save(newUserInvite);
-                        log.debug(
-                                "[WORKSPACE INVITE USER] Worksapce Invite Info Redis Set >> {}", newUserInvite.toString());
-                    }
-                    //메일은 이미 초대한 것 여부와 관계없이 발송한다.
-                    String rejectUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId="
-                            + inviteUserResponse.getUserUUID() + "&accept=false&lang=" + locale.getLanguage();
-                    String acceptUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId="
-                            + inviteUserResponse.getUserUUID() + "&accept=true&lang=" + locale.getLanguage();
-                    Context context = new Context();
-                    context.setVariable("workspaceMasterNickName", materUser.getNickname());
-                    context.setVariable("workspaceMasterEmail", materUser.getEmail());
-                    context.setVariable("workspaceName", workspace.getName());
-                    context.setVariable("workstationHomeUrl", redirectUrl);
-                    context.setVariable("rejectUrl", rejectUrl);
-                    context.setVariable("acceptUrl", acceptUrl);
-                    context.setVariable("responseUserName", inviteUserResponse.getName());
-                    context.setVariable("responseUserEmail", inviteUserResponse.getEmail());
-                    context.setVariable("responseUserNickName", inviteUserResponse.getNickname());
-                    context.setVariable("role", userInfo.getRole());
-                    context.setVariable(
-                            "plan",
-                            generatePlanString(userInfo.getPlanRemote(), userInfo.getPlanMake(), userInfo.getPlanView())
-                    );
-                    context.setVariable("supportUrl", supportUrl);
-                    String subject = this.messageSource.getMessage(Mail.WORKSPACE_INVITE.getSubject(), null, locale);
-                    String template = this.messageSource.getMessage(Mail.WORKSPACE_INVITE.getTemplate(), null, locale);
-                    String html = springTemplateEngine.process(template, context);
-
-                    List<String> emailReceiverList = new ArrayList<>();
-                    emailReceiverList.add(inviteUserResponse.getEmail());
-
-                    this.sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
+            if (inviteUserResponse.getEmail().equals(userInfo.getEmail())) {
+                //redis 긁어서 이미 초대한 정보 있는지 확인하고, 있으면 시간과 초대 정보 업데이트
+                UserInvite userInvite = this.userInviteRepository.findById(
+                        inviteUserResponse.getUserUUID() + "-" + workspaceId).orElse(null);
+                if (userInvite != null) {
+                    userInvite.setRole(userInfo.getRole());
+                    userInvite.setPlanRemote(userInfo.getPlanRemote());
+                    userInvite.setPlanMake(userInfo.getPlanMake());
+                    userInvite.setPlanView(userInfo.getPlanView());
+                    userInvite.setUpdatedDate(LocalDateTime.now());
+                    userInvite.setExpireTime(duration);
+                    this.userInviteRepository.save(userInvite);
+                    log.debug(
+                            "[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
+                } else {
+                    UserInvite newUserInvite = UserInvite.builder()
+                            .inviteId(inviteUserResponse.getUserUUID() + "-" + workspaceId)
+                            .responseUserId(inviteUserResponse.getUserUUID())
+                            .responseUserEmail(inviteUserResponse.getEmail())
+                            .responseUserName(inviteUserResponse.getName())
+                            .responseUserNickName(inviteUserResponse.getNickname())
+                            .requestUserId(materUser.getUuid())
+                            .requestUserEmail(materUser.getEmail())
+                            .requestUserName(materUser.getName())
+                            .requestUserNickName(materUser.getNickname())
+                            .workspaceId(workspace.getUuid())
+                            .workspaceName(workspace.getName())
+                            .role(userInfo.getRole())
+                            .planRemote(userInfo.getPlanRemote())
+                            .planMake(userInfo.getPlanMake())
+                            .planView(userInfo.getPlanView())
+                            .planRemoteType(licensePlanType)
+                            .planMakeType(licensePlanType)
+                            .planViewType(licensePlanType)
+                            .invitedDate(LocalDateTime.now())
+                            .updatedDate(null)
+                            .expireTime(duration)
+                            .build();
+                    this.userInviteRepository.save(newUserInvite);
+                    log.debug(
+                            "[WORKSPACE INVITE USER] Worksapce Invite Info Redis Set >> {}", newUserInvite.toString());
                 }
-            });
-        });
+                //메일은 이미 초대한 것 여부와 관계없이 발송한다.
+                String rejectUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId="
+                        + inviteUserResponse.getUserUUID() + "&accept=false&lang=" + locale.getLanguage();
+                String acceptUrl = serverUrl + "/workspaces/" + workspaceId + "/invite/accept?userId="
+                        + inviteUserResponse.getUserUUID() + "&accept=true&lang=" + locale.getLanguage();
+                Context context = new Context();
+                context.setVariable("workspaceMasterNickName", materUser.getNickname());
+                context.setVariable("workspaceMasterEmail", materUser.getEmail());
+                context.setVariable("workspaceName", workspace.getName());
+                context.setVariable("workstationHomeUrl", redirectUrl);
+                context.setVariable("rejectUrl", rejectUrl);
+                context.setVariable("acceptUrl", acceptUrl);
+                context.setVariable("responseUserName", inviteUserResponse.getName());
+                context.setVariable("responseUserEmail", inviteUserResponse.getEmail());
+                context.setVariable("responseUserNickName", inviteUserResponse.getNickname());
+                context.setVariable("role", userInfo.getRole());
+                context.setVariable(
+                        "plan",
+                        generatePlanString(userInfo.getPlanRemote(), userInfo.getPlanMake(), userInfo.getPlanView())
+                );
+                context.setVariable("supportUrl", supportUrl);
+                String subject = this.messageSource.getMessage(Mail.WORKSPACE_INVITE.getSubject(), null, locale);
+                String template = this.messageSource.getMessage(Mail.WORKSPACE_INVITE.getTemplate(), null, locale);
+                String html = springTemplateEngine.process(template, context);
+
+                List<String> emailReceiverList = new ArrayList<>();
+                emailReceiverList.add(inviteUserResponse.getEmail());
+
+                this.sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
+            }
+        }));
 
         return new ApiResponse<>(true);
     }
@@ -1117,7 +1120,12 @@ public class WorkspaceService {
             String userId, Workspace workspace, UserInfoRestResponse masterUser, UserInfoRestResponse user,
             UserInfoRestResponse requestUser, Boolean remoteLicense, Boolean makeLicense, Boolean viewLicense, Locale locale
     ) {
+        //라이선스 할당 체크
         userLicenseValidCheck(remoteLicense, makeLicense, viewLicense);
+
+        //라이선스 변경 권한 체크 - MASTER, MANAGER 에게만 있음.
+        checkWorkspaceAndUserRole(workspace.getUuid(), requestUser.getUuid(), new String[]{"MASTER", "MANAGER"});
+
 
         //사용자의 예전 라이선스정보 가져오기
         MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
@@ -1471,21 +1479,29 @@ public class WorkspaceService {
         UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(workspace.getUserId())
                 .getData();
 
-        //내쫓는 자의 권한 확인(마스터, 매니저만 가능)
+        /**
+         * 권한체크
+         * 내보내는 사람 권한 - 마스터, 매니저만 가능
+         * 내쫓기는 사람 권한 - 매니저, 멤버만 가능
+         * 내보내는 사람이 매니저일때 - 멤버만 내보낼 수 있음
+         */
+
         WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
                 workspace, memberKickOutRequest.getUserId());
+        WorkspaceUserPermission kickedUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
+                workspace, memberKickOutRequest.getKickedUserId());
+        log.debug("[WORKSPACE KICK OUT USER] Request user Role >> [{}], Response user Role >> [{}]", workspaceUserPermission.getWorkspaceRole().getRole(),
+                kickedUserPermission.getWorkspaceRole().getRole());
+        //내보내는 자의 권한 확인(마스터, 매니저만 가능)
         if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
-
         //내쫓기는 자의 권한 확인(매니저, 멤버만 가능)
-        WorkspaceUserPermission kickedUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, memberKickOutRequest.getKickedUserId());
         if (kickedUserPermission.getWorkspaceRole().getRole().equals("MASTER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
-        //매니저 유저는 멤버만 쫓아낼 수 있다.
+        //내보내는 사람이 매니저일때는 멤버만 가능. = 내쫓기는 사람이 매니저일때는 마스터만 가능 = 매니저는 매니저를 내보낼 수 없음.
         if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
             if (kickedUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
