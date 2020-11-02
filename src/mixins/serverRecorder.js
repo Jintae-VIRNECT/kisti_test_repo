@@ -5,6 +5,7 @@ export default {
   data() {
     return {
       recordingId: null,
+      recordTimeout: null,
     }
   },
   computed: {
@@ -32,7 +33,7 @@ export default {
           userId: this.account.uuid,
           framerate: 20,
           recordingFilename: today,
-          recordingTimeLimit: 5,
+          recordingTimeLimit: 6,
           resolution: '720p',
           sessionId: this.roomInfo.sessionId,
           token: token,
@@ -40,9 +41,12 @@ export default {
         })
         this.recordingId = result.recordingId
 
-        setTimeout(() => {
+        //TODO : UI 추가되면 같이 적용할것
+        const timeout = 5 * 60 * 1000
+        const compensate = 10000 //10s
+        this.recordTimeout = setTimeout(() => {
           this.$eventBus.$emit('serverRecord', false)
-        }, 5 * 60 * 1000)
+        }, timeout + compensate)
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
         this.$eventBus.$emit('serverRecord', false)
@@ -50,6 +54,11 @@ export default {
     },
     async stopServerRecord() {
       if (this.recordingId) {
+        if (this.recordTimeout) {
+          clearTimeout(this.recordTimeout)
+          this.recordTimeout = null
+        }
+
         this.logger('SERVER RECORD', 'stop')
         await stopServerRecord({
           workspaceId: this.workspace.uuid,
