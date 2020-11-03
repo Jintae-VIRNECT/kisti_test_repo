@@ -41,7 +41,11 @@
 
           <template v-else-if="menus[tabIdx].key === 'record'">
             <set-record></set-record>
-            <set-resolution></set-resolution>
+            <set-resolution target="local"></set-resolution>
+            <template v-if="onpremise">
+              <set-server-record></set-server-record>
+              <set-resolution target="server"></set-resolution>
+            </template>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
@@ -61,9 +65,11 @@ import SetLanguage from '../section/WorkspaceSetLanguage'
 import SetTranslate from '../section/WorkspaceSetTranslate'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
+import SetServerRecord from '../section/WorkspaceSetServerRecord'
 import SetResolution from '../section/WorkspaceSetResolution'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceSetting',
@@ -73,6 +79,7 @@ export default {
     SetLanguage,
     SetTranslate,
     SetRecord,
+    SetServerRecord,
     SetResolution,
     MicTest,
     DeviceDenied,
@@ -117,6 +124,9 @@ export default {
         })
       }
       return menu
+    },
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
     },
   },
   methods: {

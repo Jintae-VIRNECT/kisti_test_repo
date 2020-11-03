@@ -107,6 +107,7 @@ export default {
       'setAllow',
       'setTranslate',
       'setCompanyInfo',
+      'setServerRecord',
     ]),
     async init() {
       this.inited = false
@@ -179,6 +180,10 @@ export default {
       const translateInfo = this.$localStorage.getItem('translate')
       if (translateInfo) {
         this.setTranslate(translateInfo)
+      }
+      const serverRecordInfo = this.$localStorage.getItem('serverRecordInfo')
+      if (serverRecordInfo) {
+        this.setServerRecord(serverRecordInfo)
       }
     },
     showDeviceDenied() {

@@ -116,6 +116,15 @@ export default {
     commit(types.SETTINGS.SET_RECORD, payload)
   },
   /**
+   * set server Record
+   * @param {*} param0
+   * @param {Object} payload
+   */
+  setServerRecord({ commit }, payload) {
+    commit(types.SETTINGS.SET_SERVER_RECORD, payload)
+  },
+
+  /**
    * set Allow
    * @param {*} param0
    * @param {Object} payload
@@ -159,6 +168,6 @@ export default {
    * update local record status
    */
   setLocalRecordStatus({ commit }, status) {
-    commit(types.SETTINGS.SET_LCOAL_RECORD_STAUTS, status)
+    commit(types.SETTINGS.SET_LOCAL_RECORD_STATUS, status)
   },
 }

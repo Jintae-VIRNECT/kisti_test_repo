@@ -35,13 +35,17 @@ export default {
       if (this.disabled) return false
 
       if (!this.isRecording) {
-        this.$eventBus.$emit('serverRecord', true)
+        this.$eventBus.$emit('serverRecord', {
+          isStart: true,
+        })
       } else {
-        this.$eventBus.$emit('serverRecord', false)
+        this.$eventBus.$emit('serverRecord', {
+          isStart: false,
+        })
       }
     },
-    toggleButton(isStart) {
-      this.isRecording = isStart
+    toggleButton(payload) {
+      this.isRecording = payload.isStart
     },
   },
 
