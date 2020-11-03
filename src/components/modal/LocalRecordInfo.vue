@@ -48,10 +48,6 @@ import Modal from 'components/modules/Modal'
 import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
-import FileSaver from 'file-saver'
-
-import { downloadRecordFile } from 'api/remote/record'
-
 import confirmMixin from 'mixins/confirm'
 
 export default {
@@ -115,54 +111,52 @@ export default {
 
   methods: {
     async download() {
-      for (const file of this.selectedFiles) {
-        try {
-          const data = await downloadRecordFile({
-            id: file.recordingId,
-          })
-          FileSaver.saveAs(
-            new Blob([data], {
-              type: data.type,
-            }),
-            file.filename,
-          )
-        } catch (e) {
-          console.error(e)
-        }
-      }
+      // for (const file of this.selectedFiles) {
+      //   try {
+      //     const data = await downloadRecordFile({
+      //       id: file.recordingId,
+      //     })
+      //     FileSaver.saveAs(
+      //       new Blob([data], {
+      //         type: data.type,
+      //       }),
+      //       file.filename,
+      //     )
+      //   } catch (e) {
+      //     console.error(e)
+      //   }
+      // }
     },
     async deleteItems() {
-      const deleteFiles = []
-      const errorFiles = []
-
-      this.selectedArray.forEach((selected, index) => {
-        if (selected) {
-          deleteFiles.push(this.fileList[index])
-        }
-      })
-
-      for (const file of deleteFiles) {
-        console.log(file)
-        try {
-          throw 'delete file'
-          // await deleteRecordFile({
-          //   id: recordingId,
-          // })
-        } catch (e) {
-          console.error(e)
-          errorFiles.push(file.name)
-          this.confirmDefault(
-            `${this.$t('confirm.file_not_found')}\n <p> ${file.name}</p>`,
-          )
-        }
-      }
-      if (errorFiles.length > 0) {
-        this.confirmDefault(
-          `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
-            '\n',
-          )}</p>`,
-        )
-      }
+      // const deleteFiles = []
+      // const errorFiles = []
+      // this.selectedArray.forEach((selected, index) => {
+      //   if (selected) {
+      //     deleteFiles.push(this.fileList[index])
+      //   }
+      // })
+      // for (const file of deleteFiles) {
+      //   console.log(file)
+      //   try {
+      //     throw 'delete file'
+      //     // await deleteRecordFile({
+      //     //   id: recordingId,
+      //     // })
+      //   } catch (e) {
+      //     console.error(e)
+      //     errorFiles.push(file.name)
+      //     this.confirmDefault(
+      //       `${this.$t('confirm.file_not_found')}\n <p> ${file.name}</p>`,
+      //     )
+      //   }
+      // }
+      // if (errorFiles.length > 0) {
+      //   this.confirmDefault(
+      //     `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
+      //       '\n',
+      //     )}</p>`,
+      //   )
+      // }
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
