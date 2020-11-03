@@ -1074,7 +1074,14 @@ public class DataRepository {
                 log.info("STOP RECORD::#stopRecordSession::destroy session => [{}]",sessionId);
                 if(room != null) {
                     ApiResponse<StopRecordingResponse> apiResponse = recordRestService.stopRecordingBySessionId(room.getWorkspaceId(), room.getLeaderId(), room.getSessionId());
-                    log.info("STOP RECORD::#stopRecordSession::response => [{}]",apiResponse.getData().getRecordingIds());
+                    if(apiResponse.getCode() == 200) {
+                        for (String recordingId: apiResponse.getData().getRecordingIds()) {
+                            log.info("STOP RECORD::#stopRecordSession::response => [{}]", recordingId);
+                        }
+                    } else {
+                        log.info("STOP RECORD::#stopRecordSession::err response => [{}]", apiResponse.getCode());
+                    }
+
                     return new DataProcess<>(true);
                 } else {
                     return new DataProcess<>(false);
