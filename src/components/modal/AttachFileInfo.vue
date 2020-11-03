@@ -48,10 +48,10 @@ import Modal from 'components/modules/Modal'
 import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
-import FileSaver from 'file-saver'
-import { downloadRecordFile } from 'api/remote/record'
+import { getFileDownloadUrl } from 'api/http/file'
 
 import confirmMixin from 'mixins/confirm'
+import { downloadByURL, deleteFileItem } from 'utils/file'
 
 export default {
   name: 'AttachFileInfo',
@@ -109,17 +109,25 @@ export default {
 
   methods: {
     async download() {
-      for (const file of this.selectedFiles) {
+      const downloadFiles = []
+
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          downloadFiles.push(this.fileList[index])
+        }
+      })
+
+      for (const file of downloadFiles) {
         try {
-          const data = await downloadRecordFile({
-            id: file.recordingId,
+          const data = await getFileDownloadUrl({
+            objectName: file.objectName,
+            sessionId: file.sessionId,
+            userId: this.account.uuid,
+            workspaceId: file.workspaceId,
           })
-          FileSaver.saveAs(
-            new Blob([data], {
-              type: data.type,
-            }),
-            file.filename,
-          )
+
+          downloadByURL(data)
+          console.log(data)
         } catch (e) {
           console.error(e)
         }
@@ -136,12 +144,14 @@ export default {
       })
 
       for (const file of deleteFiles) {
-        console.log(file)
         try {
-          throw 'delete file'
-          // await deleteRecordFile({
-          //   id: recordingId,
-          // })
+          const result = await deleteFileItem({
+            objectName: file.objectName,
+            sessionId: file.sessionId,
+            userId: this.account.uuid,
+            workspaceId: file.workspaceId,
+          })
+          console.log(result)
         } catch (e) {
           console.error(e)
           errorFiles.push(file.name)
@@ -155,6 +165,7 @@ export default {
           )}</p>`,
         )
       }
+      this.$eventBus.$emit('reload::list')
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
