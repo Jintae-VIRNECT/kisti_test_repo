@@ -14,7 +14,9 @@
             <div
               class="image"
               :style="
-                `background-image: url(${scope.row[imageProp]}), url(${$defaultUserProfile})`
+                `background-image: url(${cdn(
+                  scope.row[imageProp],
+                )}), url(${$defaultUserProfile})`
               "
             />
           </div>
@@ -26,7 +28,9 @@
           <div
             class="image"
             :style="
-              `background-image: url(${scope.row[imageProp]}), url(${$defaultUserProfile})`
+              `background-image: url(${cdn(
+                scope.row[imageProp],
+              )}), url(${$defaultUserProfile})`
             "
           />
         </div>
@@ -40,7 +44,9 @@
               <div
                 class="image"
                 :style="
-                  `background-image: url('${scope.row[imageProp]}'), url('${$defaultUserProfile}')`
+                  `background-image: url('${cdn(
+                    scope.row[imageProp],
+                  )}'), url('${$defaultUserProfile}')`
                 "
               />
             </div>
@@ -53,7 +59,10 @@
 </template>
 
 <script>
+import filterMixin from '@/mixins/filters'
+
 export default {
+  mixins: [filterMixin],
   props: {
     prop: String,
     type: String,
