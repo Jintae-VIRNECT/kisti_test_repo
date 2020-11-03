@@ -151,7 +151,8 @@ class Auth {
 
     if (Cookies.get('accessToken')) {
       try {
-        await Promise.all([getMyInfo(), getSettings()])
+        // await Promise.all([getMyInfo(), getSettings()])
+        await Promise.all([getMyInfo()])
         isLogin = true
         tokenRenewal()
       } catch (e) {
