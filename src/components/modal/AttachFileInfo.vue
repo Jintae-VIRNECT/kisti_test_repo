@@ -84,7 +84,7 @@ export default {
       visibleFlag: false,
       // toggleAllFlag: false,
       selectedArray: [],
-      columns: ['name', 'size', 'uploader', 'expirationDate'],
+      columns: [['name'], ['size'], ['uploader'], ['expirationDate']],
     }
   },
   computed: {

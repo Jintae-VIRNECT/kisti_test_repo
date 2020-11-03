@@ -85,7 +85,12 @@ export default {
       visibleFlag: false,
       // toggleAllFlag: false,
       selectedArray: [],
-      columns: ['name', 'duration', 'size', 'uploader'],
+      columns: [
+        ['name'],
+        ['durationSec'],
+        ['size'],
+        ['fileUserInfo', 'nickname'],
+      ],
     }
   },
   computed: {
@@ -218,7 +223,7 @@ export default {
 
       renderOpts.push(
         {
-          column: 'duration',
+          column: 'durationSec',
           render: playTimeRender,
         },
         { column: 'size', render: fileSizeRender },

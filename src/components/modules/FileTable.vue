@@ -87,6 +87,8 @@
 import ToggleButton from 'ToggleButton'
 import Scroller from 'Scroller'
 import PlayButton from 'PlayButton'
+import { deepGet } from 'utils/util'
+
 export default {
   name: 'FileTable',
   components: {
@@ -181,7 +183,11 @@ export default {
 
         //copy data with specific columns
         this.columns.forEach(key => {
-          newData[key] = data[key]
+          // newData[key] = data[key]
+          const value = deepGet(data, key)
+          console.log('key', key)
+          console.log('value', value)
+          newData[key] = value ? value : ''
         })
 
         //execute render function
