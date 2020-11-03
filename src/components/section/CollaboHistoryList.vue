@@ -24,7 +24,11 @@ import History from 'components/partials/History'
 import PaginationTool from 'components/partials/PaginationTool'
 
 import { getHistoryList, getHistorySingleItem } from 'api/http/history'
-import { getServerRecordFiles, getFiles } from 'api/http/file'
+import {
+  getServerRecordFiles,
+  getAttachFiles,
+  getLocalRecordFiles,
+} from 'api/http/file'
 import { getMemberInfo } from 'api/http/member'
 
 import confirmMixin from 'mixins/confirm'
@@ -104,6 +108,7 @@ export default {
       await this.setLeader(sorted)
       await this.setServerRecord(sorted)
       await this.setFile(sorted)
+      await this.setLocalRecord(sorted)
 
       this.historyList = sorted
 
@@ -169,26 +174,36 @@ export default {
     async setFile(list) {
       for (const history of list) {
         try {
-          const datas = await getFiles({
+          const datas = await getAttachFiles({
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
             sessionId: history.sessionId,
           })
-          const files = datas.fileInfoList.filter(file => {
-            return file.contentType !== 'video/mp4'
-          })
-          const localFiles = datas.fileInfoList.filter(file => {
-            return file.contentType === 'video/mp4'
-          })
-          history.files = files
-          history.localRecord = localFiles
+          history.files = datas.fileInfoList
+          // history.localRecord = localFiles
         } catch (e) {
           history.files = []
-          history.localRecord = []
+          // history.localRecord = []
           console.error(e)
         }
       }
       console.log(history.files)
+      console.log(history.localRecord)
+    },
+    async setLocalRecord(list) {
+      for (const history of list) {
+        try {
+          const datas = await getLocalRecordFiles({
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+            sessionId: history.sessionId,
+          })
+          history.localRecord = datas.fileDetailInfoList
+        } catch (e) {
+          history.localRecord = []
+          console.error(e)
+        }
+      }
       console.log(history.localRecord)
     },
     async getExcelData() {
@@ -208,6 +223,7 @@ export default {
         this.setLeader(historys.roomHistoryInfoList)
         this.setServerRecord(historys.roomHistoryInfoList)
         this.setFile(historys.roomHistoryInfoList)
+        this.setLocalRecord(historys.roomHistoryInfoList)
 
         for (const history of historys.roomHistoryInfoList) {
           const room = await getHistorySingleItem({
