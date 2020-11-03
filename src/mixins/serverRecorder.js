@@ -12,8 +12,6 @@ export default {
       recordingId: null,
       recordTimeout: null,
 
-      timeout: 5 * 60 * 1000,
-      compensate: 2 * 1000,
       elapsedTime: 0,
 
       isContinue: false,
@@ -52,11 +50,12 @@ export default {
         })
         this.recordingId = result.recordingId
 
+        const timeout = Number.parseInt(this.serverRecord.time, 10) * 60 * 1000
         this.recordTimeout = setTimeout(() => {
           this.$eventBus.$emit('serverRecord', {
             isStart: false,
           })
-        }, this.timeout + this.compensate)
+        }, timeout)
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
         console.error('SERVER RECORD::', e)
@@ -120,16 +119,17 @@ export default {
         const elapsedTime = result.infos[0].duration
         this.recordingId = result.infos[0].recordingId
         this.elapsedTime = elapsedTime
-        this.continueServerRecord()
+        const timeout = result.infos[0].timeLimit * 1000
+        this.continueServerRecord(timeout)
       }
     },
 
-    async continueServerRecord() {
+    async continueServerRecord(timeout) {
       this.recordTimeout = setTimeout(() => {
         this.$eventBus.$emit('serverRecord', {
           isStart: false,
         })
-      }, this.timeout + this.compensate - this.elapsedTime)
+      }, timeout - this.elapsedTime * 1000)
 
       this.$eventBus.$emit('serverRecord', {
         isStart: true,
