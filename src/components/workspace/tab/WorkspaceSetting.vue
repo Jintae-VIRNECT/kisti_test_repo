@@ -41,10 +41,10 @@
 
           <template v-else-if="menus[tabIdx].key === 'record'">
             <set-record></set-record>
-            <set-resolution :target="'local'"></set-resolution>
-            <template v-if="onpremise">
+            <set-resolution target="local"></set-resolution>
+            <template>
               <set-server-record></set-server-record>
-              <set-resolution :target="'server'"></set-resolution>
+              <set-resolution target="server"></set-resolution>
             </template>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
