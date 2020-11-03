@@ -51,7 +51,7 @@ import IconButton from 'components/modules/IconButton'
 
 import confirmMixin from 'mixins/confirm'
 import { getLocalRecordFileUrl } from 'api/http/file' //삭제 api 추가 필요함.
-import { downloadByURL, convertProxyUrl } from 'utils/file'
+import { downloadByURL, proxyUrl } from 'utils/file'
 
 export default {
   name: 'LocalRecordInfo',
@@ -123,7 +123,7 @@ export default {
         workspaceId: file.workspaceId,
       })
 
-      this.$eventBus.$emit('open::player', convertProxyUrl(url))
+      this.$eventBus.$emit('open::player', proxyUrl(url))
     },
     async download() {
       const downloadFiles = []

@@ -25,7 +25,7 @@
 import Role from 'Role'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
-import { convertProxyUrl } from 'utils/file'
+import { proxyUrl } from 'utils/file'
 export default {
   name: 'Profile',
   components: {
@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     imgSrc() {
-      return convertProxyUrl(this.image)
+      return proxyUrl(this.image)
     },
     showRole() {
       if (this.role === WORKSPACE_ROLE.MEMBER || this.role === ROLE.UNKNOWN) {
