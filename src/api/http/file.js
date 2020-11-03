@@ -84,13 +84,11 @@ export const getAttachFiles = async ({
   return returnVal
 }
 
-
-
 /**
- * 
- * @param {*} param0 
+ *
+ * @param {*} param0
  */
-export const getLocalRecordFiles = async({
+export const getLocalRecordFiles = async ({
   deleted,
   page,
   sessionId,
@@ -111,22 +109,21 @@ export const getLocalRecordFiles = async({
   return returnVal
 }
 
-
 /**
  * 특정 파일을 삭제하는 API
  * @param {*} param0
  */
 export const deleteFileItem = async ({
   objectName,
-  workspaceId,
-  userId,
   sessionId,
+  userId,
+  workspaceId,
 }) => {
   const returnVal = await http('DELETE_FILE_ITEM', {
     objectName,
-    workspaceId,
-    userId,
     sessionId,
+    userId,
+    workspaceId,
   })
   return returnVal
 }
@@ -135,10 +132,23 @@ export const deleteFileItem = async ({
  * 특정 파일의 다운로드 URL을 반환하는 API
  * @param {*} param0
  */
-export const getFileDownloadUrl = async ({ workspaceId, sessionId }) => {
-  const returnVal = await http('FILE_ITEM_DOWNLOAD_URL', {
-    workspaceId,
+export const getFileDownloadUrl = async ({
+  objectName,
+  sessionId,
+  userId,
+  workspaceId,
+}) => {
+  console.log({
+    objectName,
     sessionId,
+    userId,
+    workspaceId,
+  })
+  const returnVal = await http('FILE_ITEM_DOWNLOAD_URL', {
+    objectName,
+    sessionId,
+    userId,
+    workspaceId,
   })
   return returnVal
 }
