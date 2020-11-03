@@ -31,10 +31,10 @@
 <script>
 import Popover from 'Popover'
 import langMixin from 'mixins/language'
-
+import confirmMixin from 'mixins/confirm'
 export default {
   name: 'HeaderLanguage',
-  mixins: [langMixin],
+  mixins: [langMixin, confirmMixin],
   components: {
     Popover,
   },
@@ -44,14 +44,17 @@ export default {
     }
   },
   methods: {
-    changeLang(lang) {
-      this.mx_changeLang(lang)
-      this.defaultLanguage = lang
-
-      this.$nextTick(() => {
-        this.$eventBus.$emit('popover:close')
-      })
+    changeLang() {
+      this.confirmDefault('현재 준비중인 기능입니다.')
     },
+    // changeLang(lang) {
+    //   this.mx_changeLang(lang)
+    //   this.defaultLanguage = lang
+
+    //   this.$nextTick(() => {
+    //     this.$eventBus.$emit('popover:close')
+    //   })
+    // },
     isSelected(lang) {
       return this.defaultLanguage === lang
     },
