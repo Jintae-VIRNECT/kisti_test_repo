@@ -1,7 +1,6 @@
 /*eslint no-unused-vars: "error"*/
 
 import http from 'api/gateway'
-import dummyFile from './dummyFile'
 
 //서버 녹화파일 / 로컬 녹화 파일 / 첨부파일 API 전부
 
@@ -70,22 +69,48 @@ export const getServerRecordFileUrl = async ({ workspaceId, userId, id }) => {
  * 모든 파일 목록을 반환하는 API
  * @param {*} param0
  */
-export const getFiles = async ({
+export const getAttachFiles = async ({
   workspaceId,
   userId,
   sessionId,
   opts = {},
 }) => {
-  // const returnVal = await http('FILES', {
-  //   workspaceId,
-  //   userId,
-  //   sessionId,
-  //   ...opts,
-  // })
-  // return returnVal
-  const returnVal = dummyFile
+  const returnVal = await http('FILES', {
+    workspaceId,
+    userId,
+    sessionId,
+    ...opts,
+  })
   return returnVal
 }
+
+
+
+/**
+ * 
+ * @param {*} param0 
+ */
+export const getLocalRecordFiles = async({
+  deleted,
+  page,
+  sessionId,
+  size,
+  sort,
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('LOCAL_RECORD_FILES', {
+    deleted,
+    page,
+    sessionId,
+    size,
+    sort,
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}
+
 
 /**
  * 특정 파일을 삭제하는 API

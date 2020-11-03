@@ -35,7 +35,7 @@ export default {
     '/remote/recorder/workspaces/{workspaceId}/users/{userId}/files/{id}/url',
   ],
 
-  /* ATTACH & LOCAL RECORD FILE */
+  /* ATTACH */
   FILES: ['GET', '/remote/file'],
 
   DELETE_FILE_ITEM: ['DELETE', '/remote/file/{workspaceId}/{sessionId}'],
@@ -49,6 +49,14 @@ export default {
     'GET',
     '/remote/file/download/url/{workspaceId}/{sessionId}',
   ],
+
+  /* LOCAL RECORD FILE */
+  LOCAL_RECORD_FILES: ['GET', '/remote/file/record/info'],
+
+  // DELETE_RECORD_FILE_ITEM:[
+  //   'DELETE',
+  //   '/remote/record/'
+  // ]
 
   /* USER */
   USER_LIST: ['GET'],
