@@ -1,5 +1,5 @@
 <template>
-  <tab-view>
+  <tab-view title="">
     <div class="workcard-list">
       <card class="card-skeleton" width="100%" height="27.143em"> </card>
       <card class="card-skeleton" width="100%" height="27.143em"> </card>
