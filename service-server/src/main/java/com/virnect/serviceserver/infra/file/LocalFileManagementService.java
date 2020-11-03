@@ -489,28 +489,28 @@ public class LocalFileManagementService implements IFileManagementService {
             switch (fileType) {
                 case FILE: {
                     objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
-                    //url = minioClient.getObjectUrl(bucketName, objectPath.toString());
-                    url = minioClient.getPresignedObjectUrl(
+                    url = minioClient.getObjectUrl(bucketName, objectPath.toString());
+                    /*url = minioClient.getPresignedObjectUrl(
                             GetPresignedObjectUrlArgs
                                     .builder()
                                     .method(Method.GET)
                                     .bucket(bucketName).object(objectPath.toString())
                                     .expiry(expiry)
-                                    .build());
+                                    .build());*/
                     log.info("DOWNLOAD FILE::#filePreSignedUrl::file result::[{}]", url);
                     break;
                 }
 
                 case RECORD: {
                     objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
-                    url = minioClient.getPresignedObjectUrl(
+                    /*url = minioClient.getPresignedObjectUrl(
                             GetPresignedObjectUrlArgs
                                     .builder()
                                     .method(Method.GET)
                                     .bucket(bucketName)
                                     .object(objectPath.toString())
                                     .expiry(expiry)
-                                    .build());
+                                    .build());*/
                     log.info("DOWNLOAD FILE::#filePreSignedUrl::record result::[{}]", url);
                     break;
                 }
