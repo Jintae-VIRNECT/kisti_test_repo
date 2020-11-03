@@ -143,7 +143,6 @@ export default {
           })
 
           const a = document.createElement('a')
-          // a.href = url
           a.href = convertProxyUrl(url)
           a.setAttribute('type', 'application/octet-stream')
           a.setAttribute('download', file.filename)
