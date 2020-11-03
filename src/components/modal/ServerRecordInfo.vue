@@ -193,7 +193,9 @@ export default {
 
       //display h hour m min s sec
       const playTimeRender = playTime => {
-        console.log('playTime:', playTime)
+        if (playTime === '') {
+          playTime = 0
+        }
         let sec_num = Number.parseInt(playTime, 10)
         let hours = Math.floor(sec_num / 3600)
         let minutes = Math.floor((sec_num - hours * 3600) / 60)
