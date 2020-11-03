@@ -58,7 +58,7 @@ export default {
       return URLS['workstation']
     },
     dashboardLink() {
-      if ('dashboard' in URLS) {
+      if (!('dashboard' in URLS)) {
         return false
       } else {
         return URLS['dashboard']
