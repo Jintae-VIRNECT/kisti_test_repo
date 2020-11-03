@@ -9,6 +9,7 @@
   >
     <div class="file-list">
       <file-table
+        @play="openPlayModal"
         :showToggleHeader="true"
         :showPlayButton="true"
         :headers="headers"
@@ -50,7 +51,8 @@ import IconButton from 'components/modules/IconButton'
 
 import confirmMixin from 'mixins/confirm'
 import { getLocalRecordFileUrl } from 'api/http/file' //삭제 api 추가 필요함.
-import { downloadByURL } from 'utils/file'
+import { downloadByURL, convertProxyUrl } from 'utils/file'
+
 export default {
   name: 'LocalRecordInfo',
   mixins: [confirmMixin],
@@ -111,6 +113,18 @@ export default {
   },
 
   methods: {
+    async openPlayModal(index) {
+      const file = this.fileList[index]
+
+      const url = await getLocalRecordFileUrl({
+        objectName: file.objectName,
+        sessionId: file.sessionId,
+        userId: this.account.uuid,
+        workspaceId: file.workspaceId,
+      })
+
+      this.$eventBus.$emit('open::player', convertProxyUrl(url))
+    },
     async download() {
       const downloadFiles = []
 
@@ -128,7 +142,7 @@ export default {
             userId: this.account.uuid,
             workspaceId: file.workspaceId,
           })
-
+          console.log('download::getLocalRecordFileUrl', data)
           downloadByURL(data)
           console.log(data)
         } catch (e) {
