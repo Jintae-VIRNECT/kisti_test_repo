@@ -42,7 +42,7 @@
           <template v-else-if="menus[tabIdx].key === 'record'">
             <set-record></set-record>
             <set-resolution target="local"></set-resolution>
-            <template>
+            <template v-if="onpremise">
               <set-server-record></set-server-record>
               <set-resolution target="server"></set-resolution>
             </template>
