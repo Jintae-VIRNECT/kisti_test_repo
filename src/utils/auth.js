@@ -111,7 +111,7 @@ const getSettings = async () => {
   if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
   const settings = await getSettingInfo()
 
-  document.title = `${settings.workspaceTitle} | Remote`
+  document.title = `${settings.workspaceTitle} | Dashboard`
   const favicon = document.querySelector("link[rel*='icon']")
   favicon.href = settings.favicon
 
