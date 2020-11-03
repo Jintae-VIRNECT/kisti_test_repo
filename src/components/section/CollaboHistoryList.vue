@@ -180,13 +180,12 @@ export default {
             sessionId: history.sessionId,
           })
           history.files = datas.fileInfoList
-          // history.localRecord = localFiles
         } catch (e) {
           history.files = []
-          // history.localRecord = []
           console.error(e)
         }
       }
+
       console.log(history.files)
       console.log(history.localRecord)
     },
@@ -204,6 +203,7 @@ export default {
           console.error(e)
         }
       }
+
       console.log(history.localRecord)
     },
     async getExcelData() {
