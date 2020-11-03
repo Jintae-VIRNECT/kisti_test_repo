@@ -59,6 +59,7 @@ export default {
     { type: 'form' },
   ],
   FILE_UPLOAD: ['POST', '/remote/file/upload', { type: 'form' }],
+  FILE_UPLOAD_RECORD: ['POST', '/remote/record/upload', { type: 'form' }],
   // FILE_DOWNLOAD: [
   //   'GET',
   //   '/remote/file/download/{workspaceId}/{sessionId}',
@@ -75,6 +76,10 @@ export default {
   STOP_SERVER_RECORD: [
     'DELETE',
     '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings/{id}',
+  ],
+  SERVER_RECORD_LIST: [
+    'GET',
+    '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings',
   ],
 }
 

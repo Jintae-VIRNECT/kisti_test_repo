@@ -379,12 +379,13 @@ export default {
         this.localTimer = null
       }
     },
-    serverRecord(isStart) {
-      if (isStart) {
+    serverRecord(payload) {
+      const elapsedTime = payload.elapsedTime ? payload.elapsedTime : 0
+
+      if (payload.isStart) {
         this.serverStart = this.$dayjs().unix()
         this.serverTimer = setInterval(() => {
-          const diff = this.$dayjs().unix() - this.serverStart
-
+          const diff = this.$dayjs().unix() - this.serverStart + elapsedTime
           this.serverTime = this.$dayjs
             .duration(diff, 'seconds')
             .as('milliseconds')

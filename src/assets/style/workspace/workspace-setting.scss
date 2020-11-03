@@ -112,6 +112,12 @@
   margin: 0.357rem 0 0.857rem;
   color: rgba($color_text_main, 0.62);
   font-size: 1rem;
+
+  &.dot {
+    &:before {
+      content: "\002A\00a0";
+    }
+  }
 }
 
 .setting__r-selecter {
