@@ -101,10 +101,7 @@ export default {
       showMemberKickModal: false,
       showMemberPasswordModal: false,
       showMemberDeleteModal: false,
-      plans: Object.values(plans).reduce((o, n) => {
-        o[n.value] = n
-        return o
-      }, {}),
+      plans,
     }
   },
   watch: {

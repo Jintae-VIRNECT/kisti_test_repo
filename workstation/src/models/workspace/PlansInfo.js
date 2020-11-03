@@ -6,8 +6,7 @@ const { mb2gb } = filters.filters
 
 export class Plan {
   constructor(product) {
-    const { id, value, label, logo } = product
-    this.id = id
+    const { value, label, logo } = product
     this.value = value
     this.label = label
     this.logo = logo
@@ -66,14 +65,16 @@ export default class PlansInfo extends Model {
       new Plan(plans.view),
     ]
     json.licenseProductInfoList.forEach(license => {
-      const product = this.products.find(p => p.id === license.productId)
+      const product = this.products.find(
+        p => p.value.toLowerCase() === license.productName.toLowerCase(),
+      )
       product.amount = license.quantity
       product.usedAmount = license.useLicenseAmount
       product.unUsedAmount = license.unUseLicenseAmount
     })
 
-    this.remote = this.products.find(p => p.id === 1001)
-    this.make = this.products.find(p => p.id === 1002)
-    this.view = this.products.find(p => p.id === 1003)
+    this.remote = this.products.find(p => p.value === 'remote')
+    this.make = this.products.find(p => p.value === 'make')
+    this.view = this.products.find(p => p.value === 'view')
   }
 }
