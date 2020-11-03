@@ -66,6 +66,10 @@ public class FileService {
         return this.fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
     }
 
+    public RecordFile getRecordFileByObjectName(String workspaceId, String sessionId, String objectName) {
+        return this.recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+    }
+
     public Page<File> getFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {
         if(isDeleted)
             return this.fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId, pageable);

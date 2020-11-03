@@ -1075,8 +1075,10 @@ public class DataRepository {
                 if(room != null) {
                     ApiResponse<StopRecordingResponse> apiResponse = recordRestService.stopRecordingBySessionId(room.getWorkspaceId(), room.getLeaderId(), room.getSessionId());
                     if(apiResponse.getCode() == 200) {
-                        for (String recordingId: apiResponse.getData().getRecordingIds()) {
-                            log.info("STOP RECORD::#stopRecordSession::response => [{}]", recordingId);
+                        if(apiResponse.getData() != null) {
+                            for (String recordingId : apiResponse.getData().getRecordingIds()) {
+                                log.info("STOP RECORD::#stopRecordSession::response => [{}]", recordingId);
+                            }
                         }
                     } else {
                         log.info("STOP RECORD::#stopRecordSession::err response => [{}]", apiResponse.getCode());

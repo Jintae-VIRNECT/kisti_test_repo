@@ -118,6 +118,24 @@ public class FileRestController implements IFileRestAPI {
     }
 
     @Override
+    public ResponseEntity<ApiResponse<FilePreSignedResponse>> recordFileDownloadUrlRequestHandler(String workspaceId, String sessionId, String userId, String objectName) throws IOException {
+        log.info("REST API::GET::#recordFileDownloadUrlRequestHandler::{}/download/url/{}/{}",
+                REST_FILE_PATH,
+                workspaceId != null ? workspaceId : "{}",
+                sessionId != null ? sessionId : "{}");
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            if (userId == null && objectName == null) {
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            return ResponseEntity.ok(
+                    this.fileDataRepository.downloadRecordFileUrl(workspaceId, sessionId, userId, objectName)
+            );
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
+    }
+
+    @Override
     public ResponseEntity<ApiResponse<FileInfoListResponse>> getFileList(
             String workspaceId,
             String sessionId,

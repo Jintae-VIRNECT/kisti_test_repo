@@ -14,6 +14,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -473,24 +475,44 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String filePreSignedUrl(String dirPath, String objectName, int expiry, FileType fileType)
+    public String filePreSignedUrl(String dirPath, String objectName, int expiry, String fileName, FileType fileType)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
+            // Create headers
+            HttpHeaders httpHeaders = new HttpHeaders();
+            //httpHeaders.setContentLength(byteArray.length);
+            httpHeaders.setContentDispositionFormData("attachment", fileName);
+            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+
             StringBuilder objectPath = new StringBuilder();
             String url = null;
             switch (fileType) {
                 case FILE: {
                     objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
-                    url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET)
-                            .bucket(bucketName).object(objectPath.toString()).expiry(expiry).build());
+                    //url = minioClient.getObjectUrl(bucketName, objectPath.toString());
+                    url = minioClient.getPresignedObjectUrl(
+                            GetPresignedObjectUrlArgs
+                                    .builder()
+                                    .method(Method.GET)
+                                    .extraHeaders(httpHeaders.toSingleValueMap())
+                                    .bucket(bucketName).object(objectPath.toString())
+                                    .expiry(expiry)
+                                    .build());
                     log.info("DOWNLOAD FILE::#filePreSignedUrl::file result::[{}]", url);
                     break;
                 }
 
                 case RECORD: {
                     objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
-                    url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET)
-                            .bucket(bucketName).object(objectPath.toString()).expiry(expiry).build());
+                    url = minioClient.getPresignedObjectUrl(
+                            GetPresignedObjectUrlArgs
+                                    .builder()
+                                    .method(Method.GET)
+                                    .extraHeaders(httpHeaders.toSingleValueMap())
+                                    .bucket(bucketName)
+                                    .object(objectPath.toString())
+                                    .expiry(expiry)
+                                    .build());
                     log.info("DOWNLOAD FILE::#filePreSignedUrl::record result::[{}]", url);
                     break;
                 }
