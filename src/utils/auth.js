@@ -1,4 +1,5 @@
-import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
+// import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
+import { getAccount, tokenRequest } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
@@ -8,8 +9,8 @@ import { logger, debug } from 'utils/logger'
 import {
   setConfigs,
   setUrls,
-  RUNTIME_ENV,
-  RUNTIME,
+  // RUNTIME_ENV,
+  // RUNTIME,
   URLS,
 } from 'configs/env.config'
 
