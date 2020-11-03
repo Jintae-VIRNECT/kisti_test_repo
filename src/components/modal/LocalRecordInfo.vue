@@ -48,9 +48,9 @@ import Modal from 'components/modules/Modal'
 import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
-import FileSaver from 'file-saver'
+// import FileSaver from 'file-saver'
 
-import { downloadRecordFile } from 'api/remote/record'
+// import { downloadRecordFile } from 'api/remote/record'
 
 import confirmMixin from 'mixins/confirm'
 
@@ -115,22 +115,22 @@ export default {
 
   methods: {
     async download() {
-      for (const file of this.selectedFiles) {
-        try {
-          const data = await downloadRecordFile({
-            id: file.recordingId,
-          })
-
-          FileSaver.saveAs(
-            new Blob([data], {
-              type: data.type,
-            }),
-            file.filename,
-          )
-        } catch (e) {
-          console.error(e)
-        }
-      }
+      this.confirmDefault('현재 준비중인 기능입니다.')
+      // for (const file of this.selectedFiles) {
+      //   try {
+      //     const data = await downloadRecordFile({
+      //       id: file.recordingId,
+      //     })
+      //     FileSaver.saveAs(
+      //       new Blob([data], {
+      //         type: data.type,
+      //       }),
+      //       file.filename,
+      //     )
+      //   } catch (e) {
+      //     console.error(e)
+      //   }
+      // }
     },
     async deleteItems() {
       const deleteFiles = []
