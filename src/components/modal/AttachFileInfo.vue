@@ -48,8 +48,8 @@ import Modal from 'components/modules/Modal'
 import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
-// import FileSaver from 'file-saver'
-// import { downloadRecordFile } from 'api/remote/record'
+import FileSaver from 'file-saver'
+import { downloadRecordFile } from 'api/remote/record'
 
 import confirmMixin from 'mixins/confirm'
 
@@ -109,54 +109,52 @@ export default {
 
   methods: {
     async download() {
-      this.confirmDefault('현재 준비중인 기능입니다.')
-      // for (const file of this.selectedFiles) {
-      //   try {
-      //     const data = await downloadRecordFile({
-      //       id: file.recordingId,
-      //     })
-      //     FileSaver.saveAs(
-      //       new Blob([data], {
-      //         type: data.type,
-      //       }),
-      //       file.filename,
-      //     )
-      //   } catch (e) {
-      //     console.error(e)
-      //   }
-      // }
+      for (const file of this.selectedFiles) {
+        try {
+          const data = await downloadRecordFile({
+            id: file.recordingId,
+          })
+          FileSaver.saveAs(
+            new Blob([data], {
+              type: data.type,
+            }),
+            file.filename,
+          )
+        } catch (e) {
+          console.error(e)
+        }
+      }
     },
     async deleteItems() {
-      this.confirmDefault('현재 준비중인 기능입니다.')
-      // const deleteFiles = []
-      // const errorFiles = []
+      const deleteFiles = []
+      const errorFiles = []
 
-      // this.selectedArray.forEach((selected, index) => {
-      //   if (selected) {
-      //     deleteFiles.push(this.fileList[index])
-      //   }
-      // })
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          deleteFiles.push(this.fileList[index])
+        }
+      })
 
-      // for (const file of deleteFiles) {
-      //   console.log(file)
-      //   try {
-      //     throw 'delete file'
-      //     // await deleteRecordFile({
-      //     //   id: recordingId,
-      //     // })
-      //   } catch (e) {
-      //     console.error(e)
-      //     errorFiles.push(file.name)
-      //   }
-      // }
-      // console.log(errorFiles)
-      // if (errorFiles.length > 0) {
-      //   this.confirmDefault(
-      //     `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
-      //       '\n',
-      //     )}</p>`,
-      //   )
-      // }
+      for (const file of deleteFiles) {
+        console.log(file)
+        try {
+          throw 'delete file'
+          // await deleteRecordFile({
+          //   id: recordingId,
+          // })
+        } catch (e) {
+          console.error(e)
+          errorFiles.push(file.name)
+        }
+      }
+      console.log(errorFiles)
+      if (errorFiles.length > 0) {
+        this.confirmDefault(
+          `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
+            '\n',
+          )}</p>`,
+        )
+      }
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray
