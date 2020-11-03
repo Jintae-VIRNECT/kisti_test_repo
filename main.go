@@ -43,15 +43,14 @@ func main() {
 	// display configuration
 	displayConfig()
 
+	// initialize storage
+	storage.Init()
+
 	// initialize recorder
 	recorder.Init()
 
 	// initialize docker client
 	dockerclient.Init()
-
-	// initialize storage
-	storageClient := storage.GetClient()
-	storageClient.Init()
 
 	// setup gin router
 	router := setupRouter()

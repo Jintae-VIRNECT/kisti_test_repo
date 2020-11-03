@@ -8,7 +8,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"sync"
 	"time"
 
 	"github.com/minio/minio-go/v7"
@@ -22,48 +21,44 @@ type Client struct {
 	bucketName  string
 }
 
-var once sync.Once
-var storageClient *Client
-
-func GetClient() *Client {
-	once.Do(func() {
-		endpoint := viper.GetString("storage.endpoint")
-		accessKey := viper.GetString("storage.accessKey")
-		secretKey := viper.GetString("storage.secretKey")
-		useSSL := viper.GetBool("storage.useSSL")
-
-		opt := &minio.Options{
-			Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
-			Secure: useSSL,
-		}
-		if useSSL == true {
-			opt.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
-		}
-
-		client, err := minio.New(endpoint, opt)
-		if err != nil {
-			panic(err)
-		}
-		storageClient = &Client{minioClient: client, bucketName: viper.GetString("storage.bucketName")}
-	})
-
-	return storageClient
-}
-
-func (c *Client) Init() {
+func Init() {
 	ctx := context.Background()
-	found, err := c.minioClient.BucketExists(ctx, c.bucketName)
+	bucketName := viper.GetString("storage.bucketName")
+	client := NewClient()
+
+	found, err := client.minioClient.BucketExists(ctx, bucketName)
 	if err != nil {
 		panic(err)
 	}
 
 	if !found {
-		err = c.minioClient.MakeBucket(ctx, c.bucketName, minio.MakeBucketOptions{ObjectLocking: false, Region: ""})
+		err = client.minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{ObjectLocking: false, Region: ""})
 		if err != nil {
 			panic(err)
 		}
-		logrus.Info("create bucket:", c.bucketName)
+		logrus.Info("create bucket:", bucketName)
 	}
+}
+
+func NewClient() *Client {
+	endpoint := viper.GetString("storage.endpoint")
+	accessKey := viper.GetString("storage.accessKey")
+	secretKey := viper.GetString("storage.secretKey")
+	useSSL := viper.GetBool("storage.useSSL")
+
+	opt := &minio.Options{
+		Creds:  credentials.NewStaticV4(accessKey, secretKey, ""),
+		Secure: useSSL,
+	}
+	if useSSL == true {
+		opt.Transport = &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
+	}
+
+	minoClient, err := minio.New(endpoint, opt)
+	if err != nil {
+		panic(err)
+	}
+	return &Client{minioClient: minoClient, bucketName: viper.GetString("storage.bucketName")}
 }
 
 func (c *Client) Upload(ctx context.Context, src string, target string) error {

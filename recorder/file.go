@@ -87,7 +87,7 @@ func RemoveRecordingFileAll(ctx context.Context, workspaceID data.WorkspaceID) (
 	for _, info := range infos {
 		log.Infof("delete file. recordingId:%s filename:%s", info.RecordingID, info.Filename)
 		storagePath := getStoragePath(info)
-		err = storage.GetClient().Remove(ctx, storagePath)
+		err = storage.NewClient().Remove(ctx, storagePath)
 		if err != nil {
 			log.Warn(err)
 		}
@@ -111,7 +111,7 @@ func RemoveRecordingFile(ctx context.Context, filter *data.Filter) error {
 	}
 
 	storagePath := getStoragePath(infos[0])
-	err = storage.GetClient().Remove(ctx, storagePath)
+	err = storage.NewClient().Remove(ctx, storagePath)
 	if err != nil {
 		log.Warn(err)
 	}
@@ -133,7 +133,7 @@ func GetRecordingFileDownloadUrl(ctx context.Context, filter *data.Filter) (stri
 	}
 
 	target := getStoragePath(infos[0])
-	url, err := storage.GetClient().GetPresignedUrl(ctx, target, infos[0].Filename)
+	url, err := storage.NewClient().GetPresignedUrl(ctx, target, infos[0].Filename)
 	if err != nil {
 		return "", err
 	}
@@ -241,13 +241,13 @@ func readInfoFile(ctx context.Context, recordingID data.RecordingID) (RecordingF
 func upload(ctx context.Context, info RecordingFileInfo) error {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 	storagePath := getStoragePath(info)
-	if err := storage.GetClient().Upload(ctx, info.FullPath, storagePath); err != nil {
+	if err := storage.NewClient().Upload(ctx, info.FullPath, storagePath); err != nil {
 		log.Error(err)
 		return err
 	}
 	if err := insertIntoDB(ctx, info); err != nil {
 		log.Error(err)
-		if err = storage.GetClient().Remove(ctx, storagePath); err != nil {
+		if err = storage.NewClient().Remove(ctx, storagePath); err != nil {
 			log.Error(err)
 		}
 		return err
