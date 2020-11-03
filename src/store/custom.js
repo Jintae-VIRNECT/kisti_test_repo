@@ -19,9 +19,8 @@ export const custom = {
 			const { data } = await WorkspaceService.customConfig()
 
 			if (window.env === 'onpremise') {
-				console.log(`replace proxy url`)
+				console.log(`<----------replace proxy url`)
 				const URLS = window.urls
-				// URLS.minio = 'https://192.168.13.64:4545'
 				const proxyUrl = url => {
 					if ('minio' in URLS && url !== null) {
 						return url.replace(/^((http[s]?|ftp):\/\/)([^/]+)/, URLS['minio'])
@@ -33,6 +32,7 @@ export const custom = {
 					data[key] = proxyUrl(url)
 				}
 				console.log(data)
+				console.log(`replace proxy url---------->`)
 			}
 
 			document.title = `${data.workspaceTitle} Login Center`
