@@ -503,6 +503,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
                 case RECORD: {
                     objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    url = minioClient.getObjectUrl(bucketName, objectPath.toString());
                     /*url = minioClient.getPresignedObjectUrl(
                             GetPresignedObjectUrlArgs
                                     .builder()
