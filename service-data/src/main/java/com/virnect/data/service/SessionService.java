@@ -292,6 +292,10 @@ public class SessionService {
         return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
     }
 
+    public Room getRoom(String sessionId) {
+        return  this.roomRepository.findBySessionId(sessionId).orElse(null);
+    }
+
     public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
         return  this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
     }

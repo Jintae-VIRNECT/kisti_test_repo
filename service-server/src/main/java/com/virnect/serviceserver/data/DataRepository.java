@@ -22,6 +22,7 @@ import com.virnect.serviceserver.ServiceServerApplication;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.core.Participant;
 import com.virnect.serviceserver.feign.service.LicenseRestService;
+import com.virnect.serviceserver.feign.service.RecordRestService;
 import com.virnect.serviceserver.feign.service.UserRestService;
 import com.virnect.serviceserver.feign.service.WorkspaceRestService;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,7 @@ public class DataRepository {
     private final WorkspaceRestService workspaceRestService;
     private final UserRestService userRestService;
     private final LicenseRestService licenseRestService;
+    private final RecordRestService recordRestService;
     private final ModelMapper modelMapper;
     //
     //private final LocalFileManagementService localFileManagementService;
@@ -1055,6 +1057,29 @@ public class DataRepository {
             DataProcess<Boolean> invokeDataProcess() {
                 sessionService.destroySession(sessionId);
                 return new DataProcess<>(true);
+            }
+        }.asResponseData();
+    }
+
+    public DataProcess<Boolean> stopRecordSession(String sessionId) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.FETCH) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(sessionId);
+            }
+
+            @Override
+            DataProcess<Boolean> invokeDataProcess() {
+                Room room = loadFromDatabase();
+                log.info("STOP RECORD::#stopRecordSession::destroy session => [{}]",sessionId);
+                if(room != null) {
+                    ApiResponse<StopRecordingResponse> apiResponse = recordRestService.stopRecordingBySessionId(room.getWorkspaceId(), room.getLeaderId(), room.getSessionId());
+                    log.info("STOP RECORD::#stopRecordSession::response => [{}]",apiResponse.getData().getRecordingIds());
+                    return new DataProcess<>(true);
+                } else {
+                    return new DataProcess<>(false);
+                }
+
             }
         }.asResponseData();
     }
