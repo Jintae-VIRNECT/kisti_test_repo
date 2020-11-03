@@ -4,7 +4,7 @@
       <div class="profile--image" :class="{ group: group, image: useImage }">
         <img
           v-if="useImage"
-          :src="image"
+          :src="imgSrc"
           :alt="mainText"
           @error="onImageError"
         />
