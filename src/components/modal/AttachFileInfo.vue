@@ -48,10 +48,10 @@ import Modal from 'components/modules/Modal'
 import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
-import { getFileDownloadUrl } from 'api/http/file'
+import { getFileDownloadUrl, deleteFileItem } from 'api/http/file'
 
 import confirmMixin from 'mixins/confirm'
-import { downloadByURL, deleteFileItem } from 'utils/file'
+import { downloadByURL } from 'utils/file'
 
 export default {
   name: 'AttachFileInfo',

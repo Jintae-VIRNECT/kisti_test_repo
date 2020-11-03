@@ -109,6 +109,21 @@ export const getLocalRecordFiles = async ({
   return returnVal
 }
 
+export const getLocalRecordFileUrl = async ({
+  objectName,
+  sessionId,
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('LOCAL_RECORD_FILE_DOWNLOAD_URL', {
+    objectName,
+    sessionId,
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}
+
 /**
  * 특정 파일을 삭제하는 API
  * @param {*} param0

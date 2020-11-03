@@ -49,7 +49,8 @@ import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
 import confirmMixin from 'mixins/confirm'
-
+import { getLocalRecordFileUrl } from 'api/http/file' //삭제 api 추가 필요함.
+import { downloadByURL } from 'utils/file'
 export default {
   name: 'LocalRecordInfo',
   mixins: [confirmMixin],
@@ -111,21 +112,29 @@ export default {
 
   methods: {
     async download() {
-      // for (const file of this.selectedFiles) {
-      //   try {
-      //     const data = await downloadRecordFile({
-      //       id: file.recordingId,
-      //     })
-      //     FileSaver.saveAs(
-      //       new Blob([data], {
-      //         type: data.type,
-      //       }),
-      //       file.filename,
-      //     )
-      //   } catch (e) {
-      //     console.error(e)
-      //   }
-      // }
+      const downloadFiles = []
+
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          downloadFiles.push(this.fileList[index])
+        }
+      })
+
+      for (const file of downloadFiles) {
+        try {
+          const data = await getLocalRecordFileUrl({
+            objectName: file.objectName,
+            sessionId: file.sessionId,
+            userId: this.account.uuid,
+            workspaceId: file.workspaceId,
+          })
+
+          downloadByURL(data)
+          console.log(data)
+        } catch (e) {
+          console.error(e)
+        }
+      }
     },
     async deleteItems() {
       // const deleteFiles = []

@@ -53,6 +53,13 @@ export default {
   /* LOCAL RECORD FILE */
   LOCAL_RECORD_FILES: ['GET', '/remote/file/record/info'],
 
+  LOCAL_RECORD_FILE_DOWNLOAD_URL: [
+    'GET',
+    '/remote/file/record/download/url/{workspaceId}/{sessionId}',
+  ],
+
+  //로컬 녹화 삭제 API 추가하여야함
+
   // DELETE_RECORD_FILE_ITEM:[
   //   'DELETE',
   //   '/remote/record/'
