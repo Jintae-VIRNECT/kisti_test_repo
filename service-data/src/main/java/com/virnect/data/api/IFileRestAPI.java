@@ -74,7 +74,7 @@ public interface IFileRestAPI {
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId);
 
-    @ApiOperation(value = "Get URL to download ", notes = "파일 다운로드 URL을 받습니다.")
+    @ApiOperation(value = "Get URL to download file", notes = "파일 다운로드 URL을 받습니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
@@ -83,6 +83,21 @@ public interface IFileRestAPI {
     })
     @GetMapping(value = "file/download/url/{workspaceId}/{sessionId}")
     ResponseEntity<ApiResponse<FilePreSignedResponse>> fileDownloadUrlRequestHandler(
+            @PathVariable(name = "workspaceId") String workspaceId,
+            @PathVariable(name = "sessionId") String sessionId,
+            @RequestParam(name = "userId") String userId,
+            @RequestParam(name = "objectName") String objectName
+    ) throws IOException;
+
+    @ApiOperation(value = "Get URL to download record file", notes = "레코드 파일 다운로드 URL을 받습니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "userId", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
+            @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
+    })
+    @GetMapping(value = "file/record/download/url/{workspaceId}/{sessionId}")
+    ResponseEntity<ApiResponse<FilePreSignedResponse>> recordFileDownloadUrlRequestHandler(
             @PathVariable(name = "workspaceId") String workspaceId,
             @PathVariable(name = "sessionId") String sessionId,
             @RequestParam(name = "userId") String userId,

@@ -289,13 +289,59 @@ public class FileDataRepository {
                     String bucketPath = generateDirPath(workspaceId, sessionId);
 
                     int expiry = 60 * 60 *24; //one day
-                    String url = fileManagementService.filePreSignedUrl(bucketPath, objectName, expiry, FileType.FILE);
+                    String url = fileManagementService.filePreSignedUrl(bucketPath, objectName, expiry, file.getName(), FileType.FILE);
                     FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
                     filePreSignedResponse.setWorkspaceId(file.getWorkspaceId());
                     filePreSignedResponse.setSessionId(file.getSessionId());
                     filePreSignedResponse.setName(file.getName());
                     filePreSignedResponse.setObjectName(file.getObjectName());
                     filePreSignedResponse.setContentType(file.getContentType());
+                    filePreSignedResponse.setUrl(url);
+                    filePreSignedResponse.setExpiry(expiry);
+                    return new DataProcess<>(filePreSignedResponse);
+                } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+                    log.info("{}", exception.getMessage());
+                    return new DataProcess<>(new FilePreSignedResponse(), ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+                }
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<FilePreSignedResponse> downloadRecordFileUrl(String workspaceId,
+                                                              String sessionId,
+                                                              String userId,
+                                                              String objectName) {
+        return new RepoDecoder<RecordFile, FilePreSignedResponse>(RepoDecoderType.READ) {
+            @Override
+            RecordFile loadFromDatabase() {
+                return fileService.getRecordFileByObjectName(
+                        workspaceId,
+                        sessionId,
+                        objectName);
+            }
+
+            @Override
+            DataProcess<FilePreSignedResponse> invokeDataProcess() {
+                RecordFile recordFile = loadFromDatabase();
+                log.info("recordFile download: {}", recordFile.getObjectName());
+                try {
+                    StringBuilder stringBuilder;
+                    stringBuilder = new StringBuilder();
+                    stringBuilder.append(workspaceId).append("/")
+                            .append(sessionId).append("/")
+                            .append(recordFile.getObjectName());
+
+                    // upload to file storage
+                    String bucketPath = generateDirPath(workspaceId, sessionId);
+
+                    int expiry = 60 * 60 *24; //one day
+                    String url = fileManagementService.filePreSignedUrl(bucketPath, objectName, expiry, recordFile.getName(), FileType.RECORD);
+                    FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
+                    filePreSignedResponse.setWorkspaceId(recordFile.getWorkspaceId());
+                    filePreSignedResponse.setSessionId(recordFile.getSessionId());
+                    filePreSignedResponse.setName(recordFile.getName());
+                    filePreSignedResponse.setObjectName(recordFile.getObjectName());
+                    filePreSignedResponse.setContentType(recordFile.getContentType());
                     filePreSignedResponse.setUrl(url);
                     filePreSignedResponse.setExpiry(expiry);
                     return new DataProcess<>(filePreSignedResponse);
