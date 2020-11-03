@@ -32,5 +32,15 @@ export default {
       const targetInfo = targetTypes.find(({ value }) => value === targetType)
       return app.i18n.t(targetInfo.label)
     },
+    /**
+     * cdn files filter, onpremise minio proxy url
+     * @param {string} url
+     */
+    cdn(url) {
+      if (url && 'minio' in this.$url) {
+        url = url.replace(/^((http[s]?|ftp):\/\/)([^/]+)/, this.$url['minio'])
+      }
+      return url
+    },
   },
 }

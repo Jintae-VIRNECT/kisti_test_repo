@@ -21,8 +21,8 @@
         </template>
         <div v-if="issue.photoFilePath" class="image-container">
           <el-image
-            :src="issue.photoFilePath"
-            :preview-src-list="[issue.photoFilePath]"
+            :src="cdn(issue.photoFilePath)"
+            :preview-src-list="[cdn(issue.photoFilePath)]"
           />
           <i class="el-icon-full-screen" />
         </div>
@@ -45,7 +45,7 @@
             <img
               v-if="issue.photoFilePath"
               src="~assets/images/icon/ic-file-download.svg"
-              @click="download(issue.photoFilePath, issue.caption)"
+              @click="download(cdn(issue.photoFilePath), issue.caption)"
             />
           </dd>
         </dl>
@@ -66,6 +66,7 @@ export default {
       stepId: params.stepId,
       size: 50,
     })
+    console.log(list)
     return {
       issues: list,
       activeIssues: [list[0].issueId],

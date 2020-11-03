@@ -21,7 +21,9 @@
             <div class="avatar">
               <div
                 class="image"
-                :style="`background-image: url(${content.uploaderProfile})`"
+                :style="
+                  `background-image: url(${cdn(content.uploaderProfile)})`
+                "
               />
             </div>
             <span>{{ content.uploaderName }}</span>

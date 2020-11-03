@@ -6,7 +6,9 @@
         <a
           @click="$router.push('/')"
           :style="
-            `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
+            `background-image: url(${cdn(
+              activeWorkspace.profile,
+            )}), url(${$defaultWorkspaceProfile})`
           "
         />
       </div>
@@ -21,7 +23,9 @@
           <a
             @click.stop="openCollapse(logoCollapse)"
             :style="
-              `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
+              `background-image: url(${cdn(
+                activeWorkspace.profile,
+              )}), url(${$defaultWorkspaceProfile})`
             "
           />
         </el-tooltip>
@@ -54,8 +58,10 @@ import collapseMember from '@/components/layout/collapses/TheSidebarCollapseMemb
 import collapseContents from '@/components/layout/collapses/TheSidebarCollapseContents'
 import TheSidebarMenuList from './TheSidebarMenuList.vue'
 import { mapGetters } from 'vuex'
+import filterMixin from '@/mixins/filters'
 
 export default {
+  mixins: [filterMixin],
   components: {
     TheSidebarMenuList,
     collapseWorkspace,

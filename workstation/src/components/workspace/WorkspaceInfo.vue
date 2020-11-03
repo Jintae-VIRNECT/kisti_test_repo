@@ -5,7 +5,9 @@
         <div
           class="image"
           :style="
-            `background-image: url(${workspaceInfo.info.profile}), url(${$defaultWorkspaceProfile})`
+            `background-image: url(${cdn(
+              workspaceInfo.info.profile,
+            )}), url(${$defaultWorkspaceProfile})`
           "
         />
       </div>
@@ -25,7 +27,9 @@
           <div class="avatar">
             <div
               class="image"
-              :style="`background-image: url(${workspaceInfo.master.profile})`"
+              :style="
+                `background-image: url(${cdn(workspaceInfo.master.profile)})`
+              "
             />
           </div>
         </el-tooltip>
@@ -42,7 +46,7 @@
           <div class="avatar">
             <div
               class="image"
-              :style="`background-image: url(${user.profile})`"
+              :style="`background-image: url(${cdn(user.profile)})`"
             />
           </div>
         </el-tooltip>
@@ -97,8 +101,10 @@
 import { mapGetters } from 'vuex'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
+import filterMixin from '@/mixins/filters'
 
 export default {
+  mixins: [filterMixin],
   computed: {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',

@@ -14,7 +14,7 @@
           <div class="avatar">
             <div
               class="image"
-              :style="`background-image: url(${data.profile})`"
+              :style="`background-image: url(${cdn(data.profile)})`"
             />
           </div>
           <span>{{ data.nickname }}</span>
@@ -150,12 +150,13 @@ import { mapGetters } from 'vuex'
 import EditMember from '@/models/workspace/EditMember'
 import plans from '@/models/workspace/plans'
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import filterMixin from '@/mixins/filters'
 
 export default {
   components: {
     MemberRoleSelect,
   },
-  mixins: [modalMixin],
+  mixins: [filterMixin, modalMixin],
   props: {
     data: Object,
   },
