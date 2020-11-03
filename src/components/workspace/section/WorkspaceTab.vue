@@ -25,17 +25,17 @@
         </transition>
       </ul>
     </nav>
+    <template v-if="inited">
+      <workspace-license v-if="!hasLicense"></workspace-license>
+      <workspace-expire v-else-if="expireLicense"></workspace-expire>
+      <workspace-select
+        v-else-if="!workspace || !workspace.uuid"
+      ></workspace-select>
+      <component v-else :is="component" :class="{ fix: fix }"></component>
+    </template>
     <transition name="opacity">
-      <template v-if="inited">
-        <workspace-license v-if="!hasLicense"></workspace-license>
-        <workspace-expire v-else-if="expireLicense"></workspace-expire>
-        <workspace-select
-          v-else-if="!workspace || !workspace.uuid"
-        ></workspace-select>
-        <component v-else :is="component" :class="{ fix: fix }"></component>
-      </template>
+      <workspace-skeleton v-if="!inited"></workspace-skeleton>
     </transition>
-    <workspace-skeleton v-if="!inited"></workspace-skeleton>
   </div>
 </template>
 
