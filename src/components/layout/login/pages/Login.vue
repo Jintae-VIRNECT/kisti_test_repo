@@ -146,6 +146,7 @@ export default {
 				location.href = /^https?:/.test(redirectTarget)
 					? redirectTarget
 					: `//${redirectTarget}`
+				// } else if (this.login.autoLogin) {
 			} else if (this.auth.isLogin) {
 				// console.log(redirectTarget)
 				location.href = this.$urls['workstation']
