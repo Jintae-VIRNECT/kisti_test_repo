@@ -1,5 +1,4 @@
-// import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
-import { getAccount, tokenRequest } from 'api/http/account'
+import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
@@ -9,8 +8,8 @@ import { logger, debug } from 'utils/logger'
 import {
   setConfigs,
   setUrls,
-  // RUNTIME_ENV,
-  // RUNTIME,
+  RUNTIME_ENV,
+  RUNTIME,
   URLS,
 } from 'configs/env.config'
 
@@ -108,18 +107,19 @@ const getConfigs = async () => {
   setUrls(res.data)
 }
 
-// const getSettings = async () => {
-//   if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
-//   const settings = await getSettingInfo()
-//   document.title = `${settings.workspaceTitle} | Remote`
-//   const favicon = document.querySelector("link[rel*='icon']")
-//   favicon.href = settings.favicon
+const getSettings = async () => {
+  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
+  const settings = await getSettingInfo()
 
-//   setConfigs({
-//     whiteLogo: settings.whiteLogo,
-//     defaultLogo: settings.defaultLogo,
-//   })
-// }
+  document.title = `${settings.workspaceTitle} | Remote`
+  const favicon = document.querySelector("link[rel*='icon']")
+  favicon.href = settings.favicon
+
+  setConfigs({
+    whiteLogo: settings.whiteLogo,
+    defaultLogo: settings.defaultLogo,
+  })
+}
 
 export const cookieClear = () => {
   if (/\.?virnect\.com/.test(location.href)) {
@@ -152,7 +152,8 @@ class Auth {
 
     if (Cookies.get('accessToken')) {
       try {
-        await Promise.all([getMyInfo()])
+        await Promise.all([getMyInfo(), getSettings()])
+
         isLogin = true
         tokenRenewal()
       } catch (e) {
