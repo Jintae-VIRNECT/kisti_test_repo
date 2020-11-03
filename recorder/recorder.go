@@ -293,6 +293,19 @@ func RestoreRecording(ctx context.Context, recordingID data.RecordingID, session
 
 	if recordingTimeLeft <= 0 {
 		dockerclient.StopContainer(ctx, containerID)
+
+		info, err := readInfoFile(ctx, recordingID)
+		if err != nil {
+			logger.Error(err)
+			return
+		}
+
+		if err := upload(ctx, info); err != nil {
+			logger.Error("upload fail. err:", err)
+			return
+		}
+
+		removeLocalFile(ctx, info.FullPath)
 		return
 	}
 
