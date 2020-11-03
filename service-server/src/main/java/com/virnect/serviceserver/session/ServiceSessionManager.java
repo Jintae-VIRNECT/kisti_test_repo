@@ -529,6 +529,7 @@ public class ServiceSessionManager {
     public void destroySession(KurentoSession session, EndReason reason) {
         log.info("session destroy and sessionEventHandler is here: [sessionId] {}", session.getSessionId());
         log.info("session destroy and sessionEventHandler is here: [reason] {}", reason);
+        dataRepository.stopRecordSession(session.getSessionId());
         dataRepository.destroySession(session.getSessionId());
     }
 
