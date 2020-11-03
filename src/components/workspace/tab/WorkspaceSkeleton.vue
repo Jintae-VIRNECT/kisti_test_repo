@@ -11,11 +11,9 @@
 </template>
 
 <script>
-import Card from 'Card'
 import TabView from '../partials/WorkspaceTabView'
 export default {
   components: {
-    Card,
     TabView,
   },
 }

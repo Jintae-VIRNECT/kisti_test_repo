@@ -50,11 +50,7 @@ export const getFile = url => {
       }
     })
 
-    if ('minio' in URLS) {
-      xhr.open('GET', proxyUrl(url, URLS['minio']))
-    } else {
-      xhr.open('GET', url)
-    }
+    xhr.open('GET', proxyUrl(url))
     xhr.responseType = 'blob'
     xhr.send(null)
   })
@@ -82,14 +78,14 @@ export const downloadByURL = async file => {
     a.click()
     window.URL.revokeObjectURL(xhr.response)
   }
-  if ('minio' in URLS) {
-    xhr.open('GET', proxyUrl(file.url, URLS['minio']))
-  } else {
-    xhr.open('GET', file.url)
-  }
+  xhr.open('GET', proxyUrl(file.url))
   xhr.send()
 }
 
-const proxyUrl = (url, baseUrl) => {
-  return url.replace(/^((http[s]?|ftp):\/\/)([^/]+)/, baseUrl)
+export const proxyUrl = url => {
+  if ('minio' in URLS) {
+    return url.replace(/^((http[s]?|ftp):\/\/)([^/]+)/, URLS['minio'])
+  } else {
+    return url
+  }
 }
