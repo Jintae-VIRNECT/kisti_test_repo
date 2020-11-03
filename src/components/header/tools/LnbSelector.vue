@@ -66,7 +66,13 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    this.$nextTick(() => {
+      if (!this.workspace.uuid) {
+        this.changeSelect(this.workspaceList[0])
+      }
+    })
+  },
 }
 </script>
 <style lang="scss">
