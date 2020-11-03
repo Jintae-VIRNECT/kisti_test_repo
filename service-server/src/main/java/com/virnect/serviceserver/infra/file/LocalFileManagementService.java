@@ -479,10 +479,10 @@ public class LocalFileManagementService implements IFileManagementService {
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
             // Create headers
-            HttpHeaders httpHeaders = new HttpHeaders();
-            //httpHeaders.setContentLength(byteArray.length);
+            /*HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentLength(byteArray.length);
             httpHeaders.setContentDispositionFormData("attachment", fileName);
-            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
+            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);*/
 
             StringBuilder objectPath = new StringBuilder();
             String url = null;
@@ -494,7 +494,6 @@ public class LocalFileManagementService implements IFileManagementService {
                             GetPresignedObjectUrlArgs
                                     .builder()
                                     .method(Method.GET)
-                                    .extraHeaders(httpHeaders.toSingleValueMap())
                                     .bucket(bucketName).object(objectPath.toString())
                                     .expiry(expiry)
                                     .build());
@@ -508,7 +507,6 @@ public class LocalFileManagementService implements IFileManagementService {
                             GetPresignedObjectUrlArgs
                                     .builder()
                                     .method(Method.GET)
-                                    .extraHeaders(httpHeaders.toSingleValueMap())
                                     .bucket(bucketName)
                                     .object(objectPath.toString())
                                     .expiry(expiry)
