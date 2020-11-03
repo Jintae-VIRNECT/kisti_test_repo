@@ -49,10 +49,12 @@
 import Datepicker from 'Datepicker'
 import CheckBox from 'CheckBox'
 import DSelect from 'DashBoardSelect'
+import confirmMixin from 'mixins/confirm'
 import { collabo } from 'utils/collabo'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'CollaboSearchBar',
+  mixins: [confirmMixin],
   components: {
     Datepicker,
     CheckBox,
@@ -146,13 +148,10 @@ export default {
       })
     },
     doSearch() {
-      console.log('검색하삼')
-
+      this.confirmDefault('현재 준비중인 기능입니다.')
       //날짜 사용하는지 체크
       //날짜 사용하면 날짜 적용한 리스트 다시 로드함
-
       //필터적용
-
       //페이징
       //그리고 sort는 sort만(새로운 데이터 X, 기존데이터 변경만)
     },
