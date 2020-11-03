@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.2.24.2",
+  "version": "1.2.24.3",
   "description": "Virnect Platofrm Login FrontEnd",
   "author": "SungHyun Kang <k23sh138@gmail.com>",
   "private": true,
@@ -43,6 +43,7 @@
     "dayjs": "^1.8.25",
     "dotenv": "^8.2.0",
     "dotenv-webpack": "^1.7.0",
+    "es6-promise": "^4.2.8",
     "element-ui": "^2.13.0",
     "element-theme-chalk": "^2.13.0",
     "eslint": "^6.7.2",
