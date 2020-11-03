@@ -107,18 +107,18 @@ const getConfigs = async () => {
   setUrls(res.data)
 }
 
-const getSettings = async () => {
-  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
-  const settings = await getSettingInfo()
-  document.title = `${settings.workspaceTitle} | Remote`
-  const favicon = document.querySelector("link[rel*='icon']")
-  favicon.href = settings.favicon
+// const getSettings = async () => {
+//   if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
+//   const settings = await getSettingInfo()
+//   document.title = `${settings.workspaceTitle} | Remote`
+//   const favicon = document.querySelector("link[rel*='icon']")
+//   favicon.href = settings.favicon
 
-  setConfigs({
-    whiteLogo: settings.whiteLogo,
-    defaultLogo: settings.defaultLogo,
-  })
-}
+//   setConfigs({
+//     whiteLogo: settings.whiteLogo,
+//     defaultLogo: settings.defaultLogo,
+//   })
+// }
 
 export const cookieClear = () => {
   if (/\.?virnect\.com/.test(location.href)) {
@@ -151,7 +151,6 @@ class Auth {
 
     if (Cookies.get('accessToken')) {
       try {
-        // await Promise.all([getMyInfo(), getSettings()])
         await Promise.all([getMyInfo()])
         isLogin = true
         tokenRenewal()
