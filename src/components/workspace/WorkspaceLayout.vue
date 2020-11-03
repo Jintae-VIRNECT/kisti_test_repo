@@ -8,11 +8,15 @@
       :onMaxScroll="handleMaxScroll"
     >
       <div class="workspace-wrapper">
-        <workspace-welcome ref="welcomeSection"></workspace-welcome>
+        <workspace-welcome
+          ref="welcomeSection"
+          :inited="inited"
+        ></workspace-welcome>
 
         <workspace-tab
           ref="tabSection"
           :fix="tabFix"
+          :inited="inited"
           @tabChange="tabChange"
         ></workspace-tab>
       </div>
@@ -49,25 +53,11 @@ import { PLAN_STATUS } from 'configs/status.config'
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
-    const authInfo = await auth.init()
-    if (!auth.isLogin) {
+    const hasToken = await auth.check()
+    if (!hasToken) {
       auth.login()
     } else {
-      const res = await getLicense({ userId: authInfo.account.uuid })
-      const workspaces = res.myPlanInfoList.filter(
-        plan => plan.planProduct === 'REMOTE',
-      )
-      if (workspaces.length === 0) {
-        next(vm => {
-          vm.license = false
-          vm.init(authInfo)
-        })
-      } else {
-        next(vm => {
-          vm.license = true
-          vm.init(authInfo, workspaces)
-        })
-      }
+      next()
     }
   },
   mixins: [confirmMixin, langMixin],
@@ -93,6 +83,7 @@ export default {
       showPlanOverflow: false,
       showFileUpload: false,
       fileIds: [],
+      inited: false,
     }
   },
   watch: {
@@ -117,20 +108,39 @@ export default {
       'setTranslate',
       'setCompanyInfo',
     ]),
-    init(authInfo, workspaces) {
-      this.updateAccount({
-        ...authInfo.account,
-        licenseEmpty: this.license,
-      })
-      if (workspaces) {
-        for (let workspace of workspaces) {
-          const info = authInfo.workspace.find(
-            work => work.uuid === workspace.workspaceId,
-          )
-          if (!info || !info.workspaceId) continue
-          workspace['role'] = info.role
+    async init() {
+      this.inited = false
+      const authInfo = await auth.init()
+      if (!auth.isLogin) {
+        auth.login()
+        return
+      } else {
+        const res = await getLicense({ userId: authInfo.account.uuid })
+        const workspaces = res.myPlanInfoList.filter(
+          plan => plan.planProduct === 'REMOTE',
+        )
+        if (workspaces.length === 0) {
+          this.license = false
+        } else {
+          this.license = true
         }
-        this.initWorkspace(workspaces)
+        this.updateAccount({
+          ...authInfo.account,
+          licenseEmpty: this.license,
+        })
+        if (workspaces.length > 0) {
+          for (let workspace of workspaces) {
+            const info = authInfo.workspace.find(
+              work => work.uuid === workspace.workspaceId,
+            )
+            if (!info || !info.workspaceId) continue
+            workspace['role'] = info.role
+          }
+          this.initWorkspace(workspaces)
+        }
+        this.$nextTick(() => {
+          this.inited = true
+        })
       }
     },
     handleMaxScroll(event) {
@@ -208,6 +218,7 @@ export default {
   /* Lifecycles */
   created() {
     this.savedStorageDatas()
+    this.init()
   },
   mounted() {
     this.mx_changeLang()

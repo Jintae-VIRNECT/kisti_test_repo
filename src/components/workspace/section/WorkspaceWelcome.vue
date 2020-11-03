@@ -68,6 +68,9 @@ export default {
       }
     },
     welcomeText() {
+      if (!this.inited) {
+        return ''
+      }
       if (this.hasLicense && !this.expireLicense) {
         return this.$t('workspace.welcome', { name: this.account.nickname })
       } else if (!this.hasLicense) {
@@ -88,7 +91,12 @@ export default {
       }
     },
   },
-  watch: {},
+  props: {
+    inited: {
+      type: Boolean,
+      default: false,
+    },
+  },
   methods: {
     async createRoom() {
       this.visible = !this.visible

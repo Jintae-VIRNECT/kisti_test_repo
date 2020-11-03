@@ -146,9 +146,16 @@ class Auth {
     return clonedeep(myWorkspaces)
   }
 
-  async init() {
+  async check() {
     await getConfigs()
 
+    if (Cookies.get('accessToken')) {
+      return true
+    }
+    return false
+  }
+
+  async init() {
     if (Cookies.get('accessToken')) {
       try {
         await Promise.all([getMyInfo(), getSettings()])

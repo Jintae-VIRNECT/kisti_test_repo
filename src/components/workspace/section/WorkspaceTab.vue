@@ -25,17 +25,23 @@
         </transition>
       </ul>
     </nav>
-    <workspace-license v-if="!hasLicense"></workspace-license>
-    <workspace-expire v-else-if="expireLicense"></workspace-expire>
-    <workspace-select
-      v-else-if="!workspace || !workspace.uuid"
-    ></workspace-select>
-    <component v-else :is="component" :class="{ fix: fix }"></component>
+    <transition name="opacity">
+      <template v-if="inited">
+        <workspace-license v-if="!hasLicense"></workspace-license>
+        <workspace-expire v-else-if="expireLicense"></workspace-expire>
+        <workspace-select
+          v-else-if="!workspace || !workspace.uuid"
+        ></workspace-select>
+        <component v-else :is="component" :class="{ fix: fix }"></component>
+      </template>
+    </transition>
+    <workspace-skeleton v-if="!inited"></workspace-skeleton>
   </div>
 </template>
 
 <script>
 import TabButton from '../partials/WorkspaceTabButton'
+import WorkspaceSkeleton from '../tab/WorkspaceSkeleton'
 import WorkspaceHistory from '../tab/WorkspaceHistory'
 import WorkspaceRemote from '../tab/WorkspaceRemote'
 import WorkspaceUser from '../tab/WorkspaceUser'
@@ -48,6 +54,7 @@ export default {
   name: 'WorkspaceTab',
   components: {
     TabButton,
+    WorkspaceSkeleton,
     history: WorkspaceHistory,
     remote: WorkspaceRemote,
     user: WorkspaceUser,
@@ -94,6 +101,10 @@ export default {
   props: {
     fix: {
       type: [Number, Boolean],
+      default: false,
+    },
+    inited: {
+      type: Boolean,
       default: false,
     },
   },
