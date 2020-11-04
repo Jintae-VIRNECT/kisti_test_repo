@@ -46,7 +46,6 @@ public class MinioConfiguration {
 		NoSuchAlgorithmException,
 		KeyManagementException {
 		MinioClient minioClient = MinioClient.builder()
-			//.httpClient(okHttpClient())
 			.endpoint(minioServer)
 			.credentials(accessKey, secretKey)
 			.build();
