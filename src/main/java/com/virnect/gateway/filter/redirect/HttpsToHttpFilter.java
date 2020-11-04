@@ -35,7 +35,7 @@ public class HttpsToHttpFilter implements GlobalFilter, Ordered {
 		ServerHttpRequest.Builder mutate = request.mutate();
 		String forwardedUri = request.getURI().toString();
 
-		if (request.getURI().toString().startsWith("/media")) {
+		if (request.getURI().toString().startsWith("/media") || request.getURI().toString().contains("/record")) {
 			return chain.filter(exchange);
 		}
 
