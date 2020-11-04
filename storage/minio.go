@@ -114,5 +114,11 @@ func (c *Client) GetPresignedUrl(ctx context.Context, target string, filename st
 		return "", err
 	}
 
-	return presignedURL.String(), nil
+	return removeQueryParam(presignedURL.String()), nil
+}
+
+func removeQueryParam(inURL string) string {
+	u, _ := url.Parse(inURL)
+	u.RawQuery = ""
+	return u.String()
 }
