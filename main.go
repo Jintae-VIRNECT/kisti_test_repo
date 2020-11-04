@@ -62,7 +62,15 @@ func main() {
 
 	go func() {
 		logger.Info("Server Started: listen:", viper.GetInt("general.port"))
-		if err := srv.ListenAndServe(); err != nil {
+		var err error
+		if viper.GetBool("general.useSSL") {
+			certFile := viper.GetString("general.cert")
+			keyFile := viper.GetString("general.key")
+			err = srv.ListenAndServeTLS(certFile, keyFile)
+		} else {
+			err = srv.ListenAndServe()
+		}
+		if err != nil {
 			logger.Errorf("listen: %s", err)
 		}
 	}()

@@ -111,6 +111,7 @@ func (c *EurekaClient) runDeRegister() {
 func NewClient() *EurekaClient {
 	port := viper.GetInt("general.port")
 	appName := viper.GetString("eureka.app")
+	useSSL := viper.GetBool("general.useSSL")
 	var ipAddr string
 	if viper.IsSet("eureka.instanceIp") {
 		ipAddr = viper.GetString("eureka.instanceIp")
@@ -130,9 +131,9 @@ func NewClient() *EurekaClient {
 		Status:            UP,
 		Overriddenstatus:  UNKNOWN,
 		Port:              port,
-		PortEnabled:       true,
-		SecurePort:        443,
-		SecurePortEnabled: false,
+		PortEnabled:       !useSSL,
+		SecurePort:        port,
+		SecurePortEnabled: useSSL,
 		CountryId:         1,
 		DataCenterInfo: DataCenterInfo{
 			Name: MyOwn,

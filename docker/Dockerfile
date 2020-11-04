@@ -12,6 +12,7 @@ FROM scratch
 
 WORKDIR /
 COPY --from=build /src/build/recordserver-linux-amd64 /recordserver
+COPY ./certs /certs
 
 EXPOSE 8083
 
