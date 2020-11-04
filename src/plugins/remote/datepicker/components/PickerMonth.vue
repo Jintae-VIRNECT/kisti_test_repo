@@ -79,7 +79,7 @@ export default {
         })
         this.utils.setMonth(dObj, this.utils.getMonth(dObj) + 1)
       }
-      console.log('month', months)
+
       return months
     },
     /**
