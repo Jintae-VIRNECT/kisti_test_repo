@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -160,7 +159,6 @@ func StartRecording(c *gin.Context) {
 		TimeLimit:   timeLimit,
 		Filename:    req.RecordingFilename,
 		MetaData:    req.MetaData,
-		CreateTime:  time.Now().UTC(),
 	}
 
 	recordingID, err := recorder.NewRecording(c.Request.Context(), param)

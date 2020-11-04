@@ -23,7 +23,6 @@ type RecordingParam struct {
 	Framerate   int
 	TimeLimit   int
 	Filename    string
-	CreateTime  time.Time
 	MetaData    interface{}
 }
 
@@ -234,7 +233,6 @@ func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, 
 		SessionID:   param.SessionID,
 		WorkspaceID: param.WorkspaceID,
 		UserID:      param.UserID,
-		CreateTime:  param.CreateTime,
 		MetaData:    param.MetaData,
 	}
 
@@ -243,12 +241,15 @@ func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, 
 		return recordingID, ErrInternalError
 	}
 
-	timeout := time.Duration(param.TimeLimit)*time.Second + 10 // recording docker 내부에서 2s 지연이 발생하므로 TimeLimit에 10s정도 더해준다.
+	timeout := time.Duration(param.TimeLimit) * time.Second
 	timer := time.AfterFunc(timeout, func() {
 		mainRecorder.timeoutCh <- recordingTimeoutEvent{recordingID, param.WorkspaceID}
 	})
 
-	mainRecorder.addRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, param.CreateTime, param.TimeLimit, timer)
+	now := time.Now().UTC()
+	mainRecorder.addRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, now, param.TimeLimit, timer)
+
+	writeCreateTime(ctx, recordingID, now)
 	return recordingID, nil
 }
 
@@ -288,7 +289,10 @@ func StopRecordingBySessionID(ctx context.Context, workspaceID data.WorkspaceID,
 }
 
 func RestoreRecording(ctx context.Context, recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID,
-	userID string, containerID string, createTime time.Time, timeLimit int, recordingTimeLeft int64) {
+	userID string, containerID string, createTime time.Time, timeLimit int) {
+	now := time.Now().UTC().Unix()
+	recordingTimeLeft := timeLimit - int(now-createTime.Unix())
+
 	logger.Infof("RestoreRecording: recordingId:%s workspaceId:%s userId:%s containerID:%s recordingTimeLeft:%d)", recordingID, workspaceID, userID, containerID, recordingTimeLeft)
 
 	if recordingTimeLeft <= 0 {
@@ -329,7 +333,7 @@ func ListRecordingIDs(ctx context.Context, workspaceID data.WorkspaceID, session
 			continue
 		}
 		var duration int
-		duration = int(now.Sub(r.createTime).Seconds()) - 2 // recording docker 내부에 실제 recording이 되기 전에 2s 대기하는 시간(sleep 2)이 존재한다.
+		duration = int(now.Sub(r.createTime).Seconds())
 		if duration < 0 {
 			duration = 0
 		}
@@ -362,19 +366,18 @@ func restoreRecordingFromContainer(ctx context.Context) {
 
 	log.Info("Start: Restore Recording From Container")
 	constainers := dockerclient.ListContainers(ctx)
-	now := time.Now().UTC().Unix()
-
 	for _, container := range constainers {
-		recordingTimeLeft := container.EndTime - now
+		recordID := data.RecordingID(container.RecordingID)
+		createTime, _ := readCreateTime(ctx, recordID)
 		RestoreRecording(ctx,
-			data.RecordingID(container.RecordingID),
+			recordID,
 			data.SessionID(container.SessionID),
 			data.WorkspaceID(container.WorkspaceID),
 			container.UserID,
 			container.ID,
-			time.Unix(container.CreateTime, 0),
+			createTime,
 			container.TimeLimit,
-			recordingTimeLeft)
+		)
 	}
 	log.Info("End: Restore Recording From Container")
 }

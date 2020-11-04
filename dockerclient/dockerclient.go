@@ -3,10 +3,12 @@ package dockerclient
 import (
 	"RM-RecordServer/data"
 	"RM-RecordServer/logger"
+	"bufio"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -29,7 +31,6 @@ type ContainerParam struct {
 	SessionID   data.SessionID
 	WorkspaceID data.WorkspaceID
 	UserID      string
-	CreateTime  time.Time
 	MetaData    interface{}
 }
 
@@ -44,7 +45,6 @@ type ContainerLabel struct {
 	SessionID   string
 	WorkspaceID string
 	UserID      string
-	CreateTime  int64
 	EndTime     int64
 	TimeLimit   int
 }
@@ -131,7 +131,6 @@ func ListContainers(ctx context.Context) []ContainerLabel {
 	}
 	cons, err := cli.ListContainers(docker.ListContainersOptions{Filters: filter})
 	for _, c := range cons {
-		createTime, _ := strconv.ParseInt(c.Labels["createTime"], 10, 64)
 		endTime, _ := strconv.ParseInt(c.Labels["endTime"], 10, 64)
 		timeLimit, _ := strconv.ParseInt(c.Labels["timeLimit"], 10, 64)
 		containers = append(containers, ContainerLabel{
@@ -140,7 +139,6 @@ func ListContainers(ctx context.Context) []ContainerLabel {
 			SessionID:   c.Labels["sessionId"],
 			WorkspaceID: c.Labels["workspaceId"],
 			UserID:      c.Labels["userId"],
-			CreateTime:  createTime,
 			TimeLimit:   int(timeLimit),
 			EndTime:     endTime,
 		})
@@ -219,7 +217,7 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	url := param.LayoutURL + "?sessionId=" + param.SessionID.String() + "&token=" + param.Token
 	log.Info("url:", url)
 
-	endTime := param.CreateTime.Unix() + int64(param.TimeLimit)
+	endTime := time.Now().Unix() + int64(param.TimeLimit)
 	createOpt := docker.CreateContainerOptions{}
 	createOpt.Name = param.RecordingID.String()
 	createOpt.Config = &docker.Config{
@@ -239,8 +237,7 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 			"recordingId": param.RecordingID.String(),
 			"sessionId":   param.SessionID.String(),
 			"workspaceId": param.WorkspaceID.String(),
-			"userID":      param.UserID,
-			"createTime":  strconv.FormatInt(param.CreateTime.Unix(), 10),
+			"userId":      param.UserID,
 			"timeLimit":   strconv.FormatInt(int64(param.TimeLimit), 10),
 			"endTime":     strconv.FormatInt(endTime, 10),
 		},
@@ -272,7 +269,68 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 	}
 	log.Info("start container:", container.ID, " sessionId:", param.VideoID)
 
+	waitStartRecording(ctx, container.ID)
+
 	return container.ID, nil
+}
+
+func waitStartRecording(ctx context.Context, containerID string) error {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	cli, err := docker.NewClientFromEnv()
+	if err != nil {
+		log.Error("NewClientFromEnv:", err)
+		return ErrContainerInternal
+	}
+
+	r, w := io.Pipe()
+	logWaiter, err := cli.AttachToContainerNonBlocking(
+		docker.AttachToContainerOptions{
+			Container:    containerID,
+			OutputStream: w,
+			ErrorStream:  w,
+			Logs:         false,
+			Stdout:       true,
+			Stderr:       true,
+			Stream:       true,
+		},
+	)
+	if err != nil {
+		log.WithError(err).Warn("fail AttachToContainerNonBlocking")
+		return err
+	}
+
+	defer func() {
+		err = logWaiter.Close()
+		if err != nil {
+			log.WithError(err).Error("Could not close container log")
+		}
+		err = logWaiter.Wait()
+		if err != nil {
+			log.WithError(err).Error("Could not wait for container log to close")
+		}
+	}()
+
+	reader := bufio.NewReader(r)
+	for {
+		line, err := reader.ReadString('\n')
+		if err != nil {
+			switch err {
+			case io.EOF:
+				log.Info("Container has closed its IO channel")
+			default:
+				log.WithError(err).Error("Error reading container output")
+			}
+			break
+		}
+		log.Debug(line)
+
+		if strings.Contains(line, "ffmpeg version") {
+			break
+		}
+	}
+
+	return nil
 }
 
 func StopContainer(ctx context.Context, containerID string) {

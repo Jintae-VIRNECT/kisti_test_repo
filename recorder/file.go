@@ -255,3 +255,36 @@ func upload(ctx context.Context, info RecordingFileInfo) error {
 
 	return nil
 }
+
+func writeCreateTime(ctx context.Context, recordingID data.RecordingID, now time.Time) error {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	path := filepath.Join(viper.GetString("record.dir"), string(recordingID))
+	filename := filepath.Join(path, ".createtime")
+	data := map[string]interface{}{}
+	data["createTime"] = now.Unix()
+	dataBytes, _ := json.Marshal(data)
+	err := ioutil.WriteFile(filename, dataBytes, 0644)
+	if err != nil {
+		log.WithError(err).Error("write fail")
+	}
+
+	return nil
+}
+
+func readCreateTime(ctx context.Context, recordingID data.RecordingID) (time.Time, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	path := filepath.Join(viper.GetString("record.dir"), string(recordingID))
+	filename := filepath.Join(path, ".createtime")
+	infoFile, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.WithError(err).Error("read fail")
+		return time.Time{}, err
+	}
+
+	var data map[string]interface{}
+	json.Unmarshal(infoFile, &data)
+
+	return time.Unix(int64(data["createTime"].(float64)), 0).UTC(), nil
+}
