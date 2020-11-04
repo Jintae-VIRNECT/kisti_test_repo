@@ -131,9 +131,16 @@ export default {
           this.logger('pdf loading time', duration)
         })
         .catch(err => {
-          if (err.name === 'InvalidPDFException') {
-            this.toastError('Invalid PDF File.')
-          } else if (err.name === 'PasswordException') {
+          if (
+            err.name === 'InvalidPDFException' ||
+            err.message === 'Invalid PDF structure.'
+          ) {
+            // this.toastError('Invalid PDF File.')
+            this.toastError(this.$t('service.file_type'))
+          } else if (
+            err.name === 'PasswordException' ||
+            err.message === 'No password given'
+          ) {
             this.toastError(this.$t('service.share_locked'))
           } else {
             console.error(err)
