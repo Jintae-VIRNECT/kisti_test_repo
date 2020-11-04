@@ -1,13 +1,34 @@
 <template>
   <div class="header-logo">
-    <img class="header-logo--image" src="~assets/image/logo_symtext.svg" />
+    <img
+      v-if="logo !== false"
+      @error="logoError"
+      class="header-logo--image"
+      :src="logo"
+    />
+    <img
+      v-else
+      class="header-logo--image"
+      src="~assets/image/logo_symtext.svg"
+    />
     <div class="header-logo--text"></div>
   </div>
 </template>
 
 <script>
+import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
 export default {
   name: 'HeaderLogo',
+  data() {
+    return {
+      logo: WHITE_LOGO,
+    }
+  },
+  methods: {
+    logoError() {
+      this.logo = DEFAULT_LOGO
+    },
+  },
 }
 </script>
 
