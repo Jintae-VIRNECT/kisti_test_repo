@@ -31,13 +31,13 @@
             >{{ $t('list.room_active_date') }}</span
           >
         </div>
-        <div class="history__header--text state">
+        <!-- <div class="history__header--text state">
           <span
             @click="setSort('state')"
             :class="{ active: sort.column === 'state' }"
             >{{ $t('list.room_status') }}</span
           >
-        </div>
+        </div> -->
         <div class="history__header--text count">
           <span
             @click="setSort('server-count')"
@@ -85,9 +85,9 @@
             <div class="history__text start-date">
               {{ date(history.activeDate) }}
             </div>
-            <div class="history__text state">
+            <!-- <div class="history__text state">
               <collabo-status :status="history.status"> </collabo-status>
-            </div>
+            </div> -->
             <div class="history__text count">
               <count-button
                 :count="history.serverRecord.length"
@@ -154,7 +154,7 @@
 </template>
 
 <script>
-import CollaboStatus from 'CollaboStatus'
+// import CollaboStatus from 'CollaboStatus'
 import CountButton from 'CountButton'
 
 import HistoryInfo from 'components/modal/HistoryInfo'
@@ -169,7 +169,7 @@ export default {
   name: 'History',
   components: {
     CountButton,
-    CollaboStatus,
+    // CollaboStatus,
     HistoryInfo,
     ServerRecordInfo,
     LocalRecordInfo,

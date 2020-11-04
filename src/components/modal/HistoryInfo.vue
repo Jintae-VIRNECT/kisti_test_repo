@@ -16,10 +16,10 @@
         </div>
         <div class="history-info-table-column__info">
           <span>{{ room.title }}</span>
-          <collabo-status
+          <!-- <collabo-status
             :status="room.status"
             :customClass="'custom-collabo-status'"
-          ></collabo-status>
+          ></collabo-status> -->
         </div>
       </div>
       <div class="history-info__row">
@@ -84,7 +84,7 @@
 <script>
 import Modal from 'Modal'
 import ProfileList from 'ProfileList'
-import CollaboStatus from 'CollaboStatus'
+// import CollaboStatus from 'CollaboStatus'
 import { getHistorySingleItem } from 'api/http/history'
 
 import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
@@ -93,7 +93,7 @@ export default {
   components: {
     Modal,
     ProfileList,
-    CollaboStatus,
+    // CollaboStatus,
   },
   data() {
     return {
