@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"time"
 
 	"github.com/minio/minio-go/v7"
@@ -37,6 +38,12 @@ func Init() {
 			panic(err)
 		}
 		logrus.Info("create bucket:", bucketName)
+	}
+
+	policy := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetBucketLocation","s3:ListBucket"],"Resource":["arn:aws:s3:::` + bucketName + `"]},{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetObject"],"Resource":["arn:aws:s3:::` + bucketName + `/*"]}]}`
+	err = client.minioClient.SetBucketPolicy(ctx, bucketName, policy)
+	if err != nil {
+		panic(err)
 	}
 }
 
@@ -114,11 +121,21 @@ func (c *Client) GetPresignedUrl(ctx context.Context, target string, filename st
 		return "", err
 	}
 
-	return removeQueryParam(presignedURL.String()), nil
+	return presignedURL.String(), nil
 }
 
-func removeQueryParam(inURL string) string {
-	u, _ := url.Parse(inURL)
-	u.RawQuery = ""
-	return u.String()
+func (c *Client) GetObjectUrl(ctx context.Context, target string, filename string) (string, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
+	useSSL := viper.GetBool("storage.useSSL")
+	endpoint := viper.GetString("storage.endpoint")
+	u := new(url.URL)
+	if useSSL {
+		u.Scheme = "https"
+	} else {
+		u.Scheme = "http"
+	}
+	u.Path = path.Join(endpoint, c.bucketName, target)
+	log.Info("download url:", u.String())
+	return u.String(), nil
 }
