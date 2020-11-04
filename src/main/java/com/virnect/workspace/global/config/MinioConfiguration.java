@@ -42,53 +42,13 @@ public class MinioConfiguration {
 	private String minioServer;
 
 	@Bean
-	public OkHttpClient okHttpClient() throws
-		NoSuchAlgorithmException,
-		KeyManagementException {
-
-		final TrustManager[] trustAllCerts = new TrustManager[] {
-			new X509TrustManager() {
-				@Override
-				public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws
-					CertificateException {
-				}
-
-				@Override
-				public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws
-					CertificateException {
-				}
-
-				@SneakyThrows
-				@Override
-				public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-					return new java.security.cert.X509Certificate[] {};
-				}
-			}
-		};
-		SSLContext sslContext = SSLContext.getInstance("TLS");
-		sslContext.init(null, trustAllCerts, new SecureRandom());
-		SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-		OkHttpClient.Builder builder = new OkHttpClient.Builder();
-		builder.sslSocketFactory(sslSocketFactory);
-		builder.hostnameVerifier(new HostnameVerifier() {
-			@Override
-			public boolean verify(String s, SSLSession sslSession) {
-				return true;
-			}
-		});
-
-		return builder.build();
-	}
-
-	@Bean
 	public MinioClient minioClient() throws
 		NoSuchAlgorithmException,
 		KeyManagementException {
 		MinioClient minioClient = MinioClient.builder()
 			//.httpClient(okHttpClient())
 			.endpoint(minioServer)
-			.credentials(accessKey,secretKey)
+			.credentials(accessKey, secretKey)
 			.build();
 		minioClient.ignoreCertCheck();
 		return minioClient;
