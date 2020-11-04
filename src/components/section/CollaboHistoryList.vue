@@ -180,9 +180,7 @@ export default {
             sessionId: history.sessionId,
           })
 
-          history.files = datas.fileInfoList.filter(info => {
-            return info.deleted === false
-          })
+          history.files = datas.fileInfoList.filter(info => !info.deleted)
         } catch (e) {
           history.files = []
           console.error(e)
