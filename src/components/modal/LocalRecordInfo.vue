@@ -116,14 +116,14 @@ export default {
     async openPlayModal(index) {
       const file = this.fileList[index]
 
-      const url = await getLocalRecordFileUrl({
+      const data = await getLocalRecordFileUrl({
         objectName: file.objectName,
         sessionId: file.sessionId,
         userId: this.account.uuid,
         workspaceId: file.workspaceId,
       })
 
-      this.$eventBus.$emit('open::player', proxyUrl(url))
+      this.$eventBus.$emit('open::player', proxyUrl(data.url))
     },
     async download() {
       const downloadFiles = []
