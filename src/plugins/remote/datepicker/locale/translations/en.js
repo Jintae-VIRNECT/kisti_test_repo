@@ -1,36 +1,14 @@
 import Language from '../Language'
 
-export default new Language(
+const language = new Language(
   'English',
-  [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ],
-  [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ],
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
   ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
 )
+language.yearSuffix = '-'
+language.ymd = true
+
+export default language
 // eslint-disable-next-line
 ;

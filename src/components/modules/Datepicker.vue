@@ -9,6 +9,7 @@
       :minimumView="minimumView"
       :maximumView="maximumView"
       :value="initValue"
+      :language="langObj"
     >
     </vue-datepicker>
     <button @click="toggleCalendar" class="calendar-button">
@@ -20,11 +21,20 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import ko from 'plugins/remote/datepicker/locale/translations/ko'
+import en from 'plugins/remote/datepicker/locale/translations/en'
+import langMixin from 'mixins/language'
+
 export default {
   name: 'Datepicker',
+  mixins: [langMixin],
   data() {
     return {
       isActive: false,
+      langSet: {
+        ko: ko,
+        en: en,
+      },
     }
   },
   props: {
@@ -61,6 +71,9 @@ export default {
       )
       if (index < 0) return {}
       return this.calendars[index]
+    },
+    langObj() {
+      return this.langSet[this.currentLanguage]
     },
   },
   watch: {
