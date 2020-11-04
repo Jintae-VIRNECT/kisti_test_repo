@@ -42,16 +42,16 @@ export default {
     },
 
     mx_getLangCode() {
-      // let lang = Cookies.get('lang')
+      let lang = Cookies.get('lang')
 
-      // if (!lang) {
-      //   lang =
-      //     navigator.language ||
-      //     navigator.userLanguage || //for IE
-      //     navigator.systemLanguage || //for IE
-      //     'en'
-      // }
-      let lang = 'ko'
+      if (!lang) {
+        lang =
+          navigator.language ||
+          navigator.userLanguage || //for IE
+          navigator.systemLanguage || //for IE
+          'en'
+      }
+
       return shortLang.get(lang.toLowerCase())
     },
 
