@@ -38,7 +38,10 @@ export default {
   /* ATTACH */
   FILES: ['GET', '/remote/file'],
 
-  DELETE_FILE_ITEM: ['DELETE', '/remote/file/{workspaceId}/{sessionId}'],
+  DELETE_FILE_ITEM: [
+    'DELETE',
+    '/remote/file/{workspaceId}/{sessionId}?objectName={objectName}&userId={userId}',
+  ],
 
   FILE_ITEM_DOWNLOAD_URL: [
     'GET',

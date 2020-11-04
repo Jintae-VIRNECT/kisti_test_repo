@@ -179,7 +179,10 @@ export default {
             userId: this.account.uuid,
             sessionId: history.sessionId,
           })
-          history.files = datas.fileInfoList
+
+          history.files = datas.fileInfoList.filter(info => {
+            return info.deleted === false
+          })
         } catch (e) {
           history.files = []
           console.error(e)
