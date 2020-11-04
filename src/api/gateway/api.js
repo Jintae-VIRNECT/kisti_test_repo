@@ -40,11 +40,6 @@ export default {
 
   DELETE_FILE_ITEM: ['DELETE', '/remote/file/{workspaceId}/{sessionId}'],
 
-  DOWNLOAD_FILE_ITEM: [
-    'GET',
-    '/remote/file/download/{workspaceId}/{sessionId}',
-  ],
-
   FILE_ITEM_DOWNLOAD_URL: [
     'GET',
     '/remote/file/download/url/{workspaceId}/{sessionId}',
