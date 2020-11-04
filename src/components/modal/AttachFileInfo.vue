@@ -51,11 +51,12 @@ import IconButton from 'components/modules/IconButton'
 import { getFileDownloadUrl, deleteFileItem } from 'api/http/file'
 
 import confirmMixin from 'mixins/confirm'
+import tableMixin from 'mixins/table'
 import { downloadByURL } from 'utils/file'
 
 export default {
   name: 'AttachFileInfo',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, tableMixin],
   components: {
     FileTable,
     IconButton,
@@ -174,25 +175,9 @@ export default {
     getRenderOpts() {
       const renderOpts = []
 
-      const expirationDateRender = date => {
-        return this.$dayjs(date).format('YYYY.MM.DD')
-      }
-
-      const fileSizeRender = size => {
-        const mb = 1048576
-
-        if (size >= mb) {
-          size = size / 1024 / 1024
-          return `${size.toFixed(1)}MB`
-        } else {
-          size = size / 1024
-          return `${size.toFixed(1)}KB`
-        }
-      }
-
       renderOpts.push(
-        { column: 'expirationDate', render: expirationDateRender },
-        { column: 'size', render: fileSizeRender },
+        { column: 'expirationDate', render: this.expirationDateRender },
+        { column: 'size', render: this.fileSizeRender },
       )
 
       return renderOpts

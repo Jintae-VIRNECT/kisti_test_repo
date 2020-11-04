@@ -50,12 +50,13 @@ import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
 import confirmMixin from 'mixins/confirm'
+import tableMixin from 'mixins/table'
 import { getLocalRecordFileUrl } from 'api/http/file' //삭제 api 추가 필요함.
 import { downloadByURL, proxyUrl } from 'utils/file'
 
 export default {
   name: 'LocalRecordInfo',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, tableMixin],
   components: {
     FileTable,
     IconButton,
@@ -187,62 +188,12 @@ export default {
     //for record render
     getRenderOpts() {
       const renderOpts = []
-
-      //display h hour m min s sec
-      const playTimeRender = playTime => {
-        let sec_num = Number.parseInt(playTime, 10)
-        let hours = Math.floor(sec_num / 3600)
-        let minutes = Math.floor((sec_num - hours * 3600) / 60)
-        let seconds = sec_num - hours * 3600 - minutes * 60
-
-        let hText = this.$t('date.hour')
-        let mText = this.$t('date.minute')
-        let sText = this.$t('date.second')
-
-        if (hours === 0 && minutes === 0 && seconds < 1) {
-          hours = ''
-          hText = ''
-
-          minutes = ''
-          mText = ''
-
-          seconds = '0'
-        } else {
-          if (hours === 0) {
-            hours = ''
-            hText = ''
-          }
-          if (minutes === 0) {
-            minutes = ''
-            mText = ''
-          }
-          if (seconds === 0) {
-            seconds = ''
-            sText = ''
-          }
-        }
-
-        return `${hours}${hText} ${minutes}${mText} ${seconds}${sText}`
-      }
-
-      const fileSizeRender = size => {
-        const mb = 1048576
-
-        if (size >= mb) {
-          size = size / 1024 / 1024
-          return `${size.toFixed(1)}MB`
-        } else {
-          size = size / 1024
-          return `${size.toFixed(1)}KB`
-        }
-      }
-
       renderOpts.push(
         {
           column: 'durationSec',
-          render: playTimeRender,
+          render: this.playTimeRender,
         },
-        { column: 'size', render: fileSizeRender },
+        { column: 'size', render: this.fileSizeRender },
       )
 
       return renderOpts
