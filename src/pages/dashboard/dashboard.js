@@ -13,10 +13,12 @@ import globalMixin from 'mixins/global'
 import { version } from '../../../package.json'
 
 import Store from 'stores/remote/store'
+import VueToasted from 'plugins/remote/toasted'
 
 Vue.use(Vue2Scrollbar)
 Vue.use(DayJS)
 Vue.use(Datepicker)
+Vue.use(VueToasted)
 Vue.mixin(globalMixin)
 
 Vue.config.productionTip = false
@@ -31,3 +33,5 @@ const app = new Vue({
   render: h => h(App),
   i18n,
 }).$mount('#container')
+
+window.vue = app
