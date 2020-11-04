@@ -10,6 +10,7 @@ import API from './api'
 import { logger, debug } from 'utils/logger'
 import axios from '../axios'
 import errorList from './gateway.error.json'
+import networkError from './network.error.json'
 import { cookieClear } from 'utils/auth'
 
 const URL = API
@@ -80,26 +81,55 @@ const sender = async function(constant, params, headers = {}, custom) {
     }
   }
 
-  option = merge(option, {
-    ...custom,
-  })
+  // option = merge(option, {
+  //   ...custom,
+  // })
   option.headers = merge(option.headers, {
     ...headers,
   })
 
-  // debug(method.toUpperCase(), url, parameter, headers)
+  debug(method.toUpperCase(), url, parameter, headers)
   const request = {
     method: method,
     url: url,
     ...option,
+  }
+  if (custom && custom.type === 'blob') {
+    request.responseType = 'blob'
   }
   if (method === 'get') {
     request['params'] = parameter
   } else {
     request['data'] = parameter
   }
-  const response = await axios(request)
-  return receiver(response)
+  try {
+    const response = await axios(request)
+    if (custom && 'direct' === custom.response) {
+      return response.data
+    }
+    return receiver(response)
+  } catch (err) {
+    if (custom && custom.initing === true) throw err
+    if ('message' in err) {
+      if (
+        err.message.toLowerCase() in networkError ||
+        err.message.toLowerCase().includes('timeout of')
+      ) {
+        window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
+          position: 'bottom-center',
+          duration: 5000,
+          action: {
+            icon: 'close',
+            onClick: (e, toastObject) => {
+              toastObject.goAway(0)
+            },
+          },
+        })
+      }
+      throw err
+    }
+    throw err
+  }
 }
 
 /**
