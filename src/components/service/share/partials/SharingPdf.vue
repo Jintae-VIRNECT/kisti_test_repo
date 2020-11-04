@@ -143,8 +143,9 @@ export default {
           ) {
             this.toastError(this.$t('service.share_locked'))
           } else {
-            console.error(err)
+            this.toastError(this.$t('service.file_type'))
           }
+          console.error(err)
           setTimeout(() => {
             this.remove()
           }, 3000)
