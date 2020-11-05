@@ -27,6 +27,7 @@ type RecordingFileInfo struct {
 	Size        int
 	Resolution  string
 	Framerate   int
+	TimeLimit   int
 	CreateAt    time.Time
 	MetaData    interface{}
 }
@@ -87,7 +88,7 @@ func RemoveRecordingFileAll(ctx context.Context, workspaceID data.WorkspaceID) (
 	for _, info := range infos {
 		log.Infof("delete file. recordingId:%s filename:%s", info.RecordingID, info.Filename)
 		storagePath := getStoragePath(info)
-		err = storage.NewClient().Remove(ctx, storagePath)
+		err = storage.GetClient().Remove(ctx, storagePath)
 		if err != nil {
 			log.Warn(err)
 		}
@@ -111,7 +112,7 @@ func RemoveRecordingFile(ctx context.Context, filter *data.Filter) error {
 	}
 
 	storagePath := getStoragePath(infos[0])
-	err = storage.NewClient().Remove(ctx, storagePath)
+	err = storage.GetClient().Remove(ctx, storagePath)
 	if err != nil {
 		log.Warn(err)
 	}
@@ -133,7 +134,7 @@ func GetRecordingFileDownloadUrl(ctx context.Context, filter *data.Filter) (stri
 	}
 
 	target := getStoragePath(infos[0])
-	url, err := storage.NewClient().GetObjectUrl(ctx, target, infos[0].Filename)
+	url, err := storage.GetClient().GetObjectUrl(ctx, target, infos[0].Filename)
 	if err != nil {
 		return "", err
 	}
@@ -155,20 +156,25 @@ func removeLocalFile(ctx context.Context, file string) error {
 	return nil
 }
 
+func getInfoFilename(recordingID data.RecordingID) string {
+	path := filepath.Join(viper.GetString("record.dir"), string(recordingID))
+	return filepath.Join(path, ".recording."+string(recordingID))
+}
+
 func readInfoFile(ctx context.Context, recordingID data.RecordingID) (RecordingFileInfo, error) {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 
 	info := RecordingFileInfo{}
-	path := filepath.Join(viper.GetString("record.dir"), string(recordingID))
-	infoFile, err := os.Open(filepath.Join(path, ".recording."+string(recordingID)))
+	infoFilename := getInfoFilename(recordingID)
+	infoFile, err := os.Open(infoFilename)
 	if err != nil {
-		log.Error("open file:", err)
+		log.WithError(err).Error("fail: open file. ", infoFilename)
 		return info, err
 	}
 	defer infoFile.Close()
 	byteValue, err := ioutil.ReadAll(infoFile)
 	if err != nil {
-		log.Error("json parse file:", err)
+		log.WithError(err).Error("json parse file.", infoFilename)
 		return info, err
 	}
 	var result map[string]interface{}
@@ -210,9 +216,13 @@ func readInfoFile(ctx context.Context, recordingID data.RecordingID) (RecordingF
 		result["framerate"] = 0.0
 	}
 
+	if _, ok := result["timeLimit"]; !ok {
+		result["timeLimit"] = 0
+	}
+
 	filenameWithPath := result["filename"].(string)
 	fullPath := filepath.Join(viper.GetString("record.dir"), strings.TrimPrefix(filenameWithPath, viper.GetString("record.dirOnDocker")))
-
+	path := filepath.Join(viper.GetString("record.dir"), string(recordingID))
 	finfo, err := os.Stat(path)
 	if err != nil {
 		return info, err
@@ -226,11 +236,12 @@ func readInfoFile(ctx context.Context, recordingID data.RecordingID) (RecordingF
 	info.UserID = result["userId"].(string)
 	info.Filename = filepath.Base(filenameWithPath)
 	info.FullPath = fullPath
+	info.TimeLimit = int(result["timeLimit"].(float64))
 	info.Duration = int(result["duration"].(float64))
 	info.Size = int(result["size"].(float64))
 	info.Resolution = result["resolution"].(string)
 	info.Framerate = int(result["framerate"].(float64))
-	info.CreateAt = time.Unix(int64(ts.Sec), int64(ts.Nsec)).UTC()
+	info.CreateAt = time.Unix(int64(ts.Sec), int64(ts.Nsec))
 	if metaData, ok := result["metaData"]; ok == true {
 		info.MetaData = metaData.(interface{})
 	}
@@ -241,13 +252,13 @@ func readInfoFile(ctx context.Context, recordingID data.RecordingID) (RecordingF
 func upload(ctx context.Context, info RecordingFileInfo) error {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 	storagePath := getStoragePath(info)
-	if err := storage.NewClient().Upload(ctx, info.FullPath, storagePath); err != nil {
+	if err := storage.GetClient().Upload(ctx, info.FullPath, storagePath); err != nil {
 		log.Error(err)
 		return err
 	}
 	if err := insertIntoDB(ctx, info); err != nil {
 		log.Error(err)
-		if err = storage.NewClient().Remove(ctx, storagePath); err != nil {
+		if err = storage.GetClient().Remove(ctx, storagePath); err != nil {
 			log.Error(err)
 		}
 		return err
@@ -259,12 +270,22 @@ func upload(ctx context.Context, info RecordingFileInfo) error {
 func writeCreateTime(ctx context.Context, recordingID data.RecordingID, now time.Time) error {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 
-	path := filepath.Join(viper.GetString("record.dir"), string(recordingID))
-	filename := filepath.Join(path, ".createtime")
-	data := map[string]interface{}{}
+	// read file
+	filename := getInfoFilename(recordingID)
+	infoFile, err := ioutil.ReadFile(filename)
+	if err != nil {
+		log.WithError(err).Error("read fail: recordingId:", recordingID)
+		return err
+	}
+
+	// write create time
+	var data map[string]interface{}
+	json.Unmarshal(infoFile, &data)
 	data["createTime"] = now.Unix()
 	dataBytes, _ := json.Marshal(data)
-	err := ioutil.WriteFile(filename, dataBytes, 0644)
+
+	// write file
+	err = ioutil.WriteFile(filename, dataBytes, 0644)
 	if err != nil {
 		log.WithError(err).Error("write fail")
 	}
@@ -275,16 +296,21 @@ func writeCreateTime(ctx context.Context, recordingID data.RecordingID, now time
 func readCreateTime(ctx context.Context, recordingID data.RecordingID) (time.Time, error) {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 
-	path := filepath.Join(viper.GetString("record.dir"), string(recordingID))
-	filename := filepath.Join(path, ".createtime")
+	// read file
+	filename := getInfoFilename(recordingID)
 	infoFile, err := ioutil.ReadFile(filename)
 	if err != nil {
 		log.WithError(err).Error("read fail")
 		return time.Time{}, err
 	}
 
+	// read create time
 	var data map[string]interface{}
 	json.Unmarshal(infoFile, &data)
+	createTime, ok := data["createTime"]
+	if ok == false {
+		return time.Time{}, ErrInternalError
+	}
 
-	return time.Unix(int64(data["createTime"].(float64)), 0).UTC(), nil
+	return time.Unix(int64(createTime.(float64)), 0), nil
 }

@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"sync"
 	"time"
 
 	"github.com/minio/minio-go/v7"
@@ -22,10 +23,20 @@ type Client struct {
 	bucketName  string
 }
 
+var once sync.Once
+var client *Client
+
+func GetClient() *Client {
+	once.Do(func() {
+		client = New()
+	})
+	return client
+}
+
 func Init() {
 	ctx := context.Background()
 	bucketName := viper.GetString("storage.bucketName")
-	client := NewClient()
+	client := GetClient()
 
 	found, err := client.minioClient.BucketExists(ctx, bucketName)
 	if err != nil {
@@ -47,7 +58,7 @@ func Init() {
 	}
 }
 
-func NewClient() *Client {
+func New() *Client {
 	endpoint := viper.GetString("storage.endpoint")
 	accessKey := viper.GetString("storage.accessKey")
 	secretKey := viper.GetString("storage.secretKey")

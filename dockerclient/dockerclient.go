@@ -57,6 +57,7 @@ type recordingJson struct {
 	Filename    string           `json:"filename"`
 	Framerate   int              `json:"framerate"`
 	Resolution  string           `json:"resolution"`
+	TimeLimit   int              `json:"timeLimit"`
 	MetaData    interface{}      `json:"metaData,omitempty"`
 }
 
@@ -90,7 +91,7 @@ func garbageCollector(ctx context.Context) {
 				log.Error("NewClientFromEnv:", err)
 				return
 			}
-			now := time.Now().UTC().Unix()
+			now := time.Now().Unix()
 			filter := map[string][]string{
 				"ancestor": []string{viper.GetString("record.dockerImage")},
 			}
@@ -208,6 +209,7 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 			Filename:    filename,
 			Framerate:   param.Framerate,
 			Resolution:  param.Resolution,
+			TimeLimit:   param.TimeLimit,
 		})
 	if err != nil {
 		log.Error("metaData parsing fail:", err)

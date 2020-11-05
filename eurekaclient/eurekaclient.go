@@ -108,7 +108,7 @@ func (c *EurekaClient) runDeRegister() {
 	c.DeRegister()
 }
 
-func NewClient() *EurekaClient {
+func GetClient() *EurekaClient {
 	port := viper.GetInt("general.port")
 	appName := viper.GetString("eureka.app")
 	useSSL := viper.GetBool("general.useSSL")

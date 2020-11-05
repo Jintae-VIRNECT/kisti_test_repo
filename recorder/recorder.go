@@ -290,7 +290,7 @@ func StopRecordingBySessionID(ctx context.Context, workspaceID data.WorkspaceID,
 
 func RestoreRecording(ctx context.Context, recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID,
 	userID string, containerID string, createTime time.Time, timeLimit int) {
-	now := time.Now().UTC().Unix()
+	now := time.Now().Unix()
 	recordingTimeLeft := timeLimit - int(now-createTime.Unix())
 
 	logger.Infof("RestoreRecording: recordingId:%s workspaceId:%s userId:%s containerID:%s recordingTimeLeft:%d)", recordingID, workspaceID, userID, containerID, recordingTimeLeft)
@@ -368,7 +368,14 @@ func restoreRecordingFromContainer(ctx context.Context) {
 	constainers := dockerclient.ListContainers(ctx)
 	for _, container := range constainers {
 		recordID := data.RecordingID(container.RecordingID)
-		createTime, _ := readCreateTime(ctx, recordID)
+		createTime, err := readCreateTime(ctx, recordID)
+		if err != nil {
+			log.Warn("get create time error. endTime:", container.EndTime, " timeLimit:", container.TimeLimit)
+			createTime = time.Unix(container.EndTime-int64(container.TimeLimit), 0)
+			createTime = createTime.Add(time.Second * 10) // host와 container의 시간이 다르기 때문에 약간의 보정이 필요하다.
+			writeCreateTime(ctx, recordID, createTime)
+		}
+		log.Debug("create time:", createTime.UTC())
 		RestoreRecording(ctx,
 			recordID,
 			data.SessionID(container.SessionID),
@@ -400,6 +407,16 @@ func garbageCollector() {
 
 		for _, info := range list {
 			logger.Info("upload file. recordingId:", info.RecordingID, " file:", info.Filename, " create:", info.CreateAt)
+
+			createTime, err := readCreateTime(ctx, info.RecordingID)
+			if err != nil {
+				logEntry.WithError(err).Error("garbageCollector: get create time")
+				continue
+			}
+			marginTime := 60
+			if time.Now().Unix() < createTime.Unix()+int64(info.TimeLimit+marginTime) {
+				continue
+			}
 
 			if err := upload(ctx, info); err != nil {
 				logEntry.Error("upload fail. err:", err)
