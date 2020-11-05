@@ -1,4 +1,4 @@
-package main
+package middleware
 
 import (
 	"RM-RecordServer/data"
@@ -43,7 +43,7 @@ func IsDebugging() bool {
 	return viper.GetBool("general.devMode") == true
 }
 
-func customRecovery() gin.HandlerFunc {
+func CustomRecovery() gin.HandlerFunc {
 	return customRecoveryWithWriter(gin.DefaultErrorWriter, func(c *gin.Context, recovered interface{}) {
 		response := fmt.Sprintf(`{"data":{},"service":"%s", "code":9999,"message": "panic"}`, viper.GetString("general.service"))
 		c.String(http.StatusInternalServerError, fmt.Sprintf("%s", response))

@@ -2,31 +2,22 @@ package main
 
 import (
 	"RM-RecordServer/api"
-	"RM-RecordServer/data"
 	"RM-RecordServer/dockerclient"
 	_ "RM-RecordServer/docs"
 	"RM-RecordServer/eurekaclient"
 	"RM-RecordServer/logger"
+	"RM-RecordServer/middleware"
 	"RM-RecordServer/recorder"
 	"RM-RecordServer/storage"
-	"bytes"
 	"context"
-	"encoding/json"
-	"fmt"
-	"io"
-	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/arl/statsviz"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	swaggerFiles "github.com/swaggo/gin-swagger/swaggerFiles"
@@ -63,6 +54,8 @@ func main() {
 		Handler: router,
 	}
 
+	logger := logger.NewLogger()
+
 	go func() {
 		logger.Info("Server Started: listen:", viper.GetInt("general.port"))
 		var err error
@@ -74,14 +67,17 @@ func main() {
 			err = srv.ListenAndServe()
 		}
 		if err != nil {
-			logger.Errorf("listen: %s", err)
+			logger.WithError(err).Error("listen fail")
 		}
 	}()
 
 	if viper.GetBool("general.devMode") {
 		go func() {
 			statsviz.RegisterDefault()
-			log.Println(http.ListenAndServe(":6060", nil))
+			err := http.ListenAndServe(":6060", nil)
+			if err != nil {
+				logger.WithError(err).Error("listen fail")
+			}
 		}()
 	}
 
@@ -99,7 +95,7 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		logger.Error("Server Shutdown:", err)
+		logger.WithError(err).Error("Server Shutdown")
 	}
 	logger.Info("Record Server stopped")
 }
@@ -110,10 +106,10 @@ func setupRouter() *gin.Engine {
 	}
 
 	r := gin.New()
-	r.Use(loggerMiddleware())
-	r.Use(requestLoggerMiddleware())
-	r.Use(customRecovery())
-	r.Use(responseBodyLogMiddleware())
+	r.Use(middleware.Logger())
+	r.Use(middleware.RequestLogger())
+	r.Use(middleware.ResponseLogger())
+	r.Use(middleware.CustomRecovery())
 
 	recorder := r.Group("/remote/recorder")
 	{
@@ -139,74 +135,6 @@ func setupRouter() *gin.Engine {
 
 	url := ginSwagger.URL("http://localhost:8083/swagger/doc.json")
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
-	r.GET("/v2/api-docs/*any", swaggerMiddleware(), ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/v2/api-docs/*any", middleware.Swagger(), ginSwagger.WrapHandler(swaggerFiles.Handler))
 	return r
-}
-
-func requestLoggerMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		if strings.Contains(c.Request.RequestURI, "swagger") {
-			c.Next()
-			return
-		}
-		log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
-
-		var buf bytes.Buffer
-		tee := io.TeeReader(c.Request.Body, &buf)
-		body, _ := ioutil.ReadAll(tee)
-		c.Request.Body = ioutil.NopCloser(&buf)
-		logbuf := fmt.Sprintf("Request method:%s path:%s user-agent:%s", c.Request.Method, c.Request.URL.Path, c.GetHeader("User-Agent"))
-		if len(body) > 0 {
-			logbuf = fmt.Sprintf("%s\nbody:%s", logbuf, string(body))
-		}
-		log.Info(logbuf)
-		c.Next()
-	}
-}
-
-func loggerMiddleware() gin.HandlerFunc {
-	const headerXRequestID = "X-Request-ID"
-	logger := logger.NewLogger()
-	return func(c *gin.Context) {
-		reqID := c.GetHeader(headerXRequestID)
-		if reqID == "" {
-			reqID = uuid.New().String()
-			c.Header(headerXRequestID, reqID)
-		}
-
-		logEntry := logrus.NewEntry(logger)
-		logEntry = logEntry.WithField("request_id", reqID)
-		c.Request = c.Request.WithContext(context.WithValue(c.Request.Context(), data.ContextKeyLog, logEntry))
-		c.Next()
-	}
-}
-
-func swaggerMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Request.RequestURI = c.Request.RequestURI + "/doc.json"
-		c.Next()
-	}
-}
-
-type bodyLogWriter struct {
-	gin.ResponseWriter
-	body *bytes.Buffer
-}
-
-func (w bodyLogWriter) Write(b []byte) (int, error) {
-	w.body.Write(b)
-	return w.ResponseWriter.Write(b)
-}
-
-func responseBodyLogMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		blw := &bodyLogWriter{body: bytes.NewBufferString(""), ResponseWriter: c.Writer}
-		c.Writer = blw
-		c.Next()
-
-		var prettyJSON bytes.Buffer
-		json.Indent(&prettyJSON, blw.body.Bytes(), "", "\t")
-		log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
-		log.Info("Response body: " + prettyJSON.String())
-	}
 }
