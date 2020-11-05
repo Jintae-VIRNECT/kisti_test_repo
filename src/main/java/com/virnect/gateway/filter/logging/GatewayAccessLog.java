@@ -1,8 +1,8 @@
 package com.virnect.gateway.filter.logging;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +13,9 @@ import reactor.util.Loggers;
 final class GatewayAccessLog {
 	static final Logger LOGGER = Loggers.getLogger("com.virnect.gateway.filter.logging.GatewayAccessLog");
 	static final DateTimeFormatter DATE_TIME_FORMATTER =
-		DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss Z", Locale.KOREA);
+		DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
 	static final String COMMON_LOG_FORMAT =
-		"{} - {} [{}] [{}] \"{} {} [{}]\" {} {} {} ms [{}]";
+		"[{}] - {} - [{}] \"{} {} [{}] [{}]\" [{}] [{}] [{} ms] [{}]";
 	static final String MISSING = "-";
 	final String zonedDateTime;
 	String address = MISSING;
@@ -31,7 +31,7 @@ final class GatewayAccessLog {
 	int port;
 
 	GatewayAccessLog() {
-		this.zonedDateTime = ZonedDateTime.now().format(DATE_TIME_FORMATTER);
+		this.zonedDateTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DATE_TIME_FORMATTER);
 	}
 
 	GatewayAccessLog address(String address) {
@@ -89,8 +89,8 @@ final class GatewayAccessLog {
 	}
 
 	void log() {
-		LOGGER.info(COMMON_LOG_FORMAT, address, user, zonedDateTime, contentType,
-			method, uri, status, (contentLength > -1 ? contentLength : MISSING), port, duration(), userAgent
+		LOGGER.info(COMMON_LOG_FORMAT, zonedDateTime, user, address, method, uri, contentType, status,
+			(contentLength > -1 ? contentLength : MISSING), port, duration(), userAgent
 		);
 	}
 }
