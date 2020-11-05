@@ -12,15 +12,20 @@ VIRNECT DashBoard Web frontend project
 
 ## ENV
 
-```
-NODE_ENV: local, develop, production / SSL_ENV: private, public
-```
+
+| Value | Option 
+|-------------|---------------------|
+| NODE_ENV    | develop, production | 
+| SSL_ENV     | private, public     | 
+| VIRNECT_ENV | develop, staging, production, onpremise |
+| CONFIG_SERVER | http://192.168.6.3:6383, https://stgconfig.virnect.com, https://config.virnect.com|
+
 
 ## Environment
 
 ```
-@vue/cli 4.4.6
-npm -> 6.14.7
+@vue/cli 4.5.7
+npm -> 6.14.8
 node -> v12.16.1
 ```
 
@@ -35,11 +40,12 @@ npm run build
 
 | Type | script | description |
 |------|--------|-------------|
-|Develop| npm run serve       | Run in local webpack|
-|Build      | npm run build       | Build script in production|
-|Run Node server with develop     |    npm run start:develop    | Run node server with NODE_ENV=develop|
-|Run Node server with staging     |    npm run start:staging    | Run node server with NODE_ENV=staging|
-|Run Node server with production  |    npm run start:production    | Run node server with NODE_ENV=production|
+|Develop    | npm run serve         | Run in local webpack |
+|Build      | npm run build         | Build script in production|
+|Run Node server with develop       |    npm run start:develop       
+|Run Node server with staging       |    npm run start:staging       
+|Run Node server with onpremise     |    npm run start:op            
+|Run Node server with production    |    npm run start:production    
 |Docker      | npm  run start       | Run node server in Docker |
 
 
@@ -49,9 +55,3 @@ npm run build
 ```shell script
 docker build -t rm-dashboard .
 ```
-
-#### Run application as docker container via docker image
-```shell script
-docker run -p 9989:9989 --restart=always -e 'NODE_ENV=production' -d --name=rm-dashboard $aws_ecr_address/rm-dashboard:\\${GIT_TAG}
-```
-
