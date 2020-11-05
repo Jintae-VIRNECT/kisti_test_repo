@@ -1,7 +1,6 @@
 package com.virnect.gateway.filter.redirect;
 
 import java.net.URI;
-import java.time.LocalDateTime;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -66,7 +65,7 @@ public class HttpsToHttpFilter implements GlobalFilter, Ordered {
 			}
 		}
 		ServerHttpRequest build = mutate.build();
-		log.info("[{}] {}", LocalDateTime.now(), sb.toString());
+		log.info("{}", sb.toString());
 		return chain.filter(exchange.mutate().request(build).build());
 	}
 

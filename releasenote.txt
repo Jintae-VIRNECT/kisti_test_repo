@@ -2,17 +2,13 @@
 RELEASE
 
 New Features
-- 로깅 포맷 변경
-  1. 기존 Netty Access Log 비활성화
-  2. 기존 LoggingGatewayFilterFactory 삭제
-  3. 신규 GatewayAccessLogFilter 반영
-    - 리퀘스트 로그 항목에 사용자 정보 추가 (uuid,email,country)
-
-Bug Fixes
 - 없음
 
+Bug Fixes
+- Access Log, 타임존 문제 수정 (UTC -> KST)
+
 Limitation
-- API 암복호화 응답 헤더에 encrypt , apiName 추가
-  encrypt 필드는 응답이 암호화되었는지 여부, apiName은 현재 호출한 API request url 값을 가짐
+- JwtAuthentication Filter 의 log level 을 debug 일때만 출력됨.
+
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
