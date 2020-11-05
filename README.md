@@ -148,3 +148,13 @@ secretKey = "minio123"
 useSSL = true
 bucketName = "virnect-remote-recorder"
 ```
+
+## Visualization of Runtime Statistics
+
+디버깅을 위한 통계 정보 확인. (https://github.com/arl/statsviz)
+
+### 사용법
+
+- 설정에서 [general] 의 `devMode`를 `true`로 설정
+
+- 브라우저 접속: http://localhost:6060/debug/statsviz/

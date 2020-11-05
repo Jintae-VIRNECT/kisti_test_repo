@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,6 +22,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/arl/statsviz"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
@@ -75,7 +77,14 @@ func main() {
 		}
 	}()
 
-	euraka := eurekaclient.NewClient()
+	if viper.GetBool("general.devMode") {
+		go func() {
+			statsviz.RegisterDefault()
+			log.Println(http.ListenAndServe(":6060", nil))
+		}()
+	}
+
+	euraka := eurekaclient.GetClient()
 	euraka.Run()
 
 	// Wait for interrupt signal to gracefully shutdown the server with
