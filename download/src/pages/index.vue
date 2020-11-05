@@ -22,12 +22,12 @@
             Release: {{ app.releaseTime | dateFormat }}
           </span>
           <span class="version">{{ app.version }}</span>
-          <el-button type="primary" @click="download('app', app)">
+          <el-button type="primary" @click="link('app', app)">
             {{ $t('home.installFileDownload') }}
           </el-button>
           <el-button
             type="text"
-            @click="download('guide', app)"
+            @click="link('guide', app)"
             :disabled="!app.guideUrl"
           >
             {{ $t('home.guideDownload') }}
@@ -78,7 +78,7 @@ export default {
         await this.$api(uri, {
           route: { uuid: app.uuid },
         })
-        window.open(downloadUrl)
+        return downloadUrl
       } catch (e) {
         this.$message.error({
           message: e,
@@ -87,8 +87,11 @@ export default {
         })
       }
     },
-    link(url) {
-      window.open(url)
+    link(type, app) {
+      const popup = window.open()
+      this.download(type, app).then(url => {
+        popup.location = url
+      })
     },
     snbNav() {
       const scrollY = window.pageYOffset

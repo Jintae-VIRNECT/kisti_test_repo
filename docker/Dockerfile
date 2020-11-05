@@ -1,5 +1,5 @@
 # Build Stage
-FROM node:alpine AS builder
+FROM node:12-alpine AS builder
 
 COPY . .
 
@@ -10,7 +10,7 @@ RUN yarn workspace download build:$NODE_ENV \
 && rm -rf node_modules
 
 # Runtime Stage
-FROM node:alpine
+FROM node:12-alpine
 
 ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
