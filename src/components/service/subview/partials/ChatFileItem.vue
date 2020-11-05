@@ -50,10 +50,10 @@ export default {
       return parseFloat(this.fileInfo.size / 1024).toFixed(1) + 'KB'
     },
     isInvalid() {
-      return false
+      return this.fileInfo.expired
     },
     validDate() {
-      return this.$dayjs(this.fileInfo.createdDate).format('YYYY.MM.DD')
+      return this.$dayjs(this.fileInfo.expirationDate).format('YYYY.MM.DD')
     },
     icon() {
       switch (this.ext) {

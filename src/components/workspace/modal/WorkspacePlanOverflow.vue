@@ -30,6 +30,7 @@
 <script>
 import { mapActions } from 'vuex'
 import Modal from 'Modal'
+import { URLS } from 'configs/env.config'
 
 export default {
   name: 'PlanOverflowModal',
@@ -57,7 +58,7 @@ export default {
     ...mapActions(['clearWorkspace']),
     link() {
       window.open(
-        `${window.urls.workstation}/members?workspace=${this.workspace.uuid}`,
+        `${URLS['workstation']}/members?workspace=${this.workspace.uuid}`,
       )
     },
     workspaceClear() {

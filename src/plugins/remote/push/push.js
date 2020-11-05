@@ -1,5 +1,6 @@
 import { Client } from '@stomp/stompjs'
 import { DESTINATION, KEY } from 'configs/push.config'
+import { URLS } from 'configs/env.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 
@@ -25,7 +26,7 @@ const push = {
       const workspaceId = workspace.uuid
 
       const config = {
-        brokerURL: `${window.urls.ws}${wsUri['MESSAGE']}`,
+        brokerURL: `${URLS['ws']}${wsUri['MESSAGE']}`,
         connectHeaders: {
           login: 'guest',
           passcode: 'guest',

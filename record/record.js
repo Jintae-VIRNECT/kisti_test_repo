@@ -32,10 +32,13 @@ session.on('streamCreated', event => {
 
 session.on('streamDestroyed', event => {
   console.log('event streamDestroyed::', event)
-  console.log('streamCount::', streamCount)
-
   streamCount--
+  console.log('streamCount::', streamCount)
   layoutSelector(streamCount)
+  if (streamCount <= 0) {
+    console.log('session::disconnect')
+    session.disconnect()
+  }
 })
 
 session

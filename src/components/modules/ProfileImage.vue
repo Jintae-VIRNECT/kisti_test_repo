@@ -7,7 +7,7 @@
     <img
       v-if="image && image.length > 0"
       class="profile-image__image"
-      :src="image"
+      :src="imageUrl"
       @error="$emit('update:image', null)"
     />
     <button v-if="deleteBtn" class="profile-image__button" @click="deleteImage">
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import { proxyUrl } from 'utils/file'
 export default {
   name: 'ProfileImage',
   components: {},
@@ -46,6 +47,9 @@ export default {
     return {}
   },
   computed: {
+    imageUrl() {
+      return proxyUrl(this.image)
+    },
     imageSize() {
       if (typeof this.size === 'string') {
         return this.size

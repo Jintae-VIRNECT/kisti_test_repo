@@ -4,7 +4,7 @@
       <div class="profile--image" :class="{ group: group, image: useImage }">
         <img
           v-if="useImage"
-          :src="image"
+          :src="imageUrl"
           :alt="mainText"
           @error="onImageError"
         />
@@ -25,6 +25,7 @@
 import Role from 'Role'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
+import { proxyUrl } from 'utils/file'
 export default {
   name: 'Profile',
   components: {
@@ -74,6 +75,9 @@ export default {
       } else {
         return false
       }
+    },
+    imageUrl() {
+      return proxyUrl(this.image)
     },
   },
   watch: {

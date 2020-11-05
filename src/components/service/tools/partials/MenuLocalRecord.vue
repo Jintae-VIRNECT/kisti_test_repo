@@ -16,7 +16,7 @@ import toastMixin from 'mixins/toast'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
+import { LOCAL_RECORD_STATUS } from 'utils/recordOptions'
 
 export default {
   name: 'LocalRecordMenu',
@@ -63,7 +63,7 @@ export default {
         return false
       }
 
-      if (this.localRecordStatus === LCOAL_RECORD_STAUTS.START) {
+      if (this.localRecordStatus === LOCAL_RECORD_STATUS.START) {
         this.$eventBus.$emit('localRecord', { isStart: false })
         return false
       } else {

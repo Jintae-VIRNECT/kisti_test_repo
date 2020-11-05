@@ -18,6 +18,18 @@ export const RUNTIME = {
   ONPREMISE: 'onpremise',
 }
 
+export let URLS = {}
+export const setUrls = urls => {
+  URLS = {
+    ...urls,
+  }
+}
+
+export let RECORD_INFO = {}
+export const setRecordInfo = info => {
+  RECORD_INFO = info
+}
+
 export default {
   RUNTIME_ENV,
   TARGET_COMPANY,

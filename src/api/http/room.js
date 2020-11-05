@@ -117,7 +117,7 @@ export const getRoomList = async ({
   page = 0,
   paging = false,
   size = 10,
-  sort = 'createdDate,desc',
+  sort = 'activeDate,asc',
   userId,
   workspaceId,
 }) => {
@@ -224,6 +224,20 @@ export const updateRoomInfo = async ({
     uuid,
     title,
     description,
+    sessionId,
+    workspaceId,
+  })
+
+  return returnVal
+}
+
+/**
+ * 원격협업 프로필 삭제
+ * @query {String} sessionId
+ * @query {String} workspaceId
+ */
+export const removeRoomProfile = async ({ sessionId, workspaceId }) => {
+  const returnVal = await http('REMOVE_ROOM_PROFILE', {
     sessionId,
     workspaceId,
   })

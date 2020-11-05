@@ -17,22 +17,8 @@ import { mapGetters } from 'vuex'
 import { downloadFile } from 'api/http/file'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
+import { getFile } from 'utils/file'
 
-const getFile = url => {
-  return new Promise(resolve => {
-    var xhr = new XMLHttpRequest()
-
-    xhr.addEventListener('load', function() {
-      if (xhr.status == 200) {
-        resolve(xhr.response)
-      }
-    })
-
-    xhr.open('GET', url)
-    xhr.responseType = 'blob'
-    xhr.send(null)
-  })
-}
 export default {
   name: 'ChatFileDownload',
   data() {

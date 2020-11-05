@@ -39,8 +39,7 @@
               {{ $t('workspace.record_file_title') }}
             </div>
             <div class="table__tools">
-              <!-- Remote Dashboard 적용전까지 주석처리 -->
-              <!-- <icon-button
+              <icon-button
                 v-if="isHome && onpremise"
                 :text="'선택 업로드'"
                 :imgSrc="require('assets/image/ic_upload.svg')"
@@ -49,7 +48,7 @@
                   'custom-local-record': true,
                 }"
                 @click="upload"
-              ></icon-button> -->
+              ></icon-button>
               <icon-button
                 :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"

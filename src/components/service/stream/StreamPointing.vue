@@ -1,5 +1,5 @@
 <template>
-  <div @click="doPointing($event)">
+  <div ref="pointingBody" @click="doPointing($event)">
     <div
       v-for="(point, index) in pointList"
       :key="index"
@@ -54,7 +54,9 @@ export default {
         loop: false,
         autoplay: true,
         rendererSettings: {
-          progressiveLoad: true,
+          progressiveLoad: false,
+          focusable: false,
+          hideOnTransparent: false,
         },
       },
       pointList: [],
@@ -127,6 +129,12 @@ export default {
         const lottie = Lottie.loadAnimation({
           ...this.lottieOption,
           container,
+        })
+        lottie.addEventListener('DOMLoaded', () => {
+          lottie.play()
+          setTimeout(() => {
+            lottie.destroy()
+          }, 1000)
         })
 
         lottie.addEventListener('complete', () => {

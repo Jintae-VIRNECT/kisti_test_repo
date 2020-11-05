@@ -33,10 +33,11 @@ const mutations = {
       alarm => alarm.type === 'invite' && alarm.sessionId === info.sessionId,
     )
     if (idx < 0) return
-    for (let key in info) {
-      if (key === 'sessionId') continue
-      state.alarmList[idx][key] = info[key]
-    }
+    state.alarmList.splice(idx, 1)
+    // for (let key in info) {
+    //   if (key === 'sessionId') continue
+    //   state.alarmList[idx][key] = info[key]
+    // }
   },
 }
 
