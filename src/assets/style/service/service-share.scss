@@ -132,7 +132,7 @@ $share_savebtn_height: 2.929rem;
 .upload-list__button {
   width: 100%;
   height: $share_image_height;
-  background: url(~assets/image/call/ic-add-circle-outline.svg) center/40px
+  background: url(~assets/image/call/ic-add-circle-outline.svg) center/2.857rem
     no-repeat #4c5259;
   opacity: 0.28;
 
@@ -142,7 +142,7 @@ $share_savebtn_height: 2.929rem;
 .sharing-image {
   position: relative;
   width: 100%;
-  margin-top: 18px;
+  margin-top: 1.286rem;
   .sharing-image__remove {
     opacity: 0;
     transition: opacity 0.3s;
