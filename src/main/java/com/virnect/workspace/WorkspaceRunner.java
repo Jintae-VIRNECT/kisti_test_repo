@@ -34,7 +34,8 @@ public class WorkspaceRunner implements ApplicationRunner {
 	 */
 	@Override
 	public void run(ApplicationArguments args) {
-		String logoDefault = fileService.getFileUrl("virnect-default-logo.png");
+        String workspaceProfile = fileService.getFileUrl("workspace-profile.png");
+        String logoDefault = fileService.getFileUrl("virnect-default-logo.png");
 		String logoWhite = fileService.getFileUrl("virnect-white-logo.png");
 		String favicon = fileService.getFileUrl("virnect-default-favicon.ico");
 		List<WorkspaceSetting> workspaceSettingList = workspaceSettingRepository.findAll();
@@ -42,7 +43,7 @@ public class WorkspaceRunner implements ApplicationRunner {
 			WorkspaceSetting newWorkspaceSetting = WorkspaceSetting.builder()
 				.title("VIRNECT")
 				.defaultLogo(logoDefault)
-				.greyLogo(logoWhite)
+				.whiteLogo(logoWhite)
 				.favicon(favicon).build();
 			workspaceSettingRepository.save(newWorkspaceSetting);
 			log.info("[WORKSPACE DEFAULT SETTING] TITLE : [{}], LOGO : [{}], FAVICON : [{}]",

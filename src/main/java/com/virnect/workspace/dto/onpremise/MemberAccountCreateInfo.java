@@ -2,6 +2,7 @@ package com.virnect.workspace.dto.onpremise;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -19,6 +20,7 @@ import lombok.Setter;
 public class MemberAccountCreateInfo {
 	@ApiModelProperty(value = "계정 생성 아이디", required = true, example = "virnect", position = 0)
 	@NotBlank
+	@Pattern(regexp = "[a-zA-Z0-9]{4,20}")
 	private String id;
 	@ApiModelProperty(value = "계정 생성 패스워드", required = true, example = "virnect1234", position = 1)
 	@NotBlank
