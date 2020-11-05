@@ -1,4 +1,5 @@
 import ElementUI from 'element-ui'
+import 'es6-promise/auto'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import router from '@/router/index'

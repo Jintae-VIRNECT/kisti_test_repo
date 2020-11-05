@@ -61,14 +61,6 @@ export default {
 		},
 	},
 	mounted() {
-		// IE 체크
-		if (
-			navigator.userAgent.indexOf('MSIE ') > 0 ||
-			!!navigator.userAgent.match(/Trident.*rv:11\./)
-		) {
-			this.$router.replace('/nobrowser')
-		}
-
 		const redirectTarget = this.$route.query.continue
 		// 자신으로 리다이렉트 제외
 		if (

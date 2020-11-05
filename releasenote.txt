@@ -2,12 +2,16 @@
 RELEASE
 -
 New Features
-1.2.24.0
-구축형 대응 적용
+v1.2.24.0
+-구축형 대응 적용
 
 Bug Fixes
 -
-1.2.24.1
-폰트 최적화
+v1.2.24.1
+-폰트 최적화
+
+v1.2.24.3
+-IE브라우저 미지원 안내 창
+-promise polyfill 추가
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

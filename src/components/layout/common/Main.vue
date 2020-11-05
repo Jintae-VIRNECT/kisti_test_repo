@@ -35,6 +35,15 @@ export default {
 			},
 		}
 	},
+	mounted() {
+		// IE 체크
+		if (
+			navigator.userAgent.indexOf('MSIE ') > 0 ||
+			!!navigator.userAgent.match(/Trident.*rv:11\./)
+		) {
+			this.$router.replace('/nobrowser')
+		}
+	},
 }
 </script>
 

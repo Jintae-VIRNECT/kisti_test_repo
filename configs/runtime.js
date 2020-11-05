@@ -19,10 +19,10 @@ const localUrls = {
 	download: 'https://localhost:8833',
 	remote: 'https://localhost:8886',
 	pay: `https://${localIp}:7070`,
+	minio: 'https://192.168.13.64:4545',
 	env: 'local',
 	timeout: 30000,
 }
-
 class Config {
 	constructor() {}
 
