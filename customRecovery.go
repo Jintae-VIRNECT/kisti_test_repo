@@ -43,15 +43,15 @@ func IsDebugging() bool {
 	return viper.GetBool("general.devMode") == true
 }
 
-func CustomRecovery() gin.HandlerFunc {
-	return CustomRecoveryWithWriter(gin.DefaultErrorWriter, func(c *gin.Context, recovered interface{}) {
+func customRecovery() gin.HandlerFunc {
+	return customRecoveryWithWriter(gin.DefaultErrorWriter, func(c *gin.Context, recovered interface{}) {
 		response := fmt.Sprintf(`{"data":{},"service":"%s", "code":9999,"message": "panic"}`, viper.GetString("general.service"))
 		c.String(http.StatusInternalServerError, fmt.Sprintf("%s", response))
 		c.AbortWithStatus(http.StatusInternalServerError)
 	})
 }
 
-func CustomRecoveryWithWriter(out io.Writer, handle RecoveryFunc) gin.HandlerFunc {
+func customRecoveryWithWriter(out io.Writer, handle RecoveryFunc) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		defer func() {
 			log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
