@@ -49,7 +49,7 @@ export default {
       return this.getFilter(this.rooms, [
         'title',
         'description',
-        'memberList[].nickname',
+        'memberList[].nickName',
       ])
     },
     emptyTitle() {

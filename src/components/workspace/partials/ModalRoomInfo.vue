@@ -215,6 +215,7 @@ export default {
     },
     remove() {
       this.imageRemove()
+      this.$emit('update:image', 'default')
     },
     saveInfo() {
       const params = {

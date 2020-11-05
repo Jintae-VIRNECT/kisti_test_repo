@@ -11,7 +11,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import * as Regexp from 'utils/regexp'
+// import * as Regexp from 'utils/regexp'
 export default {
   name: 'Search',
   props: {
@@ -31,7 +31,7 @@ export default {
   },
   watch: {
     search(sch) {
-      sch = Regexp.escapeRegExp(sch)
+      // sch = Regexp.escapeRegExp(sch)
       this.$emit('search', sch)
       this.setFilter(sch)
     },

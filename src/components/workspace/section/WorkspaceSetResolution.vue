@@ -21,7 +21,7 @@
         </div>
         <r-select
           class="setting__r-selecter"
-          :options="localRecResOpt"
+          :options="target === 'local' ? localRecResOpt : serverRecResOpt"
           value="value"
           text="text"
           :selectedValue.sync="recordResolution"
@@ -35,21 +35,28 @@
 import RSelect from 'RemoteSelect'
 import Tooltip from 'Tooltip'
 import { mapGetters, mapActions } from 'vuex'
-import { localRecResOpt } from 'utils/recordOptions'
+import { localRecResOpt, serverRecResOpt } from 'utils/recordOptions'
 export default {
   name: 'WorkspaceSetResolution',
   data() {
     return {
       localRecResOpt: localRecResOpt,
+      serverRecResOpt: serverRecResOpt,
       recordResolution: '',
     }
+  },
+  props: {
+    target: {
+      type: String,
+      required: true,
+    },
   },
   components: {
     RSelect,
     Tooltip,
   },
   computed: {
-    ...mapGetters(['localRecord']),
+    ...mapGetters(['localRecord', 'serverRecord']),
   },
   watch: {
     recordResolution(resolution) {
@@ -57,18 +64,31 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setRecord']),
+    ...mapActions(['setRecord', 'setServerRecord']),
 
     setRecResolution(resolution) {
-      this.setRecord({
-        resolution: resolution,
-      })
-      this.$localStorage.setRecord('resolution', resolution)
+      if (this.target === 'local') {
+        this.setRecord({
+          resolution: resolution,
+        })
+        this.$localStorage.setRecord('resolution', resolution)
+      } else {
+        this.setServerRecord({
+          resolution: resolution,
+        })
+        this.$localStorage.setServerRecord('resolution', resolution)
+      }
     },
   },
   created() {
-    if (this.localRecord.resolution) {
-      this.recordResolution = this.localRecord.resolution
+    if (this.target === 'local') {
+      if (this.localRecord.resolution) {
+        this.recordResolution = this.localRecord.resolution
+      }
+    } else {
+      if (this.serverRecord.resolution) {
+        this.recordResolution = this.serverRecord.resolution
+      }
     }
   },
 }

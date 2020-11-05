@@ -208,6 +208,13 @@
   }
 }
 
+// 태블릿
+@mixin iPad {
+  @media only screen and (min-device-width: 768px) and (max-width: $size_tab_max) {
+    @content;
+  }
+}
+
 // 모바일
 @mixin mobile {
   @media screen and (max-width: $size_m_max) {
@@ -222,6 +229,9 @@
   }
   @media screen and (max-width: $size_m_max) {
     font-size: 10px;
+  }
+  @include iPad {
+    font-size: 8px;
   }
 }
 

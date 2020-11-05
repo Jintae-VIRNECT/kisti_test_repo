@@ -47,6 +47,10 @@ export const checkPermission = async (checkVideo = true) => {
 
 export const getPermission = async () => {
   try {
+    if (!('permission' in navigator)) {
+      return 'prompt'
+    }
+
     const result = await Promise.all([
       navigator.permissions.query({ name: 'camera' }),
       navigator.permissions.query({ name: 'microphone' }),

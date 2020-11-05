@@ -8,6 +8,7 @@ import {
   FLASH,
   ROLE,
   VIDEO,
+  FILE,
 } from 'configs/remote.config'
 import {
   FLASH as FLASH_STATUE,
@@ -346,16 +347,18 @@ export const addSessionEventListener = session => {
     )
     if (idx < 0) return
     let data = JSON.parse(event.data)
-    Store.commit('addChat', {
-      type:
-        session.connection.connectionId === event.from.connectionId
-          ? 'me'
-          : 'opponent',
-      name: participants[idx].nickname,
-      profile: participants[idx].path,
-      uuid: event.from.connectionId,
-      file: data,
-    })
+    if (data.type === FILE.UPLOADED) {
+      Store.commit('addChat', {
+        type:
+          session.connection.connectionId === event.from.connectionId
+            ? 'me'
+            : 'opponent',
+        name: participants[idx].nickname,
+        profile: participants[idx].path,
+        uuid: event.from.connectionId,
+        file: data.fileInfo,
+      })
+    }
   })
 }
 

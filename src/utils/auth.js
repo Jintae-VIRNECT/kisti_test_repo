@@ -2,10 +2,16 @@ import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
-import { setBaseURL } from 'api/gateway/gateway'
+import { setHttpOptions } from 'api/gateway/gateway'
 import axios from 'api/axios'
 import { logger, debug } from 'utils/logger'
-import { setConfigs, RUNTIME_ENV, RUNTIME } from 'configs/env.config'
+import {
+  setConfigs,
+  setUrls,
+  RUNTIME_ENV,
+  RUNTIME,
+  URLS,
+} from 'configs/env.config'
 
 /**
  * 상태
@@ -88,13 +94,17 @@ const getConfigs = async () => {
   logger('RUNTIME ENV', res.data.runtime)
   delete res.data.runtime
 
+  const timeout = res.data.timeout || 5000
+  delete res.data.timeout
+
   debug('URLS::', res.data)
 
-  setBaseURL(res.data['api'])
+  setHttpOptions(res.data['api'], timeout)
   window.urls = res.data
   setConfigs({
     runtimeEnv,
   })
+  setUrls(res.data)
 }
 
 const getSettings = async () => {
@@ -136,9 +146,16 @@ class Auth {
     return clonedeep(myWorkspaces)
   }
 
-  async init() {
+  async check() {
     await getConfigs()
 
+    if (Cookies.get('accessToken')) {
+      return true
+    }
+    return false
+  }
+
+  async init() {
     if (Cookies.get('accessToken')) {
       try {
         await Promise.all([getMyInfo(), getSettings()])
@@ -156,8 +173,7 @@ class Auth {
   }
   login() {
     cookieClear()
-    const url = window.urls.console
-    location.href = `${url}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
   logout() {
@@ -165,8 +181,7 @@ class Auth {
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    const url = window.urls.console
-    location.href = `${url}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
 }

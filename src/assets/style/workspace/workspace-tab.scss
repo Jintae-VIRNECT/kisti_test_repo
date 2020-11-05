@@ -1,4 +1,5 @@
 .workspace-tab {
+  position: relative;
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -111,6 +112,7 @@
   padding: 3.643rem 0 0;
 }
 .tab-view__title {
+  min-height: 35px;
   margin-right: 0.571rem;
   color: $color_text_main;
   font-weight: 500;

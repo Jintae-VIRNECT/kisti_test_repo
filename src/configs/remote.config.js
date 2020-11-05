@@ -18,6 +18,10 @@ export const SIGNAL = {
   SYSTEM: 'signal:system',
 }
 
+export const FILE = {
+  UPLOADED: 'fileUploaded',
+}
+
 export const VIDEO = {
   NORMAL: 'normal',
   SHARE: 'share',

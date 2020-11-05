@@ -56,7 +56,7 @@
     </input-row>
     <button
       class="btn large createroom-info__button"
-      :class="{ disabled: btnDisabled }"
+      :class="{ disabled: btnDisabled, 'btn-loading': btnLoading }"
       @click="startRemote"
     >
       {{ $t('button.start') }}
@@ -109,6 +109,10 @@ export default {
         return {}
       },
     },
+    btnLoading: {
+      type: Boolean,
+      defalut: false,
+    },
   },
   watch: {
     roomInfo: {
@@ -138,7 +142,9 @@ export default {
       }
     },
     titleValidMessage() {
-      if (this.title.length < 2) {
+      if (this.selection.length < 1) {
+        return this.$t('workspace.create_remote_selected_empty')
+      } else if (this.title.length < 2) {
         return this.$t('workspace.remote_name_valid1')
       } else {
         return this.$t('workspace.remote_name_valid2')
@@ -160,6 +166,7 @@ export default {
         title: this.title,
         description: this.description,
         imageFile: this.imageFile,
+        imageUrl: this.imageURL,
         open: false,
       })
     },

@@ -15,10 +15,11 @@
 </template>
 
 <script>
+import { URLS } from 'configs/env.config'
 export default {
   methods: {
     purchase() {
-      location.href = window.urls.pay
+      location.href = URLS['pay']
     },
   },
 }

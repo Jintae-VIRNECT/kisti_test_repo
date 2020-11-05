@@ -11,6 +11,7 @@
     <div class="openroom">
       <open-room-info
         :roomInfo="roomInfo"
+        :btnLoading="clicked"
         @startRemote="startRemote"
       ></open-room-info>
     </div>
@@ -25,7 +26,7 @@ import OpenRoomInfo from '../partials/ModalCreateOpenRoomInfo'
 import { getHistorySingleItem } from 'api/http/history'
 import {
   createRoom,
-  // restartRoom,
+  restartRoom,
   updateRoomProfile,
   getRoomInfo,
 } from 'api/http/room'
@@ -100,34 +101,26 @@ export default {
         // const options = await checkPermission()
         const options = false
         let createdRes
-        // if (this.sessionId && this.sessionId.length > 0) {
-        //   createdRes = await restartRoom({
-        //     title: info.title,
-        //     description: info.description,
-        //     leaderId: this.account.uuid,
-        //     participantIds: [],
-        //     workspaceId: this.workspace.uuid,
-        //     sessionId: this.sessionId,
-        //     sessionType: ROOM_STATUS.OPEN,
-        //     companyCode: COMPANY_CODE[TARGET_COMPANY],
-        //   })
-        // } else {
-        createdRes = await createRoom({
-          title: info.title,
-          description: info.description,
-          leaderId: this.account.uuid,
-          sessionType: ROOM_STATUS.OPEN,
-          participantIds: [],
-          workspaceId: this.workspace.uuid,
-          companyCode: this.targetCompany,
-        })
-        // }
-        if (info.imageFile) {
-          updateRoomProfile({
-            profile: info.imageFile,
-            sessionId: createdRes.sessionId,
-            uuid: this.account.uuid,
+        if (this.sessionId && this.sessionId.length > 0) {
+          createdRes = await restartRoom({
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            participantIds: [],
             workspaceId: this.workspace.uuid,
+            sessionId: this.sessionId,
+            sessionType: ROOM_STATUS.OPEN,
+            companyCode: this.targetCompany,
+          })
+        } else {
+          createdRes = await createRoom({
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            sessionType: ROOM_STATUS.OPEN,
+            participantIds: [],
+            workspaceId: this.workspace.uuid,
+            companyCode: this.targetCompany,
           })
         }
         const connRes = await this.$call.connect(
@@ -135,14 +128,19 @@ export default {
           ROLE.LEADER,
           options,
         )
+        if (info.imageFile) {
+          await updateRoomProfile({
+            profile: info.imageFile,
+            sessionId: createdRes.sessionId,
+            uuid: this.account.uuid,
+            workspaceId: this.workspace.uuid,
+          })
+        }
 
         const roomInfo = await getRoomInfo({
           sessionId: createdRes.sessionId,
           workspaceId: this.workspace.uuid,
         })
-        window.urls['token'] = createdRes.token
-        window.urls['coturn'] = createdRes.coturn
-        window.urls['wss'] = createdRes.wss
 
         this.setRoomInfo({
           ...roomInfo,

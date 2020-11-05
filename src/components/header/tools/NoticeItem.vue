@@ -49,6 +49,7 @@
 
 <script>
 import dayjs from 'dayjs'
+import { proxyUrl } from 'utils/file'
 export default {
   name: 'NoticeItem',
   data() {
@@ -114,7 +115,7 @@ export default {
       } else if (this.type === 'fail') {
         return require('assets/image/header/ic_notice.svg')
       } else {
-        return this.image
+        return proxyUrl(this.image)
       }
     },
   },

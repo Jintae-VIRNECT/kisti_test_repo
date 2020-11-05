@@ -51,3 +51,22 @@ export const stopServerRecord = async ({ workspaceId, userId, id }) => {
   })
   return returnVal
 }
+
+/**
+ * 현재 특정 세션에서 진행중인 서버 녹화 목록 반환
+ * @query {*} workspaceId
+ * @query {*} userId
+ * @param {*} sessionId
+ */
+export const getServerRecordList = async ({
+  workspaceId,
+  userId,
+  sessionId,
+}) => {
+  const returnVal = await http('SERVER_RECORD_LIST', {
+    workspaceId,
+    userId,
+    sessionId,
+  })
+  return returnVal
+}

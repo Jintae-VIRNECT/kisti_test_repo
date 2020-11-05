@@ -43,6 +43,10 @@ export default {
     '/remote/room/{workspaceId}/{sessionId}/exit?userId={userId}',
   ],
   UPDATE_ROOM_INFO: ['POST', '/remote/room/{workspaceId}/{sessionId}/info'],
+  REMOVE_ROOM_PROFILE: [
+    'DELETE',
+    '/remote/file/{workspaceId}/{sessionId}/profile',
+  ],
 
   /* CALL */
   INVITE_ROOM: ['POST', '/remote/room/{workspaceId}/{sessionId}/member'],
@@ -59,6 +63,7 @@ export default {
     { type: 'form' },
   ],
   FILE_UPLOAD: ['POST', '/remote/file/upload', { type: 'form' }],
+  FILE_UPLOAD_RECORD: ['POST', '/remote/record/upload', { type: 'form' }],
   // FILE_DOWNLOAD: [
   //   'GET',
   //   '/remote/file/download/{workspaceId}/{sessionId}',
@@ -75,6 +80,10 @@ export default {
   STOP_SERVER_RECORD: [
     'DELETE',
     '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings/{id}',
+  ],
+  SERVER_RECORD_LIST: [
+    'GET',
+    '/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings',
   ],
 }
 

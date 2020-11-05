@@ -5,9 +5,6 @@
     </button>
 
     <p class="sharing-image__name">{{ fileData.name }}</p>
-    <button class="sharing-image__remove" @click.stop="deleteImage">
-      {{ $t('service.file_remove') }}
-    </button>
     <div
       class="sharing-image__loading"
       v-if="docPages.length === 0 || docPages.length !== totalPages"
@@ -31,6 +28,9 @@
       style=" z-index: -999;display: none; width: 100%; height: 100%;"
       ref="backCanvas"
     ></canvas>
+    <button class="sharing-image__remove" @click.stop="deleteImage">
+      {{ $t('service.file_remove') }}
+    </button>
   </li>
 </template>
 
@@ -119,8 +119,9 @@ export default {
       this.removePdfPage(this.fileInfo.id)
       let startTime = Date.now()
       // PDFJS.GlobalWorkerOptions.workerSrc = '/pdf.worker'
-      PDFJS.getDocument(URL.createObjectURL(this.fileData))
-        .promise.then(async pdfDocument => {
+      const loadingTask = PDFJS.getDocument(URL.createObjectURL(this.fileData))
+      loadingTask.promise
+        .then(async pdfDocument => {
           this.document = pdfDocument
           // 페이지 별 로드처리
           for (let index = 1; index <= pdfDocument.numPages; index++) {
@@ -130,13 +131,21 @@ export default {
           this.logger('pdf loading time', duration)
         })
         .catch(err => {
-          if (err.name === 'InvalidPDFException') {
-            this.toastError('Invalid PDF File.')
-          } else if (err.name === 'PasswordException') {
+          if (
+            err.name === 'InvalidPDFException' ||
+            err.message === 'Invalid PDF structure.'
+          ) {
+            // this.toastError('Invalid PDF File.')
+            this.toastError(this.$t('service.file_type'))
+          } else if (
+            err.name === 'PasswordException' ||
+            err.message === 'No password given'
+          ) {
             this.toastError(this.$t('service.share_locked'))
           } else {
-            console.error(err)
+            this.toastError(this.$t('service.file_type'))
           }
+          console.error(err)
           setTimeout(() => {
             this.remove()
           }, 3000)

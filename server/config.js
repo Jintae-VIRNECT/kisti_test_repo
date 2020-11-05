@@ -56,6 +56,7 @@ module.exports = {
     return {
       ...this.getUrls(),
       runtime: this.getEnv(),
+      timeout: this.getAsNumber('TIMEOUT'),
     }
   },
 }

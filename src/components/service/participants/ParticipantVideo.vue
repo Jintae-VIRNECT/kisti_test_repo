@@ -18,7 +18,7 @@
         <img
           v-if="participant.path && participant.path !== 'default'"
           class="participant-video__profile-background"
-          :src="participant.path"
+          :src="profileUrl"
           @error="onImageError"
         />
         <div class="participant-video__profile-dim"></div>
@@ -129,6 +129,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import { CAMERA } from 'configs/device.config'
+import { proxyUrl } from 'utils/file'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 
@@ -163,6 +164,13 @@ export default {
       'initing',
       'openRoom',
     ]),
+    profileUrl() {
+      if (!this.participant.path) {
+        return ''
+      } else {
+        return proxyUrl(this.participant.path)
+      }
+    },
     showProfile() {
       if (!this.participant.hasVideo) {
         return true

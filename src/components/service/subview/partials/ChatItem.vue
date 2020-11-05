@@ -14,7 +14,7 @@
           <div class="chat-item__file--wrapper">
             <!-- <div class="chat-item__file--icon" :class="extension"></div> -->
             <div class="chat-item__file--name" :class="extension">
-              {{ chat.file.fileName }}
+              {{ chat.file.name }}
             </div>
           </div>
           <p class="chat-item__file--size">{{ fileSize }}</p>
@@ -155,7 +155,7 @@ export default {
       let ext = ''
       const file = this.chat.file
       if (file) {
-        ext = file.fileName.split('.').pop()
+        ext = file.name.split('.').pop()
       } else {
         return ''
       }

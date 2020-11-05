@@ -135,11 +135,7 @@ export default {
           const res = await uploadFile(params)
 
           this.$call.sendFile({
-            fileName: res.name,
-            objectName: res.objectName,
-            mimeType: file.filedata.type,
-            size: res.size,
-            fileDownloadUrl: res.path,
+            fileInfo: { ...res },
           })
         }
 

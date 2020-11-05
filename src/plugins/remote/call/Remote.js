@@ -8,7 +8,9 @@ import {
   FLASH,
   VIDEO,
   AR_FEATURE,
+  FILE,
 } from 'configs/remote.config'
+import { URLS, setRecordInfo } from 'configs/env.config'
 import {
   DEVICE,
   FLASH as FLASH_STATUE,
@@ -53,10 +55,19 @@ const _ = {
         deviceType: DEVICE.WEB,
       }
 
-      const iceServers = configs.coturn || window.urls.coturn
-      // const iceServers = window.urls.coturn
-      const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
+      const iceServers = configs.coturn || URLS['coturn']
+      for (let ice of iceServers) {
+        ice['urls'] = ice['url']
+      }
+      // const iceServers = URLS.coturn
+      const ws = configs.wss || `${URLS['wsapi']}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+
+      setRecordInfo({
+        token: configs['token'],
+        coturn: iceServers,
+        wss: ws,
+      })
 
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'
@@ -192,6 +203,7 @@ const _ = {
    */
   sendFile: params => {
     if (!_.session) return
+    params.type = FILE.UPLOADED
 
     //파일 관련 정보 전송하기
     _.session.signal({

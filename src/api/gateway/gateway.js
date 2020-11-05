@@ -12,7 +12,6 @@ import axios from '../axios'
 import errorList from './gateway.error.json'
 import networkError from './network.error.json'
 import { cookieClear } from 'utils/auth'
-const timeout = process.env.NODE_ENV === 'production' ? 5000 : 10000
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
@@ -113,7 +112,10 @@ const sender = async function(constant, params, headers = {}, custom) {
   } catch (err) {
     if (custom && custom.initing === true) throw err
     if ('message' in err) {
-      if (err.message.toLowerCase() in networkError) {
+      if (
+        err.message.toLowerCase() in networkError ||
+        err.message.toLowerCase().includes('timeout of')
+      ) {
         window.vue.$toasted.error(window.vue.$t('confirm.network_error'), {
           position: 'bottom-center',
           duration: 5000,
@@ -186,11 +188,13 @@ const errorHandler = function(err) {
   }
 }
 
-export const setBaseURL = baseURL => {
+export const setHttpOptions = (baseURL, timeout) => {
   axios.defaults.baseURL = baseURL
   axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
+  axios.defaults.timeout = timeout || 5000
 
   debug('BASE_URL::', baseURL)
+  debug('TIMEOUT::', timeout)
 }
 
 export default sender

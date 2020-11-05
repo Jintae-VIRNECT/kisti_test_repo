@@ -37,10 +37,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import shutterMixin from 'mixins/shutter'
+import confirmMixin from 'mixins/confirm'
 import FileSaver from 'file-saver'
+import { VIEW } from 'configs/view.config'
 export default {
   name: 'CaptureModal',
-  mixins: [shutterMixin],
+  mixins: [shutterMixin, confirmMixin],
   data() {
     return {
       status: false,
@@ -56,7 +58,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['openRoom']),
+    ...mapGetters(['openRoom', 'view']),
   },
   watch: {
     file: {
@@ -85,14 +87,31 @@ export default {
     },
     share() {
       if (this.imageData && this.imageData.length > 0) {
-        const history = this.getHistoryObject()
-
-        this.addHistory(history)
-        this.setView('drawing')
-        this.$nextTick(() => {
-          this.close()
-        })
+        if (this.view === VIEW.AR) {
+          this.serviceConfirmTitle(
+            this.$t('service.ar_exit'),
+            this.$t('service.ar_exit_description'),
+            {
+              text: this.$t('button.exit'),
+              action: () => {
+                this.$call.stopArFeature()
+                this.shareCapture()
+              },
+            },
+          )
+        } else {
+          this.shareCapture()
+        }
       }
+    },
+    shareCapture() {
+      const history = this.getHistoryObject()
+
+      this.addHistory(history)
+      this.setView('drawing')
+      this.$nextTick(() => {
+        this.close()
+      })
     },
     close() {
       this.clearCapture()

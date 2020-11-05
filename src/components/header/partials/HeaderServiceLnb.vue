@@ -99,6 +99,7 @@ export default {
         this.participants.length > 0
       ) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
+        this.showImage({})
         this.setView(VIEW.STREAM)
       }
     },
@@ -118,7 +119,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setView', 'addChat']),
+    ...mapActions(['setView', 'addChat', 'showImage']),
     ...mapMutations(['updateParticipant']),
     goTab(type) {
       if (type === this.view) return
@@ -126,7 +127,6 @@ export default {
       // leader
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {
-          // TODO: MESSAGE
           this.serviceConfirmTitle(
             this.$t('service.ar_exit'),
             this.$t('service.ar_exit_description'),
