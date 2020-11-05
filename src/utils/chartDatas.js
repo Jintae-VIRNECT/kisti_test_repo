@@ -38,7 +38,6 @@ export const getDays = date => {
 }
 
 export const getDailyData = async ({ workspaceId, userId, date }) => {
-  console.log({ workspaceId, userId, date })
   const result = {
     total: {},
     my: {},
@@ -46,13 +45,11 @@ export const getDailyData = async ({ workspaceId, userId, date }) => {
 
   //@To-do : 전체 일별 협업수, 전체 일별 협업 시간 불러와야함.
   result.my = await getMyDailyData({ workspaceId, userId, date })
-  // result.total = await getTotalDailyData({ workspaceId, userId, date })
 
   return result
 }
 
 export const getMonthlyData = async ({ workspaceId, userId, date }) => {
-  console.log({ workspaceId, userId, date })
   const result = {
     total: {},
     my: {},
@@ -60,7 +57,6 @@ export const getMonthlyData = async ({ workspaceId, userId, date }) => {
 
   //@To-do : 전체 월별 협업수, 전체 월별 협업 시간 불러와야함.
   result.my = await getMyMonthlyData({ workspaceId, userId, date })
-  // result.total = await getTotalMonthlyData({ workspaceId, userId, date })
 
   return result
 }
