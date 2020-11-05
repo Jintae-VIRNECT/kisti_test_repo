@@ -66,10 +66,7 @@ export const getMonthlyData = async ({ workspaceId, userId, date }) => {
  * @param {*} param0
  */
 const getMyDailyData = async ({ workspaceId, userId, date }) => {
-  console.log({ workspaceId, userId, date })
-
   const result = {}
-
   const timeMap = new Map()
 
   hourLabels.forEach(hour => {
