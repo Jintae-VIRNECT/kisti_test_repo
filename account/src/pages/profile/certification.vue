@@ -14,7 +14,9 @@
             class="image"
             v-if="me.image"
             :style="
-              `background-image: url('${me.image}'), url(${$defaultUserProfile})`
+              `background-image: url('${cdn(
+                me.image,
+              )}'), url(${$defaultUserProfile})`
             "
           />
         </div>
@@ -51,7 +53,10 @@
 <script>
 import profileService from '@/services/profile'
 
+import filterMixin from '@/mixins/filters'
+
 export default {
+  mixins: [filterMixin],
   layout: 'noSidebar',
   data() {
     const profile = profileService.getMyProfile()
@@ -69,9 +74,7 @@ export default {
     async submit() {
       try {
         await profileService.certification(this.form)
-        this.$router.push(
-          this.$isOnpremise ? '/profile/op' : '/profile',
-        )
+        this.$router.push(this.$isOnpremise ? '/profile/op' : '/profile')
       } catch (e) {
         console.error(e)
         const message = /^Error: 4001/.test(e)

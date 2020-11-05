@@ -65,7 +65,9 @@ export default {
       }
     },
   },
-  beforeMount() {
+  mounted() {
+    this.$store.dispatch('auth/getAuth')
+
     // 콘솔 표시
     console.log(
       `%cVirnect Account v${this.$config.VERSION}`,
@@ -81,7 +83,15 @@ export default {
       this.$i18n.locale = lang
     }
 
-    this.$store.dispatch('auth/getAuth')
+    // 사파리 테이블 버그
+    document
+      .querySelectorAll('.el-table__body')
+      .forEach(table => (table.style.tableLayout = 'auto'))
+    setTimeout(() => {
+      document
+        .querySelectorAll('.el-table__body')
+        .forEach(table => (table.style.tableLayout = 'fixed'))
+    }, 10)
   },
 }
 </script>

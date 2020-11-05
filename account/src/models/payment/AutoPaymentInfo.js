@@ -2,9 +2,6 @@ import Model from '@/models/Model'
 import Ticket from './Ticket'
 import products from '@/models/products'
 import { Plan } from '@/models/purchases/PlansInfo'
-import filters from '@/mixins/filters'
-
-const { mb2gb } = filters.methods
 
 export default class AutoPaymentInfo extends Model {
   constructor(json) {
@@ -40,7 +37,9 @@ export default class AutoPaymentInfo extends Model {
     }
 
     this.items.forEach(item => {
-      const product = this.products.find(p => p.id === item.id)
+      const product = this.products.find(
+        p => p.value === item.productType.name.toLowerCase(),
+      )
       if (product) product.amount += item.count
       if (item.productType.id === 'product') {
         this.storage.default += item.storage
