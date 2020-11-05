@@ -104,6 +104,7 @@ export default {
   mounted() {
     this.mx_changeLang()
     this.$eventBus.$on('open::player', this.openPlayer)
+    console.log('is isOnpremise?', this.isOnpremise)
   },
   beforeDestroy() {
     this.$eventBus.$off('open::player')
