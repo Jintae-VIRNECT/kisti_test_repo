@@ -48,8 +48,7 @@ import Modal from 'components/modules/Modal'
 import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
 
-// import { getFileDownloadUrl, deleteFileItem } from 'api/http/file'
-import { getFileDownloadUrl } from 'api/http/file'
+import { getFileDownloadUrl, deleteFileItem } from 'api/http/file'
 
 import confirmMixin from 'mixins/confirm'
 import tableMixin from 'mixins/table'
@@ -136,39 +135,38 @@ export default {
       }
     },
     async deleteItems() {
-      this.confirmDefault('현재 준비중인 기능입니다.')
-      // const deleteFiles = []
-      // const errorFiles = []
+      const deleteFiles = []
+      const errorFiles = []
 
-      // this.selectedArray.forEach((selected, index) => {
-      //   if (selected) {
-      //     deleteFiles.push(this.fileList[index])
-      //   }
-      // })
+      this.selectedArray.forEach((selected, index) => {
+        if (selected) {
+          deleteFiles.push(this.fileList[index])
+        }
+      })
 
-      // for (const file of deleteFiles) {
-      //   try {
-      //     const result = await deleteFileItem({
-      //       objectName: file.objectName,
-      //       sessionId: file.sessionId,
-      //       userId: this.account.uuid,
-      //       workspaceId: file.workspaceId,
-      //     })
-      //     console.log(result)
-      //   } catch (e) {
-      //     console.error(e)
-      //     errorFiles.push(file.name)
-      //   }
-      // }
-      // console.log(errorFiles)
-      // if (errorFiles.length > 0) {
-      //   this.confirmDefault(
-      //     `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
-      //       '\n',
-      //     )}</p>`,
-      //   )
-      // }
-      // this.$eventBus.$emit('reload::list')
+      for (const file of deleteFiles) {
+        try {
+          const result = await deleteFileItem({
+            objectName: file.objectName,
+            sessionId: file.sessionId,
+            userId: this.account.uuid,
+            workspaceId: file.workspaceId,
+          })
+          console.log(result)
+        } catch (e) {
+          console.error(e)
+          errorFiles.push(file.name)
+        }
+      }
+      console.log(errorFiles)
+      if (errorFiles.length > 0) {
+        this.confirmDefault(
+          `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
+            '\n',
+          )}</p>`,
+        )
+      }
+      this.$eventBus.$emit('reload::list')
     },
     refreshSelectedArray(selectedArray) {
       this.selectedArray = selectedArray

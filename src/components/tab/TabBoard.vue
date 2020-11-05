@@ -21,6 +21,9 @@ export default {
       daily: null,
       monthly: null,
       now: new Date(),
+
+      day: null,
+      month: null,
     }
   },
   computed: {
@@ -28,14 +31,12 @@ export default {
   },
   watch: {
     async workspace() {
-      await this.getDailyData()
-      await this.getMonthlyData()
+      this.refresh()
     },
     calendars: {
       handler() {
         if (this.workspace.uuid && this.account.uuid) {
-          this.initDaily()
-          this.initMonthly()
+          this.refresh()
         }
       },
       deep: true,
@@ -44,31 +45,39 @@ export default {
   methods: {
     async initDaily() {
       const index = this.calendars.findIndex(cal => cal.name === 'daily')
+
       if (index < 0) return null
       if (this.calendars[index].status) return null
 
-      await this.getDailyData(this.calendars[index].date)
+      if (this.day !== this.calendars[index].date) {
+        this.day = this.calendars[index].date
+        await this.getDailyData()
+      }
     },
-    async getDailyData(day) {
+    async getDailyData() {
       const result = await getDailyData({
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
-        date: day ? day : new Date(),
+        date: this.day ? this.day : new Date(),
       })
       this.daily = result
     },
     async initMonthly() {
       const index = this.calendars.findIndex(cal => cal.name === 'monthly')
+
       if (index < 0) return null
       if (this.calendars[index].status) return null
 
-      await this.getMonthlyData(this.calendars[index].date)
+      if (this.month !== this.calendars[index].date) {
+        this.month = this.calendars[index].date
+        await this.getMonthlyData()
+      }
     },
-    async getMonthlyData(month) {
+    async getMonthlyData() {
       const result = await getMonthlyData({
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
-        date: month ? month : new Date(),
+        date: this.month ? this.month : new Date(),
       })
       this.monthly = result
     },

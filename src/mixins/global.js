@@ -1,5 +1,6 @@
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
+import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 
 export default {
   data() {
@@ -97,6 +98,9 @@ export default {
     },
     isScreenMobile() {
       return 'mobile' === this.deviceType
+    },
+    isOnpremise() {
+      return RUNTIME_ENV === RUNTIME.ONPREMISE ? true : false
     },
   },
   methods: {

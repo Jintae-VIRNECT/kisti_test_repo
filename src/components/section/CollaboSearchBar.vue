@@ -128,7 +128,8 @@ export default {
     fromDate() {
       const index = this.calendars.findIndex(cal => cal.name === 'search-from')
       if (index < 0) return null
-      this.date.from = new Date(this.calendars[index].date)
+
+      this.date.from = this.calendars[index].date
       this.setSearch({
         date: {
           from: this.date.from,
@@ -139,7 +140,7 @@ export default {
     toDate() {
       const index = this.calendars.findIndex(cal => cal.name === 'search-to')
       if (index < 0) return null
-      this.date.to = new Date(this.calendars[index].date)
+      this.date.to = this.calendars[index].date
       this.setSearch({
         date: {
           from: this.date.from,

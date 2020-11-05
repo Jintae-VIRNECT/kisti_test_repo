@@ -141,7 +141,7 @@ const receiver = function(res) {
     const code = res.data['code']
     if (code === 200) {
       if ('data' in res.data) {
-        // debug(res.data['data'])
+        debug(res.data['data'])
         return res.data['data']
       } else {
         return true

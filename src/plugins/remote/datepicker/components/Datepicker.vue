@@ -1,5 +1,9 @@
 <template>
-  <div class="vdp-datepicker" :class="[wrapperClass, isRtl ? 'rtl' : '']">
+  <div
+    class="vdp-datepicker"
+    :class="[wrapperClass, isRtl ? 'rtl' : '']"
+    @click.stop
+  >
     <date-input
       :selectedDate="selectedDate"
       :resetTypedDate="resetTypedDate"
@@ -254,6 +258,7 @@ export default {
      * @return {mixed}
      */
     showCalendar() {
+      this.$eventBus.$emit('close::calendar', this.pickerName)
       if (this.disabled || this.isInline) {
         return false
       }
@@ -284,7 +289,6 @@ export default {
           this.showDayCalendar()
           break
       }
-
       this.setCalendar({
         name: this.pickerName,
         status: true,
@@ -482,9 +486,26 @@ export default {
         this.setInitialView()
       }
     },
+    closeByWindow() {
+      if (this.isOpen) {
+        this.close()
+      }
+    },
+    closeOther(pickerName) {
+      if (this.pickerName !== pickerName) {
+        this.close()
+      }
+    },
   },
   mounted() {
+    window.addEventListener('click', this.closeByWindow)
+    this.$eventBus.$on('close::calendar', this.closeOther)
+    this.$eventBus.$on('scrollClose:calendar', this.closeByWindow)
     this.init()
+  },
+  beforeDestroy() {
+    this.$eventBus.$off('close::calendar')
+    window.removeEventListener('click', this.closeByWindow)
   },
 }
 // eslint-disable-next-line

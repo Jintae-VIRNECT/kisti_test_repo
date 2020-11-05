@@ -20,6 +20,7 @@ import DashBoardFooter from 'components/footer/Footer'
 import DashBoardTab from 'components/section/DashBoardTab'
 import { mapActions } from 'vuex'
 import { getLicense } from 'api/http/account'
+import langMixin from 'mixins/language'
 import auth from 'utils/auth'
 
 import Player from 'components/modal/Player'
@@ -49,7 +50,7 @@ export default {
       }
     }
   },
-
+  mixins: [langMixin],
   components: {
     DashBoardHeader,
     DashBoardFooter,
@@ -101,7 +102,9 @@ export default {
     },
   },
   mounted() {
+    this.mx_changeLang()
     this.$eventBus.$on('open::player', this.openPlayer)
+    console.log('is isOnpremise?', this.isOnpremise)
   },
   beforeDestroy() {
     this.$eventBus.$off('open::player')

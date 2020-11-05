@@ -52,7 +52,6 @@
 </template>
 <script>
 import { makeDateUtils } from '../utils/DateUtils'
-import { mapActions } from 'vuex'
 export default {
   props: {
     selectedDate: Date,
@@ -133,7 +132,6 @@ export default {
     // },
   },
   methods: {
-    ...mapActions(['setCalendar']),
     showCalendar() {
       this.$emit('showCalendar')
     },

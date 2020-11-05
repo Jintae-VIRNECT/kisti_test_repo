@@ -201,6 +201,7 @@ export default {
 
     normalizeVertical(next) {
       this.$eventBus.$emit('popover:scrollClose')
+      this.$eventBus.$emit('scrollClose:calendar')
       const elementSize = this.getSize()
 
       // Vertical Scrolling
