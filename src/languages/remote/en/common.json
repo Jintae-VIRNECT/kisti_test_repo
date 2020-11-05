@@ -41,7 +41,9 @@
     "time": "m[min] s[sec]",
     "hour": "Hour",
     "minute": "Minute",
-    "second": "Second"
+    "second": "Second",
+    "day": "Day",
+    "left": "{time} left"
   },
   "common": {
     "leader": "Leader",

@@ -11,39 +11,18 @@
           <div class="download-table__column name" style="width: 50%;">
             <span>{{ $t('workspace.info_name') }}</span>
           </div>
-          <!-- <div class="download-table__column duration">
+          <div class="download-table__column duration">
             <span>{{ $t('workspace.info_dutation') }}</span>
-          </div> -->
+          </div>
           <div class="download-table__column"></div>
         </div>
         <vue2-scrollbar ref="downloadScrollbar" v-if="files.length > 0">
           <div>
-            <div
-              class="download-table__row"
+            <download-row
               v-for="(data, idx) of files"
               :key="'download_' + idx"
-            >
-              <div class="download-table__column name">
-                <span>{{ data.name }}</span>
-              </div>
-              <!-- <div
-                class="download-table__column duration"
-                :class="{ expire: data.expired }"
-              >
-                <span>{{
-                  data.expired ? $t('common.expiration') : data.expirationDate
-                }}</span>
-              </div> -->
-              <div class="download-table__column">
-                <button
-                  class="btn download-table__button"
-                  :class="{ expire: data.expired }"
-                  @click="download(data)"
-                >
-                  {{ $t('button.download') }}
-                </button>
-              </div>
-            </div>
+              :file="data"
+            ></download-row>
           </div>
         </vue2-scrollbar>
         <div v-else class="download-table__body">
@@ -60,8 +39,12 @@
 <script>
 import { getFileList, downloadFile } from 'api/http/file'
 import { downloadByURL } from 'utils/file'
+import DownloadRow from 'DownloadRow'
 export default {
   name: 'ModalParticipantsInfo',
+  components: {
+    DownloadRow,
+  },
   data() {
     return {
       files: [
