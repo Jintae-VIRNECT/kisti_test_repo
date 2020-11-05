@@ -32,14 +32,14 @@
         <img
           v-if="taskInfo.target.imgPath"
           src="~assets/images/icon/ic-print.svg"
-          @click="print(taskInfo.target.imgPath, taskInfo.targetSize)"
+          @click="print(cdn(taskInfo.target.imgPath), taskInfo.targetSize)"
         />
         <img
           v-if="taskInfo.target.imgPath"
           src="~assets/images/icon/ic-file-download.svg"
           @click="
             download(
-              taskInfo.target.imgPath,
+              cdn(taskInfo.target.imgPath),
               `task_${taskInfo.id}_${taskInfo.name}`,
             )
           "

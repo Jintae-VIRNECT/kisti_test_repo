@@ -24,10 +24,12 @@ export default class Member extends Model {
     this.joinDate = json.joinDate
     this.licenseProducts =
       json.licenseProducts &&
-      json.licenseProducts.sort((a, b) => {
-        const priority = ['REMOTE', 'MAKE', 'VIEW']
-        return priority.indexOf(a) - priority.indexOf(b)
-      })
+      json.licenseProducts
+        .map(str => str.toLowerCase())
+        .sort((a, b) => {
+          const priority = ['remove', 'make', 'view']
+          return priority.indexOf(a) - priority.indexOf(b)
+        })
   }
 }
 

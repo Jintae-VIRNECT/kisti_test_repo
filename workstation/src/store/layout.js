@@ -1,7 +1,19 @@
 import workspaceService from '@/services/workspace'
 import OnPremiseSetting from '@/models/workspace/OnPremiseSetting'
+import { context } from '@/plugins/context'
 
 const defaultSetting = new OnPremiseSetting()
+
+/**
+ * cdn files filter, onpremise minio proxy url
+ * @param {string} url
+ */
+function cdn(url) {
+  if (url && 'minio' in context.$url) {
+    url = url.replace(/^((http[s]?|ftp):\/\/)([^/]+)/, context.$url['minio'])
+  }
+  return url
+}
 
 export default {
   state: () => {
@@ -36,6 +48,9 @@ export default {
   actions: {
     async getWorkspaceSetting({ commit }) {
       const setting = await workspaceService.getWorkspaceSetting()
+      for (let prop in setting) {
+        setting[prop] = cdn(setting[prop])
+      }
       commit('SET_TITLE', setting.title)
       commit('SET_FAVICON', setting.favicon)
       commit('SET_LOGO', {

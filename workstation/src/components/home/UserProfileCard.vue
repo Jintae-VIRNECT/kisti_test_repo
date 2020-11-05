@@ -14,7 +14,7 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url(${profile.profile})`"
+            :style="`background-image: url(${cdn(profile.profile)})`"
           />
         </div>
         <span class="name">{{ profile.nickname }}</span>
@@ -39,8 +39,10 @@
 import { mapGetters } from 'vuex'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
+import filterMixin from '@/mixins/filters'
 
 export default {
+  mixins: [filterMixin],
   data() {
     return {
       profile: {},
