@@ -22,7 +22,7 @@
 
 .chat-header {
   display: flex;
-  flex: 0 0;
+  flex: 0 0 auto;
   flex-direction: column;
   background-color: $color_chat_header;
   border-bottom: solid 1px $color_chat_bg_default;

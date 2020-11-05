@@ -81,6 +81,7 @@ button {
   font: inherit;
   word-break: keep-all;
   border: 0;
+  touch-action: pan-y;
 }
 
 html,

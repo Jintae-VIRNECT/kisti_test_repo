@@ -55,6 +55,7 @@ export default {
   color: rgba(#d2d2d2, 0.8);
   font-size: 0.929em;
   line-height: 1.429em;
+  white-space: nowrap;
   background: #38383a 0.929em 50%/1.571em no-repeat;
   border-radius: 2px;
   opacity: 0.4;
