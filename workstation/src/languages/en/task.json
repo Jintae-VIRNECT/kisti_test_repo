@@ -157,7 +157,6 @@
       "scheduleStart": "Start",
       "scheduleEnd": "End",
       "subTaskWorkerSelected": "Assignee is set per subtasks",
-      "update": "Edit",
       "subTaskWorkerChangeDesc": "Receive subtask reports with updated information",
       "message": {
         "taskUpdateSuccess": "Task details updated.",

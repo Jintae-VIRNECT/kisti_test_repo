@@ -36,7 +36,6 @@
       "target": "Target Type",
       "properties": "Content Components",
       "delete": "Delete",
-      "update": "Edit",
       "register": "Register Task",
       "message": {
         "delete": "Delete selected content",

@@ -28,7 +28,6 @@
       "image": "Profile Image",
       "imageComment": "Update your Workspace profile image. This profile picture is displayed on the sidebar and notifications.",
       "start": "Begin Workspace",
-      "update": "Edit",
       "leave": "Leave Workspace",
       "leaveInfo": {
         "title": "Notice on leaving the Workspace",
