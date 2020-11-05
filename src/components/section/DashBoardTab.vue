@@ -54,7 +54,6 @@ export default {
     },
     tabComponents() {
       return [
-        //hide after server record test
         {
           name: 'board',
           text: this.$t('common.dashboard'),
