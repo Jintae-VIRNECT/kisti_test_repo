@@ -16,6 +16,7 @@
           :initValue="today"
         ></datepicker>
       </div>
+
       <div class="chart-legend">
         <chart-legend
           :text="$t('chart.my_collabo_list')"
@@ -27,9 +28,11 @@
           customClass="grey"
         ></chart-legend>
       </div>
-      <div class="chart-holder">
-        <canvas id="chart-dayily" width="1250"></canvas></div
-    ></card>
+      <div class="chart-holder" :class="{ loading: loading }">
+        <canvas id="chart-dayily" width="1250" height="250"></canvas>
+      </div>
+    </card>
+
     <div class="board-figures">
       <figure-board
         :header="$t('chart.daily_my_collabo_count')"
@@ -92,6 +95,9 @@ export default {
       },
       require: true,
     },
+    loading: {
+      type: Boolean,
+    },
   },
   watch: {
     daily: {
@@ -101,8 +107,23 @@ export default {
           this.dailyChart.update()
         }
       },
+      deep: true,
     },
-    deep: true,
+    loading: {
+      handler() {
+        // if (this.loading === false) {
+        //   console.log('init chart')
+        //   setTimeout(() => {
+        //     this.initChart()
+        //   }, 1000)
+        // } else {
+        //   console.log('clearing')
+        //   if (this.dailyChart) {
+        //     this.dailyChart.destroy()
+        //   }
+        // }
+      },
+    },
   },
   methods: {
     getDummyDataTotal() {
@@ -133,108 +154,110 @@ export default {
         0,
       ]
     },
+    initChart() {
+      this.$nextTick(() => {
+        const ctx = document.getElementById('chart-dayily').getContext('2d')
+
+        this.totalColaboDatas = this.getDummyDataTotal()
+
+        const custom = this.customTooltips(
+          'chart-dayily',
+          'chartjs-tooltip',
+          'inner',
+        )
+        this.dailyChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: hourLabels,
+            datasets: [
+              {
+                label: this.$t('chart.my_collabo_list'),
+                data: this.daily ? this.daily.my.set : [],
+                borderColor: '#0f75f5',
+                borderWidth: 4,
+                pointRadius: 0,
+                pointBackgroundColor: '#ffffff',
+                borderJoinStyle: 'bevel',
+                lineTension: 0,
+                fill: false,
+                hoverBorderWidth: 4,
+              },
+              {
+                label: this.$t('chart.total_collabo_list'),
+                data: this.totalColaboDatas,
+                borderColor: '#bbc8d9',
+                borderWidth: 4,
+                pointRadius: 0,
+                pointBackgroundColor: '#ffffff',
+                borderJoinStyle: 'bevel',
+                lineTension: 0,
+                fill: false,
+                hoverBorderWidth: 4,
+              },
+            ],
+          },
+          options: {
+            maintainAspectRatio: false,
+            aspectRatio: 5,
+            hover: {
+              mode: 'index',
+              intersect: false,
+            },
+            tooltips: {
+              mode: 'index',
+              intersect: false,
+              position: 'average',
+              enabled: false,
+              custom: custom,
+              titleFontSize: '15rem',
+              bodyFontSize: '14rem',
+              displayColors: false,
+              backgroundColor: '#516277',
+              bodyFontStyle: 'bold',
+              callbacks: {
+                title: () => {
+                  return this.$t('chart.collabo_count_by_time')
+                },
+                label: tooltipItem => {
+                  return this.$t('chart.count', {
+                    count: Number(tooltipItem.yLabel),
+                  })
+                },
+              },
+            },
+            legend: {
+              display: false,
+            },
+            scales: {
+              xAxes: [
+                {
+                  gridLines: {
+                    display: false,
+                  },
+                },
+              ],
+              yAxes: [
+                {
+                  ticks: {
+                    beginAtZero: true,
+                    min: 0,
+                    stepSize: 4,
+                  },
+                  gridLines: {
+                    borderDash: [1, 2],
+                  },
+                },
+              ],
+            },
+          },
+        })
+      })
+    },
   },
   mounted() {
     //todo TotalData
     console.log('board daily mounted')
-
-    this.$nextTick(() => {
-      const ctx = document.getElementById('chart-dayily').getContext('2d')
-
-      this.totalColaboDatas = this.getDummyDataTotal()
-
-      const custom = this.customTooltips(
-        'chart-dayily',
-        'chartjs-tooltip',
-        'inner',
-      )
-      this.dailyChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: hourLabels,
-          datasets: [
-            {
-              label: this.$t('chart.my_collabo_list'),
-              data: this.daily ? this.daily.my.set : [],
-              borderColor: '#0f75f5',
-              borderWidth: 4,
-              pointRadius: 0,
-              pointBackgroundColor: '#ffffff',
-              borderJoinStyle: 'bevel',
-              lineTension: 0,
-              fill: false,
-              hoverBorderWidth: 4,
-            },
-            {
-              label: this.$t('chart.total_collabo_list'),
-              data: this.totalColaboDatas,
-              borderColor: '#bbc8d9',
-              borderWidth: 4,
-              pointRadius: 0,
-              pointBackgroundColor: '#ffffff',
-              borderJoinStyle: 'bevel',
-              lineTension: 0,
-              fill: false,
-              hoverBorderWidth: 4,
-            },
-          ],
-        },
-        options: {
-          maintainAspectRatio: false,
-          aspectRatio: 5,
-          hover: {
-            mode: 'index',
-            intersect: false,
-          },
-          tooltips: {
-            mode: 'index',
-            intersect: false,
-            position: 'average',
-            enabled: false,
-            custom: custom,
-            titleFontSize: '15rem',
-            bodyFontSize: '14rem',
-            displayColors: false,
-            backgroundColor: '#516277',
-            bodyFontStyle: 'bold',
-            callbacks: {
-              title: () => {
-                return this.$t('chart.collabo_count_by_time')
-              },
-              label: tooltipItem => {
-                return this.$t('chart.count', {
-                  count: Number(tooltipItem.yLabel),
-                })
-              },
-            },
-          },
-          legend: {
-            display: false,
-          },
-          scales: {
-            xAxes: [
-              {
-                gridLines: {
-                  display: false,
-                },
-              },
-            ],
-            yAxes: [
-              {
-                ticks: {
-                  beginAtZero: true,
-                  min: 0,
-                  stepSize: 4,
-                },
-                gridLines: {
-                  borderDash: [1, 2],
-                },
-              },
-            ],
-          },
-        },
-      })
-    })
+    this.initChart()
   },
 }
 </script>
@@ -297,6 +320,33 @@ export default {
   & > .legend.round.grey {
     &::before {
       border: 4px solid #bbc8d9;
+    }
+  }
+}
+
+.chart-holder {
+  color: transparent;
+  &.loading {
+    &:before {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff;
+      content: '';
+    }
+
+    &:after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5.7143rem;
+      height: 5.7143rem;
+      background: center center/40px 40px no-repeat
+        url(~assets/image/loading.gif);
+      transform: translate(-50%, -50%);
+      content: '';
     }
   }
 }

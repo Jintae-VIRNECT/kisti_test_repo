@@ -1,7 +1,7 @@
 <template>
   <section class="tab-board">
-    <board-daily :daily="daily"> </board-daily>
-    <board-monthly :monthly="monthly"> </board-monthly>
+    <board-daily :daily="daily" :loading="dayLoading"> </board-daily>
+    <board-monthly :monthly="monthly" :loading="monthLoading"> </board-monthly>
   </section>
 </template>
 
@@ -24,6 +24,9 @@ export default {
 
       day: null,
       month: null,
+
+      dayLoading: false,
+      monthLoading: false,
     }
   },
   computed: {
@@ -55,12 +58,17 @@ export default {
       }
     },
     async getDailyData() {
+      this.dayLoading = true
+      console.log('this.dayLoading', this.dayLoading)
       const result = await getDailyData({
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
         date: this.day ? this.day : new Date(),
       })
       this.daily = result
+
+      this.dayLoading = false
+      console.log('this.dayLoading', this.dayLoading)
     },
     async initMonthly() {
       const index = this.calendars.findIndex(cal => cal.name === 'monthly')

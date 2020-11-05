@@ -11,7 +11,11 @@
         EXCEL
       </button>
     </div>
-    <history :isMaster="isMaster" :historys="historyList"></history>
+    <history
+      :loading="loading"
+      :isMaster="isMaster"
+      :historys="historyList"
+    ></history>
     <pagination-tool
       @current-page="getHistoryPage"
       :totalPage="pageMeta.totalPage"
@@ -81,6 +85,7 @@ export default {
   methods: {
     async init(page = 0) {
       //check for master
+      this.loading = true
       const memberInfo = await getMemberInfo({
         userId: this.account.uuid,
         workspaceId: this.workspace.uuid,
@@ -90,7 +95,6 @@ export default {
         this.isMaster = true
       }
 
-      this.loading = true
       const list = await this.getHistory(page)
       if (list === false) {
         this.loading = false
@@ -104,11 +108,7 @@ export default {
         )
       })
 
-      await this.setIndex(sorted)
-      await this.setLeader(sorted)
-      await this.setServerRecord(sorted)
-      await this.setFile(sorted)
-      await this.setLocalRecord(sorted)
+      await this.addAdditionalData(sorted)
 
       this.historyList = sorted
 
@@ -220,11 +220,7 @@ export default {
           workspaceId: this.workspace.uuid,
         })
 
-        this.setIndex(historys.roomHistoryInfoList)
-        this.setLeader(historys.roomHistoryInfoList)
-        this.setServerRecord(historys.roomHistoryInfoList)
-        this.setFile(historys.roomHistoryInfoList)
-        this.setLocalRecord(historys.roomHistoryInfoList)
+        this.addAdditionalData(historys.roomHistoryInfoList)
 
         for (const history of historys.roomHistoryInfoList) {
           const room = await getHistorySingleItem({
@@ -253,6 +249,13 @@ export default {
         console.error(err)
         return false
       }
+    },
+    async addAdditionalData(list) {
+      await this.setIndex(list)
+      await this.setLeader(list)
+      await this.setServerRecord(list)
+      await this.setFile(list)
+      await this.setLocalRecord(list)
     },
   },
 

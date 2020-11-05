@@ -91,6 +91,9 @@ export default {
       },
       require: true,
     },
+    loading: {
+      type: Boolean,
+    },
   },
 
   watch: {
