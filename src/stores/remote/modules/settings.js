@@ -1,6 +1,6 @@
 //Definition of workspace store
 import { SETTINGS, TOGGLE_CHAT } from '../mutation-types'
-import { RECORD_TARGET, LOCAL_RECORD_STATUS } from 'utils/recordOptions'
+import { RECORD_TARGET } from 'utils/recordOptions'
 import { resolution } from 'utils/settingOptions'
 
 const state = {
@@ -43,7 +43,7 @@ const state = {
   screenStream: null,
 
   localRecordTarget: RECORD_TARGET.WORKER,
-  localRecordStatus: LOCAL_RECORD_STATUS.STOP,
+  localRecordStatus: 'STOP',
 
   chatBox: false,
 }
