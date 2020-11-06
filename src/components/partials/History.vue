@@ -1,6 +1,6 @@
 <template>
   <section>
-    <div class="history">
+    <div class="history" :class="{ loading: loading }">
       <div class="history__header">
         <div class="history__header--text index">
           <span
@@ -62,7 +62,8 @@
       </div>
 
       <div class="history__body" :class="{ nodata: !listExists }">
-        <template v-if="listExists">
+        <span v-if="loading" class="history__body--loading"></span>
+        <template v-else-if="!loading && listExists">
           <div
             class="history__row"
             v-for="(history, index) in historys"
@@ -184,6 +185,9 @@ export default {
       type: Boolean,
       default: false,
     },
+    loading: {
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -285,6 +289,7 @@ export default {
 
 <style lang="scss">
 .history {
+  position: relative;
   width: 100%;
   border: 1px solid #eaedf3;
   box-shadow: 0px 1px 0px 0px #eaedf3;
@@ -297,6 +302,20 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+}
+
+.history__body--loading {
+  color: transparent;
+  &:after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5.7143rem;
+    height: 5.7143rem;
+    background: center center/40px 40px no-repeat url(~assets/image/loading.gif);
+    transform: translate(-50%, -50%);
+    content: '';
   }
 }
 

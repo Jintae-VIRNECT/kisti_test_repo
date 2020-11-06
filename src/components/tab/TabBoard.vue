@@ -1,7 +1,7 @@
 <template>
   <section class="tab-board">
-    <board-daily :daily="daily"> </board-daily>
-    <board-monthly :monthly="monthly"> </board-monthly>
+    <board-daily :daily="daily" :loading="dayLoading"> </board-daily>
+    <board-monthly :monthly="monthly" :loading="monthLoading"> </board-monthly>
   </section>
 </template>
 
@@ -24,6 +24,9 @@ export default {
 
       day: null,
       month: null,
+
+      dayLoading: false,
+      monthLoading: false,
     }
   },
   computed: {
@@ -31,64 +34,83 @@ export default {
   },
   watch: {
     async workspace() {
-      this.refresh()
+      this.load()
     },
     calendars: {
       handler() {
         if (this.workspace.uuid && this.account.uuid) {
-          this.refresh()
+          this.load()
         }
       },
       deep: true,
     },
   },
   methods: {
-    async initDaily() {
+    async initDaily(refresh) {
       const index = this.calendars.findIndex(cal => cal.name === 'daily')
 
       if (index < 0) return null
       if (this.calendars[index].status) return null
 
-      if (this.day !== this.calendars[index].date) {
-        this.day = this.calendars[index].date
+      if (refresh) {
         await this.getDailyData()
+      } else {
+        if (this.day !== this.calendars[index].date) {
+          this.day = this.calendars[index].date
+          await this.getDailyData()
+        }
       }
     },
     async getDailyData() {
+      this.dayLoading = true
+      console.log('this.dayLoading', this.dayLoading)
       const result = await getDailyData({
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
         date: this.day ? this.day : new Date(),
       })
       this.daily = result
+
+      this.dayLoading = false
+      console.log('this.dayLoading', this.dayLoading)
     },
-    async initMonthly() {
+    async initMonthly(refresh) {
       const index = this.calendars.findIndex(cal => cal.name === 'monthly')
 
       if (index < 0) return null
       if (this.calendars[index].status) return null
 
-      if (this.month !== this.calendars[index].date) {
-        this.month = this.calendars[index].date
+      if (refresh) {
         await this.getMonthlyData()
+      } else {
+        if (this.month !== this.calendars[index].date) {
+          this.month = this.calendars[index].date
+          await this.getMonthlyData()
+        }
       }
     },
     async getMonthlyData() {
+      this.monthLoading = true
       const result = await getMonthlyData({
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
         date: this.month ? this.month : new Date(),
       })
       this.monthly = result
+      this.monthLoading = false
     },
-    async refresh() {
+    load() {
       this.initDaily()
       this.initMonthly()
+    },
+    async refresh() {
+      const refresh = true
+      this.initDaily(refresh)
+      this.initMonthly(refresh)
     },
   },
 
   async mounted() {
-    console.log('mounted')
     this.$eventBus.$on('refresh:chart', this.refresh)
   },
   beforeDestroy() {

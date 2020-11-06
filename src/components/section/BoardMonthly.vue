@@ -19,17 +19,19 @@
       </div>
       <div class="chart-legend">
         <chart-legend
+          @click="toggle(monthlyChart, 'my')"
           :text="$t('chart.my_collabo_list')"
           shape="square"
         ></chart-legend>
         <chart-legend
+          @click="toggle(monthlyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
           shape="square"
           customClass="grey"
         ></chart-legend>
       </div>
-      <div class="chart-holder">
-        <canvas id="chart-month" width="1250"></canvas>
+      <div class="chart-holder" :class="{ loading: loading }">
+        <canvas id="chart-month" width="1250" height="250"></canvas>
       </div>
     </card>
     <div class="board-figures">
@@ -91,6 +93,9 @@ export default {
       },
       require: true,
     },
+    loading: {
+      type: Boolean,
+    },
   },
 
   watch: {
@@ -121,7 +126,7 @@ export default {
             label: this.$t('chart.my_collabo_list'),
             data: this.monthly ? this.monthly.my.set : [],
             backgroundColor: '#0f75f5',
-            barThickness: 10,
+            barThickness: 9,
           },
           {
             label: this.$t('chart.total_collabo_list'),
@@ -152,60 +157,11 @@ export default {
               12,
             ],
             backgroundColor: '#bbc8d9',
-            barThickness: 10,
+            barThickness: 9,
           },
         ],
       },
-      options: {
-        maintainAspectRatio: false,
-        aspectRatio: 5,
-        barRoundness: 1.2,
-        hover: {
-          mode: 'index',
-        },
-        tooltips: {
-          mode: 'index',
-          position: 'average',
-          enabled: false,
-          custom: custom,
-          titleFontSize: '15rem',
-          bodyFontSize: '14rem',
-          displayColors: false,
-          backgroundColor: '#516277',
-          bodyFontStyle: 'bold',
-          callbacks: {
-            title: () => {
-              return this.$t('chart.collabo_count_by_day')
-            },
-            label: tooltipItem => {
-              return this.$t('chart.count', {
-                count: Number(tooltipItem.yLabel),
-              })
-            },
-          },
-        },
-        legend: {
-          display: false,
-        },
-        scales: {
-          xAxes: [
-            {
-              stacked: true,
-              gridLines: {
-                display: false,
-              },
-            },
-          ],
-          yAxes: [
-            {
-              stacked: true,
-              gridLines: {
-                borderDash: [1, 2],
-              },
-            },
-          ],
-        },
-      },
+      options: this.getOptionMonthly(custom),
     }
 
     this.monthlyChart = new Chart(ctx, chartData)
@@ -223,56 +179,4 @@ export default {
 }
 </script>
 
-<style lang="scss">
-#chartjs-noarrow {
-  position: absolute;
-  width: 9.1429rem;
-  height: 6.4286rem;
-  color: white;
-  background: #3b3b3b;
-  border: 1px solid rgb(52, 65, 81);
-  border-radius: 4px;
-  -webkit-transform: translate(-50%, 0);
-  transform: translate(-50%, 0);
-  opacity: 1;
-  -webkit-transition: all 0.1s ease;
-  transition: all 0.1s ease;
-  pointer-events: none;
-
-  .chartjs-tooltip-head {
-    color: white;
-    font-weight: 400;
-    font-size: 1.0714rem;
-    text-align: left;
-
-    p {
-      padding-left: 0.4286rem;
-    }
-  }
-
-  table {
-    position: relative;
-    width: 100%;
-  }
-
-  .tooil-tip-legend {
-    width: 0.7143rem;
-    height: 0.7143rem;
-    margin-right: 0.3571rem;
-    margin-left: 0.3571rem;
-    border-radius: 50%;
-  }
-}
-.chart-legend {
-  display: flex;
-  align-items: center;
-  height: 4.7143rem;
-  padding-left: 2.1429rem;
-
-  & > .legend.square.grey {
-    &::before {
-      background-color: #bbc8d9;
-    }
-  }
-}
-</style>
+<style lang="scss"></style>

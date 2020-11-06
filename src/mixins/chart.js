@@ -2,15 +2,15 @@ import Chart from 'chart.js'
 
 export default {
   methods: {
-    customTooltips(chartId, tooilTipId, legendShape) {
+    customTooltips(chartId, toolTipId, legendShape) {
       return tooltipModel => {
         // Tooltip Element
-        let tooltipEl = document.getElementById(tooilTipId)
+        let tooltipEl = document.getElementById(toolTipId)
 
         // Create element on first render
         if (!tooltipEl) {
           tooltipEl = document.createElement('div')
-          tooltipEl.id = tooilTipId
+          tooltipEl.id = toolTipId
           tooltipEl.innerHTML = '<table></table>'
           document.body.appendChild(tooltipEl)
         }
@@ -53,7 +53,7 @@ export default {
 
             if (legendShape === 'inner') {
               let span =
-                '<span class="tooil-tip-legend" style="display:inline-block; background:#fff; border-radius: 50%; border: 3px solid' +
+                '<span class="tool-tip-legend" style="display:inline-block; background:#fff; border-radius: 50%; border: 3px solid' +
                 colors.borderColor +
                 '"></span><span style="' +
                 style +
@@ -61,7 +61,7 @@ export default {
               innerHtml += '<tr><td>' + span + body + '</td></tr>'
             } else {
               let span =
-                '<span class="tooil-tip-legend" style="display:inline-block; background:' +
+                '<span class="tool-tip-legend" style="display:inline-block; background:' +
                 colors.backgroundColor +
                 '"></span><span style="' +
                 style +
@@ -224,5 +224,142 @@ export default {
         dataElementType: Chart.elements.RoundedTopRectangle,
       })
     },
+
+    getOptionDaily(custom) {
+      return {
+        maintainAspectRatio: false,
+        aspectRatio: 5,
+        hover: {
+          mode: 'index',
+          intersect: false,
+        },
+        tooltips: {
+          mode: 'index',
+          intersect: false,
+          position: 'average',
+          enabled: false,
+          custom: custom,
+          titleFontSize: '15rem',
+          bodyFontSize: '14rem',
+          displayColors: false,
+          backgroundColor: '#516277',
+          bodyFontStyle: 'bold',
+          callbacks: {
+            title: () => {
+              return this.$t('chart.collabo_count_by_time')
+            },
+            label: tooltipItem => {
+              return this.$t('chart.count', {
+                count: Number(tooltipItem.yLabel),
+              })
+            },
+          },
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [
+            {
+              gridLines: {
+                display: false,
+              },
+            },
+          ],
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+                min: 0,
+                stepSize: 4,
+              },
+              gridLines: {
+                borderDash: [1, 2],
+                // zeroLineWidth: 0,
+                // zeroLineBorderDashOffset: 1,
+                drawBorder: false,
+              },
+            },
+          ],
+        },
+      }
+    },
+
+    getOptionMonthly(custom) {
+      return {
+        maintainAspectRatio: false,
+        aspectRatio: 5,
+        barRoundness: 1.2,
+        hover: {
+          mode: 'index',
+        },
+        tooltips: {
+          mode: 'index',
+          position: 'average',
+          enabled: false,
+          custom: custom,
+          titleFontSize: '15rem',
+          bodyFontSize: '14rem',
+          displayColors: false,
+          backgroundColor: '#516277',
+          bodyFontStyle: 'bold',
+          callbacks: {
+            title: () => {
+              return this.$t('chart.collabo_count_by_day')
+            },
+            label: tooltipItem => {
+              return this.$t('chart.count', {
+                count: Number(tooltipItem.yLabel),
+              })
+            },
+          },
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [
+            {
+              stacked: true,
+              gridLines: {
+                display: false,
+              },
+            },
+          ],
+          yAxes: [
+            {
+              stacked: true,
+              gridLines: {
+                borderDash: [1, 2],
+                drawBorder: false,
+              },
+            },
+          ],
+        },
+      }
+    },
+
+    toggle(chart, target) {
+      if (chart) {
+        let index
+        switch (target) {
+          case 'my':
+            index = 0
+            break
+          case 'total':
+            index = 1
+            break
+        }
+        const hidden = chart.data.datasets[index].hidden
+        chart.data.datasets[index].hidden = !hidden
+        chart.update()
+      }
+    },
+  },
+
+  beforeMount() {
+    Chart.defaults.global.defaultFontFamily = 'Roboto-Regular'
+    Chart.defaults.global.defaultFontColor = 'rgb(136, 136, 136)'
+    Chart.defaults.global.defaultFontSize = 12
   },
 }

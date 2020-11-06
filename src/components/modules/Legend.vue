@@ -1,14 +1,19 @@
 <template>
-  <div class="legend" :class="[shape, customClass]">
-    <p class="legend--text">
+  <button class="legend" @click="clickListener" :class="[shape, customClass]">
+    <p class="legend--text" :class="{ toggle: toggle }">
       {{ text }}
     </p>
-  </div>
+  </button>
 </template>
 
 <script>
 export default {
   name: 'Legend',
+  data() {
+    return {
+      toggle: false,
+    }
+  },
   props: {
     text: {
       type: String,
@@ -27,6 +32,18 @@ export default {
     },
   },
   computed: {},
+  methods: {
+    clickListener() {
+      if (typeof this.$listeners['click'] === 'function') {
+        this.toggle = !this.toggle
+        this.$listeners['click']()
+        this.animateClass = this.animation
+        setTimeout(() => {
+          this.animateClass = ''
+        }, 400)
+      }
+    },
+  },
 }
 </script>
 
@@ -68,5 +85,9 @@ export default {
   font-weight: normal;
   font-size: 1rem;
   letter-spacing: 0px;
+
+  &.toggle {
+    text-decoration: line-through;
+  }
 }
 </style>

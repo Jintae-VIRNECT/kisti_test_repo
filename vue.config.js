@@ -6,7 +6,7 @@ let logger = null
 let configService = null
 
 //only work in local env
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === 'develop') {
   logger = require('./server/logger')
   configService = require('./server/config')
 }
