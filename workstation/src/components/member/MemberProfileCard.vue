@@ -15,7 +15,7 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url(${myInfo.profile})`"
+            :style="`background-image: url(${cdn(myInfo.profile)})`"
           />
         </div>
         <div class="column-role">
@@ -83,8 +83,10 @@ import MemberPasswordModal from '@/components/member/MemberPasswordModal'
 import MemberDeleteModal from '@/components/member/MemberDeleteModal'
 import { mapGetters } from 'vuex'
 import plans from '@/models/workspace/plans'
+import filterMixin from '@/mixins/filters'
 
 export default {
+  mixins: [filterMixin],
   components: {
     MemberSettingModal,
     MemberKickModal,
@@ -101,10 +103,7 @@ export default {
       showMemberKickModal: false,
       showMemberPasswordModal: false,
       showMemberDeleteModal: false,
-      plans: Object.values(plans).reduce((o, n) => {
-        o[n.value] = n
-        return o
-      }, {}),
+      plans,
     }
   },
   watch: {

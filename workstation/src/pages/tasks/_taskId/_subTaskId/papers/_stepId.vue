@@ -33,7 +33,7 @@
                 <a
                   v-if="action.photoFilePath"
                   class="el-button"
-                  :href="action.photoFilePath"
+                  :href="cdn(action.photoFilePath)"
                   download
                   target="_blank"
                 >
@@ -45,8 +45,8 @@
           </el-col>
           <el-col v-if="action.photoFilePath" class="image-container">
             <el-image
-              :src="action.photoFilePath"
-              :preview-src-list="[action.photoFilePath]"
+              :src="cdn(action.photoFilePath)"
+              :preview-src-list="[cdn(action.photoFilePath)]"
             />
             <i class="el-icon-full-screen" />
           </el-col>

@@ -107,6 +107,35 @@ export default {
       })
       this.$router.replace(this.$route.path)
     }
+
+    // 사파리 테이블 버그
+    document
+      .querySelectorAll('.el-table__body')
+      .forEach(table => (table.style.tableLayout = 'auto'))
+    setTimeout(() => {
+      document
+        .querySelectorAll('.el-table__body')
+        .forEach(table => (table.style.tableLayout = 'fixed'))
+    }, 10)
+
+    // 제니퍼 프론트 테스트
+    if (this.$config.VIRNECT_ENV === 'staging') {
+      ;(function(j, en, ni, fer) {
+        j['dmndata'] = []
+        j['jenniferFront'] = function(args) {
+          window.dmndata.push(args)
+        }
+        j['dmnaid'] = fer
+        j['dmnatime'] = new Date()
+        j['dmnanocookie'] = false
+        j['dmnajennifer'] = 'JENNIFER_FRONT@INTG'
+        var b = Math.floor(new Date().getTime() / 60000) * 60000
+        var a = en.createElement(ni)
+        a.src = 'https://d-collect.jennifersoft.com/' + fer + '/demian.js?' + b
+        a.async = true
+        en.getElementsByTagName(ni)[0].parentNode.appendChild(a)
+      })(window, document, 'script', 'a49fb716')
+    }
   },
 }
 </script>

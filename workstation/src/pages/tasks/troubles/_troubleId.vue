@@ -10,8 +10,8 @@
   >
     <div v-if="trouble.photoFilePath" class="image-container">
       <el-image
-        :src="trouble.photoFilePath"
-        :preview-src-list="[trouble.photoFilePath]"
+        :src="cdn(trouble.photoFilePath)"
+        :preview-src-list="[cdn(trouble.photoFilePath)]"
       />
       <i class="el-icon-full-screen" />
     </div>
@@ -21,7 +21,7 @@
         <div class="avatar">
           <div
             class="image"
-            :style="`background-image: url(${trouble.workerProfile})`"
+            :style="`background-image: url(${cdn(trouble.workerProfile)})`"
           />
         </div>
         <span>{{ trouble.workerName }}</span>

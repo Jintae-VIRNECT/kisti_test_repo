@@ -37,7 +37,9 @@
                         <div
                           class="image"
                           :style="
-                            `background-image: url(${activeWorkspace.masterProfile})`
+                            `background-image: url(${cdn(
+                              activeWorkspace.masterProfile,
+                            )})`
                           "
                         />
                       </div>
@@ -214,7 +216,7 @@ export default {
     setWorkspaceInfo() {
       this.form.name = this.activeWorkspace.name
       this.form.description = this.activeWorkspace.description
-      this.file = this.activeWorkspace.profile
+      this.file = this.cdn(this.activeWorkspace.profile)
     },
   },
   beforeMount() {
@@ -262,6 +264,7 @@ export default {
   }
   .el-textarea__inner {
     height: 80px;
+    line-height: inherit;
   }
   .el-textarea .el-input__count {
     background: none;

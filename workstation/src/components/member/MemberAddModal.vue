@@ -59,7 +59,10 @@
                   <img src="~assets/images/icon/ic-error.svg" />
                 </el-tooltip>
               </template>
-              <member-role-select v-model="form.role" />
+              <member-role-select
+                v-model="form.role"
+                :disabled="!canChangeRole"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -182,6 +185,9 @@ export default {
       activeWorkspace: 'auth/activeWorkspace',
       plansInfo: 'plan/plansInfo',
     }),
+    canChangeRole() {
+      return this.activeWorkspace.role === 'MASTER'
+    },
   },
   methods: {
     opened() {
