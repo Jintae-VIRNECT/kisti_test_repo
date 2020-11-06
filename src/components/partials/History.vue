@@ -1,155 +1,151 @@
 <template>
-  <section>
-    <div class="history" :class="{ loading: loading }">
-      <div class="history__header">
-        <div class="history__header--text index">
-          <span
-            @click="setSort('index')"
-            :class="{ active: sort.column === 'index' }"
-            >No</span
-          >
-        </div>
-        <div class="history__header--text collabo-name">
-          <span
-            @click="setSort('collabo-name')"
-            :class="{ active: sort.column === 'collabo-name' }"
-          >
-            {{ $t('list.room_title') }}
-          </span>
-        </div>
-        <div class="history__header--text leader-name">
-          <span
-            @click="setSort('leader-name')"
-            :class="{ active: sort.column === 'leader-name' }"
-            >{{ $t('list.room_leader') }}</span
-          >
-        </div>
-        <div class="history__header--text start-date">
-          <span
-            @click="setSort('start-date')"
-            :class="{ active: sort.column === 'start-date' }"
-            >{{ $t('list.room_active_date') }}</span
-          >
-        </div>
-        <div class="history__header--text state">
-          <span
-            @click="setSort('state')"
-            :class="{ active: sort.column === 'state' }"
-            >{{ $t('list.room_status') }}</span
-          >
-        </div>
-        <div class="history__header--text count">
-          <span
-            @click="setSort('server-count')"
-            :class="{ active: sort.column === 'server-count' }"
-            >{{ $t('list.room_server_record') }}</span
-          >
-        </div>
-        <div class="history__header--text count">
-          <span
-            @click="setSort('local-count')"
-            :class="{ active: sort.column === 'local-count' }"
-            >{{ $t('list.room_local_record') }}</span
-          >
-        </div>
-        <div class="history__header--text count">
-          <span
-            @click="setSort('file-count')"
-            :class="{ active: sort.column === 'file-count' }"
-            >{{ $t('list.room_attach_file') }}</span
-          >
-        </div>
+  <section class="history" :class="{ loading: loading }">
+    <div class="history__header">
+      <div class="history__header--text index">
+        <span
+          @click="setSort('index')"
+          :class="{ active: sort.column === 'index' }"
+          >No</span
+        >
       </div>
+      <div class="history__header--text collabo-name">
+        <span
+          @click="setSort('collabo-name')"
+          :class="{ active: sort.column === 'collabo-name' }"
+        >
+          {{ $t('list.room_title') }}
+        </span>
+      </div>
+      <div class="history__header--text leader-name">
+        <span
+          @click="setSort('leader-name')"
+          :class="{ active: sort.column === 'leader-name' }"
+          >{{ $t('list.room_leader') }}</span
+        >
+      </div>
+      <div class="history__header--text start-date">
+        <span
+          @click="setSort('start-date')"
+          :class="{ active: sort.column === 'start-date' }"
+          >{{ $t('list.room_active_date') }}</span
+        >
+      </div>
+      <div class="history__header--text state">
+        <span
+          @click="setSort('state')"
+          :class="{ active: sort.column === 'state' }"
+          >{{ $t('list.room_status') }}</span
+        >
+      </div>
+      <div class="history__header--text count">
+        <span
+          @click="setSort('server-count')"
+          :class="{ active: sort.column === 'server-count' }"
+          >{{ $t('list.room_server_record') }}</span
+        >
+      </div>
+      <div class="history__header--text count">
+        <span
+          @click="setSort('local-count')"
+          :class="{ active: sort.column === 'local-count' }"
+          >{{ $t('list.room_local_record') }}</span
+        >
+      </div>
+      <div class="history__header--text count">
+        <span
+          @click="setSort('file-count')"
+          :class="{ active: sort.column === 'file-count' }"
+          >{{ $t('list.room_attach_file') }}</span
+        >
+      </div>
+    </div>
 
-      <div class="history__body" :class="{ nodata: !listExists }">
-        <span v-if="loading" class="history__body--loading"></span>
-        <template v-else-if="!loading && listExists">
-          <div
-            class="history__row"
-            v-for="(history, index) in historys"
-            :key="index"
-            @click="showHistory(history.sessionId)"
-            @mouseover="hover = true"
-            @mouseleave="hover = false"
-          >
-            <div class="history__text index">
-              <p>{{ history.index }}</p>
-            </div>
-            <div class="history__text collabo-name">
-              <p>{{ history.title }}</p>
-            </div>
-            <div class="history__text leader-name">
-              <p>
-                {{ history.leader.nickName }}
-              </p>
-            </div>
-            <div class="history__text start-date">
-              {{ date(history.activeDate) }}
-            </div>
-            <div class="history__text state">
-              <collabo-status :status="history.status"> </collabo-status>
-            </div>
-            <div class="history__text count">
-              <count-button
-                :count="history.serverRecord.length"
-                :images="{
-                  select: require('assets/image/ic_rec_select.svg'),
-                  active: require('assets/image/ic_rec_active.svg'),
-                  default: require('assets/image/ic_rec_default.svg'),
-                }"
-                @click="showServerRecord(history, index)"
-              ></count-button>
-            </div>
-            <div class="history__text count">
-              <count-button
-                :count="history.localRecord.length"
-                :images="{
-                  select: require('assets/image/ic_video_select.svg'),
-                  active: require('assets/image/ic_video_active.svg'),
-                  default: require('assets/image/ic_video_default.svg'),
-                }"
-                @click="showLocalRecord(history, index)"
-              ></count-button>
-            </div>
-            <div class="history__text count">
-              <count-button
-                :count="history.files.length"
-                :images="{
-                  select: require('assets/image/ic_file_select.svg'),
-                  active: require('assets/image/ic_file_active.svg'),
-                  default: require('assets/image/ic_file_default.svg'),
-                }"
-                @click="showFile(history, index)"
-              ></count-button>
-            </div>
+    <div class="history__body" :class="{ nodata: !listExists }">
+      <span v-if="loading" class="history__body--loading"></span>
+      <template v-else-if="!loading && listExists">
+        <div
+          class="history__row"
+          v-for="(history, index) in historys"
+          :key="index"
+          @click="showHistory(history.sessionId)"
+          @mouseover="hover = true"
+          @mouseleave="hover = false"
+        >
+          <div class="history__text index">
+            <p>{{ history.index }}</p>
           </div>
-          <history-info
-            :sessionId="sessionId"
-            :visible.sync="historyInfo"
-          ></history-info>
-          <server-record-info
-            :title="historyTitle"
-            :fileList="fileList"
-            :visible.sync="serverRecord"
-            :deletable="isMaster"
-          ></server-record-info>
-          <local-record-info
-            :title="historyTitle"
-            :fileList="fileList"
-            :visible.sync="localRecord"
-            :deletable="isMaster"
-          ></local-record-info>
-          <attach-file-info
-            :title="historyTitle"
-            :fileList="fileList"
-            :visible.sync="file"
-            :deletable="isMaster"
-          ></attach-file-info>
-        </template>
-        <span v-else class="history__body--nodata">{{
-          $t('list.no_data')
-        }}</span>
-      </div>
+          <div class="history__text collabo-name">
+            <p>{{ history.title }}</p>
+          </div>
+          <div class="history__text leader-name">
+            <p>
+              {{ history.leader.nickName }}
+            </p>
+          </div>
+          <div class="history__text start-date">
+            {{ date(history.activeDate) }}
+          </div>
+          <div class="history__text state">
+            <collabo-status :status="history.status"> </collabo-status>
+          </div>
+          <div class="history__text count">
+            <count-button
+              :count="history.serverRecord.length"
+              :images="{
+                select: require('assets/image/ic_rec_select.svg'),
+                active: require('assets/image/ic_rec_active.svg'),
+                default: require('assets/image/ic_rec_default.svg'),
+              }"
+              @click="showServerRecord(history, index)"
+            ></count-button>
+          </div>
+          <div class="history__text count">
+            <count-button
+              :count="history.localRecord.length"
+              :images="{
+                select: require('assets/image/ic_video_select.svg'),
+                active: require('assets/image/ic_video_active.svg'),
+                default: require('assets/image/ic_video_default.svg'),
+              }"
+              @click="showLocalRecord(history, index)"
+            ></count-button>
+          </div>
+          <div class="history__text count">
+            <count-button
+              :count="history.files.length"
+              :images="{
+                select: require('assets/image/ic_file_select.svg'),
+                active: require('assets/image/ic_file_active.svg'),
+                default: require('assets/image/ic_file_default.svg'),
+              }"
+              @click="showFile(history, index)"
+            ></count-button>
+          </div>
+        </div>
+        <history-info
+          :sessionId="sessionId"
+          :visible.sync="historyInfo"
+        ></history-info>
+        <server-record-info
+          :title="historyTitle"
+          :fileList="fileList"
+          :visible.sync="serverRecord"
+          :deletable="isMaster"
+        ></server-record-info>
+        <local-record-info
+          :title="historyTitle"
+          :fileList="fileList"
+          :visible.sync="localRecord"
+          :deletable="isMaster"
+        ></local-record-info>
+        <attach-file-info
+          :title="historyTitle"
+          :fileList="fileList"
+          :visible.sync="file"
+          :deletable="isMaster"
+        ></attach-file-info>
+      </template>
+      <span v-else class="history__body--nodata">{{ $t('list.no_data') }}</span>
     </div>
   </section>
 </template>
@@ -219,6 +215,11 @@ export default {
           this.fileList = this.historys[this.currentIndex].localRecord
         }
       }
+    },
+    loading() {
+      this.file = false
+      this.serverRecord = false
+      this.localRecord = false
     },
   },
   computed: {
