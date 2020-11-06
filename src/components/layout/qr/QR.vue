@@ -1,6 +1,6 @@
 <template>
 	<section>
-		<TheHeader :showSection="showSection" :auth="auth">
+		<TheHeader :showSection="showSection" :auth="auth" :logoImg="customInfo">
 			<template slot="subTitle">{{ $t('qrLogin.title') }}</template>
 		</TheHeader>
 		<transition name="app-fade" mode="out-in">
