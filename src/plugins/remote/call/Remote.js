@@ -129,6 +129,7 @@ const _ = {
         })
         _.publisher.on('streamCreated', () => {
           logger('room', 'publish success')
+          debug('publisher stream :: ', _.publisher.stream)
           const mediaStream = _.publisher.stream.mediaStream
           Store.commit('updateParticipant', {
             connectionId: _.publisher.stream.connection.connectionId,
