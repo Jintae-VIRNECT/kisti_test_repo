@@ -230,9 +230,9 @@
   @media screen and (max-width: $size_m_max) {
     font-size: 10px;
   }
-  @include iPad {
-    font-size: 8px;
-  }
+  // @include iPad {
+  //   font-size: 8px;
+  // }
 }
 
 // 프린트
