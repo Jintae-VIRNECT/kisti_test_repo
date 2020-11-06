@@ -10,7 +10,6 @@ import (
 	"RM-RecordServer/recorder"
 	"RM-RecordServer/storage"
 	"context"
-	"crypto/tls"
 	"net/http"
 	"os"
 	"os/signal"
@@ -61,9 +60,6 @@ func main() {
 		logger.Info("Server Started: listen:", viper.GetInt("general.port"))
 		var err error
 		if viper.GetBool("general.useSSL") {
-			srv.TLSConfig = &tls.Config{
-				MinVersion: tls.VersionTLS12,
-			}
 			certFile := viper.GetString("general.cert")
 			keyFile := viper.GetString("general.key")
 			err = srv.ListenAndServeTLS(certFile, keyFile)
