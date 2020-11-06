@@ -15,6 +15,7 @@
     "list": "List",
     "numbersUnit": "",
     "paymentCenter": "Payment Center",
+    "plan": "Plan",
     "message": {
       "notAllowFileExtension": "Unsupported file type.",
       "notAllowFileSize": "Unsupported file size."

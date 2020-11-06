@@ -3,7 +3,7 @@
     class="member-setting-modal"
     :visible.sync="showMe"
     :title="$t('members.setting.title')"
-    width="440px"
+    width="628px"
     top="11vh"
   >
     <div>
@@ -37,7 +37,7 @@
         @submit.native.prevent="submit"
       >
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon">
               <template slot="label">
                 <span>{{ $t('members.setting.role') }}</span>
@@ -65,19 +65,24 @@
           </el-tooltip>
         </dt>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.remote.label">
-              <el-select v-model="form.licenseRemote">
+              <el-select
+                v-model="form.licenseRemote"
+                popper-class="member-setting-select__dropdown"
+              >
                 <el-option
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
                 <el-option
                   :value="true"
-                  :label="plans.remote.label"
+                  :label="`${plans.remote.label} ${$t('common.plan')}`"
                   :disabled="!plansInfo.remote.unUsedAmount"
                 >
-                  <span>{{ plans.remote.label }}</span>
+                  <span>
+                    {{ `${plans.remote.label} ${$t('common.plan')}` }}
+                  </span>
                   <span class="right">
                     {{ plansInfo.remote.unUsedAmount }}
                   </span>
@@ -85,19 +90,22 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.make.label">
-              <el-select v-model="form.licenseMake">
+              <el-select
+                v-model="form.licenseMake"
+                popper-class="member-setting-select__dropdown"
+              >
                 <el-option
                   :value="false"
                   :label="$t('members.setting.givePlansEmpty')"
                 />
                 <el-option
                   :value="true"
-                  :label="plans.make.label"
+                  :label="`${plans.make.label} ${$t('common.plan')}`"
                   :disabled="!plansInfo.make.unUsedAmount"
                 >
-                  <span>{{ plans.make.label }}</span>
+                  <span>{{ `${plans.make.label} ${$t('common.plan')}` }}</span>
                   <span class="right">
                     {{ plansInfo.make.unUsedAmount }}
                   </span>
@@ -105,7 +113,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.view.label">
               <el-select v-model="form.licenseView">
                 <el-option
@@ -114,10 +122,10 @@
                 />
                 <el-option
                   :value="true"
-                  :label="plans.view.label"
+                  :label="`${plans.view.label} ${$t('common.plan')}`"
                   :disabled="!plansInfo.view.unUsedAmount"
                 >
-                  <span>{{ plans.view.label }}</span>
+                  <span>{{ `${plans.view.label} ${$t('common.plan')}` }}</span>
                   <span class="right">
                     {{ plansInfo.view.unUsedAmount }}
                   </span>
@@ -165,6 +173,7 @@ export default {
       plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       form: {},
+      test: [],
     }
   },
   computed: {
@@ -274,7 +283,7 @@ export default {
   }
 
   .el-form {
-    margin: 20px 0;
+    margin: 20px 0 0;
     .el-form-item {
       margin-bottom: 20px;
     }
@@ -288,6 +297,15 @@ export default {
     .el-button:first-child {
       float: left;
     }
+  }
+}
+
+body .el-popper.el-select-dropdown.member-setting-select__dropdown {
+  .el-select-dropdown__list {
+    padding: 6px 0;
+  }
+  .el-select-dropdown__item.hover {
+    background: #e9ecf1;
   }
 }
 </style>

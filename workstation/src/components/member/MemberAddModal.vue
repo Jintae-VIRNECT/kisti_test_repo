@@ -3,7 +3,7 @@
     class="member-add-modal"
     :visible.sync="showMe"
     :title="$t('members.add.title')"
-    width="440px"
+    width="628px"
     top="11vh"
   >
     <div>
@@ -48,7 +48,7 @@
           />
         </el-form-item>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon">
               <template slot="label">
                 <span>{{ $t('members.setting.role') }}</span>
@@ -76,7 +76,7 @@
           </el-tooltip>
         </label>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.remote.label">
               <el-select v-model="form.planRemote">
                 <el-option
@@ -96,7 +96,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.make.label">
               <el-select v-model="form.planMake">
                 <el-option
@@ -116,7 +116,7 @@
               </el-select>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.view.label">
               <el-select v-model="form.planView">
                 <el-option
@@ -308,8 +308,8 @@ export default {
   .el-dialog__footer {
     border-top: solid 1px #edf0f7;
 
-    .el-button:first-child {
-      float: left;
+    .el-button:last-child {
+      float: right;
     }
   }
 }
