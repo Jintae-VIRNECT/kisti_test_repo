@@ -18,13 +18,9 @@ spring:
           envers:
             audit_table_suffix: _history
   redis:
-    port: 32768
-    database: 0
     host: localhost
-  cloud:
-    loadbalancer:
-      ribbon:
-        enabled: false
+    database: 0
+    port: 6379
   servlet:
     multipart:
       max-file-size: 30MB
@@ -32,17 +28,19 @@ spring:
   messages:
     encoding: UTF-8
     basename: classpath:/messages
+  zipkin:
+    enabled: true
+    base-url: http://localhost:9411
 
 logging:
   level:
     org.hibernate.type.descriptor.sql: trace
     com.virnect.workspace.application.*: DEBUG
-
 ## Server Configuration
 server:
   port: 8082
   ssl:
-    enabled: true
+    enabled: false
     key-store: virnect.pfx
     key-store-type: PKCS12
     key-store-password: 123456
@@ -54,7 +52,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-    enabled: false
+    enabled: true
 
 ## Mail send rediect Url
 serverUrl: "http://localhost:8082"

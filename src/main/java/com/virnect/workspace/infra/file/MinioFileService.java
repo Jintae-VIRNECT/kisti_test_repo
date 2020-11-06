@@ -174,7 +174,7 @@ public class MinioFileService implements FileService {
                 InternalException | InvalidBucketNameException | InvalidKeyException |
                 InvalidResponseException | IOException | NoSuchAlgorithmException | ServerException |
                 XmlParserException e) {
-            log.error(e.getMessage());
+            log.warn(e.getMessage());
             return false;
         }
     }
