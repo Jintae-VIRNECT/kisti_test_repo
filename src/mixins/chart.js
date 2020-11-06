@@ -338,6 +338,23 @@ export default {
         },
       }
     },
+
+    toggle(chart, target) {
+      if (chart) {
+        let index
+        switch (target) {
+          case 'my':
+            index = 0
+            break
+          case 'total':
+            index = 1
+            break
+        }
+        const hidden = chart.data.datasets[index].hidden
+        chart.data.datasets[index].hidden = !hidden
+        chart.update()
+      }
+    },
   },
 
   beforeMount() {

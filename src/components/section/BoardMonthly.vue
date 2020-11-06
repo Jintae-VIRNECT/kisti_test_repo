@@ -19,10 +19,12 @@
       </div>
       <div class="chart-legend">
         <chart-legend
+          @click="toggle(monthlyChart, 'my')"
           :text="$t('chart.my_collabo_list')"
           shape="square"
         ></chart-legend>
         <chart-legend
+          @click="toggle(monthlyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
           shape="square"
           customClass="grey"

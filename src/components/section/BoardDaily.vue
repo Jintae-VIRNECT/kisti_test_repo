@@ -19,10 +19,12 @@
 
       <div class="chart-legend">
         <chart-legend
+          @click="toggle(dailyChart, 'my')"
           :text="$t('chart.my_collabo_list')"
           shape="round"
         ></chart-legend>
         <chart-legend
+          @click="toggle(dailyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
           shape="round"
           customClass="grey"
