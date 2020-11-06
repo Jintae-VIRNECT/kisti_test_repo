@@ -359,7 +359,7 @@ public class LicenseService {
 			pushContent.put("productName", product.getName());
 
 			PushRequest pushRequest = new PushRequest();
-			pushRequest.setService("license");
+			pushRequest.setService(productName.toLowerCase());
 			pushRequest.setWorkspaceId(workspaceId);
 			pushRequest.setUserId("system");
 			pushRequest.setTargetUserIds(Collections.singletonList(userId));
