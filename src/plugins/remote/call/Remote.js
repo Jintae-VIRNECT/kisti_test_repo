@@ -109,16 +109,12 @@ const _ = {
 
         _.publisher = OV.initPublisher('', publishOptions)
         _.publisher.onIceStateChanged(state => {
-          if (
-            state === 'failed' ||
-            state === 'disconnected' ||
-            state === 'closed'
-          ) {
+          if (['failed', 'disconnected', 'closed'].includes(state)) {
             Store.commit('updateParticipant', {
               connectionId: _.publisher.stream.connection.connectionId,
               status: 'bad',
             })
-          } else if (state === 'connected') {
+          } else if (['connected', 'completed'].includes(state)) {
             Store.commit('updateParticipant', {
               connectionId: _.publisher.stream.connection.connectionId,
               status: 'good',
