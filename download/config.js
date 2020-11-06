@@ -2,6 +2,7 @@ const fs = require('fs')
 const axios = require('axios')
 const dotenv = require('dotenv')
 const env = dotenv.parse(fs.readFileSync('.env.local'))
+const pjson = require('./package.json')
 
 /**
  * get env from config server
@@ -19,8 +20,8 @@ async function getConfig(serviceName, branch) {
 module.exports = async () => {
   env.NODE_ENV = process.env.NODE_ENV
   env.VIRNECT_ENV = process.env.VIRNECT_ENV
-  env.PROJECT_NAME = process.env.npm_package_name || ''
-  env.PROJECT_VERSION = process.env.npm_package_version || '0.0.0'
+  env.PROJECT_NAME = pjson.name || ''
+  env.PROJECT_VERSION = pjson.version || '0.0.0'
 
   // local
   if (process.env.VIRNECT_ENV === 'local') {

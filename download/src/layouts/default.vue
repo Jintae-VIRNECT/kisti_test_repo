@@ -69,6 +69,6 @@ body .sub-title {
   font-size: 18px;
 }
 main {
-  margin-top: 64px;
+  margin-top: 60px;
 }
 </style>
