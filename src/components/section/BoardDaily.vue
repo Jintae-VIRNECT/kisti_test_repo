@@ -109,21 +109,6 @@ export default {
       },
       deep: true,
     },
-    loading: {
-      handler() {
-        // if (this.loading === false) {
-        //   console.log('init chart')
-        //   setTimeout(() => {
-        //     this.initChart()
-        //   }, 1000)
-        // } else {
-        //   console.log('clearing')
-        //   if (this.dailyChart) {
-        //     this.dailyChart.destroy()
-        //   }
-        // }
-      },
-    },
   },
   methods: {
     getDummyDataTotal() {

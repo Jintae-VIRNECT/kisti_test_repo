@@ -28,8 +28,8 @@
           customClass="grey"
         ></chart-legend>
       </div>
-      <div class="chart-holder">
-        <canvas id="chart-month" width="1250"></canvas>
+      <div class="chart-holder" :class="{ loading: loading }">
+        <canvas id="chart-month" width="1250" height="250"></canvas>
       </div>
     </card>
     <div class="board-figures">
@@ -275,6 +275,33 @@ export default {
   & > .legend.square.grey {
     &::before {
       background-color: #bbc8d9;
+    }
+  }
+}
+
+.chart-holder {
+  color: transparent;
+  &.loading {
+    &:before {
+      position: absolute;
+      top: 0px;
+      left: 0px;
+      width: 100%;
+      height: 100%;
+      background-color: #ffffff;
+      content: '';
+    }
+
+    &:after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5.7143rem;
+      height: 5.7143rem;
+      background: center center/40px 40px no-repeat
+        url(~assets/image/loading.gif);
+      transform: translate(-50%, -50%);
+      content: '';
     }
   }
 }
