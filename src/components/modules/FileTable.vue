@@ -183,10 +183,7 @@ export default {
 
         //copy data with specific columns
         this.columns.forEach(key => {
-          // newData[key] = data[key]
           const value = deepGet(data, key)
-          console.log('key', key)
-          console.log('value', value)
           newData[key] = value ? value : ''
         })
 
