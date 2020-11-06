@@ -3,7 +3,7 @@ import toastMixin from 'mixins/toast'
 import LocalRecorder from 'utils/localRecorder'
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { getWH, RECORD_TARGET, LOCAL_RECORD_STATUS } from 'utils/recordOptions'
+import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 
 export default {
   name: 'LocalRecordMenu',
@@ -71,7 +71,7 @@ export default {
         //for leaved
         this.disconnectAudio()
 
-        if (this.localRecordStatus === LOCAL_RECORD_STATUS.START) {
+        if (this.localRecordStatus === 'START') {
           const anyStreamAlive = this.participants.some(participant => {
             return participant.video === true
           })
@@ -122,7 +122,7 @@ export default {
       this.recorder = new LocalRecorder()
 
       if (await this.initRecorder()) {
-        await this.setLocalRecordStatus(LOCAL_RECORD_STATUS.START)
+        await this.setLocalRecordStatus('START')
         this.recorder.startRecord()
       } else {
         //TODO : MESSAGE
@@ -241,7 +241,7 @@ export default {
         console.error(e)
       } finally {
         this.recorder = null
-        await this.setLocalRecordStatus(LOCAL_RECORD_STATUS.STOP)
+        await this.setLocalRecordStatus('STOP')
       }
     },
 
@@ -288,7 +288,7 @@ export default {
     },
 
     changeVideoStream(videoStream, resolution) {
-      if (this.localRecordStatus === LOCAL_RECORD_STATUS.START) {
+      if (this.localRecordStatus === 'START') {
         this.recorder.changeVideoStream(videoStream, resolution)
       }
     },
@@ -303,12 +303,9 @@ export default {
       const isStart = status.isStart
       const stopType = status.stopType
 
-      if (isStart && this.localRecordStatus === LOCAL_RECORD_STATUS.STOP) {
+      if (isStart && this.localRecordStatus === 'STOP') {
         this.startLocalRecord()
-      } else if (
-        !isStart &&
-        this.localRecordStatus === LOCAL_RECORD_STATUS.START
-      ) {
+      } else if (!isStart && this.localRecordStatus === 'START') {
         this.stopLocalRecord(stopType)
       }
     },
