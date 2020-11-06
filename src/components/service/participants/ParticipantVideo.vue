@@ -3,7 +3,7 @@
     <div
       class="participant-video"
       :class="{ current: isCurrent }"
-      @dblclick="changeMain"
+      @click="changeMain"
     >
       <div class="participant-video__stream" v-if="participant.hasVideo">
         <video
@@ -149,6 +149,7 @@ export default {
       hover: false,
       btnActive: false,
       statusHover: {},
+      clickTime: false,
     }
   },
   props: {
@@ -297,6 +298,17 @@ export default {
       this.btnActive = val
     },
     changeMain() {
+      if (this.clickTime === false) {
+        this.clickTime = new Date().getTime()
+        return
+      } else {
+        if (new Date().getTime() - this.clickTime < 500) {
+          this.clickTime = false
+        } else {
+          this.clickTime = new Date().getTime()
+          return
+        }
+      }
       if (this.openRoom) {
         if (!this.participant.hasCamera) {
           this.toastDefault(this.$t('service.participant_no_stream'))
