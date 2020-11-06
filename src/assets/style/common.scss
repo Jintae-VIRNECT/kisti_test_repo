@@ -13,6 +13,9 @@ body {
   @include mobile {
     font-size: 10px;
   }
+  @include iPad {
+    font-size: 8px;
+  }
 }
 
 @include desktop {
@@ -31,6 +34,7 @@ body.modal-open {
 }
 
 .btn {
+  min-height: 3rem;
   // margin-top: 0.714em;
   padding: 0.714em 2.857em;
   color: #fff;

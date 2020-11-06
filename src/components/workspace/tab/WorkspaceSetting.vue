@@ -177,7 +177,7 @@ export default {
         this.micDevices = devices.mics
         this.speakerDevices = devices.speakers
       } else if (permission === 'prompt') {
-        const devices = await this.getMediaDevice()
+        let devices = await this.getMediaDevice()
         let video = false,
           audio = false
         if (devices.videos.length > 0) {
@@ -187,6 +187,7 @@ export default {
           audio = true
         }
         await getUserMedia(audio, video)
+        devices = await this.getMediaDevice()
         this.videoDevices = devices.videos
         this.micDevices = devices.mics
         this.speakerDevices = devices.speakers

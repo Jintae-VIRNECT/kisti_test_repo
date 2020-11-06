@@ -340,7 +340,7 @@ export default {
   mounted() {
     this.$eventBus.$on('localRecord', this.toggleLocalRecordStatus)
 
-    this.audioContext = new AudioContext()
+    this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     this.audioContextDes = this.audioContext.createMediaStreamDestination()
   },
   beforeDestroy() {

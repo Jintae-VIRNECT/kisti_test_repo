@@ -2,6 +2,7 @@
   <wide-card
     :key="user.uuid"
     :customClass="['remoteinfo-usercard', { offline: isOffline }]"
+    height="6.143em"
   >
     <div class="roominfo-userinfo">
       <profile

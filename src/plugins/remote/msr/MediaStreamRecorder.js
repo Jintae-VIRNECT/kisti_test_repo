@@ -360,7 +360,7 @@ function MultiStreamsMixer(arrayOfMediaStreams) {
   // Cross-Browser-Declarations.js
 
   // WebAudio API representer
-  var AudioContext = window.AudioContext
+  var AudioContext = window.AudioContext || window.webkitAudioContext
 
   if (typeof AudioContext === 'undefined') {
     if (typeof webkitAudioContext !== 'undefined') {

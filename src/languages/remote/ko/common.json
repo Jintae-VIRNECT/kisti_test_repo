@@ -41,7 +41,9 @@
     "time": "m분 s초",
     "hour": "시간",
     "minute": "분",
-    "second": "초"
+    "second": "초",
+    "day": "일",
+    "left": "{time} 남음"
   },
   "common": {
     "leader": "리더",
