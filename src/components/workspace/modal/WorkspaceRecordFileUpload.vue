@@ -6,7 +6,7 @@
     :showClose="true"
     :visible.sync="visible"
     :beforeClose="beforeClose"
-    customClass="custom-modal-record-file-upload"
+    customClass="modal-upload"
     :class="{ modalless: true }"
     :dimClose="false"
   >
@@ -14,7 +14,7 @@
       <p class="record-file-upload--header">파일을 업로드중입니다.</p>
       <p class="record-file-upload--current-file">{{ currentFile }}</p>
       <progress-bar
-        customClass="custom-progress-record-file-upload"
+        customClass="progress-upload"
         :value="uploaded"
         :max="fileIds.length"
       ></progress-bar>
@@ -121,7 +121,7 @@ export default {
 <style lang="scss">
 @import '~assets/style/vars';
 
-.modal.custom-modal-record-file-upload {
+.modal.modal-upload {
   position: fixed;
   top: 0;
   left: 0;
@@ -191,7 +191,7 @@ export default {
   text-align: center;
 }
 
-.progress.custom-progress-record-file-upload {
+.progress.progress-upload {
   position: relative;
   width: 25.7143em;
   height: 1em;
