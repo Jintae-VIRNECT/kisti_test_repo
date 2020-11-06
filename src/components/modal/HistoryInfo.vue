@@ -3,8 +3,8 @@
     :title="room.title"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
-    width="819.994px"
-    height="725.9994px"
+    width="58.571rem"
+    height="51.8571rem"
     :showClose="true"
     customClass="modal-history-info"
   >
@@ -159,52 +159,52 @@ export default {
 <style lang="scss">
 .modal.modal-history-info {
   .modal--header {
-    height: 68px;
-    padding: 22px 0px 16px 27px;
+    height: 4.8571rem;
+    padding: 1.5714rem 0rem 1.1429rem 1.9286rem;
     color: rgb(11, 31, 72);
     font-weight: normal;
 
-    font-size: 16px;
+    font-size: 1.1429rem;
     background-color: #f8f8fa;
   }
 
   .modal--body {
-    padding: 40px 45px 45px 45px;
+    padding: 2.8571rem 3.2143rem 3.2143rem 3.2143rem;
   }
 
   .modal--close {
-    width: 14px;
-    height: 14px;
+    width: 1rem;
+    height: 1rem;
   }
 }
 
 .history-info--header {
   color: rgb(11, 31, 72);
   font-weight: normal;
-  font-size: 22px;
+  font-size: 1.5714rem;
 }
 
 .history-info-table {
-  width: 720px;
-  height: 518;
-  margin-top: 16px;
+  width: 51.4286rem;
+  height: 37rem;
+  margin-top: 1.1429rem;
   border-top: 2px solid rgb(234, 237, 243);
 }
 
 .history-info__row {
   display: flex;
-  height: 74px;
+  height: 5.2857rem;
   border-bottom: 1px solid #eaedf3;
 }
 
 .history-info-table-column__header {
   display: flex;
   align-items: center;
-  width: 160px;
-  padding-left: 20px;
+  width: 11.4286rem;
+  padding-left: 1.4286rem;
   color: rgb(65, 74, 89);
   font-weight: normal;
-  font-size: 15px;
+  font-size: 1.0714rem;
   background-color: #f5f7fa;
 }
 
@@ -213,13 +213,13 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  padding-left: 30px;
+  padding-left: 2.1429rem;
   color: #0b1f48;
   font-weight: 500;
-  font-size: 16px;
+  font-size: 1.1429rem;
 
   & > p {
-    width: 400px;
+    width: 28.5714rem;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -229,13 +229,13 @@ export default {
   }
 
   &.member-list {
-    padding: 23px 0px 18px 18px;
+    padding: 1.6429rem 0rem 1.2857rem 1.2857rem;
   }
 }
 
 .collabo-status.custom-collabo-status {
   position: absolute;
-  top: 24px;
+  top: 1.7143rem;
   right: 0px;
 }
 </style>
