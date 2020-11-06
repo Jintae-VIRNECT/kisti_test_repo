@@ -124,7 +124,7 @@ export default {
             label: this.$t('chart.my_collabo_list'),
             data: this.monthly ? this.monthly.my.set : [],
             backgroundColor: '#0f75f5',
-            barThickness: 10,
+            barThickness: 9,
           },
           {
             label: this.$t('chart.total_collabo_list'),
@@ -155,7 +155,7 @@ export default {
               12,
             ],
             backgroundColor: '#bbc8d9',
-            barThickness: 10,
+            barThickness: 9,
           },
         ],
       },
