@@ -2,15 +2,15 @@ import Chart from 'chart.js'
 
 export default {
   methods: {
-    customTooltips(chartId, tooilTipId, legendShape) {
+    customTooltips(chartId, toolTipId, legendShape) {
       return tooltipModel => {
         // Tooltip Element
-        let tooltipEl = document.getElementById(tooilTipId)
+        let tooltipEl = document.getElementById(toolTipId)
 
         // Create element on first render
         if (!tooltipEl) {
           tooltipEl = document.createElement('div')
-          tooltipEl.id = tooilTipId
+          tooltipEl.id = toolTipId
           tooltipEl.innerHTML = '<table></table>'
           document.body.appendChild(tooltipEl)
         }
@@ -53,7 +53,7 @@ export default {
 
             if (legendShape === 'inner') {
               let span =
-                '<span class="tooil-tip-legend" style="display:inline-block; background:#fff; border-radius: 50%; border: 3px solid' +
+                '<span class="tool-tip-legend" style="display:inline-block; background:#fff; border-radius: 50%; border: 3px solid' +
                 colors.borderColor +
                 '"></span><span style="' +
                 style +
@@ -61,7 +61,7 @@ export default {
               innerHtml += '<tr><td>' + span + body + '</td></tr>'
             } else {
               let span =
-                '<span class="tooil-tip-legend" style="display:inline-block; background:' +
+                '<span class="tool-tip-legend" style="display:inline-block; background:' +
                 colors.backgroundColor +
                 '"></span><span style="' +
                 style +
