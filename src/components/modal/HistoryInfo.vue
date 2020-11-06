@@ -44,12 +44,12 @@
           <profile-list
             :users="room.memberList"
             :customStyle="{
-              width: '38px',
-              height: '38px',
-              'font-size': '14px',
-              'margin-left': '12px',
+              width: '2.7143rem',
+              height: '2.7143rem',
+              'font-size': '1rem',
+              'margin-left': '0.8571rem',
             }"
-            size="38px"
+            size="2.7143rem"
           ></profile-list>
         </div>
       </div>
