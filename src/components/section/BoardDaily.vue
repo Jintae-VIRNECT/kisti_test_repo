@@ -181,60 +181,7 @@ export default {
               },
             ],
           },
-          options: {
-            maintainAspectRatio: false,
-            aspectRatio: 5,
-            hover: {
-              mode: 'index',
-              intersect: false,
-            },
-            tooltips: {
-              mode: 'index',
-              intersect: false,
-              position: 'average',
-              enabled: false,
-              custom: custom,
-              titleFontSize: '15rem',
-              bodyFontSize: '14rem',
-              displayColors: false,
-              backgroundColor: '#516277',
-              bodyFontStyle: 'bold',
-              callbacks: {
-                title: () => {
-                  return this.$t('chart.collabo_count_by_time')
-                },
-                label: tooltipItem => {
-                  return this.$t('chart.count', {
-                    count: Number(tooltipItem.yLabel),
-                  })
-                },
-              },
-            },
-            legend: {
-              display: false,
-            },
-            scales: {
-              xAxes: [
-                {
-                  gridLines: {
-                    display: false,
-                  },
-                },
-              ],
-              yAxes: [
-                {
-                  ticks: {
-                    beginAtZero: true,
-                    min: 0,
-                    stepSize: 4,
-                  },
-                  gridLines: {
-                    borderDash: [1, 2],
-                  },
-                },
-              ],
-            },
-          },
+          options: this.getOptionDaily(custom),
         })
       })
     },

@@ -224,5 +224,125 @@ export default {
         dataElementType: Chart.elements.RoundedTopRectangle,
       })
     },
+
+    getOptionDaily(custom) {
+      return {
+        maintainAspectRatio: false,
+        aspectRatio: 5,
+        hover: {
+          mode: 'index',
+          intersect: false,
+        },
+        tooltips: {
+          mode: 'index',
+          intersect: false,
+          position: 'average',
+          enabled: false,
+          custom: custom,
+          titleFontSize: '15rem',
+          bodyFontSize: '14rem',
+          displayColors: false,
+          backgroundColor: '#516277',
+          bodyFontStyle: 'bold',
+          callbacks: {
+            title: () => {
+              return this.$t('chart.collabo_count_by_time')
+            },
+            label: tooltipItem => {
+              return this.$t('chart.count', {
+                count: Number(tooltipItem.yLabel),
+              })
+            },
+          },
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [
+            {
+              gridLines: {
+                display: false,
+              },
+            },
+          ],
+          yAxes: [
+            {
+              ticks: {
+                beginAtZero: true,
+                min: 0,
+                stepSize: 4,
+              },
+              gridLines: {
+                borderDash: [1, 2],
+                // zeroLineWidth: 0,
+                // zeroLineBorderDashOffset: 1,
+                drawBorder: false,
+              },
+            },
+          ],
+        },
+      }
+    },
+
+    getOptionMonthly(custom) {
+      return {
+        maintainAspectRatio: false,
+        aspectRatio: 5,
+        barRoundness: 1.2,
+        hover: {
+          mode: 'index',
+        },
+        tooltips: {
+          mode: 'index',
+          position: 'average',
+          enabled: false,
+          custom: custom,
+          titleFontSize: '15rem',
+          bodyFontSize: '14rem',
+          displayColors: false,
+          backgroundColor: '#516277',
+          bodyFontStyle: 'bold',
+          callbacks: {
+            title: () => {
+              return this.$t('chart.collabo_count_by_day')
+            },
+            label: tooltipItem => {
+              return this.$t('chart.count', {
+                count: Number(tooltipItem.yLabel),
+              })
+            },
+          },
+        },
+        legend: {
+          display: false,
+        },
+        scales: {
+          xAxes: [
+            {
+              stacked: true,
+              gridLines: {
+                display: false,
+              },
+            },
+          ],
+          yAxes: [
+            {
+              stacked: true,
+              gridLines: {
+                borderDash: [1, 2],
+                drawBorder: false,
+              },
+            },
+          ],
+        },
+      }
+    },
+  },
+
+  beforeMount() {
+    Chart.defaults.global.defaultFontFamily = 'Roboto-Regular'
+    Chart.defaults.global.defaultFontColor = 'rgb(136, 136, 136)'
+    Chart.defaults.global.defaultFontSize = 12
   },
 }
