@@ -7,8 +7,17 @@
       <span class="collabo-history-list__header--description">
         {{ $t('list.title_description') }}
       </span>
-      <button @click="getExcelData" class="collabo-history-list__header--excel">
-        EXCEL
+      <button
+        @click="getExcelData"
+        class="collabo-history-list__header--excel"
+        :class="[
+          { 'excel-loading': excelLoading },
+          {
+            disable: historyList.length <= 0,
+          },
+        ]"
+      >
+        <p v-if="!excelLoading">EXCEL</p>
       </button>
     </div>
     <history
@@ -51,9 +60,6 @@ export default {
   },
   data() {
     return {
-      targetId: 0,
-      modalVisible: false,
-      fileList: [],
       historyList: [],
       isMaster: false,
       pageMeta: {
@@ -65,6 +71,7 @@ export default {
       },
       paging: false,
       loading: false,
+      excelLoading: false,
     }
   },
   computed: {
@@ -209,6 +216,8 @@ export default {
     },
     async getExcelData() {
       try {
+        if (this.historyList.length <= 0 || this.excelLoading) return
+        this.excelLoading = true
         let merged = []
 
         const historys = await getHistoryList({
@@ -244,10 +253,12 @@ export default {
           this.$t('excel.file_local_record'),
           this.$t('excel.file_attach_file'),
         ]
+
         exportExcel(merged, header)
+        this.excelLoading = false
       } catch (err) {
         console.error(err)
-        return false
+        this.excelLoading = false
       }
     },
     async addAdditionalData(list) {
@@ -300,11 +311,35 @@ export default {
   color: rgb(15, 117, 245);
   font-weight: 500;
   font-size: 1.0714rem;
-  line-height: 1.4286rem;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(227, 227, 227);
   border-radius: 2px;
   transition: 0.3s;
+
+  &.excel-loading {
+    &:after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5.7143rem;
+      height: 5.7143rem;
+      background: center center/40px 40px no-repeat
+        url(~assets/image/loading.gif);
+      transform: translate(-50%, -50%);
+      content: '';
+    }
+  }
+
+  &.disable {
+    color: rgb(189, 197, 204);
+    font-weight: 500;
+    font-size: 15px;
+
+    &:hover {
+      background-color: rgb(255, 255, 255);
+    }
+  }
+
   &:hover {
     background-color: #f3f3f3;
   }
