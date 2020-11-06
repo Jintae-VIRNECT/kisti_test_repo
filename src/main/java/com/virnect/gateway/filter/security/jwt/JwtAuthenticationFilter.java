@@ -38,6 +38,9 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 	@Value("${jwt.secret}")
 	private String secretKey;
 
+	@Value("${spring.profiles.active:none}")
+	private String serverMode;
+
 	@PostConstruct
 	protected void init() {
 		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
@@ -52,19 +55,24 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			requestUrlPath.startsWith("/licenses/allocate/check") ||
 			requestUrlPath.startsWith("/licenses/allocate") ||
 			requestUrlPath.startsWith("/licenses/deallocate") ||
+			requestUrlPath.contains("/licenses/deallocate") ||
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
 
 		if (isAuthenticateSkipUrl) {
 			return chain.filter(exchange);
 		}
 
-		log.info("JWT Authentication Filter Start");
+		if ((serverMode.equals("develop") || serverMode.equals("onpremise")) && requestUrlPath.contains("/v2/api-docs")) {
+			return chain.filter(exchange);
+		}
+
+		log.debug("JWT Authentication Filter Start");
 		String jwt = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()))
 			.orElseThrow(() -> new MalformedJwtException("JWT Token not exist"));
 		Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
 		Claims body = claims.getBody();
 
-		log.info("[AUTHENTICATION TOKEN]: {}", body.toString());
+		log.debug("[AUTHENTICATION TOKEN]: {}", body.toString());
 
 		ServerHttpRequest authenticateRequest = exchange.getRequest().mutate()
 			.header("X-jwt-uuid", body.get("uuid", String.class))
@@ -77,7 +85,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.build();
 
 		return chain.filter(exchange.mutate().request(authenticateRequest).build())
-			.then(Mono.fromRunnable(() -> log.info("JWT Authentication Filter end")));
+			.then(Mono.fromRunnable(() -> log.debug("JWT Authentication Filter end")));
 	}
 
 	private String getJwtTokenFromRequest(ServerHttpRequest request) {
