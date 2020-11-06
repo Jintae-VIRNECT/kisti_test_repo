@@ -8,11 +8,6 @@ export const RECORD_TARGET = {
   SCREEN: 'SCREEN',
 }
 
-export const LOCAL_RECORD_STATUS = {
-  START: 'START',
-  STOP: 'STOP',
-}
-
 // Service Options
 export const localRecTime = [
   '1',
