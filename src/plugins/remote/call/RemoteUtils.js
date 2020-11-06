@@ -64,16 +64,12 @@ export const addSessionEventListener = session => {
   })
   session.on('streamCreated', event => {
     event.stream.onIceStateChanged = state => {
-      if (
-        state === 'failed' ||
-        state === 'disconnected' ||
-        state === 'closed'
-      ) {
+      if (['failed', 'disconnected', 'closed'].includes(state)) {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
           status: 'disconnected',
         })
-      } else if (state === 'connected') {
+      } else if (['connected', 'completed'].includes(state)) {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
           status: 'good',
@@ -420,9 +416,9 @@ const setUserObject = event => {
             ? CAMERA_STATUS.CAMERA_OFF
             : CAMERA_STATUS.CAMERA_NONE,
         })
-        if (hasCamera) {
-          _.changeProperty(true)
-        }
+        // if (hasCamera) {
+        //   _.changeProperty(true)
+        // }
       }
     })
     return 'me'

@@ -88,7 +88,7 @@ export default {
   position: relative;
   width: 2rem;
   height: 2rem;
-  background: url(~assets/image/ic_more.svg) 50% no-repeat;
+  background: url(~assets/image/ic_more.svg) 50%/2rem 2rem no-repeat;
   &:before {
     position: absolute;
     top: 0;
