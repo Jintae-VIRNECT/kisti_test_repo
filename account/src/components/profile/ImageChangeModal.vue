@@ -51,10 +51,11 @@
 
 <script>
 import dialogMixin from '@/mixins/dialog'
+import filterMixin from '@/mixins/filters'
 import profileService from '@/services/profile'
 
 export default {
-  mixins: [dialogMixin],
+  mixins: [filterMixin, dialogMixin],
   props: {
     me: Object,
   },
@@ -65,12 +66,12 @@ export default {
   },
   computed: {
     disabled() {
-      return this.file === this.$props.me.image
+      return this.file === this.cdn(this.$props.me.image)
     },
   },
   watch: {
     visible() {
-      this.file = this.$props.me.image
+      this.file = this.cdn(this.$props.me.image)
     },
   },
   methods: {

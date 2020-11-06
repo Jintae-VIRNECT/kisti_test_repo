@@ -15,8 +15,5 @@ export default class Ticket extends Model {
     this.viewCount = json.productHit
     this.storage = json.productStorage
     this.productType = json.productType
-
-    const product = Object.values(products).find(({ id }) => id === json.ItemID)
-    this.product = product ? product.value : null
   }
 }

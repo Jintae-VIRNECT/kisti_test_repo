@@ -3,20 +3,17 @@
  */
 export default {
   remote: {
-    id: 1001,
-    value: 'REMOTE',
+    value: 'remote',
     label: 'Remote',
     logo: require('assets/images/logo/logo-remote.svg'),
   },
   make: {
-    id: 1002,
-    value: 'MAKE',
+    value: 'make',
     label: 'Make',
     logo: require('assets/images/logo/logo-make.svg'),
   },
   view: {
-    id: 1003,
-    value: 'VIEW',
+    value: 'view',
     label: 'View',
     logo: require('assets/images/logo/logo-view.svg'),
   },

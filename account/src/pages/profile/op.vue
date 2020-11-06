@@ -27,7 +27,9 @@
               <div
                 class="image"
                 :style="
-                  `background-image: url('${profileImg}'), url(${$defaultUserProfile})`
+                  `background-image: url('${cdn(
+                    profileImg,
+                  )}'), url(${$defaultUserProfile})`
                 "
               />
               <i>
@@ -124,7 +126,10 @@ import NicknameChangeModal from '@/components/profile/NicknameChangeModal'
 import PasswordChangeModal from '@/components/profile/PasswordChangeModal'
 import PasswordQuestionModal from '@/components/profile/PasswordQuestionModal'
 
+import filterMixin from '@/mixins/filters'
+
 export default {
+  mixins: [filterMixin],
   middleware: ['default', 'profile'],
   components: {
     ImageChangeModal,
