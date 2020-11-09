@@ -89,7 +89,7 @@ import { getHistorySingleItem } from 'api/http/history'
 
 import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 export default {
-  name: 'HistoryInfo',
+  name: 'ModalHistoryInfo',
   components: {
     Modal,
     ProfileList,

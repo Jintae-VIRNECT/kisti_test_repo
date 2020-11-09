@@ -189,8 +189,8 @@
 import CollaboStatus from 'CollaboStatus'
 import CountButton from 'CountButton'
 
-import HistoryInfo from 'components/collabo/modal/HistoryInfo'
-import FileInfo from 'components/collabo/modal/FileInfo'
+import HistoryInfo from 'components/collabo/modal/ModalHistoryInfo'
+import FileInfo from 'components/collabo/modal/ModalFileInfo'
 
 import { mapActions } from 'vuex'
 
@@ -198,7 +198,7 @@ import fileInfoMixin from 'mixins/fileInfo'
 import confirmMixin from 'mixins/confirm'
 
 export default {
-  name: 'History',
+  name: 'CollaboHistory',
   mixins: [confirmMixin, fileInfoMixin],
   components: {
     CountButton,

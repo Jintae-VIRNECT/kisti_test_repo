@@ -23,7 +23,7 @@ import { getLicense } from 'api/http/account'
 import langMixin from 'mixins/language'
 import auth from 'utils/auth'
 
-import Player from 'components/dashboard/modal/Player'
+import Player from 'components/dashboard/modal/ModalPlayer'
 
 export default {
   name: 'DashBoardLayout',

@@ -13,7 +13,7 @@
 <script>
 import Modal from 'Modal'
 export default {
-  name: 'Player',
+  name: 'ModalPlayer',
   components: {
     Modal,
   },

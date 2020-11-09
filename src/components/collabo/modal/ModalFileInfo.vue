@@ -53,7 +53,7 @@ import { proxyUrl } from 'utils/file'
 import { getLocalRecordFileUrl, getServerRecordFileUrl } from 'api/http/file'
 
 export default {
-  name: 'FileInfo',
+  name: 'ModalFileInfo',
 
   components: {
     FileTable,
