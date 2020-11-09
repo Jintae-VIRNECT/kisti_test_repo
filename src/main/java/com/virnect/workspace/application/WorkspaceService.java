@@ -208,7 +208,6 @@ public class WorkspaceService {
     public ApiResponse<MemberListResponse> getMembers(
             String workspaceId, String search, String filter, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
-
         //Pageable로 Sort처리를 할 수 없기때문에 sort값을 제외한 Pageable을 만든다.
         Pageable newPageable = PageRequest.of(pageRequest.of().getPageNumber(), pageRequest.of().getPageSize());
 
@@ -402,14 +401,13 @@ public class WorkspaceService {
 
         String sortName = pageRequest.of().getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
         String sortDirection = pageRequest.of().getSort().toString().split(":")[1].trim();//sort의 방향 : 내림차순 or 오름차순
-
-        if (sortName.equalsIgnoreCase("role") && sortDirection.equalsIgnoreCase("asc")) {
+        if (sortName.equalsIgnoreCase("workspaceRole") && sortDirection.equalsIgnoreCase("asc")) {
             return memberInfoDTOList.stream()
                     .sorted(
                             Comparator.comparing(MemberInfoDTO::getRoleId, Comparator.nullsFirst(Comparator.naturalOrder())))
                     .collect(Collectors.toList());
         }
-        if (sortName.equalsIgnoreCase("role") && sortDirection.equalsIgnoreCase("desc")) {
+        if (sortName.equalsIgnoreCase("workspaceRole") && sortDirection.equalsIgnoreCase("desc")) {
             return memberInfoDTOList.stream()
                     .sorted(
                             Comparator.comparing(MemberInfoDTO::getRoleId, Comparator.nullsFirst(Comparator.reverseOrder())))
@@ -554,7 +552,7 @@ public class WorkspaceService {
         // 워크스페이스 플랜 조회하여 최대 초대 가능 명 수를 초과했는지 체크
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
                 workspaceId).getData();
-        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
+        if (workspaceLicensePlanInfoResponse == null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
                 || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
             throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
         }
