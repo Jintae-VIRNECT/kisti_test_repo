@@ -671,7 +671,7 @@ public class WorkspaceService {
         // 초대할 유저의 계정 유효성 체크(user 서비스)
         String[] inviteEmails = workspaceInviteRequest.getUserInfoList().stream().map(WorkspaceInviteRequest.UserInfo::getEmail).toArray(String[]::new);
         InviteUserInfoRestResponse responseUserList = userRestService.getUserInfoByEmailList(inviteEmails).getData();
-        if (inviteEmails.length != responseUserList.getInviteUserInfoList().size()) {
+        if (responseUserList == null || inviteEmails.length != responseUserList.getInviteUserInfoList().size()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_USER_EXIST);
         }
         //TODO : 서브유저로 등록되어 있는 사용자가 포함되어 있는 경우.
@@ -1140,11 +1140,11 @@ public class WorkspaceService {
         }
         List<String> removedProductList = oldProductList.stream().filter(s -> !requestProductList.contains(s)).collect(Collectors.toList());
         List<String> addedProductList = requestProductList.stream().filter(s -> !oldProductList.contains(s)).collect(Collectors.toList());
-        List<String> updatedProductList = Stream.concat(removedProductList.stream(),addedProductList.stream()).distinct().collect(Collectors.toList());
+        List<String> updatedProductList = Stream.concat(removedProductList.stream(), addedProductList.stream()).distinct().collect(Collectors.toList());
         log.info("[REVISE MEMBER INFO] Revise License Info. removed License Product Info >> [{}], added License Product Info >> [{}], result License Product Info >> [{}].",
-                org.apache.commons.lang.StringUtils.join(removedProductList,","),
-                org.apache.commons.lang.StringUtils.join(addedProductList,","),
-                org.apache.commons.lang.StringUtils.join(updatedProductList,","));
+                org.apache.commons.lang.StringUtils.join(removedProductList, ","),
+                org.apache.commons.lang.StringUtils.join(addedProductList, ","),
+                org.apache.commons.lang.StringUtils.join(updatedProductList, ","));
 
         if (!removedProductList.isEmpty()) {
             removedProductList.forEach(productName -> {
@@ -1156,7 +1156,7 @@ public class WorkspaceService {
             });
             String message = this.messageSource.getMessage(
                     "WORKSPACE_REVOKE_LICENSE",
-                    new String[]{requestUser.getNickname(), user.getNickname(), org.apache.commons.lang.StringUtils.join(removedProductList,",")},
+                    new String[]{requestUser.getNickname(), user.getNickname(), org.apache.commons.lang.StringUtils.join(removedProductList, ",")},
                     locale
             );
             saveHistotry(workspace, userId, message);
@@ -1172,7 +1172,7 @@ public class WorkspaceService {
             });
             String message = this.messageSource.getMessage(
                     "WORKSPACE_GRANT_LICENSE",
-                    new String[]{requestUser.getNickname(), user.getNickname(), org.apache.commons.lang.StringUtils.join(addedProductList,",")}, locale
+                    new String[]{requestUser.getNickname(), user.getNickname(), org.apache.commons.lang.StringUtils.join(addedProductList, ",")}, locale
             );
             saveHistotry(workspace, userId, message);
         }
@@ -1187,7 +1187,7 @@ public class WorkspaceService {
             context.setVariable("responseUserNickName", user.getNickname());
             context.setVariable("responseUserEmail", user.getEmail());
             context.setVariable("supportUrl", supportUrl);
-            context.setVariable("plan", org.apache.commons.lang.StringUtils.join(updatedProductList,","));
+            context.setVariable("plan", org.apache.commons.lang.StringUtils.join(updatedProductList, ","));
 
             List<String> receiverEmailList = new ArrayList<>();
             receiverEmailList.add(user.getEmail());
