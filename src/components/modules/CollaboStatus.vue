@@ -28,7 +28,8 @@ export default {
         case collabo.FINISHED:
           return this.$t('status.finished')
         default:
-          return this.$t('status.unknown')
+          return this.$t('status.finished')
+        // return this.$t('status.unknown')
       }
     },
     getClass() {
