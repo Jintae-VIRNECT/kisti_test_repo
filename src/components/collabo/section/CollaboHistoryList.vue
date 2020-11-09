@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import History from 'components/partials/History'
-import PaginationTool from 'components/partials/PaginationTool'
+import History from 'components/collabo/partials/History'
+import PaginationTool from 'components/collabo/partials/PaginationTool'
 
 import { getHistoryList, getHistorySingleItem } from 'api/http/history'
 import {

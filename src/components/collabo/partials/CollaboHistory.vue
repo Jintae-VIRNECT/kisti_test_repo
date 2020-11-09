@@ -96,7 +96,7 @@
                 active: require('assets/image/ic_rec_active.svg'),
                 default: require('assets/image/ic_rec_default.svg'),
               }"
-              @click="showInfo('server', history, index)"
+              @click="showFiles('server', history, index)"
             ></count-button>
           </div>
           <div class="history__text count">
@@ -107,7 +107,7 @@
                 active: require('assets/image/ic_video_active.svg'),
                 default: require('assets/image/ic_video_default.svg'),
               }"
-              @click="showInfo('local', history, index)"
+              @click="showFiles('local', history, index)"
             ></count-button>
           </div>
           <div class="history__text count">
@@ -118,7 +118,7 @@
                 active: require('assets/image/ic_file_active.svg'),
                 default: require('assets/image/ic_file_default.svg'),
               }"
-              @click="showInfo('attach', history, index)"
+              @click="showFiles('attach', history, index)"
             ></count-button>
           </div>
         </div>
@@ -189,9 +189,8 @@
 import CollaboStatus from 'CollaboStatus'
 import CountButton from 'CountButton'
 
-import HistoryInfo from 'components/modal/HistoryInfo'
-
-import FileInfo from 'components/modal/FileInfo'
+import HistoryInfo from 'components/collabo/modal/HistoryInfo'
+import FileInfo from 'components/collabo/modal/FileInfo'
 
 import { mapActions } from 'vuex'
 
@@ -233,24 +232,12 @@ export default {
 
       //modal data
       fileList: [],
-      currentIndex: null,
 
       hover: false,
       sort: { column: '', direction: '' },
     }
   },
   watch: {
-    historys() {
-      if (this.currentIndex !== null) {
-        if (this.file) {
-          this.fileList = this.historys[this.currentIndex].files
-        } else if (this.serverRecord) {
-          this.fileList = this.historys[this.currentIndex].serverRecord
-        } else if (this.localRecord) {
-          this.fileList = this.historys[this.currentIndex].localRecord
-        }
-      }
-    },
     loading() {
       this.file = false
       this.serverRecord = false
@@ -279,7 +266,7 @@ export default {
       this.sessionId = sessionId
       this.historyInfo = true
     },
-    showInfo(type, history, index) {
+    showFiles(type, history) {
       switch (type) {
         case 'server':
           this.serverRecord = true
@@ -295,7 +282,6 @@ export default {
           break
       }
       this.historyTitle = history.title
-      this.currentIndex = index
     },
 
     setSort(column) {
