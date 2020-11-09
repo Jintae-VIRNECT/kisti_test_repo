@@ -160,7 +160,7 @@ public class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return - 소속된 워크스페이스 정보
      */
-    @Cacheable(value = "userWorkspaces", key = "#userId", unless = "#result==null")
+    @Cacheable(value = "userWorkspaces", key = "#userId", unless = "#result.workspaceList.size()==0")
     public WorkspaceInfoListResponse getUserWorkspaces(
             String userId, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {

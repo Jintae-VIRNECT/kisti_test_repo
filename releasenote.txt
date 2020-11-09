@@ -1,10 +1,9 @@
 RELEASE
 
 New Features
-- 워크스페이스 목록 조회 api 캐싱
 
 Bug Fixes
-- 워크스페이스 권한 체크 로직 추가
+- 워크스페이스 목록이 빈값인 경우에도 캐싱되는 에러 개선
 
 Limitation
 
