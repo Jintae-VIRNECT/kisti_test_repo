@@ -13,8 +13,11 @@
     >
     </vue-datepicker>
     <button @click="toggleCalendar" class="calendar-button">
-      <img v-if="!isActive" src="~assets/image/ic_calendar_default.svg" />
-      <img v-else src="~assets/image/ic_calendar_active.svg" />
+      <img
+        v-if="!isActive"
+        src="~assets/image/calendar/ic_calendar_default.svg"
+      />
+      <img v-else src="~assets/image/calendar/ic_calendar_active.svg" />
     </button>
   </div>
 </template>
