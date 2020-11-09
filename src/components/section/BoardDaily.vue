@@ -37,7 +37,7 @@
 
     <div class="board-figures">
       <figure-board
-        :header="$t('chart.daily_my_collabo_count')"
+        :header="$t('chart.daily_total_collabo_count')"
         :count="9999"
         :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
       ></figure-board>

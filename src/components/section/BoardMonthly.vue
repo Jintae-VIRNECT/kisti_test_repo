@@ -41,7 +41,7 @@
         :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
       ></figure-board>
       <figure-board
-        :header="$t('chart.monthly_my_collabo_time')"
+        :header="$t('chart.monthly_total_collabo_time')"
         :time="999999"
         :imgSrc="require('assets/image/figure/ic_figure_date_all.svg')"
       ></figure-board>
