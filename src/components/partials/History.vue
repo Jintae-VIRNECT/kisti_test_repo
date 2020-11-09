@@ -195,12 +195,12 @@ import FileInfo from 'components/modal/FileInfo'
 
 import { mapActions } from 'vuex'
 
-import tableMixin from 'mixins/table'
+import fileInfoMixin from 'mixins/fileInfo'
 import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'History',
-  mixins: [confirmMixin, tableMixin],
+  mixins: [confirmMixin, fileInfoMixin],
   components: {
     CountButton,
     CollaboStatus,

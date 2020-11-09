@@ -7,8 +7,10 @@ import {
 } from 'api/http/file'
 
 import { downloadByURL, proxyUrl } from 'utils/file'
+import confirmMixin from 'mixins/confirm'
 
 export default {
+  mixins: [confirmMixin],
   methods: {
     getHeader(type) {
       let header = []
@@ -146,14 +148,28 @@ export default {
       return this.$dayjs(date).format('YYYY.MM.DD')
     },
 
-    async downloadItems(selectedArray, fileList) {
-      const downloadFiles = []
-
-      selectedArray.forEach((selected, index) => {
-        if (selected) {
-          downloadFiles.push(fileList[index])
+    getSelectedFile(selectedArray, fileList) {
+      const selects = []
+      selectedArray.forEach((select, index) => {
+        if (select) {
+          selects.push(fileList[index])
         }
       })
+      return selects
+    },
+
+    showErrorFiles(files) {
+      if (files.length > 0) {
+        this.confirmDefault(
+          `${this.$t('confirm.file_not_found')}\n <p> ${files.join('\n')}</p>`,
+        )
+      }
+    },
+
+    async downloadItems(selectedArray, fileList) {
+      let downloadFiles = []
+
+      downloadFiles = this.getSelectedFile(selectedArray, fileList)
 
       for (const file of downloadFiles) {
         try {
@@ -172,14 +188,10 @@ export default {
       }
     },
     async deleteItems(selectedArray, fileList) {
-      const deleteFiles = []
+      let deleteFiles = []
       const errorFiles = []
 
-      selectedArray.forEach((selected, index) => {
-        if (selected) {
-          deleteFiles.push(fileList[index])
-        }
-      })
+      deleteFiles = this.getSelectedFile(selectedArray, fileList)
 
       for (const file of deleteFiles) {
         try {
@@ -195,25 +207,15 @@ export default {
           errorFiles.push(file.name)
         }
       }
-      console.log(errorFiles)
-      if (errorFiles.length > 0) {
-        this.confirmDefault(
-          `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
-            '\n',
-          )}</p>`,
-        )
-      }
+      this.showErrorFiles(errorFiles)
       this.$eventBus.$emit('reload::list')
     },
-    async downloadServer(selectedArray, fileList) {
-      const downloadFiles = []
 
-      selectedArray.forEach((selected, index) => {
-        if (selected) {
-          downloadFiles.push(fileList[index])
-        }
-      })
-      console.log(downloadFiles)
+    async downloadServer(selectedArray, fileList) {
+      let downloadFiles = []
+
+      downloadFiles = this.getSelectedFile(selectedArray, fileList)
+
       for (const file of downloadFiles) {
         try {
           console.log(file)
@@ -235,14 +237,10 @@ export default {
     },
 
     async deleteServer(selectedArray, fileList) {
-      const deleteFiles = []
+      let deleteFiles = []
       const errorFiles = []
 
-      selectedArray.forEach((selected, index) => {
-        if (selected) {
-          deleteFiles.push(fileList[index])
-        }
-      })
+      deleteFiles = this.getSelectedFile(selectedArray, fileList)
 
       for (const file of deleteFiles) {
         try {
@@ -256,24 +254,15 @@ export default {
           errorFiles.push(file.filename)
         }
       }
-      if (errorFiles.length > 0) {
-        this.confirmDefault(
-          `${this.$t('confirm.file_not_found')}\n <p> ${errorFiles.join(
-            '\n',
-          )}</p>`,
-        )
-      }
+
+      this.showErrorFiles(errorFiles)
       this.$eventBus.$emit('reload::list')
     },
 
     async downloadLocal(selectedArray, fileList) {
-      const downloadFiles = []
+      let downloadFiles = []
 
-      selectedArray.forEach((selected, index) => {
-        if (selected) {
-          downloadFiles.push(fileList[index])
-        }
-      })
+      downloadFiles = this.getSelectedFile(selectedArray, fileList)
 
       for (const file of downloadFiles) {
         try {

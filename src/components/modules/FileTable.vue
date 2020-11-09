@@ -223,7 +223,6 @@ export default {
       })
     },
     setSelectedArray() {
-      console.log('call setSelectedArray')
       this.selectedArray = []
 
       if (this.showToggleHeader) {
