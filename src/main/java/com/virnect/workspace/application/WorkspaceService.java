@@ -44,6 +44,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -681,7 +682,7 @@ public class WorkspaceService {
         Long duration = Duration.ofDays(7).getSeconds();
         responseUserList.getInviteUserInfoList().forEach(inviteUserResponse -> workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
             //이미 이 워크스페이스에 소속되어 있는 경우
-            if (workspaceUserRepository.findByUserIdAndWorkspace(inviteUserResponse.getUserUUID(), workspace)!= null) {
+            if (workspaceUserRepository.findByUserIdAndWorkspace(inviteUserResponse.getUserUUID(), workspace) != null) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ALREADY_EXIST);
             }
             if (inviteUserResponse.getEmail().equals(userInfo.getEmail())) {
@@ -1082,6 +1083,7 @@ public class WorkspaceService {
      * @param locale              - 언어 정보
      * @return - 변경 성공 여부
      */
+    @Transactional
     public ApiResponse<Boolean> reviseMemberInfo(
             String workspaceId, MemberUpdateRequest memberUpdateRequest, Locale locale
     ) {
@@ -1116,119 +1118,66 @@ public class WorkspaceService {
         return new ApiResponse<>(true);
     }
 
-    private void workspaceUserLicenseHandling(
+    @Transactional
+    public void workspaceUserLicenseHandling(
             String userId, Workspace workspace, UserInfoRestResponse masterUser, UserInfoRestResponse user,
             UserInfoRestResponse requestUser, Boolean remoteLicense, Boolean makeLicense, Boolean viewLicense, Locale locale
     ) {
         //라이선스 할당 체크
-        userLicenseValidCheck(remoteLicense, makeLicense, viewLicense);
+        List<String> requestProductList = userLicenseValidCheck(remoteLicense, makeLicense, viewLicense);
 
         //라이선스 변경 권한 체크 - MASTER, MANAGER 에게만 있음.
         checkWorkspaceAndUserRole(workspace.getUuid(), requestUser.getUuid(), new String[]{"MASTER", "MANAGER"});
 
-
         //사용자의 예전 라이선스정보 가져오기
-        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
-                workspace.getUuid(), userId).getData();
+        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(workspace.getUuid(), userId).getData();
         List<String> oldProductList = new ArrayList<>();
         if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
                 .isEmpty()) {
-            oldProductList = myLicenseInfoListResponse.getLicenseInfoList()
-                    .stream()
-                    .map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
-                    .collect(Collectors.toList());
-        }
-        List<LicenseProduct> notFoundProductList = new ArrayList<>();
-
-        List<LicenseProduct> newProductList = new ArrayList<>();
-        if (remoteLicense) {
-            if (!oldProductList.contains(LicenseProduct.REMOTE.toString())) {
-                //CASE1 : 기존에 없던 라이선스인데 사용하는 경우면
-                newProductList.add(LicenseProduct.REMOTE);
-                MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(
-                        workspace.getUuid(), userId, LicenseProduct.REMOTE.toString()).getData();
-                if (!grantResult.getProductName().equals(LicenseProduct.REMOTE.toString())) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
-                }
+            for (MyLicenseInfoResponse myLicenseInfoResponse : myLicenseInfoListResponse.getLicenseInfoList()) {
+                oldProductList.add(myLicenseInfoResponse.getProductName());
             }
-            //CASE2 : 기존에 있던 라이선스인데 사용하는 경우면
-        } else {
-            //CASE3 : 기존에 있던 라이선스인데 사용안하는 경우면
-            if (oldProductList.contains(LicenseProduct.REMOTE.toString())) {
-                notFoundProductList.add(LicenseProduct.REMOTE);
-                Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(
-                        workspace.getUuid(), userId, LicenseProduct.REMOTE.toString()).getData();
+        }
+        List<String> removedProductList = oldProductList.stream().filter(s -> !requestProductList.contains(s)).collect(Collectors.toList());
+        List<String> addedProductList = requestProductList.stream().filter(s -> !oldProductList.contains(s)).collect(Collectors.toList());
+        List<String> updatedProductList = Stream.concat(removedProductList.stream(),addedProductList.stream()).distinct().collect(Collectors.toList());
+        log.info("[REVISE MEMBER INFO] Revise License Info. removed License Product Info >> [{}], added License Product Info >> [{}], result License Product Info >> [{}].",
+                org.apache.commons.lang.StringUtils.join(removedProductList,","),
+                org.apache.commons.lang.StringUtils.join(addedProductList,","),
+                org.apache.commons.lang.StringUtils.join(updatedProductList,","));
+
+        if (!removedProductList.isEmpty()) {
+            removedProductList.forEach(productName -> {
+                Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
+                        workspace.getUuid(), userId, productName).getData();
                 if (!revokeResult) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
                 }
-            }
-            //CASE4 : 기존에 없던 라이선스인데 사용안하는 경우면
+            });
+            String message = this.messageSource.getMessage(
+                    "WORKSPACE_REVOKE_LICENSE",
+                    new String[]{requestUser.getNickname(), user.getNickname(), org.apache.commons.lang.StringUtils.join(removedProductList,",")},
+                    locale
+            );
+            saveHistotry(workspace, userId, message);
         }
 
-        if (makeLicense) {
-            if (!oldProductList.contains(LicenseProduct.MAKE.toString())) {
-                newProductList.add(LicenseProduct.MAKE);
+        if (!addedProductList.isEmpty()) {
+            addedProductList.forEach(productName -> {
                 MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(
-                        workspace.getUuid(), userId, LicenseProduct.MAKE.toString()).getData();
-                if (!grantResult.getProductName().equals(LicenseProduct.MAKE.toString())) {
+                        workspace.getUuid(), userId, productName).getData();
+                if (!grantResult.getProductName().equals(productName)) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
                 }
-            }
-        } else {
-            if (oldProductList.contains(LicenseProduct.MAKE.toString())) {
-                notFoundProductList.add(LicenseProduct.MAKE);
-                Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(
-                        workspace.getUuid(), userId, LicenseProduct.MAKE.toString()).getData();
-                if (!revokeResult) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
-                }
-            }
+            });
+            String message = this.messageSource.getMessage(
+                    "WORKSPACE_GRANT_LICENSE",
+                    new String[]{requestUser.getNickname(), user.getNickname(), org.apache.commons.lang.StringUtils.join(addedProductList,",")}, locale
+            );
+            saveHistotry(workspace, userId, message);
         }
 
-        if (viewLicense) {
-            if (!oldProductList.contains(LicenseProduct.VIEW.toString())) {
-                newProductList.add(LicenseProduct.VIEW);
-                MyLicenseInfoResponse grantResult = this.licenseRestService.grantWorkspaceLicenseToUser(
-                        workspace.getUuid(), userId, LicenseProduct.VIEW.toString()).getData();
-                if (!grantResult.getProductName().equals(LicenseProduct.VIEW.toString())) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_GRANT_FAIL);
-                }
-            }
-        } else {
-            if (oldProductList.contains(LicenseProduct.VIEW.toString())) {
-                notFoundProductList.add(LicenseProduct.VIEW);
-                Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(
-                        workspace.getUuid(), userId, LicenseProduct.VIEW.toString()).getData();
-                if (!revokeResult) {
-                    throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
-                }
-            }
-        }
-
-        if (!newProductList.isEmpty() || !notFoundProductList.isEmpty()) {
-            //히스토리
-            if (!newProductList.isEmpty()) {
-                String newProductString = newProductList.stream()
-                        .map(licenseProduct -> String.valueOf(licenseProduct))
-                        .collect(Collectors.joining());
-                String message = this.messageSource.getMessage(
-                        "WORKSPACE_GRANT_LICENSE",
-                        new java.lang.String[]{requestUser.getNickname(), user.getNickname(), newProductString}, locale
-                );
-                saveHistotry(workspace, userId, message);
-            }
-            if (!notFoundProductList.isEmpty()) {
-                String notFoundProductString = notFoundProductList.stream()
-                        .map(licenseProduct -> String.valueOf(licenseProduct))
-                        .collect(Collectors.joining());
-                String message = this.messageSource.getMessage(
-                        "WORKSPACE_REVOKE_LICENSE",
-                        new java.lang.String[]{requestUser.getNickname(), user.getNickname(), notFoundProductString},
-                        locale
-                );
-                saveHistotry(workspace, userId, message);
-            }
-
+        if (!addedProductList.isEmpty() || !removedProductList.isEmpty()) {
             //메일 발송
             Context context = new Context();
             context.setVariable("workspaceName", workspace.getName());
@@ -1238,18 +1187,7 @@ public class WorkspaceService {
             context.setVariable("responseUserNickName", user.getNickname());
             context.setVariable("responseUserEmail", user.getEmail());
             context.setVariable("supportUrl", supportUrl);
-
-            StringBuilder plan = new StringBuilder();
-            if (remoteLicense) {
-                plan.append("REMOTE");
-            }
-            if (makeLicense) {
-                plan.append(",MAKE");
-            }
-            if (viewLicense) {
-                plan.append(",VIEW");
-            }
-            context.setVariable("plan", plan.toString());
+            context.setVariable("plan", org.apache.commons.lang.StringUtils.join(updatedProductList,","));
 
             List<String> receiverEmailList = new ArrayList<>();
             receiverEmailList.add(user.getEmail());
@@ -1257,13 +1195,13 @@ public class WorkspaceService {
             String template = this.messageSource.getMessage(
                     Mail.WORKSPACE_USER_PLAN_UPDATE.getTemplate(), null, locale);
             String html = springTemplateEngine.process(template, context);
-            this.sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
+            sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
         }
-
     }
 
     @CacheEvict(value = "userWorkspaces", key = "#userId")
-    private void updateUserPermission(
+    @Transactional
+    public void updateUserPermission(
             Workspace workspace, String requestUserId, String responseUserId, WorkspaceRole workspaceRole,
             UserInfoRestResponse masterUser, UserInfoRestResponse user, Locale locale
     ) {
@@ -1330,10 +1268,21 @@ public class WorkspaceService {
         this.historyRepository.save(history);
     }
 
-    private void userLicenseValidCheck(Boolean planRemote, Boolean planMake, Boolean planView) {
+    private List<String> userLicenseValidCheck(Boolean planRemote, Boolean planMake, Boolean planView) {
         if (!planRemote && !planMake && !planView) {
             throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_LICENSE_INFO);
         }
+        List<String> licensePrductList = new ArrayList<>();
+        if (planRemote) {
+            licensePrductList.add(LicenseProduct.REMOTE.toString());
+        }
+        if (planMake) {
+            licensePrductList.add(LicenseProduct.MAKE.toString());
+        }
+        if (planView) {
+            licensePrductList.add(LicenseProduct.VIEW.toString());
+        }
+        return licensePrductList;
     }
 
     /**
