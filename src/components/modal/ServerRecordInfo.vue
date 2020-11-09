@@ -87,7 +87,6 @@ export default {
   data() {
     return {
       visibleFlag: false,
-      // toggleAllFlag: false,
       selectedArray: [],
       columns: [['filename'], ['duration'], ['size']],
     }

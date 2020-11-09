@@ -3,24 +3,24 @@
     :title="title"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
-    :width="'64.2857rem'"
-    :height="'50.4286rem'"
-    customClass="modal-server-record-info"
+    :width="width"
+    :height="height"
+    customClass="file-info"
   >
     <div class="file-list">
       <file-table
         @play="openPlayModal"
-        :showToggleHeader="true"
-        :showPlayButton="true"
+        :showToggleHeader="showToggleHeader"
+        :showPlayButton="showPlayButton"
         :headers="headers"
         :columns="columns"
         :datas="fileList"
-        :renderOpts="getRenderOpts()"
+        :renderOpts="renderOpts"
         :emptyText="''"
       >
         <div class="table__header">
           <div class="table__title">
-            {{ $t('file.local_record') }}
+            {{ $t('file.attach_file') }}
           </div>
           <div class="table__tools">
             <icon-button
@@ -28,14 +28,14 @@
               :imgSrc="require('assets/image/ic_down_off.svg')"
               :active="hasSelect"
               :activeImgSrc="require('assets/image/ic_down_on.svg')"
-              @click="download"
+              @click="downloadItems(selectedArray, fileList)"
             ></icon-button>
             <icon-button
               v-if="deletable"
               :text="$t('button.select_delete')"
               :imgSrc="require('assets/image/ic_delete.svg')"
               :active="hasSelect"
-              @click="deleteItems"
+              @click="deleteItems(selectedArray, fileList)"
             ></icon-button>
           </div>
         </div>
@@ -46,23 +46,28 @@
 
 <script>
 import Modal from 'components/modules/Modal'
-import FileTable from 'FileTable'
 import IconButton from 'components/modules/IconButton'
+import FileTable from 'FileTable'
 
 import confirmMixin from 'mixins/confirm'
-import tableMixin from 'mixins/table'
-import { getLocalRecordFileUrl, getServerRecordFileUrl } from 'api/http/file' //삭제 api 추가 필요함.
-import { downloadByURL, proxyUrl } from 'utils/file'
+// import tableMixin from 'mixins/table'
+import { proxyUrl } from 'utils/file'
+
+import { getLocalRecordFileUrl, getServerRecordFileUrl } from 'api/http/file'
 
 export default {
-  name: 'LocalRecordInfo',
-  mixins: [confirmMixin, tableMixin],
+  name: 'FileInfo',
+  mixins: [confirmMixin],
   components: {
     FileTable,
     IconButton,
     Modal,
   },
+
   props: {
+    type: {
+      type: String,
+    },
     visible: {
       type: Boolean,
       default: false,
@@ -79,100 +84,86 @@ export default {
       type: Boolean,
       default: false,
     },
+    columns: {
+      type: Array,
+    },
+    downloadItems: {
+      type: Function,
+    },
+    deleteItems: {
+      type: Function,
+    },
+    renderOpts: {
+      type: Array,
+    },
+    headers: {
+      type: Array,
+    },
+    height: {
+      type: String,
+    },
+    width: {
+      type: String,
+    },
+    showToggleHeader: {
+      type: Boolean,
+    },
+    showPlayButton: {
+      type: Boolean,
+    },
   },
   data() {
     return {
       visibleFlag: false,
-      // toggleAllFlag: false,
       selectedArray: [],
-      columns: [
-        ['name'],
-        ['durationSec'],
-        ['size'],
-        ['fileUserInfo', 'nickname'],
-      ],
     }
   },
   computed: {
-    headers() {
-      return [
-        this.$t('file.name'),
-        this.$t('file.record_time'),
-        this.$t('file.size'),
-        this.$t('file.record_member'),
-      ]
-    },
     hasSelect() {
       return this.selectedArray.some(select => select)
     },
   },
   watch: {
     async visible(flag) {
-      // this.initSelectedArray()
       this.visibleFlag = flag
     },
   },
-
   methods: {
+    beforeClose() {
+      this.$emit('update:visible', false)
+    },
+    refreshSelectedArray(selectedArray) {
+      this.selectedArray = selectedArray
+    },
     async openPlayModal(index) {
+      let params = {}
+      let getUrl = null
+
       const file = this.fileList[index]
 
-      const data = await getLocalRecordFileUrl({
-        objectName: file.objectName,
-        sessionId: file.sessionId,
-        userId: this.account.uuid,
-        workspaceId: file.workspaceId,
-      })
-
-      this.$eventBus.$emit('open::player', proxyUrl(data.url))
-    },
-    async download() {
-      const downloadFiles = []
-
-      this.selectedArray.forEach((selected, index) => {
-        if (selected) {
-          downloadFiles.push(this.fileList[index])
-        }
-      })
-
-      for (const file of downloadFiles) {
-        try {
-          const data = await getLocalRecordFileUrl({
+      switch (this.type) {
+        case 'local':
+          params = {
             objectName: file.objectName,
             sessionId: file.sessionId,
             userId: this.account.uuid,
             workspaceId: file.workspaceId,
-          })
-          console.log('download::getLocalRecordFileUrl', data)
-          downloadByURL(data)
-          console.log(data)
-        } catch (e) {
-          console.error(e)
-        }
+          }
+          getUrl = getLocalRecordFileUrl
+          break
+        case 'server':
+          params = {
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+            id: file.recordingId,
+          }
+          getUrl = getServerRecordFileUrl
       }
-    },
-    async deleteItems() {},
-    refreshSelectedArray(selectedArray) {
-      this.selectedArray = selectedArray
-    },
-    //for record render
-    getRenderOpts() {
-      const renderOpts = []
-      renderOpts.push(
-        {
-          column: 'durationSec',
-          render: this.playTimeRender,
-        },
-        { column: 'size', render: this.fileSizeRender },
-      )
 
-      return renderOpts
-    },
-    beforeClose() {
-      this.$emit('update:visible', false)
+      const data = await getUrl(params)
+      this.$eventBus.$emit('open::player', proxyUrl(data.url))
     },
   },
-
   mounted() {
     this.$eventBus.$on('table:selectedarray', this.refreshSelectedArray)
   },
@@ -183,7 +174,7 @@ export default {
 </script>
 
 <style lang="scss">
-.modal.modal-server-record-info {
+.modal.file-info {
   .modal--header {
     height: 68px;
     padding: 22px 0px 16px 27px;

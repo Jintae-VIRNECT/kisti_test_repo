@@ -96,7 +96,7 @@
                 active: require('assets/image/ic_rec_active.svg'),
                 default: require('assets/image/ic_rec_default.svg'),
               }"
-              @click="showServerRecord(history, index)"
+              @click="showInfo('server', history, index)"
             ></count-button>
           </div>
           <div class="history__text count">
@@ -107,7 +107,7 @@
                 active: require('assets/image/ic_video_active.svg'),
                 default: require('assets/image/ic_video_default.svg'),
               }"
-              @click="showLocalRecord(history, index)"
+              @click="showInfo('local', history, index)"
             ></count-button>
           </div>
           <div class="history__text count">
@@ -118,7 +118,7 @@
                 active: require('assets/image/ic_file_active.svg'),
                 default: require('assets/image/ic_file_default.svg'),
               }"
-              @click="showFile(history, index)"
+              @click="showInfo('attach', history, index)"
             ></count-button>
           </div>
         </div>
@@ -126,24 +126,59 @@
           :sessionId="sessionId"
           :visible.sync="historyInfo"
         ></history-info>
-        <server-record-info
+
+        <file-info
+          type="server"
+          :width="'64.2857rem'"
+          :height="'50.4286rem'"
           :title="historyTitle"
           :fileList="fileList"
           :visible.sync="serverRecord"
           :deletable="isMaster"
-        ></server-record-info>
-        <local-record-info
+          :headers="getHeader('server')"
+          :columns="getColumns('server')"
+          :downloadItems="downloadServer"
+          :deleteItems="deleteServer"
+          :renderOpts="getRenderer('server')"
+          :showToggleHeader="true"
+          :showPlayButton="true"
+        ></file-info>
+
+        <file-info
+          type="local"
+          :width="'64.2857rem'"
+          :height="'50.4286rem'"
           :title="historyTitle"
           :fileList="fileList"
           :visible.sync="localRecord"
           :deletable="isMaster"
-        ></local-record-info>
-        <attach-file-info
+          :headers="getHeader('local')"
+          :columns="getColumns('local')"
+          :downloadItems="downloadLocal"
+          :deleteItems="deleteLocal"
+          :renderOpts="getRenderer('local')"
+          :showToggleHeader="true"
+          :showPlayButton="true"
+        >
+        </file-info>
+
+        <file-info
+          type="attach"
+          :width="'64.2857rem'"
+          :height="'50.4286rem'"
           :title="historyTitle"
           :fileList="fileList"
           :visible.sync="file"
           :deletable="isMaster"
-        ></attach-file-info>
+          :headers="getHeader('attach')"
+          :columns="getColumns('attach')"
+          :downloadItems="downloadItems"
+          :deleteItems="deleteItems"
+          :renderOpts="getRenderer('attach')"
+          :showToggleHeader="true"
+          :showPlayButton="false"
+        >
+        </file-info>
       </template>
       <span v-else class="history__body--nodata">{{ $t('list.no_data') }}</span>
     </div>
@@ -156,21 +191,21 @@ import CountButton from 'CountButton'
 
 import HistoryInfo from 'components/modal/HistoryInfo'
 
-import ServerRecordInfo from 'components/modal/ServerRecordInfo'
-import LocalRecordInfo from 'components/modal/LocalRecordInfo'
-import AttachFileInfo from 'components/modal/AttachFileInfo'
+import FileInfo from 'components/modal/FileInfo'
 
 import { mapActions } from 'vuex'
 
+import tableMixin from 'mixins/table'
+import confirmMixin from 'mixins/confirm'
+
 export default {
   name: 'History',
+  mixins: [confirmMixin, tableMixin],
   components: {
     CountButton,
     CollaboStatus,
     HistoryInfo,
-    ServerRecordInfo,
-    LocalRecordInfo,
-    AttachFileInfo,
+    FileInfo,
   },
   props: {
     historys: {
@@ -244,24 +279,25 @@ export default {
       this.sessionId = sessionId
       this.historyInfo = true
     },
-    showServerRecord(history, index) {
-      this.serverRecord = true
-      this.fileList = history.serverRecord
+    showInfo(type, history, index) {
+      switch (type) {
+        case 'server':
+          this.serverRecord = true
+          this.fileList = history.serverRecord
+          break
+        case 'local':
+          this.localRecord = true
+          this.fileList = history.localRecord
+          break
+        case 'attach':
+          this.file = true
+          this.fileList = history.files
+          break
+      }
       this.historyTitle = history.title
       this.currentIndex = index
     },
-    showLocalRecord(history, index) {
-      this.localRecord = true
-      this.fileList = history.localRecord
-      this.historyTitle = history.title
-      this.currentIndex = index
-    },
-    showFile(history, index) {
-      this.file = true
-      this.fileList = history.files
-      this.historyTitle = history.title
-      this.currentIndex = index
-    },
+
     setSort(column) {
       if (this.sort.column === column) {
         if (this.sort.direction === '') {
