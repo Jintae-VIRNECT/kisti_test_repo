@@ -259,7 +259,7 @@ export default {
   flex-grow: 1;
   flex-shrink: 1;
   // color: #a7a7a7;
-  color: rgb(65, 74, 89);
+  color: #414a59;
   font-weight: normal;
   font-size: 15px;
   text-align: center;
@@ -344,7 +344,7 @@ export default {
 }
 
 .table__body--empty-text {
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 1.1429rem;
 }

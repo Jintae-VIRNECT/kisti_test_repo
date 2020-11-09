@@ -161,7 +161,7 @@ export default {
   .modal--header {
     height: 4.8571rem;
     padding: 1.5714rem 0rem 1.1429rem 1.9286rem;
-    color: rgb(11, 31, 72);
+    color: #0b1f48;
     font-weight: normal;
 
     font-size: 1.1429rem;
@@ -179,7 +179,7 @@ export default {
 }
 
 .history-info--header {
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: normal;
   font-size: 1.5714rem;
 }
@@ -188,7 +188,7 @@ export default {
   width: 51.4286rem;
   height: 37rem;
   margin-top: 1.1429rem;
-  border-top: 2px solid rgb(234, 237, 243);
+  border-top: 2px solid #eaedf3;
 }
 
 .history-info__row {
@@ -202,7 +202,7 @@ export default {
   align-items: center;
   width: 11.4286rem;
   padding-left: 1.4286rem;
-  color: rgb(65, 74, 89);
+  color: #414a59;
   font-weight: normal;
   font-size: 1.0714rem;
   background-color: #f5f7fa;
@@ -225,7 +225,7 @@ export default {
   }
 
   &.time {
-    color: rgb(15, 117, 245);
+    color: #0f75f5;
   }
 
   &.member-list {

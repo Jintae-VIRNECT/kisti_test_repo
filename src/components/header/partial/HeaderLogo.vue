@@ -52,7 +52,7 @@ export default {
   font-weight: 500;
   font-size: 1.0286rem;
   text-align: center;
-  background: rgb(31, 127, 250) url('~assets/image/logo_sub_text.svg');
+  background: #1f7ffa url('~assets/image/logo_sub_text.svg');
   border-radius: 0.1714rem;
 }
 </style>

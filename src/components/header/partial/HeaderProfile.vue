@@ -87,7 +87,7 @@ export default {
 @import '~assets/style/mixin';
 
 .popover-profile {
-  background-color: rgb(255, 255, 255);
+  background-color: #ffffff;
   border: solid 1px #e3e3e3;
   border-radius: 8px;
   transform: translateY(1.571rem);
@@ -105,7 +105,7 @@ export default {
   }
   > .profile .profile--text .profile--maintext {
     margin: 0.286rem 0;
-    color: rgb(11, 31, 72);
+    color: #0b1f48;
     font-size: 1.214rem;
   }
   > .profile .profile--subtext {
@@ -122,7 +122,7 @@ export default {
   }
 
   > button {
-    color: rgb(11, 31, 72);
+    color: #0b1f48;
     font-weight: 500;
     font-size: 1.071rem;
     background: transparent;

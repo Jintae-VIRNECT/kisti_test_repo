@@ -175,7 +175,7 @@ export default {
   .modal--header {
     height: 68px;
     padding: 22px 0px 16px 27px;
-    color: rgb(11, 31, 72);
+    color: #0b1f48;
     font-weight: normal;
 
     font-size: 16px;
@@ -199,7 +199,7 @@ export default {
 }
 
 .table__title {
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: normal;
   font-size: 22px;
 }

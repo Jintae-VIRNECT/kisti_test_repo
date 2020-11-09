@@ -8,18 +8,18 @@
   position: relative;
   height: 4.8571rem;
   padding: 1.4286rem 0px 1.2143rem 1.4286rem;
-  border-bottom: 1px solid rgb(227, 227, 227);
+  border-bottom: 1px solid #e3e3e3;
 }
 
 .board__header--title {
   margin-right: 0.7143rem;
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 1.4286rem;
 }
 
 .board__header--description {
-  color: rgb(122, 122, 122);
+  color: #7a7a7a;
   font-weight: normal;
   font-size: 1.0714rem;
 }
@@ -127,7 +127,7 @@
     width: 100%;
 
     thead {
-      color: rgb(255, 255, 255);
+      color: #ffffff;
       font-weight: 400;
       font-size: 1.0714rem;
     }
@@ -160,7 +160,7 @@
   height: 6.4286rem;
   color: white;
   background: #3b3b3b;
-  border: 1px solid rgb(52, 65, 81);
+  border: 1px solid #344151;
   border-radius: 4px;
   -webkit-transform: translate(-50%, 0);
   transform: translate(-50%, 0);

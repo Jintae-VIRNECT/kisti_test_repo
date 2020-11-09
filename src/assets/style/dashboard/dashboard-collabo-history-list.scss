@@ -8,13 +8,13 @@
 
 .collabo-history-list__header--title {
   margin-right: 0.7143rem;
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 1.5714rem;
 }
 
 .collabo-history-list__header--description {
-  color: rgb(122, 122, 122);
+  color: #7a7a7a;
   font-weight: 500;
   font-size: 1.0714rem;
 }
@@ -23,11 +23,11 @@
   right: 0px;
   width: 6.3571rem;
   height: 3rem;
-  color: rgb(15, 117, 245);
+  color: #0f75f5;
   font-weight: 500;
   font-size: 1.0714rem;
-  background: rgb(255, 255, 255);
-  border: 1px solid rgb(227, 227, 227);
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
   border-radius: 2px;
   transition: 0.3s;
 
@@ -46,12 +46,12 @@
   }
 
   &.disable {
-    color: rgb(189, 197, 204);
+    color: #bdc5cc;
     font-weight: 500;
     font-size: 15px;
 
     &:hover {
-      background-color: rgb(255, 255, 255);
+      background-color: #ffffff;
     }
   }
 

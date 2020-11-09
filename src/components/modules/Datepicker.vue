@@ -134,8 +134,8 @@ export default {
   width: 3rem;
   height: 3rem;
   padding-top: 0.2143rem;
-  background: rgb(255, 255, 255);
-  border: 1px solid rgb(227, 227, 227);
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
   border-radius: 0px 4px 4px 0px;
 }
 </style>

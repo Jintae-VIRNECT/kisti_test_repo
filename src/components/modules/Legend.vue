@@ -81,7 +81,7 @@ export default {
 
 .legend--text {
   padding-left: 1.7857rem;
-  color: rgb(122, 122, 122);
+  color: #7a7a7a;
   font-weight: normal;
   font-size: 1rem;
   letter-spacing: 0px;
