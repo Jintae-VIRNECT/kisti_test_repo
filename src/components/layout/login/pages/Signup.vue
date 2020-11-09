@@ -422,6 +422,12 @@ export default {
 						this.$t('signup.errors.duplicateEmail.contents'), // 이미 VIRNECT 회원으로 등록된 이메일 주소입니다.
 						'error',
 					)
+				else if (e.code === 2206)
+					return this.alertMessage(
+						this.$t('signup.errors.secessionEmail.title'), // 이메일 인증 메일 전송 실패
+						this.$t('signup.errors.secessionEmail.contents'), // 탈퇴한 유저입니다.
+						'error',
+					)
 				else
 					return this.alertMessage(
 						this.$t('signup.errors.verification.title'), // 이메일 인증 메일 전송 실패
