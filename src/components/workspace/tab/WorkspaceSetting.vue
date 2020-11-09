@@ -22,6 +22,12 @@
             :visible.sync="showDenied"
             :modalless="true"
           ></device-denied>
+          <!-- <template v-if="menus[tabIdx].key === 'test'">
+            <stt-test
+              :micDevices="micDevices"
+              :speakerDevices="speakerDevices"
+            ></stt-test>
+          </template> -->
 
           <template v-if="menus[tabIdx].key === 'video'">
             <set-video
@@ -41,11 +47,7 @@
 
           <template v-else-if="menus[tabIdx].key === 'record'">
             <set-record></set-record>
-            <set-resolution target="local"></set-resolution>
-            <template v-if="onpremise">
-              <set-server-record></set-server-record>
-              <set-resolution target="server"></set-resolution>
-            </template>
+            <set-server-record v-if="onpremise || true"></set-server-record>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
@@ -59,6 +61,7 @@
   </div>
 </template>
 <script>
+import SttTest from '../section/WorkspaceSttTest'
 import SetVideo from '../section/WorkspaceSetVideo'
 import SetAudio from '../section/WorkspaceSetAudio'
 import SetLanguage from '../section/WorkspaceSetLanguage'
@@ -74,6 +77,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceSetting',
   components: {
+    SttTest,
     SetVideo,
     SetAudio,
     SetLanguage,
@@ -100,6 +104,10 @@ export default {
     ...mapGetters(['useTranslate']),
     menus() {
       const menu = [
+        // {
+        //   key: 'test',
+        //   text: 'TEST',
+        // },
         {
           key: 'video',
           text: this.$t('workspace.setting_video'),
