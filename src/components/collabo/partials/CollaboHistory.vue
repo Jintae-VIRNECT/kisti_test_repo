@@ -132,6 +132,7 @@
           :width="'64.2857rem'"
           :height="'50.4286rem'"
           :title="historyTitle"
+          :tableTitle="$t('file.server_record')"
           :fileList="fileList"
           :visible.sync="serverRecord"
           :deletable="isMaster"
@@ -149,6 +150,7 @@
           :width="'64.2857rem'"
           :height="'50.4286rem'"
           :title="historyTitle"
+          :tableTitle="$t('file.local_record')"
           :fileList="fileList"
           :visible.sync="localRecord"
           :deletable="isMaster"
@@ -167,6 +169,7 @@
           :width="'64.2857rem'"
           :height="'50.4286rem'"
           :title="historyTitle"
+          :tableTitle="$t('file.attach_file')"
           :fileList="fileList"
           :visible.sync="file"
           :deletable="isMaster"
@@ -267,6 +270,7 @@ export default {
       this.historyInfo = true
     },
     showFiles(type, history) {
+      this.historyTitle = history.title
       switch (type) {
         case 'server':
           this.serverRecord = true
@@ -281,7 +285,6 @@ export default {
           this.fileList = history.files
           break
       }
-      this.historyTitle = history.title
     },
 
     setSort(column) {

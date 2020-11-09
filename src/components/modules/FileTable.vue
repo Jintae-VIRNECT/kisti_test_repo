@@ -52,6 +52,7 @@
 
           <play-button
             class="table__cell--play"
+            :class="[type]"
             size="2.1429rem"
             v-if="showPlayButton"
             @click="getPlayIndex(index)"
@@ -126,6 +127,10 @@ export default {
     }
   },
   props: {
+    type: {
+      type: String,
+      default: '',
+    },
     showToggleHeader: {
       type: Boolean,
       default: false,
@@ -336,8 +341,13 @@ export default {
 }
 
 .table__cell--play {
-  display: flex;
-  margin: 0 3.2857rem 0 3.4286rem;
+  // display: flex;
+  &.local {
+    margin: 0 3.4286rem 0 3.4286rem;
+  }
+  &.server {
+    margin: 0 3.4286rem 0 4.4286rem;
+  }
 }
 
 .table__body--empty {

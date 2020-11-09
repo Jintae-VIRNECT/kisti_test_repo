@@ -17,10 +17,11 @@
         :datas="fileList"
         :renderOpts="renderOpts"
         :emptyText="''"
+        :type="type"
       >
         <div class="table__header">
           <div class="table__title">
-            {{ $t('file.attach_file') }}
+            {{ tableTitle }}
           </div>
           <div class="table__tools">
             <icon-button
@@ -70,6 +71,10 @@ export default {
       default: false,
     },
     title: {
+      type: String,
+      default: '',
+    },
+    tableTitle: {
       type: String,
       default: '',
     },
