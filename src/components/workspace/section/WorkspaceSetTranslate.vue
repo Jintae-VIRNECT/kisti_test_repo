@@ -51,7 +51,7 @@
       <slider
         :first="'동시 출력'"
         :second="'선택 출력'"
-        :isFirst.sync="transSameTime"
+        :isFirst.sync="transMultiple"
       ></slider>
     </section>
     <section class="setting-section list horizon">
@@ -62,14 +62,14 @@
         <slider
           :first="'음성 녹음'"
           :second="'스트리밍'"
-          :isFirst.sync="sttSamePeriod"
+          :isFirst.sync="sttSync"
         ></slider>
       </figure>
       <figure class="setting-section__translate">
         <div class="setting-section__title">
           {{ '음성 변환 설정(TTS)' }}
         </div>
-        <check :text="'음성 변환 사용 허용'" :value.sync="useTranslate"></check>
+        <check :text="'음성 변환 사용 허용'" :value.sync="ttsAllow"></check>
       </figure>
     </section>
   </div>
@@ -93,8 +93,9 @@ export default {
     return {
       useTranslate: false,
       transCode: 'ko-KR',
-      transSameTime: true,
-      sttSamePeriod: true,
+      transMultiple: true,
+      sttSync: true,
+      ttsAllow: false,
     }
   },
   computed: {
@@ -106,6 +107,15 @@ export default {
     },
     transCode(language) {
       this.setTranslateCode(language)
+    },
+    transMultiple(flag) {
+      this.setTranslateMultiple(flag)
+    },
+    sttSync(flag) {
+      this.setSttSync(flag)
+    },
+    ttsAllow(flag) {
+      this.setTtsAllow(flag)
     },
   },
   methods: {
@@ -120,10 +130,26 @@ export default {
       this.setTranslate({ code })
       this.$localStorage.setTranslate('code', code)
     },
+    setTranslateMultiple(multiple) {
+      console.log(multiple)
+      this.setTranslate({ multiple })
+      this.$localStorage.setTranslate('multiple', multiple)
+    },
+    setSttSync(sttSync) {
+      this.setTranslate({ sttSync })
+      this.$localStorage.setTranslate('sttSync', sttSync)
+    },
+    setTtsAllow(ttsAllow) {
+      this.setTranslate({ ttsAllow })
+      this.$localStorage.setTranslate('ttsAllow', ttsAllow)
+    },
   },
   created() {
     this.useTranslate = this.translate.flag
     this.transCode = this.translate.code
+    this.transMultiple = this.translate.multiple
+    this.sttSync = this.translate.sttSync
+    this.ttsAllow = this.translate.ttsAllow
   },
 }
 </script>

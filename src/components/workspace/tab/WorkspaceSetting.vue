@@ -47,7 +47,7 @@
 
           <template v-else-if="menus[tabIdx].key === 'record'">
             <set-record></set-record>
-            <set-server-record v-if="onpremise || true"></set-server-record>
+            <set-server-record v-if="onpremise"></set-server-record>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
@@ -69,7 +69,6 @@ import SetTranslate from '../section/WorkspaceSetTranslate'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetServerRecord from '../section/WorkspaceSetServerRecord'
-import SetResolution from '../section/WorkspaceSetResolution'
 import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
@@ -84,7 +83,6 @@ export default {
     SetTranslate,
     SetRecord,
     SetServerRecord,
-    SetResolution,
     MicTest,
     DeviceDenied,
   },
