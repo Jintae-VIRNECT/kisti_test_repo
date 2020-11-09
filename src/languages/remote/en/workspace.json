@@ -130,7 +130,7 @@
     "license_no_title": "No available plan <br>to use VIRNECT Remote 2.0.",
     "license_no_description": "There is no Workspace to use the VIRNECT Remote 2.0. <br>Please ask your Master for plans.",
 
-    "error_no_connected_device": "Cannot find a connected device.",
+    "error_no_connected_device": "The connected microphone device could not be found. Please check the microphone.",
     "error_no_device": "Cannot find a device.",
 
     "plan_exceeded": "Notice of excess use of plans",
