@@ -4,9 +4,12 @@
     @click.stop="clickListener"
     @mouseover="select = true"
     @mouseleave="select = false"
-  >
-    <img :src="imgSrc" />
-  </button>
+    :style="{
+      backgroundImage: 'url(' + imgSrc + ')',
+      width: size,
+      height: size,
+    }"
+  ></button>
 </template>
 
 <script>
@@ -21,6 +24,10 @@ export default {
     mediaUrl: {
       type: String,
       default: null,
+    },
+    size: {
+      type: [Number, String],
+      default: 12,
     },
   },
   computed: {
@@ -45,8 +52,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/mixin';
 .play-button {
-  width: 30px;
-  height: 30px;
+  @include ir();
+  width: 1.714em;
+  height: 1.714em;
+  background: center/100% no-repeat;
 }
 </style>

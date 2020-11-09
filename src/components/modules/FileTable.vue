@@ -8,7 +8,6 @@
         v-show="showToggleHeader && datas.length > 0"
       >
         <toggle-button
-          slot="body"
           size="1.714em"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
@@ -52,7 +51,8 @@
           </div>
 
           <play-button
-            class="table__cell"
+            class="table__cell--play"
+            size="2.1429rem"
             v-if="showPlayButton"
             @click="getPlayIndex(index)"
           ></play-button>
@@ -261,7 +261,7 @@ export default {
   // color: #a7a7a7;
   color: #414a59;
   font-weight: normal;
-  font-size: 15px;
+  font-size: 1.0714rem;
   text-align: center;
 }
 
@@ -279,7 +279,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 62.0004px;
+  height: 4.4286rem;
   border-bottom: 1px solid #eaedf3;
   // margin-bottom: 0.5714rem;
   // background: $color_darkgray_600;
@@ -335,11 +335,16 @@ export default {
   margin: 0 1.3571rem 0 1.5714rem;
 }
 
+.table__cell--play {
+  display: flex;
+  margin: 0 3.2857rem 0 3.4286rem;
+}
+
 .table__body--empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 434px;
+  height: 31rem;
   // background-color: $color_darkgray_600;
 }
 

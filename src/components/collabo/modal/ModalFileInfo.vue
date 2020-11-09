@@ -173,22 +173,22 @@ export default {
 <style lang="scss">
 .modal.file-info {
   .modal--header {
-    height: 68px;
-    padding: 22px 0px 16px 27px;
+    height: 4.8571rem;
+    padding: 1.5714rem 0rem 1.1429rem 1.9286rem;
     color: #0b1f48;
     font-weight: normal;
 
-    font-size: 16px;
+    font-size: 1.1429rem;
     background-color: #f8f8fa;
   }
 
   .modal--body {
-    padding: 40px 45px 45px 45px;
+    padding: 2.8571rem 3.2143rem 3.2143rem 3.2143rem;
   }
 
   .modal--close {
-    width: 14px;
-    height: 14px;
+    width: 1rem;
+    height: 1rem;
   }
 }
 
@@ -201,7 +201,7 @@ export default {
 .table__title {
   color: #0b1f48;
   font-weight: normal;
-  font-size: 22px;
+  font-size: 1.5714rem;
 }
 
 .table__tools {
