@@ -67,70 +67,29 @@
         <el-row>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.remote.label">
-              <el-select
+              <member-plan-select
                 v-model="form.licenseRemote"
-                popper-class="member-setting-select__dropdown"
-              >
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="`${plans.remote.label} ${$t('common.plan')}`"
-                  :disabled="!plansInfo.remote.unUsedAmount"
-                >
-                  <span>
-                    {{ `${plans.remote.label} ${$t('common.plan')}` }}
-                  </span>
-                  <span class="right">
-                    {{ plansInfo.remote.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+                :label="plans.remote.label"
+                :amount="plansInfo.remote.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.make.label">
-              <el-select
+              <member-plan-select
                 v-model="form.licenseMake"
-                popper-class="member-setting-select__dropdown"
-              >
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="`${plans.make.label} ${$t('common.plan')}`"
-                  :disabled="!plansInfo.make.unUsedAmount"
-                >
-                  <span>{{ `${plans.make.label} ${$t('common.plan')}` }}</span>
-                  <span class="right">
-                    {{ plansInfo.make.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+                :label="plans.make.label"
+                :amount="plansInfo.make.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.view.label">
-              <el-select v-model="form.licenseView">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="`${plans.view.label} ${$t('common.plan')}`"
-                  :disabled="!plansInfo.view.unUsedAmount"
-                >
-                  <span>{{ `${plans.view.label} ${$t('common.plan')}` }}</span>
-                  <span class="right">
-                    {{ plansInfo.view.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.licenseView"
+                :label="plans.view.label"
+                :amount="plansInfo.view.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -151,6 +110,7 @@
 
 <script>
 import MemberRoleSelect from '@/components/member/MemberRoleSelect'
+import MemberPlanSelect from '@/components/member/MemberPlanSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import workspaceService from '@/services/workspace'
@@ -163,6 +123,7 @@ import filterMixin from '@/mixins/filters'
 export default {
   components: {
     MemberRoleSelect,
+    MemberPlanSelect,
   },
   mixins: [filterMixin, modalMixin],
   props: {

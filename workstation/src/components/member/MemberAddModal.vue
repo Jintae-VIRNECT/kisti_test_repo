@@ -78,62 +78,29 @@
         <el-row>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.remote.label">
-              <el-select v-model="form.planRemote">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.remote.label"
-                  :disabled="!plansInfo.remote.unUsedAmount"
-                >
-                  <span>{{ plans.remote.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.remote.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.planRemote"
+                :label="plans.remote.label"
+                :amount="plansInfo.remote.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.make.label">
-              <el-select v-model="form.planMake">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.make.label"
-                  :disabled="!plansInfo.make.unUsedAmount"
-                >
-                  <span>{{ plans.make.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.make.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.planMake"
+                :label="plans.make.label"
+                :amount="plansInfo.make.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.view.label">
-              <el-select v-model="form.planView">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.view.label"
-                  :disabled="!plansInfo.view.unUsedAmount"
-                >
-                  <span>{{ plans.view.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.view.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.planView"
+                :label="plans.view.label"
+                :amount="plansInfo.view.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -157,6 +124,7 @@
 
 <script>
 import MemberRoleSelect from '@/components/member/MemberRoleSelect'
+import MemberPlanSelect from '@/components/member/MemberPlanSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
@@ -168,6 +136,7 @@ import { mapGetters } from 'vuex'
 export default {
   components: {
     MemberRoleSelect,
+    MemberPlanSelect,
   },
   mixins: [modalMixin],
   data() {

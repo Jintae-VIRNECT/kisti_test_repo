@@ -92,58 +92,28 @@
                 </label>
                 <div class="plans">
                   <el-form-item :label="plans.remote.label">
-                    <el-select v-model="form.planRemote" @change="choosePlan">
-                      <el-option
-                        :value="false"
-                        :label="$t('members.setting.givePlansEmpty')"
-                      />
-                      <el-option
-                        :value="true"
-                        :label="plans.remote.label"
-                        :disabled="!availablePlans.remote"
-                      >
-                        <span>{{ plans.remote.label }}</span>
-                        <span class="right">
-                          {{ availablePlans.remote }}
-                        </span>
-                      </el-option>
-                    </el-select>
+                    <member-plan-select
+                      v-model="form.planRemote"
+                      :label="plans.remote.label"
+                      :amount="availablePlans.remote"
+                      @change="choosePlan"
+                    />
                   </el-form-item>
                   <el-form-item class="horizon" :label="plans.make.label">
-                    <el-select v-model="form.planMake" @change="choosePlan">
-                      <el-option
-                        :value="false"
-                        :label="$t('members.setting.givePlansEmpty')"
-                      />
-                      <el-option
-                        :value="true"
-                        :label="plans.make.label"
-                        :disabled="!availablePlans.make"
-                      >
-                        <span>{{ plans.make.label }}</span>
-                        <span class="right">
-                          {{ availablePlans.make }}
-                        </span>
-                      </el-option>
-                    </el-select>
+                    <member-plan-select
+                      v-model="form.planMake"
+                      :label="plans.make.label"
+                      :amount="availablePlans.make"
+                      @change="choosePlan"
+                    />
                   </el-form-item>
                   <el-form-item class="horizon" :label="plans.view.label">
-                    <el-select v-model="form.planView" @change="choosePlan">
-                      <el-option
-                        :value="false"
-                        :label="$t('members.setting.givePlansEmpty')"
-                      />
-                      <el-option
-                        :value="true"
-                        :label="plans.view.label"
-                        :disabled="!availablePlans.view"
-                      >
-                        <span>{{ plans.view.label }}</span>
-                        <span class="right">
-                          {{ availablePlans.view }}
-                        </span>
-                      </el-option>
-                    </el-select>
+                    <member-plan-select
+                      v-model="form.planView"
+                      :label="plans.view.label"
+                      :amount="availablePlans.view"
+                      @change="choosePlan"
+                    />
                   </el-form-item>
                 </div>
               </el-col>
@@ -166,6 +136,7 @@
 
 <script>
 import MemberRoleSelect from '@/components/member/MemberRoleSelect'
+import MemberPlanSelect from '@/components/member/MemberPlanSelect'
 import CreateMember from '@/models/workspace/CreateMember'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
@@ -174,6 +145,7 @@ import { mapGetters } from 'vuex'
 export default {
   components: {
     MemberRoleSelect,
+    MemberPlanSelect,
   },
   middleware({ $config, error }) {
     if ($config.VIRNECT_ENV !== 'onpremise') {
