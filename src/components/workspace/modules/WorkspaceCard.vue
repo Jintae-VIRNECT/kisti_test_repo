@@ -1,5 +1,5 @@
 <template>
-  <card class="workcard" width="100%" height="27.143em">
+  <card class="workcard" width="100%" height="27.071em">
     <div class="workcard-body">
       <div class="workcard-profile">
         <div class="profile__image">
