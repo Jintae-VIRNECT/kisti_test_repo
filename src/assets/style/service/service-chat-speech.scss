@@ -54,6 +54,14 @@
       background-color: #0f75f5;
     }
   }
+  &.recording {
+    &:before {
+      opacity: 0;
+    }
+    &:after {
+      background-color: #0f75f5;
+    }
+  }
 }
 
 .chat-speech__progress {

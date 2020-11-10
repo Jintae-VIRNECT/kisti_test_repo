@@ -1,11 +1,11 @@
 <template>
   <div class="chat-speech">
     <div class="chat-speech__main">
-      <svg class="chat-speech__progress">
+      <svg class="chat-speech__progress" v-if="progress > 0">
         <circle
           stroke="#0f75f5"
           :stroke-dasharray="`${circumference} ${circumference}`"
-          :style="`stroke-dashoffset:${circumference}`"
+          :style="`stroke-dashoffset:${strokeDashoffset}`"
           stroke-width="2"
           fill="transparent"
           r="1.857rem"
@@ -13,7 +13,10 @@
           cy="1.929rem"
         />
       </svg>
-      <span class="chat-speech__icon active"></span>
+      <span
+        class="chat-speech__icon"
+        :class="{ active: !sync, recording: progress > 0 }"
+      ></span>
       <span class="chat-speech__text">{{ speechGuide }}</span>
       <button
         class="chat-speech__send"
@@ -44,6 +47,7 @@ export default {
     return {
       timer: null,
       circumference: 52 * Math.PI,
+      strokeDashoffset: 0,
       progress: 0,
       speechText: '',
     }
@@ -83,14 +87,16 @@ export default {
     },
   },
   methods: {
-    init() {
+    startSpeechRecord() {
       if (this.timer) clearInterval(this.timer)
       this.speechText = ''
+      this.strokeDashoffset = this.circumference
       this.timer = setInterval(() => {
         this.progress += 1
         this.setProgress()
         if (this.progress > MAX_RECORD_TIME) {
           clearInterval(this.timer)
+          this.strokeDashoffset = 0
           this.progress = 0
         }
       }, 1000)
@@ -99,12 +105,15 @@ export default {
       const offset =
         this.circumference -
         (this.progress / MAX_RECORD_TIME) * this.circumference
-      this.$el.querySelector('circle').style.strokeDashoffset = offset
+      this.strokeDashoffset = offset
     },
   },
 
   /* Lifecycles */
   mounted() {
+    if (this.sync) {
+      this.startSpeechRecord()
+    }
     // this.init()
   },
   beforeDestroy() {
