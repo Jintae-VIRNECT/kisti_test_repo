@@ -34,13 +34,12 @@
       </main>
 
       <user-list
-        v-if="!openRoom || isLeader"
         :class="{
           shareview: isLeader && currentView === 'drawing',
-          fullscreen: isFullScreen,
+          fullscreen: isFullScreen && currentView === 'stream',
         }"
       ></user-list>
-      <div v-else>
+      <!-- <div v-else>
         <figure
           v-for="participant of participants"
           :key="'audio_' + participant.id"
@@ -53,7 +52,7 @@
             loop
           ></audio>
         </figure>
-      </div>
+      </div> -->
       <!-- <component :is="viewComponent"></component> -->
     </div>
   </section>
@@ -106,14 +105,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'view',
-      'captureFile',
-      'chatBox',
-      'participants',
-      'myInfo',
-      'openRoom',
-    ]),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants', 'myInfo']),
     isLeader() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
@@ -205,9 +197,7 @@ export default {
     window.onbeforeunload = () => {
       return true
     }
-    if (!this.openRoom) {
-      navigator.mediaDevices.ondevicechange = this.onDeviceChange
-    }
+    navigator.mediaDevices.ondevicechange = this.onDeviceChange
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
     this.$eventBus.$on('fullscreen', this.setFullScreen)

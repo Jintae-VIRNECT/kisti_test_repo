@@ -327,17 +327,6 @@ export default {
   created() {
     this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
-
-    if (this.openRoom) {
-      this.menus = [
-        {
-          text: this.$t('service.stream'),
-          key: VIEW.STREAM,
-          icon: require('assets/image/call/gnb_ic_shareframe.svg'),
-          notice: false,
-        },
-      ]
-    }
   },
 }
 </script>

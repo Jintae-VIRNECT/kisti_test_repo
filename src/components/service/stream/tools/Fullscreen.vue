@@ -23,8 +23,19 @@ export default {
       status: true,
     }
   },
+  props: {
+    hide: {
+      type: Boolean,
+      default: false,
+    },
+  },
   methods: {
     clickHandler() {
+      if (this.hide) return
+      this.$emit('update:hide', true)
+      setTimeout(() => {
+        this.$emit('update:hide', false)
+      }, 500)
       this.$eventBus.$emit('fullscreen', this.status)
       this.status = !this.status
     },

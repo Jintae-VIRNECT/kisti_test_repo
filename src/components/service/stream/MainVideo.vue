@@ -60,7 +60,10 @@
           </transition>
         </template>
         <transition name="opacity">
-          <fullscreen v-show="hoverTools"></fullscreen>
+          <fullscreen
+            :hide.sync="hideFullBtn"
+            v-show="!hideFullBtn"
+          ></fullscreen>
         </transition>
       </template>
     </div>
@@ -165,6 +168,7 @@ export default {
       serverTimer: null,
       serverTime: 0,
       serverStart: 0,
+      hideFullBtn: false,
     }
   },
   computed: {
