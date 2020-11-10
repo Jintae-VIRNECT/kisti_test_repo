@@ -195,6 +195,20 @@ public class WorkspaceService {
         return new WorkspaceInfoListResponse(workspaceList, pageMetadataResponse);
     }
 
+    public String[] getUserLicenseProductList(String workspaceId, String userId) {
+        MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
+                workspaceId, userId).getData();
+
+        String[] licenseProducts = new String[0];
+        if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+            licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
+                    .stream()
+                    .map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
+                    .toArray(String[]::new);
+        }
+        return licenseProducts;
+    }
+
     /**
      * 멤버 조회
      *
@@ -202,201 +216,84 @@ public class WorkspaceService {
      * @param userId      - 조회 중인 유저 uuid
      * @param search      - (옵션) 검색값
      * @param filter      - (옵션) 필터값 ex.MEMBER, MASTER
-     * @param pageable    - 페이징 처리 값
+     * @param #pageable   - 페이징 처리 값
      * @return - 멤버 정보 리스트
      */
     public ApiResponse<MemberListResponse> getMembers(
             String workspaceId, String search, String filter, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
-        //Pageable로 Sort처리를 할 수 없기때문에 sort값을 제외한 Pageable을 만든다.
+        //workspace 서버에서 sort 처리할 수 있는 것들만 한다.
         Pageable newPageable = PageRequest.of(pageRequest.of().getPageNumber(), pageRequest.of().getPageSize());
-
-        //filter set
-        List<WorkspaceRole> workspaceRoleList = new ArrayList<>();
-        if (StringUtils.hasText(filter) && filter.toUpperCase().contains("MASTER")) {
-            workspaceRoleList.add(WorkspaceRole.builder().id(1L).build());
-        }
-        if (StringUtils.hasText(filter) && filter.toUpperCase().contains("MANAGER")) {
-            workspaceRoleList.add(WorkspaceRole.builder().id(2L).build());
-        }
-        if (StringUtils.hasText(filter) && filter.toUpperCase().contains("MEMBER")) {
-            workspaceRoleList.add(WorkspaceRole.builder().id(3L).build());
-        }
-        List<String> licenseProductList = new ArrayList<>();
-        if (StringUtils.hasText(filter) && filter.toUpperCase().contains("REMOTE")) {
-            licenseProductList.add("REMOTE");
-        }
-        if (StringUtils.hasText(filter) && filter.toUpperCase().contains("MAKE")) {
-            licenseProductList.add("MAKE");
-        }
-        if (StringUtils.hasText(filter) && filter.toUpperCase().contains("VIEW")) {
-            licenseProductList.add("VIEW");
+        String sortName = pageRequest.of().getSort().toString().split(":")[0].trim();
+        if (sortName.equalsIgnoreCase("workspaceRole") || sortName.equalsIgnoreCase("workspaceUser.createdDate")) {
+            newPageable = pageRequest.of();
         }
 
-        Workspace workspace = this.workspaceRepository.findByUuid(workspaceId)
-                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.getWorkspaceUserList(newPageable, workspaceId);
+        String[] userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
 
-        //USER-SERVER : 워크스페이스에 해당하는 유저들에 대한 정보만 불러온다. (+ search)
-        List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
-        String[] workspaceUserIdList = workspaceUserList.stream()
-                .map(workspaceUser -> workspaceUser.getUserId())
-                .toArray(String[]::new);
-
-        List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
-        PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
-
-        UserInfoListRestResponse userInfoListRestResponse = this.userRestService.getUserInfoList(
-                search, workspaceUserIdList).getData();
-
-        //filter로 role을 건 경우
-        if (!workspaceRoleList.isEmpty()) {
-            List<WorkspaceUser> workspaceUsers = userInfoListRestResponse.getUserInfoList()
-                    .stream()
-                    .map(userInfoRestResponse -> workspaceUserRepository.findByUserIdAndWorkspace(
-                            userInfoRestResponse.getUuid(), workspace))
-                    .collect(Collectors.toList());
-            Page<WorkspaceUserPermission> workspaceUserPermissionPage = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUserIsInAndWorkspaceRoleIsIn(
-                    workspace, workspaceUsers, workspaceRoleList, newPageable);
-            List<WorkspaceUserPermission> filterdWorkspaceUserList = workspaceUserPermissionPage.toList();
-
-            for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
-                WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                        workspace, userInfoRestResponse.getUuid());
-                if (filterdWorkspaceUserList.contains(workspaceUserPermission)) {
-                    MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
-                    memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-                    memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
-                    memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-
-                    String[] licenseProducts = new String[0];
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
-                            workspaceId, userInfoRestResponse.getUuid()).getData();
-                    if (myLicenseInfoListResponse.getLicenseInfoList() != null
-                            && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
-                        licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
-                                .stream()
-                                .map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
-                                .toArray(String[]::new);
-                        memberInfoDTO.setLicenseProducts(licenseProducts);
-                    }
-                    memberInfoDTO.setLicenseProducts(licenseProducts);
-                    memberInfoDTOList.add(memberInfoDTO);
-                }
-            }
-            pageMetadataResponse.setTotalElements(workspaceUserPermissionPage.getTotalElements());
-            pageMetadataResponse.setTotalPage(workspaceUserPermissionPage.getTotalPages());
-            pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
-            pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
-
-            List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
-            return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
-
+        //권한으로 필터를 건 경우
+        if (StringUtils.hasText(filter) && (filter.toUpperCase().contains("MASTER") || filter.toUpperCase().contains("MANAGER") || filter.toUpperCase().contains("MEMBER"))) {
+            workspaceUserPermissionPage = workspaceUserPermissionRepository.getRoleFilteredUserList(filter, newPageable, workspaceId);
+            userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
         }
-        //filter로 license 정보를 건 경우
-        if (!licenseProductList.isEmpty()) {
+
+        //라이선스로 필터를 건 경우
+        if (StringUtils.hasText(filter) && (filter.toUpperCase().contains("REMOTE") || filter.toUpperCase().contains("MAKE") || filter.toUpperCase().contains("VIEW"))) {
+            List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
             List<String> userIdList = new ArrayList<>();
-            userInfoListRestResponse.getUserInfoList().forEach(userInfoRestResponse -> {
-                MyLicenseInfoListResponse userLicenseInfo = licenseRestService.getMyLicenseInfoRequestHandler(
-                        workspaceId, userInfoRestResponse.getUuid()).getData();
-                if (userLicenseInfo.getLicenseInfoList() != null && !userLicenseInfo.getLicenseInfoList().isEmpty()) {
-                    userLicenseInfo.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-                        if (licenseProductList.contains(myLicenseInfoResponse.getProductName()) && !userIdList.contains(
-                                userInfoRestResponse.getUuid())) {
-                            //페이징 만들 데이터 넣기
-                            userIdList.add(userInfoRestResponse.getUuid());
+            for (WorkspaceUser workspaceUser : workspaceUserList) {
+                MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
+                        workspaceId, workspaceUser.getUserId()).getData();
+                if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+                    myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+                        if (filter.toUpperCase().contains(myLicenseInfoResponse.getProductName())) {
+                            userIdList.add(workspaceUser.getUserId());
                         }
                     });
                 }
-            });
-            Page<WorkspaceUser> workspaceUserPage = this.workspaceUserRepository.findByWorkspace_UuidAndUserIdIn(
-                    workspaceId, userIdList, newPageable);
-            List<WorkspaceUser> resultWorkspaceUser = workspaceUserPage.toList();
-
-            for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
-
-                WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                        workspace, userInfoRestResponse.getUuid());
-                if (resultWorkspaceUser.contains(workspaceUserPermission.getWorkspaceUser())) {
-                    MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
-                    memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-                    memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-                    memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
-
-                    String[] licenseProducts = new String[0];
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
-                            workspaceId, userInfoRestResponse.getUuid()).getData();
-                    if (myLicenseInfoListResponse.getLicenseInfoList() != null
-                            && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
-                        licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
-                                .stream()
-                                .map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
-                                .toArray(String[]::new);
-                        memberInfoDTO.setLicenseProducts(licenseProducts);
-                    }
-                    memberInfoDTO.setLicenseProducts(licenseProducts);
-                    memberInfoDTOList.add(memberInfoDTO);
-                }
-
             }
-            pageMetadataResponse.setTotalElements(workspaceUserPage.getTotalElements());
-            pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
+
+            //TODO: WORKSPACE_USER 와 WORKSPACE_USER_PERMISSION 은 1:1이 아니므로, PAGING을 WORKSAPCE_USER의 레코드를 기준으로 해야한다.
+            workspaceUserPermissionPage = workspaceUserPermissionRepository.getContainedUserIdList(userIdList, newPageable, workspaceId);
+            userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
+        }
+        if (userIds.length == 0) {
+            PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
             pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
             pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
-
-            List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
-            return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
+            return new ApiResponse<>(new MemberListResponse(new ArrayList<>(), pageMetadataResponse));
         }
-        //아무것도 filter 건 게 없는 경우
-        if (workspaceRoleList.isEmpty() && licenseProductList.isEmpty()) {
-            List<String> userIdList = userInfoListRestResponse.getUserInfoList()
-                    .stream()
-                    .map(userInfoRestResponse -> userInfoRestResponse.getUuid())
-                    .collect(Collectors.toList());
+        UserInfoListRestResponse userInfoListRestResponse = this.userRestService.getUserInfoList(search, userIds).getData();
 
-            Page<WorkspaceUser> workspaceUserPage = this.workspaceUserRepository.findByWorkspace_UuidAndUserIdIn(
-                    workspaceId, userIdList, newPageable);
-            List<WorkspaceUser> resultWorkspaceUser = workspaceUserPage.toList();
-
-            for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
-
-                WorkspaceUserPermission workspaceUserPermission = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                        workspace, userInfoRestResponse.getUuid());
-                if (resultWorkspaceUser.contains(workspaceUserPermission.getWorkspaceUser())) {
+        List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
+        for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
+            for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
+                if (userInfoRestResponse.getUuid().equalsIgnoreCase(workspaceUserPermission.getWorkspaceUser().getUserId())) {
                     MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
                     memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-                    memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
-
-                    String[] licenseProducts = new String[0];
-                    MyLicenseInfoListResponse myLicenseInfoListResponse = this.licenseRestService.getMyLicenseInfoRequestHandler(
-                            workspaceId, userInfoRestResponse.getUuid()).getData();
-                    if (myLicenseInfoListResponse.getLicenseInfoList() != null
-                            && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
-                        licenseProducts = myLicenseInfoListResponse.getLicenseInfoList()
-                                .stream()
-                                .map(myLicenseInfoResponse -> myLicenseInfoResponse.getProductName())
-                                .toArray(String[]::new);
-                        memberInfoDTO.setLicenseProducts(licenseProducts);
-                    }
-                    memberInfoDTO.setLicenseProducts(licenseProducts);
+                    memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
+                    String[] userLicenseProducts = getUserLicenseProductList(workspaceId, workspaceUserPermission.getWorkspaceUser().getUserId());
+                    memberInfoDTO.setLicenseProducts(userLicenseProducts);
                     memberInfoDTOList.add(memberInfoDTO);
                 }
             }
-            pageMetadataResponse.setTotalElements(workspaceUserPage.getTotalElements());
-            pageMetadataResponse.setTotalPage(workspaceUserPage.getTotalPages());
-            pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
-            pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
-
-            List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
-            return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
         }
+
+        PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
+        pageMetadataResponse.setTotalElements(workspaceUserPermissionPage.getTotalElements());
+        pageMetadataResponse.setTotalPage(workspaceUserPermissionPage.getTotalPages());
+        pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
+        pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
 
         List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
         return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
     }
 
     public List<MemberInfoDTO> getSortedMemberList(
-            com.virnect.workspace.global.common.PageRequest pageRequest, List<MemberInfoDTO> memberInfoDTOList
+            com.virnect.workspace.global.common.PageRequest
+                    pageRequest, List<MemberInfoDTO> memberInfoDTOList
     ) {
 
         String sortName = pageRequest.of().getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
@@ -423,13 +320,13 @@ public class WorkspaceService {
                     .sorted(Comparator.comparing(MemberInfoDTO::getEmail, Comparator.nullsFirst(Comparator.reverseOrder())))
                     .collect(Collectors.toList());
         }
-        if (sortName.equalsIgnoreCase("joinDate") && sortDirection.equalsIgnoreCase("asc")) {
+        if (sortName.equalsIgnoreCase("workspaceUser.createdDate") && sortDirection.equalsIgnoreCase("asc")) {
             return memberInfoDTOList.stream()
                     .sorted(
                             Comparator.comparing(MemberInfoDTO::getJoinDate, Comparator.nullsFirst(Comparator.naturalOrder())))
                     .collect(Collectors.toList());
         }
-        if (sortName.equalsIgnoreCase("joinDate") && sortDirection.equalsIgnoreCase("desc")) {
+        if (sortName.equalsIgnoreCase("workspaceUser.createdDate") && sortDirection.equalsIgnoreCase("desc")) {
             return memberInfoDTOList.stream()
                     .sorted(
                             Comparator.comparing(MemberInfoDTO::getJoinDate, Comparator.nullsFirst(Comparator.reverseOrder())))
@@ -1118,7 +1015,8 @@ public class WorkspaceService {
     @Transactional
     public void workspaceUserLicenseHandling(
             String userId, Workspace workspace, UserInfoRestResponse masterUser, UserInfoRestResponse user,
-            UserInfoRestResponse requestUser, Boolean remoteLicense, Boolean makeLicense, Boolean viewLicense, Locale locale
+            UserInfoRestResponse requestUser, Boolean remoteLicense, Boolean makeLicense, Boolean
+                    viewLicense, Locale locale
     ) {
         //라이선스 할당 체크
         List<String> requestProductList = userLicenseValidCheck(remoteLicense, makeLicense, viewLicense);
@@ -1321,7 +1219,8 @@ public class WorkspaceService {
         return new ApiResponse<>(workspaceNewMemberInfoList);
     }
 
-    public ApiResponse<WorkspaceInfoDTO> setWorkspace(WorkspaceUpdateRequest workspaceUpdateRequest, Locale locale) {
+    public ApiResponse<WorkspaceInfoDTO> setWorkspace(WorkspaceUpdateRequest workspaceUpdateRequest, Locale
+            locale) {
         if (!StringUtils.hasText(workspaceUpdateRequest.getUserId()) || !StringUtils.hasText(
                 workspaceUpdateRequest.getName())
                 || !StringUtils.hasText(workspaceUpdateRequest.getDescription()) || !StringUtils.hasText(
