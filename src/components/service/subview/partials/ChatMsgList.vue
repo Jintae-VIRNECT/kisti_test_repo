@@ -18,7 +18,7 @@
     <transition name="hide-bottom">
       <chat-speech
         v-if="speech"
-        :sync="!translate.sttSync"
+        :sync="translate.sttSync"
         @hidespeech="speech = false"
       ></chat-speech>
     </transition>
