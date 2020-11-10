@@ -409,16 +409,15 @@ const setUserObject = event => {
           status: 'good',
         })
       } else {
-        Store.commit('updateParticipant', {
+        const params = {
           connectionId: event.connection.connectionId,
           hasAudio: true,
-          cameraStatus: hasCamera
-            ? CAMERA_STATUS.CAMERA_OFF
-            : CAMERA_STATUS.CAMERA_NONE,
-        })
-        // if (hasCamera) {
-        //   _.changeProperty(true)
-        // }
+        }
+        if (!hasCamera) {
+          params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
+          // _.changeProperty(true)
+        }
+        Store.commit('updateParticipant', params)
       }
     })
     return 'me'

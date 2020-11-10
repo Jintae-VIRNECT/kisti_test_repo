@@ -129,12 +129,13 @@ const _ = {
         })
         _.publisher.on('streamCreated', () => {
           logger('room', 'publish success')
+          debug('publisher stream :: ', _.publisher.stream)
           const mediaStream = _.publisher.stream.mediaStream
           Store.commit('updateParticipant', {
             connectionId: _.publisher.stream.connection.connectionId,
             stream: mediaStream,
             hasVideo: _.publisher.stream.hasVideo,
-            video: _.publisher.stream.videoActive,
+            video: settingInfo.videoOn,
             audio: _.publisher.stream.audioActive,
           })
           if (_.publisher.stream.hasVideo) {
@@ -153,7 +154,7 @@ const _ = {
               )
               _.minZoomLevel = parseInt(capability.zoom.min)
             }
-            _.video(_.publisher.stream.videoActive)
+            _.video(settingInfo.videoOn)
             _.sendResolution({
               width: settings.width,
               height: settings.height,
