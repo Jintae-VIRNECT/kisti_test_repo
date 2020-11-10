@@ -139,7 +139,8 @@ export default {
     },
     async openPlayModal(index) {
       let params = {}
-      let getUrl = null
+      let data = null
+      let url = ''
 
       const file = this.fileList[index]
 
@@ -151,7 +152,8 @@ export default {
             userId: this.account.uuid,
             workspaceId: file.workspaceId,
           }
-          getUrl = getLocalRecordFileUrl
+          data = await getLocalRecordFileUrl(params)
+          url = data.url
           break
         case 'server':
           params = {
@@ -159,11 +161,10 @@ export default {
             userId: this.account.uuid,
             id: file.recordingId,
           }
-          getUrl = getServerRecordFileUrl
+          url = await getServerRecordFileUrl(params)
       }
 
-      const data = await getUrl(params)
-      this.$eventBus.$emit('open::player', proxyUrl(data.url))
+      this.$eventBus.$emit('open::player', proxyUrl(url))
     },
   },
   mounted() {
