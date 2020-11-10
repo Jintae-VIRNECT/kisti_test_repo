@@ -24,7 +24,7 @@
           </p>
         </button>
       </div>
-      <button v-if="!openRoom" class="capture-share" @click="share">
+      <button class="capture-share" @click="share">
         <p>
           <img src="~assets/image/call/ic_share.svg" />
           {{ $t('service.capture_image_share') }}
@@ -58,7 +58,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['openRoom', 'view']),
+    ...mapGetters(['view']),
   },
   watch: {
     file: {

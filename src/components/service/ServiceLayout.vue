@@ -198,6 +198,7 @@ export default {
       return true
     }
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
+    this.onDeviceChange()
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
     this.$eventBus.$on('fullscreen', this.setFullScreen)

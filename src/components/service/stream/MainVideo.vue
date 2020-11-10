@@ -23,7 +23,7 @@
         <transition name="opacity">
           <div class="main-video__sharing" v-if="viewForce">
             <button
-              v-if="isLeader && !openRoom"
+              v-if="isLeader"
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
