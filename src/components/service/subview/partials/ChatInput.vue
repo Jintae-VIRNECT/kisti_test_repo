@@ -34,6 +34,13 @@
         @change="fileUpload($event)"
       />
       <template v-if="fileList.length === 0">
+        <button
+          v-if="translate.flag"
+          class="chat-input__form-speech"
+          @click="$emit('update:speech', true)"
+        >
+          {{ '번역' }}
+        </button>
         <button class="chat-input__form-upload" @click="clickUpload">
           {{ $t('service.file_upload') }}
         </button>

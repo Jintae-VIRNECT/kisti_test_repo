@@ -296,6 +296,11 @@
     height: 0;
     opacity: 0;
   }
+  &.multiple + &.multiple {
+    margin-top: 0.929rem;
+    padding-top: 0.786rem;
+    border-top: dashed 1px #c7c7c7;
+  }
   &.init::before {
     background-image: url(~assets/image/call/ic_chat_remote.svg);
   }
@@ -543,13 +548,23 @@
 .chat-input__form {
   display: flex;
   height: 4.286rem;
-  padding: 1.071rem 1.286rem 1.071rem 0.857rem;
+  padding: 1.071rem 1.286rem 1.071rem 1.143rem;
   border-top: solid 1px $color_chat_bg_default;
 }
 
+.chat-input__form-speech {
+  width: 1.714rem;
+  height: 1.714rem;
+  margin: auto 0.357rem;
+  background: url(~assets/image/call/ic_voice_recognition.svg) center/100%
+    no-repeat;
+
+  @include ir();
+}
 .chat-input__form-upload {
-  width: 2.143rem;
-  height: 100%;
+  width: 1.714rem;
+  height: 1.714rem;
+  margin: auto 0;
   background: url(~assets/image/call/chat_ic_attachfile.svg) center/100%
     no-repeat;
 

@@ -14,7 +14,14 @@
         ></chat-item>
       </ol>
     </vue2-scrollbar>
-    <chat-input></chat-input>
+    <chat-input :speech.sync="speech"></chat-input>
+    <transition name="hide-bottom">
+      <chat-speech
+        v-if="speech"
+        :sync="!translate.sttSync"
+        @hidespeech="speech = false"
+      ></chat-speech>
+    </transition>
   </div>
 </template>
 
@@ -22,14 +29,21 @@
 import { mapGetters } from 'vuex'
 import ChatItem from './ChatItem'
 import ChatInput from './ChatInput'
+import ChatSpeech from './ChatSpeech'
 export default {
   name: 'ChatMsgList',
   components: {
     ChatInput,
     ChatItem,
+    ChatSpeech,
+  },
+  data() {
+    return {
+      speech: false,
+    }
   },
   computed: {
-    ...mapGetters(['chatList', 'view']),
+    ...mapGetters(['chatList', 'view', 'translate']),
   },
   watch: {
     chatList: {
@@ -53,4 +67,17 @@ export default {
 }
 </script>
 
-<style></style>
+<style>
+.hide-bottom-enter-active,
+.hide-bottom-leave-active {
+  transition: bottom 0.8s;
+}
+.hide-bottom-leave-to,
+.hide-bottom-enter {
+  bottom: -17.143rem;
+}
+/* .hide-bottom-leave,
+.hide-bottom-enter-to {
+  bottom: 0;
+} */
+</style>

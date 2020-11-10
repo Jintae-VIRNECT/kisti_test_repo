@@ -24,19 +24,26 @@
             class="chat-item__body--text"
             :class="[
               subClass,
-              { inactive: isTranslate ? translateActive : false },
+              {
+                inactive:
+                  isTranslate && !translate.multiple ? translateActive : false,
+                multiple: isTranslate && translate.multiple,
+              },
             ]"
             v-html="chatText"
           ></p>
           <p
             v-if="isTranslate"
             class="chat-item__body--text"
-            :class="{ inactive: !translateActive }"
+            :class="{
+              inactive: !translateActive || !translate.multiple,
+              multiple: isTranslate && translate.multiple,
+            }"
             v-html="chatTranslateText"
           ></p>
         </div>
         <button
-          v-if="isTranslate"
+          v-if="isTranslate && !translate.multiple"
           class="chat-item__translate--button"
           :class="{ active: translateActive }"
           @click="translateActive = !translateActive"
