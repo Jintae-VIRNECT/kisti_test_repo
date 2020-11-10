@@ -18,16 +18,15 @@ export default {
   components: {
     ToolButton,
   },
-  props: {
-    status: {
-      type: Boolean,
-      default: true,
-    },
+  data() {
+    return {
+      status: true,
+    }
   },
   methods: {
     clickHandler() {
       this.$eventBus.$emit('fullscreen', this.status)
-      this.$emit('update:status', !this.status)
+      this.status = !this.status
     },
   },
 

@@ -60,10 +60,7 @@
           </transition>
         </template>
         <transition name="opacity">
-          <fullscreen
-            v-show="hoverTools"
-            :status.sync="isFullscreen"
-          ></fullscreen>
+          <fullscreen v-show="hoverTools"></fullscreen>
         </transition>
       </template>
     </div>
@@ -168,7 +165,6 @@ export default {
       serverTimer: null,
       serverTime: 0,
       serverStart: 0,
-      isFullscreen: false,
     }
   },
   computed: {
