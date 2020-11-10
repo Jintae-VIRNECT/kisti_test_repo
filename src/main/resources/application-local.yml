@@ -18,8 +18,7 @@ spring:
           envers:
             audit_table_suffix: _history
   redis:
-    host: localhost
-    database: 0
+    host: 192.168.6.3
     port: 6379
   servlet:
     multipart:

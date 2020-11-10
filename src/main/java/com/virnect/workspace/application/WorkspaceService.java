@@ -581,7 +581,6 @@ public class WorkspaceService {
         //초대받는 사람에게 할당할 라이선스가 있는 지 체크.(useful license check)
         for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfo : workspaceLicensePlanInfoResponse
                 .getLicenseProductInfoList()) {
-
             if (licenseProductInfo.getProductName().equals(LicenseProduct.REMOTE.toString())) {
                 log.debug(
                         "[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Remote License count >> {}, Request REMOTE License count >> {}",
@@ -1138,7 +1137,9 @@ public class WorkspaceService {
         }
         List<String> removedProductList = oldProductList.stream().filter(s -> !requestProductList.contains(s)).collect(Collectors.toList());
         List<String> addedProductList = requestProductList.stream().filter(s -> !oldProductList.contains(s)).collect(Collectors.toList());
-        List<String> updatedProductList = Stream.concat(removedProductList.stream(), addedProductList.stream()).distinct().collect(Collectors.toList());
+        oldProductList.removeAll(removedProductList);
+        List<String> updatedProductList = Stream.concat(oldProductList.stream(), addedProductList.stream()).distinct().collect(Collectors.toList());
+
         log.info("[REVISE MEMBER INFO] Revise License Info. removed License Product Info >> [{}], added License Product Info >> [{}], result License Product Info >> [{}].",
                 org.apache.commons.lang.StringUtils.join(removedProductList, ","),
                 org.apache.commons.lang.StringUtils.join(addedProductList, ","),
@@ -1197,7 +1198,7 @@ public class WorkspaceService {
         }
     }
 
-    @CacheEvict(value = "userWorkspaces", key = "#userId")
+    @CacheEvict(value = "userWorkspaces", key = "#requestUserId")
     @Transactional
     public void updateUserPermission(
             Workspace workspace, String requestUserId, String responseUserId, WorkspaceRole workspaceRole,
@@ -1411,7 +1412,7 @@ public class WorkspaceService {
         return new ApiResponse<>(userInfoDTO);
     }
 
-    @CacheEvict(value = "userWorkspaces", key = "#userId")
+    @CacheEvict(value = "userWorkspaces", key = "#memberKickOutRequest.kickedUserId")
     @Transactional
     public ApiResponse<Boolean> kickOutMember(
             String workspaceId, MemberKickOutRequest memberKickOutRequest, Locale locale
