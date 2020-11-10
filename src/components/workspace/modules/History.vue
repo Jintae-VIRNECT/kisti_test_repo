@@ -33,7 +33,7 @@
       <div class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
         <span class="text">{{
-          `${$t('common.leader')} : ${leader.nickName}`
+          `${$t('common.leader')} : ${leader.nickName ? leader.nickName : ''}`
         }}</span>
       </div>
     </div>
@@ -150,9 +150,13 @@ export default {
       }
     },
     leader() {
-      return this.history.memberList.find(member => {
+      const idx = this.history.memberList.findIndex(member => {
         return member.memberType === 'LEADER'
       })
+      if (idx < 0) {
+        return {}
+      }
+      return this.history.memberList[idx]
     },
   },
   methods: {},
