@@ -285,10 +285,11 @@
   &::before {
     position: absolute;
     top: 0.357rem;
+    left: 0;
     width: 1rem;
     height: 1rem;
     background: center/100% no-repeat;
-    transform: translateY(-1.429rem);
+    // transform: translateY(-1.429rem);
     content: "";
   }
   &.inactive {

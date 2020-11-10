@@ -68,6 +68,9 @@
     &:first-child {
       margin-top: 2.857rem;
     }
+    &:last-child {
+      padding-bottom: 2.857rem;
+    }
     &.horizon {
       display: flex;
     }
