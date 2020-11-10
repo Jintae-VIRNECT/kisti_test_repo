@@ -123,7 +123,45 @@
           :value.sync="localRecording"
         ></r-check>
       </div>
-      <template v-if="useTranslate">
+      <template v-if="isOnpremise">
+        <p class="rec-setting--header" :class="{ disable: serverRecording }">
+          {{ '서버 녹화 설정' }}
+        </p>
+        <p v-if="serverRecording" class="rec-setting--warning">
+          {{ $t('서버 녹화 중에서는 설정을 변경 할 수 없습니다.') }}
+        </p>
+        <div class="rec-setting__row" :class="{ disable: serverRecording }">
+          <p class="rec-setting__text">
+            {{ $t('service.setting_record_max_time') }}
+          </p>
+          <r-select
+            class="rec-setting__selector"
+            :options="serverRecTime"
+            value="value"
+            text="text"
+            :selectedValue.sync="serverMaxRecordTime"
+          >
+          </r-select>
+        </div>
+
+        <div class="rec-setting__row" :class="{ disable: serverRecording }">
+          <div class="rec-setting__text custom">
+            <p>
+              {{ $t('service.setting_record_resolution') }}
+            </p>
+          </div>
+
+          <r-select
+            class="rec-setting__selector"
+            :options="serverRecResOpt"
+            value="value"
+            text="text"
+            :selectedValue.sync="serverRecordResolution"
+          >
+          </r-select>
+        </div>
+      </template>
+      <!-- <template v-if="useTranslate">
         <p class="rec-setting--header">
           {{ $t('service.setting_translate') }}
         </p>
@@ -162,7 +200,7 @@
           >
           </r-select>
         </div>
-      </template>
+      </template> -->
     </div>
   </modal>
 </template>
@@ -178,10 +216,13 @@ import toastMixin from 'mixins/toast'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
+import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 import {
   localRecTime,
   localRecResOpt,
   localRecInterval,
+  serverRecTime,
+  serverRecResOpt,
   RECORD_TARGET,
 } from 'utils/recordOptions'
 
@@ -206,9 +247,12 @@ export default {
       recordTarget: this.$store.state.settings.localRecordTarget,
 
       localRecResOpt: localRecResOpt,
+      serverRecResOpt: serverRecResOpt,
       maxRecordTime: '',
       maxRecordInterval: '',
       recordResolution: '',
+      serverMaxRecordTime: '',
+      serverRecordResolution: '',
       useTranslateAllow: false,
       translateCode: 'ko-KR',
     }
@@ -222,12 +266,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    serverRecording: {
+      type: Boolean,
+      default: false,
+    },
     viewType: String,
   },
 
   computed: {
     ...mapGetters([
       'view',
+      'serverRecord',
       'localRecord',
       'allowLocalRecord',
       'allowPointing',
@@ -265,6 +314,15 @@ export default {
         },
       ]
     },
+    serverRecTime() {
+      const options = serverRecTime.map(time => {
+        return {
+          value: time,
+          text: `${time} ${this.$t('date.minute')}`,
+        }
+      })
+      return options
+    },
     isLeader() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
@@ -274,6 +332,13 @@ export default {
     },
     isCurrentView() {
       if (this.viewType === this.view) {
+        return true
+      } else {
+        return false
+      }
+    },
+    isOnpremise() {
+      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
         return true
       } else {
         return false
@@ -290,6 +355,8 @@ export default {
         this.maxRecordTime = this.localRecord.time
         this.maxRecordInterval = this.localRecord.interval
         this.recordResolution = this.localRecord.resolution
+        this.serverMaxRecordTime = this.serverRecord.time
+        this.serverRecordResolution = this.serverRecord.resolution
         if (this.account.roleType === ROLE.LEADER) {
           this.localRecording = this.allowLocalRecord
           this.pointing = this.allowPointing
@@ -376,16 +443,23 @@ export default {
     recordResolution(resolution) {
       this.changeSetting('resolution', resolution)
     },
-    translateCode(code) {
-      this.changeTranslate('code', code)
+    serverMaxRecordTime(time) {
+      this.changeServerSetting('time', time)
     },
-    useTranslateAllow(flag) {
-      this.changeTranslate('flag', flag)
+    serverRecordResolution(resolution) {
+      this.changeServerSetting('resolution', resolution)
     },
+    // translateCode(code) {
+    //   this.changeTranslate('code', code)
+    // },
+    // useTranslateAllow(flag) {
+    //   this.changeTranslate('flag', flag)
+    // },
   },
   methods: {
     ...mapActions([
       'setRecord',
+      'setServerRecord',
       'setScreenStream',
       'setLocalRecordTarget',
       'addChat',
@@ -396,6 +470,13 @@ export default {
       param[item] = setting
       this.setRecord(param)
       this.$localStorage.setRecord(item, setting)
+      // this.showToast()
+    },
+    changeServerSetting(item, setting) {
+      const param = {}
+      param[item] = setting
+      this.setServerRecord(param)
+      this.$localStorage.setServerRecord(item, setting)
       // this.showToast()
     },
     changeTranslate(item, setting) {
@@ -424,6 +505,10 @@ export default {
     if (this.account.roleType === ROLE.LEADER) {
       this.localRecording = this.allowLocalRecord
       this.pointing = this.allowPointing
+    }
+    if (this.isOnpremise) {
+      this.serverMaxRecordTime = this.serverRecord.time
+      this.serverRecordResolution = this.serverRecord.resolution
     }
     this.$nextTick(() => {
       this.initing = true
