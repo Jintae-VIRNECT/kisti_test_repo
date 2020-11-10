@@ -37,6 +37,7 @@
         v-if="!openRoom || isLeader"
         :class="{
           shareview: isLeader && currentView === 'drawing',
+          fullscreen: isFullScreen,
         }"
       ></user-list>
       <div v-else>
@@ -101,6 +102,7 @@ export default {
     return {
       showDenied: false,
       callTimeout: null,
+      isFullScreen: false,
     }
   },
   computed: {
@@ -192,6 +194,9 @@ export default {
       if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
       this.$call.changeProperty(hasVideo)
     },
+    setFullScreen(flag) {
+      this.isFullScreen = flag
+    },
   },
 
   /* Lifecycles */
@@ -205,6 +210,7 @@ export default {
     }
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
+    this.$eventBus.$on('fullscreen', this.setFullScreen)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -217,6 +223,7 @@ export default {
 
     this.stopLocalRecord()
     this.stopServerRecord()
+    this.$eventBus.$off('fullscreen', this.setFullScreen)
   },
 }
 </script>

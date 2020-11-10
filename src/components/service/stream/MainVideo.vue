@@ -59,6 +59,12 @@
             <video-tools v-if="hoverTools"></video-tools>
           </transition>
         </template>
+        <transition name="opacity">
+          <fullscreen
+            v-show="hoverTools"
+            :status.sync="isFullscreen"
+          ></fullscreen>
+        </transition>
       </template>
     </div>
     <div class="main-video__empty" v-if="!loaded">
@@ -135,6 +141,7 @@ import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
+import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
 export default {
@@ -143,6 +150,7 @@ export default {
   components: {
     Pointing,
     VideoTools,
+    Fullscreen,
   },
   data() {
     return {
@@ -160,6 +168,7 @@ export default {
       serverTimer: null,
       serverTime: 0,
       serverStart: 0,
+      isFullscreen: false,
     }
   },
   computed: {
@@ -396,6 +405,11 @@ export default {
         this.serverTimer = null
       }
     },
+    changeFullScreen() {
+      setTimeout(() => {
+        this.optimizeVideoSize()
+      }, 500)
+    },
   },
 
   /* Lifecycles */
@@ -403,12 +417,14 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('localRecord', this.localRecord)
     this.$eventBus.$off('serverRecord', this.serverRecord)
+    this.$eventBus.$off('fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('localRecord', this.localRecord)
     this.$eventBus.$on('serverRecord', this.serverRecord)
+    this.$eventBus.$on('fullscreen', this.changeFullScreen)
     window.addEventListener('resize', this.nextOptimize)
   },
 }
