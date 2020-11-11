@@ -604,6 +604,64 @@ public class DataRepository {
         }.asApiResponse();
     }
 
+    public DataProcess<RoomDetailInfoResponse> loadRoomDummy(String workspaceId, String sessionId) {
+        return new RepoDecoder<Room, RoomDetailInfoResponse>(RepoDecoderType.READ) {
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
+            }
+
+            @Override
+            DataProcess<RoomDetailInfoResponse> invokeDataProcess() {
+                log.info("ROOM INFO RETRIEVE BY SESSION ID => [{}]", sessionId);
+                //ApiResponse<RoomDetailInfoResponse> response = new ApiResponse<>();
+                Room room = loadFromDatabase();
+                if(room == null) {
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                } else {
+                    if (room.getRoomStatus() != RoomStatus.ACTIVE) {
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
+                    } else {
+                        RoomDetailInfoResponse resultResponse;
+                        // mapping data
+                        //RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+                        resultResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+                        // Get Member List by Room Session ID
+                        // Mapping Member List Data to Member Information List
+                        List<MemberInfoResponse> memberInfoList = sessionService.getMemberList(resultResponse.getSessionId())
+                                .stream()
+                                .map(member -> modelMapper.map(member, MemberInfoResponse.class))
+                                .collect(Collectors.toList());
+
+                        //remove members who is evicted
+                        memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+
+                        // find and get extra information from workspace-server using uuid
+                        //if (!memberInfoList.isEmpty()) {
+                        for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+                            ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                            log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                            //todo://user infomation does not have role and role id change to workspace member info
+                            WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                            memberInfoResponse.setRole(workspaceMemberData.getRole());
+                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                            memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                            memberInfoResponse.setName(workspaceMemberData.getName());
+                            memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                            memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+                        }
+                        //}
+                        // Set Member List to Room Detail Information Response
+                        resultResponse.setMemberList(memberInfoList);
+                        return new DataProcess<>(resultResponse);
+                    }
+                }
+            }
+        }.asResponseData();
+    }
+
     public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
             @Override

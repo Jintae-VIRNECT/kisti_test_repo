@@ -23,6 +23,9 @@ import com.virnect.serviceserver.feign.service.MessageRestService;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -389,6 +392,26 @@ public class SessionRestController implements ISessionRestAPI {
         return ResponseEntity.ok(
                 this.dataRepository.loadRoom(workspaceId, sessionId)
         );
+    }
+
+    private HttpHeaders getResponseHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return responseHeaders;
+    }
+
+    @Override
+    public ResponseEntity<RoomDetailInfoResponse> getRoomByIdDummyTwo(String workspaceId, String sessionId) {
+        if (workspaceId.isEmpty() || sessionId.isEmpty()) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        return new ResponseEntity<>(
+                this.dataRepository.loadRoomDummy(workspaceId, sessionId).getData(),
+                getResponseHeaders(),
+                HttpStatus.OK
+        );
+
     }
 
     @Override
