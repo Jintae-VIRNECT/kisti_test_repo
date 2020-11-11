@@ -16,8 +16,19 @@ import java.util.stream.Collectors;
 public class CustomPageHandler<T> {
     private int temp = 0;
 
+    /**
+     * 커스텀 페이징 공통 모듈
+     *
+     * @param page             - 현재 조회할 페이지 번호
+     * @param size             - 페이지 당 보여줄 요소 갯수
+     * @param beforePagingList - 페이징 처리하기 전의 리스트
+     * @return - 페이징 처리 후의 리스트
+     */
     public CustomPageResponse paging(int page, int size, List<T> beforePagingList) {
         int totalElements = beforePagingList.size();
+        if (totalElements <= size) {
+            size = totalElements;
+        }
         int totalPage = totalElements / size;
         int resultPage = totalPage;
         int lastElements = totalElements % size;
