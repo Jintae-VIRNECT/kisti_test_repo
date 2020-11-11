@@ -382,6 +382,16 @@ public class SessionRestController implements ISessionRestAPI {
     }
 
     @Override
+    public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomByIdDummy(String workspaceId, String sessionId) {
+        if (workspaceId.isEmpty() || sessionId.isEmpty()) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        return ResponseEntity.ok(
+                this.dataRepository.loadRoom(workspaceId, sessionId)
+        );
+    }
+
+    @Override
     public ResponseEntity<ApiResponse<RoomDeleteResponse>> deleteRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,

@@ -94,6 +94,11 @@ public interface ISessionRestAPI {
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId);
 
+    @GetMapping(value = "room/dummy/{workspaceId}/{sessionId}")
+    ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomByIdDummy(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId);
+
     @ApiOperation(value = "Delete Specific Room", notes = "특정 원격협업 방을 삭제하는 API 입니다.")
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/{userId}")
     ResponseEntity<ApiResponse<RoomDeleteResponse>> deleteRoomById(
