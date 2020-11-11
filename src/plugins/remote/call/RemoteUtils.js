@@ -379,7 +379,7 @@ const setUserObject = event => {
     video: false,
     audio: true,
     hasVideo: false,
-    hasAudio: false,
+    hasAudio: true,
     hasCamera: false,
     speaker: true,
     mute: false,

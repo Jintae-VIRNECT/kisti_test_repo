@@ -11,17 +11,28 @@
           :beforeChat="idx === 0 ? null : chatList[idx - 1]"
           :afterChat="idx === chatList.length - 1 ? null : chatList[idx + 1]"
           :chat="chat"
+          @tts="doTts"
         ></chat-item>
       </ol>
     </vue2-scrollbar>
-    <chat-input :speech.sync="speech"></chat-input>
-    <transition name="hide-bottom">
-      <chat-speech
-        v-if="speech"
-        :sync="translate.sttSync"
-        @hidespeech="speech = false"
-      ></chat-speech>
-    </transition>
+    <chat-tts ref="chatTts"></chat-tts>
+    <div>
+      <transition name="hide-back">
+        <chat-input v-if="!speech" :speech.sync="speech"></chat-input>
+      </transition>
+      <transition name="hide-bottom">
+        <chat-speech
+          v-if="speech && translate.sttSync"
+          @hidespeech="speech = false"
+        ></chat-speech>
+      </transition>
+      <transition name="hide-bottom">
+        <chat-speech-streaming
+          v-if="speech && !translate.sttSync"
+          @hidespeech="speech = false"
+        ></chat-speech-streaming>
+      </transition>
+    </div>
   </div>
 </template>
 
@@ -30,12 +41,16 @@ import { mapGetters } from 'vuex'
 import ChatItem from './ChatItem'
 import ChatInput from './ChatInput'
 import ChatSpeech from './ChatSpeech'
+import ChatSpeechStreaming from './ChatSpeechStreaming'
+import ChatTts from './ChatTts'
 export default {
   name: 'ChatMsgList',
   components: {
     ChatInput,
     ChatItem,
     ChatSpeech,
+    ChatSpeechStreaming,
+    ChatTts,
   },
   data() {
     return {
@@ -64,6 +79,11 @@ export default {
       }, 300)
     },
   },
+  methods: {
+    doTts(info) {
+      this.$refs['chatTts'].doTts(info)
+    },
+  },
 }
 </script>
 
@@ -76,8 +96,20 @@ export default {
 .hide-bottom-enter {
   bottom: -17.143rem;
 }
-/* .hide-bottom-leave,
+.hide-bottom-leave,
 .hide-bottom-enter-to {
   bottom: 0;
-} */
+}
+.hide-back-enter-active,
+.hide-back-leave-active {
+  transition: bottom 0.8s;
+}
+.hide-back-leave-to,
+.hide-back-enter {
+  position: absolute;
+}
+.hide-back-leave,
+.hide-back-enter-to {
+  position: absolute;
+}
 </style>

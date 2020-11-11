@@ -15,12 +15,11 @@
       </svg>
       <button
         class="chat-speech__icon"
-        :class="{ active: !sync, recording: progress > 0 }"
+        :class="{ recording: progress > 0 }"
         @click="clickSpeech"
       ></button>
       <span class="chat-speech__text">{{ speechGuide }}</span>
       <button
-        v-if="sync"
         class="chat-speech__send"
         :class="{ inactive: !sendActive }"
         @click="doSend()"
@@ -28,7 +27,7 @@
         보내기
       </button>
     </div>
-    <div class="chat-speach__textarea" v-if="sync">
+    <div class="chat-speach__textarea">
       <textarea
         placeholder="음성 녹음을 진행하여 음성 채팅을 시작하세요."
         v-model="speechText"
@@ -58,31 +57,20 @@ export default {
       speechText: '',
     }
   },
-  props: {
-    sync: {
-      type: Boolean,
-      default: true,
-    },
-  },
   computed: {
     ...mapGetters(['mainView', 'translate', 'mic']),
     speechGuide() {
-      if (this.sync) {
-        if (this.speechText && this.speechText.length > 0) {
-          return '음성 인식 완료'
-        }
-        if (this.progress > 0) {
-          return '음성 인식 중...'
-        } else {
-          return '음성 대기'
-        }
+      if (this.speechText && this.speechText.length > 0) {
+        return '음성 인식 완료'
+      }
+      if (this.progress > 0) {
+        return '음성 인식 중...'
       } else {
-        return '음성 인식된 문장이 표출됩니다.'
+        return '음성 대기'
       }
     },
     sendActive() {
       if (
-        this.sync &&
         this.speechText &&
         this.speechText.length > 0 &&
         this.progress === 0
@@ -119,20 +107,18 @@ export default {
       this.strokeDashoffset = offset
     },
     async clickSpeech() {
-      if (this.sync) {
-        if (this.progress > 0) {
-          clearInterval(this.timer)
-          this.strokeDashoffset = 0
-          this.progress = 0
-          const text = await this.stopRecord(true)
-          if (!text || text.trim().length === 0) {
-            this.toastDefault('인식된 음성이 없습니다.')
-          } else {
-            this.speechText = text
-          }
+      if (this.progress > 0) {
+        clearInterval(this.timer)
+        this.strokeDashoffset = 0
+        this.progress = 0
+        const text = await this.stopRecord(true)
+        if (!text || text.trim().length === 0) {
+          this.toastDefault('인식된 음성이 없습니다.')
         } else {
-          this.startSpeechRecord()
+          this.speechText = text
         }
+      } else {
+        this.startSpeechRecord()
       }
     },
     async doSend() {
@@ -144,9 +130,7 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    if (this.sync) {
-      this.startSpeechRecord()
-    }
+    this.startSpeechRecord()
   },
   beforeDestroy() {
     clearInterval(this.timer)

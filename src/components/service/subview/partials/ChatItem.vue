@@ -21,6 +21,15 @@
         </div>
         <div class="chat-item__body--textbox">
           <p
+            v-if="isTranslate"
+            class="chat-item__body--text"
+            :class="{
+              inactive: !translateActive && !translate.multiple,
+              multiple: isTranslate && translate.multiple,
+            }"
+            v-html="chatTranslateText"
+          ></p>
+          <p
             class="chat-item__body--text"
             :class="[
               subClass,
@@ -31,15 +40,6 @@
               },
             ]"
             v-html="chatText"
-          ></p>
-          <p
-            v-if="isTranslate"
-            class="chat-item__body--text"
-            :class="{
-              inactive: !translateActive || !translate.multiple,
-              multiple: isTranslate && translate.multiple,
-            }"
-            v-html="chatTranslateText"
           ></p>
         </div>
         <button
@@ -243,6 +243,7 @@ export default {
         const response = await doTranslate(this.chat.text, this.translateCode)
         this.translateText = response
         this.translateActive = true
+        this.$emit('tts', response)
       } catch (err) {
         console.error(`${err.message} (${err.code})`)
       }
@@ -251,8 +252,12 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    if (this.chat.type === 'opponent' && this.translate.flag) {
-      this.doTranslateText()
+    if (this.chat.type === 'opponent' && !this.isFile) {
+      if (this.translate.flag) {
+        this.doTranslateText()
+      } else {
+        this.$emit('tts', this.chat.text)
+      }
     }
   },
 }

@@ -35,9 +35,7 @@ export default {
             if (doStt) {
               translateText = await this.getRecordFile(blob)
             }
-            this.debug('audio data', blob)
-            this.logger('Audio size: ', blob.size)
-            console.log(translateText)
+            this.logger('STT', 'AUDIO SIZE: ', blob.size)
             resolve(translateText)
             // Recorder.download(blob, 'sttfile.wav')
           })
@@ -57,8 +55,8 @@ export default {
           const b64 = reader.result.replace(/^data:.+;base64,/, '')
           const sendMessage = await stt(b64, this.sttCode)
           const sttTime = Date.now() - startTime
-          this.logger('STT Message: ', sendMessage)
-          this.logger('STT during time: ', sttTime)
+          this.logger('STT', 'MESSAGE: ', sendMessage)
+          this.logger('STT', 'DURING TIME: ', sttTime)
           resolve(sendMessage)
           // if (sendMessage.length > 0) {
           //   this.sttText = sendMessage
