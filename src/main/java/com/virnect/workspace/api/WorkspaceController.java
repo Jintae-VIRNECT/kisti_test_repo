@@ -71,7 +71,7 @@ public class WorkspaceController {
 		if (bindingResult.hasErrors()) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.createWorkspace(workspaceCreateRequest);
+		ApiResponse<WorkspaceInfoDTO> apiResponse = workspaceService.createWorkspace(workspaceCreateRequest);
 		return ResponseEntity.ok(apiResponse);
 	}
 
@@ -94,7 +94,7 @@ public class WorkspaceController {
 		if (bindingResult.hasErrors()) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceInfoDTO> apiResponse = this.workspaceService.setWorkspace(workspaceUpdateRequest, locale);
+		ApiResponse<WorkspaceInfoDTO> apiResponse = workspaceService.setWorkspace(workspaceUpdateRequest, locale);
 		return ResponseEntity.ok(apiResponse);
 	}
 
@@ -140,7 +140,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getMembers(
+		ApiResponse<MemberListResponse> apiResponse = workspaceService.getMembers(
 			workspaceId, search, filter, pageable);
 		return ResponseEntity.ok(apiResponse);
 	}
@@ -156,7 +156,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceInfoResponse> apiResponse = this.workspaceService.getWorkspaceDetailInfo(workspaceId);
+		ApiResponse<WorkspaceInfoResponse> apiResponse = workspaceService.getWorkspaceDetailInfo(workspaceId);
 		return ResponseEntity.ok(apiResponse);
 	}
 
@@ -171,7 +171,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<List<WorkspaceNewMemberInfoDTO>> apiResponse = this.workspaceService.getWorkspaceNewUserInfo(
+		ApiResponse<List<WorkspaceNewMemberInfoDTO>> apiResponse = workspaceService.getWorkspaceNewUserInfo(
 			workspaceId);
 		return ResponseEntity.ok(apiResponse);
 	}
@@ -191,7 +191,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<Boolean> apiResponse = this.workspaceService.reviseMemberInfo(
+		ApiResponse<Boolean> apiResponse = workspaceService.reviseMemberInfo(
 			workspaceId, memberUpdateRequest, locale);
 		return ResponseEntity.ok(apiResponse);
 	}
@@ -211,7 +211,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<UserInfoDTO> apiResponse = this.workspaceService.getMemberInfo(workspaceId, userId);
+		ApiResponse<UserInfoDTO> apiResponse = workspaceService.getMemberInfo(workspaceId, userId);
 		return ResponseEntity.ok(apiResponse);
 	}
 
@@ -233,7 +233,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<Boolean> apiResponse = this.workspaceService.kickOutMember(
+		ApiResponse<Boolean> apiResponse = workspaceService.kickOutMember(
 			workspaceId, memberKickOutRequest, locale);
 		return ResponseEntity.ok(apiResponse);
 	}
@@ -254,7 +254,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<Boolean> apiResponse = this.workspaceService.inviteWorkspace(
+		ApiResponse<Boolean> apiResponse = workspaceService.inviteWorkspace(
 			workspaceId, workspaceInviteRequest, locale);
 		return ResponseEntity.ok(apiResponse);
 	}
@@ -278,7 +278,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		RedirectView redirectView = this.workspaceService.inviteWorkspaceResult(workspaceId, userId, accept, lang);
+		RedirectView redirectView = workspaceService.inviteWorkspaceResult(workspaceId, userId, accept, lang);
 		return redirectView;
 	}
 
@@ -297,7 +297,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<Boolean> apiResponse = this.workspaceService.exitWorkspace(workspaceId, userId, locale);
+		ApiResponse<Boolean> apiResponse = workspaceService.exitWorkspace(workspaceId, userId, locale);
 		return ResponseEntity.ok(apiResponse);
 	}
 
@@ -320,7 +320,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceHistoryListResponse> apiResponse = this.workspaceService.getWorkspaceHistory(
+		ApiResponse<WorkspaceHistoryListResponse> apiResponse = workspaceService.getWorkspaceHistory(
 			workspaceId, userId, pageRequest.of());
 		return ResponseEntity.ok(apiResponse);
 	}
@@ -339,7 +339,7 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<MemberListResponse> apiResponse = this.workspaceService.getSimpleWorkspaceUserList(workspaceId);
+		ApiResponse<MemberListResponse> apiResponse = workspaceService.getSimpleWorkspaceUserList(workspaceId);
 		return ResponseEntity.ok(apiResponse);
 	}
 
@@ -360,9 +360,8 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceUserLicenseListResponse> apiResponse = this.workspaceService.getLicenseWorkspaceUserList(
-			workspaceId, pageRequest.of());
-		return ResponseEntity.ok(apiResponse);
+		WorkspaceUserLicenseListResponse response = workspaceService.getLicenseWorkspaceUserList(workspaceId, pageRequest.of());
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
 	@ApiOperation(
@@ -379,9 +378,8 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceLicenseInfoResponse> apiResponse = this.workspaceService.getWorkspaceLicenseInfo(
-			workspaceId);
-		return ResponseEntity.ok(apiResponse);
+		WorkspaceLicenseInfoResponse response = workspaceService.getWorkspaceLicenseInfo(workspaceId);
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 /*
     @ApiOperation(
@@ -396,7 +394,7 @@ public class WorkspaceController {
         if (!StringUtils.hasText(workspaceId) || bindingResult.hasErrors()) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<Boolean> apiResponse = this.workspaceService.testSetMember(workspaceId, workspaceInviteRequest);
+        ApiResponse<Boolean> apiResponse = workspaceService.testSetMember(workspaceId, workspaceInviteRequest);
         return ResponseEntity.ok(apiResponse);
     }
 */

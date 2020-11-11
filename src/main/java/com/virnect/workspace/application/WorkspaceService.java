@@ -16,6 +16,8 @@ import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
+import com.virnect.workspace.global.common.CustomPageHandler;
+import com.virnect.workspace.global.common.CustomPageResponse;
 import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
@@ -254,7 +256,7 @@ public class WorkspaceService {
                 }
             }
 
-            //TODO: WORKSPACE_USER 와 WORKSPACE_USER_PERMISSION 은 1:1이 아니므로, PAGING을 WORKSAPCE_USER의 레코드를 기준으로 해야한다.
+            //TODO: WORKSPACE_USER 와 WORKSPACE_USER_PERMISSION 은 1:1이 아니므로, PAGING을 WORKSAPCE_USER의 레코드를 기준으로 해야한다.(대신 정렬 다깨짐)
             workspaceUserPermissionPage = workspaceUserPermissionRepository.getContainedUserIdList(userIdList, newPageable, workspaceId);
             userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
         }
@@ -295,7 +297,6 @@ public class WorkspaceService {
             com.virnect.workspace.global.common.PageRequest
                     pageRequest, List<MemberInfoDTO> memberInfoDTOList
     ) {
-
         String sortName = pageRequest.of().getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
         String sortDirection = pageRequest.of().getSort().toString().split(":")[1].trim();//sort의 방향 : 내림차순 or 오름차순
         if (sortName.equalsIgnoreCase("workspaceRole") && sortDirection.equalsIgnoreCase("asc")) {
@@ -371,7 +372,7 @@ public class WorkspaceService {
         //user 정보 set
         List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
         List<UserInfoDTO> userInfoList = new ArrayList<>();
-        workspaceUserList.stream().forEach(workspaceUser -> {
+        workspaceUserList.forEach(workspaceUser -> {
             UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(
                     workspaceUser.getUserId()).getData();
             UserInfoDTO userInfoDTO = modelMapper.map(userInfoRestResponse, UserInfoDTO.class);
@@ -476,8 +477,7 @@ public class WorkspaceService {
         }
 
         //초대받는 사람에게 할당할 라이선스가 있는 지 체크.(useful license check)
-        for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfo : workspaceLicensePlanInfoResponse
-                .getLicenseProductInfoList()) {
+        for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfo : workspaceLicensePlanInfoResponse.getLicenseProductInfoList()) {
             if (licenseProductInfo.getProductName().equals(LicenseProduct.REMOTE.toString())) {
                 log.debug(
                         "[WORKSPACE INVITE USER] Workspace Useful License Check. Workspace Unuse Remote License count >> {}, Request REMOTE License count >> {}",
@@ -696,7 +696,8 @@ public class WorkspaceService {
         List<WorkspaceUserPermission> workspaceUserPermissionList = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(
                 workspace, "MANAGER");
         if (workspaceUserPermissionList != null) {
-            workspaceUserPermissionList.stream().forEach(workspaceUserPermission -> {
+
+            workspaceUserPermissionList.forEach(workspaceUserPermission -> {
                 UserInfoRestResponse managerUser = this.userRestService.getUserInfoByUserId(workspace.getUserId())
                         .getData();
                 emailReceiverList.add(managerUser.getEmail());
@@ -936,7 +937,7 @@ public class WorkspaceService {
         List<WorkspaceUserPermission> workspaceUserPermissionList = this.workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(
                 workspace, "MANAGER");
         if (workspaceUserPermissionList != null) {
-            workspaceUserPermissionList.stream().forEach(workspaceUserPermission -> {
+            workspaceUserPermissionList.forEach(workspaceUserPermission -> {
                 UserInfoRestResponse managerUser = this.userRestService.getUserInfoByUserId(workspace.getUserId())
                         .getData();
                 emailReceiverList.add(managerUser.getEmail());
@@ -1206,7 +1207,7 @@ public class WorkspaceService {
                 workspaceId);//최신 4명만 가져와서
 
         List<WorkspaceNewMemberInfoDTO> workspaceNewMemberInfoList = new ArrayList<>();
-        workspaceUserList.stream().forEach(workspaceUser -> {
+        workspaceUserList.forEach(workspaceUser -> {
             UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspaceUser.getUserId())
                     .getData();
             WorkspaceNewMemberInfoDTO newMemberInfo = modelMapper.map(
@@ -1245,7 +1246,7 @@ public class WorkspaceService {
 
             List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(
                     workspace.getUuid());
-            workspaceUserList.stream().forEach(workspaceUser -> {
+            workspaceUserList.forEach(workspaceUser -> {
                 UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(
                         workspaceUser.getUserId()).getData();
                 receiverEmailList.add(userInfoRestResponse.getEmail());
@@ -1360,7 +1361,7 @@ public class WorkspaceService {
                 workspaceId, memberKickOutRequest.getKickedUserId()).getData();
         if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
                 .isEmpty()) {
-            myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
+            myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
                 log.debug(
                         "[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
                         myLicenseInfoResponse.getProductName()
@@ -1434,7 +1435,7 @@ public class WorkspaceService {
                 workspaceId, userId).getData();
         if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
                 .isEmpty()) {
-            myLicenseInfoListResponse.getLicenseInfoList().stream().forEach(myLicenseInfoResponse -> {
+            myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
                 Boolean revokeResult = this.licenseRestService.revokeWorkspaceLicenseToUser(
                         workspaceId, userId, myLicenseInfoResponse.getProductName()).getData();
                 if (!revokeResult) {
@@ -1482,13 +1483,13 @@ public class WorkspaceService {
     public ApiResponse<MemberListResponse> getSimpleWorkspaceUserList(String workspaceId) {
         List<WorkspaceUser> workspaceUserList = this.workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
         String[] workspaceUserIdList = workspaceUserList.stream()
-                .map(workspaceUser -> workspaceUser.getUserId())
+                .map(WorkspaceUser::getUserId)
                 .toArray(String[]::new);
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
 
         UserInfoListRestResponse userInfoListRestResponse = this.userRestService.getUserInfoList(
                 "", workspaceUserIdList).getData();
-        userInfoListRestResponse.getUserInfoList().stream().forEach(userInfoRestResponse -> {
+        userInfoListRestResponse.getUserInfoList().forEach(userInfoRestResponse -> {
             MemberInfoDTO memberInfoDTO = this.modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
             memberInfoDTOList.add(memberInfoDTO);
         });
@@ -1503,10 +1504,10 @@ public class WorkspaceService {
      * @param pageable    -  페이징
      * @return - 멤버 플랜 리스트
      */
-    public ApiResponse<WorkspaceUserLicenseListResponse> getLicenseWorkspaceUserList(
+    public WorkspaceUserLicenseListResponse getLicenseWorkspaceUserList(
             String workspaceId, Pageable pageable
     ) {
-        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = licenseRestService.getWorkspaceLicenses(
                 workspaceId).getData();
         if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
                 || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
@@ -1515,34 +1516,25 @@ public class WorkspaceService {
 
         List<WorkspaceUserLicenseInfoResponse> workspaceUserLicenseInfoList = new ArrayList<>();
 
-        for (WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse licenseProductInfoResponse : workspaceLicensePlanInfoResponse
-                .getLicenseProductInfoList()) {
-            if (!licenseProductInfoResponse.getLicenseInfoList().isEmpty()) {
-                for (WorkspaceLicensePlanInfoResponse.LicenseInfoResponse licenseInfoResponse : licenseProductInfoResponse
-                        .getLicenseInfoList()) {
-                    if (licenseInfoResponse.getStatus().equals(LicenseStatus.USE)) {
-                        UserInfoRestResponse userInfoRestResponse = this.userRestService.getUserInfoByUserId(
-                                licenseInfoResponse.getUserId()).getData();
-                        WorkspaceUserLicenseInfoResponse workspaceUserLicenseInfo = new WorkspaceUserLicenseInfoResponse();
-                        workspaceUserLicenseInfo.setUuid(userInfoRestResponse.getUuid());
-                        workspaceUserLicenseInfo.setProfile(userInfoRestResponse.getProfile());
-                        workspaceUserLicenseInfo.setNickName(userInfoRestResponse.getNickname());
-                        workspaceUserLicenseInfo.setProductName(licenseProductInfoResponse.getProductName());
-                        workspaceUserLicenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
-                        workspaceUserLicenseInfoList.add(workspaceUserLicenseInfo);
-                    }
-                }
-            }
-        }
+        workspaceLicensePlanInfoResponse.getLicenseProductInfoList()
+                .forEach(licenseProductInfoResponse -> {
+                    licenseProductInfoResponse.getLicenseInfoList().stream()
+                            .filter(licenseInfoResponse -> licenseInfoResponse.getStatus().equals(LicenseStatus.USE))
+                            .forEach(licenseInfoResponse -> {
+                                UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(licenseInfoResponse.getUserId()).getData();
+                                WorkspaceUserLicenseInfoResponse workspaceUserLicenseInfo = modelMapper.map(userInfoRestResponse, WorkspaceUserLicenseInfoResponse.class);
+                                workspaceUserLicenseInfo.setLicenseType(licenseProductInfoResponse.getLicenseType());
+                                workspaceUserLicenseInfo.setProductName(licenseProductInfoResponse.getProductName());
+                                workspaceUserLicenseInfoList.add(workspaceUserLicenseInfo);
+                            });
+                });
         if (workspaceUserLicenseInfoList.isEmpty()) {
             PageMetadataRestResponse pageMetadataRestResponse = new PageMetadataRestResponse();
             pageMetadataRestResponse.setCurrentPage(pageable.getPageNumber());
             pageMetadataRestResponse.setCurrentSize(pageable.getPageSize());
             pageMetadataRestResponse.setTotalElements(0);
             pageMetadataRestResponse.setTotalPage(0);
-            WorkspaceUserLicenseListResponse workspaceUserLicenseListResponse = new WorkspaceUserLicenseListResponse(
-                    workspaceUserLicenseInfoList, new PageMetadataRestResponse());
-            return new ApiResponse<>(workspaceUserLicenseListResponse);
+            return new WorkspaceUserLicenseListResponse(workspaceUserLicenseInfoList, new PageMetadataRestResponse());
         }
         List<WorkspaceUserLicenseInfoResponse> beforeWorkspaceUserLicenseList = new ArrayList<>();
 
@@ -1582,11 +1574,13 @@ public class WorkspaceService {
                     ))
                     .collect(Collectors.toList());
         }
-        return new ApiResponse<>(
-                paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList));
+        //WorkspaceUserLicenseListResponse workspaceUserLicenseListResponse = paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList);
+        CustomPageResponse customPageResponse = new CustomPageHandler<WorkspaceUserLicenseInfoResponse>().paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList);
+        WorkspaceUserLicenseListResponse workspaceUserLicenseListResponse = new WorkspaceUserLicenseListResponse(customPageResponse.getAfterPagingList(), customPageResponse.getPageMetadataResponse());
+        return workspaceUserLicenseListResponse;
     }
 
-    public WorkspaceUserLicenseListResponse paging(
+  /*  public WorkspaceUserLicenseListResponse paging(
             int pageNum, int pageSize, List<WorkspaceUserLicenseInfoResponse> beforeWorkspaceUserLicenseList
     ) {
 
@@ -1622,9 +1616,9 @@ public class WorkspaceService {
             return new WorkspaceUserLicenseListResponse(new ArrayList<>(), pageMetadataResponse);
         }
         return new WorkspaceUserLicenseListResponse(result.get(pageNum), pageMetadataResponse);
-    }
+    }*/
 
-    public ApiResponse<WorkspaceLicenseInfoResponse> getWorkspaceLicenseInfo(String workspaceId) {
+    public WorkspaceLicenseInfoResponse getWorkspaceLicenseInfo(String workspaceId) {
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = this.licenseRestService.getWorkspaceLicenses(
                 workspaceId).getData();
 		/*if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null) {
@@ -1657,7 +1651,7 @@ public class WorkspaceService {
         workspaceLicenseInfoResponse.setMaxDownloadHit(workspaceLicensePlanInfoResponse.getMaxDownloadHit());
         workspaceLicenseInfoResponse.setMaxCallTime(workspaceLicenseInfoResponse.getMaxCallTime());
 
-        return new ApiResponse<>(workspaceLicenseInfoResponse);
+        return workspaceLicenseInfoResponse;
     }
 
     /***
