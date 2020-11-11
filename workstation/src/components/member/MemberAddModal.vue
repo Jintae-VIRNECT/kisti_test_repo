@@ -8,12 +8,6 @@
   >
     <div>
       <p>{{ $t('members.add.desc') }}</p>
-      <p>
-        <span>{{ $t('members.add.desc2') }}</span>
-        <el-tooltip :content="$t('members.add.desc3')" placement="bottom-start">
-          <img src="~assets/images/icon/ic-error.svg" />
-        </el-tooltip>
-      </p>
       <el-form
         ref="form"
         v-for="(form, index) in userInfoList"
@@ -23,7 +17,6 @@
         :rules="rules"
         :show-message="false"
       >
-        <el-divider />
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
@@ -34,12 +27,6 @@
         <el-form-item class="horizon" prop="email" required>
           <template slot="label">
             <span>{{ $t('members.add.email') }}</span>
-            <el-tooltip
-              :content="$t('members.add.emailDesc')"
-              placement="bottom-start"
-            >
-              <img src="~assets/images/icon/ic-error.svg" />
-            </el-tooltip>
           </template>
           <el-input
             class="full"
@@ -81,7 +68,8 @@
               <member-plan-select
                 v-model="form.planRemote"
                 :label="plans.remote.label"
-                :amount="plansInfo.remote.unUsedAmount"
+                :amount="availablePlans.remote"
+                @change="choosePlan"
               />
             </el-form-item>
           </el-col>
@@ -90,7 +78,8 @@
               <member-plan-select
                 v-model="form.planMake"
                 :label="plans.make.label"
-                :amount="plansInfo.make.unUsedAmount"
+                :amount="availablePlans.make"
+                @change="choosePlan"
               />
             </el-form-item>
           </el-col>
@@ -99,7 +88,8 @@
               <member-plan-select
                 v-model="form.planView"
                 :label="plans.view.label"
-                :amount="plansInfo.view.unUsedAmount"
+                :amount="availablePlans.view"
+                @change="choosePlan"
               />
             </el-form-item>
           </el-col>
@@ -107,6 +97,10 @@
       </el-form>
     </div>
     <div slot="footer">
+      <div class="available">
+        <img src="~assets/images/icon/ic-person.svg" />
+        <span v-html="$tc('members.add.available', availableMember)" />
+      </div>
       <el-button @click="addMember">
         {{ $t('members.add.addMember') }}
       </el-button>
@@ -139,10 +133,14 @@ export default {
     MemberPlanSelect,
   },
   mixins: [modalMixin],
+  props: {
+    membersTotal: Number,
+  },
   data() {
     return {
       plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
+      availablePlans: { remote: 0, make: 0, view: 0 },
       userInfoList: [new InviteMember()],
       rules: {
         email: [{ required: true, trigger: 'blur' }],
@@ -157,20 +155,50 @@ export default {
     canChangeRole() {
       return this.activeWorkspace.role === 'MASTER'
     },
+    availableMember() {
+      return 49 - this.membersTotal - this.userInfoList.length
+    },
   },
   methods: {
-    opened() {
+    async reset() {
       this.userInfoList = [new InviteMember()]
       this.$refs.form.forEach(form => form.resetFields())
       if (!this.plansInfo.planStatus) {
-        this.$store.dispatch('plan/getPlansInfo')
+        await this.$store.dispatch('plan/getPlansInfo')
       }
+      this.initAvailablePlans()
+    },
+    opened() {
+      this.userInfoList = this.userInfoList.filter(form => form.email)
+      if (!this.userInfoList.length) this.reset()
     },
     addMember() {
-      this.userInfoList.push(new InviteMember())
+      if (this.availableMember < 1) {
+        this.$message.error({
+          dangerouslyUseHTMLString: true,
+          message: this.$t('members.add.message.memberOverflow'),
+          duration: 3000,
+          showClose: true,
+        })
+      } else {
+        this.userInfoList.push(new InviteMember())
+      }
     },
     clearMember(index) {
       this.userInfoList.splice(index, 1)
+    },
+    initAvailablePlans() {
+      this.plansInfo.products.forEach(product => {
+        this.availablePlans[product.value.toLowerCase()] = product.unUsedAmount
+      })
+    },
+    choosePlan() {
+      this.initAvailablePlans()
+      this.userInfoList.forEach(user => {
+        if (user.planRemote) this.availablePlans.remote -= 1
+        if (user.planMake) this.availablePlans.make -= 1
+        if (user.planView) this.availablePlans.view -= 1
+      })
     },
     async submit() {
       // 유효성 검사
@@ -188,6 +216,7 @@ export default {
           showClose: true,
         })
         this.$emit('updated', this.form)
+        this.reset()
         this.showMe = false
       } catch (e) {
         const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
@@ -224,6 +253,7 @@ export default {
 <style lang="scss">
 #__nuxt .member-add-modal {
   .el-dialog__body {
+    padding-right: 24px;
     overflow-y: scroll;
   }
   p {
@@ -251,7 +281,14 @@ export default {
   }
 
   .el-form {
-    margin: 0 0 -8px;
+    margin: 20px 0;
+    padding: 20px 20px 4px;
+    border: solid 1px #e6e9ee;
+    box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.1);
+
+    .el-icon-close:before {
+      font-weight: bold;
+    }
 
     h6 {
       margin-bottom: 20px;
@@ -268,7 +305,7 @@ export default {
       margin-bottom: 20px;
     }
     .el-input {
-      width: 180px;
+      width: 168px;
       &.full {
         width: 100%;
       }
@@ -276,6 +313,23 @@ export default {
   }
   .el-dialog__footer {
     border-top: solid 1px #edf0f7;
+
+    .available {
+      float: left;
+      & > img {
+        vertical-align: middle;
+        transform: scale(0.85);
+        opacity: 0.6;
+      }
+      & > span {
+        color: $font-color-desc;
+        vertical-align: middle;
+        size: 13px;
+      }
+      & > span > i {
+        color: $color-primary;
+      }
+    }
 
     .el-button:last-child {
       float: right;

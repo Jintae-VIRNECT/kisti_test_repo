@@ -39,13 +39,13 @@ export default {
     },
     myValue(v) {
       this.$emit('input', v[0])
+      this.$emit('change', this.myValue[0])
     },
   },
   methods: {
     change() {
       this.myValue = [this.myValue[this.myValue.length - 1]]
       if (!this.myValue[0]) this.myValue = [false]
-      this.$emit('change', this.myValue[0])
     },
   },
 }

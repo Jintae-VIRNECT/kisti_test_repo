@@ -52,7 +52,10 @@
         :total="membersTotal"
       />
     </div>
-    <member-add-modal :visible.sync="showAddModal" />
+    <member-add-modal
+      :visible.sync="showAddModal"
+      :membersTotal="membersTotal"
+    />
   </div>
 </template>
 
