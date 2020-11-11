@@ -66,7 +66,9 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 			gatewayAccessLog
 				.status(responseStatus)
 				.contentType(
-					Optional.ofNullable(response.getHeaders().getContentType()).orElse(new MediaType("-","-")).toString())
+					Optional.ofNullable(response.getHeaders().getContentType())
+						.orElse(new MediaType("-", "-"))
+						.toString())
 				.contentLength(response.getHeaders().getContentLength());
 			gatewayAccessLog.log();
 		}));

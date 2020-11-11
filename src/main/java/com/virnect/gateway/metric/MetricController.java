@@ -22,7 +22,7 @@ public class MetricController {
 	@GetMapping("/healthcheck")
 	public ResponseEntity<String> healthCheck() {
 		String message =
-				"\n\n"
+			"\n\n"
 				+ "------------------------------------------------------------------------------\n" + "\n"
 				+ "   VIRNECT PLATFORM API GATEWAY\n"
 				+ "   ---------------------------\n" + "\n"

@@ -14,13 +14,15 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import lombok.extern.slf4j.Slf4j;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 
 import com.virnect.gateway.error.ErrorCode;
 import com.virnect.gateway.error.GatewaySecurityException;
 
-@Slf4j
 public class EncryptDecryptHelper {
+	private final static Logger logger = Loggers.getLogger(
+		"com.virnect.gateway.filter.security.message.EncryptDecryptHelper");
 
 	public static String encrypt(final String key, final String data) {
 		try {
@@ -34,8 +36,8 @@ public class EncryptDecryptHelper {
 			return new String(Base64.getEncoder().encode(encrypted));
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException
 			| InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-			log.error("AES Util Encrypt Error: {}", e.getMessage());
-			log.error("Message Decrypt Error", e);
+			logger.error("AES Util Encrypt Error: {}", e.getMessage());
+			logger.error("Message Decrypt Error", e);
 			throw new GatewaySecurityException(ErrorCode.ERR_MESSAGE_ENCRYPT_DECRYPT);
 		}
 	}
@@ -52,8 +54,8 @@ public class EncryptDecryptHelper {
 			return new String(cipher.doFinal(decrypted), StandardCharsets.UTF_8);
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidAlgorithmParameterException
 			| InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
-			log.error("AES Util Decrypt Error: {}", e.getMessage());
-			log.error("Message Decrypt Error", e);
+			logger.error("AES Util Decrypt Error: {}", e.getMessage());
+			logger.error("Message Decrypt Error", e);
 			throw new GatewaySecurityException(ErrorCode.ERR_MESSAGE_ENCRYPT_DECRYPT);
 		}
 	}

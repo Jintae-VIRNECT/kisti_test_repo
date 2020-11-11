@@ -13,9 +13,10 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -24,16 +25,19 @@ import reactor.core.publisher.Mono;
  * @description
  * @since 2020.04.27
  */
-@Slf4j
+
 @Component
 public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
+	private static final Logger logger = Loggers.getLogger(
+		"com.virnect.gateway.error.GatewayExceptionHandler");
+
 	private String errorMessage(ErrorCode error) {
 		return "{\"code\":" + error.getCode() + ",\"message\":\"" + error.getMessage() + "\",\"data\":{}}";
 	}
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-		log.error("[GATEWAY EXCEPTION HANDLER] : {}", ex.getMessage(), ex);
+		logger.error("[GATEWAY EXCEPTION HANDLER] : {}", ex.getMessage(), ex);
 
 		String message = "";
 		// Gateway Security Related Exception Handling
