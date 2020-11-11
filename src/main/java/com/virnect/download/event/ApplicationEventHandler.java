@@ -17,7 +17,7 @@ public class ApplicationEventHandler {
 	@EventListener(ApplicationReadyEvent.class)
 	public void applicationReady() {
 		String msg = "\n\n----------------------------------------------------\n" + "\n"
-			+ "   Platform User Server is ready!\n"
+			+ "   Platform Download Server is ready!\n"
 			+ "   ---------------------------\n" + "\n"
 			+ "   * Server Host: [" + System.getenv("eureka.instance.ip-address") + "]\n" + "\n"
 			+ "   * VIRNECT_ENV: [" + System.getenv("VIRNECT_ENV") + "]\n" + "\n"
