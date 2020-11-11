@@ -13,15 +13,17 @@
           cy="1.929rem"
         />
       </svg>
-      <span
+      <button
         class="chat-speech__icon"
         :class="{ active: !sync, recording: progress > 0 }"
-      ></span>
+        @click="clickSpeech"
+      ></button>
       <span class="chat-speech__text">{{ speechGuide }}</span>
       <button
+        v-if="sync"
         class="chat-speech__send"
         :class="{ inactive: !sendActive }"
-        v-if="sync"
+        @click="doSend()"
       >
         보내기
       </button>
@@ -39,10 +41,14 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import sttMixin from './sttMixin'
+import toastMixin from 'mixins/toast'
 const MAX_RECORD_TIME = 15
 
 export default {
   name: 'ChatSpeech',
+  mixins: [toastMixin, sttMixin],
   data() {
     return {
       timer: null,
@@ -59,6 +65,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['mainView', 'translate', 'mic']),
     speechGuide() {
       if (this.sync) {
         if (this.speechText && this.speechText.length > 0) {
@@ -87,17 +94,21 @@ export default {
     },
   },
   methods: {
-    startSpeechRecord() {
+    async startSpeechRecord() {
+      if (!this.mic.isOn) {
+        this.toastError('마이크가 꺼져있습니다.')
+        return
+      }
       if (this.timer) clearInterval(this.timer)
+      this.initRecord(this.mainView.stream)
       this.speechText = ''
       this.strokeDashoffset = this.circumference
-      this.timer = setInterval(() => {
+      await this.startRecord(this.translate.code)
+      this.timer = setInterval(async () => {
         this.progress += 1
         this.setProgress()
         if (this.progress > MAX_RECORD_TIME) {
-          clearInterval(this.timer)
-          this.strokeDashoffset = 0
-          this.progress = 0
+          this.clickSpeech()
         }
       }, 1000)
     },
@@ -107,6 +118,28 @@ export default {
         (this.progress / MAX_RECORD_TIME) * this.circumference
       this.strokeDashoffset = offset
     },
+    async clickSpeech() {
+      if (this.sync) {
+        if (this.progress > 0) {
+          clearInterval(this.timer)
+          this.strokeDashoffset = 0
+          this.progress = 0
+          const text = await this.stopRecord(true)
+          if (!text || text.trim().length === 0) {
+            this.toastDefault('인식된 음성이 없습니다.')
+          } else {
+            this.speechText = text
+          }
+        } else {
+          this.startSpeechRecord()
+        }
+      }
+    },
+    async doSend() {
+      this.$call.sendChat(this.speechText, this.translate.code)
+
+      this.speechText = ''
+    },
   },
 
   /* Lifecycles */
@@ -114,7 +147,6 @@ export default {
     if (this.sync) {
       this.startSpeechRecord()
     }
-    // this.init()
   },
   beforeDestroy() {
     clearInterval(this.timer)

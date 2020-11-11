@@ -46,6 +46,7 @@
   }
 
   &.active {
+    cursor: default;
     &:before {
       background-color: #0f75f5;
       opacity: 0.3;
@@ -73,7 +74,7 @@
   > circle {
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
-    transition: stroke-dashoffset 1s;
+    transition: stroke-dashoffset linear 1s;
   }
 }
 
@@ -103,6 +104,11 @@
   }
   &:active {
     background-color: $color_primary_dark;
+  }
+  &.inactive {
+    color: rgba(#fafafa, 0.5);
+    background-color: #797e85;
+    cursor: default;
   }
 }
 

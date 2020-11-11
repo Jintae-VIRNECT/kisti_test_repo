@@ -2,19 +2,19 @@
 <svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
     <title>mdpi/icon_trans</title>
     <defs>
-        <path d="M12.5536364,13.842 L10.9372727,12.336 L10.9563636,12.318 C12.0636364,11.154 12.8527273,9.816 13.3172727,8.4 L15.1818182,8.4 L15.1818182,7.2 L10.7272727,7.2 L10.7272727,6 L9.45454545,6 L9.45454545,7.2 L5,7.2 L5,8.394 L12.1081818,8.394 C11.6818182,9.552 11.0072727,10.65 10.0909091,11.61 C9.49909091,10.992 9.00909091,10.314 8.62090909,9.6 L7.34818182,9.6 C7.81272727,10.578 8.44909091,11.502 9.24454545,12.336 L6.00545455,15.348 L6.90909091,16.2 L10.0909091,13.2 L12.07,15.066 L12.5536364,13.842 Z M16.1363636,10.8 L14.8636364,10.8 L12,18 L13.2727273,18 L13.9854545,16.2 L17.0081818,16.2 L17.7272727,18 L19,18 L16.1363636,10.8 Z M14.4690909,15 L15.5,12.402 L16.5309091,15 L14.4690909,15 Z" id="path-1"></path>
+        <path d="M16.4444444,9.41176471 L16.4444444,12.0588235 L20,8.52941176 L16.4444444,5 L16.4444444,7.64705882 L5.77777778,7.64705882 L5.77777778,9.41176471 L7.55555556,9.41176471 L16.4444444,9.41176471 Z M7.55555556,15.5882353 L7.55555556,12.9411765 L4,16.4705882 L7.55555556,20 L7.55555556,17.3529412 L18.2222222,17.3529412 L18.2222222,15.5882353 L16.4444444,15.5882353 L7.55555556,15.5882353 Z" id="path-1"></path>
     </defs>
-    <g id="kintex" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="RTT_0110-_STT-진행-화면-" transform="translate(-1855.000000, -665.000000)">
-            <g id="message" transform="translate(1560.000000, 56.000000)">
+    <g id="V2.2-update" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RTT_0110-_선택-출력,-동시-출력" transform="translate(-655.000000, -459.000000)">
+            <g id="message" transform="translate(360.000000, 112.000000)">
                 <g id="Group-2" transform="translate(15.000000, 114.000000)">
-                    <g id="speechbb_left02" transform="translate(10.000000, 493.000000)">
+                    <g id="speechbb_left02" transform="translate(10.000000, 231.000000)">
                         <g id="icon_trans" transform="translate(268.000000, 0.000000)">
                             <rect id="tr" x="0" y="0" width="24" height="24"></rect>
                             <mask id="mask-2" fill="white">
                                 <use xlink:href="#path-1"></use>
                             </mask>
-                            <use id="icon/action/translate_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            <use id="icon/av/repeat_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
                         </g>
                     </g>
                 </g>
