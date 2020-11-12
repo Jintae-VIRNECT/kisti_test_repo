@@ -2,15 +2,13 @@ package com.virnect.workspace.dao;
 
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.virnect.workspace.domain.QWorkspaceUserPermission;
-import com.virnect.workspace.domain.WorkspaceRole;
-import com.virnect.workspace.domain.WorkspaceUser;
-import com.virnect.workspace.domain.WorkspaceUserPermission;
+import com.virnect.workspace.domain.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -47,23 +45,21 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
     @Override
     public Page<WorkspaceUserPermission> getRoleFilteredUserList(String roleFilter, Pageable pageable, String workspaceId) {
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
-        /*
-        QWorkspaceRole qWorkspaceRole= QWorkspaceRole.workspaceRole;
-        List<WorkspaceRole> roleList = new ArrayList<>();
+        List<String> roleList = new ArrayList<>();
         if (roleFilter.contains("MASTER")) {
-            roleList.add(WorkspaceRole.builder().id(1L).build());
+            roleList.add("MASTER");
         }
         if (roleFilter.contains("MANAGER")) {
-            roleList.add(WorkspaceRole.builder().id(2L).build());
+            roleList.add("MANAGER");
         }
         if (roleFilter.contains("MEMBER")) {
-            roleList.add(WorkspaceRole.builder().id(3L).build());
-        }*/
+            roleList.add("MEMBER");
+        }
 
         JPQLQuery<WorkspaceUserPermission> query = jpaQueryFactory
                 .select(qWorkspaceUserPermission)
                 .from(qWorkspaceUserPermission)
-                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId).and(qWorkspaceUserPermission.workspaceRole.role.containsIgnoreCase(roleFilter)))
+                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId).and(qWorkspaceUserPermission.workspaceRole.role.in(roleList)))
                 .fetchAll();
 
         List<WorkspaceUserPermission> workspaceUserPermissionList = getQuerydsl().applyPagination(pageable, query).fetch();
