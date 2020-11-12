@@ -48,7 +48,6 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 		ServerHttpResponse response = exchange.getResponse();
 		GatewayAccessLog gatewayAccessLog = new GatewayAccessLog()
 			.address(fetchAddressFromRequest(request))
-			.port(request.getLocalAddress().getPort())
 			.method(request.getMethod().name())
 			.uri(request.getURI().toString())
 			.protocol("protocol")
@@ -90,9 +89,17 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 	}
 
 	private String fetchAddressFromRequest(ServerHttpRequest request) {
-		return Optional.ofNullable(
-			request.getHeaders().getFirst("X-Forwarded-For")
-		).orElse(request.getRemoteAddress().getHostName());
+		String clientIp = request.getHeaders().getFirst("X-Forwarded-For");
+
+		if (clientIp != null) {
+			return clientIp;
+		}
+
+		if (request.getRemoteAddress() != null) {
+			return request.getRemoteAddress().getAddress().getHostAddress();
+		}
+
+		return "-";
 	}
 
 	private String generateUserInfo(ServerHttpRequest request) {
