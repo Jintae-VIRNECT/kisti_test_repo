@@ -22,7 +22,7 @@ export default {
   height: 2.8571rem;
   margin: auto 0;
   text-align: left;
-  background: rgb(69, 69, 69);
+  background: #454545;
   border-radius: 4px;
   .popover--wrapper {
     height: 100%;

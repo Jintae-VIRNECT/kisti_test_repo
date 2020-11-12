@@ -328,6 +328,10 @@ export default {
           ],
           yAxes: [
             {
+              ticks: {
+                beginAtZero: true,
+                min: 0,
+              },
               stacked: true,
               gridLines: {
                 borderDash: [1, 2],

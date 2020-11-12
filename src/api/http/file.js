@@ -1,5 +1,3 @@
-/*eslint no-unused-vars: "error"*/
-
 import http from 'api/gateway'
 
 //서버 녹화파일 / 로컬 녹화 파일 / 첨부파일 API 전부

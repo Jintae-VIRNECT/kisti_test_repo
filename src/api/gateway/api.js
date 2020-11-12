@@ -12,7 +12,10 @@ export default {
 
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
+
   HISTORY_ITEM: ['GET', '/remote/history/{workspaceId}/{sessionId}'],
+
+  ALL_HISTORY_LIST: ['GET', '/remote/dashboard/history/{workspaceId}'],
 
   /* SERVER RECORD */
   SERVER_RECORD_FILES: [
@@ -62,6 +65,14 @@ export default {
   //   'DELETE',
   //   '/remote/record/'
   // ]
+
+  /** CHART */
+  DAILY_COLLABO: ['GET', '/remote/dashboard/history/count/date/{workspaceId}'],
+
+  MONTHLY_COLLABO: [
+    'GET',
+    '/remote/dashboard/history/count/month/{workspaceId}',
+  ],
 
   /* USER */
   USER_LIST: ['GET'],

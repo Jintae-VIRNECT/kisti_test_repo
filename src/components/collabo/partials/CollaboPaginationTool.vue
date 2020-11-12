@@ -19,6 +19,7 @@
 
 <script>
 export default {
+  name: 'CollaboPaginationTool',
   props: {
     totalPage: {
       type: Number,

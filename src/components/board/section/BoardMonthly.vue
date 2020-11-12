@@ -37,12 +37,12 @@
     <div class="board-figures">
       <figure-board
         :header="$t('chart.monthly_total_collabo_count')"
-        :count="48"
+        :count="monthly ? monthly.total.count : 0"
         :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
       ></figure-board>
       <figure-board
-        :header="$t('chart.monthly_my_collabo_time')"
-        :time="999999"
+        :header="$t('chart.monthly_total_collabo_time')"
+        :time="monthly ? monthly.total.time : 0"
         :imgSrc="require('assets/image/figure/ic_figure_date_all.svg')"
       ></figure-board>
       <figure-board
@@ -102,12 +102,14 @@ export default {
     monthly: {
       handler(data) {
         if (this.monthlyChart) {
+          this.monthlyChart.data.labels = this.getLabel()
           this.monthlyChart.data.datasets[0].data = data.my.set
+          this.monthlyChart.data.datasets[1].data = data.total.set
           this.monthlyChart.update()
         }
       },
+      deep: true,
     },
-    deep: true,
   },
 
   mounted() {
@@ -120,7 +122,7 @@ export default {
     const chartData = {
       type: 'roundedBar',
       data: {
-        labels: this.getMonth(),
+        labels: [],
         datasets: [
           {
             label: this.$t('chart.my_collabo_list'),
@@ -130,32 +132,7 @@ export default {
           },
           {
             label: this.$t('chart.total_collabo_list'),
-            data: [
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-              12,
-            ],
+            data: this.monthly ? this.monthly.total.set : [],
             backgroundColor: '#bbc8d9',
             barThickness: 9,
           },
@@ -167,10 +144,9 @@ export default {
     this.monthlyChart = new Chart(ctx, chartData)
   },
   methods: {
-    //temp
-    getMonth() {
+    getLabel() {
       const dayList = []
-      for (let i = 1; i <= 31; i++) {
+      for (let i = 1; i <= this.monthly.my.set.length; i++) {
         dayList.push(i + this.$t('chart.collabo_day'))
       }
       return dayList
@@ -178,5 +154,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss"></style>

@@ -28,7 +28,8 @@ export default {
         case collabo.FINISHED:
           return this.$t('status.finished')
         default:
-          return this.$t('status.unknown')
+          return this.$t('status.finished')
+        // return this.$t('status.unknown')
       }
     },
     getClass() {
@@ -66,7 +67,7 @@ export default {
 
 .collabo-status--text {
   padding-left: 0.7143rem;
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 1.0714rem;
 }

@@ -62,7 +62,7 @@ export default {
   margin: auto;
   margin-left: 0.714rem;
   // color: rgba($color_white, 0.6);
-  color: rgb(67, 75, 88);
+  color: #434b58;
   font-weight: 500;
   font-size: 14px;
   line-height: 1.429rem;
@@ -75,7 +75,7 @@ export default {
   // background-color: #17171a;
   // border: solid 1px #333335;
   background-color: #ffffff;
-  border: 1px solid rgb(194, 198, 206);
+  border: 1px solid #c2c6ce;
   border-radius: 2px;
   transition: all 0.3s;
   @include ir();

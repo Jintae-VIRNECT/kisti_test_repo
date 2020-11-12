@@ -72,7 +72,7 @@ export default {
 .popover-language {
   min-width: 5.1429rem;
   height: 6.5714rem;
-  background: rgb(255, 255, 255);
+  background: #ffffff;
   > .popover--body {
     padding: 7px 0;
   }

@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import BoardDaily from 'components/section/BoardDaily'
-import BoardMonthly from 'components/section/BoardMonthly'
+import BoardDaily from 'components/board/section/BoardDaily'
+import BoardMonthly from 'components/board/section/BoardMonthly'
 import { getDailyData, getMonthlyData } from 'utils/chartDatas'
 import { mapGetters } from 'vuex'
 export default {
