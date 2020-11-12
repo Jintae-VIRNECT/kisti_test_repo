@@ -1,4 +1,4 @@
-package com.virnect.workspace.application;
+package com.virnect.workspace.application.user;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;

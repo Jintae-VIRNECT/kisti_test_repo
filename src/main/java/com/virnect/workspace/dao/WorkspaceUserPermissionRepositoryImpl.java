@@ -2,14 +2,15 @@ package com.virnect.workspace.dao;
 
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.virnect.workspace.domain.*;
-import com.virnect.workspace.dto.MemberInfoDTO;
+import com.virnect.workspace.domain.QWorkspaceUserPermission;
+import com.virnect.workspace.domain.WorkspaceRole;
+import com.virnect.workspace.domain.WorkspaceUser;
+import com.virnect.workspace.domain.WorkspaceUserPermission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -38,34 +39,6 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
     }
 
     @Override
-    public List<MemberInfoDTO> findUserInfoListFilterd(List<MemberInfoDTO> memberInfoList, String workspaceId, String filter) {
-
-        QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
-        List<MemberInfoDTO> resultList = new ArrayList<>();
-
-        for (MemberInfoDTO memberInfo : memberInfoList) {
-            String role = jpaQueryFactory.select(qWorkspaceUserPermission.workspaceRole.role)
-                    .from(qWorkspaceUserPermission)
-                    .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId)
-                            .and(qWorkspaceUserPermission.workspaceUser.userId.eq(memberInfo.getUuid()))).fetchOne();
-            switch (role) {
-                case "MASTER":
-                    if (filter.contains("MASTER") || filter.contains("ALL")) resultList.add(memberInfo);
-                    break;
-                case "MANAGER":
-                    if (filter.contains("MANAGER") || filter.contains("ALL")) resultList.add(memberInfo);
-                    break;
-                case "MEMBER":
-                    if (filter.contains("MEMBER") || filter.contains("ALL")) resultList.add(memberInfo);
-                    break;
-                default:
-            }
-
-        }
-        return resultList;
-    }
-
-    @Override
     public long deleteAllWorkspaceUserPermissionByWorkspaceUser(List<WorkspaceUser> workspaceUserList) {
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
         return jpaQueryFactory.delete(qWorkspaceUserPermission).where(qWorkspaceUserPermission.workspaceUser.in(workspaceUserList)).execute();
@@ -74,8 +47,8 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
     @Override
     public Page<WorkspaceUserPermission> getRoleFilteredUserList(String roleFilter, Pageable pageable, String workspaceId) {
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
-
-        //1. 필터
+        /*
+        QWorkspaceRole qWorkspaceRole= QWorkspaceRole.workspaceRole;
         List<WorkspaceRole> roleList = new ArrayList<>();
         if (roleFilter.contains("MASTER")) {
             roleList.add(WorkspaceRole.builder().id(1L).build());
@@ -85,12 +58,12 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
         }
         if (roleFilter.contains("MEMBER")) {
             roleList.add(WorkspaceRole.builder().id(3L).build());
-        }
+        }*/
 
         JPQLQuery<WorkspaceUserPermission> query = jpaQueryFactory
                 .select(qWorkspaceUserPermission)
                 .from(qWorkspaceUserPermission)
-                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId).and(qWorkspaceUserPermission.workspaceRole.in(roleList)))
+                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId).and(qWorkspaceUserPermission.workspaceRole.role.containsIgnoreCase(roleFilter)))
                 .fetchAll();
 
         List<WorkspaceUserPermission> workspaceUserPermissionList = getQuerydsl().applyPagination(pageable, query).fetch();
@@ -122,5 +95,17 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
         List<WorkspaceUserPermission> workspaceUserPermissionList = getQuerydsl().applyPagination(pageable, query).fetch();
 
         return new PageImpl<>(workspaceUserPermissionList, pageable, query.fetchCount());
+    }
+
+    @Override
+    public List<WorkspaceUserPermission> findRecentWorkspaceUserList(int size, String workspaceId) {
+        QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
+        JPQLQuery<WorkspaceUserPermission> query = jpaQueryFactory
+                .select(qWorkspaceUserPermission)
+                .from(qWorkspaceUserPermission)
+                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId))
+                .orderBy(qWorkspaceUserPermission.workspaceUser.createdDate.desc())
+                .limit(size);
+        return query.fetch();
     }
 }

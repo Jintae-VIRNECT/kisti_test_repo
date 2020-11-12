@@ -19,16 +19,18 @@ public class CustomPageHandler<T> {
     /**
      * 커스텀 페이징 공통 모듈
      *
-     * @param page             - 현재 조회할 페이지 번호
-     * @param size             - 페이지 당 보여줄 요소 갯수
+     * @param page          - 현재 조회할 페이지 번호
+     * @param pageSize         - 페이지 당 보여줄 요소 갯수
      * @param beforePagingList - 페이징 처리하기 전의 리스트
      * @return - 페이징 처리 후의 리스트
      */
-    public CustomPageResponse paging(int page, int size, List<T> beforePagingList) {
+    public CustomPageResponse paging(int page, int pageSize, List<T> beforePagingList) {
         int totalElements = beforePagingList.size();
+        int size = pageSize;
         if (totalElements <= size) {
             size = totalElements;
         }
+
         int totalPage = totalElements / size;
         int resultPage = totalPage;
         int lastElements = totalElements % size;
@@ -51,7 +53,7 @@ public class CustomPageHandler<T> {
         pageMetadataResponse.setTotalElements(totalElements);
         pageMetadataResponse.setTotalPage(resultPage);
         pageMetadataResponse.setCurrentPage(currentPage);
-        pageMetadataResponse.setCurrentSize(size);
+        pageMetadataResponse.setCurrentSize(pageSize);
 
         if (currentPage > result.size()) {
             return new CustomPageResponse(new ArrayList<>(), pageMetadataResponse);

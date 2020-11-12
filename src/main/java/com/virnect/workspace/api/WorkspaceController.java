@@ -71,8 +71,8 @@ public class WorkspaceController {
 		if (bindingResult.hasErrors()) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceInfoDTO> apiResponse = workspaceService.createWorkspace(workspaceCreateRequest);
-		return ResponseEntity.ok(apiResponse);
+		WorkspaceInfoDTO response = workspaceService.createWorkspace(workspaceCreateRequest);
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
 	@ApiOperation(
@@ -94,8 +94,8 @@ public class WorkspaceController {
 		if (bindingResult.hasErrors()) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceInfoDTO> apiResponse = workspaceService.setWorkspace(workspaceUpdateRequest, locale);
-		return ResponseEntity.ok(apiResponse);
+		WorkspaceInfoDTO response= workspaceService.setWorkspace(workspaceUpdateRequest, locale);
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
 	@ApiOperation(
@@ -156,8 +156,8 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceInfoResponse> apiResponse = workspaceService.getWorkspaceDetailInfo(workspaceId);
-		return ResponseEntity.ok(apiResponse);
+		WorkspaceInfoResponse response = workspaceService.getWorkspaceDetailInfo(workspaceId);
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
 	@ApiOperation(
@@ -171,9 +171,9 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<List<WorkspaceNewMemberInfoDTO>> apiResponse = workspaceService.getWorkspaceNewUserInfo(
+		List<WorkspaceNewMemberInfoDTO> response = workspaceService.getWorkspaceNewUserInfo(
 			workspaceId);
-		return ResponseEntity.ok(apiResponse);
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
 	@ApiOperation(
@@ -211,8 +211,8 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<UserInfoDTO> apiResponse = workspaceService.getMemberInfo(workspaceId, userId);
-		return ResponseEntity.ok(apiResponse);
+		UserInfoDTO responese = workspaceService.getMemberInfo(workspaceId, userId);
+		return ResponseEntity.ok(new ApiResponse<>(responese));
 	}
 
 	@ApiOperation(
@@ -339,8 +339,8 @@ public class WorkspaceController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<MemberListResponse> apiResponse = workspaceService.getSimpleWorkspaceUserList(workspaceId);
-		return ResponseEntity.ok(apiResponse);
+		MemberListResponse response = workspaceService.getSimpleWorkspaceUserList(workspaceId);
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
 	@ApiOperation(
@@ -410,8 +410,8 @@ public class WorkspaceController {
 		if (StringUtils.isEmpty(workspaceId)) {
 			throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		ApiResponse<WorkspaceInfoDTO> responseMessage = workspaceService.getWorkspaceInfo(workspaceId);
-		return ResponseEntity.ok(responseMessage);
+		WorkspaceInfoDTO response = workspaceService.getWorkspaceInfo(workspaceId);
+		return ResponseEntity.ok(new ApiResponse<>(response));
 	}
 
 	@ApiOperation(value = "워크스페이스 관련 정보 삭제 - 회원탈퇴", tags = "user server only")
