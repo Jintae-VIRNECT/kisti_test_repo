@@ -50,10 +50,16 @@ export default {
         })
         this.recordingId = result.recordingId
 
+        this.$eventBus.$emit('serverRecord', {
+          isStart: true,
+          isWaiting: false,
+        })
+
         const timeout = Number.parseInt(this.serverRecord.time, 10) * 60 * 1000
+
         this.recordTimeout = setTimeout(() => {
           this.$eventBus.$emit('serverRecord', {
-            isStart: false,
+            isStop: true,
           })
         }, timeout)
       } catch (e) {
@@ -74,7 +80,7 @@ export default {
         }
 
         this.$eventBus.$emit('serverRecord', {
-          isStart: false,
+          isStop: true,
         })
       }
     },
@@ -101,10 +107,10 @@ export default {
     async toggleServerRecord(payload) {
       if (this.isContinue) return
 
-      if (payload.isStart) {
-        await this.startServerRecord()
-      } else {
+      if (payload.isStop) {
         await this.stopServerRecord()
+      } else if (payload.isStart && payload.isWaiting) {
+        await this.startServerRecord()
       }
     },
     async checkServerRecordings() {
@@ -127,7 +133,7 @@ export default {
     async continueServerRecord(timeout) {
       this.recordTimeout = setTimeout(() => {
         this.$eventBus.$emit('serverRecord', {
-          isStart: false,
+          isStop: true,
         })
       }, timeout - this.elapsedTime * 1000)
 
@@ -136,6 +142,7 @@ export default {
         elapsedTime: this.elapsedTime,
         isContinue: this.isContinue,
       })
+
       this.isContinue = false
     },
   },

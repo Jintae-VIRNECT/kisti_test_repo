@@ -7,6 +7,7 @@
     :icActive="isRecording"
     :activeSrc="require('assets/image/call/ic_record_ing.svg')"
     @click="recording"
+    :isWaiting="isWaiting"
   ></menu-button>
 </template>
 
@@ -18,6 +19,7 @@ export default {
   data() {
     return {
       isRecording: false,
+      isWaiting: false,
     }
   },
   computed: {
@@ -33,19 +35,34 @@ export default {
   methods: {
     recording() {
       if (this.disabled) return false
+      if (this.isWaiting) return false
 
       if (!this.isRecording) {
-        this.$eventBus.$emit('serverRecord', {
-          isStart: true,
-        })
+        this.start()
       } else {
-        this.$eventBus.$emit('serverRecord', {
-          isStart: false,
-        })
+        this.stop()
       }
     },
+    start() {
+      this.isWaiting = true
+      this.$eventBus.$emit('serverRecord', {
+        isStart: true,
+        isWaiting: this.isWaiting,
+      })
+    },
+    stop() {
+      this.$eventBus.$emit('serverRecord', {
+        isStop: true,
+      })
+    },
     toggleButton(payload) {
-      this.isRecording = payload.isStart
+      if (payload.isStop) {
+        this.isRecording = false
+      } else if (payload.isStart) {
+        this.isRecording = true
+      }
+
+      this.isWaiting = payload.isWaiting ? true : false
     },
   },
 
