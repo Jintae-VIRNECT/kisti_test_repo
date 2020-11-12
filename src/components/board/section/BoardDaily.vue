@@ -103,8 +103,6 @@ export default {
     daily: {
       handler(data) {
         if (this.dailyChart) {
-          console.log('daily.data.my.set::', data.my.set)
-          console.log('daily.data.total.set::', data.total.set)
           this.dailyChart.data.datasets[0].data = data.my.set
           this.dailyChart.data.datasets[1].data = data.total.set
           this.dailyChart.update()

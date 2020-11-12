@@ -12,6 +12,7 @@ export default {
 
   /* Workspace - History */
   HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
+
   HISTORY_ITEM: ['GET', '/remote/history/{workspaceId}/{sessionId}'],
 
   ALL_HISTORY_LIST: ['GET', '/remote/dashboard/history/{workspaceId}'],
