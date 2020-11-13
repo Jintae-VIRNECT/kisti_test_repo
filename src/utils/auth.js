@@ -94,7 +94,7 @@ const getConfigs = async () => {
   logger('RUNTIME ENV', res.data.runtime)
   delete res.data.runtime
 
-  const timeout = res.data.timeout || 5000
+  const timeout = res.data.timeout || 10000
   delete res.data.timeout
 
   debug('URLS::', res.data)

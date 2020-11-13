@@ -30,6 +30,26 @@ export const getHistoryList = async function({
   return returnVal
 }
 
+export const getAllHistoryList = async function({
+  page = 0,
+  paging = false,
+  size = 7,
+  sort = 'createdDate,desc',
+  userId,
+  workspaceId,
+}) {
+  const returnVal = await http('ALL_HISTORY_LIST', {
+    page,
+    paging,
+    size,
+    sort,
+    userId,
+    workspaceId,
+  })
+
+  return returnVal
+}
+
 /**
  * 최근 협업 목록중 단일 항목에 대한 세부 내용 요청
  * @param {String} workspaceId 워크스페이스 id

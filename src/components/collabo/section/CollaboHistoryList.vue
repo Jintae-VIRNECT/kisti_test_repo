@@ -36,7 +36,11 @@
 import History from 'components/collabo/partials/CollaboHistory'
 import PaginationTool from 'components/collabo/partials/CollaboPaginationTool'
 
-import { getHistoryList, getHistorySingleItem } from 'api/http/history'
+import {
+  getHistoryList,
+  getAllHistoryList,
+  getHistorySingleItem,
+} from 'api/http/history'
 import {
   getServerRecordFiles,
   getAttachFiles,
@@ -127,12 +131,15 @@ export default {
     },
     async getHistory(page = 0) {
       try {
-        const datas = await getHistoryList({
+        const parms = {
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
           paging: true,
           page,
-        })
+        }
+        const datas = this.isMaster
+          ? await getAllHistoryList(parms)
+          : await getHistoryList(parms)
         if ('pageMeta' in datas) {
           this.pageMeta = datas.pageMeta
         } else {
@@ -220,14 +227,18 @@ export default {
         this.excelLoading = true
         let merged = []
 
-        const historys = await getHistoryList({
+        const parms = {
           page: 0,
           paging: false,
           size: 1,
           sort: 'createdDate,desc',
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
-        })
+        }
+
+        const historys = this.isMaster
+          ? await getAllHistoryList(parms)
+          : await getHistoryList(parms)
 
         this.addAdditionalData(historys.roomHistoryInfoList)
 
@@ -264,9 +275,9 @@ export default {
     async addAdditionalData(list) {
       await this.setIndex(list)
       await this.setLeader(list)
-      await this.setServerRecord(list)
-      await this.setFile(list)
-      await this.setLocalRecord(list)
+      // await this.setServerRecord(list)
+      // await this.setFile(list)
+      // await this.setLocalRecord(list)
     },
   },
 

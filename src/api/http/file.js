@@ -21,17 +21,17 @@ export const getServerRecordFiles = async ({
   return returnVal
 }
 
-/**
- * 모든 서버 녹화 파일을 삭제하는 API
- * @param {*} param0
- */
-export const deleteServerRecordFilesAll = async ({ workspaceId, userId }) => {
-  const returnVal = await http('DELETE_SERVER_RECORD_FILES_ALL', {
-    workspaceId,
-    userId,
-  })
-  return returnVal
-}
+// /**
+//  * 모든 서버 녹화 파일을 삭제하는 API
+//  * @param {*} param0
+//  */
+// export const deleteServerRecordFilesAll = async ({ workspaceId, userId }) => {
+//   const returnVal = await http('DELETE_SERVER_RECORD_FILES_ALL', {
+//     workspaceId,
+//     userId,
+//   })
+//   return returnVal
+// }
 
 /**
  * 특정 서버 녹화 파일을 삭제하는 API
@@ -71,7 +71,7 @@ export const getAttachFiles = async ({
   workspaceId,
   userId,
   sessionId,
-  opts = {},
+  opts = { deleted: false, page: 0, size: 100, paging: false },
 }) => {
   const returnVal = await http('FILES', {
     workspaceId,
@@ -87,13 +87,14 @@ export const getAttachFiles = async ({
  * @param {*} param0
  */
 export const getLocalRecordFiles = async ({
-  deleted,
+  deleted = false,
   page,
   sessionId,
   size,
   sort,
   userId,
   workspaceId,
+  paging = false,
 }) => {
   const returnVal = await http('LOCAL_RECORD_FILES', {
     deleted,
@@ -103,6 +104,7 @@ export const getLocalRecordFiles = async ({
     sort,
     userId,
     workspaceId,
+    paging,
   })
   return returnVal
 }

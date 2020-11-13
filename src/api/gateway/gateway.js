@@ -192,7 +192,10 @@ const errorHandler = function(err) {
 export const setHttpOptions = (baseURL, timeout) => {
   axios.defaults.baseURL = baseURL
   axios.defaults.headers['Access-Control-Allow-Origin'] = baseURL
-  axios.defaults.timeout = timeout || 5000
+  // axios.defaults.timeout = timeout || 10000
+
+  //@TODO for temp
+  axios.defaults.timeout = 20000
 
   debug('BASE_URL::', baseURL)
   debug('TIMEOUT::', timeout)
