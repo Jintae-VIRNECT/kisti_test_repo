@@ -118,9 +118,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.tab-board {
-  margin-top: 2px;
-}
-</style>
