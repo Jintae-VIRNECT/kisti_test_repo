@@ -35,7 +35,7 @@ import com.virnect.license.domain.product.LicenseProduct;
 @Getter
 @Setter
 @Audited
-@Where(clause = "status !='TERMINATE'")
+@Where(clause = "license_status !='TERMINATE'")
 @Table(name = "license")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class License extends BaseTimeEntity {
