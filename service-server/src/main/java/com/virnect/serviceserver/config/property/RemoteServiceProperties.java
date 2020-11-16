@@ -56,6 +56,7 @@ public class RemoteServiceProperties extends PropertyService {
     }
 
     // Config properties
+    private boolean isDotenvEnabled;
     private String dotenvPath;
     private String domainOrPublicIp;
     private String remoteServicePublicUrl;
@@ -113,8 +114,13 @@ public class RemoteServiceProperties extends PropertyService {
     protected int remoteServiceSessionsGarbageInterval;
     protected int remoteServiceSessionsGarbageThreshold;
 
+    public boolean isDotenvEnabled() {
+        return isDotenvEnabled = asBoolean("service.dotenv");
+    }
+
     public void setDotenvPath() {
-        dotenvPath = getValue("DOTENV_PATH");
+        dotenvPath = getValue("service.dotenv_path");
+        //dotenvPath = getValue("DOTENV_PATH");
     }
 
     public String getDotenvPath() {
@@ -327,7 +333,8 @@ public class RemoteServiceProperties extends PropertyService {
         remoteServiceStreamsVideoMaxSendBandwidth = asNonNegativeInteger("service.remote_streams_video_max_send_bandwidth");
         remoteServiceStreamsVideoMinSendBandwidth = asNonNegativeInteger("service.remote_streams_video_min_send_bandwidth");
 
-
+        //SERVICE_REMOTE_SESSIONS_GARBAGE_INTERVAL
+        //remoteServiceSessionsGarbageInterval = asNonNegativeInteger("service.remote_sessions_garbage_interval");
         remoteServiceSessionsGarbageInterval = asNonNegativeInteger("service.remote_sessions_garbage_interval");
         remoteServiceSessionsGarbageThreshold = asNonNegativeInteger("service.remote_sessions_garbage_threshold");
 

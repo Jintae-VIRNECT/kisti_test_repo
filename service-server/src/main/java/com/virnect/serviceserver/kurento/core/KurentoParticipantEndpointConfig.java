@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.virnect.serviceserver.cdr.CallDetailRecord;
-import com.virnect.serviceserver.config.InfoHandler;
+import com.virnect.mediaserver.config.InfoHandler;
 import com.virnect.serviceserver.kurento.endpoint.KmsEvent;
 import com.virnect.serviceserver.kurento.endpoint.KmsMediaEvent;
 import com.virnect.serviceserver.kurento.endpoint.MediaEndpoint;

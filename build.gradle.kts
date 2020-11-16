@@ -59,9 +59,9 @@ project(":service-server") {
     }
 
     dependencies {
-        //implementation(project(":service-kms"))
-        implementation(project(":service-client"))
-        implementation(project(":service-java-client"))
+        implementation(project(":service-kms"))
+        //implementation(project(":service-client"))
+        //implementation(project(":service-java-client"))
         implementation(project(":service-data"))
         implementation("org.springframework.cloud:spring-cloud-config-client")
     }
@@ -84,13 +84,13 @@ project(":service-common") {
 
 }
 
-/*project(":service-kms") {
+project(":service-kms") {
     dependencies {
         //implementation(project(":service-kms"))
-        implementation(project(":service-client"))
-        implementation(project(":service-java-client"))
+        //implementation(project(":service-client"))
+        //implementation(project(":service-java-client"))
     }
-}*/
+}
 
 project(":service-client") {
 

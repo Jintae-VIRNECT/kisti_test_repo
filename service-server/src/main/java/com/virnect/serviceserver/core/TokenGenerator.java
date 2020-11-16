@@ -22,8 +22,8 @@ import com.virnect.serviceserver.kurento.core.KurentoTokenOptions;
 
 public interface TokenGenerator {
 
-	public Token generateToken(String sessionId, RemoteServiceRole role, String serverMetadata, KurentoTokenOptions kurentoTokenOptions) throws Exception;
+	Token generateToken(String sessionId, RemoteServiceRole role, String serverMetadata, KurentoTokenOptions kurentoTokenOptions) throws Exception;
 
-	public Token generateSessionToken(String sessionId, RemoteServiceRole role, String serverMetadata, KurentoTokenOptions kurentoTokenOptions) throws Exception;
+	Token generateSessionToken(String sessionId, RemoteServiceRole role, String serverMetadata, KurentoTokenOptions kurentoTokenOptions) throws Exception;
 
 }

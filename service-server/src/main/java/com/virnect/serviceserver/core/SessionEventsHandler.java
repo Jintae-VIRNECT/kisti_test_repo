@@ -39,7 +39,7 @@ import com.virnect.client.RemoteServiceException.Code;
 import com.virnect.client.internal.ProtocolElements;
 import com.virnect.java.client.RemoteServiceRole;
 import com.virnect.serviceserver.cdr.CallDetailRecord;
-import com.virnect.serviceserver.config.InfoHandler;
+import com.virnect.mediaserver.config.InfoHandler;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.kurento.core.KurentoParticipant;
 import com.virnect.serviceserver.kurento.endpoint.KurentoFilter;

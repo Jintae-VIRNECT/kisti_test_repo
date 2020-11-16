@@ -8,6 +8,7 @@ import com.virnect.data.dao.RoomStatus;
 import com.virnect.data.dto.response.RoomResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.java.client.*;
+import com.virnect.mediaserver.config.property.BandwidthProperties;
 import com.virnect.serviceserver.core.*;
 import com.virnect.serviceserver.core.Session;
 import com.virnect.serviceserver.data.DataRepository;
@@ -46,6 +47,9 @@ public class ServiceSessionManager {
 
     @Autowired
     DataRepository dataRepository;
+
+    @Autowired
+    BandwidthProperties bandwidthProperties;
 
     /*public ServiceSessionManager(@Lazy SessionManager sessionManager, DataRepository dataRepository) {
         this.sessionManager = sessionManager;

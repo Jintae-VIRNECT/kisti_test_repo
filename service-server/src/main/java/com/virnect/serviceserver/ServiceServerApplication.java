@@ -1,5 +1,6 @@
 package com.virnect.serviceserver;
 
+import com.virnect.mediaserver.config.MediaServerConfig;
 import com.virnect.serviceserver.cdr.CDRLogger;
 import com.virnect.serviceserver.cdr.CDRLoggerFile;
 import com.virnect.serviceserver.cdr.CallDetailRecord;
@@ -62,7 +63,11 @@ import java.util.concurrent.Semaphore;
 //@EnableWebSecurity
 @Import({ JsonRpcConfiguration.class })
 //@EnableConfigurationProperties(RemoteServiceProperties.class)
-@ComponentScan(value = {"com.virnect.data", "com.virnect.serviceserver"})
+@ComponentScan(value = {
+        "com.virnect.data",
+        "com.virnect.serviceserver",
+        "com.virnect.mediaserver"
+})
 @EntityScan(value = {"com.virnect.data.dao"})
 @EnableJpaRepositories(value = {"com.virnect.data.repository"})
 //@PropertySource(value = {"classpath:feign-application.properties", "classpath:application.properties"})
@@ -85,6 +90,13 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
     @Autowired
     RemoteServiceConfig config;
+
+    /*@Bean
+    @DependsOn("remoteServiceConfig")
+    public MediaServerConfig mediaServerConfig(RemoteServiceConfig remoteServiceConfig) {
+        log.info("RemoteService Server using mediaServerConfig");
+        return new MediaServerConfig();
+    }*/
 
     @Bean
     public ModelMapper modelMapper() {
@@ -283,8 +295,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");
         SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
-        //SpringApplication.run(ServiceServerApplication.class, args);
-
         //disableSslVerification();
     }
 
@@ -319,19 +329,19 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         } else {
             String msg = "\n\n\n" + "   Configuration properties\n" + "   ------------------------\n" + "\n";
 
-            final Map<String, String> CONFIG_PROPS = config.getConfigProps();
+            final Map<String, String> configProps = config.getConfigProps();
             List<String> configPropNames = new ArrayList<>(config.getUserProperties());
             Collections.sort(configPropNames);
 
             for (String property : configPropNames) {
-                String value = CONFIG_PROPS.get(property);
+                String value = configProps.get(property);
                 msg += "   * " + config.getPropertyName(property) + "=" + (value == null ? "" : value) + "\n";
             }
             msg += "\n\n";
             log.info(msg);
             // Close the auxiliary ApplicationContext
             app.close();
-            return CONFIG_PROPS;
+            return configProps;
         }
         return null;
     }

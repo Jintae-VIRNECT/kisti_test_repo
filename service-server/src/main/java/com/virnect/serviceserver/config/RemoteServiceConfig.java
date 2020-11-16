@@ -28,6 +28,8 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.virnect.mediaserver.config.MediaServerConfig;
+import com.virnect.mediaserver.config.property.BandwidthProperties;
 import com.virnect.serviceserver.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.config.property.RemoteStorageProperties;
 import org.apache.commons.io.FilenameUtils;
@@ -35,20 +37,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.virnect.java.client.RemoteServiceRole;
 import com.virnect.serviceserver.config.Dotenv.DotenvFormatException;
+import org.springframework.context.annotation.DependsOn;
 
-//@Component
-//@EnableConfigurationProperties(RemoteServiceProperties.class)
 @Configuration
 @EnableConfigurationProperties({
 		RemoteServiceProperties.class,
 		RemoteStorageProperties.class
 })
-//@ComponentScan(value = "com.virnect.serviceserver")
 public class RemoteServiceConfig {
 
 	public static class Error {
@@ -94,6 +96,21 @@ public class RemoteServiceConfig {
 
 	@Autowired
 	public RemoteStorageProperties remoteStorageProperties;
+
+	@Bean
+	public BandwidthProperties bandwidthProperties() {
+		return new BandwidthProperties();
+	}
+
+	//@Autowired
+	//public MediaServerConfig mediaServerConfig;
+
+	/*@Bean
+	@DependsOn("remoteServiceConfig")
+	public MediaServerConfig mediaServerConfig(RemoteServiceConfig remoteServiceConfig) {
+		log.info("RemoteService Server using mediaServerConfig");
+		return new MediaServerConfig();
+	}*/
 
 	/*public final RemoteServiceProperties remoteServiceProperties;
 
@@ -245,6 +262,8 @@ public class RemoteServiceConfig {
 			if(loadDotenv) {
 				this.remoteServiceProperties.setDotenvPath();
 				populatePropertySourceFromDotenv();
+			} else {
+				log.warn("Be sure checking .env file does not use.");
 			}
 			this.remoteServiceProperties.checkConfigurationProperties(loadDotenv);
 			this.remoteStorageProperties.checkStorageProperties();
@@ -260,7 +279,8 @@ public class RemoteServiceConfig {
 
 	@PostConstruct
 	public void checkConfiguration() {
-		this.checkConfiguration(true);
+		boolean isDotenvEnabled = this.remoteServiceProperties.isDotenvEnabled();
+		this.checkConfiguration(isDotenvEnabled);
 	}
 
 	protected List<String> getNonUserProperties() {
