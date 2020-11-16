@@ -2,13 +2,23 @@
 const speech = require('@google-cloud/speech')
 // const fs = require('fs')
 const logger = require('../server/logger')
+const config = require('../server/config')
+const cors = require('cors')
 
 const getSocket = server => {
-  const io = require('socket.io')(server)
-  console.log(io)
+  const VIRNECT_ENV = process.env.VIRNECT_ENV || 'production'
+  const io = require('socket.io')(server, {
+    path: '/stt',
+    pingInterval: 1000,
+    pingTimeout: config.getAsNumber('TIMEOUT'),
+  })
+  if (VIRNECT_ENV === 'develop') {
+    io.cors = cors()
+  }
 
   io.on('connection', socket => {
-    logger.log(`SOCKET: ${socket.id} : CONNECT`, 'STT_STREAMING')
+    const sttCode = socket.handshake.query.lang
+    logger.log(`SOCKET: ${socket.id} : CONNECT [${sttCode}]`, 'STT_STREAMING')
     const clientData = {}
     clientData[socket.id] = {
       id: socket.id,
@@ -18,7 +28,7 @@ const getSocket = server => {
       recognizeStream: null,
       restartTimeoutId: null,
       intervalTimerId: null,
-      sttLanguageCode: 'en-US',
+      sttLanguageCode: sttCode,
       currentResultEndTime: null,
       totalResultEndTime: 0,
       streamingLimit: 60000,
@@ -104,6 +114,9 @@ const getSocket = server => {
 
     function stopStreaming() {
       clearInterval(clientData[socket.id].intervalTimerId)
+      if (clientData[socket.id].recognizeStream) {
+        clientData[socket.id].recognizeStream.end()
+      }
       clientData[socket.id].recognizeStream = null
     }
     const speechCallback = stream => {

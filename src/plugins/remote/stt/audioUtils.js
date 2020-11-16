@@ -1,46 +1,46 @@
-import { socket, startStreamingServer, stopStreamingServer } from './api'
+import { socket } from './api'
 
 let bufferSize = 2048
-let processor
-let input
-let globalStream
+let processor = null
+let input = null
 
 export const startStreaming = (context, stream) => {
-  socket.emit('stopStreaming', true)
-  socket.emit('startStreaming', true)
+  if (socket !== null) {
+    socket.emit('stopStreaming', true)
+    socket.emit('startStreaming', true)
+  }
   bufferSize = 2048
-  processor = null
-  input = null
-  globalStream = null
 
   processor = context.createScriptProcessor(bufferSize, 1, 1)
   processor.connect(context.destination)
   context.resume()
-  globalStream = stream
 
-  if (input == undefined) {
+  if (input === null) {
     input = context.createMediaStreamSource(stream)
   }
   input.connect(processor)
 
   processor.onaudioprocess = function(e) {
+    // console.log(e)
     microphoneProcess(e)
   }
 }
 
 function microphoneProcess(e) {
+  if (socket === null) return
   const left = e.inputBuffer.getChannelData(0)
   const left16 = downsampleBuffer(left, 44100, 16000)
   socket.emit('binaryStream', left16)
 }
 
-export const stopStreaming = context => {
+export const stopStreaming = () => {
+  if (socket === null) return
   socket.emit('stopStreaming', true)
-  const track = globalStream.getTracks()[0]
-  track.stop()
   if (input) {
     input.disconnect(processor)
     processor.disconnect()
+    processor = null
+    input = null
   }
 }
 const downsampleBuffer = function(buffer, sampleRate, outSampleRate) {

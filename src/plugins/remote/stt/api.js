@@ -1,10 +1,34 @@
-import openSocket from 'socket.io-client'
+import io from 'socket.io-client'
 export let socket = null
 let lastEndTime = 0
+import { TIMEOUT } from 'configs/env.config'
+import { logger, debug } from 'utils/logger'
 
-export const connect = () => {
-  socket = openSocket('wss://192.168.13.64:8885')
-  getTimeout()
+export const connect = (sttCode = 'en-US') => {
+  return new Promise((resolve, reject) => {
+    socket = io(`wss://${location.host}`, {
+      path: '/stt',
+      reconnectionDelayMax: TIMEOUT,
+      query: {
+        lang: sttCode,
+      },
+    })
+    socket.on('connect', () => {
+      logger('STT', 'SOCKET CONNECT SUCCESS')
+      resolve()
+    })
+    socket.on('disconnect', err => {
+      logger('STT', 'SOCKET DISCONNECT')
+      reject()
+    })
+    socket.on('error', err => {
+      console.error(err)
+    })
+    socket.on('reconnect_attempt', count => {
+      debug('STT', 'RECONNECT ATTEMPT : ', count)
+    })
+    getTimeout()
+  })
 }
 
 export const disconnect = cb => {
@@ -60,8 +84,7 @@ export const requestRestarted = cb => {
     const restartObject = {
       transcript: 'Restart',
       isFinal: true,
-      startTime: data,
-      endTime: data,
+      duration: data,
       isRestart: true,
     }
     cb(null, restartObject)

@@ -1,5 +1,5 @@
 import {
-  getTimeout,
+  requestRestarted,
   connect,
   disconnect,
   setStreamingLimit,
@@ -7,28 +7,25 @@ import {
   getJSON,
 } from 'plugins/remote/stt/api'
 import { startStreaming, stopStreaming } from 'plugins/remote/stt/audioUtils'
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
       isListening: false,
+      connected: false,
 
       audio: null,
       restartTime: 0,
-      concatText: '   ',
-      outputText: '',
       transcriptObject: {},
       transcriptList: [],
       transcriptCounter: 0,
+      audioContext: null,
     }
   },
+  computed: {
+    ...mapGetters(['translate']),
+  },
   methods: {
-    toggleListen() {
-      if (this.isListening) {
-        this.stopListening()
-      } else {
-        this.startListening()
-      }
-    },
     handleNumberChange(evt) {
       const restartTime = evt.target.validity.valid
         ? evt.target.value
@@ -36,23 +33,24 @@ export default {
       this.restartTime = restartTime
       setStreamingLimit(restartTime)
     },
-    componentWillUnmount() {
-      this.stopListening()
-      if (this.audioContext) {
-        this.audioContext.close()
-      }
-    },
     startListening(stream) {
       if (this.isListening) return
       this.logger('STT', 'START LISTENING')
       startStreaming(this.audioContext, stream)
+      requestRestarted(this.restartStreaming)
       // this.setState({ audio: true, started: true })
       this.isListening = true
       getTranscript((err, transcriptObject) => {
         this.transcriptObject = transcriptObject
 
         this.transcriptList[this.transcriptCounter] = transcriptObject
-        this.logger('STT', 'RECEIVE')
+        this.debug(
+          'STT',
+          'RECEIVE::',
+          transcriptObject.isFinal,
+          '::',
+          transcriptObject.transcript,
+        )
 
         if (transcriptObject.transcript != undefined) {
           this.outputText = transcriptObject.transcript
@@ -60,8 +58,11 @@ export default {
           if (transcriptObject.isFinal) {
             this.logger('STT', 'RECEIVED::FINAL::', transcriptObject.transcript)
             this.transcriptCounter = this.transcriptCounter + 1
-            this.concatText = transcriptObject.transcript
             this.outputText = transcriptObject.transcript
+            if (typeof this.doSend === 'function') {
+              this.doSend(this.outputText)
+            }
+            this.outputText = ''
           }
         }
       })
@@ -79,15 +80,39 @@ export default {
       // this.setState({ audio: false })
       this.isListening = false
       stopStreaming(this.audioContext)
+      if (this.audioContext) {
+        this.audioContext.close()
+      }
+    },
+    restartStreaming(err, obj) {
+      this.logger('STT', `RESTART::DURATION : ${obj.duration}`)
+      if (this.outputText.trim().length > 0) {
+        this.logger('STT', `RESTART::${this.outputText}`)
+        if (typeof this.doSend === 'function') {
+          this.doSend(this.outputText)
+        }
+        this.outputText = ''
+      }
     },
   },
   mounted() {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
-    // this.test()
-    connect()
+    connect(this.translate.code)
+      .then(() => {
+        this.connected = true
+      })
+      .catch(() => {
+        this.connected = false
+      })
   },
   beforeDestroy() {
     this.stopListening()
     disconnect()
+    if (this.outputText && this.outputText.trim().length > 0) {
+      this.logger('STT', 'RECEIVED::END::', this.outputText)
+      if (typeof this.doSend === 'function') {
+        this.doSend(this.outputText)
+      }
+    }
   },
 }

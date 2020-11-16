@@ -1,7 +1,7 @@
 <template>
   <div class="chat-speech">
     <div class="chat-speech__main">
-      <span class="chat-speech__icon active"></span>
+      <span class="chat-speech__icon" :class="{ active: connected }"></span>
       <span class="chat-speech__text">
         {{ `음성 인식된 문장이 표출됩니다.` }}
       </span>
@@ -31,31 +31,24 @@ export default {
     },
   },
   watch: {
-    concatText(text) {
-      if (text.length > 0) {
-        this.doSend(text)
+    connected(val) {
+      if (val) {
+        this.initStreaming()
       }
     },
   },
   methods: {
     initStreaming() {
-      if (!this.mic.isOn) {
-        this.toastError('마이크가 꺼져있습니다.')
-        return
-      }
       this.startListening(this.mainView.stream)
     },
     doSend(text) {
+      if (text.trim() === '') return
       this.$call.sendChat(text, this.translate.code)
-
-      this.concatText = ''
     },
   },
 
   /* Lifecycles */
-  mounted() {
-    this.initStreaming()
-  },
+  mounted() {},
   beforeDestroy() {},
 }
 </script>

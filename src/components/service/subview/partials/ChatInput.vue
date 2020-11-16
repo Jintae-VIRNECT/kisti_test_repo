@@ -37,7 +37,7 @@
         <button
           v-if="translate.flag"
           class="chat-input__form-speech"
-          @click="$emit('update:speech', true)"
+          @click="doStt"
         >
           {{ '번역' }}
         </button>
@@ -119,6 +119,13 @@ export default {
     },
   },
   methods: {
+    doStt() {
+      if (!this.mic.isOn) {
+        this.toastError('마이크가 꺼져있습니다.')
+        return
+      }
+      this.$emit('update:speech', true)
+    },
     doTranslate() {
       if (!this.mic.isOn) {
         this.toastDefault('마이크가 활성화 되어있지 않습니다.')
