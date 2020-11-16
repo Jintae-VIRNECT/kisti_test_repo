@@ -22,12 +22,12 @@
             :visible.sync="showDenied"
             :modalless="true"
           ></device-denied>
-          <template v-if="menus[tabIdx].key === 'test'">
+          <!-- <template v-if="menus[tabIdx].key === 'test'">
             <stt-test
               :micDevices="micDevices"
               :speakerDevices="speakerDevices"
             ></stt-test>
-          </template>
+          </template> -->
 
           <template v-if="menus[tabIdx].key === 'video'">
             <set-video
@@ -61,7 +61,7 @@
   </div>
 </template>
 <script>
-import SttTest from '../section/WorkspaceSttTest'
+// import SttTest from '../section/WorkspaceSttTest'
 import SetVideo from '../section/WorkspaceSetVideo'
 import SetAudio from '../section/WorkspaceSetAudio'
 import SetLanguage from '../section/WorkspaceSetLanguage'
@@ -76,7 +76,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceSetting',
   components: {
-    SttTest,
+    // SttTest,
     SetVideo,
     SetAudio,
     SetLanguage,
