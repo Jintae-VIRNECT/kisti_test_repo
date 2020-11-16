@@ -22,7 +22,7 @@ export default {
   },
   props: {
     customClass: {
-      type: String,
+      type: [String, Object],
       default: '',
     },
     description: String,

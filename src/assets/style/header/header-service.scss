@@ -113,4 +113,8 @@
     border-radius: 50%;
     content: "";
   }
+  &.toggle-button.toggle-header.visible {
+    background-color: rgba(#fff, 0.1);
+    border-radius: 2px;
+  }
 }
