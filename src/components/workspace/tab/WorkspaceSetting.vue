@@ -22,12 +22,12 @@
             :visible.sync="showDenied"
             :modalless="true"
           ></device-denied>
-          <!-- <template v-if="menus[tabIdx].key === 'test'">
+          <template v-if="menus[tabIdx].key === 'test'">
             <stt-test
               :micDevices="micDevices"
               :speakerDevices="speakerDevices"
             ></stt-test>
-          </template> -->
+          </template>
 
           <template v-if="menus[tabIdx].key === 'video'">
             <set-video
