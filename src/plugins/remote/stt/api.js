@@ -7,6 +7,7 @@ import { logger, debug } from 'utils/logger'
 export const connect = (sttCode = 'en-US') => {
   return new Promise((resolve, reject) => {
     socket = io(`wss://${location.host}`, {
+      // socket = io(`wss://192.168.13.64:8885`, {
       path: '/stt',
       reconnectionDelayMax: TIMEOUT,
       query: {

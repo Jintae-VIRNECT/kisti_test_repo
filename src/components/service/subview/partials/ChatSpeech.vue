@@ -58,7 +58,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'translate', 'mic']),
+    ...mapGetters(['myInfo', 'translate', 'mic']),
     speechGuide() {
       if (this.speechText && this.speechText.length > 0) {
         return '음성 인식 완료'
@@ -88,7 +88,7 @@ export default {
         return
       }
       if (this.timer) clearInterval(this.timer)
-      this.initRecord(this.mainView.stream)
+      this.initRecord(this.myInfo.stream)
       this.speechText = ''
       this.strokeDashoffset = this.circumference
       await this.startRecord(this.translate.code)

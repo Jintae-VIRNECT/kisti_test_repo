@@ -24,7 +24,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mainView', 'translate', 'mic']),
+    ...mapGetters(['myInfo', 'translate', 'mic']),
     speechText() {
       return `${this.concatText}
       ${this.outputText}`
@@ -39,7 +39,13 @@ export default {
   },
   methods: {
     initStreaming() {
-      this.startListening(this.mainView.stream)
+      setTimeout(() => {
+        if (!this.myInfo.stream) {
+          this.initStreaming()
+          return
+        }
+        this.startListening(this.myInfo.stream)
+      }, 100)
     },
     doSend(text) {
       if (text.trim() === '') return
