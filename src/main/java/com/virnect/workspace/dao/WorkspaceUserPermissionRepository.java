@@ -19,14 +19,11 @@ import java.util.Optional;
  * DESCRIPTION:
  */
 public interface WorkspaceUserPermissionRepository extends JpaRepository<WorkspaceUserPermission, Long>, WorkspaceUserPermissionRepositoryCustom {
-    WorkspaceUserPermission findByWorkspaceUser(WorkspaceUser workspaceUser);
-    WorkspaceUserPermission findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(Workspace workspace, String userId);
+    Optional<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(Workspace workspace, String userId);
     Page<WorkspaceUserPermission> findByWorkspaceUser_UserId(String userId, Pageable pageable);
     List<WorkspaceUserPermission> findByWorkspaceUser_Workspace(Workspace workspace);
     @Transactional
     void deleteAllByWorkspaceUser(WorkspaceUser workspaceUser);
-    long countByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String WorkspaceRole);
     List<WorkspaceUserPermission> findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(Workspace workspace, String role);
-    Optional<WorkspaceUserPermission> findByWorkspaceUser_UserIdAndWorkspaceUser_Workspace(String userId, Workspace workspace);
 
 }

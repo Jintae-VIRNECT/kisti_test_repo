@@ -2,7 +2,9 @@ package com.virnect.workspace.dao;
 
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.virnect.workspace.domain.*;
+import com.virnect.workspace.domain.QWorkspaceUserPermission;
+import com.virnect.workspace.domain.WorkspaceUser;
+import com.virnect.workspace.domain.WorkspaceUserPermission;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +12,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Project: PF-Workspace
@@ -26,15 +29,6 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
         this.jpaQueryFactory=jpaQueryFactory;
     }
 
-    @Override
-    public WorkspaceRole findWorkspaceUserRole(String workspaceId, String userId) {
-        QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
-
-        return jpaQueryFactory.select(QWorkspaceUserPermission.workspaceUserPermission.workspaceRole)
-                .from(qWorkspaceUserPermission)
-                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId)
-                        .and(qWorkspaceUserPermission.workspaceUser.userId.eq(userId))).fetchOne();
-    }
 
     @Override
     public long deleteAllWorkspaceUserPermissionByWorkspaceUser(List<WorkspaceUser> workspaceUserList) {
@@ -103,5 +97,15 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
                 .orderBy(qWorkspaceUserPermission.workspaceUser.createdDate.desc())
                 .limit(size);
         return query.fetch();
+    }
+
+    @Override
+    public Optional<WorkspaceUserPermission> findWorkspaceUser(String workspaceId, String userId) {
+        QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
+        JPQLQuery<WorkspaceUserPermission> query = jpaQueryFactory
+                .select(qWorkspaceUserPermission)
+                .from(qWorkspaceUserPermission)
+                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId).and(qWorkspaceUserPermission.workspaceUser.userId.eq(userId)));
+        return Optional.ofNullable(query.fetchOne());
     }
 }

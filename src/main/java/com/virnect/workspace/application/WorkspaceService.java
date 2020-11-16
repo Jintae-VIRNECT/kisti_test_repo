@@ -170,8 +170,7 @@ public class WorkspaceService {
     public WorkspaceInfoListResponse getUserWorkspaces(
             String userId, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
-        Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.findByWorkspaceUser_UserId(
-                userId, pageRequest.of());
+        Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.findByWorkspaceUser_UserId(userId, pageRequest.of());
 
         List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceList = new ArrayList<>();
 
@@ -244,7 +243,6 @@ public class WorkspaceService {
                 }
             }
 
-            //TODO: WORKSPACE_USER 와 WORKSPACE_USER_PERMISSION 은 1:1이 아니므로, PAGING을 WORKSAPCE_USER의 레코드를 기준으로 해야한다.(대신 정렬 다깨짐)
             workspaceUserPermissionPage = workspaceUserPermissionRepository.getContainedUserIdList(userIdList, newPageable, workspaceId);
             userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
         }
@@ -367,7 +365,6 @@ public class WorkspaceService {
                             Comparator.nullsFirst(Comparator.reverseOrder())
                     ))
                     .collect(Collectors.toList());
-
         }
     }
 
@@ -447,7 +444,7 @@ public class WorkspaceService {
      *
      * @param workspaceId            - 초대 할 워크스페이스 uuid
      * @param workspaceInviteRequest - 초대 유저 정보
-     * @return
+     * @return - 초대 결과
      */
     public ApiResponse<Boolean> inviteWorkspace(
             String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale
@@ -469,14 +466,14 @@ public class WorkspaceService {
         int requestRemote = 0, requestMake = 0, requestView = 0;
         for (WorkspaceInviteRequest.UserInfo userInfo : workspaceInviteRequest.getUserInfoList()) {
             //초대받는 사람에게 부여되는 라이선스는 최소 1개 이상이도록 체크
-            userLicenseValidCheck(userInfo.getPlanRemote(), userInfo.getPlanMake(), userInfo.getPlanView());
-            if (userInfo.getPlanRemote()) {
+            userLicenseValidCheck(userInfo.isPlanRemote(), userInfo.isPlanMake(), userInfo.isPlanView());
+            if (userInfo.isPlanRemote()) {
                 requestRemote++;
             }
-            if (userInfo.getPlanMake()) {
+            if (userInfo.isPlanMake()) {
                 requestMake++;
             }
-            if (userInfo.getPlanView()) {
+            if (userInfo.isPlanView()) {
                 requestView++;
             }
         }
@@ -549,20 +546,18 @@ public class WorkspaceService {
          * 초대받는 사람 권한 - 매니저, 멤버만 가능
          * 초대하는 사람이 매니저일때 - 멤버만 초대할 수 있음.
          */
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId)
-                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, workspaceInviteRequest.getUserId());
-        if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
+        WorkspaceUserPermission requestUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, workspaceInviteRequest.getUserId()).orElse(null);
+        if (requestUserPermission == null || requestUserPermission.getWorkspaceRole().getRole().equals("MEMBER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
+        Workspace workspace = requestUserPermission.getWorkspaceUser().getWorkspace();
         workspaceInviteRequest.getUserInfoList().forEach(userInfo -> {
             log.debug("[WORKSPACE INVITE USER] Invite request user role >> [{}], response user role >> [{}]",
-                    workspaceUserPermission.getWorkspaceRole().getRole(), userInfo.getRole());
+                    requestUserPermission.getWorkspaceRole().getRole(), userInfo.getRole());
             if (userInfo.getRole().equalsIgnoreCase("MASTER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
-            if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && userInfo.getRole().equalsIgnoreCase("MANAGER")) {
+            if (requestUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && userInfo.getRole().equalsIgnoreCase("MANAGER")) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
             }
         });
@@ -590,9 +585,9 @@ public class WorkspaceService {
                         inviteUserResponse.getUserUUID() + "-" + workspaceId).orElse(null);
                 if (userInvite != null) {
                     userInvite.setRole(userInfo.getRole());
-                    userInvite.setPlanRemote(userInfo.getPlanRemote());
-                    userInvite.setPlanMake(userInfo.getPlanMake());
-                    userInvite.setPlanView(userInfo.getPlanView());
+                    userInvite.setPlanRemote(userInfo.isPlanRemote());
+                    userInvite.setPlanMake(userInfo.isPlanMake());
+                    userInvite.setPlanView(userInfo.isPlanView());
                     userInvite.setUpdatedDate(LocalDateTime.now());
                     userInvite.setExpireTime(duration);
                     userInviteRepository.save(userInvite);
@@ -612,9 +607,9 @@ public class WorkspaceService {
                             .workspaceId(workspace.getUuid())
                             .workspaceName(workspace.getName())
                             .role(userInfo.getRole())
-                            .planRemote(userInfo.getPlanRemote())
-                            .planMake(userInfo.getPlanMake())
-                            .planView(userInfo.getPlanView())
+                            .planRemote(userInfo.isPlanRemote())
+                            .planMake(userInfo.isPlanMake())
+                            .planView(userInfo.isPlanView())
                             .planRemoteType(licensePlanType)
                             .planMakeType(licensePlanType)
                             .planViewType(licensePlanType)
@@ -642,7 +637,7 @@ public class WorkspaceService {
                 context.setVariable("responseUserEmail", inviteUserResponse.getEmail());
                 context.setVariable("responseUserNickName", inviteUserResponse.getNickname());
                 context.setVariable("role", userInfo.getRole());
-                context.setVariable("plan", generatePlanString(userInfo.getPlanRemote(), userInfo.getPlanMake(), userInfo.getPlanView()));
+                context.setVariable("plan", generatePlanString(userInfo.isPlanRemote(), userInfo.isPlanMake(), userInfo.isPlanView()));
                 context.setVariable("supportUrl", supportUrl);
                 String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE.getSubject(), null, locale);
                 String template = messageSource.getMessage(Mail.WORKSPACE_INVITE.getTemplate(), null, locale);
@@ -695,10 +690,8 @@ public class WorkspaceService {
         UserInfoRestResponse masterUser = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
         emailReceiverList.add(masterUser.getEmail());
 
-        List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(
-                workspace, "MANAGER");
+        List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceRole_Role(workspace, "MANAGER");
         if (workspaceUserPermissionList != null) {
-
             workspaceUserPermissionList.forEach(workspaceUserPermission -> {
                 UserInfoRestResponse managerUser = userRestService.getUserInfoByUserId(workspace.getUserId())
                         .getData();
@@ -908,7 +901,7 @@ public class WorkspaceService {
 
     }
 
-    private String generatePlanString(Boolean remote, Boolean make, Boolean view) {
+    private String generatePlanString(boolean remote, boolean make, boolean view) {
         List<String> productList = new ArrayList<>();
         if (remote) {
             productList.add("REMOTE");
@@ -987,7 +980,7 @@ public class WorkspaceService {
         Workspace workspace = workspaceRepository.findByUuid(workspaceId)
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
         WorkspaceUserPermission userPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, memberUpdateRequest.getUserId());
+                workspace, memberUpdateRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
         WorkspaceRole workspaceRole = workspaceRoleRepository.findByRole(memberUpdateRequest.getRole()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_ROLE_NOT_FOUND));
         UserInfoRestResponse masterUser = getUserInfo(workspace.getUserId());
@@ -1104,7 +1097,7 @@ public class WorkspaceService {
     ) {
         //1. 요청자 권한 확인(마스터만 가능)
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, requestUserId);
+                workspace, requestUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         String role = workspaceUserPermission.getWorkspaceRole().getRole();
         if (role == null || !role.equalsIgnoreCase("MASTER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
@@ -1112,7 +1105,7 @@ public class WorkspaceService {
 
         //2. 대상자 권한 확인(매니저, 멤버 권한만 가능)
         WorkspaceUserPermission userPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, responseUserId);
+                workspace, responseUserId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         String userRole = userPermission.getWorkspaceRole().getRole();
         if (userRole == null || userRole.equalsIgnoreCase("MASTER")) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
@@ -1165,7 +1158,7 @@ public class WorkspaceService {
         historyRepository.save(history);
     }
 
-    private List<String> userLicenseValidCheck(Boolean planRemote, Boolean planMake, Boolean planView) {
+    private List<String> userLicenseValidCheck(boolean planRemote, boolean planMake, boolean planView) {
         if (!planRemote && !planMake && !planView) {
             throw new WorkspaceException(ErrorCode.ERR_INCORRECT_USER_LICENSE_INFO);
         }
@@ -1195,6 +1188,13 @@ public class WorkspaceService {
         return workspaceNewMemberInfoList;
     }
 
+    /**
+     * 워크스페이스 정보 변경
+     *
+     * @param workspaceUpdateRequest
+     * @param locale
+     * @return
+     */
     public WorkspaceInfoDTO setWorkspace(WorkspaceUpdateRequest workspaceUpdateRequest, Locale locale) {
         if (!StringUtils.hasText(workspaceUpdateRequest.getUserId()) || !StringUtils.hasText(workspaceUpdateRequest.getName())
                 || !StringUtils.hasText(workspaceUpdateRequest.getDescription()) || !StringUtils.hasText(
@@ -1259,8 +1259,11 @@ public class WorkspaceService {
     }
 
     public UserInfoDTO getMemberInfo(String workspaceId, String userId) {
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId);
+        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId).orElse(null);
+        if (workspaceUserPermission == null) {
+            UserInfoDTO userInfoDTO = new UserInfoDTO();
+            return userInfoDTO;
+        }
         UserInfoRestResponse userInfoRestResponse = getUserInfo(userId);
         UserInfoDTO userInfoDTO = modelMapper.map(userInfoRestResponse, UserInfoDTO.class);
         userInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
@@ -1278,10 +1281,7 @@ public class WorkspaceService {
                 memberKickOutRequest.getKickedUserId(),
                 memberKickOutRequest.getUserId()
         );
-        Workspace workspace = workspaceRepository.findByUuid(workspaceId)
-                .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-        UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspace.getUserId())
-                .getData();
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
         /**
          * 권한체크
@@ -1291,9 +1291,9 @@ public class WorkspaceService {
          */
 
         WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, memberKickOutRequest.getUserId());
+                workspace, memberKickOutRequest.getUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         WorkspaceUserPermission kickedUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(
-                workspace, memberKickOutRequest.getKickedUserId());
+                workspace, memberKickOutRequest.getKickedUserId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
         log.debug("[WORKSPACE KICK OUT USER] Request user Role >> [{}], Response user Role >> [{}]", workspaceUserPermission.getWorkspaceRole().getRole(),
                 kickedUserPermission.getWorkspaceRole().getRole());
         //내보내는 자의 권한 확인(마스터, 매니저만 가능)
@@ -1306,23 +1306,23 @@ public class WorkspaceService {
         }
 
         //내보내는 사람이 매니저일때는 멤버만 가능. = 내쫓기는 사람이 매니저일때는 마스터만 가능 = 매니저는 매니저를 내보낼 수 없음.
-        if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
-            if (kickedUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
-                throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
-            }
+        if (workspaceUserPermission.getWorkspaceRole().getRole().equals("MANAGER") && kickedUserPermission.getWorkspaceRole().getRole().equals("MANAGER")) {
+            throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
         //라이선스 해제
         MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
                 workspaceId, memberKickOutRequest.getKickedUserId()).getData();
         if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
-                .isEmpty()) {
+                .
+
+                        isEmpty()) {
             myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
                 log.debug(
                         "[WORKSPACE KICK OUT USER] Workspace User License Revoke. License Product Name >> {}",
                         myLicenseInfoResponse.getProductName()
                 );
-                Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
+                boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
                         workspaceId, memberKickOutRequest.getKickedUserId(), myLicenseInfoResponse.getProductName())
                         .getData();
 
@@ -1341,14 +1341,13 @@ public class WorkspaceService {
         log.debug("[WORKSPACE KICK OUT USER] Delete Workspace user info.");
 
         //메일 발송
+        UserInfoRestResponse masterUser = userRestService.getUserInfoByUserId(workspace.getUserId()).getData();
+        UserInfoRestResponse kickedUser = getUserInfo(memberKickOutRequest.getKickedUserId());
         Context context = new Context();
         context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("workspaceMasterNickName", userInfoRestResponse.getNickname());
-        context.setVariable("workspaceMasterEmail", userInfoRestResponse.getEmail());
+        context.setVariable("workspaceMasterNickName", masterUser.getNickname());
+        context.setVariable("workspaceMasterEmail", masterUser.getEmail());
         context.setVariable("supportUrl", supportUrl);
-
-        UserInfoRestResponse kickedUser = userRestService.getUserInfoByUserId(
-                memberKickOutRequest.getKickedUserId()).getData();
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(kickedUser.getEmail());
@@ -1356,12 +1355,13 @@ public class WorkspaceService {
         String subject = messageSource.getMessage(Mail.WORKSPACE_KICKOUT.getSubject(), null, locale);
         String template = messageSource.getMessage(Mail.WORKSPACE_KICKOUT.getTemplate(), null, locale);
         String html = springTemplateEngine.process(template, context);
+
         sendMailRequest(html, receiverEmailList, MailSender.MASTER.getValue(), subject);
         log.debug("[WORKSPACE KICK OUT USER] Send Workspace kick out mail.");
 
         //history 저장
         String message = messageSource.getMessage(
-                "WORKSPACE_EXPELED", new String[]{userInfoRestResponse.getNickname(), kickedUser.getNickname()}, locale);
+                "WORKSPACE_EXPELED", new String[]{masterUser.getNickname(), kickedUser.getNickname()}, locale);
         History history = History.builder()
                 .message(message)
                 .userId(kickedUser.getUuid())
@@ -1381,7 +1381,7 @@ public class WorkspaceService {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
 
-        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace,userId);
+        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
         //라이선스 해제
         MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
@@ -1389,7 +1389,7 @@ public class WorkspaceService {
         if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList()
                 .isEmpty()) {
             myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-                Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
+                boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(
                         workspaceId, userId, myLicenseInfoResponse.getProductName()).getData();
                 if (!revokeResult) {
                     throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_LICENSE_REVOKE_FAIL);
@@ -1420,9 +1420,7 @@ public class WorkspaceService {
 
         Page<History> historyPage = historyRepository.findAllByUserIdAndWorkspace_Uuid(
                 userId, workspaceId, pageable);
-        List<WorkspaceHistoryListResponse.WorkspaceHistory> workspaceHistoryList = historyPage.stream().map(history -> {
-            return modelMapper.map(history, WorkspaceHistoryListResponse.WorkspaceHistory.class);
-        }).collect(Collectors.toList());
+        List<WorkspaceHistoryListResponse.WorkspaceHistory> workspaceHistoryList = historyPage.stream().map(history -> modelMapper.map(history, WorkspaceHistoryListResponse.WorkspaceHistory.class)).collect(Collectors.toList());
 
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         pageMetadataResponse.setTotalElements(historyPage.getTotalElements());
@@ -1528,9 +1526,9 @@ public class WorkspaceService {
                     .collect(Collectors.toList());
         }
         //WorkspaceUserLicenseListResponse workspaceUserLicenseListResponse = paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList);
-        CustomPageResponse customPageResponse = new CustomPageHandler<WorkspaceUserLicenseInfoResponse>().paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList);
-        WorkspaceUserLicenseListResponse workspaceUserLicenseListResponse = new WorkspaceUserLicenseListResponse(customPageResponse.getAfterPagingList(), customPageResponse.getPageMetadataResponse());
-        return workspaceUserLicenseListResponse;
+        CustomPageHandler<WorkspaceUserLicenseInfoResponse> customPageHandler = new CustomPageHandler<>();
+        CustomPageResponse customPageResponse = customPageHandler.paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList);
+        return new WorkspaceUserLicenseListResponse(customPageResponse.getAfterPagingList(), customPageResponse.getPageMetadataResponse());
     }
 
     public WorkspaceLicenseInfoResponse getWorkspaceLicenseInfo(String workspaceId) {
@@ -1622,8 +1620,8 @@ public class WorkspaceService {
 
         for (MemberAccountCreateInfo memberAccountCreateInfo : memberAccountCreateRequest.getMemberAccountCreateRequest()) {
             //1-1. 사용자에게 최소 1개 이상의 라이선스를 부여했는지 체크
-            userLicenseValidCheck(memberAccountCreateInfo.getPlanRemote(), memberAccountCreateInfo.getPlanMake(),
-                    memberAccountCreateInfo.getPlanView()
+            userLicenseValidCheck(memberAccountCreateInfo.isPlanRemote(), memberAccountCreateInfo.isPlanMake(),
+                    memberAccountCreateInfo.isPlanView()
             );
 
             //2. user-server 멤버 정보 등록 api 요청
@@ -1646,7 +1644,7 @@ public class WorkspaceService {
             );
 
             //3. license-server grant api 요청 -> 실패시 user-server 롤백 api 요청
-            if (memberAccountCreateInfo.getPlanRemote()) {
+            if (memberAccountCreateInfo.isPlanRemote()) {
                 MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
                         workspaceId, userInfoRestResponse.getUuid(), "REMOTE").getData();
                 if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
@@ -1668,7 +1666,7 @@ public class WorkspaceService {
                 );
                 responseLicense.add("REMOTE");
             }
-            if (memberAccountCreateInfo.getPlanMake()) {
+            if (memberAccountCreateInfo.isPlanMake()) {
                 MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
                         workspaceId, userInfoRestResponse.getUuid(), "MAKE").getData();
                 if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
@@ -1690,7 +1688,7 @@ public class WorkspaceService {
                 );
                 responseLicense.add("MAKE");
             }
-            if (memberAccountCreateInfo.getPlanView()) {
+            if (memberAccountCreateInfo.isPlanView()) {
                 MyLicenseInfoResponse myLicenseInfoResponse = licenseRestService.grantWorkspaceLicenseToUser(
                         workspaceId, userInfoRestResponse.getUuid(), "VIEW").getData();
                 if (myLicenseInfoResponse == null || !StringUtils.hasText(myLicenseInfoResponse.getProductName())) {
@@ -1739,7 +1737,7 @@ public class WorkspaceService {
             memberInfoResponse.setRole(newWorkspaceUserPermission.getWorkspaceRole().getRole());
             memberInfoResponse.setRoleId(newWorkspaceUserPermission.getWorkspaceRole().getId());
             memberInfoResponse.setJoinDate(newWorkspaceUser.getCreatedDate());
-            memberInfoResponse.setLicenseProducts(responseLicense.toArray(new String[responseLicense.size()]));
+            memberInfoResponse.setLicenseProducts(responseLicense.toArray(new String[0]));
             memberInfoDTOList.add(memberInfoResponse);
         }
 
@@ -1844,24 +1842,20 @@ public class WorkspaceService {
     }
 
     private Workspace checkWorkspaceAndUserRole(String workspaceId, String userId, String[] role) {
-        Optional<Workspace> workspace = workspaceRepository.findByUuid(workspaceId);
-        workspace.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
-
-        Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_UserIdAndWorkspaceUser_Workspace(
-                userId, workspace.get());
-        workspaceUserPermission.orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
+        Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
+        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findByWorkspaceUser_WorkspaceAndWorkspaceUser_UserId(workspace, userId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_NOT_FOUND));
 
         log.info(
                 "[CHECK WORKSPACE USER ROLE] Acceptable User Workspace Role : {}, Present User Role : [{}]",
                 Arrays.toString(role),
-                workspaceUserPermission.get().getWorkspaceRole().getRole()
+                workspaceUserPermission.getWorkspaceRole().getRole()
         );
         if (!Arrays.asList(role)
                 .stream()
-                .anyMatch(workspaceUserPermission.get().getWorkspaceRole().getRole()::equals)) {
+                .anyMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
-        return workspace.get();
+        return workspace;
     }
 
     public WorkspaceFaviconUpdateResponse updateWorkspaceFavicon(
@@ -1886,7 +1880,7 @@ public class WorkspaceService {
         }
         String allowExtension = "jpg,jpeg,ico,png";
         String extension = FilenameUtils.getExtension(workspaceFaviconUpdateRequest.getFavicon().getOriginalFilename());
-        checkFileSize(workspaceFaviconUpdateRequest.getFavicon().getSize(), 3145728L);
+        checkFileSize(workspaceFaviconUpdateRequest.getFavicon().getSize());
         checkFileExtension(extension, allowExtension);
 
         //3. 파비콘 업로드
@@ -1907,11 +1901,11 @@ public class WorkspaceService {
         }
     }
 
-    private void checkFileSize(long requestSize, long acceptSize) {
-        if (requestSize < 0 || requestSize > acceptSize) {
+    private void checkFileSize(long requestSize) {
+        if (requestSize < 0 || requestSize > (long) 3145728) {
             log.error(
                     "[UPLOAD FILE SIZE CHECK] Acceptable File size : [{}], Present File size : [{}] ",
-                    3145728L, requestSize
+                    3145728, requestSize
             );
             throw new WorkspaceException(ErrorCode.ERR_NOT_ALLOW_FILE_SIZE);
         }
@@ -1944,7 +1938,7 @@ public class WorkspaceService {
         if (workspaceLogoUpdateRequest.getDefaultLogo() != null) {
             String defaultExtension = FilenameUtils.getExtension(
                     workspaceLogoUpdateRequest.getDefaultLogo().getOriginalFilename());
-            checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize(), 3145728L);
+            checkFileSize(workspaceLogoUpdateRequest.getDefaultLogo().getSize());
             checkFileExtension(defaultExtension, allowExtension);
 
             try {
@@ -1967,7 +1961,7 @@ public class WorkspaceService {
         if (workspaceLogoUpdateRequest.getGreyLogo() != null) {
             String greyExtension = FilenameUtils.getExtension(
                     workspaceLogoUpdateRequest.getGreyLogo().getOriginalFilename());
-            checkFileSize(workspaceLogoUpdateRequest.getGreyLogo().getSize(), 3145728L);
+            checkFileSize(workspaceLogoUpdateRequest.getGreyLogo().getSize());
             checkFileExtension(greyExtension, allowExtension);
 
             try {
@@ -1984,7 +1978,7 @@ public class WorkspaceService {
         //4. white logo 업로드
         if (workspaceLogoUpdateRequest.getWhiteLogo() != null) {
             String whiteExtension = FilenameUtils.getExtension(workspaceLogoUpdateRequest.getWhiteLogo().getOriginalFilename());
-            checkFileSize(workspaceLogoUpdateRequest.getWhiteLogo().getSize(), 3145728L);
+            checkFileSize(workspaceLogoUpdateRequest.getWhiteLogo().getSize());
             checkFileExtension(whiteExtension, allowExtension);
 
             try {

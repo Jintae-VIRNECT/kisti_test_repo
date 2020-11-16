@@ -37,13 +37,13 @@ public class WorkspaceInviteRequest {
         private String role;
         @ApiModelProperty(value = "planRemote", position = 2)
         @NotNull(message = "초대할 유저의 리모트 플랜 부여 여부는 필수값입니다.")
-        private Boolean planRemote;
+        private boolean planRemote;
         @ApiModelProperty(value = "planMake", position = 3)
         @NotNull(message = "초대할 유저의 메이크 플랜 부여 여부는 필수값입니다.")
-        private Boolean planMake;
+        private boolean planMake;
         @ApiModelProperty(value = "planView", position = 4)
         @NotNull(message = "초대할 유저의 뷰 플랜 부여 여부는 필수값입니다.")
-        private Boolean planView;
+        private boolean planView;
     }
 }
 
