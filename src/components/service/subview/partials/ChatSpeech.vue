@@ -1,7 +1,7 @@
 <template>
   <div class="chat-speech">
     <div class="chat-speech__main">
-      <svg class="chat-speech__progress" v-if="progress > 0">
+      <svg class="chat-speech__progress" v-if="progress > -1">
         <circle
           stroke="#0f75f5"
           :stroke-dasharray="`${circumference} ${circumference}`"
@@ -15,7 +15,7 @@
       </svg>
       <button
         class="chat-speech__icon"
-        :class="{ recording: progress > 0 }"
+        :class="{ recording: progress > -1 }"
         @click="clickSpeech"
       ></button>
       <span class="chat-speech__text">{{ speechGuide }}</span>
@@ -30,6 +30,7 @@
     <div class="chat-speach__textarea">
       <textarea
         placeholder="음성 녹음을 진행하여 음성 채팅을 시작하세요."
+        :disabled="status !== 'wait'"
         v-model="speechText"
       />
     </div>
@@ -53,27 +54,26 @@ export default {
       timer: null,
       circumference: 52 * Math.PI,
       strokeDashoffset: 0,
-      progress: 0,
+      progress: -1,
       speechText: '',
     }
   },
   computed: {
     ...mapGetters(['myInfo', 'translate', 'mic']),
     speechGuide() {
-      if (this.speechText && this.speechText.length > 0) {
-        return '음성 인식 완료'
-      }
-      if (this.progress > 0) {
+      if (this.status === 'wait') {
+        return '음성 대기'
+      } else if (this.status === 'recording') {
         return '음성 인식 중...'
       } else {
-        return '음성 대기'
+        return '음성 인식 완료'
       }
     },
     sendActive() {
       if (
         this.speechText &&
         this.speechText.length > 0 &&
-        this.progress === 0
+        this.progress === -1
       ) {
         return true
       } else {
@@ -95,10 +95,12 @@ export default {
       this.timer = setInterval(async () => {
         this.progress += 1
         this.setProgress()
-        if (this.progress > MAX_RECORD_TIME) {
+        if (this.progress >= MAX_RECORD_TIME) {
           this.clickSpeech()
         }
       }, 1000)
+      this.progress = 0
+      this.setProgress()
     },
     setProgress() {
       const offset =
@@ -107,11 +109,11 @@ export default {
       this.strokeDashoffset = offset
     },
     async clickSpeech() {
-      if (this.progress > 0) {
+      if (this.progress > -1) {
         clearInterval(this.timer)
-        this.strokeDashoffset = 0
-        this.progress = 0
         const text = await this.stopRecord(true)
+        this.strokeDashoffset = 0
+        this.progress = -1
         if (!text || text.trim().length === 0) {
           this.toastDefault('인식된 음성이 없습니다.')
         } else {

@@ -7,6 +7,7 @@ export default {
       recording: false,
       record: null,
       sttCode: 'en-US',
+      status: 'wait', // 'recording', 'stt', 'wait'
     }
   },
   methods: {
@@ -16,6 +17,7 @@ export default {
         this.record
           .start()
           .then(() => {
+            this.status = 'recording'
             this.recording = true
             response(true)
           })
@@ -31,9 +33,11 @@ export default {
           .stop()
           .then(async ({ blob, buffer }) => {
             this.recording = false
+            this.status = 'stt'
             let translateText
             if (doStt) {
               translateText = await this.getRecordFile(blob)
+              this.status = 'wait'
             }
             this.logger('STT', 'AUDIO SIZE: ', blob.size)
             resolve(translateText)
