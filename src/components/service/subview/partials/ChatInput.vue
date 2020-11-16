@@ -82,6 +82,7 @@ import { mapGetters } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
 import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
+import { ALLOW_MINE_TYPE } from 'utils/file'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
@@ -121,16 +122,16 @@ export default {
   methods: {
     doStt() {
       if (!this.mic.isOn) {
-        this.toastError('마이크가 꺼져있습니다.')
+        this.toastDefault('마이크가 활성화 되어있지 않습니다.')
         return
       }
       this.$emit('update:speech', true)
     },
     doTranslate() {
-      if (!this.mic.isOn) {
-        this.toastDefault('마이크가 활성화 되어있지 않습니다.')
-        return
-      }
+      // if (!this.mic.isOn) {
+      //   this.toastDefault('마이크가 활성화 되어있지 않습니다.')
+      //   return
+      // }
       this.viewTrans = !this.viewTrans
     },
     async doSend(e) {
@@ -186,6 +187,11 @@ export default {
           this.toastDefault(this.$t('service.file_upload_maxsize'))
           this.clearUploadFile()
           return false
+        }
+        if (!ALLOW_MINE_TYPE.includes(file.type)) {
+          this.toastDefault(this.$t('service.file_type_notsupport'))
+          this.clearUploadFile()
+          return
         }
 
         const isValid = [
