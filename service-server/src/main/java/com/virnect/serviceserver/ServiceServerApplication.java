@@ -1,28 +1,33 @@
 package com.virnect.serviceserver;
 
-import com.virnect.mediaserver.config.MediaServerConfig;
-import com.virnect.serviceserver.cdr.CDRLogger;
-import com.virnect.serviceserver.cdr.CDRLoggerFile;
-import com.virnect.serviceserver.cdr.CallDetailRecord;
+import com.virnect.mediaserver.cdr.CDRLogger;
+import com.virnect.mediaserver.cdr.CDRLoggerFile;
+import com.virnect.mediaserver.cdr.CallDetailRecord;
+import com.virnect.mediaserver.config.MediaServerProperties;
+import com.virnect.mediaserver.core.SessionEventsHandler;
+import com.virnect.mediaserver.core.SessionManager;
+import com.virnect.mediaserver.core.TokenGenerator;
+import com.virnect.mediaserver.coturn.CoturnCredentialsService;
+import com.virnect.mediaserver.coturn.CoturnCredentialsServiceFactory;
+import com.virnect.mediaserver.kurento.core.KurentoParticipantEndpointConfig;
+import com.virnect.mediaserver.kurento.core.KurentoSessionEventsHandler;
+import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
+import com.virnect.mediaserver.kurento.kms.DummyLoadManager;
+import com.virnect.mediaserver.kurento.kms.FixedKmsManager;
+import com.virnect.mediaserver.kurento.kms.KmsManager;
+import com.virnect.mediaserver.kurento.kms.LoadManager;
+import com.virnect.mediaserver.recording.DummyRecordingDownloader;
+import com.virnect.mediaserver.recording.RecordingDownloader;
+import com.virnect.mediaserver.recording.service.RecordingManager;
+import com.virnect.mediaserver.rpc.RpcHandler;
+import com.virnect.mediaserver.rpc.RpcNotificationService;
+import com.virnect.mediaserver.utils.*;
+import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
+
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.core.SessionEventsHandler;
-import com.virnect.serviceserver.core.SessionManager;
-import com.virnect.serviceserver.core.TokenGenerator;
-import com.virnect.serviceserver.core.TokenGeneratorDefault;
-import com.virnect.serviceserver.coturn.CoturnCredentialsService;
-import com.virnect.serviceserver.coturn.CoturnCredentialsServiceFactory;
-import com.virnect.serviceserver.kurento.core.KurentoParticipantEndpointConfig;
-import com.virnect.serviceserver.kurento.core.KurentoSessionEventsHandler;
-import com.virnect.serviceserver.kurento.core.KurentoSessionManager;
-import com.virnect.serviceserver.kurento.kms.*;
-import com.virnect.serviceserver.recording.DummyRecordingDownloader;
-import com.virnect.serviceserver.recording.RecordingDownloader;
-import com.virnect.serviceserver.recording.service.RecordingManager;
-import com.virnect.serviceserver.rpc.RpcHandler;
-import com.virnect.serviceserver.rpc.RpcNotificationService;
-import com.virnect.serviceserver.utils.*;
-import com.virnect.serviceserver.webhook.CDRLoggerWebhook;
+import com.virnect.serviceserver.session.ServiceSessionManager;
+import com.virnect.serviceserver.token.TokenGeneratorDefault;
 import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
 import org.kurento.jsonrpc.server.JsonRpcConfigurer;
@@ -65,8 +70,7 @@ import java.util.concurrent.Semaphore;
 //@EnableConfigurationProperties(RemoteServiceProperties.class)
 @ComponentScan(value = {
         "com.virnect.data",
-        "com.virnect.serviceserver",
-        "com.virnect.mediaserver"
+        "com.virnect.serviceserver"
 })
 @EntityScan(value = {"com.virnect.data.dao"})
 @EnableJpaRepositories(value = {"com.virnect.data.repository"})
@@ -90,6 +94,12 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
     @Autowired
     RemoteServiceConfig config;
+
+    @Autowired
+    MediaServerProperties mediaServerProperties;
+
+    @Autowired
+    ServiceSessionManager serviceSessionManager;
 
     /*@Bean
     @DependsOn("remoteServiceConfig")
@@ -143,7 +153,23 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
-    public CallDetailRecord cdr(RemoteServiceConfig remoteServiceConfig) {
+    public CallDetailRecord cdr(MediaServerProperties mediaServerProperties) {
+        List<CDRLogger> loggers = new ArrayList<>();
+        if (mediaServerProperties.serverProperty.isServiceCdr()) {
+            log.info("RemoteService CDR service is enabled");
+            loggers.add(new CDRLoggerFile());
+        } else {
+            log.info("RemoteService CDR service is disabled (may be enable with 'remote_cdr=true')");
+        }
+        if (mediaServerProperties.serverProperty.isWebhookEnabled()) {
+            log.info("RemoteService Webhook service is enabled");
+            loggers.add(new CDRLoggerWebhook(mediaServerProperties));
+        } else {
+            log.info("RemoteService Webhook service is disabled (may be enabled with 'remote_webhook=true')");
+        }
+        return new CallDetailRecord(loggers);
+    }
+    /*public CallDetailRecord cdr(RemoteServiceConfig remoteServiceConfig) {
         List<CDRLogger> loggers = new ArrayList<>();
         if (remoteServiceConfig.isCdrEnabled()) {
             log.info("RemoteService CDR service is enabled");
@@ -158,7 +184,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             log.info("RemoteService Webhook service is disabled (may be enabled with 'remote_webhook=true')");
         }
         return new CallDetailRecord(loggers);
-    }
+    }*/
 
     @Bean
     @ConditionalOnMissingBean
@@ -171,7 +197,10 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
     public SessionManager sessionManager() {
-        return new KurentoSessionManager();
+        KurentoSessionManager kurentoSessionManager = new KurentoSessionManager();
+        //kurentoSessionManager.setKurentoSessionListener(serviceSessionManager.kurentoSessionListener);
+        return kurentoSessionManager;
+        //return new KurentoSessionManager();
     }
 
     @Bean
