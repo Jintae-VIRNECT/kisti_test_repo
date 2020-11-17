@@ -11,7 +11,8 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/google/uuid v1.1.1
 	github.com/jinzhu/gorm v1.9.15
-	github.com/minio/minio-go/v7 v7.0.5
+	github.com/minio/minio v0.0.0-20201116061641-0b766288efe1
+	github.com/minio/minio-go/v7 v7.0.6-0.20200929220449-755b5633803a
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/pflag v1.0.5
 	github.com/spf13/viper v1.7.0

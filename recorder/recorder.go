@@ -63,9 +63,7 @@ func (r *recorder) timeoutHandler() {
 	logEntry := logrus.NewEntry(log)
 	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
 
-	defer func() {
-		logger.Info("stop timeoutHandler")
-	}()
+	defer logger.Info("stop timeoutHandler")
 
 	for {
 		select {

@@ -9,8 +9,9 @@ import (
 	"path"
 	"regexp"
 	"strings"
-	"syscall"
 	"time"
+
+	"github.com/minio/minio/pkg/disk"
 )
 
 const (
@@ -52,16 +53,15 @@ func GetLocalIP() string {
 }
 
 func DiskUsage(path string) (DiskStatus, error) {
-	disk := DiskStatus{}
-	fs := syscall.Statfs_t{}
-	err := syscall.Statfs(path, &fs)
+	status := DiskStatus{}
+	di, err := disk.GetInfo(path)
 	if err != nil {
-		return disk, err
+		return status, err
 	}
-	disk.All = fs.Blocks * uint64(fs.Bsize)
-	disk.Free = fs.Bfree * uint64(fs.Bsize)
-	disk.Used = disk.All - disk.Free
-	return disk, nil
+	status.All = di.Total
+	status.Free = di.Free
+	status.Used = di.Total - di.Free
+	return status, nil
 }
 
 func RemoveContents(dirname string) (int, error) {
