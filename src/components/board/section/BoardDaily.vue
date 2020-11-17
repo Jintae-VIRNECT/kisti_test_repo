@@ -37,13 +37,13 @@
 
     <div class="board-figures">
       <figure-board
-        :header="$t('chart.daily_my_collabo_count')"
-        :count="9999"
+        :header="$t('chart.daily_total_collabo_count')"
+        :count="daily ? daily.total.count : 0"
         :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
       ></figure-board>
       <figure-board
         :header="$t('chart.daily_total_collabo_time')"
-        :time="999999"
+        :time="daily ? daily.total.time : 0"
         :imgSrc="require('assets/image/figure/ic_figure_date_all.svg')"
       ></figure-board>
       <figure-board
@@ -83,8 +83,6 @@ export default {
   },
   data() {
     return {
-      //dummy datas
-      totalColaboDatas: [],
       dailyChart: null,
       today: new Date(),
     }
@@ -106,6 +104,7 @@ export default {
       handler(data) {
         if (this.dailyChart) {
           this.dailyChart.data.datasets[0].data = data.my.set
+          this.dailyChart.data.datasets[1].data = data.total.set
           this.dailyChart.update()
         }
       },
@@ -113,39 +112,9 @@ export default {
     },
   },
   methods: {
-    getDummyDataTotal() {
-      return [
-        0,
-        2,
-        4,
-        5,
-        10,
-        8,
-        2,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        10,
-        10,
-        9,
-        0,
-        0,
-        0,
-        0,
-        0,
-      ]
-    },
     initChart() {
       this.$nextTick(() => {
         const ctx = document.getElementById('chart-dayily').getContext('2d')
-
-        this.totalColaboDatas = this.getDummyDataTotal()
 
         const custom = this.customTooltips(
           'chart-dayily',
@@ -171,7 +140,7 @@ export default {
               },
               {
                 label: this.$t('chart.total_collabo_list'),
-                data: this.totalColaboDatas,
+                data: this.daily ? this.daily.total.set : [],
                 borderColor: '#bbc8d9',
                 borderWidth: 4,
                 pointRadius: 0,
@@ -195,5 +164,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss"></style>

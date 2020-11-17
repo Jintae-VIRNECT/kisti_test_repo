@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import CollaboSearchBar from 'components/section/CollaboSearchBar'
-import CollaboHistoryList from 'components/section/CollaboHistoryList'
+import CollaboSearchBar from 'components/collabo/section/CollaboSearchBar'
+import CollaboHistoryList from 'components/collabo/section/CollaboHistoryList'
 export default {
   name: 'TabCollabo',
   components: {

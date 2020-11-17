@@ -1,0 +1,64 @@
+.collabo-history-list {
+  margin-top: 2.9286rem;
+}
+.collabo-history-list__header {
+  position: relative;
+  height: 3.8571rem;
+}
+
+.collabo-history-list__header--title {
+  margin-right: 0.7143rem;
+  color: #0b1f48;
+  font-weight: 500;
+  font-size: 1.5714rem;
+}
+
+.collabo-history-list__header--description {
+  color: #7a7a7a;
+  font-weight: 500;
+  font-size: 1.0714rem;
+}
+.collabo-history-list__header--excel {
+  position: absolute;
+  right: 0px;
+  width: 6.3571rem;
+  height: 3rem;
+  color: #0f75f5;
+  font-weight: 500;
+  font-size: 1.0714rem;
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
+  border-radius: 2px;
+  transition: 0.3s;
+
+  &.excel-loading {
+    &:after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5.7143rem;
+      height: 5.7143rem;
+      background: center center/40px 40px no-repeat
+        url(~assets/image/loading.gif);
+      transform: translate(-50%, -50%);
+      content: "";
+    }
+  }
+
+  &.disable {
+    color: #bdc5cc;
+    font-weight: 500;
+    font-size: 15px;
+
+    &:hover {
+      background-color: #ffffff;
+    }
+  }
+
+  &:hover {
+    background-color: #f3f3f3;
+  }
+  &:active {
+    background-color: #e6e6e6;
+  }
+}

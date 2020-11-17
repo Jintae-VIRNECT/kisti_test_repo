@@ -99,7 +99,7 @@ export default {
   border-radius: 4px;
 
   &.only-me {
-    background: rgb(15, 117, 245);
+    background: #0f75f5;
   }
 
   & > img {
@@ -109,7 +109,7 @@ export default {
 }
 
 .figure-board--header {
-  color: rgb(117, 127, 145);
+  color: #757f91;
   font-weight: 500;
   font-size: 1rem;
 }

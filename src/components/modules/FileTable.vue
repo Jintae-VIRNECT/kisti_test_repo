@@ -8,7 +8,6 @@
         v-show="showToggleHeader && datas.length > 0"
       >
         <toggle-button
-          slot="body"
           size="1.714em"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
@@ -52,7 +51,9 @@
           </div>
 
           <play-button
-            class="table__cell"
+            class="table__cell--play"
+            :class="[type]"
+            size="2.1429rem"
             v-if="showPlayButton"
             @click="getPlayIndex(index)"
           ></play-button>
@@ -126,6 +127,10 @@ export default {
     }
   },
   props: {
+    type: {
+      type: String,
+      default: '',
+    },
     showToggleHeader: {
       type: Boolean,
       default: false,
@@ -223,7 +228,6 @@ export default {
       })
     },
     setSelectedArray() {
-      console.log('call setSelectedArray')
       this.selectedArray = []
 
       if (this.showToggleHeader) {
@@ -260,9 +264,9 @@ export default {
   flex-grow: 1;
   flex-shrink: 1;
   // color: #a7a7a7;
-  color: rgb(65, 74, 89);
+  color: #414a59;
   font-weight: normal;
-  font-size: 15px;
+  font-size: 1.0714rem;
   text-align: center;
 }
 
@@ -280,7 +284,7 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  height: 62.0004px;
+  height: 4.4286rem;
   border-bottom: 1px solid #eaedf3;
   // margin-bottom: 0.5714rem;
   // background: $color_darkgray_600;
@@ -336,16 +340,26 @@ export default {
   margin: 0 1.3571rem 0 1.5714rem;
 }
 
+.table__cell--play {
+  // display: flex;
+  &.local {
+    margin: 0 3.4286rem 0 3.4286rem;
+  }
+  &.server {
+    margin: 0 3.4286rem 0 4.4286rem;
+  }
+}
+
 .table__body--empty {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 434px;
+  height: 31rem;
   // background-color: $color_darkgray_600;
 }
 
 .table__body--empty-text {
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 1.1429rem;
 }

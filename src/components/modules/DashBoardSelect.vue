@@ -142,7 +142,7 @@ export default {
   text-overflow: ellipsis;
   // background-color: $color_darkgray;
   background-color: #ffffff;
-  border: 1px solid rgb(194, 198, 206);
+  border: 1px solid #c2c6ce;
   border-radius: 4px;
   transition: all 0.3s;
   &::after {
@@ -233,7 +233,7 @@ export default {
   }
   &.active {
     // color: rgba($color_text, 0.76);
-    color: rgb(11, 31, 72);
+    color: #0b1f48;
     text-decoration: underline;
     background-color: #e3e7ed;
   }

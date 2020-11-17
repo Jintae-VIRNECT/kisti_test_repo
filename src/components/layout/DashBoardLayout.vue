@@ -17,13 +17,13 @@
 <script>
 import DashBoardHeader from 'components/header/Header'
 import DashBoardFooter from 'components/footer/Footer'
-import DashBoardTab from 'components/section/DashBoardTab'
+import DashBoardTab from 'components/dashboard/section/DashBoardTab'
 import { mapActions } from 'vuex'
 import { getLicense } from 'api/http/account'
 import langMixin from 'mixins/language'
 import auth from 'utils/auth'
 
-import Player from 'components/modal/Player'
+import Player from 'components/dashboard/modal/ModalPlayer'
 
 export default {
   name: 'DashBoardLayout',

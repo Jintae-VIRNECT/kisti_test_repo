@@ -169,8 +169,8 @@ export default {
   display: flex;
   justify-content: center;
   height: 7.7143rem;
-  background: rgb(215, 224, 236);
-  border: 1px solid rgb(205, 210, 220);
+  background: #d7e0ec;
+  border: 1px solid #cdd2dc;
   border-radius: 0px;
 }
 
@@ -185,11 +185,11 @@ export default {
 .collabo-search-bar__condition {
   .vdp-datepicker--input {
     height: 3.4286rem;
-    border: 1px solid rgb(194, 198, 206);
+    border: 1px solid #c2c6ce;
   }
   .calendar-button {
     height: 3.4286rem;
-    border: 1px solid rgb(194, 198, 206);
+    border: 1px solid #c2c6ce;
   }
 }
 
@@ -198,24 +198,24 @@ export default {
   height: 3.1429rem;
   margin-right: 4.9286rem;
   padding-left: 1.1429rem;
-  color: rgb(11, 31, 72);
+  color: #0b1f48;
   font-weight: 500;
   font-size: 1.1429rem;
   // line-height: 28px;
   letter-spacing: 0px;
-  background: rgb(255, 255, 255);
-  border: 1px solid rgb(194, 198, 206);
+  background: #ffffff;
+  border: 1px solid #c2c6ce;
   border-radius: 4px;
   outline: none;
   &:focus {
     width: 16.9286rem;
     height: 3rem;
-    border: 2px solid rgb(15, 117, 245);
+    border: 2px solid #0f75f5;
   }
 
   &::placeholder {
     // padding-left: 1.1429rem;
-    color: rgb(186, 194, 204);
+    color: #bac2cc;
     font-weight: normal;
     font-size: 1.1429rem;
     // line-height: 28px;
@@ -236,7 +236,7 @@ export default {
 
 .collabo-search-bar--label {
   margin-right: 0.7143rem;
-  color: rgb(67, 75, 88);
+  color: #434b58;
   font-weight: 500;
   font-size: 1.1429rem;
 }
@@ -251,7 +251,7 @@ export default {
   border-radius: 0px;
   transition: 0.3s;
   &:hover {
-    background: rgb(15, 117, 245);
+    background: #0f75f5;
   }
 
   & > span {
@@ -272,7 +272,7 @@ export default {
 .collabo-search-bar__condition--tilde {
   margin: 0 0.6429rem;
   &::after {
-    color: rgb(117, 127, 145);
+    color: #757f91;
     font-weight: 500;
     font-size: 1rem;
     content: '\223C';

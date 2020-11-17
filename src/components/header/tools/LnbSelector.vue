@@ -115,7 +115,7 @@ export default {
     &:hover {
       // color: rgba($color_text, 0.7);
       // background-color: rgba($color_bg_item, 0.7);
-      color: rgb(11, 31, 72);
+      color: #0b1f48;
       background-color: #eaedf3;
       // > .header-lnb-selector__check {
       //   border-color: rgba($color_text, 0.4);
@@ -123,7 +123,7 @@ export default {
     }
     &.active {
       // color: $color_text;
-      color: rgb(11, 31, 72);
+      color: #0b1f48;
       // background-color: rgba($color_bg_item, 0.4);
       background-color: #eaedf3;
       > .header-lnb-selector__check {
