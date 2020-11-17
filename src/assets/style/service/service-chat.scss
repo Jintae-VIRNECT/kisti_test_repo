@@ -745,22 +745,16 @@
   font-size: 1rem;
 }
 
-.chat-down__bar--button {
+.btn.chat-down__bar--button {
   position: absolute;
   right: 1.286rem;
+  min-height: auto;
   padding: 0.214rem 0.857rem;
-  color: $color_text_sub;
-  background-color: $color_primary;
-  border-radius: 2px;
+  // color: $color_text_sub;
+  font-weight: 300;
+  font-size: 1em;
   transition: background-color 0.2s;
-
-  &:focus {
-    background-color: $color_primary;
-  }
-  &:hover {
-    background-color: $color_primary_700;
-  }
-  &:active {
-    background-color: $color_primary_dark;
+  &:disabled {
+    color: rgba($color_text_sub, 0.5);
   }
 }
