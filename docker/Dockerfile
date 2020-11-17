@@ -6,9 +6,6 @@ WORKDIR $APP_HOME
 # Only copy dependency-related files
 COPY build.gradle settings.gradle ./
 
-# Download all dependencies libraries
-RUN gradle build -x test --no-daemon
-
 # Copy Sourcefile
 COPY virnect.pfx .
 COPY src src
