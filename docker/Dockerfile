@@ -12,7 +12,7 @@ COPY src src
 
 # build soruce file with dependnecies
 RUN gradle cleanQuerydslSourcesDir
-RUN gradle --no-daemon build -x test --stacktrace
+RUN gradle build -x test --stacktrace
 
 # Runtime Stage
 FROM openjdk:8-jre-alpine
