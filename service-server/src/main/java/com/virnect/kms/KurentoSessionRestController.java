@@ -21,10 +21,6 @@ package com.virnect.kms;
 //import com.virnect.serviceserver.recording.service.RecordingManager;
 
 
-/**
- *
- * @author Pablo Fuente (pablofuenteperez@gmail.com)
- */
 /*
 @RestController
 @CrossOrigin
