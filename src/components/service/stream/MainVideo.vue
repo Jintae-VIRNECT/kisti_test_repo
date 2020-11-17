@@ -390,7 +390,7 @@ export default {
     },
 
     serverRecord(payload) {
-      if (payload.isStop) {
+      if (!payload.isStart) {
         this.closeServerTimer()
       } else if (payload.isStart && !payload.isWaiting) {
         this.showServerTimer(payload)

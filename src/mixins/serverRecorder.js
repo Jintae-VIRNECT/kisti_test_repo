@@ -59,7 +59,7 @@ export default {
 
         this.recordTimeout = setTimeout(() => {
           this.$eventBus.$emit('serverRecord', {
-            isStop: true,
+            isStart: false,
           })
         }, timeout)
       } catch (e) {
@@ -80,7 +80,7 @@ export default {
         }
 
         this.$eventBus.$emit('serverRecord', {
-          isStop: true,
+          isStart: false,
         })
       }
     },
@@ -107,7 +107,7 @@ export default {
     async toggleServerRecord(payload) {
       if (this.isContinue) return
 
-      if (payload.isStop) {
+      if (!payload.isStart) {
         await this.stopServerRecord()
       } else if (payload.isStart && payload.isWaiting) {
         await this.startServerRecord()
@@ -133,7 +133,7 @@ export default {
     async continueServerRecord(timeout) {
       this.recordTimeout = setTimeout(() => {
         this.$eventBus.$emit('serverRecord', {
-          isStop: true,
+          isStart: false,
         })
       }, timeout - this.elapsedTime * 1000)
 

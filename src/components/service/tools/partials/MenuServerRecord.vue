@@ -44,25 +44,19 @@ export default {
       }
     },
     start() {
-      this.isWaiting = true
       this.$eventBus.$emit('serverRecord', {
         isStart: true,
-        isWaiting: this.isWaiting,
+        isWaiting: true,
       })
     },
     stop() {
       this.$eventBus.$emit('serverRecord', {
-        isStop: true,
+        isStart: false,
       })
     },
     toggleButton(payload) {
-      if (payload.isStop) {
-        this.isRecording = false
-      } else if (payload.isStart) {
-        this.isRecording = true
-      }
-
-      this.isWaiting = payload.isWaiting ? true : false
+      this.isRecording = payload.isStart ? true : false
+      this.isWaiting = payload.isWaiting
     },
   },
 
