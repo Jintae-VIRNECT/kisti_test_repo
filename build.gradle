@@ -140,6 +140,9 @@ build {
 
 
 jib {
+    extraDirectories {
+        paths = './virnect.pfx'
+    }
     from {
         image = "openjdk:8-jre-alpine"
     }
@@ -147,5 +150,6 @@ jib {
         jvmFlags = ['-XX:+UseG1GC', '-Xms400m']
         mainClass = 'com.virnect.license.LicenseApplication'
         ports = ['8632']
+
     }
 }
