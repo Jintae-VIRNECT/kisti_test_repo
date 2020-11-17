@@ -141,7 +141,11 @@ build {
 
 jib {
     extraDirectories {
-        paths = './virnect.pfx'
+        paths {
+            path {
+                from = file('virnect.pfx')
+            }
+        }
     }
     from {
         image = "openjdk:8-jre-alpine"
