@@ -7,7 +7,7 @@ export default {
   SETTING_INFO: ['GET', '/workspaces/setting', { initing: true }],
 
   /* LICENSE */
-  GET_LICENSE: ['GET', '/licenses/plan/{userId}'],
+  GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],
 
   /* HISTORY */
   HISTORY_LIST: ['GET', '/remote/dashboard/my-history/{workspaceId}'],
