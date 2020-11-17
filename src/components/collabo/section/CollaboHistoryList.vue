@@ -249,9 +249,6 @@ export default {
     async addAdditionalData(list) {
       await this.setIndex(list)
       await this.setLeader(list)
-      // await this.setServerRecord(list)
-      // await this.setFile(list)
-      // await this.setLocalRecord(list)
     },
     async getHistoryPage(page) {
       this.init(page - 1)
