@@ -32,7 +32,7 @@ const mutations = {
     Object.assign(state.sort, sort)
   },
   [SEARCH.DATE_TOGGLE](state, sort) {
-    Object.assign(state.sort, sort)
+    Object.assign(state.useDate, sort)
   },
 }
 
