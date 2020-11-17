@@ -146,6 +146,6 @@ jib {
     container {
         jvmFlags = ['-XX:+UseG1GC', '-Xms400m']
         mainClass = 'com.virnect.license.LicenseApplication'
-        ports = ['8321']
+        ports = ['8632']
     }
 }
