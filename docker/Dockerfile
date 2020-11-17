@@ -20,9 +20,7 @@ ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 ARG buildDir=${APP_HOME}/build/unpack
 
-COPY --from=builder ${APP_HOME}/virnect.pfx .
-COPY --from=builder ${APP_HOME}/virnect_2.pfx .
-COPY --from=builder ${APP_HOME}/safari.pfx .
+COPY --from=builder ${APP_HOME}/*.pfx ./
 COPY --from=builder ${buildDir}/lib BOOT-INF/lib
 COPY --from=builder ${buildDir}/app .
 
