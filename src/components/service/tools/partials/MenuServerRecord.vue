@@ -37,10 +37,10 @@ export default {
       if (this.disabled) return false
       if (this.isWaiting) return false
 
-      if (!this.isRecording) {
-        this.start()
-      } else {
+      if (this.isRecording) {
         this.stop()
+      } else {
+        this.start()
       }
     },
     start() {
@@ -55,7 +55,7 @@ export default {
       })
     },
     toggleButton(payload) {
-      this.isRecording = payload.isStart ? true : false
+      this.isRecording = payload.isStart
       this.isWaiting = payload.isWaiting
     },
   },
