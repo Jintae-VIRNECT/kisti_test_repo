@@ -41,7 +41,6 @@ const _ = {
     try {
       _.account = Store.getters['account']
       _.openRoom = open
-      console.log(_.openRoom)
 
       Store.commit('callClear')
       OV = new OpenVidu()
