@@ -17,6 +17,7 @@
 
 package com.virnect.serviceserver.config;
 
+import com.virnect.mediaserver.config.InfoHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;

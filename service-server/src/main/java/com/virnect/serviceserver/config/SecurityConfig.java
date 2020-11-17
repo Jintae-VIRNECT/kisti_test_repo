@@ -91,11 +91,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		conf.antMatchers("/layouts/**").permitAll();
 
 		// Security for recorded video files
-		if (remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPublicAccess()) {
+		/*if (remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPublicAccess()) {
 			conf = conf.antMatchers("/recordings/**").permitAll();
 		} else {
 			conf = conf.antMatchers("/recordings/**").authenticated();
-		}
+		}*/
 
 		conf.and().httpBasic();
 	}

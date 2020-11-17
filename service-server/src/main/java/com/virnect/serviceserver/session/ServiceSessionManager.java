@@ -2,31 +2,26 @@ package com.virnect.serviceserver.session;
 
 import com.google.gson.*;
 import com.virnect.client.RemoteServiceException;
-import com.virnect.data.ApiResponse;
-import com.virnect.data.dao.Room;
-import com.virnect.data.dao.RoomStatus;
-import com.virnect.data.dto.response.RoomResponse;
-import com.virnect.data.error.ErrorCode;
 import com.virnect.java.client.*;
-import com.virnect.serviceserver.core.*;
-import com.virnect.serviceserver.core.Session;
+import com.virnect.mediaserver.core.Session;
+import com.virnect.mediaserver.core.*;
+import com.virnect.mediaserver.kurento.core.KurentoSession;
+import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
+import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
+import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
 import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.model.SessionData;
 import com.virnect.serviceserver.model.SessionTokenData;
-import com.virnect.serviceserver.kurento.core.KurentoSession;
-import com.virnect.serviceserver.kurento.core.KurentoTokenOptions;
-import lombok.RequiredArgsConstructor;
+import com.virnect.serviceserver.utils.LogMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +29,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-//@RequiredArgsConstructor
 public class ServiceSessionManager {
     private static final String TAG = ServiceSessionManager.class.getSimpleName();
     private final String SESSION_METHOD = "generateSession";
@@ -46,6 +40,82 @@ public class ServiceSessionManager {
 
     @Autowired
     DataRepository dataRepository;
+
+    @Bean
+    @ConditionalOnMissingBean
+    @DependsOn("sessionManager")
+    public KurentoSessionListener kurentoSessionListener() {
+        LogMessage.formedInfo(
+                TAG,
+                "SET LISTENER",
+                "kurentoSessionListener",
+                "interaction with kurento session",
+                "created");
+        return new KurentoSessionListener() {
+            @Override
+            public void createSession(Session sessionNotActive) {
+                LogMessage.formedInfo(
+                        TAG,
+                        "CREATE SESSION EVENT",
+                        "createSession",
+                        "session create and sessionEventHandler is here",
+                        "event received");
+                dataRepository.generateRoomSession(sessionNotActive.getSessionId());
+            }
+
+            @Override
+            public void joinSession(Participant participant, String sessionId, Set<Participant> existingParticipants, Integer transactionId) {
+                String result = "[participant] " + participant + "\n"
+                        + "[sessionId]" + sessionId + "\n"
+                        + "[transactionId]" + transactionId + "\n"
+                        + "[existingParticipants]" + existingParticipants + "\n";
+                LogMessage.formedInfo(
+                        TAG,
+                        "JOIN SESSION EVENT",
+                        "joinSession",
+                        "session join and sessionEventHandler is here",
+                        result);
+                dataRepository.joinSession(participant, sessionId);
+            }
+
+            @Override
+            public void leaveSession(Participant participant, String sessionId, Set<Participant> remainingParticipants, Integer transactionId, EndReason reason) {
+                String result = "[participant] " + participant + "\n"
+                        + "[clientMetadata]" + participant.getClientMetadata() + "\n"
+                        + "[sessionId]" + sessionId + "\n"
+                        + "[remainingParticipants]" + remainingParticipants + "\n"
+                        + "[transactionId]" + transactionId + "\n"
+                        + "[reason]" + reason + "\n";
+                LogMessage.formedInfo(
+                        TAG,
+                        "LEAVE SESSION EVENT",
+                        "leaveSession",
+                        "session leave and sessionEventHandler is here",
+                        result);
+                if(reason.equals(EndReason.forceDisconnectByUser)) {
+                    dataRepository.disconnectSession(participant, sessionId);
+                } else {
+                    dataRepository.leaveSession(participant, sessionId);
+                }
+            }
+
+            @Override
+            public void destroySession(KurentoSession session, EndReason reason) {
+                String result = "[sessionId] " + session.getSessionId() + "\n"
+                        + "[reason]" + reason + "\n";
+                LogMessage.formedInfo(
+                        TAG,
+                        "DESTROY SESSION EVENT",
+                        "destroySession",
+                        "session destroy and sessionEventHandler is here",
+                        result);
+                dataRepository.stopRecordSession(session.getSessionId());
+                dataRepository.destroySession(session.getSessionId());
+            }
+        };
+    }
+
+
 
     /*public ServiceSessionManager(@Lazy SessionManager sessionManager, DataRepository dataRepository) {
         this.sessionManager = sessionManager;
@@ -499,7 +569,7 @@ public class ServiceSessionManager {
 
 
     //
-    public void createSession(Session sessionNotActive) {
+    /*public void createSession(Session sessionNotActive) {
         log.info("session create and sessionEventHandler is here");
         dataRepository.generateRoomSession(sessionNotActive.getSessionId());
     }
@@ -531,7 +601,7 @@ public class ServiceSessionManager {
         log.info("session destroy and sessionEventHandler is here: [reason] {}", reason);
         dataRepository.stopRecordSession(session.getSessionId());
         dataRepository.destroySession(session.getSessionId());
-    }
+    }*/
 
     public boolean evictParticipant(String sessionId, String connectionId) {
         Session session = this.sessionManager.getSessionWithNotActive(sessionId);
