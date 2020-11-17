@@ -69,6 +69,7 @@ export default {
   mounted() {
     this.$nextTick(() => {
       if (!this.workspace.uuid) {
+        console.log('test')
         this.changeSelect(this.workspaceList[0])
       }
     })
