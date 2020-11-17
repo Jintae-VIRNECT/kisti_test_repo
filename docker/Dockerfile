@@ -7,7 +7,7 @@ WORKDIR $APP_HOME
 COPY build.gradle settings.gradle ./
 
 # Copy Sourcefile
-COPY virnect.pfx virnect_2.pfx safari.pfx ./
+COPY *.pfx ./
 COPY src src
 
 # build soruce file with dependnecies
