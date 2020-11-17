@@ -14,7 +14,7 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh './gradlew jibDockerBuild --image=pf-license'
+                        sh 'docker build -t pf-license -f docker/Dockerfile .'
                     }
                 }
 
