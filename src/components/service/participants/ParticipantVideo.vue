@@ -11,7 +11,7 @@
           autoplay
           playsinline
           loop
-          :muted="isMe"
+          :muted="isMuted"
         ></video>
       </div>
       <div class="participant-video__profile" v-else>
@@ -36,7 +36,7 @@
           autoplay
           playsinline
           loop
-          :muted="isMe || mainView.id === participant.id"
+          :muted="isMuted"
         ></audio>
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
@@ -217,17 +217,18 @@ export default {
         return -1
       }
     },
+    isMuted() {
+      if (
+        this.isMe ||
+        this.mainView.id === this.participant.id ||
+        this.speaker.isOn === false
+      ) {
+        return 'muted'
+      }
+      return false
+    },
   },
   watch: {
-    speaker(val) {
-      if (this.isMe) return
-      if (this.$el.querySelector('video')) {
-        this.$el.querySelector('video').muted = val
-      }
-      if (this.$el.querySelector('audio')) {
-        this.$el.querySelector('audio').muted = val
-      }
-    },
     'participant.nickname': 'participantInited',
     participant() {},
     cameraStatus(status, oldStatus) {

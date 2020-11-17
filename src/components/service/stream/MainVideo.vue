@@ -13,7 +13,7 @@
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
         @loadeddata="optimizeVideoSize"
-        :muted="!speaker || mainView.id === account.uuid"
+        :muted="isMuted"
         autoplay
         playsinline
         loop
@@ -241,11 +241,14 @@ export default {
         return false
       }
     },
+    isMuted() {
+      if (!this.speaker.isOn || this.mainView.id === this.account.uuid) {
+        return 'muted'
+      }
+      return false
+    },
   },
   watch: {
-    speaker(val) {
-      this.$refs['mainVideo'].muted = val ? false : true
-    },
     resolution: {
       deep: true,
       handler() {
