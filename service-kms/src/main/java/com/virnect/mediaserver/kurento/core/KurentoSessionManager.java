@@ -66,11 +66,12 @@ public class KurentoSessionManager extends SessionManager {
 	@Autowired
 	private KurentoParticipantEndpointConfig kurentoEndpointConfig;
 
+	@Autowired
 	private KurentoSessionListener kurentoSessionListener;
 
-	public void setKurentoSessionListener(KurentoSessionListener kurentoSessionListener) {
+	/*public void setKurentoSessionListener(KurentoSessionListener kurentoSessionListener) {
 		this.kurentoSessionListener = kurentoSessionListener;
-	}
+	}*/
 
 	@Override
 	/* Protected by Session.closingLock.readLock */
