@@ -3,6 +3,7 @@
     :content="text"
     :placement="placement"
     :active="disableActive ? !active : true"
+    :customClass="customClass"
   >
     <button
       slot="body"
@@ -10,7 +11,7 @@
       :class="{ active: active, disabled: disabled }"
       v-on="$listeners"
     >
-      <img v-if="icActive" :src="activeSrc" />
+      <img v-if="isActive" :src="activeSrc" />
       <img v-else-if="src" :src="src" />
       <slot v-else></slot>
     </button>
@@ -42,7 +43,7 @@ export default {
       default: false,
     },
     src: String,
-    icActive: {
+    isActive: {
       type: Boolean,
       default: false,
     },
@@ -53,6 +54,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    customClass: {
+      type: [String, Object],
+      default: '',
     },
   },
   watch: {},

@@ -34,6 +34,13 @@
         @change="fileUpload($event)"
       />
       <template v-if="fileList.length === 0">
+        <button
+          v-if="translate.flag"
+          class="chat-input__form-speech"
+          @click="doStt"
+        >
+          {{ '번역' }}
+        </button>
         <button class="chat-input__form-upload" @click="clickUpload">
           {{ $t('service.file_upload') }}
         </button>
@@ -75,6 +82,7 @@ import { mapGetters } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
 import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
+import { ALLOW_MINE_TYPE } from 'utils/file'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
@@ -112,11 +120,18 @@ export default {
     },
   },
   methods: {
-    doTranslate() {
+    doStt() {
       if (!this.mic.isOn) {
         this.toastDefault('마이크가 활성화 되어있지 않습니다.')
         return
       }
+      this.$emit('update:speech', true)
+    },
+    doTranslate() {
+      // if (!this.mic.isOn) {
+      //   this.toastDefault('마이크가 활성화 되어있지 않습니다.')
+      //   return
+      // }
       this.viewTrans = !this.viewTrans
     },
     async doSend(e) {
@@ -172,6 +187,11 @@ export default {
           this.toastDefault(this.$t('service.file_upload_maxsize'))
           this.clearUploadFile()
           return false
+        }
+        if (!ALLOW_MINE_TYPE.includes(file.type)) {
+          this.toastDefault(this.$t('service.file_type_notsupport'))
+          this.clearUploadFile()
+          return
         }
 
         const isValid = [

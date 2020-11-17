@@ -6,7 +6,7 @@
       :class="{ active: active, disabled: disabled }"
       v-on="$listeners"
     >
-      <img v-if="icActive" :src="activeSrc" :class="{ waiting: isWaiting }" />
+      <img v-if="isActive" :src="activeSrc" :class="{ waiting: isWaiting }" />
       <img v-else-if="src" :src="src" />
       <slot v-else></slot>
     </button>
@@ -30,7 +30,7 @@ export default {
       default: false,
     },
     src: String,
-    icActive: {
+    isActive: {
       type: Boolean,
       default: false,
     },

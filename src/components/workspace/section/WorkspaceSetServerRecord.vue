@@ -3,10 +3,6 @@
     <div class="setting-section__title">
       서버 녹화 설정
     </div>
-    <p class="setting__label dot">
-      수정된 설정 값은 녹화를 시작하는 시점에 적용이 됩니다.
-    </p>
-
     <div class="setting-section__body horizon first">
       <figure class="setting__figure">
         <p class="setting__label">
@@ -21,22 +17,42 @@
         >
         </r-select>
       </figure>
+      <figure class="setting__figure">
+        <div class="setting__figure--wrapper">
+          <p class="setting__label">
+            {{ $t('workspace.setting_record_resolution') }}
+          </p>
+        </div>
+        <r-select
+          class="setting__r-selecter"
+          :options="serverRecResOpt"
+          value="value"
+          text="text"
+          :selectedValue.sync="recordResolution"
+        >
+        </r-select>
+      </figure>
     </div>
+    <p class="setting__label dot">
+      수정된 설정 값은 녹화를 시작하는 시점에 적용이 됩니다.
+    </p>
   </section>
 </template>
 <script>
 import RSelect from 'RemoteSelect'
 import { mapGetters, mapActions } from 'vuex'
-import { serverRecTime } from 'utils/recordOptions'
+import { serverRecTime, serverRecResOpt } from 'utils/recordOptions'
 export default {
+  components: {
+    RSelect,
+  },
   data() {
     return {
       recordTime: '',
       recordInterval: '',
+      serverRecResOpt: serverRecResOpt,
+      recordResolution: '',
     }
-  },
-  components: {
-    RSelect,
   },
   computed: {
     ...mapGetters(['serverRecord']),
@@ -54,6 +70,9 @@ export default {
     recordTime(time) {
       this.setServerRecLength(time)
     },
+    recordResolution(resolution) {
+      this.setRecResolution(resolution)
+    },
   },
   methods: {
     ...mapActions(['setServerRecord']),
@@ -63,10 +82,19 @@ export default {
       })
       this.$localStorage.setServerRecord('time', time)
     },
+    setRecResolution(resolution) {
+      this.setServerRecord({
+        resolution: resolution,
+      })
+      this.$localStorage.setServerRecord('resolution', resolution)
+    },
   },
   created() {
     if (this.serverRecord.time) {
       this.recordTime = this.serverRecord.time
+    }
+    if (this.serverRecord.resolution) {
+      this.recordResolution = this.serverRecord.resolution
     }
   },
 }

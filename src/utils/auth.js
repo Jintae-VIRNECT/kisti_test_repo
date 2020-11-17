@@ -103,6 +103,7 @@ const getConfigs = async () => {
   window.urls = res.data
   setConfigs({
     runtimeEnv,
+    timeout,
   })
   setUrls(res.data)
 }

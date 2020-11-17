@@ -13,11 +13,12 @@ import {
 import { URLS, setRecordInfo } from 'configs/env.config'
 import {
   DEVICE,
-  FLASH as FLASH_STATUE,
-  CAMERA as CAMERA_STATUE,
+  FLASH as FLASH_STATUS,
+  CAMERA as CAMERA_STATUS,
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
+import { checkVideoInput } from 'utils/deviceCheck'
 
 let OV
 
@@ -36,10 +37,11 @@ const _ = {
    * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
    */
-  connect: async (configs, role, options) => {
+  connect: async (configs, role, options, open = false) => {
     try {
       _.account = Store.getters['account']
-      _.openRoom = options === false
+      _.openRoom = open
+      console.log(_.openRoom)
 
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -90,81 +92,93 @@ const _ = {
         roleType: role,
       })
       _.account.roleType = role
-      if (options !== false) {
-        const settingInfo = Store.getters['settingInfo']
+      const settingInfo = Store.getters['settingInfo']
 
-        const publishOptions = {
-          audioSource: options.audioSource,
-          videoSource: options.videoSource,
-          publishAudio: settingInfo.micOn,
-          publishVideo: settingInfo.videoOn,
-          resolution: settingInfo.quality,
-          // resolution: '1920x1080', // FHD
-          // resolution: '3840x2160', // 4K
-          frameRate: 30,
-          insertMode: 'PREPEND',
-          mirror: false,
-        }
-        debug('call::publish::', publishOptions)
+      const publishOptions = {
+        audioSource: options.audioSource,
+        videoSource: options.videoSource,
+        publishAudio: settingInfo.micOn,
+        publishVideo: settingInfo.videoOn,
+        resolution: settingInfo.quality,
+        // resolution: '1920x1080', // FHD
+        // resolution: '3840x2160', // 4K
+        frameRate: 30,
+        insertMode: 'PREPEND',
+        mirror: false,
+      }
+      debug('call::publish::', publishOptions)
 
-        _.publisher = OV.initPublisher('', publishOptions)
-        _.publisher.onIceStateChanged(state => {
-          if (['failed', 'disconnected', 'closed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'bad',
-            })
-          } else if (['connected', 'completed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'good',
-            })
-          } else {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'normal',
-            })
-          }
-          logger('ice state change', state)
-        })
-        _.publisher.on('streamCreated', () => {
-          logger('room', 'publish success')
-          debug('publisher stream :: ', _.publisher.stream)
-          const mediaStream = _.publisher.stream.mediaStream
+      _.publisher = OV.initPublisher('', publishOptions)
+      _.publisher.onIceStateChanged(state => {
+        if (['failed', 'disconnected', 'closed'].includes(state)) {
           Store.commit('updateParticipant', {
             connectionId: _.publisher.stream.connection.connectionId,
-            stream: mediaStream,
-            hasVideo: _.publisher.stream.hasVideo,
-            video: settingInfo.videoOn,
-            audio: _.publisher.stream.audioActive,
+            status: 'bad',
           })
-          if (_.publisher.stream.hasVideo) {
-            const track = mediaStream.getVideoTracks()[0]
-            const settings = track.getSettings()
-            const capability = track.getCapabilities()
-            logger('call', `resolution::${settings.width}X${settings.height}`)
-            debug('call::setting::', settings)
-            debug('call::capability::', capability)
-            if ('zoom' in capability) {
-              track.applyConstraints({
-                advanced: [{ zoom: capability['zoom'].min }],
-              })
-              _.maxZoomLevel = parseInt(
-                capability.zoom.max / capability.zoom.min,
-              )
-              _.minZoomLevel = parseInt(capability.zoom.min)
-            }
-            _.video(settingInfo.videoOn)
-            _.sendResolution({
-              width: settings.width,
-              height: settings.height,
-              orientation: '',
-            })
-          }
+        } else if (['connected', 'completed'].includes(state)) {
+          Store.commit('updateParticipant', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            status: 'good',
+          })
+        } else {
+          Store.commit('updateParticipant', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            status: 'normal',
+          })
+        }
+        logger('ice state change', state)
+      })
+      _.publisher.on('streamCreated', () => {
+        logger('room', 'publish success')
+        debug('publisher stream :: ', _.publisher.stream)
+        const mediaStream = _.publisher.stream.mediaStream
+        Store.commit('updateParticipant', {
+          connectionId: _.publisher.stream.connection.connectionId,
+          stream: mediaStream,
+          hasVideo: _.publisher.stream.hasVideo,
+          video: settingInfo.videoOn,
+          audio: _.publisher.stream.audioActive,
         })
+        if (_.publisher.stream.hasVideo) {
+          const track = mediaStream.getVideoTracks()[0]
+          const settings = track.getSettings()
+          const capability = track.getCapabilities()
+          logger('call', `resolution::${settings.width}X${settings.height}`)
+          debug('call::setting::', settings)
+          debug('call::capability::', capability)
+          if ('zoom' in capability) {
+            track.applyConstraints({
+              advanced: [{ zoom: capability['zoom'].min }],
+            })
+            _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
+            _.minZoomLevel = parseInt(capability.zoom.min)
+          }
+          _.video(settingInfo.videoOn)
+          _.sendResolution({
+            width: settings.width,
+            height: settings.height,
+            orientation: '',
+          })
+        } else if (_.openRoom) {
+          checkVideoInput().then(hasCamera => {
+            const params = {
+              connectionId: _.publisher.stream.connection.connectionId,
+              hasAudio: true,
+            }
+            if (!hasCamera) {
+              params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
+              // _.changeProperty(true)
+            } else {
+              params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
+              params.hasCamera = true
+            }
+            Store.commit('updateParticipant', params)
+            _.video(!hasCamera ? 'NONE' : false)
+          })
+        }
+      })
 
-        _.session.publish(_.publisher)
-      }
+      _.session.publish(_.publisher)
       return true
     } catch (err) {
       if (err && err.message && err.message.length > 0) {
@@ -381,14 +395,13 @@ const _ = {
    * @param {Boolean, String} active true / false / 'NONE'
    */
   video: (active, target = null) => {
-    if (_.openRoom) return
     if (!_.publisher) return
     // if (!_.publisher.stream.hasVideo) return
     if (active === 'NONE') {
-      active = CAMERA_STATUE.CAMERA_NONE
+      active = CAMERA_STATUS.CAMERA_NONE
     } else {
       _.publisher.publishVideo(active)
-      active = active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF
+      active = active ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF
     }
 
     const params = {
@@ -411,7 +424,7 @@ const _ = {
     if (_.openRoom) return
     const params = {
       type: CAMERA.STATUS,
-      status: newValue ? CAMERA_STATUE.CAMERA_OFF : CAMERA_STATUE.CAMERA_NONE,
+      status: newValue ? CAMERA_STATUS.CAMERA_OFF : CAMERA_STATUS.CAMERA_NONE,
       currentZoomLevel: _.currentZoomLevel,
       maxZoomLevel: _.maxZoomLevel,
     }
@@ -479,7 +492,7 @@ const _ = {
    * other user's flash control
    * @param {Boolean} active
    */
-  flashStatus: (status = FLASH_STATUE.FLASH_NONE, target = null) => {
+  flashStatus: (status = FLASH_STATUS.FLASH_NONE, target = null) => {
     const params = {
       status: status,
       type: FLASH.STATUS,

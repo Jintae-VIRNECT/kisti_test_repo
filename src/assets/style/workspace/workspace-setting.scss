@@ -61,11 +61,33 @@
   &:last-child {
     border-bottom: none;
   }
+  &.list {
+    margin-top: 2.286rem;
+    padding-bottom: 0;
+    border-bottom: none;
+    &:first-child {
+      margin-top: 2.857rem;
+    }
+    &:last-child {
+      padding-bottom: 2.857rem;
+    }
+    &.horizon {
+      display: flex;
+    }
+  }
   // &:first-child {
   //   border-bottom: 1px solid rgba(#969696, 0.2);
   // }
   .radio-option {
     padding: 0.857rem 0;
+  }
+  > figure {
+    // flex: 1;
+    max-width: 35.714rem;
+    margin-right: 2.286rem;
+    // &:last-child {
+    //   margin-right: 0;
+    // }
   }
 }
 

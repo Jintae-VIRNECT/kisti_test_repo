@@ -1,6 +1,61 @@
 import axios from 'axios'
 import { URLS } from 'configs/env.config'
 
+export const ALLOW_MINE_TYPE = [
+  /* MS Office */
+  'application/msword', // .doc, .dot
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // docx
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.template', // .dotx
+  'application/vnd.ms-word.document.macroEnabled.12', // .docm
+  'application/vnd.ms-word.template.macroEnabled.12', // .dotm
+  'application/vnd.ms-excel', // .xls, .xlt, .xla
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.template', // .xltx
+  'application/vnd.ms-excel.sheet.macroEnabled.12', // .xlsm
+  'application/vnd.ms-excel.template.macroEnabled.12', // .xltm
+  'application/vnd.ms-excel.addin.macroEnabled.12', // .xlam
+  'application/vnd.ms-excel.sheet.binary.macroEnabled.12', // .xlsb
+  'application/vnd.ms-powerpoint', // .ppt, .pot, .pps, .ppa
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation', // .pptx
+  'application/vnd.openxmlformats-officedocument.presentationml.template', // .potx
+  'application/vnd.openxmlformats-officedocument.presentationml.slideshow', // .ppsx
+  'application/vnd.ms-powerpoint.addin.macroEnabled.12', // .ppam
+  'application/vnd.ms-powerpoint.presentation.macroEnabled.12', // .pptm
+  'application/vnd.ms-powerpoint.template.macroEnabled.12', // .potm
+  'application/vnd.ms-powerpoint.slideshow.macroEnabled.12', // .ppsm
+  /* HWP */
+  'application/x-hwp',
+  'application/haansofthwp',
+  'application/vnd.hancom.hwp', // .hwp
+  'application/x-hwt',
+  'application/haansofthwt',
+  'application/vnd.hancom.hwt', // hwt
+  'application/vnd.hancom.hml',
+  'application/haansofthml', // hml, .hwpml
+  'application/vnd.hancom.hwpx', // .hwpx
+  /* VIDEO */
+  'video/webm',
+  'video/ogg',
+  /* AUDIO */
+  'audio/midi',
+  'audio/mpeg',
+  'audio/webm',
+  'audio/ogg',
+  'audio/wav',
+  'audio/wave',
+  'audio/x-wav',
+  'audio/x-pn-wav',
+  /* IMAGE */
+  'image/gif',
+  'image/png',
+  'image/jpeg',
+  'image/bmp',
+  'image/webp',
+  'image/svg+xml',
+  /* ETC */
+  'application/pdf',
+]
+
 /**
  * convert base64 to blob
  * @async

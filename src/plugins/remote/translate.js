@@ -40,7 +40,7 @@ const translate = async (text, targetCode) => {
  * @param {String} lang tts 언어코드
  * @param {String} voice 기본 음성 목소리 'male', 'female'
  */
-const tts = async (text, lang, voice) => {
+const tts = async (text, lang, voice = 'FEMALE') => {
   const { data } = await axios.post('/tts', {
     text: text,
     lang: lang,

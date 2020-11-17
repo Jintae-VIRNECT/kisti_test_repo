@@ -37,6 +37,9 @@ const state = {
   translate: {
     flag: false,
     code: 'ko-KR',
+    multiple: true,
+    sttSync: true,
+    ttsAllow: false,
   },
 
   //stream for local stream(screen stream)
@@ -73,6 +76,16 @@ const mutations = {
   },
   [SETTINGS.SET_TRANSLATE_CODE](state, code) {
     state.translate.code = code
+  },
+
+  [SETTINGS.SET_TRANSLATE_MULTIPLE](state, flag) {
+    state.translate.multiple = flag
+  },
+  [SETTINGS.SET_STT_SYNC](state, code) {
+    state.translate.sttSync = code
+  },
+  [SETTINGS.SET_TTS_ALLOW](state, flag) {
+    state.translate.ttsAllow = flag
   },
 
   // [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {

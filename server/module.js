@@ -5,6 +5,7 @@ const os = require('os')
 const fs = require('fs')
 const logger = require('./logger')
 const config = require('./config')
+const { getSocket } = require('../translate/sttUtils')
 
 var ServerModule = (function() {
   'use strict'
@@ -36,6 +37,7 @@ var ServerModule = (function() {
         } else {
           instance = https.createServer(options, app)
         }
+        getSocket(instance)
 
         instance
           .on('listening', onListening)
@@ -74,15 +76,15 @@ var ServerModule = (function() {
   }
 
   function onListening() {
-    logger.log(`server is running...`, 'LISTENING')
-    logger.log(`ip: ${getServerIp()}:${PORT}`, 'LISTENING')
-    logger.log(`VIRNECT_ENV: ${VIRNECT_ENV}`, 'LISTENING')
-    logger.log(`SSL_ENV: ${SSL_ENV}`, 'LISTENING')
+    logger.info(`server is running...`, 'LISTENING')
+    logger.info(`ip: ${getServerIp()}:${PORT}`, 'LISTENING')
+    logger.info(`VIRNECT_ENV: ${VIRNECT_ENV}`, 'LISTENING')
+    logger.info(`SSL_ENV: ${SSL_ENV}`, 'LISTENING')
 
     const urls = config.getUrls()
     delete urls.runtime
     Object.keys(urls).forEach(key => {
-      logger.log(`${key.toUpperCase()}: ${urls[key]}`, 'LISTENING')
+      logger.info(`${key.toUpperCase()}: ${urls[key]}`, 'LISTENING')
     })
   }
 

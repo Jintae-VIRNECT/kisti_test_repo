@@ -14,7 +14,7 @@
     "pkg": "pkg ."
   },
   "dependencies": {
-    "@google-cloud/speech": "^3.6.0",
+    "@google-cloud/speech": "^4.1.3",
     "@google-cloud/text-to-speech": "^2.3.0",
     "@google-cloud/translate": "^5.3.0",
     "axios": "^0.18.1",
@@ -23,7 +23,9 @@
     "copy-webpack-plugin": "^4.6.0",
     "express": "^4.17.1",
     "log4js": "^6.1.0",
-    "pdfjs-dist": "2.4.456"
+    "pdfjs-dist": "2.4.456",
+    "socket.io": "^2.3.0",
+    "cors": "^2.8.5"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.7.7",
@@ -82,7 +84,6 @@
     "sass-loader": "^7.3.1",
     "secure-web-storage": "^1.0.2",
     "shortid": "^2.2.15",
-    "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "style-loader": "^0.18.2",
     "stylelint": "^13.1.0",
@@ -105,6 +106,7 @@
     "vue-template-compiler": "^2.6.11",
     "vue-toasted": "^1.1.28",
     "vue2-scrollbar": "^0.0.3",
+    "vue2-perfect-scrollbar": "^1.5.0",
     "vuex": "^3.1.2",
     "webpack": "^4.41.5",
     "webpack-bundle-analyzer": "^3.6.0",

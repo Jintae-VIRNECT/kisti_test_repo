@@ -37,6 +37,10 @@ log4js.configure({
 module.exports = {
   log: function(message, context) {
     const logger = log4js.getLogger(context)
+    logger.trace(message)
+  },
+  info: function(message, context) {
+    const logger = log4js.getLogger(context)
     logger.info(message)
   },
   error: function(message, context) {

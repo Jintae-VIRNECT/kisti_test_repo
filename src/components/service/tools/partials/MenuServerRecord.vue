@@ -4,7 +4,7 @@
     :active="isRecording"
     :disabled="!canRecord"
     :src="require('assets/image/call/ic_record_off.svg')"
-    :icActive="isRecording"
+    :isActive="isRecording"
     :activeSrc="require('assets/image/call/ic_record_ing.svg')"
     @click="recording"
     :isWaiting="isWaiting"

@@ -4,15 +4,19 @@
     placement="bottom-end"
     popperClass="popover-notice"
     width="29.571rem"
+    @visible="setVisible"
   >
     <toggle-button
-      customClass="header-tools__notice toggle-header"
+      :customClass="
+        `header-tools__notice toggle-header ${visible ? 'visible' : ''}`
+      "
       slot="reference"
       :description="$t('common.notice')"
       size="2.429rem"
-      :toggle="false"
+      :toggle="!onPush"
       :active="active"
-      :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
+      :activeSrc="require('assets/image/ic_notice.svg')"
+      :inactiveSrc="require('assets/image/ic_notice_off.svg')"
       @action="notice"
     ></toggle-button>
 
@@ -138,6 +142,7 @@ export default {
       onPush: true,
       key: '',
       active: false,
+      visible: false,
       // alarmList: [],
     }
   },
@@ -165,16 +170,17 @@ export default {
       'updateAlarm',
       'inviteResponseAlarm',
     ]),
+    setVisible(value) {
+      this.visible = value
+    },
     notice() {
       this.active = false
-      if (this.onPush) return
-      // console.log('notice list refresh logic')
     },
     playSound() {
       this.$refs['noticeAudio'].play()
     },
     async alarmListener(listen) {
-      // if (!this.onPush) return
+      if (!this.onPush) return
       const body = JSON.parse(listen.body)
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
@@ -196,7 +202,7 @@ export default {
             accept: 'none',
             date: new Date(),
           })
-          if (!this.onPush) return
+          // if (!this.onPush) return
           this.playSound()
           this.alarmInvite(
             body.contents,
@@ -214,7 +220,7 @@ export default {
             description: this.$t('alarm.invite_accept'),
             date: new Date(),
           })
-          if (!this.onPush) return
+          // if (!this.onPush) return
           this.alarmInviteAccepted(body.contents.nickName)
           break
         case EVENT.INVITE_DENIED:
@@ -227,7 +233,7 @@ export default {
             description: this.$t('alarm.invite_refuse'),
             date: new Date(),
           })
-          if (!this.onPush) return
+          // if (!this.onPush) return
           this.alarmInviteDenied(body.contents.nickName)
           break
         case EVENT.LICENSE_EXPIRATION:

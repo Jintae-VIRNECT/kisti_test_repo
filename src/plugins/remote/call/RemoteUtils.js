@@ -11,14 +11,12 @@ import {
   FILE,
 } from 'configs/remote.config'
 import {
-  FLASH as FLASH_STATUE,
+  FLASH as FLASH_STATUS,
   CAMERA as CAMERA_STATUS,
-  DEVICE,
 } from 'configs/device.config'
 
 import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
-import { checkVideoInput } from 'utils/deviceCheck'
 
 export const addSessionEventListener = session => {
   let loading = false
@@ -32,7 +30,7 @@ export const addSessionEventListener = session => {
       _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
       _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
       _.sendResolution(null, [event.connection.connectionId])
-      _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.connection.connectionId])
+      _.flashStatus(FLASH_STATUS.FLASH_NONE, [event.connection.connectionId])
       if (_.account.roleType === ROLE.LEADER) {
         _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
           event.connection.connectionId,
@@ -52,6 +50,7 @@ export const addSessionEventListener = session => {
           )
         }
       }
+      console.log(Store.getters['myInfo'].cameraStatus)
       if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
         _.video(
           Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
@@ -380,7 +379,7 @@ const setUserObject = event => {
     video: false,
     audio: true,
     hasVideo: false,
-    hasAudio: false,
+    hasAudio: true,
     hasCamera: false,
     speaker: true,
     mute: false,
@@ -400,26 +399,6 @@ const setUserObject = event => {
     userObj.path = account.profile
     userObj.me = true
     Store.commit('addStream', userObj)
-
-    checkVideoInput().then(hasCamera => {
-      if (_.openRoom) {
-        Store.commit('updateParticipant', {
-          connectionId: event.connection.connectionId,
-          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
-          status: 'good',
-        })
-      } else {
-        const params = {
-          connectionId: event.connection.connectionId,
-          hasAudio: true,
-        }
-        if (!hasCamera) {
-          params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
-          // _.changeProperty(true)
-        }
-        Store.commit('updateParticipant', params)
-      }
-    })
     return 'me'
   } else {
     logger('room', "participant's connected")
@@ -431,9 +410,6 @@ const setUserObject = event => {
         connectionId: event.connection.connectionId,
         nickname: participant.nickname,
         path: participant.profile,
-      }
-      if (_.openRoom && deviceType === DEVICE.WEB) {
-        params.status = 'good'
       }
       Store.commit('updateParticipant', params)
     })
