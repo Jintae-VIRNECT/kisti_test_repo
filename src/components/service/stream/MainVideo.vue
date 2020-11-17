@@ -388,22 +388,29 @@ export default {
         this.localTimer = null
       }
     },
+
     serverRecord(payload) {
+      if (!payload.isStart) {
+        this.closeServerTimer()
+      } else if (payload.isStart && !payload.isWaiting) {
+        this.showServerTimer(payload)
+      }
+    },
+    closeServerTimer() {
+      clearInterval(this.serverTimer)
+      this.serverTime = 0
+      this.serverTimer = null
+    },
+    showServerTimer(payload) {
       const elapsedTime = payload.elapsedTime ? payload.elapsedTime : 0
 
-      if (payload.isStart) {
-        this.serverStart = this.$dayjs().unix()
-        this.serverTimer = setInterval(() => {
-          const diff = this.$dayjs().unix() - this.serverStart + elapsedTime
-          this.serverTime = this.$dayjs
-            .duration(diff, 'seconds')
-            .as('milliseconds')
-        }, 1000)
-      } else {
-        clearInterval(this.serverTimer)
-        this.serverTime = 0
-        this.serverTimer = null
-      }
+      this.serverStart = this.$dayjs().unix()
+      this.serverTimer = setInterval(() => {
+        const diff = this.$dayjs().unix() - this.serverStart + elapsedTime
+        this.serverTime = this.$dayjs
+          .duration(diff, 'seconds')
+          .as('milliseconds')
+      }, 1000)
     },
     changeFullScreen() {
       setTimeout(() => {

@@ -213,7 +213,6 @@ export default {
     window.removeEventListener('orientationchange', this.changeOrientation)
 
     this.stopLocalRecord()
-    this.stopServerRecord()
     this.$eventBus.$off('fullscreen', this.setFullScreen)
   },
 }
