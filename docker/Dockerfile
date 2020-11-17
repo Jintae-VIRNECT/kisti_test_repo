@@ -7,14 +7,15 @@ WORKDIR $APP_HOME
 COPY build.gradle settings.gradle ./
 
 # Download all dependencies libraries
-RUN gradle clean build -x test --no-daemon > /dev/null 2>&1 || true
+RUN gradle build -x test --no-daemon > /dev/null 2>&1 || true
 
 # Copy Sourcefile
 COPY virnect.pfx .
 COPY src src
 
 # build soruce file with dependnecies
-RUN gradle --no-daemon clean build -x test --stacktrace
+RUN gradle cleanQuerydslSourcesDir
+RUN gradle --no-daemon build -x test --stacktrace
 
 # Runtime Stage
 FROM openjdk:8-jre-alpine
