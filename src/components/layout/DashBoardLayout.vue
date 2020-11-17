@@ -76,6 +76,7 @@ export default {
     ]),
 
     init(authInfo, workspaces) {
+      console.log('workspaces::', workspaces)
       this.updateAccount({
         ...authInfo.account,
         licenseEmpty: this.license,

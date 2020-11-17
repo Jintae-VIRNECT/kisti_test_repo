@@ -149,7 +149,8 @@ export default {
       })
     },
     doSearch() {
-      this.confirmDefault('현재 준비중인 기능입니다.')
+      // this.confirmDefault('현재 준비중인 기능입니다.')
+      this.$eventBus.$emit('reload::list')
       //날짜 사용하는지 체크
       //날짜 사용하면 날짜 적용한 리스트 다시 로드함
       //필터적용

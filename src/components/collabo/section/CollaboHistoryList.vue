@@ -41,11 +41,11 @@ import {
   getAllHistoryList,
   getHistorySingleItem,
 } from 'api/http/history'
-import {
-  getServerRecordFiles,
-  getAttachFiles,
-  getLocalRecordFiles,
-} from 'api/http/file'
+// import {
+//   getServerRecordFiles,
+//   getAttachFiles,
+//   getLocalRecordFiles,
+// } from 'api/http/file'
 import { getMemberInfo } from 'api/http/member'
 
 import confirmMixin from 'mixins/confirm'
@@ -54,6 +54,8 @@ import searchMixin from 'mixins/filter'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 
 import { exportExcel } from 'utils/excel'
+
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollaboHistoryList',
@@ -79,6 +81,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['searchFilter']),
     // list() {
     //   return this.getFilter(this.historyList, [
     //     'title',
@@ -126,16 +129,32 @@ export default {
       this.loading = false
       this.$eventBus.$emit('scroll:reset:workspace')
     },
-    async getHistoryPage(page) {
-      this.init(page - 1)
-    },
+
     async getHistory(page = 0) {
+      //check!
+      //날짜 검색 사용하는지 체크할것,.
+      console.log(this.searchFilter)
+
+      const searchWord = this.searchFilter.input.text
+      const status = this.searchFilter.status.status
+      const from = this.searchFilter.date.from
+      const to = this.searchFilter.date.to
+      const sortColumn = this.searchFilter.sort.column
+      const sortDirection = this.searchFilter.sort.direction
+      const fromTo = `${from},${to}`
+
+      const useDate = this.searchFilter.useDate.useDate
+
       try {
         const parms = {
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
           paging: true,
           page,
+          searchWord: searchWord,
+          fromTo: useDate ? fromTo : '',
+          sort: `${sortColumn},${sortDirection}`,
+          status: status,
         }
         const datas = this.isMaster
           ? await getAllHistoryList(parms)
@@ -175,52 +194,7 @@ export default {
         history.leader = leader
       }
     },
-    async setServerRecord(list) {
-      for (const history of list) {
-        const datas = await getServerRecordFiles({
-          workspaceId: this.workspace.uuid,
-          userId: this.account.uuid,
-          sessionId: history.sessionId,
-        })
-        history.serverRecord = datas.infos
-      }
-    },
-    async setFile(list) {
-      for (const history of list) {
-        try {
-          const datas = await getAttachFiles({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            sessionId: history.sessionId,
-          })
 
-          history.files = datas.fileInfoList.filter(info => !info.deleted)
-        } catch (e) {
-          history.files = []
-          console.error(e)
-        }
-      }
-
-      console.log(history.files)
-      console.log(history.localRecord)
-    },
-    async setLocalRecord(list) {
-      for (const history of list) {
-        try {
-          const datas = await getLocalRecordFiles({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            sessionId: history.sessionId,
-          })
-          history.localRecord = datas.fileDetailInfoList
-        } catch (e) {
-          history.localRecord = []
-          console.error(e)
-        }
-      }
-
-      console.log(history.localRecord)
-    },
     async getExcelData() {
       try {
         if (this.historyList.length <= 0 || this.excelLoading) return
@@ -278,6 +252,9 @@ export default {
       // await this.setServerRecord(list)
       // await this.setFile(list)
       // await this.setLocalRecord(list)
+    },
+    async getHistoryPage(page) {
+      this.init(page - 1)
     },
   },
 

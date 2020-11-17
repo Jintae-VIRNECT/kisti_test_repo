@@ -7,7 +7,7 @@ const state = {
     target: ['title', 'memberList[].nickName'],
   },
   status: { status: collabo.ALL },
-  useDate: { userDate: false },
+  useDate: { useDate: false },
   date: {
     from: null,
     to: null,
