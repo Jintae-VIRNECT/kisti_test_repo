@@ -44,13 +44,18 @@ export default {
     }
   },
   methods: {
-    changeLang(lang) {
-      this.mx_changeLang(lang)
-      this.defaultLanguage = lang
+    // changeLang(lang) {
+    //   this.mx_changeLang(lang)
+    //   this.defaultLanguage = lang
 
-      this.$nextTick(() => {
-        this.$eventBus.$emit('popover:close')
-      })
+    //   this.$nextTick(() => {
+    //     this.$eventBus.$emit('popover:close')
+    //   })
+    // },
+    changeLang() {
+      //@TODO : 번역 적용후 제거
+      this.confirmDefault('현재 준비중입니다.')
+      return
     },
     isSelected(lang) {
       return this.defaultLanguage === lang
