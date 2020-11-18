@@ -46,6 +46,10 @@ export default {
     checkDate() {
       const showToast = this.useDate
 
+      if (!this.useDate) {
+        return
+      }
+
       if (this.from === null || this.to === null) {
         if (showToast) {
           this.toastDefault('올바른 날짜를 지정해주세요.')
