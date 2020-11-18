@@ -41,15 +41,11 @@ import {
   getAllHistoryList,
   getHistorySingleItem,
 } from 'api/http/history'
-// import {
-//   getServerRecordFiles,
-//   getAttachFiles,
-//   getLocalRecordFiles,
-// } from 'api/http/file'
+
 import { getMemberInfo } from 'api/http/member'
 
 import confirmMixin from 'mixins/confirm'
-import searchMixin from 'mixins/filter'
+import searchMixin from 'mixins/search'
 
 import { WORKSPACE_ROLE } from 'configs/status.config'
 
@@ -131,34 +127,13 @@ export default {
     },
 
     async getHistory(page = 0) {
-      //check!
-      //날짜 검색 사용하는지 체크할것,.
-      console.log(this.searchFilter)
-
-      const searchWord = this.searchFilter.input.text
-      const status = this.searchFilter.status.status
-      const from = this.searchFilter.date.from
-      const to = this.searchFilter.date.to
-      const sortColumn = this.searchFilter.sort.column
-      const sortDirection = this.searchFilter.sort.direction
-      const fromTo = `${from},${to}`
-
-      const useDate = this.searchFilter.useDate.useDate
-
       try {
-        const parms = {
-          userId: this.account.uuid,
-          workspaceId: this.workspace.uuid,
-          paging: true,
-          page,
-          searchWord: searchWord,
-          fromTo: useDate ? fromTo : '',
-          sort: `${sortColumn},${sortDirection}`,
-          status: status,
-        }
+        const paging = true
+        const params = this.getParams(paging, page)
         const datas = this.isMaster
-          ? await getAllHistoryList(parms)
-          : await getHistoryList(parms)
+          ? await getAllHistoryList(params)
+          : await getHistoryList(params)
+
         if ('pageMeta' in datas) {
           this.pageMeta = datas.pageMeta
         } else {
@@ -198,21 +173,16 @@ export default {
     async getExcelData() {
       try {
         if (this.historyList.length <= 0 || this.excelLoading) return
+
         this.excelLoading = true
         let merged = []
 
-        const parms = {
-          page: 0,
-          paging: false,
-          size: 1,
-          sort: 'createdDate,desc',
-          userId: this.account.uuid,
-          workspaceId: this.workspace.uuid,
-        }
+        const paging = false
+        const params = this.getParams(paging, 0)
 
         const historys = this.isMaster
-          ? await getAllHistoryList(parms)
-          : await getHistoryList(parms)
+          ? await getAllHistoryList(params)
+          : await getHistoryList(params)
 
         this.addAdditionalData(historys.roomHistoryInfoList)
 

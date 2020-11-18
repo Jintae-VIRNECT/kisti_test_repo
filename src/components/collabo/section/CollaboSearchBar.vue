@@ -2,10 +2,10 @@
   <section class="collabo-search-bar">
     <div class="collabo-search-bar__wrapper">
       <div class="collabo-search-bar__condition">
-        <label class="collabo-search-bar--label">{{
+        <!-- <label class="collabo-search-bar--label">{{
           $t('search.collabo_status')
-        }}</label>
-        <d-select
+        }}</label> -->
+        <!-- <d-select
           class="collabo-search-bar__status--list"
           :options="searchOpts"
           value="value"
@@ -13,7 +13,7 @@
           :selectedValue.sync="collaboSatus"
           :greyarrow="true"
           :sahdow="false"
-        ></d-select>
+        ></d-select> -->
       </div>
       <div class="collabo-search-bar__condition">
         <label class="collabo-search-bar--label">
@@ -39,7 +39,11 @@
         ></check-box>
       </div>
     </div>
-    <button @click="doSearch" class="collabo-search-bar--submit">
+    <button
+      v-on:keyup.enter="doSearch"
+      @click="doSearch"
+      class="collabo-search-bar--submit"
+    >
       <span>{{ $t('search.execute') }}</span>
     </button>
   </section>
@@ -48,7 +52,7 @@
 <script>
 import Datepicker from 'Datepicker'
 import CheckBox from 'CheckBox'
-import DSelect from 'DashBoardSelect'
+// import DSelect from 'DashBoardSelect'
 import confirmMixin from 'mixins/confirm'
 import { collabo } from 'utils/collabo'
 import { mapGetters, mapActions } from 'vuex'
@@ -58,7 +62,7 @@ export default {
   components: {
     Datepicker,
     CheckBox,
-    DSelect,
+    // DSelect,
   },
   data() {
     return {
@@ -148,15 +152,19 @@ export default {
         },
       })
     },
-    doSearch() {
-      // this.confirmDefault('현재 준비중인 기능입니다.')
-      this.$eventBus.$emit('reload::list')
-      //날짜 사용하는지 체크
-      //날짜 사용하면 날짜 적용한 리스트 다시 로드함
-      //필터적용
-      //페이징
-      //그리고 sort는 sort만(새로운 데이터 X, 기존데이터 변경만)
+    doSearch(e) {
+      if (e.type === 'keypress' && e.key === 'Enter') {
+        this.$eventBus.$emit('reload::list')
+      } else if (e.type === 'click') {
+        this.$eventBus.$emit('reload::list')
+      }
     },
+  },
+  mounted() {
+    window.addEventListener('keypress', this.doSearch)
+  },
+  beforeDestroy() {
+    window.removeEventListener('keypress', this.doSearch)
   },
 }
 </script>
