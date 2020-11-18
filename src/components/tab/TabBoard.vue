@@ -34,7 +34,7 @@ export default {
   },
   watch: {
     async workspace() {
-      this.load()
+      this.refresh()
     },
     calendars: {
       handler() {
