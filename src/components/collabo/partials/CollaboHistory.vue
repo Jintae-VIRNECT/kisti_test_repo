@@ -284,8 +284,7 @@ export default {
         userId: this.account.uuid,
         sessionId: history.sessionId,
       }
-      //call apis
-      console.log(type, history)
+
       switch (type) {
         case 'server':
           result = await getServerRecordFiles(params)
