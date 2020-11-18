@@ -269,7 +269,7 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "accept", value = "초대 수락 또는 거절 선택값", paramType = "query", required = true),
             @ApiImplicitParam(name = "lang", value = "언어", paramType = "query", required = true)
     })
-    @GetMapping("/invite")
+    @GetMapping("/invite/check")
     public RedirectView inviteWorkspaceAccept(
             @PathVariable("email") String email,
             @RequestParam("accept") Boolean accept,

@@ -869,7 +869,7 @@ public class WorkspaceService {
         if (!userInvite.isUser()) {
             //회원가입하고나서 다시 요청하도록한다.
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl("https://console.virnect.com/terms?inviteSession=abc1234");
+            redirectView.setUrl("https://192.168.6.3:8883/terms?invite=true&lang="+lang);
             redirectView.setContentType("application/json");
             return redirectView;
         } else {
