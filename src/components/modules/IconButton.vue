@@ -4,7 +4,7 @@
     @click="clickListener"
     :class="{ active: active }"
   >
-    <img :src="imgSrc" :class="animateClass" />
+    <img :src="imgSrc" :class="animateClass" alt="" />
     {{ text }}
   </button>
 </template>

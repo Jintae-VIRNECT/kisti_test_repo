@@ -37,8 +37,11 @@ export default {
 
   computed: {},
   watch: {
-    totalPage() {
+    totalPage(now) {
       this.setPages()
+      if (now === 0) {
+        this.pages = []
+      }
     },
     currentPage(page) {
       this.setPages()

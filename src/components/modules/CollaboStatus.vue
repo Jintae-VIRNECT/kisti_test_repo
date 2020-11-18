@@ -11,7 +11,7 @@ export default {
   name: 'CallaboStatus',
   props: {
     status: {
-      type: String,
+      type: [String, Boolean],
       default: null,
     },
     customClass: {
@@ -23,9 +23,9 @@ export default {
   computed: {
     collaboText() {
       switch (this.status) {
-        case collabo.PROGRESS:
+        case true:
           return this.$t('status.progress')
-        case collabo.FINISHED:
+        case false:
           return this.$t('status.finished')
         default:
           return this.$t('status.finished')

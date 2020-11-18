@@ -90,7 +90,7 @@
           </div>
           <div class="history__text count">
             <count-button
-              :count="history.serverRecord.length"
+              :count="history.serverRecord"
               :images="{
                 select: require('assets/image/ic_rec_select.svg'),
                 active: require('assets/image/ic_rec_active.svg'),
@@ -101,7 +101,7 @@
           </div>
           <div class="history__text count">
             <count-button
-              :count="history.localRecord.length"
+              :count="history.localRecord"
               :images="{
                 select: require('assets/image/ic_video_select.svg'),
                 active: require('assets/image/ic_video_active.svg'),
@@ -112,7 +112,7 @@
           </div>
           <div class="history__text count">
             <count-button
-              :count="history.files.length"
+              :count="history.attach"
               :images="{
                 select: require('assets/image/ic_file_select.svg'),
                 active: require('assets/image/ic_file_active.svg'),
@@ -195,8 +195,13 @@ import CountButton from 'CountButton'
 import HistoryInfo from 'components/collabo/modal/ModalHistoryInfo'
 import FileInfo from 'components/collabo/modal/ModalFileInfo'
 
-import { mapActions } from 'vuex'
+import {
+  getServerRecordFiles,
+  getAttachFiles,
+  getLocalRecordFiles,
+} from 'api/http/file'
 
+import { mapActions } from 'vuex'
 import fileInfoMixin from 'mixins/fileInfo'
 import confirmMixin from 'mixins/confirm'
 
@@ -269,22 +274,38 @@ export default {
       this.sessionId = sessionId
       this.historyInfo = true
     },
-    showFiles(type, history) {
+    async showFiles(type, history) {
       this.historyTitle = history.title
+
+      let result = null
+
+      const params = {
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        sessionId: history.sessionId,
+      }
+      //call apis
+      console.log(type, history)
       switch (type) {
         case 'server':
+          result = await getServerRecordFiles(params)
+          this.fileList = result.infos
           this.serverRecord = true
-          this.fileList = history.serverRecord
           break
         case 'local':
+          result = await getLocalRecordFiles(params)
+          this.fileList = result.fileDetailInfoList.filter(
+            info => !info.deleted,
+          )
           this.localRecord = true
-          this.fileList = history.localRecord
           break
         case 'attach':
+          result = await getAttachFiles(params)
+          this.fileList = result.fileInfoList.filter(info => !info.deleted)
           this.file = true
-          this.fileList = history.files
           break
       }
+      console.log('this.fileList::', this.fileList)
     },
 
     setSort(column) {

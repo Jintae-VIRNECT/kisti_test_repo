@@ -224,7 +224,6 @@ export default {
             userId: this.account.uuid,
             id: file.recordingId,
           })
-
           const a = document.createElement('a')
           a.href = proxyUrl(url)
           a.setAttribute('type', 'application/octet-stream')

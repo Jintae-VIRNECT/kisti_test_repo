@@ -17,6 +17,9 @@ export const getHistoryList = async function({
   sort = 'createdDate,desc',
   userId,
   workspaceId,
+  searchWord,
+  fromTo,
+  status,
 }) {
   const returnVal = await http('HISTORY_LIST', {
     page,
@@ -25,6 +28,35 @@ export const getHistoryList = async function({
     sort,
     userId,
     workspaceId,
+    searchWord,
+    fromTo,
+    status,
+  })
+
+  return returnVal
+}
+
+export const getAllHistoryList = async function({
+  page = 0,
+  paging = false,
+  size = 7,
+  sort = 'createdDate,desc',
+  userId,
+  workspaceId,
+  searchWord,
+  fromTo,
+  status,
+}) {
+  const returnVal = await http('ALL_HISTORY_LIST', {
+    page,
+    paging,
+    size,
+    sort,
+    userId,
+    workspaceId,
+    searchWord,
+    fromTo,
+    status,
   })
 
   return returnVal

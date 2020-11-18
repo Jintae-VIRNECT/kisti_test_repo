@@ -16,8 +16,13 @@
       <img
         v-if="!isActive"
         src="~assets/image/calendar/ic_calendar_default.svg"
+        alt="calendar_hide"
       />
-      <img v-else src="~assets/image/calendar/ic_calendar_active.svg" />
+      <img
+        v-else
+        src="~assets/image/calendar/ic_calendar_active.svg"
+        alt="calendar_active"
+      />
     </button>
   </div>
 </template>

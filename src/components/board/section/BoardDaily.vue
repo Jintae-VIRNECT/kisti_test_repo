@@ -17,7 +17,7 @@
         ></datepicker>
       </div>
 
-      <div class="chart-legend">
+      <figcaption class="chart-legend">
         <chart-legend
           @click="toggle(dailyChart, 'my')"
           :text="$t('chart.my_collabo_list')"
@@ -29,7 +29,7 @@
           shape="round"
           customClass="grey"
         ></chart-legend>
-      </div>
+      </figcaption>
       <div class="chart-holder" :class="{ loading: loading }">
         <canvas id="chart-dayily" width="1250" height="250"></canvas>
       </div>

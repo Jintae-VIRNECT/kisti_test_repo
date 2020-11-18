@@ -17,9 +17,9 @@ export const exportExcel = (datas, header) => {
     ['activeDate'],
     ['unactiveDate'],
     ['durationSec'],
-    ['serverRecord', 'length'],
-    ['localRecord', 'length'],
-    ['files', 'length'],
+    ['serverRecord'],
+    ['localRecord'],
+    ['attach'],
   ]
 
   datas.forEach(data => {

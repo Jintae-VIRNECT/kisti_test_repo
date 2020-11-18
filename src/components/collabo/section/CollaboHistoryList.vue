@@ -36,20 +36,22 @@
 import History from 'components/collabo/partials/CollaboHistory'
 import PaginationTool from 'components/collabo/partials/CollaboPaginationTool'
 
-import { getHistoryList, getHistorySingleItem } from 'api/http/history'
 import {
-  getServerRecordFiles,
-  getAttachFiles,
-  getLocalRecordFiles,
-} from 'api/http/file'
+  getHistoryList,
+  getAllHistoryList,
+  getHistorySingleItem,
+} from 'api/http/history'
+
 import { getMemberInfo } from 'api/http/member'
 
 import confirmMixin from 'mixins/confirm'
-import searchMixin from 'mixins/filter'
+import searchMixin from 'mixins/search'
 
 import { WORKSPACE_ROLE } from 'configs/status.config'
 
 import { exportExcel } from 'utils/excel'
+
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'CollaboHistoryList',
@@ -75,6 +77,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['searchFilter']),
     // list() {
     //   return this.getFilter(this.historyList, [
     //     'title',
@@ -122,17 +125,15 @@ export default {
       this.loading = false
       this.$eventBus.$emit('scroll:reset:workspace')
     },
-    async getHistoryPage(page) {
-      this.init(page - 1)
-    },
+
     async getHistory(page = 0) {
       try {
-        const datas = await getHistoryList({
-          userId: this.account.uuid,
-          workspaceId: this.workspace.uuid,
-          paging: true,
-          page,
-        })
+        const paging = true
+        const params = this.getParams(paging, page)
+        const datas = this.isMaster
+          ? await getAllHistoryList(params)
+          : await getHistoryList(params)
+
         if ('pageMeta' in datas) {
           this.pageMeta = datas.pageMeta
         } else {
@@ -168,66 +169,20 @@ export default {
         history.leader = leader
       }
     },
-    async setServerRecord(list) {
-      for (const history of list) {
-        const datas = await getServerRecordFiles({
-          workspaceId: this.workspace.uuid,
-          userId: this.account.uuid,
-          sessionId: history.sessionId,
-        })
-        history.serverRecord = datas.infos
-      }
-    },
-    async setFile(list) {
-      for (const history of list) {
-        try {
-          const datas = await getAttachFiles({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            sessionId: history.sessionId,
-          })
 
-          history.files = datas.fileInfoList.filter(info => !info.deleted)
-        } catch (e) {
-          history.files = []
-          console.error(e)
-        }
-      }
-
-      console.log(history.files)
-      console.log(history.localRecord)
-    },
-    async setLocalRecord(list) {
-      for (const history of list) {
-        try {
-          const datas = await getLocalRecordFiles({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            sessionId: history.sessionId,
-          })
-          history.localRecord = datas.fileDetailInfoList
-        } catch (e) {
-          history.localRecord = []
-          console.error(e)
-        }
-      }
-
-      console.log(history.localRecord)
-    },
     async getExcelData() {
       try {
         if (this.historyList.length <= 0 || this.excelLoading) return
+
         this.excelLoading = true
         let merged = []
 
-        const historys = await getHistoryList({
-          page: 0,
-          paging: false,
-          size: 1,
-          sort: 'createdDate,desc',
-          userId: this.account.uuid,
-          workspaceId: this.workspace.uuid,
-        })
+        const paging = false
+        const params = this.getParams(paging, 0)
+
+        const historys = this.isMaster
+          ? await getAllHistoryList(params)
+          : await getHistoryList(params)
 
         this.addAdditionalData(historys.roomHistoryInfoList)
 
@@ -264,9 +219,9 @@ export default {
     async addAdditionalData(list) {
       await this.setIndex(list)
       await this.setLeader(list)
-      await this.setServerRecord(list)
-      await this.setFile(list)
-      await this.setLocalRecord(list)
+    },
+    async getHistoryPage(page) {
+      this.init(page - 1)
     },
   },
 

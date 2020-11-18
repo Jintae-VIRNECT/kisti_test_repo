@@ -7,7 +7,7 @@ const state = {
     target: ['title', 'memberList[].nickName'],
   },
   status: { status: collabo.ALL },
-  useDate: { userDate: false },
+  useDate: { useDate: false },
   date: {
     from: null,
     to: null,
@@ -32,7 +32,7 @@ const mutations = {
     Object.assign(state.sort, sort)
   },
   [SEARCH.DATE_TOGGLE](state, sort) {
-    Object.assign(state.sort, sort)
+    Object.assign(state.useDate, sort)
   },
 }
 
