@@ -71,18 +71,16 @@ export default {
 
       return true
     },
-    getParams(paging, page, all) {
+    getParams(paging, page) {
       const params = {
         workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
         paging: paging,
         page,
         searchWord: this.searchWord,
         fromTo: this.fromTo,
         sort: `${this.sortColumn},${this.sortDirection}`,
         status: this.status,
-      }
-      if (all) {
-        params.userId = this.account.uuid
       }
 
       return params
