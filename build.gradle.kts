@@ -104,6 +104,7 @@ project(":service-kms") {
 project(":service-client") {
 
 }
+
 project(":service-java-client") {
 
 }

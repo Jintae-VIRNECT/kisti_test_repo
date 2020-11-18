@@ -66,7 +66,7 @@ public class SessionService {
     @Transactional
     public Company createCompany(CompanyRequest companyRequest) {
         //log.info("createCompany: " + roomRequest.toString());
-        Company company = Company.builder()
+        /*Company company = Company.builder()
                 .companyCode(companyRequest.getCompanyCode())
                 .workspaceId(companyRequest.getWorkspaceId())
                 .licenseName(companyRequest.getLicenseName())
@@ -83,9 +83,10 @@ public class SessionService {
                 .transPlPl(companyRequest.isTransPlPl())
                 .transRuRu(companyRequest.isTransRuRu())
                 .transUkUa(companyRequest.isTransUkUa())
-                .build();
+                .build();*/
 
-        return companyRepository.save(company);
+        return null;
+        //return companyRepository.save(company);
     }
 
     public Company getCompany(String workspaceId) {

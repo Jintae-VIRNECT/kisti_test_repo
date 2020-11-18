@@ -161,7 +161,7 @@ public class DataRepository {
                 if(company != null) {
                     companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
                     //
-                    if(company.isTransKoKr()) {
+                    /*if(company.isTransKoKr()) {
                         LanguageCode languageCode = new LanguageCode();
                         languageCode.setText(TranslationItem.LANGUAGE_KR.getLanguage());
                         languageCode.setCode(TranslationItem.LANGUAGE_KR.getLanguageCode());
@@ -214,7 +214,7 @@ public class DataRepository {
                         languageCode.setText(TranslationItem.LANGUAGE_PL.getLanguage());
                         languageCode.setCode(TranslationItem.LANGUAGE_PL.getLanguageCode());
                         companyInfoResponse.getLanguageCodes().add(languageCode);
-                    }
+                    }*/
                 } else {
                     companyInfoResponse = new CompanyInfoResponse();
                 }
