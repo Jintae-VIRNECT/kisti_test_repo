@@ -3,7 +3,6 @@ package com.virnect.workspace.domain.redis;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
@@ -21,9 +20,68 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @RedisHash(value = "userInvite")
-@ToString
 public class UserInvite implements Serializable {
     @Id
+    private String invitedUserEmail; // 초대 받은 유저 이메일
+
+    private String invitedUserId;//초대받은 유저 식별자
+    private String requestUserId;//초대한 유저 식별자
+    private String workspaceId;
+    private String role;
+    private boolean planRemote;
+    private boolean planMake;
+    private boolean planView;
+    private String planRemoteType;
+    private String planMakeType;
+    private String planViewType;
+    private boolean isUser;
+    private LocalDateTime invitedDate;
+    private LocalDateTime updatedDate;
+    @TimeToLive
+    private Long expireTime;
+
+    @Builder
+    UserInvite(String invitedUserEmail, String invitedUserId, String requestUserId, String workspaceId, String role,
+               boolean planRemote, boolean planMake, boolean planView, String planRemoteType, String planMakeType, String planViewType,
+               boolean isUser, LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
+        this.invitedUserEmail = invitedUserEmail;
+        this.invitedUserId = invitedUserId;
+        this.requestUserId = requestUserId;
+        this.workspaceId = workspaceId;
+        this.role = role;
+        this.planRemote = planRemote;
+        this.planMake = planMake;
+        this.planView = planView;
+        this.planRemoteType = planRemoteType;
+        this.planMakeType = planMakeType;
+        this.planViewType = planViewType;
+        this.isUser = isUser;
+        this.invitedDate = invitedDate;
+        this.updatedDate = updatedDate;
+        this.expireTime = expireTime;
+    }
+
+    @Override
+    public String toString() {
+        return "UserInvite{" +
+                "invitedUserEmail='" + invitedUserEmail + '\'' +
+                ", invitedUserId='" + invitedUserId + '\'' +
+                ", requestUserId='" + requestUserId + '\'' +
+                ", workspaceId='" + workspaceId + '\'' +
+                ", role='" + role + '\'' +
+                ", planRemote=" + planRemote +
+                ", planMake=" + planMake +
+                ", planView=" + planView +
+                ", planRemoteType='" + planRemoteType + '\'' +
+                ", planMakeType='" + planMakeType + '\'' +
+                ", planViewType='" + planViewType + '\'' +
+                ", isUser=" + isUser +
+                ", invitedDate=" + invitedDate +
+                ", updatedDate=" + updatedDate +
+                ", expireTime=" + expireTime +
+                '}';
+    }
+    /* @Id
     private String inviteId;//userId + workspaceId
     private String responseUserId;
     private String responseUserEmail;
@@ -72,5 +130,5 @@ public class UserInvite implements Serializable {
         this.invitedDate = invitedDate;
         this.updatedDate = updatedDate;
         this.expireTime = expireTime;
-    }
+    }*/
 }

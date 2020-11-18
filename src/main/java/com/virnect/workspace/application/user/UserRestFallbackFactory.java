@@ -1,23 +1,13 @@
 package com.virnect.workspace.application.user;
 
-import java.time.LocalDateTime;
-
+import com.virnect.workspace.dto.rest.*;
+import com.virnect.workspace.global.common.ApiResponse;
+import feign.hystrix.FallbackFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import feign.hystrix.FallbackFactory;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.workspace.dto.rest.InviteUserInfoRestResponse;
-import com.virnect.workspace.dto.rest.MemberUserPasswordChangeRequest;
-import com.virnect.workspace.dto.rest.MemberUserPasswordChangeResponse;
-import com.virnect.workspace.dto.rest.RegisterMemberRequest;
-import com.virnect.workspace.dto.rest.UserDeleteRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoAccessCheckRequest;
-import com.virnect.workspace.dto.rest.UserInfoAccessCheckResponse;
-import com.virnect.workspace.dto.rest.UserInfoListRestResponse;
-import com.virnect.workspace.dto.rest.UserInfoRestResponse;
-import com.virnect.workspace.global.common.ApiResponse;
+import java.time.LocalDateTime;
 
 /**
  * Project: PF-Workspace
@@ -46,12 +36,12 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
 				return new ApiResponse<>(new UserInfoListRestResponse());
 			}
 
-			@Override
-			public ApiResponse<InviteUserInfoRestResponse> getUserInfoByEmailList(String[] emailList) {
-				return new ApiResponse<>(new InviteUserInfoRestResponse());
-			}
+            @Override
+            public ApiResponse<InviteUserInfoResponse> getUserInfoByEmail(String email) {
+                return new ApiResponse<>(new InviteUserInfoResponse());
+            }
 
-			@Override
+            @Override
 			public ApiResponse<UserInfoListRestResponse> getUserInfoList(String search, String[] workspaceUserIdList) {
 				UserInfoListRestResponse userInfoListRestResponse = new UserInfoListRestResponse();
 				userInfoListRestResponse.setUserInfoList(UserInfoListRestResponse.EMPTY);
