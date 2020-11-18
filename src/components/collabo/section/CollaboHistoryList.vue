@@ -78,12 +78,6 @@ export default {
   },
   computed: {
     ...mapGetters(['searchFilter']),
-    // list() {
-    //   return this.getFilter(this.historyList, [
-    //     'title',
-    //     'memberList[].nickName',
-    //   ])
-    // },
   },
   watch: {
     workspace(val, oldVal) {

@@ -2,6 +2,7 @@ import http from 'api/gateway'
 
 /**
  * 지정일내의 개인 & 전체 협업수 반환
+ *
  * @query {String} workspaceId
  * @param {String} userId
  * @param {String} date 대상 일 (ex YYYY-MM-DD)
@@ -19,6 +20,7 @@ export const getDailyCollabo = async ({ workspaceId, userId, date, time }) => {
 
 /**
  * 지정월 내의 개인 & 전체 협업수 반환
+ *
  * @query {String} workspaceId 워크스페이스 id
  * @param {String} userId 유저 id
  * @param {String} month 대상 월 (ex : YYYY-MM)
