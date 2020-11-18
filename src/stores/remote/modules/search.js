@@ -13,7 +13,7 @@ const state = {
     to: null,
   },
   sort: {
-    column: 'activeDate',
+    column: 'createdDate',
     direction: 'asc',
   },
 }

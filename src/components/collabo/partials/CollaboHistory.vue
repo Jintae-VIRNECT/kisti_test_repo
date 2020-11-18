@@ -308,26 +308,27 @@ export default {
     },
 
     setSort(column) {
-      if (this.sort.column === column) {
-        if (this.sort.direction === '') {
-          this.sort.direction = 'asc'
-        } else if (this.sort.direction === 'asc') {
-          this.sort.direction = 'desc'
-        } else if (this.sort.direction === 'desc') {
-          this.sort.direction = ''
-          this.sort.column = ''
-        }
-      } else {
-        this.sort.column = column
-        this.sort.direction = 'asc'
-      }
-
-      this.setSearch({
-        sort: {
-          column: this.sort.column,
-          direction: this.sort.direction,
-        },
-      })
+      console.log(column)
+      return
+      // if (this.sort.column === column) {
+      //   if (this.sort.direction === '') {
+      //     this.sort.direction = 'asc'
+      //   } else if (this.sort.direction === 'asc') {
+      //     this.sort.direction = 'desc'
+      //   } else if (this.sort.direction === 'desc') {
+      //     this.sort.direction = 'createdDate'
+      //     this.sort.column = 'asc'
+      //   }
+      // } else {
+      //   this.sort.column = column
+      //   this.sort.direction = 'asc'
+      // }
+      // this.setSearch({
+      //   sort: {
+      //     column: this.sort.column,
+      //     direction: this.sort.direction,
+      //   },
+      // })
     },
   },
 }
