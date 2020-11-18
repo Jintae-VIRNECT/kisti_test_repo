@@ -124,6 +124,9 @@
     "record_nofile": "녹화 파일이 없습니다.",
     "record_download": "선택 다운로드",
     "record_remove": "선택 삭제",
+    "record_upload":"선택 업로드",
+    "record_uploading":"파일을 업로드 중입니다.",
+    "record_upload_error":"업로드 중 오류가 발생했습니다.",
     
     "license_expire_title": "VIRNECT Remote2.0을 사용할 수 있는<br> 플랜이 만료되었습니다.",
     "license_expire_description": "Remote2.0을 사용하시려면 워크스테이션에서<br> 플랜을 추가/갱신하여 이용해 주세요.",

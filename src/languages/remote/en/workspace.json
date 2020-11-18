@@ -124,6 +124,9 @@
     "record_nofile": "No recording files.",
     "record_download": "Download selected file",
     "record_remove": "Delete selected file",
+    "record_upload":"Select upload",
+    "record_uploading":"File is being uploaded.",
+    "record_upload_error":"There was an error during upload.",
 
     "license_expire_title": "Your plans are all expired <br>to use VIRNECT Remote 2.0.",
     "license_expire_description": "If you want to use Remote 2.0, <br>please add/update plans from your workstation.",
