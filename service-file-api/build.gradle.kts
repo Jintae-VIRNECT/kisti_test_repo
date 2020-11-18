@@ -1,0 +1,44 @@
+plugins {
+    id("org.springframework.boot")
+    id("java")
+    kotlin("jvm")
+    kotlin("plugin.spring")
+    kotlin("plugin.jpa")
+}
+
+ext {
+    set("springCloudVersion", "Hoxton.SR1")
+}
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${ext["springCloudVersion"]}")
+    }
+}
+
+dependencies {
+    testImplementation("junit", "junit", "4.12")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.data:spring-data-envers")
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+
+
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    // ModelMapper
+    implementation(group = "org.modelmapper", name = "modelmapper", version = "2.3.0")
+    // Swagger
+    api("io.springfox:springfox-swagger2:2.9.2")
+    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+}
+tasks.getByName<Jar>("jar") {
+    println("service file api Jar task invoked....")
+    enabled= true
+}
+
+tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
+    println("service file api boot Jar task invoked....")
+    enabled= false
+}

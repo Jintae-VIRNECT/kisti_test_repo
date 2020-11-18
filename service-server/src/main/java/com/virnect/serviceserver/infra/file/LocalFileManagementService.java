@@ -3,24 +3,25 @@ package com.virnect.serviceserver.infra.file;
 import com.google.common.io.Files;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.file.FileType;
+import com.virnect.file.IFileManagementService;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import io.minio.*;
 import io.minio.errors.MinioException;
-import io.minio.http.Method;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import javax.net.ssl.*;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -413,7 +414,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
     @Override
     public void deleteProfile(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        if (Default.ROOM_PROFILE.isValueEquals(objectPathToName)) {
+        if (DEFAULT_ROOM_PROFILE.equals(objectPathToName)) {
             log.info("PROFILE REMOVE::#deleteProfile::do not delete default profile name");
         } else {
             boolean result;

@@ -17,7 +17,8 @@
 
 package com.virnect.serviceserver.config;
 
-import com.virnect.serviceserver.config.Dotenv.DotenvFormatException;
+import com.virnect.serviceserver.utils.Dotenv;
+import com.virnect.serviceserver.utils.Dotenv.DotenvFormatException;
 import com.virnect.serviceserver.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.config.property.RemoteStorageProperties;
 import org.apache.commons.io.FilenameUtils;

@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.file.FileType;
+import com.virnect.file.IFileManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -118,7 +120,7 @@ public class S3FileManagementService implements IFileManagementService {
 
     @Override
     public void deleteProfile(String url) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        if (Default.ROOM_PROFILE.isValueEquals(url)) {
+        if (DEFAULT_ROOM_PROFILE.equals(url)) {
             log.info("기본 이미지는 삭제하지 않습니다.");
         } else {
             if (url != null) {

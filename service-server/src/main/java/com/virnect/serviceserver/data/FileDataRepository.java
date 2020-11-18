@@ -2,24 +2,21 @@ package com.virnect.serviceserver.data;
 
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dao.File;
-import com.virnect.data.dao.MemberHistory;
 import com.virnect.data.dao.RecordFile;
 import com.virnect.data.dao.Room;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.feign.UserInfoResponse;
-import com.virnect.data.dto.file.request.FileUploadRequest;
-import com.virnect.data.dto.file.request.RecordFileUploadRequest;
-import com.virnect.data.dto.file.response.*;
-import com.virnect.data.dto.request.RoomProfileUpdateRequest;
-import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.RoomProfileUpdateResponse;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.data.service.FileService;
 import com.virnect.data.service.SessionService;
+import com.virnect.file.FileType;
+import com.virnect.file.IFileManagementService;
+import com.virnect.file.dto.request.FileUploadRequest;
+import com.virnect.file.dto.request.RecordFileUploadRequest;
+import com.virnect.file.dto.request.RoomProfileUpdateRequest;
+import com.virnect.file.dto.response.*;
+import com.virnect.file.service.FileService;
 import com.virnect.serviceserver.feign.service.UserRestService;
-import com.virnect.serviceserver.infra.file.Default;
-import com.virnect.serviceserver.infra.file.FileType;
-import com.virnect.serviceserver.infra.file.IFileManagementService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -37,6 +34,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.virnect.file.IFileManagementService.DEFAULT_ROOM_PROFILE;
 
 @Slf4j
 @Service
@@ -147,7 +146,7 @@ public class FileDataRepository {
             DataProcess<RoomProfileUpdateResponse> invokeDataProcess() {
                 log.info("ROOM INFO UPDATE PROFILE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
                 RoomProfileUpdateResponse profileUpdateResponse = new RoomProfileUpdateResponse();
-                String profileUrl = Default.ROOM_PROFILE.getValue();
+                String profileUrl = DEFAULT_ROOM_PROFILE;
                 Room room = loadFromDatabase();
                 if(room != null) {
                     if(room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
@@ -193,7 +192,7 @@ public class FileDataRepository {
                 if(room != null) {
                     try {
                         fileManagementService.deleteProfile(room.getProfile());
-                        sessionService.updateRoom(room, Default.ROOM_PROFILE.getValue());
+                        sessionService.updateRoom(room, DEFAULT_ROOM_PROFILE);
                     } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                         exception.printStackTrace();
                     }
@@ -262,9 +261,9 @@ public class FileDataRepository {
     }
 
     public ApiResponse<FilePreSignedResponse> downloadFileUrl(String workspaceId,
-                                                           String sessionId,
-                                                           String userId,
-                                                           String objectName) {
+                                                              String sessionId,
+                                                              String userId,
+                                                              String objectName) {
         return new RepoDecoder<File, FilePreSignedResponse>(RepoDecoderType.READ) {
             @Override
             File loadFromDatabase() {

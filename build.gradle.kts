@@ -60,6 +60,7 @@ project(":service-server") {
     dependencies {
         implementation(project(":service-kms"))
         implementation(project(":service-data"))
+        implementation(project(":service-file-api"))
         implementation("org.springframework.cloud:spring-cloud-config-client")
     }
     /*val jar: Jar by tasks
@@ -76,6 +77,31 @@ project(":service-data") {
         }
     }
 }
+
+project(":service-api") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+
+    dependencies {
+        implementation(project(":service-data"))
+    }
+}
+
+project(":service-file-api") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+
+    dependencies {
+        implementation(project(":service-data"))
+    }
+}
+
 
 project(":service-common") {
 

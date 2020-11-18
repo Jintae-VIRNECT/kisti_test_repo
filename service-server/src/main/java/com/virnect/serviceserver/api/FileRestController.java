@@ -1,14 +1,14 @@
 package com.virnect.serviceserver.api;
 
 import com.virnect.data.ApiResponse;
-import com.virnect.data.api.IFileRestAPI;
-import com.virnect.data.dto.file.request.FileUploadRequest;
-import com.virnect.data.dto.file.request.RecordFileUploadRequest;
-import com.virnect.data.dto.file.response.*;
 import com.virnect.data.dto.request.PageRequest;
-import com.virnect.data.dto.request.RoomProfileUpdateRequest;
-import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.RoomProfileUpdateResponse;
+import com.virnect.file.api.IFileRestAPI;
+import com.virnect.file.dto.request.RoomProfileUpdateRequest;
+import com.virnect.file.dto.response.ResultResponse;
+import com.virnect.file.dto.response.RoomProfileUpdateResponse;
+import com.virnect.file.dto.request.FileUploadRequest;
+import com.virnect.file.dto.request.RecordFileUploadRequest;
+import com.virnect.file.dto.response.*;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
