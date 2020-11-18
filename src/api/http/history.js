@@ -1,13 +1,17 @@
 import http from 'api/gateway'
 
 /**
- * 최근 협업 목록 요청
- * @param {Number} page size 대로 나눠진 페이지를 조회할 번호(1부터 시작)
- * @param {Boolean} paging 검색 결과 페이지네이션 여부
- * @param {Number} size 페이징 사이즈
- * @param {String} sort 정렬 옵션 데이터
- * @param {String} userId 필수값
- * @param {String} workspaceId 필수값
+ * 유저 최근 협업 목록 요청
+ *
+ * @param {Number} page 페이지 번호
+ * @param {Boolean} paging 페이징 유무
+ * @param {Number} size 페이징 크기
+ * @param {String} sort 정렬 옵션(ex createdDate,asc)
+ * @param {String} userId 유저 id
+ * @query {String} workspaceId 워크스페이스 id
+ * @param {String} searchWord 검색할 협업명/멤버명(nickName)
+ * @param {String} fromTo 기간(ex YYYY-MM-DD,YYYY-MM-DD)
+ * @param {String} status 협업 상태
  *
  */
 export const getHistoryList = async function({
@@ -36,6 +40,18 @@ export const getHistoryList = async function({
   return returnVal
 }
 
+/**
+ * 해당워크스페이스의 모든 협업 목록을 반환
+ *
+ * @param {Number} page 페이지 번호
+ * @param {Boolean} paging 페이징 유무
+ * @param {Number} size 페이징 크기
+ * @param {String} sort 정렬 옵션(ex createdDate,asc)
+ * @query {String} workspaceId 워크스페이스 id
+ * @param {String} searchWord 검색할 협업명/멤버명(nickName)
+ * @param {String} fromTo 기간(ex YYYY-MM-DD,YYYY-MM-DD)
+ * @param {String} status 협업 상태
+ */
 export const getAllHistoryList = async function({
   page = 0,
   paging = false,

@@ -1,4 +1,3 @@
-// import { getHistoryList } from 'api/http/history'
 import { getDailyCollabo, getMonthlyCollabo } from 'api/http/chart'
 import dayjs from 'dayjs'
 
@@ -82,103 +81,6 @@ export const getMonthlyData = async ({ workspaceId, userId, date }) => {
   return result
 }
 
-/**
- * 개인 일별 데이터
- * @param {*} param0
- */
-// const getMyDailyData = async ({ workspaceId, userId, date }) => {
-//   const result = {}
-//   const timeMap = new Map()
-
-//   hourLabels.forEach(hour => {
-//     timeMap.set(hour, 0)
-//   })
-
-//   console.log(workspaceId, userId, date)
-//   const targetDate = dayjs(date)
-//   const datas = await getHistoryList({
-//     page: 0,
-//     paging: false,
-//     size: 1,
-//     sort: 'createdDate,desc',
-//     userId: userId,
-//     workspaceId: workspaceId,
-//   })
-
-//   const forHour = datas.roomHistoryInfoList.filter(history => {
-//     const activeDate = dayjs(history.activeDate)
-//     const sameDay = dayjs(activeDate).isSame(targetDate, 'day')
-//     if (sameDay) {
-//       const hour = dayjs(history.activeDate + '+00:00')
-//         .utc()
-//         .local()
-//         .hour()
-//       timeMap.set(
-//         hour >= 10 ? hour.toString() : '0' + hour.toString(),
-//         timeMap.get(hour >= 10 ? hour.toString() : '0' + hour.toString()) + 1,
-//       )
-//       return history
-//     }
-//   })
-//   //일일협업 개인 협업 내역 차트 데이터
-//   result.count = forHour.length
-//   result.time = forHour.reduce(sumOfTime, 0)
-//   result.set = [...timeMap.values()]
-
-//   return result
-// }
-
-/**
- * 개인 월별 데이터
- * @param {*} param0
- */
-// const getMyMonthlyData = async ({ workspaceId, userId, date }) => {
-//   console.log({ workspaceId, userId, date })
-
-//   const result = {}
-
-//   const targetDate = dayjs(date)
-//   const datas = await getHistoryList({
-//     page: 0,
-//     paging: false,
-//     size: 1,
-//     sort: 'createdDate,desc',
-//     userId: userId,
-//     workspaceId: workspaceId,
-//   })
-
-//   const dayMap = new Map()
-//   const days = getDays(date)
-//   days.forEach(day => {
-//     dayMap.set(day, 0)
-//   })
-
-//   const forDay = datas.roomHistoryInfoList.filter(history => {
-//     const activeDate = dayjs(history.activeDate)
-//     const sameMonth = dayjs(activeDate).isSame(targetDate, 'month')
-//     if (sameMonth) {
-//       const day = Number.parseInt(
-//         dayjs(history.activeDate + '+00:00')
-//           .utc()
-//           .local()
-//           .format('DD'),
-//         10,
-//       )
-//       dayMap.set(day, dayMap.get(day) + 1)
-//       return history
-//     }
-//   })
-
-//   result.count = forDay.length
-//   result.time = forDay.reduce(sumOfTime, 0)
-//   result.set = [...dayMap.values()]
-
-//   return result
-// }
-
-// const sumOfTime = (sum, history) => {
-//   return sum + history.durationSec
-// }
 const sum = (sum, elm) => {
   return sum + elm
 }

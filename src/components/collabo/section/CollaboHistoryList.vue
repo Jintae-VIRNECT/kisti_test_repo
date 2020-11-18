@@ -26,7 +26,7 @@
       :historys="historyList"
     ></history>
     <pagination-tool
-      @current-page="getHistoryPage"
+      @current-page="getHistoryByPage"
       :totalPage="pageMeta.totalPage"
     ></pagination-tool>
   </section>
@@ -35,22 +35,16 @@
 <script>
 import History from 'components/collabo/partials/CollaboHistory'
 import PaginationTool from 'components/collabo/partials/CollaboPaginationTool'
-
 import {
   getHistoryList,
   getAllHistoryList,
   getHistorySingleItem,
 } from 'api/http/history'
-
 import { getMemberInfo } from 'api/http/member'
-
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/search'
-
 import { WORKSPACE_ROLE } from 'configs/status.config'
-
 import { exportExcel } from 'utils/excel'
-
 import { mapGetters } from 'vuex'
 
 export default {
@@ -78,12 +72,6 @@ export default {
   },
   computed: {
     ...mapGetters(['searchFilter']),
-    // list() {
-    //   return this.getFilter(this.historyList, [
-    //     'title',
-    //     'memberList[].nickName',
-    //   ])
-    // },
   },
   watch: {
     workspace(val, oldVal) {
@@ -94,14 +82,13 @@ export default {
   },
   methods: {
     async init(page = 0) {
-      //check for master
       this.loading = true
       const memberInfo = await getMemberInfo({
         userId: this.account.uuid,
         workspaceId: this.workspace.uuid,
       })
+
       if (memberInfo.role === WORKSPACE_ROLE.MASTER) {
-        console.log('role :: ', WORKSPACE_ROLE.MASTER)
         this.isMaster = true
       }
 
@@ -123,16 +110,13 @@ export default {
       this.historyList = sorted
 
       this.loading = false
-      this.$eventBus.$emit('scroll:reset:workspace')
     },
 
     async getHistory(page = 0) {
       try {
         const paging = true
-
-        const datas = this.isMaster
-          ? await getAllHistoryList(this.getParams(paging, page))
-          : await getHistoryList(this.getParams(paging, page))
+        const params = this.getParams(paging, page)
+        const datas = await this.getData(params)
 
         if ('pageMeta' in datas) {
           this.pageMeta = datas.pageMeta
@@ -179,12 +163,9 @@ export default {
 
         const paging = false
         const params = this.getParams(paging, 0)
+        const historys = await this.getData(params)
 
-        const historys = this.isMaster
-          ? await getAllHistoryList(params)
-          : await getHistoryList(params)
-
-        this.addAdditionalData(historys.roomHistoryInfoList)
+        this.this.addAdditionalData(historys.roomHistoryInfoList)
 
         for (const history of historys.roomHistoryInfoList) {
           const room = await getHistorySingleItem({
@@ -220,8 +201,14 @@ export default {
       await this.setIndex(list)
       await this.setLeader(list)
     },
-    async getHistoryPage(page) {
-      this.init(page - 1)
+    async getHistoryByPage(page) {
+      await this.init(page - 1)
+    },
+
+    async getData(params) {
+      return this.isMaster
+        ? await getAllHistoryList(params)
+        : await getHistoryList(params)
     },
   },
 
