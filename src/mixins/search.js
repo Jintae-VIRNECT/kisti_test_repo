@@ -64,7 +64,7 @@ export default {
 
       if (dayDiff > 90) {
         if (showToast) {
-          this.toastDefault('3개월이상의 기간은 조회하실 수 없습니다.')
+          this.toastDefault('3개월이상 조회하실 수 없습니다.')
         }
         return 'OVER_PERIOD'
       }
