@@ -757,19 +757,28 @@ public class WorkspaceService {
             if (inviteUserResponse.isMemberUser() && workspaceUserRepository.findByUserIdAndWorkspace_Uuid(inviteUserResponse.getInviteUserDetailInfo().getUserUUID(), workspaceId).isPresent()) {
                 throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_USER_ALREADY_EXIST);
             }
-            UserInvite userInvite = userInviteRepository.findById(userInfo.getEmail()).orElse(null);
-            if (userInvite != null) {
-                userInvite.setRole(userInfo.getRole());
-                userInvite.setPlanRemote(userInfo.isPlanRemote());
-                userInvite.setPlanMake(userInfo.isPlanMake());
-                userInvite.setPlanView(userInfo.isPlanView());
-                userInvite.setUser(inviteUserResponse.isMemberUser());
-                userInvite.setUpdatedDate(LocalDateTime.now());
-                userInvite.setExpireTime(Duration.ofDays(7).getSeconds());
-                userInviteRepository.save(userInvite);
-                log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
-            } else {
+
+            boolean inviteSessionExist = false;
+            String sessionCode = null;
+            for (UserInvite userInvite : userInviteRepository.findAll()) {
+                if (userInvite != null && userInvite.getWorkspaceId().equals(workspaceId) && userInvite.getInvitedUserEmail().equals(userInfo.getEmail())) {
+                    userInvite.setRole(userInfo.getRole());
+                    userInvite.setPlanRemote(userInfo.isPlanRemote());
+                    userInvite.setPlanMake(userInfo.isPlanMake());
+                    userInvite.setPlanView(userInfo.isPlanView());
+                    userInvite.setUser(inviteUserResponse.isMemberUser());
+                    userInvite.setUpdatedDate(LocalDateTime.now());
+                    userInvite.setExpireTime(Duration.ofDays(7).getSeconds());
+                    userInviteRepository.save(userInvite);
+                    log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
+                    inviteSessionExist = true;
+                    sessionCode = userInvite.getSessionCode();
+                }
+            }
+            if (!inviteSessionExist) {
+                sessionCode=RandomStringTokenUtil.generate(UUIDType.INVITE_CODE,12);
                 UserInvite newUserInvite = UserInvite.builder()
+                        .sessionCode(sessionCode)
                         .invitedUserEmail(userInfo.getEmail())
                         .invitedUserId(inviteUserResponse.getInviteUserDetailInfo().getUserUUID())
                         .requestUserId(workspaceInviteRequest.getUserId())
@@ -791,8 +800,8 @@ public class WorkspaceService {
             }
 
             //메일 전송
-            String rejectUrl = serverUrl + "/workspaces/invite/check?email=" + userInfo.getEmail() + "&accept=false&lang=" + locale.getLanguage();
-            String acceptUrl = serverUrl + "/workspaces/invite/check?email=" + userInfo.getEmail() + "&accept=true&lang=" + locale.getLanguage();
+            String rejectUrl = serverUrl + "/workspaces/invite/" + sessionCode + "/reject?lang=" + locale.getLanguage();
+            String acceptUrl = serverUrl + "/workspaces/invite/" + sessionCode + "/accept?lang=" + locale.getLanguage();
             Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
             UserInfoRestResponse materUser = getUserInfo(workspace.getUserId());
             if (inviteUserResponse.isMemberUser()) {
@@ -856,7 +865,7 @@ public class WorkspaceService {
         messageRestService.sendMail(mailRequest);
     }
 
-    public RedirectView inviteWorkspaceResult(String email, Boolean accept, String lang) {
+    /*public RedirectView inviteWorkspaceResult(String email, Boolean accept, String lang) {
         Locale locale = new Locale(lang, "");
         UserInvite userInvite = userInviteRepository.findById(email).orElse(null);
         if (userInvite == null) {
@@ -869,7 +878,7 @@ public class WorkspaceService {
         if (!userInvite.isUser()) {
             //회원가입하고나서 다시 요청하도록한다.
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl("https://192.168.6.3:8883/terms?invite=true&lang="+lang);
+            redirectView.setUrl("https://192.168.6.3:8883/terms?invite=true&lang=" + lang);
             redirectView.setContentType("application/json");
             return redirectView;
         } else {
@@ -885,9 +894,24 @@ public class WorkspaceService {
         } else {
             return inviteWorkspaceReject(userInvite, locale);
         }
-    }
+    }*/
 
-    public RedirectView inviteWorkspaceAccept(UserInvite userInvite, Locale locale) {
+    public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) {
+        Locale locale = new Locale(lang, "");
+        UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
+        if (userInvite == null) {
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectUrl + "/?message=workspace.invite.invalid");
+            redirectView.setContentType("application/json");
+            return redirectView;
+        }
+        if (!userInvite.isUser()) {
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl("https://192.168.6.3:8883/terms?inviteSession" + sessionCode + "&lang=" + lang);
+            redirectView.setContentType("application/json");
+            return redirectView;
+        }
+
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
         //워크스페이스 최대 초대가능한 멤버수 9명 체크
@@ -1120,16 +1144,20 @@ public class WorkspaceService {
         return redirectView;
     }
 
-    public RedirectView inviteWorkspaceReject(UserInvite userInvite, Locale locale) {
-        //redis에서 삭제
-        userInviteRepository.delete(userInvite);
+    public RedirectView inviteWorkspaceReject(String sessionCode, String lang) {
+        Locale locale = new Locale(lang, "");
+        UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
 
-        if (!userInvite.isUser()) {
+        //비회원 거절은 메일 전송 안함.
+        if (userInvite != null && !userInvite.isUser()) {
+            userInviteRepository.delete(userInvite);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectUrl);
             redirectView.setContentType("application/json");
             return redirectView;
         }
+
+        userInviteRepository.delete(userInvite);
 
         //MAIL 발송
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));

@@ -22,8 +22,8 @@ import java.time.LocalDateTime;
 @RedisHash(value = "userInvite")
 public class UserInvite implements Serializable {
     @Id
+    private String sessionCode;
     private String invitedUserEmail; // 초대 받은 유저 이메일
-
     private String invitedUserId;//초대받은 유저 식별자
     private String requestUserId;//초대한 유저 식별자
     private String workspaceId;
@@ -41,9 +41,10 @@ public class UserInvite implements Serializable {
     private Long expireTime;
 
     @Builder
-    UserInvite(String invitedUserEmail, String invitedUserId, String requestUserId, String workspaceId, String role,
+    UserInvite(String sessionCode, String invitedUserEmail, String invitedUserId, String requestUserId, String workspaceId, String role,
                boolean planRemote, boolean planMake, boolean planView, String planRemoteType, String planMakeType, String planViewType,
                boolean isUser, LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
+        this.sessionCode=sessionCode;
         this.invitedUserEmail = invitedUserEmail;
         this.invitedUserId = invitedUserId;
         this.requestUserId = requestUserId;

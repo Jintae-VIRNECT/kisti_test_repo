@@ -265,20 +265,35 @@ public class WorkspaceController {
             notes = "초대받은 사용자가 이메일 인증에서 초대를 수락합니다."
     )
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "email", value = "초대 요청받은 사용자 email", paramType = "query", required = true),
-            @ApiImplicitParam(name = "accept", value = "초대 수락 또는 거절 선택값", paramType = "query", required = true),
+            @ApiImplicitParam(name = "sessionCode", value = "초대 세션 코드", paramType = "path", required = true),
             @ApiImplicitParam(name = "lang", value = "언어", paramType = "query", required = true)
     })
-    @GetMapping("/invite/check")
+    @GetMapping("/invite/{sessionCode}/accept")
     public RedirectView inviteWorkspaceAccept(
-            @PathVariable("email") String email,
-            @RequestParam("accept") Boolean accept,
+            @PathVariable("sessionCode") String sessionCode,
             @RequestParam("lang") String lang
-    ) {
+    ) {/*
         if (!StringUtils.hasText(email)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        RedirectView redirectView = workspaceService.inviteWorkspaceResult(email, accept, lang);
+        }*/
+        RedirectView redirectView = workspaceService.inviteWorkspaceAccept( sessionCode, lang);
+        return redirectView;
+    }
+    @ApiImplicitParams({
+            //@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
+            @ApiImplicitParam(name = "sessionCode", value = "초대 세션 코드", paramType = "path", required = true),
+            @ApiImplicitParam(name = "lang", value = "언어", paramType = "query", required = true)
+    })
+    @GetMapping("/invite/{sessionCode}/reject")
+    public RedirectView inviteWorkspaceReject(
+            //@PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionCode") String sessionCode,
+            @RequestParam("lang") String lang
+    ) {/*
+        if (!StringUtils.hasText(email)) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }*/
+        RedirectView redirectView = workspaceService.inviteWorkspaceReject( sessionCode, lang);
         return redirectView;
     }
 /*
