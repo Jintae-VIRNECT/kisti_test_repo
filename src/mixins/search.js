@@ -47,7 +47,7 @@ export default {
       const showToast = this.useDate
 
       if (!this.useDate) {
-        return
+        return false
       }
 
       if (this.from === null || this.to === null) {
