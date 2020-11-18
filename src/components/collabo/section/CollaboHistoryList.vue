@@ -129,10 +129,10 @@ export default {
     async getHistory(page = 0) {
       try {
         const paging = true
-        const params = this.getParams(paging, page)
+
         const datas = this.isMaster
-          ? await getAllHistoryList(params)
-          : await getHistoryList(params)
+          ? await getAllHistoryList(this.getParams(paging, page))
+          : await getHistoryList(this.getParams(paging, page))
 
         if ('pageMeta' in datas) {
           this.pageMeta = datas.pageMeta
