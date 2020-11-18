@@ -5,11 +5,15 @@ COPY gradlew .
 COPY gradle gradle
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
+
 COPY service-client service-client
-COPY service-common service-common
-COPY service-data service-data
 COPY service-java-client service-java-client
 COPY service-kms service-kms
+
+COPY service-data service-data
+COPY service-file-data service-file-data
+COPY service-api service-api
+
 COPY service-server service-server
 COPY virnect.pfx .
 

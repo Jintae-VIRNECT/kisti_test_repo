@@ -93,11 +93,6 @@ project(":service-api") {
     }
 }
 
-
-project(":service-common") {
-
-}
-
 project(":service-kms") {
     dependencies {
         implementation(group = "com.github.docker-java", name = "docker-java", version = "3.1.5")
