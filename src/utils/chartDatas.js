@@ -45,9 +45,9 @@ export const getDailyData = async ({ workspaceId, userId, date }) => {
   }
 
   date = dayjs(date).format('YYYY-MM-DD')
+  const time = new Date().getTimezoneOffset()
 
-  // result.my = await getMyDailyData({ workspaceId, userId, date })
-  let response = await getDailyCollabo({ workspaceId, userId, date })
+  let response = await getDailyCollabo({ workspaceId, userId, date, time })
 
   result.total.time = response.entireDuration.reduce(sum, 0)
   result.total.count = response.entireHistory.reduce(sum, 0)
@@ -67,9 +67,9 @@ export const getMonthlyData = async ({ workspaceId, userId, date }) => {
     my: {},
   }
   let month = dayjs(date).format('YYYY-MM')
-  //@To-do : 전체 월별 협업수, 전체 월별 협업 시간 불러와야함.
-  // result.my = await getMyMonthlyData({ workspaceId, userId, date })
-  let response = await getMonthlyCollabo({ workspaceId, userId, month })
+
+  const time = new Date().getTimezoneOffset()
+  let response = await getMonthlyCollabo({ workspaceId, userId, month, time })
 
   result.total.time = response.entireDuration.reduce(sum, 0)
   result.total.count = response.entireHistory.reduce(sum, 0)
