@@ -4,17 +4,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
-    //kotlin("jvm")
-    //kotlin("plugin.spring")
 }
-
-//configurations {
-//    compileOnly {
-//        extendsFrom(configurations.annotationProcessor.get())
-//    }
-//}
-
-
 
 ext {
     set("springCloudVersion", "Hoxton.SR1")
@@ -36,25 +26,26 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
-    //testAnnotationProcessor("org.projectlombok:lombok")
-    //testCompileOnly("org.projectlombok:lombok")
-
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
 
-
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     // ModelMapper
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation(group = "org.modelmapper", name = "modelmapper", version = "2.3.0")
+
     // Swagger
     api("io.springfox:springfox-swagger2:2.9.2")
     implementation("io.springfox:springfox-swagger-ui:2.9.2")
+
+    // service base
+    api(project(":service-data"))
+    api(project(":service-file-data"))
 }
 tasks.getByName<Jar>("jar") {
-    println("service data Jar task invoked....")
+    println("service api Jar task invoked....")
     enabled= true
 }
 
 tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    println("service data boot Jar task invoked....")
+    println("service api boot Jar task invoked....")
     enabled= false
 }

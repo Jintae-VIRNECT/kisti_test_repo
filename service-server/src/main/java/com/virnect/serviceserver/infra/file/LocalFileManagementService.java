@@ -1,8 +1,8 @@
 package com.virnect.serviceserver.infra.file;
 
 import com.google.common.io.Files;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.service.error.ErrorCode;
+import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.file.FileType;
 import com.virnect.file.IFileManagementService;
 import com.virnect.serviceserver.config.RemoteServiceConfig;

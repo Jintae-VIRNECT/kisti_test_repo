@@ -1,6 +1,7 @@
 package com.virnect.serviceserver.data;
 
-import com.virnect.data.error.ErrorCode;
+
+import com.virnect.service.error.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

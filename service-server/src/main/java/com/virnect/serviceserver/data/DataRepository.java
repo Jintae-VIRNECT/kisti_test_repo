@@ -5,20 +5,20 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.virnect.data.ApiResponse;
-import com.virnect.data.constraint.LicenseConstants;
-import com.virnect.data.constraint.LicenseItem;
-import com.virnect.data.constraint.TranslationItem;
+import com.virnect.service.ApiResponse;
+import com.virnect.service.constraint.LicenseConstants;
+import com.virnect.service.constraint.LicenseItem;
+import com.virnect.service.constraint.TranslationItem;
 import com.virnect.data.dao.*;
-import com.virnect.data.dto.*;
-import com.virnect.data.dto.feign.*;
-import com.virnect.data.dto.request.*;
-import com.virnect.data.dto.response.*;
-import com.virnect.data.dto.rpc.ClientMetaData;
-import com.virnect.data.error.ErrorCode;
+import com.virnect.service.dto.*;
+import com.virnect.service.dto.feign.*;
+import com.virnect.service.dto.rpc.ClientMetaData;
+import com.virnect.service.dto.service.request.*;
+import com.virnect.service.dto.service.response.*;
+import com.virnect.service.error.ErrorCode;
 import com.virnect.data.service.HistoryService;
-import com.virnect.data.service.SessionService;
 import com.virnect.mediaserver.core.Participant;
+import com.virnect.service.SessionService;
 import com.virnect.serviceserver.ServiceServerApplication;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.feign.service.LicenseRestService;
@@ -30,6 +30,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -53,15 +55,21 @@ public class DataRepository {
     private final LicenseRestService licenseRestService;
     private final RecordRestService recordRestService;
     private final ModelMapper modelMapper;
-    //
-    //private final LocalFileManagementService localFileManagementService;
 
-    //private final ImplementationTest implementationTest;
-    @Autowired(required = true)
     @Qualifier(value = "sessionService")
+    @Autowired
     public void setSessionService(SessionService sessionService) {
         this.sessionService = sessionService;
     }
+
+    /*@Bean
+    @ConditionalOnMissingBean
+    public SessionService sessionService() {
+        return new SessionService(
+                modelMapper,
+
+        );
+    }*/
 
 
 

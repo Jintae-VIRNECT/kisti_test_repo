@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.data;
 
 
-import com.virnect.data.ApiResponse;
+import com.virnect.service.ApiResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

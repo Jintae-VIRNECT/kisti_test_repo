@@ -1,8 +1,8 @@
 package com.virnect.serviceserver.feign;
 
-import com.virnect.data.ApiResponse;
-import com.virnect.data.dto.feign.LicenseInfoListResponse;
-import com.virnect.data.dto.feign.WorkspaceLicensePlanInfoResponse;
+import com.virnect.service.ApiResponse;
+import com.virnect.service.dto.feign.LicenseInfoListResponse;
+import com.virnect.service.dto.feign.WorkspaceLicensePlanInfoResponse;
 import com.virnect.serviceserver.feign.service.LicenseRestService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;

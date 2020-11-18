@@ -1,13 +1,12 @@
 package com.virnect.data.dao;
 
-import com.virnect.data.constraint.LicenseConstants;
-import com.virnect.data.constraint.LicenseItem;
 import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Room Domain Model Class

@@ -1,18 +1,17 @@
 package com.virnect.serviceserver.api;
 
 
-import com.virnect.data.ApiResponse;
-import com.virnect.data.api.IMemberRestAPI;
-import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
-import com.virnect.data.dto.response.MemberInfoListResponse;
-import com.virnect.data.dto.response.MemberSecessionResponse;
-import com.virnect.data.dto.response.ResultResponse;
+
 import com.virnect.data.service.MemberService;
+import com.virnect.service.ApiResponse;
+import com.virnect.service.api.IMemberRestAPI;
+import com.virnect.service.dto.feign.WorkspaceMemberInfoListResponse;
+import com.virnect.service.dto.service.response.MemberInfoListResponse;
+import com.virnect.service.dto.service.response.MemberSecessionResponse;
 import com.virnect.serviceserver.data.DataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j

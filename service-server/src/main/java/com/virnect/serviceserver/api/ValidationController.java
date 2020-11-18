@@ -1,18 +1,17 @@
 package com.virnect.serviceserver.api;
 
-import com.virnect.data.ApiResponse;
-import com.virnect.data.api.IValidationRestAPI;
-import com.virnect.data.constraint.CompanyConstants;
-import com.virnect.data.constraint.LicenseConstants;
-import com.virnect.data.constraint.LicenseItem;
-import com.virnect.data.dao.SessionType;
-import com.virnect.data.dto.feign.LicenseInfoListResponse;
-import com.virnect.data.dto.feign.LicenseInfoResponse;
-import com.virnect.data.dto.feign.UserInfoResponse;
-import com.virnect.data.dto.response.CompanyInfoResponse;
-import com.virnect.data.dto.response.LicenseItemResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+
+import com.virnect.service.ApiResponse;
+import com.virnect.service.api.IValidationRestAPI;
+import com.virnect.service.constraint.LicenseConstants;
+import com.virnect.service.constraint.LicenseItem;
+import com.virnect.service.dto.feign.LicenseInfoListResponse;
+import com.virnect.service.dto.feign.LicenseInfoResponse;
+import com.virnect.service.dto.feign.UserInfoResponse;
+import com.virnect.service.dto.service.response.CompanyInfoResponse;
+import com.virnect.service.dto.service.response.LicenseItemResponse;
+import com.virnect.service.error.ErrorCode;
+import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.feign.service.LicenseRestService;

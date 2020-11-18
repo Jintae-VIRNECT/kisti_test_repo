@@ -1,11 +1,11 @@
 package com.virnect.serviceserver.api;
 
-import com.virnect.data.ApiResponse;
-import com.virnect.data.api.IAdminRestAPI;
-import com.virnect.data.dto.request.CompanyRequest;
-import com.virnect.data.dto.request.CompanyResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.service.ApiResponse;
+import com.virnect.service.api.IAdminRestAPI;
+import com.virnect.service.dto.service.request.CompanyRequest;
+import com.virnect.service.dto.service.request.CompanyResponse;
+import com.virnect.service.error.ErrorCode;
+import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

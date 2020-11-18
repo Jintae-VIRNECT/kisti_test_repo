@@ -14,7 +14,7 @@ import java.util.List;
 @Audited
 @Table(name = "rooms_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class RoomHistory extends BaseTimeEntity  {
+public class RoomHistory extends BaseTimeEntity {
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(name = "room_history_id", nullable = false)

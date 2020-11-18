@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.feign;
 
-import com.virnect.data.ApiResponse;
-import com.virnect.data.dto.feign.StopRecordingResponse;
+import com.virnect.service.ApiResponse;
+import com.virnect.service.dto.feign.StopRecordingResponse;
 import com.virnect.serviceserver.feign.service.RecordRestService;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;

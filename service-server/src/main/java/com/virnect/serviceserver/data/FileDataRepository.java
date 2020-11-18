@@ -1,25 +1,28 @@
 package com.virnect.serviceserver.data;
 
-import com.virnect.data.ApiResponse;
-import com.virnect.data.dao.File;
-import com.virnect.data.dao.RecordFile;
 import com.virnect.data.dao.Room;
-import com.virnect.data.dto.PageMetadataResponse;
-import com.virnect.data.dto.feign.UserInfoResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.service.SessionService;
+import com.virnect.file.dao.File;
+import com.virnect.file.dao.RecordFile;
+import com.virnect.service.ApiResponse;
+import com.virnect.service.FileService;
+import com.virnect.service.dto.PageMetadataResponse;
+import com.virnect.service.dto.ResultResponse;
+import com.virnect.service.dto.feign.UserInfoResponse;
 import com.virnect.file.FileType;
 import com.virnect.file.IFileManagementService;
-import com.virnect.file.dto.request.FileUploadRequest;
-import com.virnect.file.dto.request.RecordFileUploadRequest;
-import com.virnect.file.dto.request.RoomProfileUpdateRequest;
-import com.virnect.file.dto.response.*;
-import com.virnect.file.service.FileService;
+import com.virnect.service.dto.file.request.FileUploadRequest;
+import com.virnect.service.dto.file.request.RecordFileUploadRequest;
+import com.virnect.service.dto.file.request.RoomProfileUpdateRequest;
+import com.virnect.service.dto.file.response.*;
+import com.virnect.service.error.ErrorCode;
+import com.virnect.service.SessionService;
 import com.virnect.serviceserver.feign.service.UserRestService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -44,12 +47,17 @@ public class FileDataRepository {
     private static final String TAG = FileDataRepository.class.getSimpleName();
 
     private final UserRestService userRestService;
-
     private final SessionService sessionService;
-    private final FileService fileService;
+    //private final FileService fileService;
+    private FileService fileService;
     private final IFileManagementService fileManagementService;
-
     private final ModelMapper modelMapper;
+
+    @Qualifier(value = "fileService")
+    @Autowired
+    public void setFileService(FileService fileService) {
+        this.fileService = fileService;
+    }
 
     /**
      * Generate directory path to upload file
