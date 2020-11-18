@@ -1,18 +1,18 @@
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
 import confirmMixin from 'mixins/confirm'
+import toastMixin from 'mixins/toast'
 export default {
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, toastMixin],
   computed: {
     ...mapGetters(['searchFilter']),
     fromTo() {
-      if (this.checkDate()) {
+      const result = this.checkDate()
+      if (result === true) {
         const formattedFrom = dayjs(this.from).format('YYYY-MM-DD')
         const formattedTo = dayjs(this.to).format('YYYY-MM-DD')
         return `${formattedFrom},${formattedTo}`
       } else {
-        console.log('유효하지않은 기간값')
-        // this.confirmDefault('유효하지 않은 기간입니다.')
         const defaultTo = dayjs().format('YYYY-MM-DD')
         const defaultFrom = dayjs()
           .subtract(7, 'day')
@@ -43,30 +43,36 @@ export default {
     },
   },
   methods: {
-    //3개월 제한
-    //dayjs 체크
     checkDate() {
+      const showToast = this.useDate
+
       if (this.from === null || this.to === null) {
-        return false
+        if (showToast) {
+          this.toastDefault('올바른 날짜를 지정해주세요.')
+        }
+        return 'INVALID_DATE'
       }
 
       if (dayjs(this.from).isAfter(dayjs(this.to))) {
-        return false
+        if (showToast) {
+          this.toastDefault('유효하지 않은 기간입니다.')
+        }
+        return 'INVALID_PERIOD'
       }
 
       const dayDiff = dayjs(this.to).diff(dayjs(this.from), 'day')
 
-      console.log('dayDiff::', dayDiff)
       if (dayDiff > 90) {
-        this.confirmDefault('3개월 이상 조회하실 수 없습니다.')
-        return false
+        if (showToast) {
+          this.toastDefault('3개월이상의 기간은 조회하실 수 없습니다.')
+        }
+        return 'OVER_PERIOD'
       }
 
       return true
     },
-    getParams(paging, page) {
-      return {
-        userId: this.account.uuid,
+    getParams(paging, page, all) {
+      const params = {
         workspaceId: this.workspace.uuid,
         paging: paging,
         page,
@@ -75,6 +81,11 @@ export default {
         sort: `${this.sortColumn},${this.sortDirection}`,
         status: this.status,
       }
+      if (all) {
+        params.userId = this.account.uuid
+      }
+
+      return params
     },
   },
 }

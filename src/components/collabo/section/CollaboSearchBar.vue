@@ -97,8 +97,7 @@ export default {
   },
   watch: {
     calendars: {
-      handler(cal) {
-        console.log(cal)
+      handler() {
         this.fromDate()
         this.toDate()
       },
@@ -114,7 +113,6 @@ export default {
         this.setSearch({
           input: {
             text: searchText,
-            target: ['title', 'memberList[].nickName'],
           },
         })
       },
@@ -159,11 +157,24 @@ export default {
         this.$eventBus.$emit('reload::list')
       }
     },
+    resetCondition() {
+      this.setSearch({
+        date: {
+          from: null,
+          to: null,
+        },
+        useDate: { useDate: false },
+        input: {
+          text: '',
+        },
+      })
+    },
   },
   mounted() {
     window.addEventListener('keypress', this.doSearch)
   },
   beforeDestroy() {
+    this.resetCondition()
     window.removeEventListener('keypress', this.doSearch)
   },
 }
@@ -185,13 +196,12 @@ export default {
 
 .collabo-search-bar__condition {
   display: flex;
-  // justify-items: center;
   align-items: center;
+
   &.padding {
     padding-bottom: 0.3571rem;
   }
-}
-.collabo-search-bar__condition {
+
   .vdp-datepicker--input {
     height: 3.4286rem;
     border: 1px solid #c2c6ce;
@@ -199,6 +209,10 @@ export default {
   .calendar-button {
     height: 3.4286rem;
     border: 1px solid #c2c6ce;
+  }
+
+  > .checkbox {
+    margin-left: 0.4286rem;
   }
 }
 
