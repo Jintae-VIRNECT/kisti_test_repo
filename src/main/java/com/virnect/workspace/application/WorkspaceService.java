@@ -36,6 +36,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -43,6 +44,7 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.Duration;
@@ -882,25 +884,42 @@ public class WorkspaceService {
         }
     }*/
 
-    public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) {
+    private void historySaveHandler(String message, String userId, Workspace workspace) {
+        History history = History.builder()
+                .message(message)
+                .userId(userId)
+                .workspace(workspace)
+                .build();
+        historyRepository.save(history);
+    }
+
+    public void inviteWorkspaceAccept(String sessionCode, String lang, HttpServletResponse httpServletResponse) throws IOException {
         Locale locale = new Locale(lang, "");
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
         if (userInvite == null) {
             log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
-            RedirectView redirectView = new RedirectView();
+            /*RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb() + "/?message=workspace.invite.invalid");
             redirectView.setContentType("application/json");
-            return redirectView;
+            redirectView.setStatusCode(HttpStatus.OK);
+            return redirectView;*/
+            httpServletResponse.sendRedirect(redirectProperty.getWorkstationWeb() + "/?message=workspace.invite.invalid");
+            httpServletResponse.setContentType("application/json");
+            httpServletResponse.setStatus(200);
         }
 
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
         InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
         if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
             log.info("[WORKSPACE INVITE ACCEPT] Invited User isMemberUser Info >> [{}]", inviteUserResponse.isMemberUser());
-            RedirectView redirectView = new RedirectView();
+         /*   RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getSignupWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang);
             redirectView.setContentType("application/json");
-            return redirectView;
+            redirectView.setStatusCode(HttpStatus.OK);
+            return redirectView;*/
+            httpServletResponse.sendRedirect(redirectProperty.getSignupWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang);
+            httpServletResponse.setContentType("application/json");
+            httpServletResponse.setStatus(200);
         }
 
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
@@ -1002,19 +1021,14 @@ public class WorkspaceService {
             historySaveHandler(message, userInvite.getInvitedUserId(), workspace);
         }
 
-        RedirectView redirectView = new RedirectView();
+        /*RedirectView redirectView = new RedirectView();
         redirectView.setUrl(redirectProperty.getWorkstationWeb());
         redirectView.setContentType("application/json");
-        return redirectView;
-    }
-
-    private void historySaveHandler(String message, String userId, Workspace workspace) {
-        History history = History.builder()
-                .message(message)
-                .userId(userId)
-                .workspace(workspace)
-                .build();
-        historyRepository.save(history);
+        redirectView.setStatusCode(HttpStatus.OK);
+        return redirectView;*/
+        httpServletResponse.sendRedirect(redirectProperty.getWorkstationWeb());
+        httpServletResponse.setContentType("application/json");
+        httpServletResponse.setStatus(200);
     }
 
     public RedirectView worksapceOverJoinFailHandler(Workspace workspace, UserInvite userInvite, Locale locale) {
