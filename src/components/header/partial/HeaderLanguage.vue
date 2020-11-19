@@ -50,6 +50,7 @@ export default {
 
       this.$nextTick(() => {
         this.$eventBus.$emit('popover:close')
+        this.$eventBus.$emit('refresh:chart')
       })
     },
     isSelected(lang) {
