@@ -14,6 +14,8 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,9 +41,10 @@ import java.util.*;
 @Component
 public class LocalFileManagementService implements IFileManagementService {
 
+    private String bucketName;
     private String fileBucketName;
     private String profileBucketName;
-    private String rootDirPath;
+    private String recordBucketName;
 
     @Autowired
     private RemoteServiceConfig remoteServiceConfig;
@@ -50,7 +53,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
     private MinioClient minioClient = null;
 
-    String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/remote/";
+    String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/virnect-remote/";
     final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
 
 
@@ -95,6 +98,8 @@ public class LocalFileManagementService implements IFileManagementService {
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);*/
     }
 
+
+
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
@@ -105,9 +110,10 @@ public class LocalFileManagementService implements IFileManagementService {
                 e.printStackTrace();
             }
 
+            this.bucketName = this.remoteServiceConfig.remoteStorageProperties.getBucketName();
             this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
             this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
-            this.rootDirPath = this.remoteServiceConfig.remoteStorageProperties.getRootDirPath();
+            this.recordBucketName = this.remoteServiceConfig.remoteStorageProperties.getRecordBucketName();
 
             String accessKey = this.remoteServiceConfig.remoteStorageProperties.getAccessKey();
             String secretKey = this.remoteServiceConfig.remoteStorageProperties.getSecretKey();
@@ -130,11 +136,11 @@ public class LocalFileManagementService implements IFileManagementService {
                 boolean isBucketExist = false;
 
                 //create file bucket
-                isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(fileBucketName).build());
+                isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
                 if (isBucketExist) {
-                    log.info("Bucket {} is already exist.", fileBucketName);
+                    log.info("Bucket {} is already exist.", bucketName);
                 } else {
-                    minioClient.makeBucket(MakeBucketArgs.builder().bucket(fileBucketName).build());
+                    minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
                 }
                 // set bucket lifecycle
                 String lifeCycle =
@@ -149,15 +155,15 @@ public class LocalFileManagementService implements IFileManagementService {
                                 + "</Rule>" +
                                 "</LifecycleConfiguration>";
 
-                minioClient.setBucketLifeCycle(SetBucketLifeCycleArgs.builder().bucket(fileBucketName).config(lifeCycle).build());
+                minioClient.setBucketLifeCycle(SetBucketLifeCycleArgs.builder().bucket(bucketName).config(lifeCycle).build());
 
                 //create file bucket
-                isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(profileBucketName).build());
+                /*isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(profileBucketName).build());
                 if (isBucketExist) {
                     log.info("Bucket {} is already exist.", profileBucketName);
                 } else {
                     minioClient.makeBucket(MakeBucketArgs.builder().bucket(profileBucketName).build());
-                }
+                }*/
             } catch (ConnectException e) {
                 log.info("Bucket ConnectException error occured:: {}", e.getMessage());
                 this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
@@ -172,65 +178,7 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String upload(MultipartFile file) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        // 1. 빈 파일 여부 확인
-        if (file.getSize() == 0) {
-            throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
-        }
-
-        // 2. 확장자 검사
-        String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
-        if (!fileAllowExtensionList.contains(fileExtension)) {
-            log.error(LOG_MESSAGE_TAG + "[UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
-            throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
-        }
-
-        // 3. 파일 용량 검사
-        /*
-         * if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) { throw new
-         * RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT); }
-         */
-
-        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(),
-                file.getName(), file.getSize());
-
-        String fileName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-
-        log.info("{}, {}, {}", rootDirPath, fileName, fileExtension);
-
-        String filePath = "";
-        // 4. file upload
-        // Create a InputStream for object upload.
-        // ByteArrayInputStream bais = new ByteArrayInputStream(file.getBytes());
-        try {
-            ObjectWriteResponse objectWriteResponse = minioClient
-                    .putObject(PutObjectArgs.builder().bucket(fileBucketName).object(file.getOriginalFilename())
-                            .stream(file.getInputStream(), file.getInputStream().available(), -1)
-                            .contentType(file.getContentType()).build());
-            filePath = "";
-        } catch (MinioException e) {
-            log.info("Upload error occurred:: {}", e.getMessage());
-        }
-
-        // 3. 파일 복사
-        /*
-         * File convertFile = new File(path + fileName + fileExtension); log.info("{}",
-         * convertFile.getAbsolutePath()); if (convertFile.createNewFile()) { try
-         * (FileOutputStream fos = new FileOutputStream(convertFile)) {
-         * fos.write(file.getBytes()); } }
-         */
-
-        // 4. 파일 경로 추출
-        // String filePath = String.format("%s%s", url,
-        // convertFile.getPath()).replace("\\", "/");
-        // String filePath = "";
-        log.info("SAVE FILE_URL: {}", filePath);
-        return filePath;
-    }
-
-    @Override
-    public String upload(MultipartFile file, String dirPath)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String upload(MultipartFile file, String dirPath, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 1. check is file dummy
         if (file.getSize() == 0) {
             throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
@@ -239,7 +187,7 @@ public class LocalFileManagementService implements IFileManagementService {
         // 2. check file extension
         String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
         if (!fileAllowExtensionList.contains(fileExtension)) {
-            log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
+            log.error("UPLOAD FILE::#upload::unsupported_file [{}]", file.getOriginalFilename());
             throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
 
@@ -248,75 +196,106 @@ public class LocalFileManagementService implements IFileManagementService {
          * if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) { throw new
          * RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT); }
          */
-
-        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(),
-                file.getName(), file.getSize());
+        log.info("UPLOAD FILE::#upload::result => [originName: {}, name: {} , size: {}]",
+                file.getOriginalFilename(),
+                file.getName(),
+                file.getSize());
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-        log.info("{}, {}, {}", rootDirPath, objectName, fileExtension);
+
+        log.info("UPLOAD FILE::#upload::result => [{}, {}]", objectName, fileExtension);
 
         // 4. file upload
         // Create a InputStream for object upload.
         StringBuilder objectPath = new StringBuilder();
-        try {
-            objectPath.append(dirPath).append(objectName);
-            minioClient.putObject(PutObjectArgs.builder().bucket(fileBucketName).object(objectPath.toString())
-                    .stream(file.getInputStream(), file.getInputStream().available(), -1)
-                    .contentType(file.getContentType()).build());
-        } catch (MinioException e) {
-            log.info("Upload error occurred:: {}", e.getMessage());
-            return null;
+        switch (fileType) {
+            case FILE: {
+                try {
+                    objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
+                    minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
+                            .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                            .contentType(file.getContentType()).build());
+                } catch (MinioException e) {
+                    log.info("UPLOAD FILE::#upload::upload error occurred::exception=> {}", e.getMessage());
+                    return null;
+                }
+
+                log.info("UPLOAD FILE::#upload:: {}, {}", objectPath.toString(), file.getContentType());
+                break;
+            }
+
+            case RECORD: {
+                try {
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
+                            .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                            .contentType(file.getContentType()).build());
+                } catch (MinioException e) {
+                    log.info("Upload error occurred:: {}", e.getMessage());
+                    return null;
+                }
+
+                log.info("SAVE FILE_URL: {}, {}", objectPath.toString(), file.getContentType());
+                break;
+            }
         }
 
-        log.info("SAVE FILE_URL: {}, {}", objectPath.toString(), file.getContentType());
         return objectName;
-        // return objectPath.toString();
     }
 
     @Override
     public String uploadProfile(MultipartFile file, String dirPath)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        // 1. 빈 파일 여부 확인
+        // check file is null
         if (file.getSize() == 0) {
             throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
         }
 
-        // 2. 확장자 검사
+        // check file extension
         String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
         if (!FILE_IMAGE_ALLOW_EXTENSION.contains(fileExtension)) {
             log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
             throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
 
-        // 3. 파일 용량 검사
+        // check file size
         if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) {
             throw new RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT);
         }
 
-        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(),
-                file.getName(), file.getSize());
-        log.info("{}, {}, {}", rootDirPath, dirPath, fileExtension);
+        // check profile directory name or path
+        if(dirPath == null)
+            dirPath = profileBucketName;
 
-        // 4. file upload
-        // Create a InputStream for object upload.
-        String fileUrl = null;
+        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}",
+                file.getOriginalFilename(),
+                file.getName(),
+                file.getSize());
+
+        log.info("{}, {}",dirPath, fileExtension);
+
+        // file upload with create a InputStream for object upload.
+        String fileUrl;
         StringBuilder objectPath = new StringBuilder();
         try {
             String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-            // objectPath.append(dirPath).append(PROFILE_DIRECTORY).append("/").append(objectName);
-            objectPath.append(dirPath).append("/").append(objectName);
-            // filePath = fileName + file.getOriginalFilename();
-            minioClient.putObject(PutObjectArgs.builder().bucket(profileBucketName).object(objectPath.toString())
+            objectPath.append(dirPath).append("/").append(objectName).append(".").append(fileExtension);
+            // Create headers
+            Map<String, String> headers = new HashMap<>();
+            headers.put("Content-Type", file.getContentType());
+            minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
+                    .headers(headers)
                     .stream(file.getInputStream(), file.getInputStream().available(), -1)
                     .contentType(file.getContentType()).build());
-            // 5. get file url
-            fileUrl = minioClient.getObjectUrl(profileBucketName, objectPath.toString());
+
+            // get file url
+            fileUrl = minioClient.getObjectUrl(bucketName, objectPath.toString());
             log.info("SAVE PROFILE FILE_URL: {}, {}", fileUrl, file.getContentType());
+
             return fileUrl;
         } catch (MinioException e) {
             log.info("Upload error occurred:: {}", e.getMessage());
             return null;
         }
-
     }
 
     @Override
@@ -351,12 +330,12 @@ public class LocalFileManagementService implements IFileManagementService {
         // String fileName = String.format("%s_%s", LocalDate.now(),
         // RandomStringUtils.randomAlphabetic(20));
 
-        log.info("{}, {}, {}", rootDirPath, fileName, fileExtension);
+        log.info("{}, {}", fileName, fileExtension);
         try {
             // Create new PostPolicy object for 'my-bucketname', 'my-objectname' and 7 days
             // expire time
             // from now.
-            PostPolicy policy = new PostPolicy(fileBucketName, fileName, ZonedDateTime.now().plusDays(EXPIRE_DAY));
+            PostPolicy policy = new PostPolicy(bucketName, fileName, ZonedDateTime.now().plusDays(EXPIRE_DAY));
             // 'my-objectname' should be 'image/png' content type
             policy.setContentType("image/png");
             // set success action status to 201 because we want the client to notify us with
@@ -381,7 +360,7 @@ public class LocalFileManagementService implements IFileManagementService {
 
             filePath = fileName + file.getOriginalFilename();
             ObjectWriteResponse objectWriteResponse = minioClient
-                    .putObject(PutObjectArgs.builder().bucket(fileBucketName).object(filePath)
+                    .putObject(PutObjectArgs.builder().bucket(bucketName).object(filePath)
                             .stream(file.getInputStream(), file.getInputStream().available(), -1)
                             .contentType(file.getContentType()).build());
 
@@ -408,11 +387,9 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
-    public boolean removeObject(String objectPathToName)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public boolean removeObject(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
-            minioClient
-                    .removeObject(RemoveObjectArgs.builder().bucket(fileBucketName).object(objectPathToName).build());
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(objectPathToName).build());
             return true;
         } catch (MinioException e) {
             e.printStackTrace();
@@ -435,8 +412,15 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
-    public boolean deleteProfile(String url) {
-        return false;
+    public void deleteProfile(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        if (Default.ROOM_PROFILE.isValueEquals(objectPathToName)) {
+            log.info("PROFILE REMOVE::#deleteProfile::do not delete default profile name");
+        } else {
+            boolean result;
+            String objectName = objectPathToName.replaceAll(HOST_REGEX, "").replace("\\", "/");
+            result = removeObject(objectName);
+            log.info("PROFILE REMOVE::#deleteProfile::for not using anymore::boolean => [{}, {}]", objectName, result);
+        }
     }
 
     @Override
@@ -455,11 +439,11 @@ public class LocalFileManagementService implements IFileManagementService {
             byte[] image = Base64.getDecoder().decode(base64Image);
             String randomFileName = String.format("%s_%s", LocalDate.now().toString(),
                     RandomStringUtils.randomAlphanumeric(10).toLowerCase());
-            File convertImage = new File(rootDirPath + randomFileName + ".jpg");
+            File convertImage = new File( randomFileName + ".jpg");
             FileOutputStream fos = new FileOutputStream(convertImage);
             fos.write(image);
             // 4. 파일 경로 추출
-            String filePath = String.format("%s%s", rootDirPath, convertImage.getPath()).replace("\\", "/");
+            String filePath = String.format("%s", convertImage.getPath()).replace("\\", "/");
             log.info("SAVE FILE_URL: {}", filePath);
             return filePath;
         } catch (Exception e) {
@@ -479,7 +463,7 @@ public class LocalFileManagementService implements IFileManagementService {
         // Get input stream to have content of 'my-objectname' from 'my-bucketname'
         InputStream stream = null;
         try {
-            stream = minioClient.getObject(GetObjectArgs.builder().bucket(fileBucketName).object(filePath).build());
+            stream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(filePath).build());
             log.info("fileDownload input stream:: {}_{}", stream.available(), stream.read());
             byte[] bytes = IOUtils.toByteArray(stream);
             stream.close();
@@ -491,12 +475,47 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String filePreSignedUrl(String objectPathToName, int expiry)
+    public String filePreSignedUrl(String dirPath, String objectName, int expiry, String fileName, FileType fileType)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
-            String url = minioClient.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET)
-                    .bucket(fileBucketName).object(objectPathToName).expiry(expiry).build());
-            log.info("filePreSignedUrl:: {}", url);
+            // Create headers
+            /*HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.setContentLength(byteArray.length);
+            httpHeaders.setContentDispositionFormData("attachment", fileName);
+            httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);*/
+
+            StringBuilder objectPath = new StringBuilder();
+            String url = null;
+            switch (fileType) {
+                case FILE: {
+                    objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
+                    url = minioClient.getObjectUrl(bucketName, objectPath.toString());
+                    /*url = minioClient.getPresignedObjectUrl(
+                            GetPresignedObjectUrlArgs
+                                    .builder()
+                                    .method(Method.GET)
+                                    .bucket(bucketName).object(objectPath.toString())
+                                    .expiry(expiry)
+                                    .build());*/
+                    log.info("DOWNLOAD FILE::#filePreSignedUrl::file result::[{}]", url);
+                    break;
+                }
+
+                case RECORD: {
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    url = minioClient.getObjectUrl(bucketName, objectPath.toString());
+                    /*url = minioClient.getPresignedObjectUrl(
+                            GetPresignedObjectUrlArgs
+                                    .builder()
+                                    .method(Method.GET)
+                                    .bucket(bucketName)
+                                    .object(objectPath.toString())
+                                    .expiry(expiry)
+                                    .build());*/
+                    log.info("DOWNLOAD FILE::#filePreSignedUrl::record result::[{}]", url);
+                    break;
+                }
+            }
             return url;
         } catch (MinioException e) {
             log.info("Download error occurred:: {}", e.getMessage());

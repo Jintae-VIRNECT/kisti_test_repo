@@ -3,10 +3,8 @@ package com.virnect.data.api;
 import com.virnect.data.ApiResponse;
 import com.virnect.data.dto.file.request.FileDownloadRequest;
 import com.virnect.data.dto.file.request.FileUploadRequest;
-import com.virnect.data.dto.file.response.FileDeleteResponse;
-import com.virnect.data.dto.file.response.FileInfoListResponse;
-import com.virnect.data.dto.file.response.FilePreSignedResponse;
-import com.virnect.data.dto.file.response.FileUploadResponse;
+import com.virnect.data.dto.file.request.RecordFileUploadRequest;
+import com.virnect.data.dto.file.response.*;
 import com.virnect.data.dto.request.PageRequest;
 import com.virnect.data.dto.request.RoomProfileUpdateRequest;
 import com.virnect.data.dto.response.ResultResponse;
@@ -35,7 +33,7 @@ import java.util.List;
 @RequestMapping("/remote")
 public interface IFileRestAPI {
 
-    @ApiOperation(value = "Upload file", notes = "컨텐츠 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n컨텐츠 파일명은 컨텐츠 식별자와 동일한 파일명으로 저장.")
+    @ApiOperation(value = "Upload file", notes = "파일 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n파일 첨부시 사용")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48acaade22f3e2bba74bb6f1c44389a9"),
             @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "form", required = true, defaultValue = "ses_JRG7p1fFox"),
@@ -45,6 +43,18 @@ public interface IFileRestAPI {
     @PostMapping(value = "file/upload", headers = {"content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     ResponseEntity<ApiResponse<FileUploadResponse>> fileUploadRequestHandler(
             @ModelAttribute @Valid FileUploadRequest fileUploadRequest,
+            BindingResult result);
+
+    @ApiOperation(value = "Upload local record file", notes = "로컬 녹화 파일을 업로드 합니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48acaade22f3e2bba74bb6f1c44389a9"),
+            @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "form", required = true, defaultValue = "ses_JRG7p1fFox"),
+            @ApiImplicitParam(name = "userId", value = "업로드 사용자 고유 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "4218059539d944fca0a27fc5a57ce05b"),
+            @ApiImplicitParam(name = "file", value = "업로드 파일", dataType = "__file", paramType = "form", required = true),
+    })
+    @PostMapping(value = "record/upload", headers = {"content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    ResponseEntity<ApiResponse<FileUploadResponse>> recordFileUploadRequestHandler(
+            @ModelAttribute @Valid RecordFileUploadRequest recordFileUploadRequest,
             BindingResult result);
 
     @ApiOperation(value = "Update a Remote Room profile image file", notes = "원격협업 방 프로필을 업데이트 합니다.")
@@ -58,23 +68,13 @@ public interface IFileRestAPI {
             @PathVariable("sessionId") String sessionId,
             BindingResult result);
 
-    @ApiOperation(value = "Download file", notes = "파일을 다운로드.")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "userId", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
-            @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
-    })
-    @GetMapping(value = "file/download/{workspaceId}/{sessionId}")
-    ResponseEntity<byte[]> fileDownloadRequestHandler(
-            @PathVariable(name = "workspaceId") String workspaceId,
-            @PathVariable(name = "sessionId") String sessionId,
-            @RequestParam(name = "userId") String userId,
-            @RequestParam(name = "objectName") String objectName
-    ) throws IOException;
+    @ApiOperation(value = "Delete a Remote Room profile image file", notes = "원격협업 방 프로필을 삭제합니다.")
+    @DeleteMapping(value = "file/{workspaceId}/{sessionId}/profile")
+    ResponseEntity<ApiResponse<ResultResponse>> profileDeleteRequestHandler(
+            @PathVariable("workspaceId") String workspaceId,
+            @PathVariable("sessionId") String sessionId);
 
-
-    @ApiOperation(value = "Get URL to download ", notes = "파일 다운로드 URL을 받습니다.")
+    @ApiOperation(value = "Get URL to download file", notes = "파일 다운로드 URL을 받습니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
             @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
@@ -89,11 +89,26 @@ public interface IFileRestAPI {
             @RequestParam(name = "objectName") String objectName
     ) throws IOException;
 
+    @ApiOperation(value = "Get URL to download record file", notes = "레코드 파일 다운로드 URL을 받습니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
+            @ApiImplicitParam(name = "userId", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
+            @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
+    })
+    @GetMapping(value = "file/record/download/url/{workspaceId}/{sessionId}")
+    ResponseEntity<ApiResponse<FilePreSignedResponse>> recordFileDownloadUrlRequestHandler(
+            @PathVariable(name = "workspaceId") String workspaceId,
+            @PathVariable(name = "sessionId") String sessionId,
+            @RequestParam(name = "userId") String userId,
+            @RequestParam(name = "objectName") String objectName
+    ) throws IOException;
+
     @ApiOperation(value = "Load Room File List", notes = "원격협업에서 등록된 파일 목록을 조회")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "1"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(createdDate, ASC or DESC)", paramType = "query", defaultValue = "createdDate, DESC"),
             @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
     })
     @GetMapping("file")
@@ -103,6 +118,22 @@ public interface IFileRestAPI {
             @RequestParam(name = "userId") String userId,
             @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
             @ApiIgnore PageRequest pageRequest);
+
+    @ApiOperation(value = "Load Room Record File Detail Information List", notes = "원격협업에서 등록된 로컬 녹화 파일 목록을 상세 조회")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈(최대 20)", dataType = "number", paramType = "query", defaultValue = "10"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(createdDate, ASC or DESC)", paramType = "query", defaultValue = "createdDate, DESC"),
+            @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
+    })
+    @GetMapping(value = "file/record/info")
+    ResponseEntity<ApiResponse<FileDetailInfoListResponse>> getDetailFileList(
+            @RequestParam(value = "workspaceId") String workspaceId,
+            @RequestParam(value = "sessionId", required = false) String sessionId,
+            @RequestParam(name = "userId") String userId,
+            @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
+            @ApiIgnore PageRequest pageRequest);
+
 
     @ApiOperation(value = "Delete the specific file", notes = "파일을 삭제")
     @DeleteMapping(value = "file/{workspaceId}/{sessionId}")

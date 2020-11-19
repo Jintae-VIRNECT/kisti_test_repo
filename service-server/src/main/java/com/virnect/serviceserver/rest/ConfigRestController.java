@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import com.virnect.serviceserver.cdr.CDREventName;
+import com.virnect.mediaserver.cdr.CDREventName;
 import com.virnect.serviceserver.config.RemoteServiceBuildInfo;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 
@@ -68,22 +68,6 @@ public class ConfigRestController {
 		log.info("REST API: GET /config/remoteservice-publicurl");
 
 		return remoteServiceConfig.getFinalUrl();
-	}
-
-	@RequestMapping(value = "/remoteservice-recording", method = RequestMethod.GET)
-	public Boolean getRemoteServiceRecordingEnabled() {
-
-		log.info("REST API: GET /config/remoteservice-recording");
-
-		return remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled();
-	}
-
-	@RequestMapping(value = "/remoteservice-recording-path", method = RequestMethod.GET)
-	public String getRemoteServiceRecordingPath() {
-
-		log.info("REST API: GET /config/remoteservice-recording-path");
-
-		return remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath();
 	}
 
 	@RequestMapping(value = "/remoteservice-cdr", method = RequestMethod.GET)

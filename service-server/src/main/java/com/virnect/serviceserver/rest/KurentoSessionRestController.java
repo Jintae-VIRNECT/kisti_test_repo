@@ -56,16 +56,13 @@ import com.virnect.java.client.RecordingMode;
 import com.virnect.java.client.RecordingProperties;
 import com.virnect.java.client.SessionProperties;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.core.EndReason;
-import com.virnect.serviceserver.core.IdentifierPrefixes;
-import com.virnect.serviceserver.core.Participant;
-import com.virnect.serviceserver.core.Session;
-import com.virnect.serviceserver.core.SessionManager;
-import com.virnect.serviceserver.kurento.core.KurentoMediaOptions;
-import com.virnect.serviceserver.kurento.core.KurentoTokenOptions;
-import com.virnect.serviceserver.recording.Recording;
-import com.virnect.serviceserver.recording.service.RecordingManager;
-import com.virnect.serviceserver.utils.RecordingUtils;
+import com.virnect.mediaserver.core.EndReason;
+import com.virnect.mediaserver.core.IdentifierPrefixes;
+import com.virnect.mediaserver.core.Participant;
+import com.virnect.mediaserver.core.Session;
+import com.virnect.mediaserver.core.SessionManager;
+import com.virnect.mediaserver.kurento.core.KurentoMediaOptions;
+import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
 
 /**
  *
@@ -81,8 +78,8 @@ public class KurentoSessionRestController {
 	@Autowired
 	private SessionManager sessionManager;
 
-	@Autowired
-	private RecordingManager recordingManager;
+	//@Autowired
+	//private RecordingManager recordingManager;
 
 	@Autowired
 	private RemoteServiceConfig remoteServiceConfig;
@@ -438,234 +435,6 @@ public class KurentoSessionRestController {
 			return this.generateErrorResponse("Session " + sessionId + " not found", "/api/tokens",
 					HttpStatus.NOT_FOUND);
 		}
-	}
-
-	@RequestMapping(value = "/recordings/start", method = RequestMethod.POST)
-	public ResponseEntity<?> startRecordingSession(@RequestBody Map<?, ?> params) {
-
-		if (params == null) {
-			return this.generateErrorResponse("Error in body parameters. Cannot be empty", "/api/recordings/start",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		log.info("REST API: POST /api/recordings/start {}", params.toString());
-
-		if (!this.remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
-			// OpenVidu Server configuration property "OPENVIDU_RECORDING" is set to false
-			return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-		}
-
-		String sessionId;
-		String name;
-		String outputModeString;
-		String resolution;
-		Boolean hasAudio;
-		Boolean hasVideo;
-		String recordingLayoutString;
-		String customLayout;
-		Long shmSize = null;
-		try {
-			sessionId = (String) params.get("session");
-			name = (String) params.get("name");
-			outputModeString = (String) params.get("outputMode");
-			resolution = (String) params.get("resolution");
-			hasAudio = (Boolean) params.get("hasAudio");
-			hasVideo = (Boolean) params.get("hasVideo");
-			recordingLayoutString = (String) params.get("recordingLayout");
-			customLayout = (String) params.get("customLayout");
-			if (params.get("shmSize") != null) {
-				shmSize = new Long(params.get("shmSize").toString());
-			}
-		} catch (ClassCastException | NumberFormatException e) {
-			return this.generateErrorResponse("Type error in some parameter", "/api/recordings/start",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		if (sessionId == null) {
-			// "session" parameter not found
-			return this.generateErrorResponse("\"session\" parameter is mandatory", "/api/recordings/start",
-					HttpStatus.BAD_REQUEST);
-		}
-
-		OutputMode finalOutputMode = OutputMode.COMPOSED;
-		RecordingLayout recordingLayout = null;
-		if (outputModeString != null && !outputModeString.isEmpty()) {
-			try {
-				finalOutputMode = OutputMode.valueOf(outputModeString);
-			} catch (Exception e) {
-				return this.generateErrorResponse("Type error in some parameter", "/api/recordings/start",
-						HttpStatus.BAD_REQUEST);
-			}
-		}
-		if (RecordingUtils.IS_COMPOSED(finalOutputMode)) {
-			if (resolution != null && !sessionManager.formatChecker.isAcceptableRecordingResolution(resolution)) {
-				return this.generateErrorResponse(
-						"Wrong \"resolution\" parameter. Acceptable values from 100 to 1999 for both width and height",
-						"/api/recordings/start", HttpStatus.UNPROCESSABLE_ENTITY);
-			}
-			if (recordingLayoutString != null && !recordingLayoutString.isEmpty()) {
-				try {
-					recordingLayout = RecordingLayout.valueOf(recordingLayoutString);
-				} catch (Exception e) {
-					return this.generateErrorResponse("Type error in some parameter", "/api/recordings/start",
-							HttpStatus.BAD_REQUEST);
-				}
-			}
-		}
-		if ((hasAudio != null && hasVideo != null) && !hasAudio && !hasVideo) {
-			// Cannot start a recording with both "hasAudio" and "hasVideo" to false
-			return this.generateErrorResponse(
-					"Cannot start a recording with both \"hasAudio\" and \"hasVideo\" set to false",
-					"/api/recordings/start", HttpStatus.UNPROCESSABLE_ENTITY);
-		}
-
-		Session session = sessionManager.getSession(sessionId);
-		if (session == null) {
-			session = sessionManager.getSessionNotActive(sessionId);
-			if (session != null) {
-				if (!(MediaMode.ROUTED.equals(session.getSessionProperties().mediaMode()))
-						|| this.recordingManager.sessionIsBeingRecorded(session.getSessionId())) {
-					// Session is not in ROUTED MediaMode or it is already being recorded
-					return new ResponseEntity<>(HttpStatus.CONFLICT);
-				} else {
-					// Session is not active (no connected participants)
-					return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-				}
-			}
-			// Session does not exist
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (!(MediaMode.ROUTED.equals(session.getSessionProperties().mediaMode()))
-				|| this.recordingManager.sessionIsBeingRecorded(session.getSessionId())) {
-			// Session is not in ROUTED MediMode or it is already being recorded
-			return new ResponseEntity<>(HttpStatus.CONFLICT);
-		}
-		if (session.getParticipants().isEmpty()) {
-			// Session is not active (no connected participants)
-			return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-		}
-
-		// If outputMode is COMPOSED when defaultOutputMode is COMPOSED_QUICK_START,
-		// change outputMode to COMPOSED_QUICK_START (and vice versa)
-		OutputMode defaultOutputMode = session.getSessionProperties().defaultOutputMode();
-		if (OutputMode.COMPOSED_QUICK_START.equals(defaultOutputMode) && OutputMode.COMPOSED.equals(finalOutputMode)) {
-			finalOutputMode = OutputMode.COMPOSED_QUICK_START;
-		} else if (OutputMode.COMPOSED.equals(defaultOutputMode)
-				&& OutputMode.COMPOSED_QUICK_START.equals(finalOutputMode)) {
-			finalOutputMode = OutputMode.COMPOSED;
-		}
-
-		RecordingProperties.Builder builder = new RecordingProperties.Builder();
-		builder.outputMode(
-				finalOutputMode == null ? session.getSessionProperties().defaultOutputMode() : finalOutputMode);
-		if (RecordingUtils.IS_COMPOSED(finalOutputMode)) {
-			if (resolution != null) {
-				builder.resolution(resolution);
-			}
-			builder.recordingLayout(recordingLayout == null ? session.getSessionProperties().defaultRecordingLayout()
-					: recordingLayout);
-			if (RecordingLayout.CUSTOM.equals(recordingLayout)) {
-				builder.customLayout(
-						customLayout == null ? session.getSessionProperties().defaultCustomLayout() : customLayout);
-			}
-			if (shmSize != null) {
-				if (shmSize < 134217728L) {
-					return this.generateErrorResponse("Wrong \"shmSize\" parameter. Must be 134217728 (128 MB) minimum",
-							"/api/recordings/start", HttpStatus.UNPROCESSABLE_ENTITY);
-				}
-				builder.shmSize(shmSize);
-			}
-		}
-		builder.name(name).hasAudio(hasAudio != null ? hasAudio : true).hasVideo(hasVideo != null ? hasVideo : true);
-
-		try {
-			Recording startedRecording = this.recordingManager.startRecording(session, builder.build());
-			return new ResponseEntity(startedRecording.toJson().toString(), getResponseHeaders(), HttpStatus.OK);
-		} catch (RemoteServiceException e) {
-			return new ResponseEntity("Error starting recording: " + e.getMessage(), getResponseHeaders(),
-					HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-
-	@RequestMapping(value = "/recordings/stop/{recordingId}", method = RequestMethod.POST)
-	public ResponseEntity<?> stopRecordingSession(@PathVariable("recordingId") String recordingId) {
-
-		log.info("REST API: POST /api/recordings/stop/{}", recordingId);
-
-		Recording recording = recordingManager.getStartedRecording(recordingId);
-
-		if (recording == null) {
-			if (recordingManager.getStartingRecording(recordingId) != null) {
-				// Recording is still starting
-				return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
-			}
-			// Recording does not exist
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		if (!this.recordingManager.sessionIsBeingRecorded(recording.getSessionId())) {
-			// Session is not being recorded
-			return new ResponseEntity<>(HttpStatus.CONFLICT);
-		}
-
-		Session session = sessionManager.getSession(recording.getSessionId());
-
-		Recording stoppedRecording = this.recordingManager.stopRecording(session, recording.getId(),
-				EndReason.recordingStoppedByServer);
-
-		session.recordingManuallyStopped.set(true);
-
-		if (session != null && !session.isClosed() && OutputMode.COMPOSED.equals(recording.getOutputMode())
-				&& recording.hasVideo()) {
-			sessionManager.evictParticipant(
-					session.getParticipantByPublicId(ProtocolElements.RECORDER_PARTICIPANT_PUBLICID), null, null, null);
-		}
-
-		return new ResponseEntity(stoppedRecording.toJson().toString(), getResponseHeaders(), HttpStatus.OK);
-	}
-
-	@RequestMapping(value = "/recordings/{recordingId}", method = RequestMethod.GET)
-	public ResponseEntity<?> getRecording(@PathVariable("recordingId") String recordingId) {
-
-		log.info("REST API: GET /api/recordings/{}", recordingId);
-
-		try {
-			Recording recording = this.recordingManager.getRecording(recordingId);
-			if (com.virnect.java.client.Recording.Status.started.equals(recording.getStatus())
-					&& recordingManager.getStartingRecording(recording.getId()) != null) {
-				recording.setStatus(com.virnect.java.client.Recording.Status.starting);
-			}
-			return new ResponseEntity(recording.toJson().toString(), getResponseHeaders(), HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-
-	@RequestMapping(value = "/recordings", method = RequestMethod.GET)
-	public ResponseEntity<?> getAllRecordings() {
-
-		log.info("REST API: GET /api/recordings");
-
-		Collection<Recording> recordings = this.recordingManager.getAllRecordings();
-		JsonObject json = new JsonObject();
-		JsonArray jsonArray = new JsonArray();
-		recordings.forEach(rec -> {
-			if (com.virnect.java.client.Recording.Status.started.equals(rec.getStatus())
-					&& recordingManager.getStartingRecording(rec.getId()) != null) {
-				rec.setStatus(com.virnect.java.client.Recording.Status.starting);
-			}
-			jsonArray.add(rec.toJson());
-		});
-		json.addProperty("count", recordings.size());
-		json.add("items", jsonArray);
-		return new ResponseEntity(json.toString(), getResponseHeaders(), HttpStatus.OK);
-	}
-
-	@RequestMapping(value = "/recordings/{recordingId}", method = RequestMethod.DELETE)
-	public ResponseEntity<?> deleteRecording(@PathVariable("recordingId") String recordingId) {
-
-		log.info("REST API: DELETE /api/recordings/{}", recordingId);
-
-		return new ResponseEntity<>(this.recordingManager.deleteRecordingFromHost(recordingId, false));
 	}
 
 	@RequestMapping(value = "/signal", method = RequestMethod.POST)

@@ -2,7 +2,8 @@ package com.virnect.serviceserver.api;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.virnect.serviceserver.cdr.CDREventName;
+import com.virnect.mediaserver.config.MediaServerProperties;
+import com.virnect.mediaserver.cdr.CDREventName;
 import com.virnect.serviceserver.config.RemoteServiceBuildInfo;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import lombok.RequiredArgsConstructor;
@@ -59,14 +60,24 @@ public class ServiceRestController {
         json.addProperty("https_port", remoteServiceConfig.remoteServiceProperties.getHttpsPort());
         json.addProperty("remote_service_publicurl", remoteServiceConfig.remoteServiceProperties.getRemoteServicePublicUrl());
         json.addProperty("remote_service_cdr", remoteServiceConfig.isCdrEnabled());
-        json.addProperty("remote_service_streams_video_max_recv_bandwidth", remoteServiceConfig.remoteServiceProperties.getVideoMaxRecvBandwidth());
+
+        //
+        //BandwidthProperty bandwidthProperty = remoteServiceConfig.remoteServiceProperties.bandwidthProperty;
+        MediaServerProperties mediaServerProperties = remoteServiceConfig.remoteServiceProperties.mediaServerProperties;
+        json.addProperty("remote_service_streams_video_max_recv_bandwidth", mediaServerProperties.bandwidthProperty.getStreamsVideoMaxRecvBandwidth());
+        json.addProperty("remote_service_streams_video_min_recv_bandwidth", mediaServerProperties.bandwidthProperty.getStreamsVideoMinRecvBandwidth());
+        json.addProperty("remote_service_streams_video_max_send_bandwidth", mediaServerProperties.bandwidthProperty.getStreamsVideoMaxSendBandwidth());
+        json.addProperty("remote_service_streams_video_min_send_bandwidth", mediaServerProperties.bandwidthProperty.getStreamsVideoMinSendBandwidth());
+        /*json.addProperty("remote_service_streams_video_max_recv_bandwidth", remoteServiceConfig.remoteServiceProperties.getVideoMaxRecvBandwidth());
         json.addProperty("remote_service_streams_video_min_recv_bandwidth", remoteServiceConfig.remoteServiceProperties.getVideoMinRecvBandwidth());
         json.addProperty("remote_service_streams_video_max_send_bandwidth", remoteServiceConfig.remoteServiceProperties.getVideoMaxSendBandwidth());
-        json.addProperty("remote_service_streams_video_min_send_bandwidth", remoteServiceConfig.remoteServiceProperties.getVideoMinSendBandwidth());
-        json.addProperty("remote_service_sessions_garbage_interval", remoteServiceConfig.remoteServiceProperties.getSessionGarbageInterval());
-        json.addProperty("remote_service_sessions_garbage_threshold", remoteServiceConfig.remoteServiceProperties. getSessionGarbageThreshold());
-        json.addProperty("remote_service_recording", remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled());
-        if (remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
+        json.addProperty("remote_service_streams_video_min_send_bandwidth", remoteServiceConfig.remoteServiceProperties.getVideoMinSendBandwidth());*/
+        json.addProperty("remote_service_sessions_garbage_interval", mediaServerProperties.serverProperty.getSessionsGarbageInterval());
+        json.addProperty("remote_service_sessions_garbage_threshold", mediaServerProperties.serverProperty.getSessionsGarbageThreshold());
+        /*json.addProperty("remote_service_sessions_garbage_interval", remoteServiceConfig.remoteServiceProperties.getSessionGarbageInterval());
+        json.addProperty("remote_service_sessions_garbage_threshold", remoteServiceConfig.remoteServiceProperties. getSessionGarbageThreshold());*/
+        //json.addProperty("remote_service_recording", remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled());
+        /*if (remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
             json.addProperty("remote_service_recording_version", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingVersion());
             json.addProperty("remote_service_recording_path", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath());
             json.addProperty("remote_service_recording_public_access", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPublicAccess());
@@ -76,7 +87,7 @@ public class ServiceRestController {
             if (remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl() != null	&& !remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl().isEmpty()) {
                 json.addProperty("remote_service_recording_composed_url", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl());
             }
-        }
+        }*/
         json.addProperty("remote_service_webhook", remoteServiceConfig.isWebhookEnabled());
         if (remoteServiceConfig.isWebhookEnabled()) {
             json.addProperty("remote_service_webhook_endpoint", remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookEndpoint());
@@ -100,6 +111,7 @@ public class ServiceRestController {
         log.info("REST API: GET {}/version", REST_CONFIG_PATH);
         return remoteServiceBuildInfo.getRemoteServiceServerVersion();
     }
+
 
     @GetMapping(value = "config/publicurl")
     public String getRemoteServicePublicUrl() {

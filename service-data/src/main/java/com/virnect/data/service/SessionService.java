@@ -144,6 +144,79 @@ public class SessionService {
 
     @Transactional
     public Room createRoom(RoomRequest roomRequest,
+                           String profile,
+                           LicenseItem licenseItem,
+                           @Nullable SessionResponse sessionResponse) {
+        log.info("createRoom: " + roomRequest.toString());
+        // Remote Room Entity Create
+        Room room = Room.builder()
+                .sessionId(sessionResponse.getId())
+                .title(roomRequest.getTitle())
+                .description(roomRequest.getDescription())
+                .leaderId(roomRequest.getLeaderId())
+                .workspaceId(roomRequest.getWorkspaceId())
+                .maxUserCount(licenseItem.getUserCapacity())
+                .licenseName(licenseItem.name())
+                .build();
+
+        room.setProfile(profile);
+
+        // Remote Session Property Entity Create
+        SessionProperty sessionProperty = SessionProperty.builder()
+                .mediaMode("ROUTED")
+                .recordingMode("MANUAL")
+                .defaultOutputMode("COMPOSED")
+                .defaultRecordingLayout("BEST_FIT")
+                .recording(true)
+                .keepalive(roomRequest.isKeepAlive())
+                .sessionType(roomRequest.getSessionType())
+                .room(room)
+                .build();
+
+        room.setSessionProperty(sessionProperty);
+
+        // set room members
+        if(!roomRequest.getLeaderId().isEmpty()) {
+            log.info("leader Id is {}", roomRequest.getLeaderId());
+            Member member = Member.builder()
+                    .room(room)
+                    .memberType(MemberType.LEADER)
+                    .workspaceId(roomRequest.getWorkspaceId())
+                    .uuid(roomRequest.getLeaderId())
+                    .sessionId(room.getSessionId())
+                    .build();
+
+            room.getMembers().add(member);
+        } else {
+            log.info("leader Id is null");
+        }
+
+        if(!roomRequest.getParticipantIds().isEmpty()) {
+            for (String participant : roomRequest.getParticipantIds()) {
+                log.info("getParticipants Id is {}", participant);
+                Member member = Member.builder()
+                        .room(room)
+                        .memberType(MemberType.UNKNOWN)
+                        .workspaceId(roomRequest.getWorkspaceId())
+                        .uuid(participant)
+                        .sessionId(room.getSessionId())
+                        .build();
+
+                room.getMembers().add(member);
+            }
+        } else {
+            log.info("participants Id List is null");
+        }
+
+        /*List<Member> members = room.getMembers();
+        for (Member member: members) {
+            log.info("ROOM INFO CREATE => [{}]", member.getUuid());
+        }*/
+        return roomRepository.save(room);
+    }
+
+    @Transactional
+    public Room createRoom(RoomRequest roomRequest,
                            @Nullable SessionResponse sessionResponse) {
         log.info("createRoom: " + roomRequest.toString());
         // Remote Room Entity Create
@@ -206,7 +279,6 @@ public class SessionService {
     //public void createSession(Session sessionNotActive) {
     public void createSession(String sessionId) {
         log.info("session create and sessionEventHandler is here");
-        //Room room = roomRepository.findBySessionId(sessionNotActive.getSessionId()).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
         //set active time
@@ -218,6 +290,14 @@ public class SessionService {
 
     public Room getRoom(String workspaceId, String sessionId) {
         return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+    }
+
+    public Room getRoom(String sessionId) {
+        return  this.roomRepository.findBySessionId(sessionId).orElse(null);
+    }
+
+    public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
+        return  this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
     }
 
     /**
@@ -999,6 +1079,12 @@ public class SessionService {
     public void updateRoom(Room room, String profile) {
         log.info("generate room profile string is {}", profile);
         room.setProfile(profile);
+        roomRepository.save(room);
+    }
+
+
+    @Transactional
+    public void updateRoom(Room room) {
         roomRepository.save(room);
     }
 

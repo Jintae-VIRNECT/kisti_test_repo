@@ -44,8 +44,8 @@ public class File extends BaseTimeEntity {
     @Column(name = "size", nullable = false)
     private Long size;
 
-    @Column(name = "expired_at")
-    private LocalDateTime expiredDate;
+    @Column(name = "expiration_at")
+    private LocalDateTime expirationDate;
 
     //@Lob
     //@Enumerated(EnumType.STRING)
@@ -85,6 +85,6 @@ public class File extends BaseTimeEntity {
         this.downloadHits = 0L;
         this.deleted = false;
         this.expired = false;
-        this.expiredDate = LocalDateTime.now().plusDays(7);
+        this.expirationDate = LocalDateTime.now().plusDays(7);
     }
 }

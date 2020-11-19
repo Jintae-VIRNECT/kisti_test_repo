@@ -37,9 +37,6 @@ public class Member extends BaseTimeEntity {
     @Column(name = "connection_id", nullable = false)
     private String connectionId;
 
-    /*@Column(name = "email", nullable = false)
-    private String email;*/
-
     @Column(name = "member_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private MemberType memberType;
@@ -80,10 +77,9 @@ public class Member extends BaseTimeEntity {
         this.memberType = memberType;
         this.workspaceId = workspaceId;
         this.uuid = uuid;
-        //this.email = email;
         this.sessionId = sessionId;
 
-        //
+        // default set
         this.deviceType = DeviceType.UNKNOWN;
         this.memberStatus = MemberStatus.UNLOAD;
         this.connectionId = "";
@@ -102,7 +98,6 @@ public class Member extends BaseTimeEntity {
                 ", deviceType='" + deviceType + '\'' +
                 ", memberStatus='" + memberStatus + '\'' +
                 ", uuid='" + uuid + '\'' +
-                //", email='" + email + '\'' +
                 ", sessionId='" + sessionId + '\'' +
                 '}';
     }
