@@ -36,7 +36,7 @@
 	"room_server_record": "Server recording",
 	"room_local_record": "Local recording",
 	"room_attach_file": "Attach file",
-	"count": "{count}Count"
+	"count": "{count}"
   },
   "file":{
 	"name": "File name",
