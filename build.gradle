@@ -12,14 +12,14 @@ plugins {
     id 'java'
 }
 
+ext {
+    springCloudVersion = 'Hoxton.SR1'
+}
+
+
 group = 'com.virnect'
 version = '1.0.0'
 sourceCompatibility = '1.8'
-
-ext {
-    set('springCloudVersion', "Hoxton.SR1")
-}
-
 
 configurations {
     compileOnly {
