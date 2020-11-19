@@ -167,7 +167,7 @@ export default {
         const params = this.getParams(paging, 0)
         const historys = await this.getData(params)
 
-        this.this.addAdditionalData(historys.roomHistoryInfoList)
+        this.addAdditionalData(historys.roomHistoryInfoList)
 
         for (const history of historys.roomHistoryInfoList) {
           const room = await getHistorySingleItem({
