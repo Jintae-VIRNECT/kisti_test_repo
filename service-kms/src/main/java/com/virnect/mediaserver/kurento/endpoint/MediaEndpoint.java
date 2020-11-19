@@ -259,6 +259,16 @@ public abstract class MediaEndpoint {
 	protected void internalEndpointInitialization(final CountDownLatch endpointLatch) {
 		if (this.isWeb()) {
 			WebRtcEndpoint.Builder builder = new WebRtcEndpoint.Builder(pipeline);
+			//todo: check
+			/*WebRtcEndpoint.Builder builder = new WebRtcEndpoint.Builder(pipeline).with(
+					"userData",
+					"{" +
+							"\"workspaceId\":\"john\"," +
+							"\"sessionId\":22," +
+							"\"userId\":\"mca\"" +
+							"\"deviceType\":\"mca\"" +
+							"}"
+			);*/
 			/*
 			 * if (this.dataChannels) { builder.useDataChannels(); }
 			 */

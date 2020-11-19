@@ -24,6 +24,8 @@ import com.virnect.mediaserver.rpc.RpcNotificationService;
 import com.virnect.mediaserver.utils.*;
 import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
 
+import com.virnect.service.FileService;
+import com.virnect.service.SessionService;
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.session.ServiceSessionManager;
@@ -70,10 +72,18 @@ import java.util.concurrent.Semaphore;
 //@EnableConfigurationProperties(RemoteServiceProperties.class)
 @ComponentScan(value = {
         "com.virnect.data",
+        "com.virnect.file",
+        "com.virnect.service",
         "com.virnect.serviceserver"
 })
-@EntityScan(value = {"com.virnect.data.dao"})
-@EnableJpaRepositories(value = {"com.virnect.data.repository"})
+@EntityScan(value = {
+        "com.virnect.data.dao",
+        "com.virnect.file.dao"
+})
+@EnableJpaRepositories(value = {
+        "com.virnect.data.repository",
+        "com.virnect.file.repository"
+})
 //@PropertySource(value = {"classpath:feign-application.properties", "classpath:application.properties"})
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
@@ -128,6 +138,18 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public RemoteServiceProperties remoteServiceProperties() {
         return new RemoteServiceProperties();
     }*/
+
+    @Bean
+    @ConditionalOnMissingBean
+    public FileService fileService() {
+        return new FileService();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SessionService sessionService() {
+        return new SessionService();
+    }
 
     @Bean
     @ConditionalOnMissingBean

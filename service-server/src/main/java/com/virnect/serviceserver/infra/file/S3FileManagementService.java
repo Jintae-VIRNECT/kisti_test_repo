@@ -5,10 +5,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import io.minio.PutObjectArgs;
-import io.minio.errors.MinioException;
+import com.virnect.file.FileType;
+import com.virnect.file.IFileManagementService;
+import com.virnect.service.error.ErrorCode;
+import com.virnect.service.error.exception.RestServiceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -24,7 +24,10 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Profile({"staging", "production"})
 @Slf4j
@@ -108,7 +111,7 @@ public class S3FileManagementService implements IFileManagementService {
                 objectMetadata.setContentType(file.getContentType());
                 objectMetadata.setContentLength(file.getSize());
 
-                putObjectToAWSS3(objectPath.toString(), file, objectPath.toString(), objectMetadata,
+                putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
                         CannedAccessControlList.BucketOwnerRead);
                 log.info("SAVE FILE_URL: {}, {}", objectPath.toString(), file.getContentType());
                 break;
@@ -139,7 +142,7 @@ public class S3FileManagementService implements IFileManagementService {
         }
 
         // check profile directory name or path
-        if(dirPath == null)
+        if (dirPath == null)
             dirPath = profileBucketName;
 
         log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}",
@@ -147,7 +150,7 @@ public class S3FileManagementService implements IFileManagementService {
                 file.getName(),
                 file.getSize());
 
-        log.info("{}, {}",dirPath, fileExtension);
+        log.info("{}, {}", dirPath, fileExtension);
 
         // file upload with create a InputStream for object upload.
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
@@ -159,27 +162,8 @@ public class S3FileManagementService implements IFileManagementService {
         objectMetadata.setContentType(file.getContentType());
         objectMetadata.setContentLength(file.getSize());
 
-        return putObjectToAWSS3(objectPath.toString(), file, objectName, objectMetadata,
+        return putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
                 CannedAccessControlList.BucketOwnerRead);
-
-
-        /*log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(),
-                file.getName(), file.getSize());
-        log.info("BUCKET NAME:{}, {}, {}", publicBucketName, dirPath, fileExtension);
-
-        // 4. file upload
-        // String objectName = String.format("%s_%s", LocalDate.now(),
-        // RandomStringUtils.randomAlphabetic(20));
-        String uniqueObjectName = String.format("%s_%s", LocalDate.now(),
-                UUID.randomUUID().toString().replace("-", ""));
-        String objectName = String.format("%s/%s%s", resourceProfile, uniqueObjectName, fileExtension);
-
-        ObjectMetadata objectMetadata = new ObjectMetadata();
-        objectMetadata.setContentType(file.getContentType());
-        objectMetadata.setContentLength(file.getSize());
-
-        return putObjectToAWSS3(publicBucketName, file, objectName, objectMetadata,
-                CannedAccessControlList.BucketOwnerRead);*/
     }
 
     @Override
@@ -208,7 +192,7 @@ public class S3FileManagementService implements IFileManagementService {
 
     @Override
     public void deleteProfile(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        if (Default.ROOM_PROFILE.isValueEquals(objectPathToName)) {
+        if (DEFAULT_ROOM_PROFILE.equals(objectPathToName)) {
             log.info("PROFILE REMOVE::#deleteProfile::do not delete default profile name");
         } else {
             String objectName = objectPathToName.replaceAll(HOST_REGEX, "").replace("\\", "/");
@@ -216,24 +200,6 @@ public class S3FileManagementService implements IFileManagementService {
 
             log.info("PROFILE REMOVE::#deleteProfile::for not using anymore => [{}]", objectName);
         }
-
-        /*if (Default.ROOM_PROFILE.isValueEquals(url)) {
-            log.info("기본 이미지는 삭제하지 않습니다.");
-        } else {
-            if (url != null) {
-                *//*
-                 * String resourceEndPoint = String.format("%s/%s", publicBucketName,
-                 * resourceProfile); String key = url.split(String.format("/%s/",
-                 * resourceProfile))[1]; amazonS3Client.deleteObject(resourceEndPoint, key);
-                 *//*
-                String resourceEndPoint = String.format("%s/%s", publicBucketName, resourceProfile);
-                int index = url.indexOf(resourceProfile);
-                String key = url.substring(index);
-                log.info("DELETE OBJECT: ==> BUCKET NAME:[{}], KEY: [{}]", publicBucketName, key);
-                amazonS3Client.deleteObject(publicBucketName, key);
-                log.info(key + " 파일이 AWS S3(" + resourceEndPoint + ")에서 삭제되었습니다.");
-            }
-        }*/
     }
 
     @Override
