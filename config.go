@@ -2,11 +2,13 @@ package main
 
 import (
 	"RM-RecordServer/logger"
+	"crypto/tls"
 	"fmt"
 	"net/http"
 	"net/url"
 	"os"
 	"path"
+	"strings"
 
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
@@ -28,6 +30,9 @@ func readConfigFromURL() error {
 	configFilenamePath := fmt.Sprintf("/record-server/%s/master/record-server-%s.ini", env, env)
 	u.Path = path.Join(u.Path, configFilenamePath)
 	fmt.Println("configure: performing http get... to", u)
+	if strings.Contains(u.Scheme, "https") {
+		http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+	}
 	resp, err := http.Get(u.String())
 	if err != nil {
 		return fmt.Errorf("get fail: %s", err)
