@@ -271,7 +271,7 @@ public class WorkspaceController {
             @ApiImplicitParam(name = "lang", value = "언어", paramType = "query", required = true)
     })
     @GetMapping("/invite/{sessionCode}/accept")
-    public void inviteWorkspaceAccept(
+    public RedirectView inviteWorkspaceAccept(
             @PathVariable("sessionCode") String sessionCode,
             @RequestParam("lang") String lang,
             @ApiIgnore HttpServletResponse httpServletResponse
@@ -279,9 +279,8 @@ public class WorkspaceController {
         if (!StringUtils.hasText(sessionCode)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        workspaceService.inviteWorkspaceAccept(sessionCode, lang, httpServletResponse);
-        /*RedirectView redirectView =workspaceService.inviteWorkspaceAccept(sessionCode, lang, httpServletResponse);
-        return redirectView;*/
+        RedirectView redirectView =workspaceService.inviteWorkspaceAccept(sessionCode, lang, httpServletResponse);
+        return redirectView;
     }
 
     @ApiImplicitParams({
