@@ -29,18 +29,27 @@ public class CompanyInfoResponse {
     @ApiModelProperty(value = "Remote Session Type", position = 3, example = "PRIVATE")
     private SessionType sessionType = PRIVATE;
 
-    @ApiModelProperty(value = "Enable text translation", position = 4, example = "false")
-    private boolean translation;
+    @ApiModelProperty(value = "Enable server recording", position = 4, example = "false")
+    private boolean recording = false;
 
-    @ApiModelProperty(value = "Speech to text Type", position = 5, example = "false")
+    @ApiModelProperty(value = "Enable storage service", position = 5, example = "false")
+    private boolean storage = false;
+
+    @ApiModelProperty(value = "Enable text translation", position = 6, example = "false")
+    private boolean translation = false;
+
+    @ApiModelProperty(value = "Speech to text Type", position = 7, example = "false")
     private boolean sttSync = false;
 
-    @ApiModelProperty(value = "Speech to text Type", position = 6, example = "false")
+    @ApiModelProperty(value = "Speech to text Type", position = 8, example = "false")
     private boolean sttStreaming = false;
+
+    @ApiModelProperty(value = "Enable Text to speech", position = 9, example = "false")
+    private boolean tts = false;
 
     @ApiModelProperty(
             value = "Translation Language codes",
-            position = 7,
+            position = 10,
             dataType = "List"
     )
     @NotNull

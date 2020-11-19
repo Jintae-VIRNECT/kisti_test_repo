@@ -7,6 +7,8 @@ import com.virnect.service.dto.service.request.CompanyResponse;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataRepository;
+import com.virnect.serviceserver.data.UtilDataRepository;
+import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -20,23 +22,33 @@ import javax.validation.Valid;
 @RequiredArgsConstructor
 public class AdminRestController implements IAdminRestAPI {
     private static final String TAG = AdminRestController.class.getSimpleName();
-    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/admin";
 
-    private final DataRepository dataRepository;
+    private final UtilDataRepository utilDataRepository;
 
     @Override
     public ResponseEntity<ApiResponse<CompanyResponse>> createCompanyRequestHandler(@Valid CompanyRequest companyRequest, BindingResult result) {
-        log.info("REST API: POST {}",
-                REST_PATH
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST " + REST_PATH,
+                "createCompanyRequestHandler"
         );
+
         // check company request handler
         if(result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+            result.getAllErrors().forEach(message ->
+                            LogMessage.formedError(
+                                    TAG,
+                                    "REST API: POST " + REST_PATH,
+                                    "createCompanyRequestHandler",
+                                    LogMessage.PARAMETER_ERROR,
+                                    message.toString()
+                            )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<CompanyResponse> apiResponse = this.dataRepository.generateCompany(companyRequest);
+        ApiResponse<CompanyResponse> apiResponse = this.utilDataRepository.generateCompany(companyRequest);
         return ResponseEntity.ok(apiResponse);
     }
 }

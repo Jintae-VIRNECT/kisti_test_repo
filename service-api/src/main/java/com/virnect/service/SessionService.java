@@ -64,29 +64,8 @@ public class SessionService {
 
     //===========================================  Admin Services     =================================================//
     @Transactional
-    public Company createCompany(CompanyRequest companyRequest) {
-        //log.info("createCompany: " + roomRequest.toString());
-        /*Company company = Company.builder()
-                .companyCode(companyRequest.getCompanyCode())
-                .workspaceId(companyRequest.getWorkspaceId())
-                .licenseName(companyRequest.getLicenseName())
-                .sessionType(companyRequest.getSessionType())
-                .translation(companyRequest.isTranslation())
-                .sttStreaming(companyRequest.isSttStreaming())
-                .sttSync(companyRequest.isSttSync())
-                .transKoKr(companyRequest.isTransKoKr())
-                .transEnUs(companyRequest.isTransEnUs())
-                .transJaJp(companyRequest.isTransJaJp())
-                .transZh(companyRequest.isTransZh())
-                .transEsEs(companyRequest.isTransEsEs())
-                .transFrFr(companyRequest.isTransFrFr())
-                .transPlPl(companyRequest.isTransPlPl())
-                .transRuRu(companyRequest.isTransRuRu())
-                .transUkUa(companyRequest.isTransUkUa())
-                .build();*/
-
-        return null;
-        //return companyRepository.save(company);
+    public Company createCompany(Company company) {
+        return companyRepository.save(company);
     }
 
     public Company getCompany(String workspaceId) {

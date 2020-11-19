@@ -14,9 +14,9 @@ public class ApiResponse<T> {
     T data;
     ///Map<String, Object> data = new HashMap<>();
     @ApiModelProperty(value = "API 처리 결과 상태 코드 값, 200이면 정상 처리 완료.", dataType = "int", example = "200")
-    int code = 200;
+    int code;
     @ApiModelProperty(value = "API 처리 결과에 대한 메시지", dataType = "string", example = "success")
-    String message = "complete";
+    String message;
 
     public ApiResponse(T data) {
         this.data = data;

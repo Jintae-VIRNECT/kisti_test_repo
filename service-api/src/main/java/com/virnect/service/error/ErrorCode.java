@@ -13,7 +13,7 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel
 public enum  ErrorCode {
 
-    ERR_SUCCESS(200, "anyway ok"),
+    ERR_SUCCESS(200, "complete"),
 
     // error code for server process
     ERR_SERVICE_PROCESS(3001, "Remote Service Server Process error, Please try again or re-start the server."),
@@ -21,6 +21,10 @@ public enum  ErrorCode {
     ERR_WORKSPACE_PROCESS(3003, "Workspace Service Server Process error, Please try again or contact."),
     ERR_USER_PROCESS(3004, "User Service Server Process error, Please try again or contact."),
     ERR_MESSAGE_PROCESS(3005, "Message Service Server Process error, Please try again or contact."),
+
+    // error code for company information
+    ERR_COMPANY_CREATE_FAIL(3500, "Company information request is failed"),
+
 
     // error code for remote session
     ERR_ROOM_INFO(4000, "Room Info Error"),
@@ -75,6 +79,8 @@ public enum  ErrorCode {
     ERR_FILE_COVERT_FAILED(7011, "File converting is failed"),
     ERR_STORAGE_NOT_SUPPORTED(7012, "Storage service is not supported. Please check storage server url."),
     ERR_FILE_NOT_FOUND(7013, "This file can not found."),
+
+
 
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),

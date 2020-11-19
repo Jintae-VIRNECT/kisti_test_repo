@@ -14,7 +14,9 @@ import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
+import com.virnect.serviceserver.data.UtilDataRepository;
 import com.virnect.serviceserver.feign.service.LicenseRestService;
+import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,11 +27,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ValidationController implements IValidationRestAPI {
     private static final String TAG = ValidationController.class.getSimpleName();
-    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_LICENSE_PATH = "/remote/licenses";
     private static final String REST_COMPANY_PATH = "/remote/company";
 
-    private final DataRepository dataRepository;
+    //private final DataRepository dataRepository;
+    private final UtilDataRepository utilDataRepository;
     private final LicenseRestService licenseRestService;
 
     @Override
@@ -75,21 +77,26 @@ public class ValidationController implements IValidationRestAPI {
     public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(
             String workspaceId,
             String userId) {
-        log.info("REST API: GET {}/{}/",
-                REST_COMPANY_PATH,
-                userId != null ? userId : "{}");
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: GET " + REST_COMPANY_PATH + "/" + workspaceId + "/" + userId,
+                "createCompanyRequestHandler"
+        );
 
-        if (userId.isEmpty()) {
+        if (userId == null || userId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        // check user is valid
-        DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(userId);
+        if (workspaceId == null || workspaceId.isEmpty()) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
 
-        log.info("COMPANY INFO :: USER INFO :: {}", userInfo.getData().getDescription());
+        //todo: delete check user is valid
+        //DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(userId);
+        //log.info("COMPANY INFO :: USER INFO :: {}", userInfo.getData().getDescription());
 
         return ResponseEntity.ok(
-                this.dataRepository.loadCompanyInformation(workspaceId)
+                this.utilDataRepository.loadCompanyInformation(workspaceId)
         );
     }
 

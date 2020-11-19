@@ -13,8 +13,8 @@ import java.lang.reflect.InvocationTargetException;
 @NoArgsConstructor
 public class DataProcess<T> {
     T data;
-    int code = 200;
-    String message = "complete";
+    int code = -1;
+    String message = "not assigned";
 
     public DataProcess(Class<T> clazz) throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         this.data = clazz.getDeclaredConstructor().newInstance();
@@ -39,6 +39,8 @@ public class DataProcess<T> {
     }
 
     public DataProcess(T data) {
+        this.code = ErrorCode.ERR_SUCCESS.getCode();
+        this.message = ErrorCode.ERR_SUCCESS.getMessage();
         this.data = data;
     }
 
