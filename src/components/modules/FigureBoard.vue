@@ -17,7 +17,7 @@
           <span class="figure-board--number">{{ hour }}</span>
           <span class="figure-board--text">{{ $t('chart.collabo_hour') }}</span>
           <span class="figure-board--number">{{ min }}</span>
-          <span class="figure-board--text">{{
+          <span class="figure-board--text no-padding">{{
             $t('chart.collabo_minute')
           }}</span>
         </template>
@@ -93,7 +93,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 4.5714rem;
+  min-width: 4.5714rem;
   height: 4.5714rem;
   background: #bbc8d9;
   border-radius: 4px;
@@ -126,5 +126,9 @@ export default {
   color: #0b1f48;
   font-weight: normal;
   font-size: 1.0714rem;
+
+  &.no-padding {
+    padding-right: 0;
+  }
 }
 </style>
