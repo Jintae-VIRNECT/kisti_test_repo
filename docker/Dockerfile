@@ -27,7 +27,7 @@ ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 
 COPY --from=builder virnect.pfx .
-COPY --from=builder service-server/build/libs/RM-Service-*.jar ./RM-Service-2.1.0.jar
+COPY --from=builder service-server/build/libs/RM-Service-*.jar ./RM-Service-2.2.0.jar
 
 EXPOSE 8000
-CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "-jar", "RM-Service-2.1.0.jar"]
+CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "-jar", "RM-Service-2.2.0.jar"]
