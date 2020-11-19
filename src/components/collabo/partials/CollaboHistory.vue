@@ -2,30 +2,24 @@
   <section class="history" :class="{ loading: loading }">
     <div class="history__header">
       <div class="history__header--text index">
-        <span
-          @click="setSort('index')"
-          :class="{ active: sort.column === 'index' }"
-          >No</span
-        >
+        <span :class="{ active: sort.column === 'index' }">No</span>
       </div>
       <div class="history__header--text collabo-name">
         <span
-          @click="setSort('collabo-name')"
+          @click="setSort('title')"
           :class="{ active: sort.column === 'collabo-name' }"
         >
           {{ $t('list.room_title') }}
         </span>
       </div>
       <div class="history__header--text leader-name">
-        <span
-          @click="setSort('leader-name')"
-          :class="{ active: sort.column === 'leader-name' }"
-          >{{ $t('list.room_leader') }}</span
-        >
+        <span :class="{ active: sort.column === 'leader-name' }">{{
+          $t('list.room_leader')
+        }}</span>
       </div>
       <div class="history__header--text start-date">
         <span
-          @click="setSort('start-date')"
+          @click="setSort('activeDate')"
           :class="{ active: sort.column === 'start-date' }"
           >{{ $t('list.room_active_date') }}</span
         >
@@ -39,22 +33,22 @@
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('server-count')"
-          :class="{ active: sort.column === 'server-count' }"
+          @click="setSort('serverRecord')"
+          :class="{ active: sort.column === 'serverRecord' }"
           >{{ $t('list.room_server_record') }}</span
         >
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('local-count')"
-          :class="{ active: sort.column === 'local-count' }"
+          @click="setSort('localRecord')"
+          :class="{ active: sort.column === 'localRecord' }"
           >{{ $t('list.room_local_record') }}</span
         >
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('file-count')"
-          :class="{ active: sort.column === 'file-count' }"
+          @click="setSort('attach')"
+          :class="{ active: sort.column === 'attach' }"
           >{{ $t('list.room_attach_file') }}</span
         >
       </div>
@@ -329,6 +323,7 @@ export default {
       //     direction: this.sort.direction,
       //   },
       // })
+      // this.$eventBus.$emit('reload::list')
     },
   },
 }
@@ -388,9 +383,9 @@ export default {
   text-align: center;
 
   & > span {
-    &:hover {
-      cursor: pointer;
-    }
+    // &:hover {
+    //   cursor: pointer;
+    // }
 
     &.active {
       font-weight: bold;
