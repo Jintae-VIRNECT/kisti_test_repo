@@ -52,11 +52,11 @@ func Init() {
 		logrus.Info("create bucket:", bucketName)
 	}
 
-	policy := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetBucketLocation","s3:ListBucket"],"Resource":["arn:aws:s3:::` + bucketName + `"]},{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetObject"],"Resource":["arn:aws:s3:::` + bucketName + `/*"]}]}`
-	err = client.minioClient.SetBucketPolicy(ctx, bucketName, policy)
-	if err != nil {
-		panic(err)
-	}
+	// policy := `{"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetBucketLocation","s3:ListBucket"],"Resource":["arn:aws:s3:::` + bucketName + `"]},{"Effect":"Allow","Principal":{"AWS":["*"]},"Action":["s3:GetObject"],"Resource":["arn:aws:s3:::` + bucketName + `/*"]}]}`
+	// err = client.minioClient.SetBucketPolicy(ctx, bucketName, policy)
+	// if err != nil {
+	// 	panic(err)
+	// }
 }
 
 func New() *Client {
