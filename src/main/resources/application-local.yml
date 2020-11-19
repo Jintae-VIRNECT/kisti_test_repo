@@ -59,7 +59,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
-
+#
 ## Minio
 minio:
   access-key: "virnect"
