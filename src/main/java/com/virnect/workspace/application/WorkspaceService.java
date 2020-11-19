@@ -886,15 +886,19 @@ public class WorkspaceService {
         Locale locale = new Locale(lang, "");
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
         if (userInvite == null) {
+            log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb() + "/?message=workspace.invite.invalid");
             redirectView.setContentType("application/json");
             return redirectView;
         }
+
+        log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
         InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
         if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
+            log.info("[WORKSPACE INVITE ACCEPT] Invited User isMemberUser Info >> [{}]", inviteUserResponse.isMemberUser());
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl("https://192.168.6.3:8883/terms?inviteSession" + sessionCode + "&lang=" + lang);
+            redirectView.setUrl(redirectProperty.getSignupWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang);
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -915,6 +919,9 @@ public class WorkspaceService {
         //라이선스 최대 멤버 수 초과 메일전송
         int workspaceUserAmount = workspaceUserRepository.findByWorkspace_Uuid(workspace.getUuid()).size();
         if (workspaceLicensePlanInfoResponse.getMaxUserAmount() < workspaceUserAmount + 1) {
+            log.error("[WORKSPACE INVITE ACCEPT] Over Max Workspace Member amount. max user Amount >> [{}], exist user amount >> [{}]",
+                    workspaceLicensePlanInfoResponse.getMaxUserAmount(),
+                    workspaceUserAmount + 1);
             worksapceOverMaxUserFailHandler(workspace, userInvite, locale);
         }
 
@@ -926,7 +933,6 @@ public class WorkspaceService {
         List<LicenseProduct> licenseProductList = generatePlanList(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView());
         for (LicenseProduct licenseProduct : licenseProductList) {
             MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userInvite.getInvitedUserId(), licenseProduct.toString()).getData();
-            //logging
             if (grantResult == null || !StringUtils.hasText(grantResult.getProductName())) {
                 failPlan.add(licenseProduct.toString());
                 licenseGrantResult = false;
@@ -936,9 +942,9 @@ public class WorkspaceService {
         }
         if (!licenseGrantResult) {
             workspaceOverPlanFailHandler(workspace, userInvite, successPlan, failPlan, locale);
-            successPlan.stream().forEach(s -> {
+            successPlan.forEach(s -> {
                 Boolean revokeResult = licenseRestService.revokeWorkspaceLicenseToUser(workspace.getUuid(), userInvite.getInvitedUserId(), s).getData();
-                //logging
+                log.info("[WORKSPACE INVITE ACCEPT] [{}] License Grant Fail. Revoke user License Result >> [{}]", s, revokeResult);
             });
         }
         //워크스페이스 소속 넣기 (workspace_user)
@@ -982,7 +988,7 @@ public class WorkspaceService {
             });
         }
 
-        sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);//
+        sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
 
         //redis 에서 삭제
         userInviteRepository.delete(userInvite);
@@ -1134,10 +1140,19 @@ public class WorkspaceService {
     public RedirectView inviteWorkspaceReject(String sessionCode, String lang) {
         Locale locale = new Locale(lang, "");
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
+        if (userInvite == null) {
+            log.info("[WORKSPACE INVITE REJECT] Workspace invite session Info Not found. session code >> [{}]", sessionCode);
+            RedirectView redirectView = new RedirectView();
+            redirectView.setUrl(redirectProperty.getWorkstationWeb());
+            redirectView.setContentType("application/json");
+            return redirectView;
+        }
+        log.info("[WORKSPACE INVITE REJECT] Workspace Invite Session Info >> [{}] ", userInvite);
 
         //비회원 거절은 메일 전송 안함.
         InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
-        if (userInvite != null && inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
+        if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
+            log.info("[WORKSPACE INVITE REJECT] Invited User isMemberUser Info >> [{}]", inviteUserResponse.isMemberUser());
             userInviteRepository.delete(userInvite);
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl(redirectProperty.getWorkstationWeb());
@@ -1195,7 +1210,7 @@ public class WorkspaceService {
     }
 
     private String generatePlanString(boolean remote, boolean make, boolean view) {
-        return generatePlanList(remote,make,view).stream().map(Enum::toString).collect(Collectors.joining(","));
+        return generatePlanList(remote, make, view).stream().map(Enum::toString).collect(Collectors.joining(","));
     }
 
     /*
@@ -2365,9 +2380,7 @@ public class WorkspaceService {
                 Arrays.toString(role),
                 workspaceUserPermission.getWorkspaceRole().getRole()
         );
-        if (!Arrays.asList(role)
-                .stream()
-                .anyMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)) {
+        if (Arrays.stream(role).noneMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)){
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
         return workspace;

@@ -272,28 +272,27 @@ public class WorkspaceController {
     public RedirectView inviteWorkspaceAccept(
             @PathVariable("sessionCode") String sessionCode,
             @RequestParam("lang") String lang
-    ) {/*
-        if (!StringUtils.hasText(email)) {
+    ) {
+        if (!StringUtils.hasText(sessionCode)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }*/
-        RedirectView redirectView = workspaceService.inviteWorkspaceAccept( sessionCode, lang);
+        }
+        RedirectView redirectView = workspaceService.inviteWorkspaceAccept(sessionCode, lang);
         return redirectView;
     }
+
     @ApiImplicitParams({
-            //@ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
             @ApiImplicitParam(name = "sessionCode", value = "초대 세션 코드", paramType = "path", required = true),
             @ApiImplicitParam(name = "lang", value = "언어", paramType = "query", required = true)
     })
     @GetMapping("/invite/{sessionCode}/reject")
     public RedirectView inviteWorkspaceReject(
-            //@PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionCode") String sessionCode,
             @RequestParam("lang") String lang
-    ) {/*
-        if (!StringUtils.hasText(email)) {l
+    ) {
+        if (!StringUtils.hasText(sessionCode)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }*/
-        RedirectView redirectView = workspaceService.inviteWorkspaceReject( sessionCode, lang);
+        }
+        RedirectView redirectView = workspaceService.inviteWorkspaceReject(sessionCode, lang);
         return redirectView;
     }
 /*
