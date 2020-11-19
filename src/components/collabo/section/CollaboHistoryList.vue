@@ -28,6 +28,7 @@
     <pagination-tool
       @current-page="getHistoryByPage"
       :totalPage="pageMeta.totalPage"
+      :currentPage="pageMeta.currentPage"
     ></pagination-tool>
   </section>
 </template>
@@ -58,6 +59,7 @@ export default {
     return {
       historyList: [],
       isMaster: false,
+      curPage: 0,
       pageMeta: {
         currentPage: 0,
         currentSize: 0,

@@ -5,7 +5,7 @@
       <div
         v-for="(page, index) in pages"
         class="pagination-tool__link page"
-        :class="{ current: page === currentPage }"
+        :class="{ current: page === curPage }"
         :key="index"
         @click="setCurrrent(page)"
       >
@@ -25,11 +25,14 @@ export default {
       type: Number,
       required: true,
     },
+    currentPage: {
+      type: Number,
+    },
   },
 
   data() {
     return {
-      currentPage: 1,
+      curPage: 1,
       pages: [],
       maxPage: 5,
     }
@@ -37,39 +40,45 @@ export default {
 
   computed: {},
   watch: {
+    currentPage(page) {
+      if (page === 0) {
+        this.curPage = 1
+      }
+    },
     totalPage(now) {
       this.setPages()
       if (now === 0) {
         this.pages = []
       }
     },
-    currentPage(page) {
+    curPage(page) {
       this.setPages()
       this.$emit('current-page', page)
     },
   },
   methods: {
     setCurrrent(page) {
-      this.currentPage = page
+      this.curPage = page
     },
     setPages() {
+      console.log('setPages called')
       const pagesArray = []
 
-      if (this.currentPage === 1) {
-        const remained = this.totalPage - this.currentPage
+      if (this.curPage === 1) {
+        const remained = this.totalPage - this.curPage
         const end = remained <= this.maxPage ? remained + 1 : this.maxPage
         for (let i = 1; i <= end; i++) {
           pagesArray.push(i)
         }
-      } else if (this.currentPage - 1 === this.pages[this.pages.length - 1]) {
-        const remained = this.totalPage - this.currentPage
+      } else if (this.curPage - 1 === this.pages[this.pages.length - 1]) {
+        const remained = this.totalPage - this.curPage
         const end = remained < this.maxPage ? remained + 1 : this.maxPage
         for (let i = 0; i < end; i++) {
-          pagesArray.push(this.currentPage + i)
+          pagesArray.push(this.curPage + i)
         }
-      } else if (this.currentPage === this.pages[0] - 1) {
+      } else if (this.curPage === this.pages[0] - 1) {
         for (let i = 4; i >= 0; i--) {
-          pagesArray.push(this.currentPage - i)
+          pagesArray.push(this.curPage - i)
         }
       }
 
@@ -78,13 +87,13 @@ export default {
       }
     },
     prevPage() {
-      if (this.currentPage > 1) {
-        this.currentPage--
+      if (this.curPage > 1) {
+        this.curPage--
       }
     },
     nextPage() {
-      if (this.currentPage + 1 <= this.totalPage) {
-        this.currentPage++
+      if (this.curPage + 1 <= this.totalPage) {
+        this.curPage++
       }
     },
   },
