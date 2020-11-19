@@ -19,8 +19,9 @@ import (
 )
 
 type Client struct {
-	minioClient *minio.Client
-	bucketName  string
+	minioClient  *minio.Client
+	bucketName   string
+	resourceName string
 }
 
 var once sync.Once
@@ -76,7 +77,15 @@ func New() *Client {
 	if err != nil {
 		panic(err)
 	}
-	return &Client{minioClient: minoClient, bucketName: viper.GetString("storage.bucketName")}
+	return &Client{
+		minioClient:  minoClient,
+		bucketName:   viper.GetString("storage.bucketName"),
+		resourceName: viper.GetString("storage.resourceName"),
+	}
+}
+
+func (c *Client) getObjectName(target string) string {
+	return path.Join(c.resourceName, target)
 }
 
 func (c *Client) Upload(ctx context.Context, src string, target string) error {
@@ -97,7 +106,7 @@ func (c *Client) Upload(ctx context.Context, src string, target string) error {
 	_, err = c.minioClient.PutObject(
 		ctx,
 		c.bucketName,
-		target,
+		c.getObjectName(target),
 		file,
 		fileStat.Size(),
 		minio.PutObjectOptions{
@@ -114,7 +123,7 @@ func (c *Client) Upload(ctx context.Context, src string, target string) error {
 }
 
 func (c *Client) Remove(ctx context.Context, target string) error {
-	return c.minioClient.RemoveObject(ctx, c.bucketName, target, minio.RemoveObjectOptions{})
+	return c.minioClient.RemoveObject(ctx, c.bucketName, c.getObjectName(target), minio.RemoveObjectOptions{})
 }
 
 func (c *Client) GetPresignedUrl(ctx context.Context, target string, filename string) (string, error) {
@@ -126,7 +135,7 @@ func (c *Client) GetPresignedUrl(ctx context.Context, target string, filename st
 	reqParams.Set(key, value)
 
 	expirationTime := time.Second * 24 * 60 * 60 // 1 day
-	presignedURL, err := c.minioClient.PresignedGetObject(context.Background(), c.bucketName, target, expirationTime, reqParams)
+	presignedURL, err := c.minioClient.PresignedGetObject(context.Background(), c.bucketName, c.getObjectName(target), expirationTime, reqParams)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -146,7 +155,7 @@ func (c *Client) GetObjectUrl(ctx context.Context, target string, filename strin
 	} else {
 		u.Scheme = "http"
 	}
-	u.Path = path.Join(endpoint, c.bucketName, target)
+	u.Path = path.Join(endpoint, c.bucketName, c.resourceName, target)
 	log.Info("download url:", u.String())
 	return u.String(), nil
 }
