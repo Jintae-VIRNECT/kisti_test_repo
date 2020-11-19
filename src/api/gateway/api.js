@@ -18,7 +18,7 @@ export default {
   FILES: ['GET', '/remote/dashboard/file/{workspaceId}/{sessionId}'],
   DELETE_FILE_ITEM: [
     'DELETE',
-    '/remote/dashboard/file/{workspaceId}/{sessionId}',
+    '/remote/dashboard/file/{workspaceId}/{sessionId}?objectName={objectName}&userId={userId}',
   ],
   FILE_ITEM_DOWNLOAD_URL: [
     'GET',
@@ -33,7 +33,7 @@ export default {
 
   DELETE_SERVER_RECORD_FILES_ITEM: [
     'DELETE',
-    '/remote/dashboard/record/record-file/{workspaceId}',
+    '/remote/dashboard/file/record/{workspaceId}?id={id}&userId={userId}',
   ],
 
   SERVER_RECORD_FILE_URL: [
@@ -52,7 +52,7 @@ export default {
   ],
   DELETE_RECORD_FILE_ITEM: [
     'DELETE',
-    '/remote/dashboard/file/record-file/{workspaceId}/{sessionId}',
+    '/remote/dashboard/file/record-file/{workspaceId}/{sessionId}?objectName={objectName}&userId={userId}',
   ],
 
   /** CHART */

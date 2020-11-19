@@ -116,6 +116,25 @@ export const getLocalRecordFiles = async ({
 }
 
 /**
+ * 특정 로컬 녹화 파일을 삭제하는 API
+ * @param {*} param0
+ */
+export const deleteLocalRecordFileItem = async ({
+  objectName,
+  sessionId,
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('DELETE_RECORD_FILE_ITEM', {
+    objectName,
+    sessionId,
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}
+
+/**
  * 로컬 녹화파일을 다운로드 하기위한 URL을 반환하는 API
  *
  * @query {String} workspaceId 워크스페이스 id

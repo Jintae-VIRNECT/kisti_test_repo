@@ -2,6 +2,7 @@ import {
   getFileDownloadUrl,
   deleteFileItem,
   getLocalRecordFileUrl,
+  deleteLocalRecordFileItem,
   getServerRecordFileUrl,
   deleteServerRecordFileItem,
 } from 'api/http/file'
@@ -278,6 +279,28 @@ export default {
         }
       }
     },
-    async deleteLocal() {},
+    async deleteLocal(selectedArray, fileList) {
+      let deleteFiles = []
+      const errorFiles = []
+
+      deleteFiles = this.getSelectedFile(selectedArray, fileList)
+
+      for (const file of deleteFiles) {
+        try {
+          const result = await deleteLocalRecordFileItem({
+            objectName: file.objectName,
+            sessionId: file.sessionId,
+            userId: this.account.uuid,
+            workspaceId: file.workspaceId,
+          })
+          console.log(result)
+        } catch (e) {
+          console.error(e)
+          errorFiles.push(file.name)
+        }
+      }
+      this.showErrorFiles(errorFiles)
+      this.$eventBus.$emit('reload::list')
+    },
   },
 }

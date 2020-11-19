@@ -14,7 +14,7 @@ const state = {
   },
   sort: {
     column: 'createdDate',
-    direction: 'asc',
+    direction: 'desc',
   },
 }
 
