@@ -47,16 +47,11 @@ export default {
 @import '~assets/style/mixin';
 .checkbox {
   display: flex;
-  width: 10.5714em;
+  max-width: 15.5714em;
   padding: 0.571rem;
-  // background-color: #212125;
-  // border: solid 1px #171718;
   border-radius: 3px;
   cursor: pointer;
   transition: all 0.3s;
-  &.toggle {
-    // background-color: $color_primary;
-  }
 }
 .checkbox-text {
   margin: auto;
