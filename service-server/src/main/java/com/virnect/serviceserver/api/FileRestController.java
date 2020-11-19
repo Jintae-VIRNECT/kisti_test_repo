@@ -1,16 +1,15 @@
 package com.virnect.serviceserver.api;
 
-import com.virnect.data.ApiResponse;
-import com.virnect.data.api.IFileRestAPI;
-import com.virnect.data.dto.file.request.FileUploadRequest;
-import com.virnect.data.dto.file.request.RecordFileUploadRequest;
-import com.virnect.data.dto.file.response.*;
-import com.virnect.data.dto.request.PageRequest;
-import com.virnect.data.dto.request.RoomProfileUpdateRequest;
-import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.RoomProfileUpdateResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.service.ApiResponse;
+import com.virnect.service.api.IFileRestAPI;
+import com.virnect.service.dto.PageRequest;
+import com.virnect.service.dto.ResultResponse;
+import com.virnect.service.dto.file.request.FileUploadRequest;
+import com.virnect.service.dto.file.request.RecordFileUploadRequest;
+import com.virnect.service.dto.file.request.RoomProfileUpdateRequest;
+import com.virnect.service.dto.file.response.*;
+import com.virnect.service.error.ErrorCode;
+import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.data.FileDataRepository;
 import lombok.RequiredArgsConstructor;

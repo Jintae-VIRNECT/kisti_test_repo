@@ -30,6 +30,12 @@ public class Company extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private SessionType sessionType;
 
+    @Column(name = "recording", nullable = false)
+    private boolean recording;
+
+    @Column(name = "storage", nullable = false)
+    private boolean storage;
+
     @Column(name = "translation", nullable = false)
     private boolean translation;
 
@@ -39,70 +45,37 @@ public class Company extends BaseTimeEntity {
     @Column(name = "stt_streaming", nullable = false)
     private boolean sttStreaming;
 
-    @Column(name = "trans_ko_kr", nullable = false)
-    private boolean transKoKr;
+    @Column(name = "tts", nullable = false)
+    private boolean tts;
 
-    @Column(name = "trans_en_us", nullable = false)
-    private boolean transEnUs;
-
-    @Column(name = "trans_ja_jp", nullable = false)
-    private boolean transJaJp;
-
-    @Column(name = "trans_zh", nullable = false)
-    private boolean transZh;
-
-    @Column(name = "trans_fr_fr", nullable = false)
-    private boolean transFrFr;
-
-    @Column(name = "trans_es_es", nullable = false)
-    private boolean transEsEs;
-
-    @Column(name = "trans_ru_ru", nullable = false)
-    private boolean transRuRu;
-
-    @Column(name = "trans_uk_ua", nullable = false)
-    private boolean transUkUa;
-
-    @Column(name = "trans_pl_pl", nullable = false)
-    private boolean transPlPl;
-
+    @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Language language;
 
     @Builder
     public Company(int companyCode,
                    String workspaceId,
                    String licenseName,
                    SessionType sessionType,
+                   Boolean recording,
+                   Boolean storage,
                    Boolean translation,
                    Boolean sttSync,
                    Boolean sttStreaming,
-                   Boolean transKoKr,
-                   Boolean transEnUs,
-                   Boolean transJaJp,
-                   Boolean transZh,
-                   Boolean transFrFr,
-                   Boolean transEsEs,
-                   Boolean transRuRu,
-                   Boolean transUkUa,
-                   Boolean transPlPl
-                   ) {
+                   Boolean tts,
+                   Language language
+    ) {
         this.companyCode = companyCode;
         this.workspaceId = workspaceId;
         this.licenseName = licenseName;
         this.sessionType = sessionType;
+        this.recording = recording;
+        this.storage = storage;
         this.translation = translation;
         this.sttSync = sttSync;
         this.sttStreaming = sttStreaming;
+        this.tts = tts;
 
-        this.transKoKr = transKoKr;
-        this.transEnUs = transEnUs;
-        this.transJaJp = transJaJp;
-        this.transZh = transZh;
-        this.transFrFr = transFrFr;
-        this.transEsEs = transEsEs;
-        this.transRuRu = transRuRu;
-        this.transUkUa = transUkUa;
-        this.transPlPl = transPlPl;
-
+        this.language = language;
     }
 
     @Override
@@ -112,17 +85,11 @@ public class Company extends BaseTimeEntity {
                 ", workspaceId='" + workspaceId + '\'' +
                 ", licenseName='" + licenseName + '\'' +
                 ", sessionType='" + sessionType + '\'' +
+                ", recording='" + recording + '\'' +
+                ", storage='" + storage + '\'' +
                 ", sttSync='" + sttSync + '\'' +
                 ", sttStreaming='" + sttStreaming + '\'' +
-                ", transKoKr='" + transKoKr + '\'' +
-                ", transEnUs='" + transEnUs + '\'' +
-                ", transJaJp='" + transJaJp + '\'' +
-                ", transZh='" + transZh + '\'' +
-                ", transFrFr='" + transFrFr + '\'' +
-                ", transEsEs='" + transEsEs + '\'' +
-                ", transRuRu='" + transRuRu + '\'' +
-                ", transUkUa='" + transUkUa + '\'' +
-                ", transPlPl='" + transPlPl + '\'' +
+                ", tts='" + tts + '\'' +
                 '}';
     }
 }

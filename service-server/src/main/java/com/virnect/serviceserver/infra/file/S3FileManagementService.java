@@ -5,10 +5,17 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
+<<<<<<< HEAD
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import io.minio.PutObjectArgs;
 import io.minio.errors.MinioException;
+=======
+import com.virnect.file.FileType;
+import com.virnect.file.IFileManagementService;
+import com.virnect.service.error.ErrorCode;
+import com.virnect.service.error.exception.RestServiceException;
+>>>>>>> develop-hoon
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -24,7 +31,10 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Profile({"staging", "production"})
 @Slf4j
@@ -141,6 +151,7 @@ public class S3FileManagementService implements IFileManagementService {
         // check profile directory name or path
         if(dirPath == null)
             dirPath = profileBucketName;
+<<<<<<< HEAD
 
         log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}",
                 file.getOriginalFilename(),
@@ -166,20 +177,33 @@ public class S3FileManagementService implements IFileManagementService {
         /*log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}", file.getOriginalFilename(),
                 file.getName(), file.getSize());
         log.info("BUCKET NAME:{}, {}, {}", publicBucketName, dirPath, fileExtension);
+=======
+>>>>>>> develop-hoon
 
-        // 4. file upload
-        // String objectName = String.format("%s_%s", LocalDate.now(),
-        // RandomStringUtils.randomAlphabetic(20));
-        String uniqueObjectName = String.format("%s_%s", LocalDate.now(),
-                UUID.randomUUID().toString().replace("-", ""));
-        String objectName = String.format("%s/%s%s", resourceProfile, uniqueObjectName, fileExtension);
+        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}",
+                file.getOriginalFilename(),
+                file.getName(),
+                file.getSize());
 
+        log.info("{}, {}",dirPath, fileExtension);
+
+        // file upload with create a InputStream for object upload.
+        String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
+        StringBuilder objectPath;
+        objectPath = new StringBuilder();
+        objectPath.append(dirPath).append("/").append(objectName).append(".").append(fileExtension);
+        // Create headers
         ObjectMetadata objectMetadata = new ObjectMetadata();
         objectMetadata.setContentType(file.getContentType());
         objectMetadata.setContentLength(file.getSize());
 
+<<<<<<< HEAD
         return putObjectToAWSS3(publicBucketName, file, objectName, objectMetadata,
                 CannedAccessControlList.BucketOwnerRead);*/
+=======
+        return putObjectToAWSS3(objectPath.toString(), file, objectName, objectMetadata,
+                CannedAccessControlList.BucketOwnerRead);
+>>>>>>> develop-hoon
     }
 
     @Override
@@ -208,6 +232,7 @@ public class S3FileManagementService implements IFileManagementService {
 
     @Override
     public void deleteProfile(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+<<<<<<< HEAD
         if (Default.ROOM_PROFILE.isValueEquals(objectPathToName)) {
             log.info("PROFILE REMOVE::#deleteProfile::do not delete default profile name");
         } else {
@@ -234,6 +259,17 @@ public class S3FileManagementService implements IFileManagementService {
                 log.info(key + " 파일이 AWS S3(" + resourceEndPoint + ")에서 삭제되었습니다.");
             }
         }*/
+=======
+        if (DEFAULT_ROOM_PROFILE.equals(objectPathToName)) {
+            log.info("PROFILE REMOVE::#deleteProfile::do not delete default profile name");
+        } else {
+            String objectName = objectPathToName.replaceAll(HOST_REGEX, "").replace("\\", "/");
+            removeObject(objectName);
+
+            log.info("PROFILE REMOVE::#deleteProfile::for not using anymore => [{}]", objectName);
+        }
+
+>>>>>>> develop-hoon
     }
 
     @Override

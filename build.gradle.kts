@@ -17,7 +17,7 @@ plugins {
 
 allprojects {
     group = "com.virnect"
-    version = "2.1.0"
+    version = "2.2.0"
 
     tasks.withType<JavaCompile> {
         sourceCompatibility = "1.8"
@@ -58,8 +58,8 @@ project(":service-server") {
     }
 
     dependencies {
+        implementation(project(":service-api"))
         implementation(project(":service-kms"))
-        implementation(project(":service-data"))
         implementation("org.springframework.cloud:spring-cloud-config-client")
     }
     /*val jar: Jar by tasks
@@ -77,21 +77,34 @@ project(":service-data") {
     }
 }
 
-project(":service-common") {
+project(":service-file-data") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
+}
 
+project(":service-api") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
 }
 
 project(":service-kms") {
     dependencies {
         implementation(group = "com.github.docker-java", name = "docker-java", version = "3.1.5")
         implementation(group = "org.codehaus.janino", name = "janino", version = "3.1.0")
-        implementation(group = "org.apache.commons", name= "commons-lang3", version = "3.10")
+        implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.10")
     }
 }
 
 project(":service-client") {
 
 }
+
 project(":service-java-client") {
 
 }
