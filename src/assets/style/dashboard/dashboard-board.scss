@@ -108,12 +108,10 @@
 
 #chartjs-tooltip {
   position: absolute;
-  width: 9.1429rem;
+  max-width: 22.8571rem;
   height: 5.7143rem;
-  // min-height: 40px;
   color: white;
   background: #3b3b3b;
-  // border: 1px solid rgb(52, 65, 81);
   border-radius: 4px;
   -webkit-transform: translate(-50%, 0);
   transform: translate(-50%, 0);
@@ -122,26 +120,33 @@
   transition: all 0.1s ease;
   pointer-events: none;
 
+  .chartjs-tooltip-head {
+    color: #ffffff;
+    font-weight: 400;
+    font-size: 1.0714rem;
+    text-align: left;
+
+    p {
+      padding-left: 0.4286rem;
+    }
+  }
+
   table {
     position: relative;
     width: 100%;
 
-    thead {
-      color: #ffffff;
-      font-weight: 400;
-      font-size: 1.0714rem;
-    }
-
     &::after {
       position: absolute;
-      top: 5.2143rem;
-      right: 3.5714rem;
+      top: 105%;
+      right: 45%;
+
       z-index: 999;
       width: 0;
       height: 0;
       border-top: 9px solid #3b3b3b;
-      border-right: 9px solid transparent;
-      border-left: 9px solid transparent;
+
+      border-right: 0.6429rem solid transparent;
+      border-left: 0.6429rem solid transparent;
       content: "";
     }
   }
@@ -156,7 +161,7 @@
 
 #chartjs-noarrow {
   position: absolute;
-  width: 9.1429rem;
+  max-width: 22.8571rem;
   height: 6.4286rem;
   color: white;
   background: #3b3b3b;
@@ -170,7 +175,7 @@
   pointer-events: none;
 
   .chartjs-tooltip-head {
-    color: white;
+    color: #ffffff;
     font-weight: 400;
     font-size: 1.0714rem;
     text-align: left;
