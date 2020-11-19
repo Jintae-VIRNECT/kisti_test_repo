@@ -21,6 +21,7 @@ import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
 import com.virnect.workspace.global.common.CustomPageHandler;
 import com.virnect.workspace.global.common.CustomPageResponse;
+import com.virnect.workspace.global.common.RedirectProperty;
 import com.virnect.workspace.global.constant.*;
 import com.virnect.workspace.global.error.ErrorCode;
 import com.virnect.workspace.global.util.RandomStringTokenUtil;
@@ -29,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
@@ -71,18 +71,7 @@ public class WorkspaceService {
     private final MessageSource messageSource;
     private final LicenseRestService licenseRestService;
     private final WorkspaceSettingRepository workspaceSettingRepository;
-
-
-    @Value("${serverUrl}")
-    private String serverUrl;
-    @Value("${redirectUrl}")
-    private String redirectUrl;
-    @Value("${contactUrl}")
-    private String contactUrl;
-    @Value("${accountUrl}")
-    private String accountUrl;
-    @Value("${supportUrl}")
-    private String supportUrl;
+    private final RedirectProperty redirectProperty;
 
     /**
      * 워크스페이스 생성
@@ -759,24 +748,22 @@ public class WorkspaceService {
             }
 
             boolean inviteSessionExist = false;
-            String sessionCode = null;
+            String sessionCode = RandomStringTokenUtil.generate(UUIDType.INVITE_CODE, 20);
             for (UserInvite userInvite : userInviteRepository.findAll()) {
                 if (userInvite != null && userInvite.getWorkspaceId().equals(workspaceId) && userInvite.getInvitedUserEmail().equals(userInfo.getEmail())) {
+                    inviteSessionExist = true;
                     userInvite.setRole(userInfo.getRole());
                     userInvite.setPlanRemote(userInfo.isPlanRemote());
                     userInvite.setPlanMake(userInfo.isPlanMake());
                     userInvite.setPlanView(userInfo.isPlanView());
-                    userInvite.setUser(inviteUserResponse.isMemberUser());
                     userInvite.setUpdatedDate(LocalDateTime.now());
                     userInvite.setExpireTime(Duration.ofDays(7).getSeconds());
                     userInviteRepository.save(userInvite);
-                    log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
-                    inviteSessionExist = true;
                     sessionCode = userInvite.getSessionCode();
+                    log.info("[WORKSPACE INVITE USER] Workspace Invite Info Redis Update >> {}", userInvite.toString());
                 }
             }
             if (!inviteSessionExist) {
-                sessionCode=RandomStringTokenUtil.generate(UUIDType.INVITE_CODE,12);
                 UserInvite newUserInvite = UserInvite.builder()
                         .sessionCode(sessionCode)
                         .invitedUserEmail(userInfo.getEmail())
@@ -790,7 +777,6 @@ public class WorkspaceService {
                         .planRemoteType(licensePlanType)
                         .planMakeType(licensePlanType)
                         .planViewType(licensePlanType)
-                        .isUser(inviteUserResponse.isMemberUser())
                         .invitedDate(LocalDateTime.now())
                         .updatedDate(null)
                         .expireTime(Duration.ofDays(7).getSeconds())
@@ -800,8 +786,8 @@ public class WorkspaceService {
             }
 
             //메일 전송
-            String rejectUrl = serverUrl + "/workspaces/invite/" + sessionCode + "/reject?lang=" + locale.getLanguage();
-            String acceptUrl = serverUrl + "/workspaces/invite/" + sessionCode + "/accept?lang=" + locale.getLanguage();
+            String rejectUrl = redirectProperty.getWorkspaceServer() + "/workspaces/invite/" + sessionCode + "/reject?lang=" + locale.getLanguage();
+            String acceptUrl = redirectProperty.getWorkspaceServer() + "/workspaces/invite/" + sessionCode + "/accept?lang=" + locale.getLanguage();
             Workspace workspace = workspaceRepository.findByUuid(workspaceId).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
             UserInfoRestResponse materUser = getUserInfo(workspace.getUserId());
             if (inviteUserResponse.isMemberUser()) {
@@ -816,8 +802,8 @@ public class WorkspaceService {
                 context.setVariable("responseUserNickName", inviteUserResponse.getInviteUserDetailInfo().getNickname());
                 context.setVariable("role", userInfo.getRole());
                 context.setVariable("plan", generatePlanString(userInfo.isPlanRemote(), userInfo.isPlanMake(), userInfo.isPlanView()));
-                context.setVariable("workstationHomeUrl", redirectUrl);
-                context.setVariable("supportUrl", supportUrl);
+                context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+                context.setVariable("supportUrl", redirectProperty.getSupportWeb());
                 String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE.getSubject(), null, locale);
                 String template = messageSource.getMessage(Mail.WORKSPACE_INVITE.getTemplate(), null, locale);
                 String html = springTemplateEngine.process(template, context);
@@ -835,8 +821,8 @@ public class WorkspaceService {
                 context.setVariable("inviteUserEmail", userInfo.getEmail());
                 context.setVariable("role", userInfo.getRole());
                 context.setVariable("plan", generatePlanString(userInfo.isPlanRemote(), userInfo.isPlanMake(), userInfo.isPlanView()));
-                context.setVariable("workstationHomeUrl", redirectUrl);
-                context.setVariable("supportUrl", supportUrl);
+                context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+                context.setVariable("supportUrl", redirectProperty.getSupportWeb());
                 String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE_NON_USER.getSubject(), null, locale);
                 String template = messageSource.getMessage(Mail.WORKSPACE_INVITE_NON_USER.getTemplate(), null, locale);
                 String html = springTemplateEngine.process(template, context);
@@ -901,11 +887,12 @@ public class WorkspaceService {
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
         if (userInvite == null) {
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl + "/?message=workspace.invite.invalid");
+            redirectView.setUrl(redirectProperty.getWorkstationWeb() + "/?message=workspace.invite.invalid");
             redirectView.setContentType("application/json");
             return redirectView;
         }
-        if (!userInvite.isUser()) {
+        InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
+        if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
             RedirectView redirectView = new RedirectView();
             redirectView.setUrl("https://192.168.6.3:8883/terms?inviteSession" + sessionCode + "&lang=" + lang);
             redirectView.setContentType("application/json");
@@ -978,9 +965,9 @@ public class WorkspaceService {
         context.setVariable("acceptUserNickName", inviteUserInfo.getNickname());
         context.setVariable("acceptUserEmail", userInvite.getInvitedUserEmail());
         context.setVariable("role", userInvite.getRole());
-        context.setVariable("workstationHomeUrl", redirectUrl);
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
         context.setVariable("plan", generatePlanString(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView()));
-        context.setVariable("supportUrl", supportUrl);
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
 
         String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE_ACCEPT.getSubject(), null, locale);
         String template = messageSource.getMessage(Mail.WORKSPACE_INVITE_ACCEPT.getTemplate(), null, locale);
@@ -1010,7 +997,7 @@ public class WorkspaceService {
         }
 
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectUrl);
+        redirectView.setUrl(redirectProperty.getWorkstationWeb());
         redirectView.setContentType("application/json");
         return redirectView;
     }
@@ -1037,9 +1024,9 @@ public class WorkspaceService {
         context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
         context.setVariable("planMakeType", userInvite.getPlanMakeType());
         context.setVariable("planViewType", userInvite.getPlanViewType());
-        context.setVariable("workstationHomeUrl", redirectUrl);
-        context.setVariable("workstationMembersUrl", redirectUrl + "/members");
-        context.setVariable("supportUrl", supportUrl);
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("workstationMembersUrl", redirectProperty.getMembersWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
 
         String subject = messageSource.getMessage(Mail.WORKSPACE_OVER_JOIN_FAIL.getSubject(), null, locale);
         String template = messageSource.getMessage(Mail.WORKSPACE_OVER_JOIN_FAIL.getTemplate(), null, locale);
@@ -1060,7 +1047,7 @@ public class WorkspaceService {
         userInviteRepository.delete(userInvite);
 
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectUrl + RedirectPath.WORKSPACE_OVER_JOIN_FAIL.getValue());
+        redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_JOIN_FAIL.getValue());
         redirectView.setContentType("application/json");
         return redirectView;
     }
@@ -1079,9 +1066,9 @@ public class WorkspaceService {
         context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
         context.setVariable("planMakeType", userInvite.getPlanMakeType());
         context.setVariable("planViewType", userInvite.getPlanViewType());
-        context.setVariable("contactUrl", contactUrl);
-        context.setVariable("workstationHomeUrl", redirectUrl);
-        context.setVariable("supportUrl", supportUrl);
+        context.setVariable("contactUrl", redirectProperty.getContactWeb());
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
         String subject = messageSource.getMessage(Mail.WORKSPACE_OVER_MAX_USER_FAIL.getSubject(), null, locale);
         String template = messageSource.getMessage(Mail.WORKSPACE_OVER_MAX_USER_FAIL.getTemplate(), null, locale);
         String html = springTemplateEngine.process(template, context);
@@ -1098,7 +1085,7 @@ public class WorkspaceService {
 
         userInviteRepository.delete(userInvite);
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectUrl + RedirectPath.WORKSPACE_OVER_MAX_USER_FAIL.getValue());
+        redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_MAX_USER_FAIL.getValue());
         redirectView.setContentType("application/json");
         return redirectView;
     }
@@ -1118,9 +1105,9 @@ public class WorkspaceService {
         context.setVariable("planRemoteType", userInvite.getPlanRemoteType());
         context.setVariable("planMakeType", userInvite.getPlanMakeType());
         context.setVariable("planViewType", userInvite.getPlanViewType());
-        context.setVariable("workstationHomeUrl", redirectUrl);
-        context.setVariable("workstationMembersUrl", redirectUrl + "/members");
-        context.setVariable("supportUrl", supportUrl);
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("workstationMembersUrl", redirectProperty.getMembersWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
 
         String subject = messageSource.getMessage(Mail.WORKSPACE_OVER_PLAN_FAIL.getSubject(), null, locale);
         String template = messageSource.getMessage(Mail.WORKSPACE_OVER_PLAN_FAIL.getTemplate(), null, locale);
@@ -1139,7 +1126,7 @@ public class WorkspaceService {
         userInviteRepository.delete(userInvite);
 
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectUrl + RedirectPath.WORKSPACE_OVER_PLAN_FAIL.getValue());
+        redirectView.setUrl(redirectProperty.getWorkstationWeb() + RedirectPath.WORKSPACE_OVER_PLAN_FAIL.getValue());
         redirectView.setContentType("application/json");
         return redirectView;
     }
@@ -1149,10 +1136,11 @@ public class WorkspaceService {
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
 
         //비회원 거절은 메일 전송 안함.
-        if (userInvite != null && !userInvite.isUser()) {
+        InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
+        if (userInvite != null && inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
             userInviteRepository.delete(userInvite);
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectUrl);
+            redirectView.setUrl(redirectProperty.getWorkstationWeb());
             redirectView.setContentType("application/json");
             return redirectView;
         }
@@ -1167,8 +1155,8 @@ public class WorkspaceService {
         context.setVariable("rejectUserNickname", inviterUserInfo.getNickname());
         context.setVariable("rejectUserEmail", userInvite.getInvitedUserEmail());
         context.setVariable("workspaceName", workspace.getName());
-        context.setVariable("accountUrl", accountUrl);
-        context.setVariable("supportUrl", supportUrl);
+        context.setVariable("accountUrl", redirectProperty.getAccountWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
 
         String subject = messageSource.getMessage(Mail.WORKSPACE_INVITE_REJECT.getSubject(), null, locale);
         String template = messageSource.getMessage(Mail.WORKSPACE_INVITE_REJECT.getTemplate(), null, locale);
@@ -1187,7 +1175,7 @@ public class WorkspaceService {
         sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
 
         RedirectView redirectView = new RedirectView();
-        redirectView.setUrl(redirectUrl);
+        redirectView.setUrl(redirectProperty.getWorkstationWeb());
         redirectView.setContentType("application/json");
         return redirectView;
     }
@@ -1207,17 +1195,7 @@ public class WorkspaceService {
     }
 
     private String generatePlanString(boolean remote, boolean make, boolean view) {
-        List<String> productList = new ArrayList<>();
-        if (remote) {
-            productList.add("REMOTE");
-        }
-        if (make) {
-            productList.add("MAKE");
-        }
-        if (view) {
-            productList.add("VIEW");
-        }
-        return org.apache.commons.lang.StringUtils.join(productList, ",");
+        return generatePlanList(remote,make,view).stream().map(Enum::toString).collect(Collectors.joining(","));
     }
 
     /*
@@ -1608,12 +1586,12 @@ public class WorkspaceService {
             //메일 발송
             Context context = new Context();
             context.setVariable("workspaceName", workspace.getName());
-            context.setVariable("workstationHomeUrl", redirectUrl);
+            context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
             context.setVariable("workspaceMasterNickName", masterUser.getNickname());
             context.setVariable("workspaceMasterEmail", masterUser.getEmail());
             context.setVariable("responseUserNickName", user.getNickname());
             context.setVariable("responseUserEmail", user.getEmail());
-            context.setVariable("supportUrl", supportUrl);
+            context.setVariable("supportUrl", redirectProperty.getSupportWeb());
             context.setVariable("plan", org.apache.commons.lang.StringUtils.join(updatedProductList, ","));
 
             List<String> receiverEmailList = new ArrayList<>();
@@ -1660,8 +1638,8 @@ public class WorkspaceService {
         context.setVariable("responseUserNickName", user.getNickname());
         context.setVariable("responseUserEmail", user.getEmail());
         context.setVariable("role", workspaceRole.getRole());
-        context.setVariable("workstationHomeUrl", redirectUrl);
-        context.setVariable("supportUrl", supportUrl);
+        context.setVariable("workstationHomeUrl", redirectProperty.getWorkstationWeb());
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(user.getEmail());
@@ -1752,7 +1730,7 @@ public class WorkspaceService {
             Context context = new Context();
             context.setVariable("beforeWorkspaceName", oldWorkspaceName);
             context.setVariable("afterWorkspaceName", workspaceUpdateRequest.getName());
-            context.setVariable("supportUrl", supportUrl);
+            context.setVariable("supportUrl", redirectProperty.getSupportWeb());
 
             List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(
                     workspace.getUuid());
@@ -1884,7 +1862,7 @@ public class WorkspaceService {
         context.setVariable("workspaceName", workspace.getName());
         context.setVariable("workspaceMasterNickName", masterUser.getNickname());
         context.setVariable("workspaceMasterEmail", masterUser.getEmail());
-        context.setVariable("supportUrl", supportUrl);
+        context.setVariable("supportUrl", redirectProperty.getSupportWeb());
 
         List<String> receiverEmailList = new ArrayList<>();
         receiverEmailList.add(kickedUser.getEmail());

@@ -290,7 +290,7 @@ public class WorkspaceController {
             @PathVariable("sessionCode") String sessionCode,
             @RequestParam("lang") String lang
     ) {/*
-        if (!StringUtils.hasText(email)) {
+        if (!StringUtils.hasText(email)) {l
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }*/
         RedirectView redirectView = workspaceService.inviteWorkspaceReject( sessionCode, lang);

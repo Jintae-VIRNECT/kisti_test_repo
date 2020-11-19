@@ -53,12 +53,15 @@ eureka:
       defaultZone: http://localhost:8761/eureka
     enabled: true
 
-## Mail send rediect Url
-serverUrl: "http://localhost:8082"
-redirectUrl: "http://192.168.6.3:8878"
-contactUrl: "http://192.168.6.3:3000/contact/inquiry"
-accountUrl: "https://192.168.6.3:8822"
-supportUrl: "http://192.168.6.3:3000/contact/inquiry"
+## Mail send redirect Url
+redirect:
+  workspace-server: "https://localhost:8082"
+  workstation-web: "https://192.168.6.3:8878"
+  contact-web: "https://192.168.6.3:3000/contact/inquiry"
+  account-web: "https://192.168.6.3:8822"
+  support-web: "https://192.168.6.3:3000/support"
+  signup-web: "https://192.168.6.3:8878/signup"
+  members-web: "https://192.168.6.3:8878/members"
 
 ## Feign
 feign:

@@ -24,8 +24,8 @@ public class UserInvite implements Serializable {
     @Id
     private String sessionCode;
     private String invitedUserEmail; // 초대 받은 유저 이메일
-    private String invitedUserId;//초대받은 유저 식별자
-    private String requestUserId;//초대한 유저 식별자
+    private String invitedUserId;   //초대받은 유저 식별자. 없으면 null
+    private String requestUserId;   //초대한 유저 식별자
     private String workspaceId;
     private String role;
     private boolean planRemote;
@@ -34,7 +34,6 @@ public class UserInvite implements Serializable {
     private String planRemoteType;
     private String planMakeType;
     private String planViewType;
-    private boolean isUser;
     private LocalDateTime invitedDate;
     private LocalDateTime updatedDate;
     @TimeToLive
@@ -43,7 +42,7 @@ public class UserInvite implements Serializable {
     @Builder
     UserInvite(String sessionCode, String invitedUserEmail, String invitedUserId, String requestUserId, String workspaceId, String role,
                boolean planRemote, boolean planMake, boolean planView, String planRemoteType, String planMakeType, String planViewType,
-               boolean isUser, LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
+                LocalDateTime invitedDate, LocalDateTime updatedDate, Long expireTime) {
         this.sessionCode=sessionCode;
         this.invitedUserEmail = invitedUserEmail;
         this.invitedUserId = invitedUserId;
@@ -56,7 +55,6 @@ public class UserInvite implements Serializable {
         this.planRemoteType = planRemoteType;
         this.planMakeType = planMakeType;
         this.planViewType = planViewType;
-        this.isUser = isUser;
         this.invitedDate = invitedDate;
         this.updatedDate = updatedDate;
         this.expireTime = expireTime;
@@ -65,7 +63,8 @@ public class UserInvite implements Serializable {
     @Override
     public String toString() {
         return "UserInvite{" +
-                "invitedUserEmail='" + invitedUserEmail + '\'' +
+                "sessionCode='" + sessionCode + '\'' +
+                ", invitedUserEmail='" + invitedUserEmail + '\'' +
                 ", invitedUserId='" + invitedUserId + '\'' +
                 ", requestUserId='" + requestUserId + '\'' +
                 ", workspaceId='" + workspaceId + '\'' +
@@ -76,12 +75,12 @@ public class UserInvite implements Serializable {
                 ", planRemoteType='" + planRemoteType + '\'' +
                 ", planMakeType='" + planMakeType + '\'' +
                 ", planViewType='" + planViewType + '\'' +
-                ", isUser=" + isUser +
                 ", invitedDate=" + invitedDate +
                 ", updatedDate=" + updatedDate +
                 ", expireTime=" + expireTime +
                 '}';
     }
+
     /* @Id
     private String inviteId;//userId + workspaceId
     private String responseUserId;
