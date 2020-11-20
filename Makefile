@@ -22,7 +22,7 @@ build-linux: check
 swag:
 	@${GOPATH}/bin/swag init
 
-check: swag
+check: test swag
 	@go vet ./...
 	@go fmt ./...
 
