@@ -95,6 +95,7 @@
     "tool_drawing_width": "드로잉 선 굵기",
     "tool_pointing": "포인팅",
     "tool_pointing_block": "리더가 포인팅을 막았습니다.",
+    "tool_enlarge_reduce": "확대 / 축소",
 
     "setting_pointing": "포인팅 설정",
     "setting_pointing_participant": "참가자 포인팅",
@@ -174,6 +175,14 @@
     "file_image_notsupport": "해당 이미지는 지원하지 않습니다.",
     "file_type_notsupport": "지원하지 않는 파일 형식입니다.",
     "translate": "번역",
+    "stt_sync_placeholder": "음성 녹음을 진행하여 음성 채팅을 시작하세요.",
+    "stt_sync_wait": "음성 대기",
+    "stt_sync_recording": "음성 인식 중...",
+    "stt_sync_complete": "음성 인식 완료",
+    "stt_sync_error": "음성 인식 중 오류가 발생했습니다.",
+    "stt_mic_off": "마이크가 활성화 되어있지 않습니다.",
+    "stt_no_voice": "인식된 음성이 없습니다.",
+    "stt_streaming_recognize": "음성 인식된 문장이 표출됩니다.",
 
     "record_local": "로컬 녹화",
     "record_local_setting": "로컬 녹화 설정",
