@@ -312,18 +312,19 @@ export default {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
-      if (!this.participant.hasVideo) {
-        if (
-          this.account.roleType === ROLE.LEADER &&
-          this.openRoom &&
-          this.participant.cameraStatus === CAMERA.CAMERA_OFF
-        ) {
-          this.requestVideo()
+      if (this.openRoom) {
+        if (!this.participant.hasVideo) {
+          if (
+            this.account.roleType === ROLE.LEADER &&
+            this.participant.cameraStatus === CAMERA.CAMERA_OFF
+          ) {
+            this.requestVideo()
+            return
+          }
           return
+        } else {
+          this.$call.mainview(this.participant.id, true)
         }
-        return
-      } else {
-        this.$call.mainview(this.participant.id, true)
       }
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {

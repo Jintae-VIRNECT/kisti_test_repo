@@ -95,6 +95,7 @@
     "tool_drawing_width": "Drawing thickness",
     "tool_pointing": "Pointing",
     "tool_pointing_block": "Leader has disabled pointing feature",
+    "tool_enlarge_reduce": "Enlarge / reduce",
 
     "setting_pointing": "Pointing settings",
     "setting_pointing_participant": "Participant settings",
@@ -175,6 +176,14 @@
     "file_image_notsupport": "Does not support this image format.",
     "file_type_notsupport": "Does not support this file format.",
     "translate": "Translate",
+    "stt_sync_placeholder": "Start a voice chat by making a voice recording.",
+    "stt_sync_wait": "Voice standby",
+    "stt_sync_recording": "Voice recognition…",
+    "stt_sync_complete": "Recognition complete",
+    "stt_sync_error": "An error occurred during voice recognition.",
+    "stt_mic_off": "The microphone is not activated.",
+    "stt_no_voice": "No voice is detected.",
+    "stt_streaming_recognize": "Voice-recognized sentences are displayed.",
 
     "record_local": "Local recording",
     "record_local_setting": "Local recording settings",

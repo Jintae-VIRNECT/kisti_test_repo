@@ -3,11 +3,11 @@
     <div class="chat-speech__main">
       <span class="chat-speech__icon" :class="{ active: connected }"></span>
       <span class="chat-speech__text">
-        {{ `음성 인식된 문장이 표출됩니다.` }}
+        {{ $t('service.stt_streaming_recognize') }}
       </span>
     </div>
     <button class="chat-speech__close" @click="$emit('hidespeech')">
-      닫기
+      {{ $t('button.close') }}
     </button>
   </div>
 </template>
