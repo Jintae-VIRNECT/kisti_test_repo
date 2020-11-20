@@ -379,33 +379,6 @@
   margin-top: 0.0714rem;
 }
 
-.chat-item__file--icon {
-  width: 1.7143rem;
-  height: 1.7143rem;
-  margin-right: 0.4286rem;
-  &.pdf {
-    background: url(~assets/image/call/chat_ic_pdf_b.svg) center/100% no-repeat;
-  }
-  &.txt {
-    background: url(~assets/image/call/chat_ic_file_b.svg) center/100% no-repeat;
-  }
-  &.jpg {
-    background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center/100%
-      no-repeat;
-  }
-  &.png {
-    background: url(~assets/image/call/chat_ic_jpgpng_b.svg) center/100%
-      no-repeat;
-  }
-  &.mp3 {
-    background: url(~assets/image/call/chat_ic_mp3_b.svg) center/100% no-repeat;
-  }
-  &.video {
-    background: url(~assets/image/call/chat_ic_video_b.svg) center/100%
-      no-repeat;
-  }
-}
-
 .chat-item__file--name {
   position: relative;
   width: 9.714rem;
@@ -425,26 +398,29 @@
     background: center/100% no-repeat;
     content: "";
   }
+  &.3d:before {
+    background-image: url(~assets/image/call/chat/ic_3d_b.svg);
+  }
+  &.zip:before {
+    background-image: url(~assets/image/call/chat/ic_zip_b.svg);
+  }
   &.pdf:before {
-    background-image: url(~assets/image/call/chat_ic_pdf_b.svg);
+    background-image: url(~assets/image/call/chat/ic_pdf_b.svg);
   }
-  &.txt:before {
-    background-image: url(~assets/image/call/chat_ic_file_b.svg);
-  }
-  &.jpg:before {
-    background-image: url(~assets/image/call/chat_ic_jpgpng_b.svg);
-  }
-  &.png:before {
-    background-image: url(~assets/image/call/chat_ic_jpgpng_b.svg);
-  }
-  &.mp3:before {
-    background-image: url(~assets/image/call/chat_ic_mp3_b.svg);
+  &.audio:before {
+    background-image: url(~assets/image/call/chat/ic_audio_b.svg);
   }
   &.video:before {
-    background-image: url(~assets/image/call/chat_ic_video_b.svg);
+    background-image: url(~assets/image/call/chat/ic_video_b.svg);
+  }
+  &.image:before {
+    background-image: url(~assets/image/call/chat/ic_image_b.svg);
+  }
+  &.doc:before {
+    background-image: url(~assets/image/call/chat/ic_ms_b.svg);
   }
   &.file:before {
-    background-image: url(~assets/image/call/chat_ic_file_b.svg);
+    background-image: url(~assets/image/call/chat/ic_file_b.svg);
   }
 }
 

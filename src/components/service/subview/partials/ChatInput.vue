@@ -82,7 +82,6 @@ import { mapGetters } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
 import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
-import { ALLOW_MINE_TYPE } from 'utils/file'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
@@ -140,22 +139,26 @@ export default {
       }
 
       if (this.fileList.length > 0) {
-        for (const file of this.fileList) {
-          const params = {
-            file: file.filedata,
-            sessionId: this.roomInfo.sessionId,
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
+        try {
+          for (const file of this.fileList) {
+            const params = {
+              file: file.filedata,
+              sessionId: this.roomInfo.sessionId,
+              workspaceId: this.workspace.uuid,
+              userId: this.account.uuid,
+            }
+            const res = await uploadFile(params)
+
+            this.$call.sendFile({
+              fileInfo: { ...res },
+            })
           }
-          const res = await uploadFile(params)
 
-          this.$call.sendFile({
-            fileInfo: { ...res },
-          })
+          this.clearUploadFile()
+          this.fileList = []
+        } catch (err) {
+          console.error(err)
         }
-
-        this.clearUploadFile()
-        this.fileList = []
       } else if (this.inputText.length > 0) {
         this.$call.sendChat(this.inputText, this.translate.code)
       }
@@ -188,11 +191,15 @@ export default {
           this.clearUploadFile()
           return false
         }
-        if (!ALLOW_MINE_TYPE.includes(file.type)) {
-          this.toastDefault(this.$t('service.file_type_notsupport'))
-          this.clearUploadFile()
-          return
-        }
+        // const nameExp = file.name.split('.')
+        // if (
+        //   !ALLOW_MINE_TYPE.includes(file.type) &&
+        //   !ALLOW_EXTENSION.includes(nameExp[nameExp.length - 1])
+        // ) {
+        //   this.toastDefault(this.$t('service.file_type_notsupport'))
+        //   this.clearUploadFile()
+        //   return
+        // }
 
         const isValid = [
           'image/jpeg',
@@ -200,6 +207,7 @@ export default {
           // 'image/bmp',
           // 'application/pdf',
         ].includes(file.type)
+        // const fileType = checkFileType(file)
 
         if (isValid) {
           const docItem = {

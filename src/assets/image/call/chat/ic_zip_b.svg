@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>mdpi/icon_zip</title>
+    <defs>
+        <path d="M11.98,2 C6.47,2 2,6.47 2,11.98 C2,17.49 6.47,21.96 11.98,21.96 C17.49,21.96 21.96,17.49 21.96,11.98 C21.96,6.47 17.49,2 11.98,2 Z M11.46,19.98 L11.46,13.72 L7.98,13.72 L12.98,3.98 L12.98,10.24 L16.33,10.24 L11.46,19.98 Z" id="path-1"></path>
+    </defs>
+    <g id="V2.2-update" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RWS_0103_1_접속-화면-채팅-공유-파일(리더)" transform="translate(-1580.000000, -641.000000)">
+            <g id="message_04" transform="translate(1559.000000, 56.000000)">
+                <g id="list" transform="translate(1.000000, 97.000000)">
+                    <g id="07.-mp4" transform="translate(0.000000, 474.000000)">
+                        <g id="icon_zip" transform="translate(20.000000, 14.000000)">
+                            <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="icon/action/offline_bolt_24px" fill="#000000" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
