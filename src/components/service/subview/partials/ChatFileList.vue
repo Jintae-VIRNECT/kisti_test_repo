@@ -193,6 +193,7 @@ export default {
 
   mounted() {
     this.init()
+    this.$refs['chatFileListScrollbar'].scrollToY(99999)
     // this.chatFileList.push({
     //   id: 'cc',
     //   name: '1가나다라마바사아자차카타파하긴텍스트',

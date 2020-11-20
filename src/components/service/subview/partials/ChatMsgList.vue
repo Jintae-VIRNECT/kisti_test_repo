@@ -84,6 +84,9 @@ export default {
       this.$refs['chatTts'].doTts(info)
     },
   },
+  mounted() {
+    this.$refs['chatListScrollbar'].scrollToY(99999)
+  },
 }
 </script>
 
