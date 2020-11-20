@@ -5,7 +5,11 @@
       <label v-if="fileList.length > 0" class="chat-down__bar--count">{{
         $t('service.file_choice_num', { number: fileList.length })
       }}</label>
-      <button class="chat-down__bar--button" @click="download">
+      <button
+        class="btn chat-down__bar--button"
+        :disabled="fileList.length === 0"
+        @click="download"
+      >
         {{ $t('button.download') }}
       </button>
     </div>
@@ -40,6 +44,7 @@ export default {
   },
   methods: {
     async download() {
+      if (this.fileList.length === 0) return
       this.zip = new JSZip()
       for (let file of this.fileList) {
         const res = await downloadFile({

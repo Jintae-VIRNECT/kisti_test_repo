@@ -19,9 +19,15 @@ const setWorkspaceObj = info => {
   }
 }
 const companyInfo = {
-  targetCompany: 0,
-  translate: false,
-  sessionType: 'private',
+  companyCode: 0, // 회사 코드
+  translation: false, // 번역기능
+  tts: false, // TTS
+  sttSync: false, // STT 동기
+  sttStreaming: false, // STT 스트리밍
+  recording: false, // 서버녹화
+  storage: false, // 파일 업/다운로드
+  sessionType: 'PRIVATE', // 오픈방 유무 (PRIVATE, OPEN, PUBLIC)
+  licenseName: '',
   languageCodes: [],
 }
 
@@ -96,8 +102,8 @@ const getters = {
   },
   workspace: state => state.current,
   workspaceList: state => state.workspaceList,
-  targetCompany: state => state.companyInfo.targetCompany,
-  useTranslate: state => state.companyInfo.translate,
+  targetCompany: state => state.companyInfo.companyCode,
+  useTranslate: state => state.companyInfo.translation,
   useOpenRoom: state => {
     return state.companyInfo.sessionType === 'OPEN'
   },

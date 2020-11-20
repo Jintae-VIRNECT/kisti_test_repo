@@ -46,18 +46,53 @@
         </r-select>
       </figure>
     </div>
+    <div class="setting-section__body first">
+      <figure class="setting__figure">
+        <div class="setting__figure--wrapper">
+          <p class="setting__label">
+            {{ $t('workspace.setting_record_resolution') }}
+          </p>
+          <tooltip
+            customClass="tooltip-guide"
+            :content="$t('workspace.setting_record_resolution_tooltip')"
+            placement="right"
+            effect="blue"
+          >
+            <img
+              slot="body"
+              class="setting__tooltip--icon"
+              src="~assets/image/ic_tool_tip.svg"
+            />
+          </tooltip>
+        </div>
+        <r-select
+          class="setting__r-selecter"
+          :options="localRecResOpt"
+          value="value"
+          text="text"
+          :selectedValue.sync="recordResolution"
+        >
+        </r-select>
+      </figure>
+    </div>
   </section>
 </template>
 <script>
 import RSelect from 'RemoteSelect'
 import Tooltip from 'Tooltip'
 import { mapGetters, mapActions } from 'vuex'
-import { localRecTime, localRecInterval } from 'utils/recordOptions'
+import {
+  localRecTime,
+  localRecInterval,
+  localRecResOpt,
+} from 'utils/recordOptions'
 export default {
   data() {
     return {
       recordTime: '',
       recordInterval: '',
+      localRecResOpt: localRecResOpt,
+      recordResolution: '',
     }
   },
   components: {
@@ -95,6 +130,12 @@ export default {
   },
   methods: {
     ...mapActions(['setRecord']),
+    setRecResolution(resolution) {
+      this.setRecord({
+        resolution: resolution,
+      })
+      this.$localStorage.setRecord('resolution', resolution)
+    },
     setRecLength(time) {
       this.setRecord({
         time: time,
@@ -114,6 +155,9 @@ export default {
     }
     if (this.localRecord.interval) {
       this.recordInterval = this.localRecord.interval
+    }
+    if (this.localRecord.resolution) {
+      this.recordResolution = this.localRecord.resolution
     }
   },
 }

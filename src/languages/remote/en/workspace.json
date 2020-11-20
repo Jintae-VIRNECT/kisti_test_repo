@@ -76,6 +76,14 @@
     "setting_translate_use_allow": "Use translation allow",
     "setting_translate_language": "Translation language settings",
     "setting_translate_language_tooltip": "Set the texting translation language.",
+    "setting_translate_output": "Output method of translations",
+    "setting_translate_output_both": "Simultaneous output",
+    "setting_translate_output_each": "Optional output",
+    "setting_stt": "Voice recognition method(STT)",
+    "setting_stt_sync": "Voice recording",
+    "setting_stt_streaming": "Streaming",
+    "setting_tts": "Voice conversion settings(TTS)",
+    "setting_tts_allow": "Allow voice conversion",
     "access_deny": "Camera and mic. access denied.",
     "access_deny_description": "Click <span class='device-denied__content--emphasize'>icon</span> on browser address field <br />to allow access and refresh the page.",
 
@@ -124,13 +132,16 @@
     "record_nofile": "No recording files.",
     "record_download": "Download selected file",
     "record_remove": "Delete selected file",
+    "record_upload":"Select upload",
+    "record_uploading":"File is being uploaded.",
+    "record_upload_error":"There was an error during upload.",
 
     "license_expire_title": "Your plans are all expired <br>to use VIRNECT Remote 2.0.",
     "license_expire_description": "If you want to use Remote 2.0, <br>please add/update plans from your workstation.",
     "license_no_title": "No available plan <br>to use VIRNECT Remote 2.0.",
     "license_no_description": "There is no Workspace to use the VIRNECT Remote 2.0. <br>Please ask your Master for plans.",
 
-    "error_no_connected_device": "Cannot find a connected device.",
+    "error_no_connected_device": "The connected microphone device could not be found. Please check the microphone.",
     "error_no_device": "Cannot find a device.",
 
     "plan_exceeded": "Notice of excess use of plans",

@@ -144,6 +144,15 @@ export default {
     if ('code' in payload) {
       commit(types.SETTINGS.SET_TRANSLATE_CODE, payload['code'])
     }
+    if ('multiple' in payload) {
+      commit(types.SETTINGS.SET_TRANSLATE_MULTIPLE, payload['multiple'])
+    }
+    if ('sttSync' in payload) {
+      commit(types.SETTINGS.SET_STT_SYNC, payload['sttSync'])
+    }
+    if ('ttsAllow' in payload) {
+      commit(types.SETTINGS.SET_TTS_ALLOW, payload['ttsAllow'])
+    }
   },
 
   /**

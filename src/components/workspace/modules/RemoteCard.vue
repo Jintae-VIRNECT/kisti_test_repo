@@ -72,7 +72,7 @@
           {{ $t('button.remove_room') }}
         </button>
       </li>
-      <li v-else>
+      <li v-else-if="!isOpenRoom">
         <button class="group-pop__button" @click="$emit('leave')">
           {{ $t('button.leave_room') }}
         </button>

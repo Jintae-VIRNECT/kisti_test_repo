@@ -12,7 +12,6 @@
         </span>
         <div v-if="isFile" class="chat-item__file">
           <div class="chat-item__file--wrapper">
-            <!-- <div class="chat-item__file--icon" :class="extension"></div> -->
             <div class="chat-item__file--name" :class="extension">
               {{ chat.file.name }}
             </div>
@@ -21,22 +20,29 @@
         </div>
         <div class="chat-item__body--textbox">
           <p
+            v-if="isTranslate"
+            class="chat-item__body--text"
+            :class="{
+              inactive: !translateActive && !translate.multiple,
+              multiple: isTranslate && translate.multiple,
+            }"
+            v-html="chatTranslateText"
+          ></p>
+          <p
             class="chat-item__body--text"
             :class="[
               subClass,
-              { inactive: isTranslate ? translateActive : false },
+              {
+                inactive:
+                  isTranslate && !translate.multiple ? translateActive : false,
+                multiple: isTranslate && translate.multiple,
+              },
             ]"
             v-html="chatText"
           ></p>
-          <p
-            v-if="isTranslate"
-            class="chat-item__body--text"
-            :class="{ inactive: !translateActive }"
-            v-html="chatTranslateText"
-          ></p>
         </div>
         <button
-          v-if="isTranslate"
+          v-if="isTranslate && !translate.multiple"
           class="chat-item__translate--button"
           :class="{ active: translateActive }"
           @click="translateActive = !translateActive"
@@ -63,6 +69,7 @@ import { downloadFile } from 'api/http/file'
 import { mapGetters, mapActions } from 'vuex'
 import { translate as doTranslate } from 'plugins/remote/translate'
 import { downloadByURL } from 'utils/file'
+import { checkFileType } from 'utils/fileTypes'
 export default {
   name: 'ChatItem',
   components: {
@@ -152,24 +159,15 @@ export default {
       return false
     },
     extension() {
-      let ext = ''
       const file = this.chat.file
       if (file) {
-        ext = file.name.split('.').pop()
+        return checkFileType({
+          name: file.name,
+          type: file.contentType,
+        })
       } else {
         return ''
       }
-      ext = ext.toLowerCase()
-
-      if (ext === 'avi' || ext === 'mp4') {
-        ext = 'video'
-      }
-
-      if (!['pdf', 'txt', 'jpg', 'png', 'mp3', 'video'].includes(ext)) {
-        ext = 'file'
-      }
-
-      return ext
     },
     subClass() {
       if (this.chat.type === 'system') {
@@ -236,6 +234,7 @@ export default {
         const response = await doTranslate(this.chat.text, this.translateCode)
         this.translateText = response
         this.translateActive = true
+        this.$emit('tts', response)
       } catch (err) {
         console.error(`${err.message} (${err.code})`)
       }
@@ -244,8 +243,12 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    if (this.chat.type === 'opponent' && this.translate.flag) {
-      this.doTranslateText()
+    if (this.chat.type === 'opponent' && !this.isFile) {
+      if (this.translate.flag) {
+        this.doTranslateText()
+      } else {
+        this.$emit('tts', this.chat.text)
+      }
     }
   },
 }

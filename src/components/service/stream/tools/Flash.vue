@@ -2,7 +2,7 @@
   <tool-button
     :text="$t('service.tool_flash')"
     :disable="disable"
-    :icActive="status"
+    :isActive="status"
     :src="require('assets/image/ic_flash_off.svg')"
     :activeSrc="require('assets/image/ic_flash_on.svg')"
     placement="top"

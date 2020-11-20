@@ -13,7 +13,7 @@
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
         @loadeddata="optimizeVideoSize"
-        :muted="!speaker || mainView.id === account.uuid"
+        :muted="isMuted"
         autoplay
         playsinline
         loop
@@ -23,7 +23,7 @@
         <transition name="opacity">
           <div class="main-video__sharing" v-if="viewForce">
             <button
-              v-if="isLeader && !openRoom"
+              v-if="isLeader"
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
@@ -59,6 +59,12 @@
             <video-tools v-if="hoverTools"></video-tools>
           </transition>
         </template>
+        <transition name="opacity">
+          <fullscreen
+            :hide.sync="hideFullBtn"
+            v-show="!hideFullBtn"
+          ></fullscreen>
+        </transition>
       </template>
     </div>
     <div class="main-video__empty" v-if="!loaded">
@@ -135,6 +141,7 @@ import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
+import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
 export default {
@@ -143,6 +150,7 @@ export default {
   components: {
     Pointing,
     VideoTools,
+    Fullscreen,
   },
   data() {
     return {
@@ -160,6 +168,7 @@ export default {
       serverTimer: null,
       serverTime: 0,
       serverStart: 0,
+      hideFullBtn: false,
     }
   },
   computed: {
@@ -232,11 +241,14 @@ export default {
         return false
       }
     },
+    isMuted() {
+      if (!this.speaker.isOn || this.mainView.id === this.account.uuid) {
+        return 'muted'
+      }
+      return false
+    },
   },
   watch: {
-    speaker(val) {
-      this.$refs['mainVideo'].muted = val ? false : true
-    },
     resolution: {
       deep: true,
       handler() {
@@ -379,22 +391,34 @@ export default {
         this.localTimer = null
       }
     },
+
     serverRecord(payload) {
+      if (!payload.isStart) {
+        this.closeServerTimer()
+      } else if (payload.isStart && !payload.isWaiting) {
+        this.showServerTimer(payload)
+      }
+    },
+    closeServerTimer() {
+      clearInterval(this.serverTimer)
+      this.serverTime = 0
+      this.serverTimer = null
+    },
+    showServerTimer(payload) {
       const elapsedTime = payload.elapsedTime ? payload.elapsedTime : 0
 
-      if (payload.isStart) {
-        this.serverStart = this.$dayjs().unix()
-        this.serverTimer = setInterval(() => {
-          const diff = this.$dayjs().unix() - this.serverStart + elapsedTime
-          this.serverTime = this.$dayjs
-            .duration(diff, 'seconds')
-            .as('milliseconds')
-        }, 1000)
-      } else {
-        clearInterval(this.serverTimer)
-        this.serverTime = 0
-        this.serverTimer = null
-      }
+      this.serverStart = this.$dayjs().unix()
+      this.serverTimer = setInterval(() => {
+        const diff = this.$dayjs().unix() - this.serverStart + elapsedTime
+        this.serverTime = this.$dayjs
+          .duration(diff, 'seconds')
+          .as('milliseconds')
+      }, 1000)
+    },
+    changeFullScreen() {
+      setTimeout(() => {
+        this.optimizeVideoSize()
+      }, 500)
     },
   },
 
@@ -403,12 +427,14 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('localRecord', this.localRecord)
     this.$eventBus.$off('serverRecord', this.serverRecord)
+    this.$eventBus.$off('fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('localRecord', this.localRecord)
     this.$eventBus.$on('serverRecord', this.serverRecord)
+    this.$eventBus.$on('fullscreen', this.changeFullScreen)
     window.addEventListener('resize', this.nextOptimize)
   },
 }

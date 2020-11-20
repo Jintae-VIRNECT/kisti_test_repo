@@ -34,12 +34,12 @@
       </main>
 
       <user-list
-        v-if="!openRoom || isLeader"
         :class="{
           shareview: isLeader && currentView === 'drawing',
+          fullscreen: isFullScreen && currentView === 'stream',
         }"
       ></user-list>
-      <div v-else>
+      <!-- <div v-else>
         <figure
           v-for="participant of participants"
           :key="'audio_' + participant.id"
@@ -52,7 +52,7 @@
             loop
           ></audio>
         </figure>
-      </div>
+      </div> -->
       <!-- <component :is="viewComponent"></component> -->
     </div>
   </section>
@@ -101,17 +101,11 @@ export default {
     return {
       showDenied: false,
       callTimeout: null,
+      isFullScreen: false,
     }
   },
   computed: {
-    ...mapGetters([
-      'view',
-      'captureFile',
-      'chatBox',
-      'participants',
-      'myInfo',
-      'openRoom',
-    ]),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants', 'myInfo']),
     isLeader() {
       if (this.account.roleType === ROLE.LEADER) {
         return true
@@ -192,6 +186,9 @@ export default {
       if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
       this.$call.changeProperty(hasVideo)
     },
+    setFullScreen(flag) {
+      this.isFullScreen = flag
+    },
   },
 
   /* Lifecycles */
@@ -200,11 +197,11 @@ export default {
     window.onbeforeunload = () => {
       return true
     }
-    if (!this.openRoom) {
-      navigator.mediaDevices.ondevicechange = this.onDeviceChange
-    }
+    navigator.mediaDevices.ondevicechange = this.onDeviceChange
+    this.onDeviceChange()
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
+    this.$eventBus.$on('fullscreen', this.setFullScreen)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -216,7 +213,7 @@ export default {
     window.removeEventListener('orientationchange', this.changeOrientation)
 
     this.stopLocalRecord()
-    this.stopServerRecord()
+    this.$eventBus.$off('fullscreen', this.setFullScreen)
   },
 }
 </script>

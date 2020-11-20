@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>mdpi/icon_bell_off</title>
+    <g id="V2.2-update" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="ETC_0200-_알림-설정-" transform="translate(-1807.000000, -8.000000)">
+            <g id="gnb_ic_notifi_red" transform="translate(1807.000000, 8.000000)">
+                <rect id="tr40" x="0" y="0" width="40" height="40"></rect>
+                <rect id="tr40" fill-opacity="0.1" fill="transparent" x="0" y="0" width="40" height="40" rx="2"></rect>
+                <g id="icon_bell_off" transform="translate(11.000000, 11.000000)" fill="#FFFFFF" fill-rule="nonzero">
+                    <path d="M16,16.19 L3.84,3.64 L1.27,0.99 L0,2.26 L2.8,5.06 L2.8,5.07 C2.28,6.06 2,7.23 2,8.49 L2,13.49 L0,15.49 L0,16.49 L13.73,16.49 L15.73,18.49 L17,17.22 L16,16.19 L16,16.19 Z M8,19.5 C9.11,19.5 10,18.61 10,17.5 L6,17.5 C6,18.61 6.89,19.5 8,19.5 Z M14,12.18 L14,8.5 C14,5.42 12.36,2.86 9.5,2.18 L9.5,1.5 C9.5,0.67 8.83,0 8,0 C7.17,0 6.5,0.67 6.5,1.5 L6.5,2.18 C6.35,2.21 6.21,2.26 6.08,2.3 C5.98,2.33 5.88,2.37 5.78,2.41 L5.77,2.41 C5.76,2.41 5.76,2.41 5.75,2.42 C5.52,2.51 5.29,2.62 5.07,2.73 C5.07,2.73 5.06,2.73 5.06,2.74 L14,12.18 Z" id="Shape"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

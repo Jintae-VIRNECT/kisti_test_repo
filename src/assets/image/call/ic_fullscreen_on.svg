@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>A70BF6C0-F666-46F9-B286-27F96D3D70EF@1x</title>
+    <defs>
+        <path d="M5.57142857,14.5714286 L3,14.5714286 L3,21 L9.42857143,21 L9.42857143,18.4285714 L5.57142857,18.4285714 L5.57142857,14.5714286 Z M3,9.42857143 L5.57142857,9.42857143 L5.57142857,5.57142857 L9.42857143,5.57142857 L9.42857143,3 L3,3 L3,9.42857143 Z M18.4285714,18.4285714 L14.5714286,18.4285714 L14.5714286,21 L21,21 L21,14.5714286 L18.4285714,14.5714286 L18.4285714,18.4285714 Z M14.5714286,3 L14.5714286,5.57142857 L18.4285714,5.57142857 L18.4285714,9.42857143 L21,9.42857143 L21,3 L14.5714286,3 Z" id="path-1"></path>
+    </defs>
+    <g id="Open-Room" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="TWO_0041-_협업-접속_오픈-방-접속_1" transform="translate(-1403.000000, -840.000000)">
+            <g id="frame_imgs" transform="translate(110.000000, 134.000000)">
+                <g id="btn_framesettings" transform="translate(0.000000, 631.000000)">
+                    <g id="media_icon" transform="translate(630.000000, 62.000000)">
+                        <g id="icn_Fullscreen" transform="translate(650.000000, 0.000000)">
+                            <g transform="translate(13.000000, 13.000000)">
+                                <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                                <mask id="mask-2" fill="white">
+                                    <use xlink:href="#path-1"></use>
+                                </mask>
+                                <use id="icon/navigation/fullscreen_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

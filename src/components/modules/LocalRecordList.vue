@@ -41,7 +41,7 @@
             <div class="table__tools">
               <icon-button
                 v-if="isHome && onpremise"
-                :text="'선택 업로드'"
+                :text="$t('workspace.record_upload')"
                 :imgSrc="require('assets/image/ic_upload.svg')"
                 :customClass="{
                   highlight: hasSelect,

@@ -11,7 +11,7 @@
           autoplay
           playsinline
           loop
-          :muted="isMe"
+          :muted="isMuted"
         ></video>
       </div>
       <div class="participant-video__profile" v-else>
@@ -36,7 +36,7 @@
           autoplay
           playsinline
           loop
-          :muted="isMe || mainView.id === participant.id"
+          :muted="isMuted"
         ></audio>
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
@@ -217,17 +217,18 @@ export default {
         return -1
       }
     },
+    isMuted() {
+      if (
+        this.isMe ||
+        this.mainView.id === this.participant.id ||
+        this.speaker.isOn === false
+      ) {
+        return 'muted'
+      }
+      return false
+    },
   },
   watch: {
-    speaker(val) {
-      if (this.isMe) return
-      if (this.$el.querySelector('video')) {
-        this.$el.querySelector('video').muted = val
-      }
-      if (this.$el.querySelector('audio')) {
-        this.$el.querySelector('audio').muted = val
-      }
-    },
     'participant.nickname': 'participantInited',
     participant() {},
     cameraStatus(status, oldStatus) {
@@ -261,11 +262,9 @@ export default {
       if (this.participant.me || this.initing === true) return
       if (name !== oldName && name.length > 0 && this.inited === false) {
         this.inited = true
-        if (!this.openRoom || this.iamLeader) {
-          this.toastDefault(
-            this.$t('service.chat_invite', { name: this.participant.nickname }),
-          )
-        }
+        this.toastDefault(
+          this.$t('service.chat_invite', { name: this.participant.nickname }),
+        )
         const chatObj = {
           name: name,
           status: 'invite',
@@ -309,15 +308,14 @@ export default {
           return
         }
       }
+      if (!this.participant.hasCamera) {
+        this.toastDefault(this.$t('service.participant_no_stream'))
+        return
+      }
       if (this.openRoom) {
-        if (!this.participant.hasCamera) {
-          this.toastDefault(this.$t('service.participant_no_stream'))
-          return
-        }
         if (!this.participant.hasVideo) {
           if (
             this.account.roleType === ROLE.LEADER &&
-            this.openRoom &&
             this.participant.cameraStatus === CAMERA.CAMERA_OFF
           ) {
             this.requestVideo()
@@ -327,7 +325,6 @@ export default {
         } else {
           this.$call.mainview(this.participant.id, true)
         }
-        return
       }
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {
@@ -441,7 +438,7 @@ export default {
     },
   },
   beforeDestroy() {
-    if ((!this.openRoom || this.iamLeader) && this.$call.session) {
+    if (this.$call.session) {
       this.toastDefault(
         this.$t('service.chat_leave', { name: this.participant.nickname }),
       )

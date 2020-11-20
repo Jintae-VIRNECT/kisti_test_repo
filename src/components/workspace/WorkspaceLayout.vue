@@ -208,8 +208,13 @@ export default {
         ...languageCodes.map(language => language.text),
       )
       this.setCompanyInfo({
-        targetCompany: res.companyCode,
-        translate: res.translation,
+        companyCode: res.companyCode,
+        translation: res.translation,
+        tts: res.tts,
+        sttSync: res.sttSync,
+        sttStreaming: res.sttStreaming,
+        recording: res.recording,
+        storage: res.storage,
         sessionType: res.sessionType,
         languageCodes,
       })

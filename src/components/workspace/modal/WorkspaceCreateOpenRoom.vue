@@ -34,6 +34,7 @@ import { ROLE } from 'configs/remote.config'
 import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import { checkPermission } from 'utils/deviceCheck'
 
 export default {
   name: 'WorkspaceCreateOpenRoom',
@@ -98,8 +99,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        // const options = await checkPermission()
-        const options = false
+        const options = await checkPermission(false)
         let createdRes
         if (this.sessionId && this.sessionId.length > 0) {
           createdRes = await restartRoom({
@@ -123,11 +123,6 @@ export default {
             companyCode: this.targetCompany,
           })
         }
-        const connRes = await this.$call.connect(
-          createdRes,
-          ROLE.LEADER,
-          options,
-        )
         if (info.imageFile) {
           await updateRoomProfile({
             profile: info.imageFile,
@@ -136,6 +131,12 @@ export default {
             workspaceId: this.workspace.uuid,
           })
         }
+        const connRes = await this.$call.connect(
+          createdRes,
+          ROLE.LEADER,
+          options,
+          true,
+        )
 
         const roomInfo = await getRoomInfo({
           sessionId: createdRes.sessionId,

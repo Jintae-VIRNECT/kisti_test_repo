@@ -14,7 +14,11 @@
         :thumbStyle="{ width: '3em', height: '3em' }"
       ></profile>
 
-      <img class="userinfo__image" :src="deviceImg" />
+      <img
+        v-if="deviceImg && deviceImg.length > 0"
+        class="userinfo__image"
+        :src="deviceImg"
+      />
       <button
         class="btn line userinfo__button"
         :class="{ me: account.uuid === user.uuid }"
