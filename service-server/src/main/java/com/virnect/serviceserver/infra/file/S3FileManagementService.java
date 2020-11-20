@@ -9,9 +9,14 @@ import com.virnect.file.FileType;
 import com.virnect.file.IFileManagementService;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
+import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.data.UtilDataRepository;
+import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
@@ -34,27 +39,41 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 public class S3FileManagementService implements IFileManagementService {
+    private static final String TAG = S3FileManagementService.class.getSimpleName();
 
-    @Value("${cloud.aws.s3.bucket.name}")
     private String bucketName;
-
-    @Value("${cloud.aws.s3.bucket.file}")
     private String fileBucketName;
-
-    @Value("${cloud.aws.s3.bucket.profile}")
     private String profileBucketName;
-
-    @Value("${cloud.aws.s3.bucket.record}")
     private String recordBucketName;
 
     private final AmazonS3 amazonS3Client;
 
+    private RemoteServiceConfig remoteServiceConfig;
+
+    @Qualifier(value = "remoteServiceConfig")
+    @Autowired
+    public void setRemoteServiceConfig(RemoteServiceConfig remoteServiceConfig) {
+        this.remoteServiceConfig = remoteServiceConfig;
+    }
+
     private List<String> fileAllowExtensionList = new ArrayList<>();
-    String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/remote/";
+    String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/virnect-remote/";
     final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
 
     @PostConstruct
     public void init() {
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            LogMessage.formedInfo(
+                    TAG,
+                    "post construct",
+                    "init"
+            );
+        }
+        this.bucketName = this.remoteServiceConfig.remoteStorageProperties.getBucketName();
+        this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
+        this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
+        this.recordBucketName = this.remoteServiceConfig.remoteStorageProperties.getRecordBucketName();
+
         fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
         fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
         fileAllowExtensionList.addAll(FILE_VIDEO_ALLOW_EXTENSION);
@@ -100,7 +119,7 @@ public class S3FileManagementService implements IFileManagementService {
                 objectMetadata.setContentLength(file.getSize());
 
                 putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
-                        CannedAccessControlList.BucketOwnerRead);
+                        CannedAccessControlList.PublicRead);
                 log.info("UPLOAD FILE::#upload:: {}, {}", objectPath.toString(), file.getContentType());
                 break;
             }
@@ -112,7 +131,7 @@ public class S3FileManagementService implements IFileManagementService {
                 objectMetadata.setContentLength(file.getSize());
 
                 putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
-                        CannedAccessControlList.BucketOwnerRead);
+                        CannedAccessControlList.PublicRead);
                 log.info("SAVE FILE_URL: {}, {}", objectPath.toString(), file.getContentType());
                 break;
             }
@@ -150,7 +169,7 @@ public class S3FileManagementService implements IFileManagementService {
                 file.getName(),
                 file.getSize());
 
-        log.info("{}, {}", dirPath, fileExtension);
+        log.info("{}, {}, {}", bucketName, dirPath, fileExtension);
 
         // file upload with create a InputStream for object upload.
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
@@ -163,19 +182,7 @@ public class S3FileManagementService implements IFileManagementService {
         objectMetadata.setContentLength(file.getSize());
 
         return putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
-                CannedAccessControlList.BucketOwnerRead);
-    }
-
-    @Override
-    public String uploadFile(MultipartFile file, String fileName)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        return null;
-    }
-
-    @Override
-    public String uploadPolicyFile(MultipartFile file, String fileName)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        return null;
+                CannedAccessControlList.PublicRead);
     }
 
     @Override
@@ -183,11 +190,6 @@ public class S3FileManagementService implements IFileManagementService {
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         amazonS3Client.deleteObject(bucketName, objectPathToName);
         return true;
-    }
-
-    @Override
-    public boolean delete(String url) {
-        return false;
     }
 
     @Override
@@ -203,28 +205,8 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String getFileExtension(String originFileName) {
-        return null;
-    }
-
-    @Override
-    public boolean isAllowFileExtension(String fileExtension) {
-        return false;
-    }
-
-    @Override
     public String base64ImageUpload(String base64Image) {
         return null;
-    }
-
-    @Override
-    public File getFile(String url) {
-        return null;
-    }
-
-    @Override
-    public byte[] fileDownload(String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        return new byte[0];
     }
 
     @Override
@@ -248,11 +230,6 @@ public class S3FileManagementService implements IFileManagementService {
             }
         }
         return url;
-    }
-
-    @Override
-    public void copyFileS3ToLocal(String fileName) {
-
     }
 
     /**
@@ -324,10 +301,6 @@ public class S3FileManagementService implements IFileManagementService {
         }
         return amazonS3Client.getUrl(bucketName, fileName).toString();
 
-    }
-
-    private void deleteObjectToAWSS3(String bucketName, String fileName) {
-        // amazonS3Client.deleteObject();
     }
 
     @Deprecated

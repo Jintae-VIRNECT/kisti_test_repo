@@ -20,6 +20,8 @@ public class ApiResponse<T> {
 
     public ApiResponse(T data) {
         this.data = data;
+        this.code = ErrorCode.ERR_SUCCESS.getCode();
+        this.message = ErrorCode.ERR_SUCCESS.getMessage();
     }
 
     public ApiResponse(T data, int code, String message) {
