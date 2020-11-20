@@ -21,10 +21,13 @@ import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
+import com.virnect.serviceserver.data.SessionDataRepository;
 import com.virnect.serviceserver.feign.service.MessageRestService;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,9 +50,15 @@ public class SessionRestController implements ISessionRestAPI {
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/room";
 
-    private final DataRepository dataRepository;
+    private SessionDataRepository sessionDataRepository;
     private final ServiceSessionManager serviceSessionManager;
     private final MessageRestService messageRestService;
+
+    @Qualifier(value = "sessionDataRepository")
+    @Autowired
+    public void setSessionDataRepository(SessionDataRepository sessionDataRepository) {
+        this.sessionDataRepository = sessionDataRepository;
+    }
 
     @Override
     public ResponseEntity<ApiResponse<PushResponse>> sendPushMessageHandler(@Valid PushSendRequest pushSendRequest, BindingResult result) {
@@ -82,10 +91,10 @@ public class SessionRestController implements ISessionRestAPI {
         }
 
         // check user is valid
-        DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(userId);
+        DataProcess<UserInfoResponse> userInfo = this.sessionDataRepository.checkUserValidation(userId);
 
         // check user license type using user id
-        DataProcess<LicenseItem> licenseItem = this.dataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
+        DataProcess<LicenseItem> licenseItem = this.sessionDataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
         if (licenseItem.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
             ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
                     new RoomResponse(),
@@ -134,7 +143,7 @@ public class SessionRestController implements ISessionRestAPI {
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
             // create room
-            ApiResponse<RoomResponse> apiResponse = this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
+            ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
             if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
                 //send push message invite
                 PushSendRequest pushSendRequest = new PushSendRequest();
@@ -172,7 +181,7 @@ public class SessionRestController implements ISessionRestAPI {
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
             // create room
-            ApiResponse<RoomResponse> apiResponse = this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
+            ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
             return ResponseEntity.ok(apiResponse);
         } else {
             ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
@@ -269,10 +278,10 @@ public class SessionRestController implements ISessionRestAPI {
         }
 
         // check user is valid
-        DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(roomRequest.getLeaderId());
+        DataProcess<UserInfoResponse> userInfo = this.sessionDataRepository.checkUserValidation(roomRequest.getLeaderId());
 
         // check user license type using user id
-        DataProcess<LicenseItem> licenseItem = this.dataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
+        DataProcess<LicenseItem> licenseItem = this.sessionDataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
         if (licenseItem.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
             ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
                     new RoomResponse(),
@@ -310,7 +319,7 @@ public class SessionRestController implements ISessionRestAPI {
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
             // create room
-            ApiResponse<RoomResponse> apiResponse = this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
+            ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
             if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
                 //send push message invite
                 PushSendRequest pushSendRequest = new PushSendRequest();
@@ -348,7 +357,7 @@ public class SessionRestController implements ISessionRestAPI {
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
             // create room
-            ApiResponse<RoomResponse> apiResponse = this.dataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
+            ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
             return ResponseEntity.ok(apiResponse);
         } else {
             ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
@@ -369,7 +378,7 @@ public class SessionRestController implements ISessionRestAPI {
         //@RequestParam(value = "webRtcStats", required = false, defaultValue = "false") boolean webRtcStats,
         log.info("REST API: GET {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId : "{}", userId != null ? userId : "{}");
         return ResponseEntity.ok(
-                this.dataRepository.loadRoomList(workspaceId, userId, paging, pageRequest.of())
+                this.sessionDataRepository.loadRoomList(workspaceId, userId, paging, pageRequest.of())
         );
     }
 
@@ -382,17 +391,7 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         return ResponseEntity.ok(
-                this.dataRepository.loadRoom(workspaceId, sessionId)
-        );
-    }
-
-    @Override
-    public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomByIdDummy(String workspaceId, String sessionId) {
-        if (workspaceId.isEmpty() || sessionId.isEmpty()) {
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        return ResponseEntity.ok(
-                this.dataRepository.loadRoom(workspaceId, sessionId)
+                this.sessionDataRepository.loadRoom(workspaceId, sessionId)
         );
     }
 
@@ -400,20 +399,6 @@ public class SessionRestController implements ISessionRestAPI {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.setContentType(MediaType.APPLICATION_JSON);
         return responseHeaders;
-    }
-
-    @Override
-    public ResponseEntity<RoomDetailInfoResponse> getRoomByIdDummyTwo(String workspaceId, String sessionId) {
-        if (workspaceId.isEmpty() || sessionId.isEmpty()) {
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-
-        return new ResponseEntity<>(
-                this.dataRepository.loadRoomDummy(workspaceId, sessionId).getData(),
-                getResponseHeaders(),
-                HttpStatus.OK
-        );
-
     }
 
     @Override
@@ -437,8 +422,8 @@ public class SessionRestController implements ISessionRestAPI {
 
         //ResultResponse resultResponse = new ResultResponse();
         //resultResponse.setResult(false);
-        DataProcess<List<String>> dataProcess = this.dataRepository.getConnectionIds(workspaceId, sessionId);
-        ApiResponse<RoomDeleteResponse> apiResponse = this.dataRepository.removeRoom(workspaceId, sessionId, userId);
+        DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
+        ApiResponse<RoomDeleteResponse> apiResponse = this.sessionDataRepository.removeRoom(workspaceId, sessionId, userId);
 
         //if(apiResponse.getData() != null) {
         if(apiResponse.getData().result) {
@@ -525,7 +510,7 @@ public class SessionRestController implements ISessionRestAPI {
         }
 
         return ResponseEntity.ok(
-                this.dataRepository.updateRoom(workspaceId, sessionId, modifyRoomInfoRequest)
+                this.sessionDataRepository.updateRoom(workspaceId, sessionId, modifyRoomInfoRequest)
         );
     }
 
@@ -549,7 +534,7 @@ public class SessionRestController implements ISessionRestAPI {
             log.info("has no errors");
         }
 
-        DataProcess<Boolean> dataProcess = this.dataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
+        DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
         if(dataProcess.getData()) {
             // 3. generate session id and token
             //String customSessionId = sessionData.getCustomSessionId();
@@ -557,7 +542,7 @@ public class SessionRestController implements ISessionRestAPI {
             JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
             return ResponseEntity.ok(
-                    this.dataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest)
+                    this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest)
             );
         } else {
             return ResponseEntity.ok(
@@ -581,7 +566,7 @@ public class SessionRestController implements ISessionRestAPI {
         }
 
         return ResponseEntity.ok(
-                this.dataRepository.exitRoom(workspaceId, sessionId, userId)
+                this.sessionDataRepository.exitRoom(workspaceId, sessionId, userId)
         );
     }
 
@@ -597,13 +582,13 @@ public class SessionRestController implements ISessionRestAPI {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<InviteRoomResponse> response = this.dataRepository.inviteMember(workspaceId, sessionId, inviteRoomRequest);
+        ApiResponse<InviteRoomResponse> response = this.sessionDataRepository.inviteMember(workspaceId, sessionId, inviteRoomRequest);
 
         //send push message or not?
         //this send push message
         if(response.getData() != null) {
             // check user is valid
-            DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(response.getData().getLeaderId());
+            DataProcess<UserInfoResponse> userInfo = this.sessionDataRepository.checkUserValidation(response.getData().getLeaderId());
 
             PushSendRequest pushSendRequest = new PushSendRequest();
             pushSendRequest.setService(PushConstants.PUSH_EVENT_REMOTE);
@@ -661,7 +646,7 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        DataProcess<String> dataProcess = this.dataRepository.evictParticipant(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+        DataProcess<String> dataProcess = this.sessionDataRepository.evictParticipant(workspaceId, sessionId, kickRoomRequest.getParticipantId());
         if(dataProcess == null) {
             throw new RestServiceException(ErrorCode.ERR_SERVICE_PROCESS);
         } else {
@@ -683,7 +668,7 @@ public class SessionRestController implements ISessionRestAPI {
                     log.info("push response: [message] {}", pushResponse.getMessage());
                 }
                 return ResponseEntity.ok(
-                        this.dataRepository.kickFromRoom(workspaceId, sessionId, kickRoomRequest)
+                        this.sessionDataRepository.kickFromRoom(workspaceId, sessionId, kickRoomRequest)
                 );
             } else {
                 //send rpc message to connection id user of the session id

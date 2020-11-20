@@ -10,6 +10,7 @@ import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
 import com.virnect.serviceserver.data.DataRepository;
+import com.virnect.serviceserver.data.SessionDataRepository;
 import com.virnect.serviceserver.model.SessionData;
 import com.virnect.serviceserver.model.SessionTokenData;
 import com.virnect.serviceserver.utils.LogMessage;
@@ -35,11 +36,18 @@ public class ServiceSessionManager {
     private final String SESSION_MESSAGE_METHOD = "generateMessage";
     private final String SESSION_TOKEN_METHOD = "generateSessionToken";
 
-    @Autowired
     SessionManager sessionManager;
+    SessionDataRepository sessionDataRepository;
 
     @Autowired
-    DataRepository dataRepository;
+    public void setSessionManager(SessionManager sessionManager) {
+        this.sessionManager = sessionManager;
+    }
+
+    @Autowired
+    public void setSessionDataRepository(SessionDataRepository sessionDataRepository) {
+        this.sessionDataRepository = sessionDataRepository;
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -60,7 +68,7 @@ public class ServiceSessionManager {
                         "createSession",
                         "session create and sessionEventHandler is here",
                         "event received");
-                dataRepository.generateRoomSession(sessionNotActive.getSessionId());
+                sessionDataRepository.generateRoomSession(sessionNotActive.getSessionId());
             }
 
             @Override
@@ -75,7 +83,7 @@ public class ServiceSessionManager {
                         "joinSession",
                         "session join and sessionEventHandler is here",
                         result);
-                dataRepository.joinSession(participant, sessionId);
+                sessionDataRepository.joinSession(participant, sessionId);
             }
 
             @Override
@@ -93,9 +101,9 @@ public class ServiceSessionManager {
                         "session leave and sessionEventHandler is here",
                         result);
                 if(reason.equals(EndReason.forceDisconnectByUser)) {
-                    dataRepository.disconnectSession(participant, sessionId);
+                    sessionDataRepository.disconnectSession(participant, sessionId);
                 } else {
-                    dataRepository.leaveSession(participant, sessionId);
+                    sessionDataRepository.leaveSession(participant, sessionId);
                 }
             }
 
@@ -109,8 +117,8 @@ public class ServiceSessionManager {
                         "destroySession",
                         "session destroy and sessionEventHandler is here",
                         result);
-                dataRepository.stopRecordSession(session.getSessionId());
-                dataRepository.destroySession(session.getSessionId());
+                sessionDataRepository.stopRecordSession(session.getSessionId());
+                sessionDataRepository.destroySession(session.getSessionId());
             }
         };
     }

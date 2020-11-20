@@ -43,21 +43,10 @@ import static com.virnect.file.IFileManagementService.DEFAULT_ROOM_PROFILE;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileDataRepository {
+public class FileDataRepository extends DataRepository {
     private static final String TAG = FileDataRepository.class.getSimpleName();
 
-    private final UserRestService userRestService;
-    private final SessionService sessionService;
-    //private final FileService fileService;
-    private FileService fileService;
     private final IFileManagementService fileManagementService;
-    private final ModelMapper modelMapper;
-
-    @Qualifier(value = "fileService")
-    @Autowired
-    public void setFileService(FileService fileService) {
-        this.fileService = fileService;
-    }
 
     /**
      * Generate directory path to upload file

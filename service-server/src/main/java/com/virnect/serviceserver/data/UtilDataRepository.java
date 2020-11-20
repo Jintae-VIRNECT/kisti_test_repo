@@ -24,23 +24,8 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UtilDataRepository {
+public class UtilDataRepository extends DataRepository {
     private static final String TAG = UtilDataRepository.class.getSimpleName();
-
-    private SessionService sessionService;
-    private ModelMapper modelMapper;
-
-    @Qualifier(value = "sessionService")
-    @Autowired
-    public void setSessionService(SessionService sessionService) {
-        this.sessionService = sessionService;
-    }
-
-    @Qualifier(value = "modelMapper")
-    @Autowired
-    public void setModelMapper(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
-    }
 
     private List<LanguageCode> combineLanguageCode(Language language) {
         List<LanguageCode> languageCodes = new ArrayList<>();
