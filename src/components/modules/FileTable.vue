@@ -196,11 +196,11 @@ export default {
           if (Object.prototype.hasOwnProperty.call(newData, render.column)) {
             newData[render.column] = render.render(newData[render.column])
             if (render.column === 'expirationDate' && data.expired) {
-              newData['expirationDate'] = '기간만료'
+              newData['expirationDate'] = this.$t('file.expired')
             }
           }
         })
-        if (newData['expirationDate'] === '기간만료') {
+        if (newData['expirationDate'] === this.$t('file.expired')) {
           this.expiredArray.push(newData)
           return null
         } else {
@@ -212,13 +212,13 @@ export default {
       //만료된 데이터를 뒤로 보냄
       this.renderArray.sort((a, b) => {
         if (
-          a.expirationDate === '기간만료' &&
-          b.expirationDate !== '기간만료'
+          a.expirationDate === this.$t('file.expired') &&
+          b.expirationDate !== this.$t('file.expired')
         ) {
           return 1
         } else if (
-          a.expirationDate !== '기간만료' &&
-          b.expirationDate === '기간만료'
+          a.expirationDate !== this.$t('file.expired') &&
+          b.expirationDate === this.$t('file.expired')
         ) {
           return -1
         } else {
