@@ -806,6 +806,8 @@ var Stream = /** @class */ (function(_super) {
    * @hidden
    */
   Stream.prototype.streamIceConnectionStateBroken = function() {
+    console.log(!this.getWebRtcPeer(), this.getWebRtcPeer())
+    console.log(!this.getRTCPeerConnection(), this.getRTCPeerConnection())
     if (!this.getWebRtcPeer() || !this.getRTCPeerConnection()) {
       return false
     }
@@ -822,6 +824,7 @@ var Stream = /** @class */ (function(_super) {
       return true
     }
     var iceConnectionState = this.getRTCPeerConnection().iceConnectionState
+    console.log(iceConnectionState)
     return (
       iceConnectionState === 'disconnected' || iceConnectionState === 'failed'
     )
@@ -863,14 +866,15 @@ var Stream = /** @class */ (function(_super) {
       // ::CUSTOMIZED::
       var userMediaConstraints = {
         audio: _this.isSendAudio(),
-        video: reconnect,
+        video: reconnect === 'initVideo' ? true : _this.isSendVideo(),
       }
       // let mediastream = _this.mediaStream
       // ::CUSTOMIZED::
-      if (reconnect) {
+      if (reconnect === 'initVideo') {
         _this.mediaStream = await navigator.mediaDevices.getUserMedia(
           userMediaConstraints,
         )
+        reconnect = !!reconnect
       }
       var options = {
         mediaStream: _this.mediaStream,

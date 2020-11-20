@@ -111,10 +111,9 @@ export const addSessionEventListener = session => {
   })
   /** session closed */
   session.on('sessionDisconnected', event => {
-    logger('room', 'participant disconnect')
-    _.clear()
     if (event.reason === 'sessionClosedByServer') {
-      // TODO: MESSAGE
+      logger('room', 'participant disconnect')
+      _.clear()
       window.vue.$toasted.error(
         window.vue.$t('workspace.confirm_removed_room_leader'),
         {
@@ -130,7 +129,8 @@ export const addSessionEventListener = session => {
       )
       window.vue.$router.push({ name: 'workspace' })
     } else if (event.reason === 'forceDisconnectByUser') {
-      // TODO: MESSAGE
+      logger('room', 'participant disconnect')
+      _.clear()
       window.vue.$toasted.error(
         window.vue.$t('workspace.confirm_kickout_leader'),
         {
@@ -145,6 +145,8 @@ export const addSessionEventListener = session => {
         },
       )
       window.vue.$router.push({ name: 'workspace' })
+    } else if (event.reason === 'networkDisconnect') {
+      logger('network', 'disconnect')
     }
   })
   // user leave
@@ -173,7 +175,7 @@ export const addSessionEventListener = session => {
       ) {
         if (loading === true) return
         loading = true
-        _.publisher.stream.initWebRtcPeerSend(true, () => {
+        _.publisher.stream.initWebRtcPeerSend('initVideo', () => {
           loading = false
           const mediaStream = _.publisher.stream.mediaStream
           const track = mediaStream.getVideoTracks()[0]

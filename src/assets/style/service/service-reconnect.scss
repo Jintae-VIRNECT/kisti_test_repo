@@ -1,0 +1,93 @@
+@import "~assets/style/vars";
+@import "~assets/style/mixin";
+
+.modal.reconnect .modal--inner {
+  padding: 0;
+  background-color: $color_darkgray_500;
+  border: solid 1px #38383a;
+  border-radius: 4px;
+  box-shadow: none;
+  > .modal--header {
+    display: none;
+  }
+  > .modal--body {
+    padding: 0;
+  }
+}
+
+.reconnect__layout {
+  // padding: 0.714rem;
+  padding-top: 39px;
+}
+
+.reconnect__header {
+  position: relative;
+  top: 0;
+  display: flex;
+  width: 100%;
+  height: 9.643em;
+  margin-top: -2.786em;
+  margin-bottom: 0.714em;
+  overflow: hidden;
+  background-color: #29292d;
+  border-radius: 4px 4px 0 0;
+  > img {
+    width: 100%;
+    height: 9.643em;
+  }
+}
+
+.reconnect__header-dot {
+  position: absolute;
+  top: 59px;
+  left: 50%;
+  width: 5em;
+  height: 5em;
+  transform: translateX(-50%);
+}
+
+.reconnect__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 3.786em;
+}
+
+.reconnect__body-description {
+  color: #ababab;
+  font-size: 1.143em;
+  text-align: center;
+}
+
+.reconnect__body-text {
+  margin: auto;
+  color: #fff;
+  font-size: 1.143em;
+  text-align: center;
+}
+.reconnect__footer {
+  padding: 1.429em 0 2.429em;
+  text-align: center;
+  > .btn {
+    padding: 0.571em 2.857em;
+    font-weight: 400;
+    font-size: 1em;
+    &:disabled {
+      background-color: #3f3f44;
+    }
+  }
+  > .btn + .btn {
+    margin-left: 0.857em;
+  }
+  > .btn.sub {
+    background-color: #54545c;
+    &:focus {
+      background-color: #54545c;
+    }
+    &:hover {
+      background-color: #64646b;
+    }
+    &:active {
+      background-color: #434346;
+    }
+  }
+}

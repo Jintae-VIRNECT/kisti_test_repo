@@ -55,6 +55,7 @@
       </div> -->
       <!-- <component :is="viewComponent"></component> -->
     </div>
+    <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
   </section>
 </template>
 
@@ -71,6 +72,7 @@ import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
 import { checkVideoInput } from 'utils/deviceCheck'
+import ReconnectModal from 'components/service/modal/ReconnectModal'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -88,6 +90,7 @@ export default {
   },
   mixins: [localRecorderMixin, serverRecordMixin, confirmMixin],
   components: {
+    ReconnectModal,
     HeaderSection,
     SubView,
     UserList,
@@ -102,6 +105,7 @@ export default {
       showDenied: false,
       callTimeout: null,
       isFullScreen: false,
+      connectVisible: false,
     }
   },
   computed: {
@@ -189,6 +193,11 @@ export default {
     setFullScreen(flag) {
       this.isFullScreen = flag
     },
+    reconnect(event) {
+      if (event.reason === 'networkDisconnect') {
+        this.connectVisible = true
+      }
+    },
   },
 
   /* Lifecycles */
@@ -202,6 +211,7 @@ export default {
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
     this.$eventBus.$on('fullscreen', this.setFullScreen)
+    this.$call.addListener('sessionDisconnected', this.reconnect)
   },
   beforeDestroy() {
     if (this.callTimeout) {
