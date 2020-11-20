@@ -112,7 +112,7 @@ const _ = {
         if (['failed', 'disconnected', 'closed'].includes(state)) {
           Store.commit('updateParticipant', {
             connectionId: _.publisher.stream.connection.connectionId,
-            status: 'bad',
+            status: 'disconnected',
           })
         } else if (['connected', 'completed'].includes(state)) {
           Store.commit('updateParticipant', {
