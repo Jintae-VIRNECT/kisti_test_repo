@@ -47,7 +47,6 @@
     "babel-preset-stage-2": "^6.24.1",
     "clean-webpack-plugin": "^0.1.19",
     "crypto-js": "^4.0.0",
-    "bcrypt": "^5.0.0",
     "css-hot-loader": "^1.4.4",
     "css-loader": "^1.0.1",
     "dayjs": "^1.8.25",
