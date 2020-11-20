@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strings"
 	"sync"
 	"time"
 
@@ -19,9 +20,11 @@ import (
 )
 
 type Client struct {
-	minioClient  *minio.Client
-	bucketName   string
-	resourceName string
+	MinioClient  *minio.Client
+	Endpoint     string
+	UseSSL       bool
+	BucketName   string
+	ResourceName string
 }
 
 var once sync.Once
@@ -39,13 +42,13 @@ func Init() {
 	bucketName := viper.GetString("storage.bucketName")
 	client := GetClient()
 
-	found, err := client.minioClient.BucketExists(ctx, bucketName)
+	found, err := client.MinioClient.BucketExists(ctx, bucketName)
 	if err != nil {
 		panic(err)
 	}
 
 	if !found {
-		err = client.minioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{ObjectLocking: false, Region: ""})
+		err = client.MinioClient.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{ObjectLocking: false, Region: ""})
 		if err != nil {
 			panic(err)
 		}
@@ -78,14 +81,16 @@ func New() *Client {
 		panic(err)
 	}
 	return &Client{
-		minioClient:  minoClient,
-		bucketName:   viper.GetString("storage.bucketName"),
-		resourceName: viper.GetString("storage.resourceName"),
+		MinioClient:  minoClient,
+		BucketName:   viper.GetString("storage.bucketName"),
+		ResourceName: viper.GetString("storage.resourceName"),
+		UseSSL:       useSSL,
+		Endpoint:     endpoint,
 	}
 }
 
 func (c *Client) getObjectName(target string) string {
-	return path.Join(c.resourceName, target)
+	return path.Join(c.ResourceName, target)
 }
 
 func (c *Client) Upload(ctx context.Context, src string, target string) error {
@@ -103,9 +108,9 @@ func (c *Client) Upload(ctx context.Context, src string, target string) error {
 		return err
 	}
 
-	_, err = c.minioClient.PutObject(
+	_, err = c.MinioClient.PutObject(
 		ctx,
-		c.bucketName,
+		c.BucketName,
 		c.getObjectName(target),
 		file,
 		fileStat.Size(),
@@ -123,7 +128,7 @@ func (c *Client) Upload(ctx context.Context, src string, target string) error {
 }
 
 func (c *Client) Remove(ctx context.Context, target string) error {
-	return c.minioClient.RemoveObject(ctx, c.bucketName, c.getObjectName(target), minio.RemoveObjectOptions{})
+	return c.MinioClient.RemoveObject(ctx, c.BucketName, c.getObjectName(target), minio.RemoveObjectOptions{})
 }
 
 func (c *Client) GetPresignedUrl(ctx context.Context, target string, filename string) (string, error) {
@@ -135,7 +140,7 @@ func (c *Client) GetPresignedUrl(ctx context.Context, target string, filename st
 	reqParams.Set(key, value)
 
 	expirationTime := time.Second * 24 * 60 * 60 // 1 day
-	presignedURL, err := c.minioClient.PresignedGetObject(context.Background(), c.bucketName, c.getObjectName(target), expirationTime, reqParams)
+	presignedURL, err := c.MinioClient.PresignedGetObject(context.Background(), c.BucketName, c.getObjectName(target), expirationTime, reqParams)
 	if err != nil {
 		log.Error(err)
 		return "", err
@@ -144,18 +149,22 @@ func (c *Client) GetPresignedUrl(ctx context.Context, target string, filename st
 	return presignedURL.String(), nil
 }
 
-func (c *Client) GetObjectUrl(ctx context.Context, target string, filename string) (string, error) {
+func (c *Client) GetObjectUrl(ctx context.Context, target string) (string, error) {
 	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
 
-	useSSL := viper.GetBool("storage.useSSL")
-	endpoint := viper.GetString("storage.endpoint")
 	u := new(url.URL)
-	if useSSL {
+	if c.UseSSL {
 		u.Scheme = "https"
 	} else {
 		u.Scheme = "http"
 	}
-	u.Path = path.Join(endpoint, c.bucketName, c.resourceName, target)
+	if strings.Contains(c.Endpoint, "amazonaws.com") {
+		u.Host = strings.Join([]string{c.BucketName, c.Endpoint}, ".")
+		u.Path = path.Join(c.ResourceName, target)
+	} else {
+		u.Host = c.Endpoint
+		u.Path = path.Join(c.BucketName, c.ResourceName, target)
+	}
 	log.Info("download url:", u.String())
 	return u.String(), nil
 }

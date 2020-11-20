@@ -134,7 +134,7 @@ func GetRecordingFileDownloadUrl(ctx context.Context, filter *data.Filter) (stri
 	}
 
 	target := getStoragePath(infos[0])
-	url, err := storage.GetClient().GetObjectUrl(ctx, target, infos[0].Filename)
+	url, err := storage.GetClient().GetObjectUrl(ctx, target)
 	if err != nil {
 		return "", err
 	}
