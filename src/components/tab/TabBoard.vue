@@ -63,7 +63,7 @@ export default {
     },
     async getDailyData() {
       this.dayLoading = true
-      console.log('this.dayLoading', this.dayLoading)
+
       const result = await getDailyData({
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
@@ -72,7 +72,6 @@ export default {
       this.daily = result
 
       this.dayLoading = false
-      console.log('this.dayLoading', this.dayLoading)
     },
     async initMonthly(refresh) {
       const index = this.calendars.findIndex(cal => cal.name === 'monthly')

@@ -182,7 +182,6 @@ export default {
           })
 
           downloadByURL(data)
-          console.log(data)
         } catch (e) {
           console.error(e)
         }
@@ -196,13 +195,12 @@ export default {
 
       for (const file of deleteFiles) {
         try {
-          const result = await deleteFileItem({
+          await deleteFileItem({
             objectName: file.objectName,
             sessionId: file.sessionId,
             userId: this.account.uuid,
             workspaceId: file.workspaceId,
           })
-          console.log(result)
         } catch (e) {
           console.error(e)
           errorFiles.push(file.name)
@@ -219,7 +217,6 @@ export default {
 
       for (const file of downloadFiles) {
         try {
-          console.log(file)
           const url = await getServerRecordFileUrl({
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
@@ -273,7 +270,6 @@ export default {
             workspaceId: file.workspaceId,
           })
           downloadByURL(data)
-          console.log(data)
         } catch (e) {
           console.error(e)
         }

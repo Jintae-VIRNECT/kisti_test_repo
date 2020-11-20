@@ -169,13 +169,13 @@ export default {
 
             // not become a vertical line?
             if (borderLeft !== borderRight) {
-              console.log('not become a vertical line?')
+              // console.log('not become a vertical line?')
               top = borderTop
               bottom = borderBottom
             }
             // not become a horizontal line?
             if (borderTop !== borderBottom) {
-              console.log('not become a horizontal line?')
+              // console.log('not become a horizontal line?')
               left = borderLeft
               right = borderRight
             }

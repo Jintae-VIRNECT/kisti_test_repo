@@ -1,5 +1,5 @@
 <template>
-  <div class="datepicker" @click.stop @blur="blured">
+  <div class="datepicker" @click.stop>
     <vue-datepicker
       class="custom-date-picker"
       :format="format"
@@ -95,9 +95,6 @@ export default {
     },
   },
   methods: {
-    blured() {
-      console.log('')
-    },
     toggleCalendar() {
       this.$eventBus.$emit('toggle::calendar', this.pickerName)
     },

@@ -56,7 +56,6 @@ export const getDailyData = async ({ workspaceId, userId, date }) => {
   result.my.count = response.myHistory.reduce(sum, 0)
   result.my.set = response.myHistory
 
-  console.log('result::', result)
   return result
 }
 
@@ -77,7 +76,7 @@ export const getMonthlyData = async ({ workspaceId, userId, date }) => {
   result.my.time = response.myDuration.reduce(sum, 0)
   result.my.count = response.myHistory.reduce(sum, 0)
   result.my.set = response.myHistory
-  console.log('monthly::', result)
+
   return result
 }
 

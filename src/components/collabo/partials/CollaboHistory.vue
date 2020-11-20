@@ -298,11 +298,9 @@ export default {
           this.file = true
           break
       }
-      console.log('this.fileList::', this.fileList)
     },
 
-    setSort(column) {
-      console.log(column)
+    setSort() {
       return
       // if (this.sort.column === column) {
       //   if (this.sort.direction === '') {

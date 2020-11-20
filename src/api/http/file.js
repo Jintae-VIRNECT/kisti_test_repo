@@ -186,12 +186,6 @@ export const getFileDownloadUrl = async ({
   userId,
   workspaceId,
 }) => {
-  console.log({
-    objectName,
-    sessionId,
-    userId,
-    workspaceId,
-  })
   const returnVal = await http('FILE_ITEM_DOWNLOAD_URL', {
     objectName,
     sessionId,

@@ -61,7 +61,6 @@ export default {
       this.curPage = page
     },
     setPages() {
-      console.log('setPages called')
       const pagesArray = []
 
       if (this.curPage === 1) {

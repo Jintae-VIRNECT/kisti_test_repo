@@ -113,7 +113,6 @@ export default {
   },
 
   mounted() {
-    console.log('board monthly mounted')
     const ctx = document.getElementById('chart-month').getContext('2d')
 
     this.setRoundedBar()

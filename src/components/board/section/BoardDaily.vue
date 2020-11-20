@@ -158,8 +158,6 @@ export default {
     },
   },
   mounted() {
-    //todo TotalData
-    console.log('board daily mounted')
     this.initChart()
   },
 }

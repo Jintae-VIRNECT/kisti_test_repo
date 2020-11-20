@@ -471,7 +471,6 @@ export default {
           status: false,
           date: this.selectedDate,
         })
-        // console.log('selectedDate::', this.selectedDate)
       }
       // this.$eventBus.$emit('closed::calendar', this.pickerName)
     },

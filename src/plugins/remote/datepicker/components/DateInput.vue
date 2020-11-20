@@ -112,7 +112,6 @@ export default {
         }
         return { 'form-control': true, ...this.inputClass }
       }
-      console.log(this.inputClass)
       return this.inputClass
     },
   },

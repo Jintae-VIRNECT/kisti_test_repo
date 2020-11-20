@@ -181,7 +181,6 @@ export default {
      * copy datas with specific columns and execute render func
      */
     setRenderArray() {
-      console.log('call setRenderArray')
       this.expiredArray = []
       this.renderArray = this.datas.map(data => {
         const newData = {}

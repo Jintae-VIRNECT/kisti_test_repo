@@ -76,7 +76,6 @@ export default {
     ]),
 
     init(authInfo, workspaces) {
-      console.log('workspaces::', workspaces)
       this.updateAccount({
         ...authInfo.account,
         licenseEmpty: this.license,
@@ -93,10 +92,7 @@ export default {
       }
     },
 
-    tabChange() {
-      // this.scrollTop()
-      console.log('tabChanged')
-    },
+    tabChange() {},
     openPlayer(url) {
       this.showPlayer = true
       this.url = url
@@ -105,7 +101,6 @@ export default {
   mounted() {
     this.mx_changeLang()
     this.$eventBus.$on('open::player', this.openPlayer)
-    console.log('is isOnpremise?', this.isOnpremise)
   },
   beforeDestroy() {
     this.$eventBus.$off('open::player')

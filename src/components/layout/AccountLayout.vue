@@ -64,7 +64,6 @@ export default {
     },
     async doLogin() {
       try {
-        console.log(this.form)
         const params = {
           email: this.form.userId,
           password: this.form.userPw,
