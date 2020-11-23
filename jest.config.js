@@ -36,7 +36,10 @@ module.exports = {
     '^__mocks__(.*)$': '<rootDir>/tests/__mocks__$1',
   },
   collectCoverageFrom: ['**/*.{js,jsx,vue}'],
+
   setupFiles: ['<rootDir>/jest.init.js'],
+
   testMatch: ['**/*.spec.(js|jsx|ts|tsx)|**/__tests__/*.(js|jsx|ts|tsx)'],
+
   testURL: 'http://localhost:9989/',
 }
