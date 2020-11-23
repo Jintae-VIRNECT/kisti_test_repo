@@ -23,9 +23,9 @@ export default {
   computed: {
     collaboText() {
       switch (this.status) {
-        case true:
+        case collabo.PROGRESS:
           return this.$t('status.progress')
-        case false:
+        case collabo.FINISHED:
           return this.$t('status.finished')
         default:
           return this.$t('status.finished')
