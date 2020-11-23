@@ -7,7 +7,7 @@
         </div>
       </div>
 
-      <ul class="chat-header__menu">
+      <ul class="chat-header__menu" v-if="isOnpremise">
         <li class="chat-header__selector" :class="{ active: showChat }">
           <button
             class="chat-header__selector--button"
