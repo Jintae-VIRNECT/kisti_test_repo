@@ -31,6 +31,9 @@ module.exports = {
     '^stores(.*)$': '<rootDir>/src/stores$1',
     '^routers(.*)$': '<rootDir>/src/routers$1',
     '^languages(.*)$': '<rootDir>/src/languages$1',
+
+    '^__utils__(.*)$': '<rootDir>/tests/__utils__$1',
+    '^__mocks__(.*)$': '<rootDir>/tests/__mocks__$1',
   },
   collectCoverageFrom: ['**/*.{js,jsx,vue}'],
   setupFiles: ['<rootDir>/jest.init.js'],
