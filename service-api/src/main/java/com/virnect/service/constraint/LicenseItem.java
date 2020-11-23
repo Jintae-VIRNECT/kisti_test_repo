@@ -21,8 +21,8 @@ public enum LicenseItem {
 
     LicenseItem(final int userCapacity, final int companyCode, final String itemName) {
         this.userCapacity = userCapacity;
-        this.itemName = itemName;
         this.companyCode = companyCode;
+        this.itemName = itemName;
     }
 
     public int getUserCapacity() {

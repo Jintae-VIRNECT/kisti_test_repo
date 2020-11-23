@@ -23,7 +23,8 @@ public enum  ErrorCode {
     ERR_MESSAGE_PROCESS(3005, "Message Service Server Process error, Please try again or contact."),
 
     // error code for company information
-    ERR_COMPANY_CREATE_FAIL(3500, "Company information request is failed"),
+    ERR_COMPANY_CREATE_FAIL(3500, "Company information create is failed"),
+    ERR_COMPANY_INVALID_CODE(3501, "Company information request is invalid"),
 
 
     // error code for remote session
