@@ -2,7 +2,7 @@ import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 import { deepGet } from 'utils/util'
 import XLSX from 'xlsx'
 
-export const exportExcel = (raws, headers) => {
+export const exportExcel = (raws, header) => {
   const keys = [
     ['index'],
     ['title'],
@@ -42,7 +42,7 @@ export const exportExcel = (raws, headers) => {
     return row
   })
 
-  const excelDatas = [headers].concat(rows)
+  const excelDatas = [header].concat(rows)
 
   const wb = XLSX.utils.book_new()
   const newWorksheet = XLSX.utils.aoa_to_sheet(excelDatas)
