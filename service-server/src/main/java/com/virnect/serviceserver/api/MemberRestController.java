@@ -9,8 +9,11 @@ import com.virnect.service.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.service.dto.service.response.MemberInfoListResponse;
 import com.virnect.service.dto.service.response.MemberSecessionResponse;
 import com.virnect.serviceserver.data.DataRepository;
+import com.virnect.serviceserver.data.MemberDataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +25,13 @@ public class MemberRestController implements IMemberRestAPI {
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/member";
 
-    private final DataRepository dataRepository;
+    private MemberDataRepository memberDataRepository;
+
+    @Qualifier(value = "memberDataRepository")
+    @Autowired
+    public void setMemberDataRepository(MemberDataRepository memberDataRepository) {
+        this.memberDataRepository = memberDataRepository;
+    }
 
     @Override
     public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(String workspaceId, String filter, int page, int size) {
@@ -31,7 +40,7 @@ public class MemberRestController implements IMemberRestAPI {
                 REST_PATH,
                 workspaceId != null ? workspaceId: "{}");
         //increase page number + 1, cause page index starts 0
-        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.dataRepository.loadMemberList(workspaceId, filter, page + 1, size);
+        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(workspaceId, filter, page + 1, size);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -42,7 +51,7 @@ public class MemberRestController implements IMemberRestAPI {
                 workspaceId != null ? workspaceId: "{}",
                 userId != null ? userId: "{}");
         //increase page number + 1, cause page index starts 0
-        ApiResponse<MemberInfoListResponse> apiResponse = this.dataRepository.loadMemberList(workspaceId, userId, filter, page + 1, size);
+        ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(workspaceId, userId, filter, page + 1, size);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -54,7 +63,7 @@ public class MemberRestController implements IMemberRestAPI {
                 sessionId != null ? sessionId: "{}",
                 userId != null ? userId: "{}");
         //increase page number + 1, cause page index starts 0
-        ApiResponse<MemberInfoListResponse> apiResponse = this.dataRepository.loadMemberList(workspaceId, sessionId, userId, filter, page + 1, size);
+        ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(workspaceId, sessionId, userId, filter, page + 1, size);
         return ResponseEntity.ok(apiResponse);
     }
 
@@ -66,7 +75,7 @@ public class MemberRestController implements IMemberRestAPI {
                 REST_PATH,
                 userId != null ? userId: "{}");
 
-        ApiResponse<MemberSecessionResponse> apiResponse = this.dataRepository.deleteMember(userId);
+        ApiResponse<MemberSecessionResponse> apiResponse = this.memberDataRepository.deleteMember(userId);
         return ResponseEntity.ok(apiResponse);
     }
 }

@@ -37,13 +37,6 @@ import java.util.stream.Collectors;
 public class SessionService {
     private static final String TAG = SessionService.class.getSimpleName();
 
-    /*private final ModelMapper modelMapper;
-    private final RoomRepository roomRepository;
-    private final MemberRepository memberRepository;
-    private final RoomHistoryRepository roomHistoryRepository;
-    private final MemberHistoryRepository memberHistoryRepository;
-    private final CompanyRepository companyRepository;*/
-
     @Autowired
     private ModelMapper modelMapper;
 

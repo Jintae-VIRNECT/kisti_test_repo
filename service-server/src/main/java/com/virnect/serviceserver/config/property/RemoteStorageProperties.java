@@ -60,14 +60,15 @@ public class RemoteStorageProperties extends PropertyService {
 
 
     public void checkStorageProperties() {
-        this.bucketName = getValue("minio.bucket-name");
-        this.fileBucketName = getValue("minio.bucket-file-name");
-        this.profileBucketName = getValue("minio.bucket-profile-name");
-        this.recordBucketName = getValue("minio.bucket-record-name");
-        this.accessKey = getValue("minio.access-key");
-        this.secretKey = getValue("minio.secret-key");
-        this.serverUrl = getValue("minio.serverUrl");
-        this.serviceEnabled = asBoolean("minio.enabled");
+        this.serviceEnabled = asBoolean("storage.enabled");
+        this.bucketName = getValue("storage.bucket.name");
+        this.fileBucketName = getValue("storage.bucket.file");
+        this.profileBucketName = getValue("storage.bucket.profile");
+        this.recordBucketName = getValue("storage.bucket.record");
+        this.accessKey = getValue("storage.access-key");
+        this.secretKey = getValue("storage.secret-key");
+        this.serverUrl = getValue("storage.serverUrl");
+
 
         log.info("checkFileServiceProperties {}", bucketName);
         log.info("checkFileServiceProperties {}", fileBucketName);

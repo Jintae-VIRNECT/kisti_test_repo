@@ -20,6 +20,7 @@ import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -98,6 +99,18 @@ public class ValidationController implements IValidationRestAPI {
         return ResponseEntity.ok(
                 this.utilDataRepository.loadCompanyInformation(workspaceId)
         );
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfoRequestHandler(int companyCode, String workspaceId, String userId) {
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: GET " + REST_COMPANY_PATH,
+                "getCompanyInfoRequestHandler"
+        );
+
+        ApiResponse<CompanyInfoResponse> apiResponse = this.utilDataRepository.loadCompanyInformation(companyCode, workspaceId, userId);
+        return ResponseEntity.ok(apiResponse);
     }
 
     /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")

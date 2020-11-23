@@ -6,7 +6,6 @@ import com.virnect.service.dto.service.request.CompanyRequest;
 import com.virnect.service.dto.service.request.CompanyResponse;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
-import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.data.UtilDataRepository;
 import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +22,7 @@ import javax.validation.Valid;
 public class AdminRestController implements IAdminRestAPI {
     private static final String TAG = AdminRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/admin";
+    //private static final String REST_COMPANY_PATH = "/remote/company";
 
     private final UtilDataRepository utilDataRepository;
 

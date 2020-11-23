@@ -13,6 +13,7 @@ import okhttp3.OkHttpClient;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,8 +48,13 @@ public class LocalFileManagementService implements IFileManagementService {
     private String profileBucketName;
     private String recordBucketName;
 
-    @Autowired
     private RemoteServiceConfig remoteServiceConfig;
+
+    @Qualifier(value = "remoteServiceConfig")
+    @Autowired
+    public void setRemoteServiceConfig(RemoteServiceConfig remoteServiceConfig) {
+        this.remoteServiceConfig = remoteServiceConfig;
+    }
 
     private List<String> fileAllowExtensionList = new ArrayList<>();
 
@@ -299,13 +305,7 @@ public class LocalFileManagementService implements IFileManagementService {
         }
     }
 
-    @Override
-    public String uploadFile(MultipartFile file, String fileName)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        return null;
-    }
-
-    @Override
+    @Deprecated
     public String uploadPolicyFile(MultipartFile file, String fileName)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 1. 빈 파일 여부 확인
@@ -399,20 +399,6 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
-    public boolean delete(String url) {
-        log.info("{}", url.replaceAll(HOST_REGEX, "").replace("\\", "/"));
-        File file = new File(url.replaceAll(HOST_REGEX, "").replace('\\', '/'));
-
-        if (file.delete()) {
-            log.info("{} 파일이 삭제되었습니다.", file.getName());
-            return true;
-        } else {
-            log.info("{} 파일을 삭제하지 못했습니다.", file.getName());
-            return false;
-        }
-    }
-
-    @Override
     public void deleteProfile(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         if (DEFAULT_ROOM_PROFILE.equals(objectPathToName)) {
             log.info("PROFILE REMOVE::#deleteProfile::do not delete default profile name");
@@ -422,16 +408,6 @@ public class LocalFileManagementService implements IFileManagementService {
             result = removeObject(objectName);
             log.info("PROFILE REMOVE::#deleteProfile::for not using anymore::boolean => [{}, {}]", objectName, result);
         }
-    }
-
-    @Override
-    public String getFileExtension(String originFileName) {
-        return null;
-    }
-
-    @Override
-    public boolean isAllowFileExtension(String fileExtension) {
-        return false;
     }
 
     @Override
@@ -451,28 +427,6 @@ public class LocalFileManagementService implements IFileManagementService {
             e.printStackTrace();
         }
         return null;
-    }
-
-    @Override
-    public File getFile(String fileUrl) {
-        log.info("{}", fileUrl.replaceAll(HOST_REGEX, "").replace("\\", "/"));
-        return new File(fileUrl.replaceAll(HOST_REGEX, "").replace('\\', '/'));
-    }
-
-    @Override
-    public byte[] fileDownload(String filePath) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        // Get input stream to have content of 'my-objectname' from 'my-bucketname'
-        InputStream stream = null;
-        try {
-            stream = minioClient.getObject(GetObjectArgs.builder().bucket(bucketName).object(filePath).build());
-            log.info("fileDownload input stream:: {}_{}", stream.available(), stream.read());
-            byte[] bytes = IOUtils.toByteArray(stream);
-            stream.close();
-            return bytes;
-        } catch (MinioException e) {
-            log.info("Download error occurred:: {}", e.getMessage());
-            throw new RestServiceException(ErrorCode.ERR_FILE_DOWNLOAD_FAILED);
-        }
     }
 
     @Override
@@ -522,10 +476,5 @@ public class LocalFileManagementService implements IFileManagementService {
             log.info("Download error occurred:: {}", e.getMessage());
             return null;
         }
-    }
-
-    @Override
-    public void copyFileS3ToLocal(String fileName) {
-
     }
 }

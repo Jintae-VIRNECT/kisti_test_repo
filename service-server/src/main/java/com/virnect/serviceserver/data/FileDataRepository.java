@@ -43,21 +43,10 @@ import static com.virnect.file.IFileManagementService.DEFAULT_ROOM_PROFILE;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileDataRepository {
+public class FileDataRepository extends DataRepository {
     private static final String TAG = FileDataRepository.class.getSimpleName();
 
-    private final UserRestService userRestService;
-    private final SessionService sessionService;
-    //private final FileService fileService;
-    private FileService fileService;
     private final IFileManagementService fileManagementService;
-    private final ModelMapper modelMapper;
-
-    @Qualifier(value = "fileService")
-    @Autowired
-    public void setFileService(FileService fileService) {
-        this.fileService = fileService;
-    }
 
     /**
      * Generate directory path to upload file
@@ -212,60 +201,6 @@ public class FileDataRepository {
                 }
             }
         }.asApiResponse();
-    }
-
-    //will be deprecated
-    public DataProcess<ResponseEntity<byte[]>> downloadFile(
-            String workspaceId,
-            String sessionId,
-            String userId,
-            String objectName) {
-        return new RepoDecoder<File, ResponseEntity<byte[]>>(RepoDecoderType.READ) {
-            @Override
-            File loadFromDatabase() {
-                return fileService.getFileByObjectName(
-                        workspaceId,
-                        sessionId,
-                        objectName);
-            }
-
-            @Override
-            DataProcess<ResponseEntity<byte[]>> invokeDataProcess() {
-                File file = loadFromDatabase();
-                log.info("file download: {}", file.getObjectName());
-                try {
-                    StringBuilder stringBuilder;
-                    stringBuilder = new StringBuilder();
-                    stringBuilder.append(workspaceId).append("/")
-                            .append(sessionId).append("/")
-                            .append(file.getObjectName());
-                    //byte[] byteArray = localFileDownloadService.fileDownload(stringBuilder.toString());
-                    byte[] byteArray = fileManagementService.fileDownload(stringBuilder.toString());
-                    //String[] resources = file.getPath().split("/");
-                    HttpHeaders httpHeaders = new HttpHeaders();
-                    httpHeaders.setContentLength(byteArray.length);
-                    httpHeaders.setContentDispositionFormData("attachment", file.getName());
-                    switch (file.getContentType()) {
-                        case MediaType.IMAGE_JPEG_VALUE:
-                            httpHeaders.setContentType(MediaType.IMAGE_JPEG);
-                            break;
-                        case MediaType.IMAGE_GIF_VALUE:
-                            httpHeaders.setContentType(MediaType.IMAGE_GIF);
-                            break;
-                        case MediaType.IMAGE_PNG_VALUE:
-                            httpHeaders.setContentType(MediaType.IMAGE_PNG);
-                            break;
-                        default:
-                            httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-                            break;
-                    }
-                    return new DataProcess<>(new ResponseEntity<>(byteArray, httpHeaders, HttpStatus.OK));
-                } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-                    log.info("{}", exception.getMessage());
-                    return new DataProcess<>(ErrorCode.ERR_FILE_DOWNLOAD_EXCEPTION);
-                }
-            }
-        }.asResponseData();
     }
 
     public ApiResponse<FilePreSignedResponse> downloadFileUrl(String workspaceId,
