@@ -126,37 +126,53 @@ export default {
     },
     async initStream() {
       if (this.videoDevices.length === 0) return
-      const mediaRes = await getUserMedia(false, {
-        deviceId: {
-          ideal: this.videoId,
-        },
-        width: {
-          ideal: this.currentQuality.width,
-        },
-        height: {
-          ideal: this.currentQuality.height,
-        },
-      })
-      if (typeof mediaRes === 'string') {
-        if (mediaRes.toLowerCase().trim() === 'overconstrainederror') {
-          const idx = resolution.findIndex(
-            resol => resol.value === this.videoQuality,
+      this.stream = null
+      this.$nextTick(async () => {
+        try {
+          console.log(this.currentQuality.width)
+          console.log(this.currentQuality.height)
+          const mediaRes = await getUserMedia(false, {
+            deviceId: {
+              exact: this.videoId,
+            },
+            width: {
+              exact: this.currentQuality.width,
+            },
+            height: {
+              exact: this.currentQuality.height,
+            },
+          })
+          this.stream = mediaRes
+          const track = this.stream.getVideoTracks()[0]
+          const settings = track.getSettings()
+          const capability = track.getCapabilities()
+          this.logger(
+            'call',
+            `resolution::${settings.width}X${settings.height}`,
           )
-          if (idx > 0) {
-            this.setQuality(resolution[idx - 1])
+          this.debug('call::setting::', settings)
+          this.debug('call::capability::', capability)
+        } catch (err) {
+          this.stream = null
+          if (typeof err === 'object') {
+            if (err.name && err.name.toLowerCase() === 'notallowederror') {
+              return 'device access deined'
+            }
+            if (err.name && err.name.toLowerCase() === 'overconstrainederror') {
+              const idx = resolution.findIndex(
+                resol => resol.value === this.videoQuality,
+              )
+              if (idx > 0) {
+                // this.videoQuality = resolution[idx - 1].value
+                this.setQuality(resolution[idx - 1].value)
+              }
+            }
+            if (err.name && err.name.toLowerCase() === 'notallowederror') {
+            }
+            return err.name
           }
         }
-        if (mediaRes.toLowerCase().trim() === 'notreadableerror') {
-        }
-        return
-      }
-      this.stream = mediaRes
-      const track = this.stream.getVideoTracks()[0]
-      const settings = track.getSettings()
-      const capability = track.getCapabilities()
-      this.logger('call', `resolution::${settings.width}X${settings.height}`)
-      this.debug('call::setting::', settings)
-      this.debug('call::capability::', capability)
+      })
     },
   },
   created() {
