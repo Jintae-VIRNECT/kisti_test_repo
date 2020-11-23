@@ -23,23 +23,24 @@ export const exportExcel = (datas, header) => {
   ]
 
   datas.forEach(data => {
+    console.log(data)
     keys.forEach(key => {
       let value = ''
       if (key[0] === 'memberList') {
-        const memberList = deepGet(data.history, key)
+        const memberList = deepGet(data, key)
         value = memberList
           .map(member => {
             return member.nickName
           })
           .join(' ')
       } else if (key[0] === 'activeDate') {
-        value = dateTimeFormat(deepGet(data.history, key))
+        value = dateTimeFormat(deepGet(data, key))
       } else if (key[0] === 'unactiveDate') {
-        value = dateTimeFormat(deepGet(data.history, key))
+        value = dateTimeFormat(deepGet(data, key))
       } else if (key[0] === 'durationSec') {
-        value = durationFormat(deepGet(data.history, key))
+        value = durationFormat(deepGet(data, key))
       } else {
-        value = deepGet(data.history, key)
+        value = deepGet(data, key)
       }
       csvString += value + ','
     })

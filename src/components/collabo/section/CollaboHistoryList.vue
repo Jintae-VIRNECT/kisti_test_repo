@@ -39,7 +39,7 @@ import PaginationTool from 'components/collabo/partials/CollaboPaginationTool'
 import {
   getHistoryList,
   getAllHistoryList,
-  getHistorySingleItem,
+  // getHistorySingleItem,
 } from 'api/http/history'
 import { getMemberInfo } from 'api/http/member'
 import confirmMixin from 'mixins/confirm'
@@ -161,21 +161,12 @@ export default {
         if (this.historyList.length <= 0 || this.excelLoading) return
 
         this.excelLoading = true
-        let merged = []
 
         const paging = false
         const params = this.getParams(paging, 0)
         const historys = await this.getData(params)
 
         this.addAdditionalData(historys.roomHistoryInfoList)
-
-        for (const history of historys.roomHistoryInfoList) {
-          const room = await getHistorySingleItem({
-            workspaceId: this.workspace.uuid,
-            sessionId: history.sessionId,
-          })
-          merged.push({ history, room })
-        }
 
         // 'No,협업명,협업내용,리더,참가자,시작시간,종료시간,진행시간,서버녹화,로컬녹화,첨부파일'
         const header = [
@@ -192,16 +183,16 @@ export default {
           this.$t('excel.file_attach_file'),
         ]
 
-        exportExcel(merged, header)
+        exportExcel(historys.roomHistoryInfoList, header)
         this.excelLoading = false
       } catch (err) {
         console.error(err)
         this.excelLoading = false
       }
     },
-    async addAdditionalData(list) {
-      await this.setIndex(list)
-      await this.setLeader(list)
+    addAdditionalData(list) {
+      this.setIndex(list)
+      this.setLeader(list)
     },
     async getHistoryByPage(page) {
       await this.init(page - 1)
