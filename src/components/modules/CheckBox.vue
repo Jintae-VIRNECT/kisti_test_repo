@@ -1,8 +1,6 @@
 <template>
   <div class="checkbox" :class="{ toggle: value }" @click="changeToggle">
-    <span class="checkbox-toggle" :class="{ toggle: value }">
-      {{ type }}
-    </span>
+    <span class="checkbox-toggle" :class="{ toggle: value }"> </span>
     <span class="checkbox-text" v-if="text && text.length > 0">{{ text }}</span>
   </div>
 </template>
@@ -23,15 +21,7 @@ export default {
       default: null,
     },
   },
-  computed: {
-    type() {
-      if (this.value) {
-        return 'ON'
-      } else {
-        return 'OFF'
-      }
-    },
-  },
+  computed: {},
   methods: {
     changeToggle() {
       this.$emit('update:value', !this.value)
