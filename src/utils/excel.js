@@ -1,13 +1,8 @@
 import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 import { deepGet } from 'utils/util'
+import XLSX from 'xlsx'
 
-export const exportExcel = (datas, header) => {
-  let csvString = ''
-
-  const headerString = header.join(',')
-
-  csvString = csvString + headerString + '\r\n'
-
+export const exportExcel = (raws, header) => {
   const keys = [
     ['index'],
     ['title'],
@@ -22,38 +17,53 @@ export const exportExcel = (datas, header) => {
     ['attach'],
   ]
 
-  datas.forEach(data => {
-    console.log(data)
+  const rows = raws.map(raw => {
+    const row = []
     keys.forEach(key => {
-      let value = ''
       if (key[0] === 'memberList') {
-        const memberList = deepGet(data, key)
-        value = memberList
-          .map(member => {
-            return member.nickName
-          })
-          .join(' ')
+        const memberList = deepGet(raw, key)
+        row.push(
+          memberList
+            .map(member => {
+              return member.nickName
+            })
+            .join(' '),
+        )
       } else if (key[0] === 'activeDate') {
-        value = dateTimeFormat(deepGet(data, key))
+        row.push(dateTimeFormat(deepGet(raw, key)))
       } else if (key[0] === 'unactiveDate') {
-        value = dateTimeFormat(deepGet(data, key))
+        row.push(dateTimeFormat(deepGet(raw, key)))
       } else if (key[0] === 'durationSec') {
-        value = durationFormat(deepGet(data, key))
+        row.push(durationFormat(deepGet(raw, key)))
       } else {
-        value = deepGet(data, key)
+        row.push(deepGet(raw, key))
       }
-      csvString += value + ','
     })
-    csvString += '\r\n'
+    return row
   })
 
+  const excelDatas = [header].concat(rows)
+
+  const wb = XLSX.utils.book_new()
+  const newWorksheet = XLSX.utils.aoa_to_sheet(excelDatas)
+
+  XLSX.utils.book_append_sheet(wb, newWorksheet, 'list')
+  const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'binary' })
+
   const element = document.createElement('a')
-  const blob = new Blob(['\ufeff' + csvString], {
-    type: 'text/csv;charset=utf-8;',
+  const blob = new Blob([s2ab(wbout)], {
+    type: 'application/octet-stream',
   })
 
   const url = URL.createObjectURL(blob)
   element.href = url
-  element.setAttribute('download', 'virnect_history.csv')
+  element.setAttribute('download', 'virnect_history.xlsx')
   element.click()
+}
+
+const s2ab = s => {
+  const buf = new ArrayBuffer(s.length) //convert s to arrayBuffer
+  const view = new Uint8Array(buf) //create uint8array as viewer
+  for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xff //convert to octet
+  return buf
 }
