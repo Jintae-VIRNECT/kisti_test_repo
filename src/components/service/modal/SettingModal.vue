@@ -125,7 +125,7 @@
       </div>
       <template v-if="isOnpremise">
         <p class="rec-setting--header" :class="{ disable: serverRecording }">
-          {{ '서버 녹화 설정' }}
+          {{ $t('service.setting_server_record') }}
         </p>
         <p v-if="serverRecording" class="rec-setting--warning">
           {{ $t('서버 녹화 중에서는 설정을 변경 할 수 없습니다.') }}

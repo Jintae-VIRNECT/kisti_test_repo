@@ -10,6 +10,7 @@
     <setting-modal
       :visible.sync="status"
       :recording="recording"
+      :serverRecording="serverRecording"
       :viewType="viewType"
     ></setting-modal>
   </div>
@@ -31,6 +32,7 @@ export default {
     return {
       status: false,
       recording: false,
+      serverRecording: false,
     }
   },
   props: {
@@ -62,17 +64,22 @@ export default {
       }
       this.status = !this.status
     },
-    localRecording(status) {
+    localRecord(status) {
       this.recording = status.isStart
+    },
+    serverRecord(status) {
+      this.serverRecording = status.isStart
     },
   },
 
   /* Lifecycles */
   beforeDestroy() {
     this.$eventBus.$off('localRecord')
+    this.$eventBus.$off('serverRecord')
   },
   mounted() {
-    this.$eventBus.$on('localRecord', this.localRecording)
+    this.$eventBus.$on('localRecord', this.localRecord)
+    this.$eventBus.$on('serverRecord', this.serverRecord)
   },
 }
 </script>

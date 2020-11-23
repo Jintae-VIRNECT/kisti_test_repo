@@ -108,6 +108,7 @@
     "setting_record_time_tooltip": "장시간 로컬 녹화 파일 생성 시, PC의 부하 발생할 수 있기 때문에<br>녹화 파일을 시간 간격으로 나눠서 생성합니다.",
     "setting_record_resolution": "녹화 영상 해상도",
     "setting_record_resolution_tooltip": "720p(HD)급이상 해상도 설정 시, PC의 성능에 따라 서비스가<br>원활하지 않을 수 있습니다.",
+    "setting_server_record":"서버 녹화 설정",
     "setting_local_record_participant": "참가자 로컬 녹화",
     "setting_local_record_allow": "참가자 로컬 녹화 허용",
     "setting_save": "변경사항을 저장했습니다.",
@@ -192,6 +193,11 @@
     "record_start_message": "로컬 화면 녹화를 시작합니다. 녹화를 종료하시려면 버튼을 한번 더 클릭하거나 [ESC]키를 누르세요.",
     "record_fail_memory": "PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​",
     "record_end_message": "로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.",
-    "record_end_no_stream_message": "영상이 없어서 로컬 녹화를 중지합니다."
+    "record_end_no_stream_message": "영상이 없어서 로컬 녹화를 중지합니다.",
+
+    "record_server_start_message":"서버 녹화를 시작합니다.",
+    "record_server_end_message":"서버 녹화를 종료합니다.",
+    "record_server_over_max_count":"현재 실행 가능한 서버 녹화 개수가 초과 되었습니다. \n잠시후에 다시 시도해 주세요.",
+    "record_server_no_storage":"서버에 녹화 파일을 저장할 수 있는 공간이 부족합니다. \n관리자에게 문의 해주세요."
   }
 }

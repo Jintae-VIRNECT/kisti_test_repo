@@ -108,6 +108,7 @@
     "setting_record_time_tooltip": "When you create local recording files for a long time, your PC may experience a heavy load.<br> We recommed you to set recording time intervals.",
     "setting_record_resolution": "Recording resolution",
     "setting_record_resolution_tooltip": "When setting the resolution of 720p (HD) or higher, <br>please be aware that the service depends on the PC's performance.",
+    "setting_server_record":"Server recording settings",
     "setting_local_record_participant": "Local recording for participants",
     "setting_local_record_allow": "Allow local recording for participants",
     "setting_save": "Saved the changes.",
@@ -192,6 +193,11 @@
     "record_start_message": "Starting the local screen recording. If you wish to end it, click the button again or press [ESC] key.",
     "record_fail_memory": "Stopping the recording due to lack of PC storage. The file being recorded is not saved.",
     "record_end_message": "Local recording was successful, please check the file from the recording file menu.",
-    "record_end_no_stream_message": "Stopping the local recording since there is no video."
+    "record_end_no_stream_message": "Stopping the local recording since there is no video.",
+
+    "record_server_start_message":"Starting the server recording.",
+    "record_server_end_message":"Ending the server recording.",
+    "record_server_over_max_count":"The server has reached the maximum number of videos to record simultaneously. Please try again later.",
+    "record_server_no_storage":"There is not enough space on the server to store the recorded file. Please contact the administrator."
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <section class="setting-section">
     <div class="setting-section__title">
-      서버 녹화 설정
+      {{ $t('workspace.setting_server_record') }}
     </div>
     <div class="setting-section__body horizon first">
       <figure class="setting__figure">
@@ -34,7 +34,7 @@
       </figure>
     </div>
     <p class="setting__label dot">
-      수정된 설정 값은 녹화를 시작하는 시점에 적용이 됩니다.
+      {{ $t('workspace.setting_record_setting_description') }}
     </p>
   </section>
 </template>
