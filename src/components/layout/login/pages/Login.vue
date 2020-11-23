@@ -201,10 +201,7 @@ export default {
 			} catch (e) {
 				if (e.code === 2000) {
 					this.loading = false
-					this.message =
-						this.auth.env !== 'onpremise'
-							? this.$t('login.accountError.contents')
-							: this.$t('onpremise.login.error.discord')
+					this.message = this.$t('login.accountError.contents')
 				} else {
 					this.alertMessage(
 						this.$t('login.networkError.title'),
