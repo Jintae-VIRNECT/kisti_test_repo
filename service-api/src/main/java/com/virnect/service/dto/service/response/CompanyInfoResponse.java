@@ -23,7 +23,7 @@ public class CompanyInfoResponse {
     @ApiModelProperty(value = "Workspace Identifier", position = 1, example = "40f9bbee9d85dca7a34a0dd205aae718")
     private String workspaceId = "";
 
-    @ApiModelProperty(value = "Workspace Identifier", position = 2, example = "40f9bbee9d85dca7a34a0dd205aae718")
+    @ApiModelProperty(value = "License Name", position = 2, example = "")
     private String licenseName = "";
 
     @ApiModelProperty(value = "Remote Session Type", position = 3, example = "PRIVATE")

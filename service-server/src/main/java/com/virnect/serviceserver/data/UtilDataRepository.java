@@ -2,8 +2,9 @@ package com.virnect.serviceserver.data;
 
 import com.virnect.data.dao.Company;
 import com.virnect.data.dao.Language;
+import com.virnect.data.dao.SessionType;
 import com.virnect.service.ApiResponse;
-import com.virnect.service.SessionService;
+import com.virnect.service.constraint.LicenseItem;
 import com.virnect.service.constraint.TranslationItem;
 import com.virnect.service.dto.LanguageCode;
 import com.virnect.service.dto.service.request.CompanyRequest;
@@ -13,12 +14,10 @@ import com.virnect.service.dto.service.response.CompanyInfoResponse;
 import com.virnect.service.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -66,6 +65,35 @@ public class UtilDataRepository extends DataRepository {
             languageCodes.add(languageCode);
         }
         return languageCodes;
+    }
+
+    private CompanyInfoResponse defaultCompanyInfo(String workspaceId) {
+        List<LanguageCode> languageCodes = new ArrayList<>(Arrays.asList(
+                new LanguageCode(TranslationItem.LANGUAGE_KR),
+                new LanguageCode(TranslationItem.LANGUAGE_EN),
+                new LanguageCode(TranslationItem.LANGUAGE_JP),
+                new LanguageCode(TranslationItem.LANGUAGE_ZH),
+                new LanguageCode(TranslationItem.LANGUAGE_FR),
+                new LanguageCode(TranslationItem.LANGUAGE_ES),
+                new LanguageCode(TranslationItem.LANGUAGE_RU),
+                new LanguageCode(TranslationItem.LANGUAGE_UK),
+                new LanguageCode(TranslationItem.LANGUAGE_PL)
+        ));
+
+        CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
+        companyInfoResponse.setCompanyCode(0);
+        companyInfoResponse.setWorkspaceId(workspaceId);
+        companyInfoResponse.setLicenseName(LicenseItem.ITEM_PRODUCT.getItemName());
+        companyInfoResponse.setSessionType(SessionType.OPEN);
+        companyInfoResponse.setRecording(true);
+        companyInfoResponse.setStorage(true);
+        companyInfoResponse.setTranslation(true);
+        companyInfoResponse.setSttSync(true);
+        companyInfoResponse.setSttStreaming(true);
+        companyInfoResponse.setTts(true);
+        companyInfoResponse.setLanguageCodes(languageCodes);
+
+        return companyInfoResponse;
     }
 
     public ApiResponse<CompanyResponse> generateCompany(CompanyRequest companyRequest) {
@@ -124,7 +152,7 @@ public class UtilDataRepository extends DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
+    /*public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
         return new RepoDecoder<Company, CompanyInfoResponse>(RepoDecoderType.READ) {
             @Override
             Company loadFromDatabase() {
@@ -145,6 +173,54 @@ public class UtilDataRepository extends DataRepository {
                 }
                 return new DataProcess<>(companyInfoResponse);
             }
+        }.asApiResponse();
+    }*/
+
+    public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
+        return new RepoDecoder<Company, CompanyInfoResponse>(RepoDecoderType.READ) {
+            @Override
+            Company loadFromDatabase() {
+                return sessionService.getCompany(workspaceId);
+            }
+
+            @Override
+            DataProcess<CompanyInfoResponse> invokeDataProcess() {
+                CompanyInfoResponse companyInfoResponse = defaultCompanyInfo(workspaceId);
+                return new DataProcess<>(companyInfoResponse);
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<CompanyInfoResponse> loadCompanyInformation(int companyCode, String workspaceId, String userId) {
+        return new RepoDecoder<Company, CompanyInfoResponse>(RepoDecoderType.READ) {
+
+            @Override
+            Company loadFromDatabase() {
+                return sessionService.getCompany(workspaceId);
+            }
+
+            @Override
+            DataProcess<CompanyInfoResponse> invokeDataProcess() {
+                CompanyInfoResponse companyInfoResponse;
+                if(companyCode != 0) {
+                    Company company = loadFromDatabase();
+                    if(company != null) {
+                        companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
+                        Language language = company.getLanguage();
+                        List<LanguageCode> languageCodes = combineLanguageCode(language);
+                        companyInfoResponse.setLanguageCodes(languageCodes);
+                        return new DataProcess<>(companyInfoResponse);
+                    } else {
+                        CompanyInfoResponse empty = new CompanyInfoResponse();
+                        return new DataProcess<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);
+                    }
+                } else {
+                    companyInfoResponse = defaultCompanyInfo(workspaceId);
+                    return new DataProcess<>(companyInfoResponse);
+                }
+            }
+
+
         }.asApiResponse();
     }
 }
