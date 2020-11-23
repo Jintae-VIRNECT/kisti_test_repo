@@ -6,7 +6,7 @@ import localVue from '__utils__/localVue'
 describe('CheckBox.vue', () => {
   const checkBoxText = 'checkbox test'
 
-  it('커스텀 스타일 클래스 전달', () => {
+  it('text 전달', () => {
     const wrapper = shallowMount(CheckBox, {
       localVue,
       propsData: { value: true, text: checkBoxText },
