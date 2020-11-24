@@ -40,7 +40,7 @@
         <chat-msg-list v-show="showChat"></chat-msg-list>
       </transition>
       <transition name="chat-right">
-        <chat-file-list v-show="!showChat"></chat-file-list>
+        <chat-file-list v-show="!showChat" :show="!showChat"></chat-file-list>
       </transition>
     </div>
   </div>

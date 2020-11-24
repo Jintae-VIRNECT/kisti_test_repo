@@ -148,8 +148,20 @@ export default {
       selectedList: [],
     }
   },
+  props: {
+    show: {
+      type: Boolean,
+    },
+  },
   computed: {
     ...mapGetters(['view', 'roomInfo']),
+  },
+  watch: {
+    show(val) {
+      if (val) {
+        this.init()
+      }
+    },
   },
 
   methods: {
