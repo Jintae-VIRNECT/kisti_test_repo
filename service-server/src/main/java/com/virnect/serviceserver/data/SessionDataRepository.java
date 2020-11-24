@@ -6,12 +6,16 @@ import com.virnect.data.dao.*;
 import com.virnect.service.ApiResponse;
 import com.virnect.service.SessionService;
 import com.virnect.service.constraint.LicenseItem;
+import com.virnect.service.constraint.PushConstants;
 import com.virnect.service.dto.*;
+import com.virnect.service.dto.feign.PushResponse;
+import com.virnect.service.dto.feign.UserInfoResponse;
 import com.virnect.service.dto.feign.WorkspaceMemberInfoResponse;
 import com.virnect.service.dto.service.request.*;
 import com.virnect.service.dto.service.response.*;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.serviceserver.ServiceServerApplication;
+import com.virnect.serviceserver.utils.PushMessageClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,32 +37,94 @@ import java.util.stream.Collectors;
 public class SessionDataRepository extends DataRepository {
     private static final String TAG = SessionDataRepository.class.getSimpleName();
 
+    private final ObjectMapper objectMapper;
+
+    public DataProcess<PushResponse> sendSessionCreate(String sessionId) {
+        return new RepoDecoder<Room, PushResponse>(RepoDecoderType.READ) {
+            UserInfoResponse userInfoResponse;
+
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(sessionId);
+            }
+
+            @Override
+            DataProcess<PushResponse> invokeDataProcess() {
+                Room room = loadFromDatabase();
+                if(room != null) {
+                    SessionProperty sessionProperty = room.getSessionProperty();
+                    String userId = sessionProperty.getPublisherId();
+                    List<String> targetIds = room.getMembers().stream()
+                            .map(Member::getUuid)
+                            .filter(s -> !s.equals(userId))
+                            .collect(Collectors.toList());
+
+                    log.info("sendSessionCreate:: userId : {}", userId);
+                    for (String id: targetIds) {
+                        log.info("sendSessionCreate:: targetIds : {}", id);
+                    }
+
+                    fetchFromRepository(userId);
+
+                    //send push message invite
+                    pushMessageClient.setPush(
+                            PushConstants.PUSH_SERVICE_REMOTE,
+                            PushConstants.SEND_PUSH_ROOM_INVITE,
+                            room.getWorkspaceId(),
+                            sessionProperty.getPublisherId(),
+                            targetIds
+                            );
+
+                    ApiResponse<PushResponse> pushResponse = pushMessageClient.sendPushInvite(
+                            room.getSessionId(),
+                            room.getTitle(),
+                            userInfoResponse.getNickname(),
+                            userInfoResponse.getProfile());
+                    if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+                        log.info("push send message executed but not success");
+                        log.info("push response: [code] {}", pushResponse.getCode());
+                        log.info("push response: [message] {}", pushResponse.getMessage());
+                    } else {
+                        log.info("push send message executed success {}", pushResponse.toString());
+                    }
+                    return new DataProcess<>(pushResponse.getData());
+                }
+                return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+            }
+
+            private void fetchFromRepository(String userId) {
+                DataProcess<UserInfoResponse> userInfo = checkUserValidation(userId);
+                userInfoResponse = userInfo.getData();
+            }
+        }.asResponseData();
+    }
+
     public ApiResponse<RoomResponse> generateRoom(
             RoomRequest roomRequest,
             LicenseItem licenseItem,
+            String publisherId,
             String session,
             String sessionToken
     ) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        SessionResponse sessionResponse = null;
-        try {
-            sessionResponse = objectMapper.readValue(session, SessionResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        SessionTokenResponse sessionTokenResponse = null;
-        try {
-            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        assert sessionResponse != null;
-        assert sessionTokenResponse != null;
-
-        SessionResponse finalSessionResponse = sessionResponse;
-        SessionTokenResponse finalSessionTokenResponse = sessionTokenResponse;
         return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.CREATE) {
+            SessionResponse sessionResponse = null;
+            SessionTokenResponse sessionTokenResponse = null;
+
+            private void preDataProcess() {
+                try {
+                    sessionResponse = objectMapper.readValue(session, SessionResponse.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                assert sessionResponse != null;
+                assert sessionTokenResponse != null;
+            }
+
             @Override
             Room loadFromDatabase() {
                 return null;
@@ -65,49 +132,15 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             DataProcess<RoomResponse> invokeDataProcess() {
-                log.info("createRoom: " + roomRequest.toString());
-                /*ApiResponse<LicenseInfoListResponse> licenseValidation = licenseRestService.getUserLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
-                if(licenseValidation.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-                    log.info("licenseValidation code is not ok");
-                    return new DataProcess<>(licenseValidation.getCode(), licenseValidation.getMessage());
-                }
+                preDataProcess();
 
-                LicenseInfoResponse currentLicense = null;
-                for (LicenseInfoResponse licenseInfoResponse: licenseValidation.getData().getLicenseInfoList()) {
-                    if (licenseInfoResponse.getProductName().contains(LicenseConstants.PRODUCT_NAME)) {
-                        currentLicense = licenseInfoResponse;
-                    }
-                }
+                Room room = saveData();
 
-                LicenseItem licenseItem = null;
-                if(currentLicense != null) {
-                    if (currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
-                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BASIC)) {
-                            licenseItem = LicenseItem.ITEM_BASIC;
-                        }
-                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_BUSINESS)) {
-                            licenseItem = LicenseItem.ITEM_BUSINESS;
-                        }
-                        if (currentLicense.getLicenseType().contains(LicenseConstants.LICENSE_PERMANENT)) {
-                            licenseItem = LicenseItem.ITEM_PERMANENT;
-                        }
-                    } else {
-                        return new DataProcess<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY);
-                    }
-                } else {
-                    return new DataProcess<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY);
-                }
-
-                if(licenseItem == null) {
-                    return new DataProcess<>(ErrorCode.ERR_LICENSE_TYPE_VALIDITY);
-                }*/
-
-                Room room = sessionService.createRoom(roomRequest, licenseItem, finalSessionResponse);
-                if(room != null) {
+                if(sessionService.createRoom(room) != null) {
                     RoomResponse roomResponse = new RoomResponse();
                     //not set session create at property
-                    roomResponse.setSessionId(finalSessionResponse.getId());
-                    roomResponse.setToken(finalSessionTokenResponse.getToken());
+                    roomResponse.setSessionId(sessionResponse.getId());
+                    roomResponse.setToken(sessionTokenResponse.getToken());
                     roomResponse.setWss(ServiceServerApplication.wssUrl);
                     if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
                         for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
@@ -131,6 +164,73 @@ public class SessionDataRepository extends DataRepository {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
                 }
             }
+
+            private void setMember(Room room) {
+                // set room members
+                if(!roomRequest.getLeaderId().isEmpty()) {
+                    log.info("leader Id is {}", roomRequest.getLeaderId());
+                    Member member = Member.builder()
+                            .room(room)
+                            .memberType(MemberType.LEADER)
+                            .workspaceId(roomRequest.getWorkspaceId())
+                            .uuid(roomRequest.getLeaderId())
+                            .sessionId(room.getSessionId())
+                            .build();
+
+                    room.getMembers().add(member);
+                } else {
+                    log.info("leader Id is null");
+                }
+
+                if(!roomRequest.getParticipantIds().isEmpty()) {
+                    for (String participant : roomRequest.getParticipantIds()) {
+                        log.info("getParticipants Id is {}", participant);
+                        Member member = Member.builder()
+                                .room(room)
+                                .memberType(MemberType.UNKNOWN)
+                                .workspaceId(roomRequest.getWorkspaceId())
+                                .uuid(participant)
+                                .sessionId(room.getSessionId())
+                                .build();
+
+                        room.getMembers().add(member);
+                    }
+                } else {
+                    log.info("participants Id List is null");
+                }
+            }
+
+            private Room saveData() {
+                // Remote Room Entity Create
+                Room room = Room.builder()
+                        .sessionId(sessionResponse.getId())
+                        .title(roomRequest.getTitle())
+                        .description(roomRequest.getDescription())
+                        .leaderId(roomRequest.getLeaderId())
+                        .workspaceId(roomRequest.getWorkspaceId())
+                        .maxUserCount(licenseItem.getUserCapacity())
+                        .licenseName(licenseItem.name())
+                        .build();
+
+                // Remote Session Property Entity Create
+                SessionProperty sessionProperty = SessionProperty.builder()
+                        .mediaMode("ROUTED")
+                        .recordingMode("MANUAL")
+                        .defaultOutputMode("COMPOSED")
+                        .defaultRecordingLayout("BEST_FIT")
+                        .recording(true)
+                        .keepalive(roomRequest.isKeepAlive())
+                        .sessionType(roomRequest.getSessionType())
+                        .publisherId(publisherId)
+                        .room(room)
+                        .build();
+
+                room.setSessionProperty(sessionProperty);
+
+                setMember(room);
+
+                return room;
+            }
         }.asApiResponse();
     }
 
@@ -141,26 +241,26 @@ public class SessionDataRepository extends DataRepository {
             String session,
             String sessionToken
     ) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        SessionResponse sessionResponse = null;
-        try {
-            sessionResponse = objectMapper.readValue(session, SessionResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        SessionTokenResponse sessionTokenResponse = null;
-        try {
-            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        assert sessionResponse != null;
-        assert sessionTokenResponse != null;
-
-        SessionResponse finalSessionResponse = sessionResponse;
-        SessionTokenResponse finalSessionTokenResponse = sessionTokenResponse;
         return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.CREATE) {
+            SessionResponse sessionResponse = null;
+            SessionTokenResponse sessionTokenResponse = null;
+            String profile;
+
+            private void preDataProcess() {
+                try {
+                    sessionResponse = objectMapper.readValue(session, SessionResponse.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                assert sessionResponse != null;
+                assert sessionTokenResponse != null;
+            }
+
             @Override
             Room loadFromDatabase() {
                 return null;
@@ -168,18 +268,20 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             DataProcess<RoomResponse> invokeDataProcess() {
-                log.info("createRoom: " + roomRequest.toString());
+                preDataProcess();
+
                 RoomHistory roomHistory = historyService.getRoomHistory(roomRequest.getWorkspaceId(), preSessionId);
                 if(roomHistory == null) {
                     return new DataProcess<>(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND);
                 } else {
                     log.info("REDIAL ROOM::#generateRoom::re-generate room by history::session_id => [{}]", preSessionId);
-                    Room room = sessionService.createRoom(roomRequest, roomHistory.getProfile(), licenseItem, finalSessionResponse);
-                    if(room != null) {
+                    profile = roomHistory.getProfile();
+                    Room room = saveData();
+                    if(sessionService.createRoom(room) != null) {
                         RoomResponse roomResponse = new RoomResponse();
                         //not set session create at property
-                        roomResponse.setSessionId(finalSessionResponse.getId());
-                        roomResponse.setToken(finalSessionTokenResponse.getToken());
+                        roomResponse.setSessionId(sessionResponse.getId());
+                        roomResponse.setToken(sessionTokenResponse.getToken());
                         roomResponse.setWss(ServiceServerApplication.wssUrl);
                         if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
                             for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
@@ -203,6 +305,74 @@ public class SessionDataRepository extends DataRepository {
                         return new DataProcess<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
                     }
                 }
+            }
+
+            private void setMember(Room room) {
+                // set room members
+                if(!roomRequest.getLeaderId().isEmpty()) {
+                    log.info("leader Id is {}", roomRequest.getLeaderId());
+                    Member member = Member.builder()
+                            .room(room)
+                            .memberType(MemberType.LEADER)
+                            .workspaceId(roomRequest.getWorkspaceId())
+                            .uuid(roomRequest.getLeaderId())
+                            .sessionId(room.getSessionId())
+                            .build();
+
+                    room.getMembers().add(member);
+                } else {
+                    log.info("leader Id is null");
+                }
+
+                if(!roomRequest.getParticipantIds().isEmpty()) {
+                    for (String participant : roomRequest.getParticipantIds()) {
+                        log.info("getParticipants Id is {}", participant);
+                        Member member = Member.builder()
+                                .room(room)
+                                .memberType(MemberType.UNKNOWN)
+                                .workspaceId(roomRequest.getWorkspaceId())
+                                .uuid(participant)
+                                .sessionId(room.getSessionId())
+                                .build();
+
+                        room.getMembers().add(member);
+                    }
+                } else {
+                    log.info("participants Id List is null");
+                }
+            }
+
+            private Room saveData() {
+                // Remote Room Entity Create
+                Room room = Room.builder()
+                        .sessionId(sessionResponse.getId())
+                        .title(roomRequest.getTitle())
+                        .description(roomRequest.getDescription())
+                        .leaderId(roomRequest.getLeaderId())
+                        .workspaceId(roomRequest.getWorkspaceId())
+                        .maxUserCount(licenseItem.getUserCapacity())
+                        .licenseName(licenseItem.name())
+                        .build();
+
+                room.setProfile(profile);
+
+                // Remote Session Property Entity Create
+                SessionProperty sessionProperty = SessionProperty.builder()
+                        .mediaMode("ROUTED")
+                        .recordingMode("MANUAL")
+                        .defaultOutputMode("COMPOSED")
+                        .defaultRecordingLayout("BEST_FIT")
+                        .recording(true)
+                        .keepalive(roomRequest.isKeepAlive())
+                        .sessionType(roomRequest.getSessionType())
+                        .room(room)
+                        .build();
+
+                room.setSessionProperty(sessionProperty);
+
+                setMember(room);
+
+                return room;
             }
         }.asApiResponse();
     }

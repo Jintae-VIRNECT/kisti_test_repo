@@ -147,7 +147,12 @@ public class HistoryRestController implements IHistoryRestAPI {
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
             // create room
-            ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(sessionId, roomRequest, licenseItem.getData(), sessionJson.toString(), tokenResult.toString());
+            ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
+                    sessionId,
+                    roomRequest,
+                    licenseItem.getData(),
+                    sessionJson.toString(),
+                    tokenResult.toString());
             if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
                 //send push message invite
                 PushSendRequest pushSendRequest = new PushSendRequest();

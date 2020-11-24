@@ -56,7 +56,6 @@ public class SessionRestController implements ISessionRestAPI {
     private PushMessageClient pushMessageClient;
 
     private final ServiceSessionManager serviceSessionManager;
-    //private final MessageRestService messageRestService;
 
     @Qualifier(value = "pushMessageClient")
     @Autowired
@@ -93,14 +92,27 @@ public class SessionRestController implements ISessionRestAPI {
 
     @Override
     public ResponseEntity<ApiResponse<PushResponse>> sendPushMessageHandler(@Valid PushSendRequest pushSendRequest, BindingResult result) {
-        log.info("REST API: POST {}/message/push", REST_PATH);
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST " + REST_PATH + "/message/push",
+                "sendPushMessageHandler"
+        );
+
+        log.info("REST API: POST {} /message/push", REST_PATH);
 
         if(result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+            result.getAllErrors().forEach(message ->
+                    LogMessage.formedError(
+                            TAG,
+                            "REST API: POST " + REST_PATH + "/message/push",
+                            "sendPushMessageHandler",
+                            LogMessage.PARAMETER_ERROR,
+                            message.toString()
+                    )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        //ApiResponse<PushResponse> response = this.messageRestService.sendPush(pushSendRequest);
         ApiResponse<PushResponse> response = this.pushMessageClient.sendPush(pushSendRequest);
         return ResponseEntity.ok(response);
     }
@@ -115,10 +127,10 @@ public class SessionRestController implements ISessionRestAPI {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: POST " + REST_PATH +
-                        (roomRequest != null ? roomRequest.toString() : "{}") +
-                        ("company code: " + companyCode) +
-                        ("Request UserId: " + userId) +
-                        ("Request Header: " + client),
+                        (roomRequest != null ? roomRequest.toString() : "{}") + "\n"
+                        + ("COMPANY CODE: " + companyCode) + "\n"
+                        + ("REQ USERID: " + userId) + "\n"
+                        + ("REQ HEADER: " + client),
                         "createRoomRequestHandler"
         );
 
@@ -136,9 +148,6 @@ public class SessionRestController implements ISessionRestAPI {
             );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
-        // check user is valid
-        DataProcess<UserInfoResponse> userInfo = this.sessionDataRepository.checkUserValidation(userId);
 
         LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
         if (licenseItem == null) {
@@ -160,33 +169,10 @@ public class SessionRestController implements ISessionRestAPI {
                 ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
                         roomRequest,
                         licenseItem,
+                        userId,
                         sessionJson.toString(),
                         tokenResult.toString());
 
-                if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
-                    //send push message invite
-                    pushMessageClient.setPush(
-                            PushConstants.PUSH_SERVICE_REMOTE,
-                            PushConstants.SEND_PUSH_ROOM_INVITE,
-                            roomRequest.getWorkspaceId(),
-                            userId,
-                            Arrays.asList(roomRequest.getLeaderId()));
-
-                    //set push message invite room contents
-                    ApiResponse<PushResponse> pushResponse = pushMessageClient.sendPushInvite(
-                            apiResponse.getData().getSessionId(),
-                            roomRequest.getTitle(),
-                            userInfo.getData().getNickname(),
-                            userInfo.getData().getProfile());
-
-                    if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-                        log.info("push send message executed but not success");
-                        log.info("push response: [code] {}", pushResponse.getCode());
-                        log.info("push response: [message] {}", pushResponse.getMessage());
-                    } else {
-                        log.info("push send message executed success {}", pushResponse.toString());
-                    }
-                }
                 return ResponseEntity.ok(apiResponse);
             } else {
                 ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
@@ -205,6 +191,7 @@ public class SessionRestController implements ISessionRestAPI {
             ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
                     roomRequest,
                     licenseItem,
+                    userId,
                     sessionJson.toString(),
                     tokenResult.toString());
             return ResponseEntity.ok(apiResponse);
@@ -240,9 +227,6 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        // check user is valid
-        DataProcess<UserInfoResponse> userInfo = this.sessionDataRepository.checkUserValidation(roomRequest.getLeaderId());
-
         // check license item using company code if not virnect
         LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
         if (licenseItem == null) {
@@ -263,31 +247,10 @@ public class SessionRestController implements ISessionRestAPI {
                 ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
                         roomRequest,
                         licenseItem,
+                        roomRequest.getLeaderId(),
                         sessionJson.toString(),
                         tokenResult.toString());
 
-                if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
-                    pushMessageClient.setPush(
-                            PushConstants.PUSH_SERVICE_REMOTE ,
-                            PushConstants.SEND_PUSH_ROOM_INVITE ,
-                            roomRequest.getWorkspaceId() ,
-                            roomRequest.getLeaderId() ,
-                            roomRequest.getParticipantIds());
-
-                    ApiResponse<PushResponse> pushResponse = pushMessageClient.sendPushInvite(
-                            apiResponse.getData().getSessionId(),
-                            roomRequest.getTitle(),
-                            userInfo.getData().getNickname(),
-                            userInfo.getData().getProfile());
-
-                    if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-                        log.info("push send message executed but not success");
-                        log.info("push response: [code] {}", pushResponse.getCode());
-                        log.info("push response: [message] {}", pushResponse.getMessage());
-                    } else {
-                        log.info("push send message executed success {}", pushResponse.toString());
-                    }
-                }
                 return ResponseEntity.ok(apiResponse);
             } else {
                 ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
@@ -306,6 +269,7 @@ public class SessionRestController implements ISessionRestAPI {
             ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
                     roomRequest,
                     licenseItem,
+                    roomRequest.getLeaderId(),
                     sessionJson.toString(),
                     tokenResult.toString());
             return ResponseEntity.ok(apiResponse);

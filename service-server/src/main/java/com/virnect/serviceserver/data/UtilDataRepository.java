@@ -106,7 +106,7 @@ public class UtilDataRepository extends DataRepository {
 
             @Override
             DataProcess<CompanyResponse> invokeDataProcess() {
-                Company company = saveData(companyRequest);
+                Company company = saveData();
                 if(sessionService.createCompany(company) != null) {
                     CompanyResponse companyResponse = new CompanyResponse();
                     companyResponse.setWorkspaceId(company.getWorkspaceId());
@@ -118,7 +118,7 @@ public class UtilDataRepository extends DataRepository {
                 }
             }
 
-            private Company saveData(CompanyRequest companyRequest) {
+            private Company saveData() {
                 Company company = Company.builder()
                         .companyCode(companyRequest.getCompanyCode())
                         .workspaceId(companyRequest.getWorkspaceId())

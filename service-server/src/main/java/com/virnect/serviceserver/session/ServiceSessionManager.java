@@ -9,14 +9,17 @@ import com.virnect.mediaserver.kurento.core.KurentoSession;
 import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
+import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.data.SessionDataRepository;
 import com.virnect.serviceserver.model.SessionData;
 import com.virnect.serviceserver.model.SessionTokenData;
 import com.virnect.serviceserver.utils.LogMessage;
+import com.virnect.serviceserver.utils.PushMessageClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
@@ -49,6 +52,8 @@ public class ServiceSessionManager {
         this.sessionDataRepository = sessionDataRepository;
     }
 
+
+
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("sessionManager")
@@ -68,7 +73,11 @@ public class ServiceSessionManager {
                         "createSession",
                         "session create and sessionEventHandler is here",
                         "event received");
-                sessionDataRepository.generateRoomSession(sessionNotActive.getSessionId());
+                String sessionId = sessionNotActive.getSessionId();
+                DataProcess<Boolean> result = sessionDataRepository.generateRoomSession(sessionId);
+                if(result.getData()) {
+                    sessionDataRepository.sendSessionCreate(sessionId);
+                }
             }
 
             @Override

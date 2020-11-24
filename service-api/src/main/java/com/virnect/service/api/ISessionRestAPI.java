@@ -37,7 +37,7 @@ public interface ISessionRestAPI {
      * 6. register other users as a worker(participant), if the request contains other user information.
      * 7. return session id and token
      */
-    @ApiOperation(value = "Initialize a Remote Room for Realwear", notes = "Generate Remote Session  for Smart Glasses")
+    @ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "Generate Remote Session")
     @PostMapping(value = "room/{userId}")
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestHeader(name = "client", required = false) String client,
@@ -56,13 +56,7 @@ public interface ISessionRestAPI {
      * 6. register other users as a worker(participant), if the request contains other user information.
      * 7. return session id and token
      */
-    /*@ApiOperation(value = "Initialize a Remote Room", notes = "Generate Remote Session")
-    @PostMapping(value = "room")
-    ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
-            @RequestBody @Valid RoomRequest roomRequest,
-            BindingResult result);*/
-
-    @ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "Generate Remote Session")
+    @ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "This api will be deprecated")
     @PostMapping(value = "room")
     ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
             @RequestBody @Valid RoomRequest roomRequest,
