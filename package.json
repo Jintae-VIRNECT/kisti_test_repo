@@ -9,7 +9,7 @@
     "WC-Modules"
   ],
   "scripts": {
-    "dev": "cross-env VIRNECT_ENV=onpremise NODE_ENV=onpremise webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
+    "dev": "cross-env VIRNECT_ENV=local NODE_ENV=local webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
     "build": "webpack --progress --config build/webpack.prod.conf.js",
     "build:local": "cross-env VIRNECT_ENV=develop NODE_ENV=develop webpack --mode production --progress --config build/webpack.prod.conf.js",
     "start:local": "cross-env VIRNECT_ENV=onpremise NODE_ENV=onpremise node server.js",
