@@ -4,6 +4,7 @@ import com.virnect.data.dao.Company;
 import com.virnect.data.dao.Language;
 import com.virnect.data.dao.SessionType;
 import com.virnect.service.ApiResponse;
+import com.virnect.service.constraint.CompanyConstants;
 import com.virnect.service.constraint.LicenseItem;
 import com.virnect.service.constraint.TranslationItem;
 import com.virnect.service.dto.LanguageCode;
@@ -202,7 +203,7 @@ public class UtilDataRepository extends DataRepository {
             @Override
             DataProcess<CompanyInfoResponse> invokeDataProcess() {
                 CompanyInfoResponse companyInfoResponse;
-                if(companyCode != 0) {
+                if(companyCode != CompanyConstants.COMPANY_VIRNECT) {
                     Company company = loadFromDatabase();
                     if(company != null) {
                         companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);

@@ -151,7 +151,7 @@ public class HistoryRestController implements IHistoryRestAPI {
             if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
                 //send push message invite
                 PushSendRequest pushSendRequest = new PushSendRequest();
-                pushSendRequest.setService(PushConstants.PUSH_EVENT_REMOTE);
+                pushSendRequest.setService(PushConstants.PUSH_SERVICE_REMOTE);
                 pushSendRequest.setEvent(PushConstants.SEND_PUSH_ROOM_INVITE);
                 pushSendRequest.setWorkspaceId(roomRequest.getWorkspaceId());
                 pushSendRequest.setUserId(roomRequest.getLeaderId());

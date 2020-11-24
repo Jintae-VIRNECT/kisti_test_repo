@@ -16,14 +16,14 @@ import java.util.List;
 @NoArgsConstructor
 public class RoomResponse {
     @ApiModelProperty(value = "Remote Session token", example = "wss://localhost:5000?sessionId=ses_JIiIVBMNKW&token=tok_VNZEjukc3gDJpEej&role=PUBLISHER&version=0.1.0")
-    private String token;
+    private String token = "";
 
     @ApiModelProperty(value = "Remote Session Identifier", position = 1, example = "ses_NxKh1OiT2S")
-    private String sessionId;
+    private String sessionId = "";
 
     @ApiModelProperty(value = "Coturn Server IP Address", position = 2)
     private List<CoturnResponse> coturn = new ArrayList<>();
 
     @ApiModelProperty(value = "Remote Server Websocket Address", position = 3, example = "wss://")
-    private String wss;
+    private String wss = "";
 }
