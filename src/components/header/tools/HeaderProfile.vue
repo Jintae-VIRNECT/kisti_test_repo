@@ -21,12 +21,12 @@
       </div>
       <div class="popover-profile__link">
         <button @click="link(urlLink)">
-          VIRNECT Workstation
+          {{ $t('common.workstation') }}
         </button>
       </div>
       <div class="popover-profile__link" v-if="dashboardLink">
         <button @click="link(dashboardLink)">
-          Remote Dashboard
+          {{ $t('common.dashboard') }}
         </button>
       </div>
       <div class="popover-profile__link">

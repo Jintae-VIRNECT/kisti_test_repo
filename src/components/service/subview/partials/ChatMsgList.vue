@@ -78,11 +78,21 @@ export default {
         }
       }, 300)
     },
+    speech() {
+      setTimeout(() => {
+        if (this.$refs['chatListScrollbar']) {
+          this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+        }
+      }, 300)
+    },
   },
   methods: {
     doTts(info) {
       this.$refs['chatTts'].doTts(info)
     },
+  },
+  mounted() {
+    this.$refs['chatListScrollbar'].scrollToY(99999)
   },
 }
 </script>

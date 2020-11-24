@@ -7,7 +7,6 @@ Jenkinsfile
 .hg
 .svn
 .dockerignore
-package-lock.json
 docker/*
 logs/*
 .vscode/*

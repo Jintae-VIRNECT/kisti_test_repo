@@ -182,28 +182,16 @@ export default {
       return false
     },
     isMe() {
-      if (this.participant.id === this.account.uuid) {
-        return true
-      }
-      return false
+      return this.participant.id === this.account.uuid
     },
     isCurrent() {
-      if (this.mainView.id === this.participant.id) return true
-      return false
+      return this.mainView.id === this.participant.id
     },
     isLeader() {
-      if (this.participant.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.participant.roleType === ROLE.LEADER
     },
     iamLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     cameraStatus() {
       if (this.participant.hasVideo) {
@@ -312,18 +300,19 @@ export default {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
-      if (!this.participant.hasVideo) {
-        if (
-          this.account.roleType === ROLE.LEADER &&
-          this.openRoom &&
-          this.participant.cameraStatus === CAMERA.CAMERA_OFF
-        ) {
-          this.requestVideo()
+      if (this.openRoom) {
+        if (!this.participant.hasVideo) {
+          if (
+            this.account.roleType === ROLE.LEADER &&
+            this.participant.cameraStatus === CAMERA.CAMERA_OFF
+          ) {
+            this.requestVideo()
+            return
+          }
           return
+        } else {
+          this.$call.mainview(this.participant.id, true)
         }
-        return
-      } else {
-        this.$call.mainview(this.participant.id, true)
       }
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {

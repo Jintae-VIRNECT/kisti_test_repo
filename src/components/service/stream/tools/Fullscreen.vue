@@ -1,7 +1,7 @@
 <template>
   <tool-button
     customClass="fullscreen-button"
-    :text="$t('확대 / 축소')"
+    :text="$t('service.tool_enlarge_reduce')"
     :isActive="!status"
     :src="require('assets/image/call/ic_fullscreen_on.svg')"
     :activeSrc="require('assets/image/call/ic_fullscreen_off.svg')"
@@ -36,7 +36,7 @@ export default {
       setTimeout(() => {
         this.$emit('update:hide', false)
       }, 500)
-      this.$eventBus.$emit('fullscreen', this.status)
+      this.$eventBus.$emit('video:fullscreen', this.status)
       this.status = !this.status
     },
   },

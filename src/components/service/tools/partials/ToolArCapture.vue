@@ -17,11 +17,7 @@ export default {
   mixins: [toolMixin],
   computed: {
     active() {
-      if (this.viewAction === ACTION.AR_AREA) {
-        return true
-      } else {
-        return false
-      }
+      return this.viewAction === ACTION.AR_AREA
     },
   },
   methods: {

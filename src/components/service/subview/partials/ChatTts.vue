@@ -13,10 +13,11 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['translate']),
+    ...mapGetters(['translate', 'speaker']),
   },
   methods: {
     doTts(message) {
+      if (!this.speaker.isOn) return
       if (!this.translate.ttsAllow) return
       if (!message || message.length === 0) return
       const startTime = Date.now()

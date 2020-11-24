@@ -132,7 +132,7 @@ export default {
       return menu
     },
     onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   methods: {
@@ -174,34 +174,34 @@ export default {
 
   /* Lifecycles */
   async created() {
-    try {
-      const permission = await getPermission()
+    const permission = await getPermission()
 
-      if (permission === true) {
-        const devices = await this.getMediaDevice()
-        this.videoDevices = devices.videos
-        this.micDevices = devices.mics
-        this.speakerDevices = devices.speakers
-      } else if (permission === 'prompt') {
-        let devices = await this.getMediaDevice()
-        let video = false,
-          audio = false
-        if (devices.videos.length > 0) {
-          video = true
-        }
-        if (devices.mics.length > 0) {
-          audio = true
-        }
+    if (permission === true) {
+      const devices = await this.getMediaDevice()
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
+    } else if (permission === 'prompt') {
+      let devices = await this.getMediaDevice()
+      let video = false,
+        audio = false
+      if (devices.videos.length > 0) {
+        video = true
+      }
+      if (devices.mics.length > 0) {
+        audio = true
+      }
+      try {
         await getUserMedia(audio, video)
         devices = await this.getMediaDevice()
         this.videoDevices = devices.videos
         this.micDevices = devices.mics
         this.speakerDevices = devices.speakers
-      } else {
-        this.showDenied = true
+      } catch (err) {
+        console.error(err)
       }
-    } catch (err) {
-      console.error(err)
+    } else {
+      this.showDenied = true
     }
   },
   mounted() {},

@@ -46,30 +46,33 @@
     </section>
     <section class="setting-section list">
       <div class="setting-section__title">
-        {{ '번역/원본 출력 방식' }}
+        {{ $t('workspace.setting_translate_output') }}
       </div>
       <slider
-        :first="'동시 출력'"
-        :second="'선택 출력'"
+        :first="$t('workspace.setting_translate_output_both')"
+        :second="$t('workspace.setting_translate_output_each')"
         :isFirst.sync="transMultiple"
       ></slider>
     </section>
     <section class="setting-section list horizon">
       <figure class="setting-section__translate">
         <div class="setting-section__title">
-          {{ '음성 인식 방식(STT)' }}
+          {{ $t('workspace.setting_stt') }}
         </div>
         <slider
-          :first="'음성 녹음'"
-          :second="'스트리밍'"
+          :first="$t('workspace.setting_stt_sync')"
+          :second="$t('workspace.setting_stt_streaming')"
           :isFirst.sync="sttSync"
         ></slider>
       </figure>
       <figure class="setting-section__translate">
         <div class="setting-section__title">
-          {{ '음성 변환 설정(TTS)' }}
+          {{ $t('workspace.setting_tts') }}
         </div>
-        <check :text="'음성 변환 사용 허용'" :value.sync="ttsAllow"></check>
+        <check
+          :text="$t('workspace.setting_tts_allow')"
+          :value.sync="ttsAllow"
+        ></check>
       </figure>
     </section>
   </div>

@@ -12,7 +12,7 @@ const getSocket = server => {
     pingInterval: 1000,
     pingTimeout: config.getAsNumber('TIMEOUT'),
   })
-  if (VIRNECT_ENV === 'develop') {
+  if (VIRNECT_ENV === 'develop' || VIRNECT_ENV === 'onpremise') {
     io.cors = cors()
   }
 

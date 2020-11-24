@@ -22,6 +22,7 @@
               v-for="(data, idx) of files"
               :key="'download_' + idx"
               :file="data"
+              :sessionId="sessionId"
             ></download-row>
           </div>
         </vue2-scrollbar>

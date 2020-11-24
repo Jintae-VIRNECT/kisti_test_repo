@@ -78,13 +78,7 @@ export const getUserMedia = async (audio, video) => {
   try {
     return await navigator.mediaDevices.getUserMedia({ audio, video })
   } catch (err) {
-    if (typeof err === 'object') {
-      if (err.name && err.name.toLowerCase() === 'notallowederror') {
-        return 'device access deined'
-      }
-      return err.name
-    }
-    return err
+    throw err
   }
 }
 

@@ -24,18 +24,18 @@
         :class="{ inactive: !sendActive }"
         @click="doSend()"
       >
-        보내기
+        {{ $t('button.send') }}
       </button>
     </div>
     <div class="chat-speach__textarea">
       <textarea
-        placeholder="음성 녹음을 진행하여 음성 채팅을 시작하세요."
+        :placeholder="$t('service.stt_sync_placeholder')"
         :disabled="status !== 'wait'"
         v-model="speechText"
       />
     </div>
     <button class="chat-speech__close" @click="$emit('hidespeech')">
-      닫기
+      {{ $t('button.close') }}
     </button>
   </div>
 </template>
@@ -62,45 +62,45 @@ export default {
     ...mapGetters(['myInfo', 'translate', 'mic']),
     speechGuide() {
       if (this.status === 'wait') {
-        return '음성 대기'
+        return this.$t('service.stt_sync_wait')
       } else if (this.status === 'recording') {
-        return '음성 인식 중...'
+        return this.$t('service.stt_sync_recording')
       } else {
-        return '음성 인식 완료'
+        return this.$t('service.stt_sync_complete')
       }
     },
     sendActive() {
-      if (
+      return (
         this.speechText &&
         this.speechText.length > 0 &&
         this.progress === -1
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
   },
   methods: {
     async startSpeechRecord() {
       if (!this.mic.isOn) {
-        this.toastError('마이크가 꺼져있습니다.')
+        this.toastError(this.$t('service.stt_mic_off'))
         return
       }
       if (this.timer) clearInterval(this.timer)
       this.initRecord(this.myInfo.stream)
       this.speechText = ''
       this.strokeDashoffset = this.circumference
-      await this.startRecord(this.translate.code)
-      this.timer = setInterval(async () => {
-        this.progress += 1
+      try {
+        await this.startRecord(this.translate.code)
+        this.timer = setInterval(async () => {
+          this.progress += 1
+          this.setProgress()
+          if (this.progress >= MAX_RECORD_TIME) {
+            this.clickSpeech()
+          }
+        }, 1000)
+        this.progress = 0
         this.setProgress()
-        if (this.progress >= MAX_RECORD_TIME) {
-          this.clickSpeech()
-        }
-      }, 1000)
-      this.progress = 0
-      this.setProgress()
+      } catch (err) {
+        this.toastError(this.$t('service.stt_sync_error'))
+      }
     },
     setProgress() {
       const offset =
@@ -115,7 +115,7 @@ export default {
         this.strokeDashoffset = 0
         this.progress = -1
         if (!text || text.trim().length === 0) {
-          this.toastDefault('인식된 음성이 없습니다.')
+          this.toastDefault(this.$t('service.stt_no_voice'))
         } else {
           this.speechText = text
         }

@@ -13,7 +13,7 @@
       <button
         class="btn download-table__button"
         :class="{ expire: file.expired }"
-        @click="download(file)"
+        @click="download"
       >
         {{ $t('button.download') }}
       </button>
@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import { downloadFile } from 'api/http/file'
+import { downloadByURL } from 'utils/file'
 export default {
   name: 'DownloadRow',
   props: {
@@ -30,6 +32,10 @@ export default {
       default: () => {
         return {}
       },
+    },
+    sessionId: {
+      type: String,
+      default: '',
     },
   },
   computed: {
@@ -59,15 +65,20 @@ export default {
       })
     },
   },
-  methods: {},
+  methods: {
+    async download() {
+      const res = await downloadFile({
+        objectName: this.file.objectName,
+        sessionId: this.sessionId,
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+      })
+
+      downloadByURL(res)
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
 }
 </script>
-
-<style
-  lang="scss"
-  scoped
-  src="assets/style/workspace/workspace-workcard.scss"
-></style>

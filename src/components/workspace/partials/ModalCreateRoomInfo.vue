@@ -133,13 +133,7 @@ export default {
       }
     },
     btnDisabled() {
-      if (this.selection.length < 1) {
-        return true
-      } else if (this.titleValid) {
-        return true
-      } else {
-        return false
-      }
+      return this.selection.length < 1 || this.titleValid
     },
     titleValidMessage() {
       if (this.selection.length < 1) {

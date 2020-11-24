@@ -16,16 +16,22 @@
       <h2 class="support-body__title" v-html="$t('support.header_title')"></h2>
       <p
         class="support-body--description"
-        v-html="$t('support.header_description')"
+        v-html="
+          onpremise ? $t('support.pc_web') : $t('support.header_description')
+        "
       ></p>
       <p
         class="support-body--mobile"
-        v-html="$t('support.header_description_mobile')"
+        v-html="
+          onpremise
+            ? $t('support.pc_web')
+            : $t('support.header_description_mobile')
+        "
       ></p>
       <div>
         <button
           class="support-body--button"
-          v-if="isScreenDesktop"
+          v-if="isScreenDesktop && !onpremise"
           @click="pcWeb"
         >
           {{ $t('support.pc_web_button') }}
@@ -33,7 +39,7 @@
       </div>
     </div>
 
-    <footer class="support-footer">
+    <footer class="support-footer" v-if="!onpremise">
       <div class="support-footer__inner">
         <p class="support-footer__copyright">
           &copy; VIRNECT CO., LTD. All rights reserved.
@@ -44,8 +50,19 @@
 </template>
 
 <script>
+import { getConfigs } from 'utils/auth'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 export default {
   name: 'SupportComponent',
+  async beforeRouteEnter(to, from, next) {
+    await getConfigs()
+    next()
+  },
+  computed: {
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
+    },
+  },
   methods: {
     pcWeb() {
       window.open('https://www.google.com/intl/ko/chrome/')

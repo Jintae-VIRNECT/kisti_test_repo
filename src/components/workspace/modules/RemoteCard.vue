@@ -121,15 +121,11 @@ export default {
   },
   computed: {
     isOpenRoom() {
-      if (
+      return (
         this.room &&
         this.room.sessionType &&
         this.room.sessionType === ROOM_STATUS.OPEN
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
     leader() {
       if (
@@ -145,10 +141,7 @@ export default {
       return this.room.memberList[idx]
     },
     isLeader() {
-      if (this.leader.uuid === this.account.uuid) {
-        return true
-      }
-      return false
+      return this.leader.uuid === this.account.uuid
     },
     activeMemberList() {
       let activeMembers = []

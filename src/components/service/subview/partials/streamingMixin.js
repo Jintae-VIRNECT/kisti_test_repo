@@ -20,6 +20,8 @@ export default {
       transcriptList: [],
       transcriptCounter: 0,
       audioContext: null,
+      outputText: '',
+      concatText: '',
     }
   },
   computed: {

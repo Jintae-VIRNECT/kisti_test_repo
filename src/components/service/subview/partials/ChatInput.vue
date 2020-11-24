@@ -39,9 +39,13 @@
           class="chat-input__form-speech"
           @click="doStt"
         >
-          {{ '번역' }}
+          {{ $t('service.translate') }}
         </button>
-        <button class="chat-input__form-upload" @click="clickUpload">
+        <button
+          v-if="isOnpremise"
+          class="chat-input__form-upload"
+          @click="clickUpload"
+        >
           {{ $t('service.file_upload') }}
         </button>
         <textarea
@@ -99,11 +103,7 @@ export default {
   computed: {
     ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate']),
     isOnpremise() {
-      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
-        return true
-      } else {
-        return false
-      }
+      return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
   },
   watch: {
@@ -278,10 +278,7 @@ export default {
       // console.log(event);
     },
     dropHandler(event) {
-      if (!this.isOnpremise) {
-        this.unsupport()
-        return
-      }
+      if (!this.isOnpremise) return
       const file = event.dataTransfer.files[0]
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE

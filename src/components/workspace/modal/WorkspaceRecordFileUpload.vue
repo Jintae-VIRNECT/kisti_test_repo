@@ -11,7 +11,9 @@
     :dimClose="false"
   >
     <div class="record-file-upload">
-      <p class="record-file-upload--header">파일을 업로드중입니다.</p>
+      <p class="record-file-upload--header">
+        {{ $t('workspace.record_uploading') }}
+      </p>
       <p class="record-file-upload--current-file">{{ currentFile }}</p>
       <progress-bar
         customClass="progress-upload"
@@ -99,7 +101,7 @@ export default {
           this.uploaded++
         }
       } catch (e) {
-        this.confirmDefault('업로드 중 오류가 발생했습니다.​', {
+        this.confirmDefault(this.$t('workspace.record_upload_error'), {
           action: this.close,
         })
         console.error(e)

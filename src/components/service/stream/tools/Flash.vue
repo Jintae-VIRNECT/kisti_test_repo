@@ -32,23 +32,14 @@ export default {
       return -1
     },
     status() {
-      if (this.flashStatus === FLASH.FLASH_ON) {
-        return true
-      } else {
-        return false
-      }
+      return this.flashStatus === FLASH.FLASH_ON
     },
     disable() {
-      const state = this.flashStatus
-      if (
-        state === FLASH.FLASH_NONE ||
-        state === FLASH.NO_PERMISSION ||
-        state === 'default'
-      ) {
-        return true
-      } else {
-        return false
-      }
+      return (
+        this.flashStatus === FLASH.FLASH_NONE ||
+        this.flashStatus === FLASH.NO_PERMISSION ||
+        this.flashStatus === 'default'
+      )
     },
   },
   watch: {

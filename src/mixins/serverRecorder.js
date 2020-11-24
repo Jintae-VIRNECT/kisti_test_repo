@@ -50,27 +50,27 @@ export default {
         })
         this.recordingId = result.recordingId
 
+        this.$eventBus.$emit('serverRecord', {
+          isStart: true,
+          isWaiting: false,
+        })
+
         const timeout = Number.parseInt(this.serverRecord.time, 10) * 60 * 1000
+
         this.recordTimeout = setTimeout(() => {
           this.$eventBus.$emit('serverRecord', {
             isStart: false,
           })
         }, timeout)
+
+        this.toastDefault(this.$t('service.record_server_start_message'))
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
         console.error('SERVER RECORD::', e)
         if (e.code === 1001) {
-          this.toastError(
-            this.$t(
-              '현재 실행 가능한 서버녹화 개수가 초과 되었습니다. 잠시후에 다시 시도해 주세요.',
-            ),
-          )
+          this.toastError(this.$t('service.record_server_over_max_count'))
         } else if (e.code === 1002) {
-          this.toastError(
-            this.$t(
-              '서버에 녹화 파일을 저장 할 수 있는 공간이 부족합니다. 관리자에게 문의 해주세요',
-            ),
-          )
+          this.toastError(this.$t('service.record_server_no_storage'))
         }
 
         this.$eventBus.$emit('serverRecord', {
@@ -96,15 +96,17 @@ export default {
           id: this.recordingId,
         })
         this.recordingId = null
+
+        this.toastDefault(this.$t('service.record_server_end_message'))
       }
     },
     async toggleServerRecord(payload) {
       if (this.isContinue) return
 
-      if (payload.isStart) {
-        await this.startServerRecord()
-      } else {
+      if (!payload.isStart) {
         await this.stopServerRecord()
+      } else if (payload.isStart && payload.isWaiting) {
+        await this.startServerRecord()
       }
     },
     async checkServerRecordings() {
@@ -136,6 +138,7 @@ export default {
         elapsedTime: this.elapsedTime,
         isContinue: this.isContinue,
       })
+
       this.isContinue = false
     },
   },

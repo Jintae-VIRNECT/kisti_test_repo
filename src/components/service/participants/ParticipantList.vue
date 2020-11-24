@@ -57,18 +57,10 @@ export default {
       'openRoom',
     ]),
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     isMaxLength() {
-      if (this.participants.length < maxParticipants) {
-        return false
-      } else {
-        return true
-      }
+      return this.participants.length === maxParticipants
     },
   },
   watch: {

@@ -3,11 +3,11 @@
     <div class="chat-speech__main">
       <span class="chat-speech__icon" :class="{ active: connected }"></span>
       <span class="chat-speech__text">
-        {{ `음성 인식된 문장이 표출됩니다.` }}
+        {{ speechGuide }}
       </span>
     </div>
     <button class="chat-speech__close" @click="$emit('hidespeech')">
-      닫기
+      {{ $t('button.close') }}
     </button>
   </div>
 </template>
@@ -28,6 +28,12 @@ export default {
     speechText() {
       return `${this.concatText}
       ${this.outputText}`
+    },
+    speechGuide() {
+      if (this.outputText.length > 0) {
+        return this.$t('service.stt_sync_recording')
+      }
+      return this.$t('service.stt_streaming_recognize')
     },
   },
   watch: {

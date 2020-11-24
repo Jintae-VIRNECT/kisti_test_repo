@@ -105,11 +105,7 @@ export default {
       }
     },
     btnDisabled() {
-      if (this.titleValid) {
-        return true
-      } else {
-        return false
-      }
+      return !!this.titleValid
     },
     titleValidMessage() {
       if (this.title.length < 2) {
