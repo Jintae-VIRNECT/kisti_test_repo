@@ -50,7 +50,6 @@ export const addSessionEventListener = session => {
           )
         }
       }
-      console.log(Store.getters['myInfo'].cameraStatus)
       if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
         _.video(
           Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,

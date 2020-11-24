@@ -129,8 +129,6 @@ export default {
       this.stream = null
       this.$nextTick(async () => {
         try {
-          console.log(this.currentQuality.width)
-          console.log(this.currentQuality.height)
           const mediaRes = await getUserMedia(false, {
             deviceId: {
               exact: this.videoId,
