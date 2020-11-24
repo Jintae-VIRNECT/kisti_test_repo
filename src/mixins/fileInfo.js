@@ -48,7 +48,7 @@ export default {
       let columns = []
       switch (type) {
         case 'attach':
-          columns = [['name'], ['size'], ['uploader'], ['expirationDate']]
+          columns = [['name'], ['size'], ['nickName'], ['expirationDate']]
           break
         case 'server':
           columns = [['filename'], ['duration'], ['size']]
