@@ -22,7 +22,7 @@ module.exports = async () => {
         {
           hid: 'description',
           name: 'description',
-          content: 'Virnect Platform',
+          content: 'Workstation',
         },
       ],
     },

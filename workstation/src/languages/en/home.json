@@ -2,8 +2,9 @@
   "home": {
     "banner": {
       "sub": "Connect Work Space and People",
-      "main": "VIRNECT Workstation",
-      "desc": "Experience true systematic management through VIRNECT products"
+      "main": "%{company} Workstation",
+      "desc": "Experience true systematic management through VIRNECT products",
+      "desc_op": "Welcome to %{company} Workstation"
     },
     "memberList": {
       "title": "New Members",

@@ -207,6 +207,7 @@ export default {
     },
     clearMember(index) {
       this.userInfoList.splice(index, 1)
+      this.choosePlan()
     },
     initAvailablePlans() {
       this.plansInfo.products.forEach(product => {

@@ -34,8 +34,13 @@
         <el-col class="container__center">
           <el-card class="main-banner">
             <h6>{{ $t('home.banner.sub') }}</h6>
-            <h5>{{ $t('home.banner.main') }}</h5>
-            <p>{{ $t('home.banner.desc') }}</p>
+            <h5>{{ $t('home.banner.main', { company }) }}</h5>
+            <p v-if="$isOnpremise">
+              {{ $t('home.banner.desc_op', { company }) }}
+            </p>
+            <p v-else>
+              {{ $t('home.banner.desc') }}
+            </p>
           </el-card>
           <current-member-list v-if="!$isOnpremise" />
           <current-contents-list />
@@ -107,6 +112,7 @@ export default {
     ...mapGetters({
       activeWorkspace: 'auth/activeWorkspace',
       plansInfo: 'plan/plansInfo',
+      company: 'layout/title',
     }),
   },
   methods: {
@@ -140,11 +146,12 @@ export default {
     & h6 {
       font-weight: 300;
       font-size: 20px;
-      font-family: $poppins;
+      font-family: $poppins, $noto;
     }
     & h5 {
+      font-weight: bold;
       font-size: 28px;
-      font-family: $poppins;
+      font-family: $poppins, $noto;
     }
     & p {
       margin-top: 20px;
