@@ -150,6 +150,6 @@
     "plan_exceeded_desctiption": "The service is restricted because there were more users assigned to the plans than the number of plans you possess. Please request for plan management to the Master user.",
     "go_workspace_member": "Move to Workspace member list",
 
-    "cookie": "VIRNECT uses cookies to operate VIRNECT's services and improve customer experience. For more information,<br> check out our <a href='/policy/cookie' target='_blank'>cookie policy</a>. By clicking ‘OK’ or continuing to use the site, you agree to these cookie settings."
+    "cookie": "We use cookies and usage statistics to improve our service and customer experience. To learn more, <br>please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics."
   }
 }
