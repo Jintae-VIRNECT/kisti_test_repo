@@ -142,6 +142,9 @@
     "license_expire_description": "Remote2.0을 사용하시려면 워크스테이션에서<br> 플랜을 추가/갱신하여 이용해 주세요.",
     "license_no_title": "VIRNECT Remote2.0을 <br>사용할 수 있는 플랜이 없습니다.",
     "license_no_description": "VIRNECT Remote2.0을 사용할 수 있는 워크스페이스가 없습니다. <br>워크스페이스 마스터에게 Remote 플랜 할당을 요청해 주세요.",
+    "license_expire_title_onpremise": "Remote2.0을 사용할 수 있는<br> 플랜이 만료되었습니다.",
+    "license_no_title_onpremise": "Remote2.0을 <br>사용할 수 있는 플랜이 없습니다.",
+    "license_no_description_onpremise": "Remote2.0을 사용할 수 있는 워크스페이스가 없습니다. <br>워크스페이스 마스터에게 Remote 플랜 할당을 요청해 주세요.",
     
     "error_no_connected_device": "연결된 마이크 장치를 찾을 수 없습니다. 마이크를 확인해 주세요.",
     "error_no_device": "디바이스를 찾을 수 없습니다.",

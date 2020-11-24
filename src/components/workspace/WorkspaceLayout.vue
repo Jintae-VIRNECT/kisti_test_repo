@@ -21,7 +21,7 @@
         ></workspace-tab>
       </div>
       <cookie-policy
-        v-if="showCookie"
+        v-if="!onpremise && showCookie"
         :visible.sync="showCookie"
       ></cookie-policy>
       <record-list :visible.sync="showList"></record-list>
@@ -49,6 +49,7 @@ import PlanOverflow from './modal/WorkspacePlanOverflow'
 import FileUpload from './modal/WorkspaceRecordFileUpload'
 import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceLayout',
@@ -96,6 +97,9 @@ export default {
   },
   computed: {
     ...mapGetters(['useTranslate']),
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
+    },
   },
   methods: {
     ...mapActions([
