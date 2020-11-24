@@ -11,6 +11,7 @@ import globalMixin from 'mixins/global'
 
 // import { version } from '@/package.json'
 import { version } from '../../../package.json'
+import { logger, debug } from 'utils/logger'
 
 import Store from 'stores/remote/store'
 import VueToasted from 'plugins/remote/toasted'
@@ -26,6 +27,8 @@ Vue.config.productionTip = false
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
 Vue.prototype.$version = version
+Vue.prototype.logger = logger
+Vue.prototype.debug = debug
 
 const app = new Vue({
   router: Router,
