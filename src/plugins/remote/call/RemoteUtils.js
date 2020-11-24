@@ -326,6 +326,7 @@ export const addSessionEventListener = session => {
           : 'opponent',
       name: participants[idx].nickname,
       profile: participants[idx].path,
+      mute: participants[idx].mute,
       connectionId: event.from.connectionId,
       text: data.text.replace(/\</g, '&lt;'),
       languageCode: data.languageCode,

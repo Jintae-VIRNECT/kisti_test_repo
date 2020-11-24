@@ -53,9 +53,9 @@
           <span class="button-text">{{ $t('button.download') }}</span>
         </button>
       </div>
-      <span v-if="!hideTime" class="chat-item__body--time">{{
-        $dayjs(chat.date).format('A hh:mm')
-      }}</span>
+      <span v-if="!hideTime" class="chat-item__body--time">
+        {{ $dayjs(chat.date).format('A hh:mm') }}
+      </span>
     </div>
   </li>
 </template>
@@ -234,7 +234,9 @@ export default {
         const response = await doTranslate(this.chat.text, this.translateCode)
         this.translateText = response
         this.translateActive = true
-        this.$emit('tts', response)
+        if (!this.chat.mute) {
+          this.$emit('tts', response)
+        }
       } catch (err) {
         console.error(`${err.message} (${err.code})`)
       }
