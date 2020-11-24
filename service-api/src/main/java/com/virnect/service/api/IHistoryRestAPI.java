@@ -21,7 +21,7 @@ import javax.validation.Valid;
 @RequestMapping("/remote")
 public interface IHistoryRestAPI {
 
-    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "Redial Remote Session")
+    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "This api will be deprecated")
     @PostMapping(value = "history")
     ResponseEntity<ApiResponse<RoomResponse>> redialRoomRequest(
             @RequestBody @Valid RoomRequest roomRequest,
@@ -29,6 +29,16 @@ public interface IHistoryRestAPI {
             @RequestParam(name = "companyCode") int companyCode,
             BindingResult result
             );
+
+    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "Redial Remote Session")
+    @PostMapping(value = "history/{userId}")
+    ResponseEntity<ApiResponse<RoomResponse>> redialRoomRequestHandler(
+            @RequestHeader(name = "client", required = false) String client,
+            @PathVariable(name = "userId") String userId,
+            @RequestBody @Valid RoomRequest roomRequest,
+            @RequestParam(name = "sessionId") String sessionId,
+            @RequestParam(name = "companyCode") int companyCode,
+            BindingResult result);
 
     @ApiOperation(value = "Load Room History Information List", notes = "최근 기록 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({

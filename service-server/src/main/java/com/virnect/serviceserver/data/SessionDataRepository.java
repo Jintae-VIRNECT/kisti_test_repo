@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.data.dao.*;
 import com.virnect.service.ApiResponse;
-import com.virnect.service.SessionService;
 import com.virnect.service.constraint.LicenseItem;
 import com.virnect.service.constraint.PushConstants;
 import com.virnect.service.dto.*;
@@ -15,11 +14,8 @@ import com.virnect.service.dto.service.request.*;
 import com.virnect.service.dto.service.response.*;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.serviceserver.ServiceServerApplication;
-import com.virnect.serviceserver.utils.PushMessageClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,7 +23,6 @@ import org.springframework.stereotype.Service;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -238,6 +233,7 @@ public class SessionDataRepository extends DataRepository {
             String preSessionId,
             RoomRequest roomRequest,
             LicenseItem licenseItem,
+            String publisherId,
             String session,
             String sessionToken
     ) {
@@ -365,6 +361,7 @@ public class SessionDataRepository extends DataRepository {
                         .recording(true)
                         .keepalive(roomRequest.isKeepAlive())
                         .sessionType(roomRequest.getSessionType())
+                        .publisherId(publisherId)
                         .room(room)
                         .build();
 

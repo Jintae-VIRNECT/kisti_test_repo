@@ -1,28 +1,21 @@
 package com.virnect.serviceserver.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.virnect.data.dao.SessionType;
 import com.virnect.service.ApiResponse;
 import com.virnect.service.api.ISessionRestAPI;
-import com.virnect.service.constraint.CompanyConstants;
 import com.virnect.service.constraint.LicenseItem;
 import com.virnect.service.constraint.PushConstants;
 import com.virnect.service.dto.PageRequest;
 import com.virnect.service.dto.ResultResponse;
 import com.virnect.service.dto.feign.PushResponse;
 import com.virnect.service.dto.feign.UserInfoResponse;
-import com.virnect.service.dto.push.InviteRoomContents;
 import com.virnect.service.dto.service.request.*;
 import com.virnect.service.dto.service.response.*;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataProcess;
-import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.data.SessionDataRepository;
-import com.virnect.serviceserver.feign.service.MessageRestService;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import com.virnect.serviceserver.utils.LogMessage;
 import com.virnect.serviceserver.utils.PushMessageClient;
@@ -31,18 +24,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
