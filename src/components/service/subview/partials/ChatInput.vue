@@ -103,11 +103,7 @@ export default {
   computed: {
     ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate']),
     isOnpremise() {
-      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
-        return true
-      } else {
-        return false
-      }
+      return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
   },
   watch: {

@@ -65,11 +65,7 @@ export default {
   },
   computed: {
     showRole() {
-      if (this.role === WORKSPACE_ROLE.MEMBER) {
-        return false
-      } else {
-        return true
-      }
+      return this.role === WORKSPACE_ROLE.MEMBER
     },
     cardWidth() {
       if (this.width === 'full') {

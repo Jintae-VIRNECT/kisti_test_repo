@@ -2,7 +2,7 @@
   <menu-button
     :text="$t('service.record_server')"
     :active="isRecording"
-    :disabled="!canRecord"
+    :disabled="disabled"
     :src="require('assets/image/call/ic_record_off.svg')"
     :isActive="isRecording"
     :activeSrc="require('assets/image/call/ic_record_ing.svg')"
@@ -22,16 +22,6 @@ export default {
       isWaiting: false,
     }
   },
-  computed: {
-    canRecord() {
-      if (this.disabled) {
-        return false
-      } else {
-        return true
-      }
-    },
-  },
-  watch: {},
   methods: {
     recording() {
       if (this.disabled) return false

@@ -182,28 +182,16 @@ export default {
       return false
     },
     isMe() {
-      if (this.participant.id === this.account.uuid) {
-        return true
-      }
-      return false
+      return this.participant.id === this.account.uuid
     },
     isCurrent() {
-      if (this.mainView.id === this.participant.id) return true
-      return false
+      return this.mainView.id === this.participant.id
     },
     isLeader() {
-      if (this.participant.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.participant.roleType === ROLE.LEADER
     },
     iamLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     cameraStatus() {
       if (this.participant.hasVideo) {

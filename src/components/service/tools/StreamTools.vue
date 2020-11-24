@@ -23,11 +23,7 @@ export default {
   },
   computed: {
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
   },
   watch: {},

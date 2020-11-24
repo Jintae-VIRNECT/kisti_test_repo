@@ -14,9 +14,8 @@
             @click="toggleMenu('chat')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_chat_w.svg" />{{
-                $t('service.chat')
-              }}
+              <img src="~assets/image/call/chat_ic_chat_w.svg" />
+              {{ $t('service.chat') }}
             </p>
           </button>
         </li>
@@ -26,9 +25,8 @@
             @click="toggleMenu('file')"
           >
             <p class="chat-header__selector--text">
-              <img src="~assets/image/call/chat_ic_folder_w.svg" />{{
-                $t('service.file')
-              }}
+              <img src="~assets/image/call/chat_ic_folder_w.svg" />
+              {{ $t('service.file') }}
             </p>
           </button>
         </li>
@@ -68,15 +66,10 @@ export default {
   computed: {
     ...mapGetters(['chatList', 'roomInfo', 'view', 'viewAction']),
     showChat() {
-      if (this.show === 'chat') return true
-      else return false
+      return this.show === 'chat'
     },
     isOnpremise() {
-      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
-        return true
-      } else {
-        return false
-      }
+      return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
   },
   watch: {

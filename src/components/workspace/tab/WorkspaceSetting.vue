@@ -132,7 +132,7 @@ export default {
       return menu
     },
     onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   methods: {

@@ -91,11 +91,7 @@ export default {
   },
   computed: {
     drawingView() {
-      if (this.view === VIEW.DRAWING) {
-        return true
-      } else {
-        return false
-      }
+      return this.view === VIEW.DRAWING
     },
   },
   methods: {

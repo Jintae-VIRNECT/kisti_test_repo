@@ -70,15 +70,11 @@ export default {
       }
     },
     sendActive() {
-      if (
+      return (
         this.speechText &&
         this.speechText.length > 0 &&
         this.progress === -1
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
   },
   methods: {

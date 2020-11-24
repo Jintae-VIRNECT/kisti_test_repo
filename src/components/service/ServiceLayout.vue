@@ -107,11 +107,7 @@ export default {
   computed: {
     ...mapGetters(['view', 'captureFile', 'chatBox', 'participants', 'myInfo']),
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     currentView() {
       if (this.view === VIEW.STREAM) {

@@ -324,25 +324,13 @@ export default {
       return options
     },
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     isCurrentView() {
-      if (this.viewType === this.view) {
-        return true
-      } else {
-        return false
-      }
+      return this.viewType === this.view
     },
     isOnpremise() {
-      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
-        return true
-      } else {
-        return false
-      }
+      return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
   },
 

@@ -50,11 +50,7 @@ export default {
   computed: {
     ...mapGetters(['historyList', 'shareFile']),
     disabled() {
-      if (this.selected.length > 0) {
-        return false
-      } else {
-        return true
-      }
+      return this.selected.length === 0
     },
   },
   watch: {},

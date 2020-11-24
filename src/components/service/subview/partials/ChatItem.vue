@@ -106,11 +106,7 @@ export default {
       }
     },
     isFile() {
-      if (this.chat.file) {
-        return true
-      } else {
-        return false
-      }
+      return !!this.chat.file
     },
     hideTime() {
       if (this.afterChat === null) {

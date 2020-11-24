@@ -182,11 +182,7 @@ export default {
       openRoom: 'openRoom',
     }),
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     resolution() {
       const idx = this.resolutions.findIndex(
