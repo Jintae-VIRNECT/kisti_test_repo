@@ -36,7 +36,7 @@
       <user-list
         :class="{
           shareview: isLeader && currentView === 'drawing',
-          fullscreen: isFullScreen && currentView === 'stream',
+          fullscreen: isVideoLoaded && isFullScreen && currentView === 'stream',
         }"
       ></user-list>
       <!-- <div v-else>
@@ -102,6 +102,7 @@ export default {
       showDenied: false,
       callTimeout: null,
       isFullScreen: false,
+      isVideoLoaded: false,
     }
   },
   computed: {
@@ -185,6 +186,9 @@ export default {
     setFullScreen(flag) {
       this.isFullScreen = flag
     },
+    setVideoLoaded(flag) {
+      this.isVideoLoaded = flag
+    },
   },
 
   /* Lifecycles */
@@ -197,7 +201,8 @@ export default {
     this.onDeviceChange()
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
-    this.$eventBus.$on('fullscreen', this.setFullScreen)
+    this.$eventBus.$on('video:fullscreen', this.setFullScreen)
+    this.$eventBus.$on('video:loaded', this.setVideoLoaded)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -209,7 +214,8 @@ export default {
     window.removeEventListener('orientationchange', this.changeOrientation)
 
     this.stopLocalRecord()
-    this.$eventBus.$off('fullscreen', this.setFullScreen)
+    this.$eventBus.$off('video:fullscreen', this.setFullScreen)
+    this.$eventBus.$off('video:loaded', this.setVideoLoaded)
   },
 }
 </script>

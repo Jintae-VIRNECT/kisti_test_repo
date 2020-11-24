@@ -36,7 +36,7 @@ export default {
       setTimeout(() => {
         this.$emit('update:hide', false)
       }, 500)
-      this.$eventBus.$emit('fullscreen', this.status)
+      this.$eventBus.$emit('video:fullscreen', this.status)
       this.status = !this.status
     },
   },

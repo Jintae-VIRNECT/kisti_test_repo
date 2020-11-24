@@ -256,10 +256,22 @@ export default {
       handler(view) {
         if (!view.id) {
           this.loaded = false
+          this.$eventBus.$emit('video:loaded', false)
           const videoBox = this.$el.querySelector('.main-video__box')
           videoBox.style.height = '100%'
           videoBox.style.width = '100%'
         }
+      },
+    },
+    cameraStatus: {
+      deep: true,
+      handler(status) {
+        if (status === -1) {
+          this.$eventBus.$emit('video:loaded', false)
+          return
+        }
+
+        this.$eventBus.$emit('video:loaded', status.state === 'on')
       },
     },
     viewForce(flag, oldFlag) {
@@ -298,6 +310,7 @@ export default {
       this.$nextTick(() => {
         this.optimizeVideoSize()
         this.loaded = true
+        this.$eventBus.$emit('video:loaded', true)
       })
     },
     nextOptimize() {
@@ -423,14 +436,14 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('localRecord', this.localRecord)
     this.$eventBus.$off('serverRecord', this.serverRecord)
-    this.$eventBus.$off('fullscreen', this.changeFullScreen)
+    this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('localRecord', this.localRecord)
     this.$eventBus.$on('serverRecord', this.serverRecord)
-    this.$eventBus.$on('fullscreen', this.changeFullScreen)
+    this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
     window.addEventListener('resize', this.nextOptimize)
   },
 }
