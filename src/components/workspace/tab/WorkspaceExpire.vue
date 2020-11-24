@@ -15,6 +15,7 @@
         v-html="$t('workspace.license_expire_description')"
       ></p>
       <button
+        v-if="!onpremise"
         class="workspace-license__description--purchase btn"
         @click="purchase"
       >
