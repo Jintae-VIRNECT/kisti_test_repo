@@ -57,7 +57,7 @@ export const exportExcel = (raws, header) => {
 
   const url = URL.createObjectURL(blob)
   element.href = url
-  element.setAttribute('download', 'virnect_history.xlsx')
+  element.setAttribute('download', 'history.xlsx')
   element.click()
 }
 

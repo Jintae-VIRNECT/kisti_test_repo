@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer">
+  <footer v-if="!isOnpremise" class="footer">
     <p><strong>©VIRNECT CO., LTD.</strong> All rights reserved.</p>
   </footer>
 </template>

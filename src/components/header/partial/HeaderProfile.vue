@@ -22,7 +22,8 @@
       </div>
       <div class="popover-profile__link">
         <button @click="link(urlLink)">
-          VIRNECT Workstation
+          <span v-if="isOnpremise">Workstation</span>
+          <span v-else>VIRNECT Workstation</span>
         </button>
       </div>
       <div class="popover-profile__link">
