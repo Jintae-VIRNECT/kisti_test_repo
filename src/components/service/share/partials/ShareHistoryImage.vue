@@ -69,6 +69,9 @@ export default {
     },
     remove() {
       this.removeHistory(this.imgInfo.id)
+      if (this.selected) {
+        this.$emit('unSelected', this.imgInfo.id)
+      }
     },
     select() {
       if (!this.clicking) {
