@@ -97,6 +97,29 @@ export default {
     ToggleButton,
     PlayButton,
   },
+  computed: {
+    // onlyExpired() {
+    //   let isOnlyExpired = false
+    //   if (this.datas.length > 0) {
+    //     isOnlyExpired = this.datas.every(file => {
+    //       if (file.expirationDate) {
+    //         const diff = this.$dayjs().diff(
+    //           this.$dayjs(file.expirationDate),
+    //           'day',
+    //         )
+    //         if (file.expired || diff >= -20) {
+    //           return true
+    //         } else {
+    //           return false
+    //         }
+    //       } else {
+    //         return false
+    //       }
+    //     })
+    //   }
+    //   return isOnlyExpired
+    // },
+  },
   watch: {
     selectedArray: {
       handler(ary) {
