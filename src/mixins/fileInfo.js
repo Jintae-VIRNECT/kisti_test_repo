@@ -81,7 +81,7 @@ export default {
               column: 'duration',
               render: this.playTimeRender,
             },
-            { column: 'size', render: this.fileSizeRender },
+            { column: 'size', render: this.fileSizeRenderOmit },
           ]
           break
         case 'local':
@@ -90,7 +90,7 @@ export default {
               column: 'durationSec',
               render: this.playTimeRender,
             },
-            { column: 'size', render: this.fileSizeRender },
+            { column: 'size', render: this.fileSizeRenderOmit },
           ]
           break
       }
@@ -134,10 +134,25 @@ export default {
 
       return `${hours}${hText} ${minutes}${mText} ${seconds}${sText}`
     },
+    fileSizeRenderOmit(size) {
+      const gb = 1073741824 //1 GB
+
+      if (size >= gb) {
+        size = size / 1024 / 1024 / 1024
+        return `${size.toFixed(1)}GB`
+      } else {
+        size = size / 1024 / 1024
+        return `${size.toFixed(1)}MB`
+      }
+    },
     fileSizeRender(size) {
       const mb = 1048576 //1 MB
+      const gb = 1073741824 //1 GB
 
-      if (size >= mb) {
+      if (size >= gb) {
+        size = size / 1024 / 1024 / 1024
+        return `${size.toFixed(1)}GB`
+      } else if (gb < size && size >= mb) {
         size = size / 1024 / 1024
         return `${size.toFixed(1)}MB`
       } else {
