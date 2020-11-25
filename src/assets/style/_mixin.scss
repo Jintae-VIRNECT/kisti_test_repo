@@ -203,7 +203,7 @@
 
 // 태블릿
 @mixin tablet {
-  @media screen and (max-width: $size_tab_max) {
+  @media screen and (max-width: $size_tab_max), (max-height: 680px) {
     @content;
   }
 }
