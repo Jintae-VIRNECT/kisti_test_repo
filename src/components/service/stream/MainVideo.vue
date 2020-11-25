@@ -180,6 +180,7 @@ export default {
       initing: 'initing',
       viewForce: 'viewForce',
       openRoom: 'openRoom',
+      localRecordStatus: 'localRecordStatus',
     }),
     isLeader() {
       if (this.account.roleType === ROLE.LEADER) {
@@ -286,6 +287,12 @@ export default {
         }
       }
     },
+    localRecordStatus: {
+      handler(status) {
+        this.localRecord(status)
+      },
+      deep: true,
+    },
   },
   methods: {
     ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
@@ -376,7 +383,7 @@ export default {
       }, 'image/png')
     },
     localRecord(status) {
-      if (status.isStart) {
+      if (status === 'START') {
         this.localStart = this.$dayjs().unix()
         this.localTimer = setInterval(() => {
           const diff = this.$dayjs().unix() - this.localStart
@@ -425,14 +432,12 @@ export default {
   /* Lifecycles */
   beforeDestroy() {
     this.$eventBus.$off('capture', this.doCapture)
-    this.$eventBus.$off('localRecord', this.localRecord)
     this.$eventBus.$off('serverRecord', this.serverRecord)
     this.$eventBus.$off('fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
-    this.$eventBus.$on('localRecord', this.localRecord)
     this.$eventBus.$on('serverRecord', this.serverRecord)
     this.$eventBus.$on('fullscreen', this.changeFullScreen)
     window.addEventListener('resize', this.nextOptimize)
