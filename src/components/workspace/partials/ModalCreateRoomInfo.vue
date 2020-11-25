@@ -136,9 +136,7 @@ export default {
       return this.selection.length < 1 || this.titleValid
     },
     titleValidMessage() {
-      if (this.selection.length < 1) {
-        return this.$t('workspace.create_remote_selected_empty')
-      } else if (this.title.length < 2) {
+      if (this.title.length < 2) {
         return this.$t('workspace.remote_name_valid1')
       } else {
         return this.$t('workspace.remote_name_valid2')
@@ -152,7 +150,13 @@ export default {
     },
     async startRemote() {
       if (this.btnDisabled) {
-        this.confirmDefault(this.titleValidMessage)
+        if (this.selection.length < 1) {
+          this.confirmDefault(this.$t('workspace.create_remote_selected_empty'))
+        } else if (this.title.length < 2) {
+          this.confirmDefault(this.$t('workspace.remote_name_valid1'))
+        } else {
+          this.confirmDefault(this.$t('workspace.remote_name_valid2'))
+        }
         return
       }
 
