@@ -246,6 +246,7 @@ export default {
 				joinInfo: '',
 				serviceInfo: '',
 				sessionCode: '',
+				inviteSession: '',
 			},
 			passwordConfirm: '',
 			birth: {
@@ -521,6 +522,15 @@ export default {
 				return (this.isMobile = true)
 			else return (this.isMobile = false)
 		},
+		notVirnectEmailCheck() {
+			const { email, inviteSession } = this.$route.query
+			if (email && inviteSession) {
+				this.signup.email = email
+				this.signup.inviteSession = inviteSession
+				this.authLoading = true
+				this.check.isEmail = true
+			}
+		},
 	},
 	created() {
 		this.$validator.extend('password', {
@@ -529,10 +539,12 @@ export default {
 		})
 	},
 	mounted() {
-		this.mobileCheck()
 		if (!this.policyAgree) {
 			this.$router.push('/')
 		}
+		this.mobileCheck()
+		this.notVirnectEmailCheck()
+
 		if (this.marketInfoReceive)
 			return (this.signup.marketInfoReceive = 'ACCEPT')
 		else return (this.signup.marketInfoReceive = 'REJECT')
