@@ -159,6 +159,153 @@ export default {
       return selects
     },
 
+    async download(type, { selectedArray, fileList }) {
+      const errorFiles = []
+      const downloadFiles = this.getSelectedFile(selectedArray, fileList)
+      const downUrl = this.getDownUrl(type)
+
+      const downFunc = async (type, file, downUrl) => {
+        const data = await downUrl(this.getDownParams(type, file))
+
+        let link = null
+        switch (type) {
+          case 'server':
+            if (data === null) {
+              throw 'URL IS NULL'
+            }
+            link = document.createElement('a')
+            link.href = proxyUrl(data)
+            link.setAttribute('type', 'application/octet-stream')
+            link.setAttribute('download', file.filename)
+            link.click()
+            break
+          case 'attach':
+          case 'local':
+            if (data.url === null) {
+              throw 'URL IS NULL'
+            }
+            downloadByURL(data)
+            break
+        }
+      }
+
+      for (const file of downloadFiles) {
+        try {
+          await downFunc(type, file, downUrl)
+        } catch (e) {
+          if (e === 'URL IS NULL') {
+            errorFiles.push(file.name)
+          } else {
+            console.error(e)
+          }
+        }
+      }
+
+      this.showErrorFiles(errorFiles)
+    },
+
+    getDownUrl(type) {
+      let urlApi = null
+      switch (type) {
+        case 'attach':
+          urlApi = getFileDownloadUrl
+          break
+        case 'server':
+          urlApi = getServerRecordFileUrl
+          break
+        case 'local':
+          urlApi = getLocalRecordFileUrl
+          break
+      }
+      return urlApi
+    },
+
+    getDownParams(type, file) {
+      let params = null
+      switch (type) {
+        case 'server':
+          params = {
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+            id: file.recordingId,
+          }
+          break
+        case 'attach':
+        case 'local':
+          params = {
+            objectName: file.objectName,
+            sessionId: file.sessionId,
+            userId: this.account.uuid,
+            workspaceId: file.workspaceId,
+          }
+          break
+      }
+      return params
+    },
+
+    getDeleteUrl(type) {
+      let urlApi = null
+      switch (type) {
+        case 'attach':
+          urlApi = deleteFileItem
+          break
+        case 'server':
+          urlApi = deleteServerRecordFileItem
+          break
+        case 'local':
+          urlApi = deleteLocalRecordFileItem
+          break
+      }
+      return urlApi
+    },
+
+    getDeleteParams(type, file) {
+      let params = null
+      switch (type) {
+        case 'server':
+          params = {
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+            id: file.recordingId,
+          }
+          break
+        case 'attach':
+        case 'local':
+          params = {
+            objectName: file.objectName,
+            sessionId: file.sessionId,
+            userId: this.account.uuid,
+            workspaceId: file.workspaceId,
+          }
+          break
+      }
+      return params
+    },
+
+    async deleteFile(type, { selectedArray, fileList }) {
+      const errorFiles = []
+      const deleteFiles = this.getSelectedFile(selectedArray, fileList)
+      const deleteUrl = this.getDeleteUrl(type)
+
+      const deleteFunc = async (type, file, deleteUrl) => {
+        await deleteUrl(this.getDeleteParams(type, file))
+      }
+
+      for (const file of deleteFiles) {
+        try {
+          await deleteFunc(type, file, deleteUrl)
+        } catch (e) {
+          //에러코드 정리후에 네트워크 에러인지
+          //실제 없는 파일을 지우려고 시도했는지 확인해야함
+          errorFiles.push(file.name)
+          console.error(e)
+        }
+      }
+
+      this.showErrorFiles(errorFiles)
+      this.$eventBus.$emit('reload::list')
+    },
+
     showErrorFiles(files) {
       if (files.length > 0) {
         this.confirmDefault(
@@ -166,137 +313,7 @@ export default {
         )
       }
     },
-
-    async downloadItems(selectedArray, fileList) {
-      let downloadFiles = []
-
-      downloadFiles = this.getSelectedFile(selectedArray, fileList)
-
-      for (const file of downloadFiles) {
-        try {
-          const data = await getFileDownloadUrl({
-            objectName: file.objectName,
-            sessionId: file.sessionId,
-            userId: this.account.uuid,
-            workspaceId: file.workspaceId,
-          })
-
-          downloadByURL(data)
-        } catch (e) {
-          console.error(e)
-        }
-      }
-    },
-    async deleteItems(selectedArray, fileList) {
-      let deleteFiles = []
-      const errorFiles = []
-
-      deleteFiles = this.getSelectedFile(selectedArray, fileList)
-
-      for (const file of deleteFiles) {
-        try {
-          await deleteFileItem({
-            objectName: file.objectName,
-            sessionId: file.sessionId,
-            userId: this.account.uuid,
-            workspaceId: file.workspaceId,
-          })
-        } catch (e) {
-          console.error(e)
-          errorFiles.push(file.name)
-        }
-      }
-      this.showErrorFiles(errorFiles)
-      this.$eventBus.$emit('reload::list')
-    },
-
-    async downloadServer(selectedArray, fileList) {
-      let downloadFiles = []
-
-      downloadFiles = this.getSelectedFile(selectedArray, fileList)
-
-      for (const file of downloadFiles) {
-        try {
-          const url = await getServerRecordFileUrl({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            id: file.recordingId,
-          })
-          const a = document.createElement('a')
-          a.href = proxyUrl(url)
-          a.setAttribute('type', 'application/octet-stream')
-          a.setAttribute('download', file.filename)
-          a.click()
-        } catch (e) {
-          console.error(e)
-        }
-      }
-    },
-
-    async deleteServer(selectedArray, fileList) {
-      let deleteFiles = []
-      const errorFiles = []
-
-      deleteFiles = this.getSelectedFile(selectedArray, fileList)
-
-      for (const file of deleteFiles) {
-        try {
-          await deleteServerRecordFileItem({
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
-            id: file.recordingId,
-          })
-        } catch (e) {
-          console.error(e)
-          errorFiles.push(file.filename)
-        }
-      }
-
-      this.showErrorFiles(errorFiles)
-      this.$eventBus.$emit('reload::list')
-    },
-
-    async downloadLocal(selectedArray, fileList) {
-      let downloadFiles = []
-
-      downloadFiles = this.getSelectedFile(selectedArray, fileList)
-
-      for (const file of downloadFiles) {
-        try {
-          const data = await getLocalRecordFileUrl({
-            objectName: file.objectName,
-            sessionId: file.sessionId,
-            userId: this.account.uuid,
-            workspaceId: file.workspaceId,
-          })
-          downloadByURL(data)
-        } catch (e) {
-          console.error(e)
-        }
-      }
-    },
-    async deleteLocal(selectedArray, fileList) {
-      let deleteFiles = []
-      const errorFiles = []
-
-      deleteFiles = this.getSelectedFile(selectedArray, fileList)
-
-      for (const file of deleteFiles) {
-        try {
-          const result = await deleteLocalRecordFileItem({
-            objectName: file.objectName,
-            sessionId: file.sessionId,
-            userId: this.account.uuid,
-            workspaceId: file.workspaceId,
-          })
-          console.log(result)
-        } catch (e) {
-          console.error(e)
-          errorFiles.push(file.name)
-        }
-      }
-      this.showErrorFiles(errorFiles)
-      this.$eventBus.$emit('reload::list')
-    },
   },
 }
+
+//보라! 이 드러운 코드를!
