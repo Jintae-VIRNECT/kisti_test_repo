@@ -165,12 +165,27 @@ export default {
     },
 
     getSelectedFile(selectedArray, fileList) {
-      const selects = []
+      let selects = []
       selectedArray.forEach((select, index) => {
         if (select) {
           selects.push(fileList[index])
         }
       })
+
+      //@TODO : 만료된 파일을 삭제할 수 있는지 확인 필요합니다.
+      selects = selects.filter(file => {
+        if (file.expirationDate) {
+          const diff = this.$dayjs().diff(
+            this.$dayjs(file.expirationDate),
+            'day',
+          )
+          if (file.expired || diff >= 8) {
+            return false
+          }
+        }
+        return true
+      })
+
       return selects
     },
 
