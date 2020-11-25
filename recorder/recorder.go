@@ -28,8 +28,8 @@ type RecordingParam struct {
 
 type RecordingInfo struct {
 	RecordingID string
-	Duration    int
-	TimeLimit   int
+	Duration    int // in seconds
+	TimeLimit   int // in seconds
 }
 
 type Reason int
@@ -244,7 +244,7 @@ func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, 
 		mainRecorder.timeoutCh <- recordingTimeoutEvent{recordingID, param.WorkspaceID}
 	})
 
-	now := time.Now().UTC()
+	now := time.Now()
 	mainRecorder.addRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, now, param.TimeLimit, timer)
 
 	writeCreateTime(ctx, recordingID, now)
@@ -325,7 +325,7 @@ func ListRecordingIDs(ctx context.Context, workspaceID data.WorkspaceID, session
 	var recordings []RecordingInfo
 
 	log.Debug("sessionId:", sessionID)
-	now := time.Now().UTC()
+	now := time.Now()
 	for _, r := range mainRecorder.findRecordings(nil, &workspaceID, nil) {
 		if len(sessionID) > 0 && sessionID != r.sessionID {
 			continue

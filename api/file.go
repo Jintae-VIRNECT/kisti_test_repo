@@ -18,8 +18,8 @@ type RecordingFiles struct {
 	WorkspaceID data.WorkspaceID `json:"workspaceId"`
 	UserID      string           `json:"userId"`
 	Filename    string           `json:"filename"`
-	Duration    int              `json:"duration"`
-	Size        int              `json:"size"`
+	Duration    int              `json:"duration"` // in seconds
+	Size        int              `json:"size"`     // in bytes
 	Resolution  string           `json:"resolution"`
 	Framerate   int              `json:"framerate"`
 	CreateAt    time.Time        `json:"createAt"`

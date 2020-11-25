@@ -23,7 +23,7 @@ type StartRecordingRequest struct {
 	Resolution string `json:"resolution,omitempty" binding:"oneof=480p 720p 1080p" enums:"480p, 720p, 1080p" default:"720p" example:"720p"`
 	// video framerate
 	Framerate int `json:"framerate,omitempty" binding:"min=1,max=30" mininum:"1" maxinum:"30" default:"20" example:"20"`
-	// recording time
+	// recording time (in minutes)
 	RecordingTimeLimit int `json:"recordingTimeLimit,omitempty" binding:"min=5,max=60" mininum:"5" maxinum:"60" default:"5" example:"5"`
 	// recording filename. the supported file extensions are 'mp4', 'wmv'.
 	RecordingFilename string `json:"recordingFilename,omitempty" example:"2020-08-05_10:00:00.mp4"`
@@ -33,8 +33,8 @@ type StartRecordingRequest struct {
 
 type RecordingInfo struct {
 	RecordingID string `json:"recordingId"`
-	Duration    int    `json:"duration"`
-	TimeLimit   int    `json:"timeLimit"`
+	Duration    int    `json:"duration"`  // in seconds
+	TimeLimit   int    `json:"timeLimit"` // in minutes
 }
 
 type StartRecordingResponse struct {
@@ -270,7 +270,7 @@ func ListRecordings(c *gin.Context) {
 
 	body := ListRecordingResponse{make([]RecordingInfo, 0)}
 	for _, r := range recorder.ListRecordingIDs(c.Request.Context(), workspaceID, sessionID) {
-		body.Recordings = append(body.Recordings, RecordingInfo{r.RecordingID, r.Duration, r.TimeLimit})
+		body.Recordings = append(body.Recordings, RecordingInfo{r.RecordingID, r.Duration, r.TimeLimit / 60})
 	}
 
 	sendResponseWithSuccess(c, body)
