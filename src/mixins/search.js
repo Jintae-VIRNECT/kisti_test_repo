@@ -6,20 +6,7 @@ export default {
   mixins: [confirmMixin, toastMixin],
   computed: {
     ...mapGetters(['searchFilter']),
-    fromTo() {
-      const result = this.checkDate()
-      if (result === true) {
-        const formattedFrom = dayjs(this.from).format('YYYY-MM-DD')
-        const formattedTo = dayjs(this.to).format('YYYY-MM-DD')
-        return `${formattedFrom},${formattedTo}`
-      } else {
-        const defaultTo = dayjs().format('YYYY-MM-DD')
-        const defaultFrom = dayjs()
-          .subtract(7, 'day')
-          .format('YYYY-MM-DD')
-        return `${defaultFrom},${defaultTo}`
-      }
-    },
+
     from() {
       return this.searchFilter.date.from
     },
@@ -82,12 +69,26 @@ export default {
         paging: paging,
         page,
         searchWord: this.searchWord,
-        fromTo: this.fromTo,
+        fromTo: this.getFromTo(),
         sort: `${this.sortColumn},${this.sortDirection}`,
         status: this.status,
       }
 
       return params
+    },
+    getFromTo() {
+      const result = this.checkDate()
+      if (result === true) {
+        const formattedFrom = dayjs(this.from).format('YYYY-MM-DD')
+        const formattedTo = dayjs(this.to).format('YYYY-MM-DD')
+        return `${formattedFrom},${formattedTo}`
+      } else {
+        const defaultTo = dayjs().format('YYYY-MM-DD')
+        const defaultFrom = dayjs()
+          .subtract(7, 'day')
+          .format('YYYY-MM-DD')
+        return `${defaultFrom},${defaultTo}`
+      }
     },
   },
 }

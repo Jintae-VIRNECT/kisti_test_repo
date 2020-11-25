@@ -195,11 +195,18 @@ export default {
         this.renderOpts.forEach(render => {
           if (Object.prototype.hasOwnProperty.call(newData, render.column)) {
             newData[render.column] = render.render(newData[render.column])
-            if (render.column === 'expirationDate' && data.expired) {
-              newData['expirationDate'] = this.$t('file.expired')
+            if (render.column === 'expirationDate') {
+              if (data.expired) {
+                newData['expirationDate'] = this.$t('file.expired')
+              }
+
+              if (this.$dayjs().isAfter(data.expirationDate)) {
+                newData['expirationDate'] = this.$t('file.expired')
+              }
             }
           }
         })
+
         if (newData['expirationDate'] === this.$t('file.expired')) {
           this.expiredArray.push(newData)
           return null
