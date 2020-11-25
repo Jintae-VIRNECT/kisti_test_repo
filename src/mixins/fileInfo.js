@@ -164,6 +164,8 @@ export default {
       const downloadFiles = this.getSelectedFile(selectedArray, fileList)
       const downUrl = this.getDownUrl(type)
 
+      if (downloadFiles.length <= 0) return
+
       const downFunc = async (type, file, downUrl) => {
         const data = await downUrl(this.getDownParams(type, file))
 
@@ -286,6 +288,8 @@ export default {
       const errorFiles = []
       const deleteFiles = this.getSelectedFile(selectedArray, fileList)
       const deleteUrl = this.getDeleteUrl(type)
+
+      if (deleteFiles.length <= 0) return
 
       const deleteFunc = async (type, file, deleteUrl) => {
         await deleteUrl(this.getDeleteParams(type, file))
