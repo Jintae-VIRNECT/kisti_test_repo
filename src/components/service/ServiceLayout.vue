@@ -72,7 +72,7 @@ import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
 import { checkVideoInput } from 'utils/deviceCheck'
-import ReconnectModal from 'components/service/modal/ReconnectModal'
+import ReconnectModal from './modal/ReconnectModal'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -110,7 +110,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants', 'myInfo']),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'myInfo']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -128,10 +128,8 @@ export default {
 
   methods: {
     changeOrientation(event) {
-      if (!(this.participants.length > 0)) return
-      const participant = this.participants[0]
-      if (!participant.me || !participant.stream) return
-      const tracks = participant.stream.getVideoTracks()
+      if (!this.myInfo || !this.myInfo.stream) return
+      const tracks = this.myInfo.stream.getVideoTracks()
       if (tracks.length === 0) return
       const track = tracks[0]
       const settings = track.getSettings()

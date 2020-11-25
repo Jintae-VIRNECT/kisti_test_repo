@@ -136,7 +136,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { ACTION } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
@@ -180,6 +180,7 @@ export default {
       initing: 'initing',
       viewForce: 'viewForce',
       openRoom: 'openRoom',
+      view: 'view',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -238,7 +239,11 @@ export default {
       }
     },
     isMuted() {
-      if (!this.speaker.isOn || this.mainView.id === this.account.uuid) {
+      if (
+        !this.speaker.isOn ||
+        this.mainView.id === this.account.uuid ||
+        this.view !== VIEW.STREAM
+      ) {
         return 'muted'
       }
       return false

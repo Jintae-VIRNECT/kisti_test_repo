@@ -7,7 +7,7 @@
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
         @loadeddata="optimizeVideoSize"
-        :muted="!speaker"
+        :muted="isMuted"
         playsinline
         loop
       ></video>
@@ -91,6 +91,16 @@ export default {
         }
       }
       return this.resolutions[idx]
+    },
+    isMuted() {
+      if (
+        !this.speaker.isOn ||
+        this.mainView.id === this.account.uuid ||
+        this.view !== VIEW.AR
+      ) {
+        return 'muted'
+      }
+      return false
     },
   },
   watch: {
