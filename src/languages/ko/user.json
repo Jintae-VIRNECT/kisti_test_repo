@@ -22,8 +22,8 @@
       "placeHolder": "계정 분실 시 본인 확인을 위한 정보를 입력해 주세요."
     },
     "phoneNumber": {
-      "title": "연락처",
-      "contents": "전화번호를 입력해 주세요."
+      "title": "휴대폰 번호",
+      "contents": "휴대폰 번호를 입력해 주세요."
     },
     "recoveryEmail": {
       "title": "복구 이메일 주소",

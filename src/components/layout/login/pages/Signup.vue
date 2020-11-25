@@ -254,6 +254,7 @@ export default {
 				date: '',
 				mobile: '',
 			},
+			timeSet: dayjs(new Date()),
 			pickerOptions: {
 				disabledDate(time) {
 					return time.getTime() > Date.now()
@@ -315,25 +316,37 @@ export default {
 		},
 	},
 	watch: {
-		'birth.mobile'(newDate) {
-			this.birth.year = newDate
-			this.birth.month = newDate
-			this.birth.date = newDate
+		'birth.mobile'(newTime) {
+			this.birth.year = newTime
+			this.birth.month = newTime
+			this.birth.date = newTime
 		},
-		'birth.year'(newDate) {
-			const newYear = dayjs(newDate).year()
-			const newMonth = dayjs(newDate).month()
-			this.birth.month = dayjs(this.birth.month).year(newYear)
-			this.birth.date =
-				this.birth.date &&
-				dayjs(this.birth.date)
-					.year(newYear)
-					.month(newMonth)
+		'birth.year'(newTime) {
+			const newYear = dayjs(newTime).year()
+			this.timeSet = dayjs().year(newYear)
+
+			this.birth.month = this.timeSet
+			this.birth.date = this.timeSet
 		},
-		'birth.month'(newDate) {
-			const newMonth = dayjs(newDate).month()
-			this.birth.date =
-				this.birth.date && dayjs(this.birth.date).month(newMonth)
+		'birth.month'(newTime) {
+			const newYear = dayjs(this.timeSet).year()
+			const newMonth = dayjs(newTime).month()
+
+			this.timeSet = dayjs()
+				.year(newYear)
+				.month(newMonth)
+
+			this.birth.date = this.birth.date && dayjs(this.timeSet).month(newMonth)
+		},
+		'birth.date'(newTime) {
+			const newYear = dayjs(this.timeSet).year()
+			const newMonth = dayjs(this.timeSet).month()
+			const newDate = dayjs(newTime).date()
+
+			this.timeSet = dayjs()
+				.year(newYear)
+				.month(newMonth)
+				.date(newDate)
 		},
 	},
 	methods: {
