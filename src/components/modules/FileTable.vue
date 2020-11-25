@@ -196,11 +196,12 @@ export default {
           if (Object.prototype.hasOwnProperty.call(newData, render.column)) {
             newData[render.column] = render.render(newData[render.column])
             if (render.column === 'expirationDate') {
-              if (data.expired) {
-                newData['expirationDate'] = this.$t('file.expired')
-              }
+              const diff = this.$dayjs().diff(
+                this.$dayjs(data.expirationDate),
+                'day',
+              )
 
-              if (this.$dayjs().isAfter(data.expirationDate)) {
+              if (data.expired || diff >= 8) {
                 newData['expirationDate'] = this.$t('file.expired')
               }
             }
