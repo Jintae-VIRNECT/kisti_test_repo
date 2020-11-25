@@ -268,9 +268,26 @@ export default {
       this.sessionId = sessionId
       this.historyInfo = true
     },
+
     async showFiles(type, history) {
       this.historyTitle = history.title
+      this.fileList = await this.loadFiles(type, history)
 
+      switch (type) {
+        case 'server':
+          this.serverRecord = true
+          break
+        case 'local':
+          this.localRecord = true
+          break
+        case 'attach':
+          this.file = true
+          break
+      }
+    },
+
+    async loadFiles(type, history) {
+      let apiResult = null
       let result = null
 
       const params = {
@@ -281,25 +298,34 @@ export default {
 
       switch (type) {
         case 'server':
-          result = await getServerRecordFiles(params)
-          this.fileList = result.infos
-          this.serverRecord = true
+          apiResult = await getServerRecordFiles(params)
+          result = apiResult.infos.map(info => {
+            if (info.duration === 0) {
+              info.size = 0
+            }
+            return info
+          })
           break
+
         case 'local':
-          result = await getLocalRecordFiles(params)
-          this.fileList = result.fileDetailInfoList.filter(
-            info => !info.deleted,
-          )
-          this.localRecord = true
+          apiResult = await getLocalRecordFiles(params)
+          result = apiResult.fileDetailInfoList
+            .map(info => {
+              if (info.durationSec === 0) {
+                info.size = 0
+              }
+              return info
+            })
+            .filter(info => !info.deleted)
+
           break
         case 'attach':
-          result = await getAttachFiles(params)
-          this.fileList = result.fileInfoList.filter(info => !info.deleted)
-          this.file = true
+          apiResult = await getAttachFiles(params)
+          result = apiResult.fileInfoList.filter(info => !info.deleted)
           break
       }
+      return result
     },
-
     setSort() {
       return
       // if (this.sort.column === column) {
