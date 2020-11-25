@@ -232,6 +232,7 @@ export default {
 			this.formData.append('joinInfo', this.$props.signup.joinInfo)
 			this.formData.append('serviceInfo', this.$props.signup.serviceInfo)
 			this.formData.append('sessionCode', this.$props.signup.sessionCode)
+			this.formData.append('inviteSession', this.$props.signup.inviteSession)
 			if (this.user.profile !== '') {
 				this.formData.append('profile', this.user.profile)
 			}
@@ -284,6 +285,7 @@ export default {
 				this.formData.append('joinInfo', this.$props.signup.joinInfo)
 				this.formData.append('serviceInfo', this.$props.signup.serviceInfo)
 				this.formData.append('sessionCode', this.$props.signup.sessionCode)
+				this.formData.append('inviteSession', this.$props.signup.inviteSession)
 
 				let res = await AuthService.signUp({ params: this.formData })
 				// console.log(res)

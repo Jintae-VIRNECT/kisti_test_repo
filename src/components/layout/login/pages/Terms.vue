@@ -43,6 +43,7 @@
 								marketInfoReceive: marketingAgree,
 								policyAgree: privacyAgree,
 							},
+							query: $route.query,
 						})
 					"
 					:disabled="!privacyAgree || !serviceAgree"
