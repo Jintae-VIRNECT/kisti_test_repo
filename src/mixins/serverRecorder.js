@@ -123,7 +123,7 @@ export default {
         const elapsedTime = result.infos[0].duration
         this.recordingId = result.infos[0].recordingId
         this.elapsedTime = elapsedTime
-        const timeout = result.infos[0].timeLimit * 1000
+        const timeout = result.infos[0].timeLimit * 60 * 1000
         this.continueServerRecord(timeout)
       }
     },
