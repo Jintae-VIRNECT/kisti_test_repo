@@ -29,14 +29,14 @@
               :imgSrc="require('assets/image/ic_down_off.svg')"
               :active="hasSelect"
               :activeImgSrc="require('assets/image/ic_down_on.svg')"
-              @click="downloadItems(selectedArray, fileList)"
+              @click="download(type, { selectedArray, fileList })"
             ></icon-button>
             <icon-button
               v-if="deletable"
               :text="$t('button.select_delete')"
               :imgSrc="require('assets/image/ic_delete.svg')"
               :active="hasSelect"
-              @click="deleteItems(selectedArray, fileList)"
+              @click="deleteFile(type, { selectedArray, fileList })"
             ></icon-button>
           </div>
         </div>
@@ -89,10 +89,10 @@ export default {
     columns: {
       type: Array,
     },
-    downloadItems: {
+    download: {
       type: Function,
     },
-    deleteItems: {
+    deleteFile: {
       type: Function,
     },
     renderOpts: {
