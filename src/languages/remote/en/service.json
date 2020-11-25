@@ -198,6 +198,11 @@
     "record_server_start_message":"Starting the server recording.",
     "record_server_end_message":"Ending the server recording.",
     "record_server_over_max_count":"The server has reached the maximum number of videos to record simultaneously. Please try again later.",
-    "record_server_no_storage":"There is not enough space on the server to store the recorded file. Please contact the administrator."
+    "record_server_no_storage":"There is not enough space on the server to store the recorded file. Please contact the administrator.",
+    
+    "reconnect_network_connecting": "Connecting to the network...",
+    "reconnect_room_connecting": "Reconnecting collaboration...",
+    "reconnect_disconnected": "The connection has ended due to the network/server issue. <br>Would you like to reconnect?​",
+    "reconnect_reconnect_cancel": "Collabo reconnection has been canceled."
   }
 }

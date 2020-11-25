@@ -17,11 +17,15 @@
         <p class="reconnect__body-text" v-html="text">{{ text }}</p>
       </div>
       <div class="reconnect__footer">
-        <button class="btn sub" @click="logout">
-          종료
+        <button class="btn sub" @click="cancel">
+          {{ cancelText }}
         </button>
-        <button class="btn" :disabled="canReconnect" @click="reconnect">
-          재연결
+        <button
+          class="btn"
+          :disabled="!canReconnect"
+          @click="setConnectionState('network-connect')"
+        >
+          {{ $t('button.reconnect') }}
         </button>
       </div>
     </div>
@@ -32,17 +36,27 @@
 import Lottie from 'lottie-web'
 import * as animationData from 'assets/json/reconnect.lottie.json'
 import Modal from 'Modal'
+import { mapGetters } from 'vuex'
+import { getRoomInfo } from 'api/http/room'
+import roomMixin from 'mixins/room'
+import { checkOnline } from 'utils/network'
 
 export default {
   name: 'ReconnectModal',
   components: {
     Modal,
   },
+  mixins: [roomMixin],
   data() {
     return {
       visibleFlag: false,
       state: 'disconnected', // disconnected, network-connect, room-connect, cancel
       lottie: null,
+
+      duration: 30,
+      startTime: null,
+      timer: null,
+      retry: 0,
     }
   },
   props: {
@@ -52,21 +66,28 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['roomInfo']),
+    cancelText() {
+      if (this.state === 'disconnected' || this.state === 'cancel') {
+        return this.$t('button.exit')
+      }
+      return this.$t('button.cancel')
+    },
     text() {
       if (this.state === 'disconnected') {
-        return '네트워크/서버 문제로 연결이 종료되었습니다. <br>재입장을 하시겠습니까?​'
+        return this.$t('service.reconnect_disconnected')
       }
       if (this.state === 'cancel') {
-        return '협업 재연결이 취소 되었습니다.'
+        return this.$t('service.reconnect_reconnect_cancel')
       }
-      return '30초'
+      return this.duration + this.$t('date.second')
     },
     description() {
       if (this.state === 'network-connect') {
-        return '네트워크 연결 중…'
+        return this.$t('service.reconnect_network_connecting')
       }
       if (this.state === 'room-connect') {
-        return '협업 재연결 중…'
+        return this.$t('service.reconnect_room_connecting')
       }
       return ''
     },
@@ -85,36 +106,127 @@ export default {
     },
   },
   methods: {
-    init() {
+    lottieInit() {
       const container = this.$refs['reconnectContainer']
       this.$nextTick(() => {
-        this.lottie = Lottie.loadAnimation({
-          animationData,
-          loop: true,
-          autoplay: false,
-          container,
-        })
+        if (!this.lottie) {
+          this.lottie = Lottie.loadAnimation({
+            animationData,
+            loop: true,
+            autoplay: false,
+            container,
+          })
+          this.lottie.addEventListener('DOMLoaded', () => {
+            this.lottie.play()
+          })
+        } else {
+          this.lottie.play()
+        }
       })
     },
-    reconnect() {
-      if (this.state === 'disconnected') {
-        this.state = 'network-connect'
-        this.lottie.play()
-      } else if (this.state === 'network-connect') {
-        this.state = 'room-connect'
-      } else if (this.state === 'room-connect') {
+    async setConnectionState(connect) {
+      if (this.state === connect) return
+      if (connect === 'network-connect') {
+        this.duration = 30
+        this.startTime = this.$dayjs().unix()
+        this.lottieInit()
+        this.timeRunner()
+      } else if (connect === 'room-connect') {
+        setTimeout(() => {
+          this.retry = 0
+          this.tryRoomConnect()
+        }, 5000)
+      } else if (connect === 'cancel') {
         this.lottie.stop()
-        this.state = 'cancel'
-      } else if (this.state === 'cancel') {
-        this.state = 'disconnected'
+        this.stopTimeRunner()
+        // } else if (connect === 'disconnected') {
+      }
+      this.state = connect
+    },
+    async tryRoomConnect() {
+      try {
+        const info = await getRoomInfo({
+          sessionId: this.roomInfo.sessionId,
+          workspaceId: this.workspace.uuid,
+        })
+        const joinRes = await this.join(info)
+        if (joinRes) {
+          this.lottie.stop()
+          this.stopTimeRunner()
+          // this.$emit('update:visible', false)
+          this.$eventBus.$emit('reJoin')
+        } else {
+          this.logout()
+        }
+      } catch (err) {
+        if (err.code === 4002) {
+          this.toastError(this.$t('workspace.remote_already_removed'))
+        } else if (err.code === 4016) {
+          if (this.retry > 1) {
+            this.retry = 0
+            this.toastError(this.$t('workspace.remote_already_invite'))
+          } else {
+            this.retry++
+            setTimeout(() => {
+              this.tryRoomConnect()
+            }, 5000)
+          }
+        } else {
+          this.toastError(this.$t('workspace.remote_invite_impossible'))
+        }
+        this.logout()
+      }
+    },
+    timeRunner() {
+      this.checkingNetwork = false
+      this.stopTimeRunner()
+      this.timer = setInterval(() => {
+        const diff = this.$dayjs().unix() - this.startTime
+
+        this.duration =
+          30 -
+          Math.round(
+            this.$dayjs.duration(diff, 'seconds').as('milliseconds') / 1000,
+          )
+        if (!this.checkingNetwork) {
+          this.checkingNetwork = true
+          checkOnline().then(res => {
+            if (res === true) {
+              this.logger('network', 'onLine')
+              this.setConnectionState('room-connect')
+            } else {
+              this.checkingNetwork = false
+              this.logger('network', 'offLine')
+            }
+          })
+        }
+        if (this.duration === 0) {
+          this.stopTimeRunner()
+          this.setConnectionState('cancel')
+        }
+      }, 1000)
+    },
+    stopTimeRunner() {
+      if (this.timer === null) return
+      clearInterval(this.timer)
+      this.timer = null
+    },
+    cancel() {
+      switch (this.state) {
+        case 'disconnected':
+        case 'cancel':
+          this.logout()
+          return
+        default:
+          this.setConnectionState('cancel')
       }
     },
     logout() {
       this.$eventBus.$emit('call:logout')
     },
   },
-  mounted() {
-    this.init()
+  beforeDestroy() {
+    this.stopTimeRunner()
   },
 }
 </script>

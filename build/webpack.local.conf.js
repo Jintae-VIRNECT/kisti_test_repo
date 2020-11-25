@@ -85,6 +85,9 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           limit: '50mb',
         }),
       )
+      app.get('/healthcheck', function(req, res) {
+        res.send(200)
+      })
 
       app.post('/logs', bodyParser.json(), function(req, res) {
         logger.log(req.body.data, 'CONSOLE')

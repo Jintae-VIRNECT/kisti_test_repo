@@ -32,7 +32,8 @@
     "stream_sharing_cancel": "전체 공유 취소",
     "stream_normal": "영상 보기",
     "exit_room": "협업 종료",
-    "progress": "진행"
+    "progress": "진행",
+    "reconnect": "재연결"
   },
   "date": {
     "lastday": "[어제] A",

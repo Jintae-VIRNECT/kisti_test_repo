@@ -32,7 +32,8 @@
     "stream_sharing_cancel": "Cancel sharing to everyone",
     "stream_normal": "View video",
     "exit_room": "End Collabo",
-    "progress": "Progress"
+    "progress": "Progress",
+    "reconnect": "Reconnect"
   },
   "date": {
     "lastday": "[Yesterday]",
