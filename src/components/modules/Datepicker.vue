@@ -67,7 +67,7 @@ export default {
       default: 'yyyy-MM-dd',
     },
     initValue: {
-      type: Date,
+      type: [String, Date],
       default: null,
     },
   },

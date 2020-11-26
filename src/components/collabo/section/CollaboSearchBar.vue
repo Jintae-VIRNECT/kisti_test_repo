@@ -30,9 +30,18 @@
         <datepicker
           :pickerName="'search-from'"
           :highlighted="date"
+          :initValue="
+            $dayjs()
+              .subtract(7, 'day')
+              .format('YYYY-MM-DD')
+          "
         ></datepicker>
         <span class="collabo-search-bar__condition--tilde"></span>
-        <datepicker :pickerName="'search-to'" :highlighted="date"></datepicker>
+        <datepicker
+          :pickerName="'search-to'"
+          :highlighted="date"
+          :initValue="$dayjs().format('YYYY-MM-DD')"
+        ></datepicker>
         <check-box
           :text="$t('search.use_date_search')"
           :value.sync="useDate"
