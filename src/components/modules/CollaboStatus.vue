@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { collabo } from 'utils/collabo'
 export default {
   name: 'CallaboStatus',
   props: {
@@ -23,9 +22,9 @@ export default {
   computed: {
     collaboText() {
       switch (this.status) {
-        case collabo.PROGRESS:
+        case false:
           return this.$t('status.progress')
-        case collabo.FINISHED:
+        case true:
           return this.$t('status.finished')
         default:
           return this.$t('status.finished')
@@ -34,9 +33,9 @@ export default {
     },
     getClass() {
       switch (this.status) {
-        case collabo.PROGRESS:
+        case false:
           return 'progress'
-        case collabo.FINISHED:
+        case true:
           return 'finished'
         default:
           return 'finished'

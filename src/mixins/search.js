@@ -17,7 +17,7 @@ export default {
       return this.searchFilter.input.text
     },
     status() {
-      return this.searchFilter.status.status
+      return this.searchFilter.status
     },
     useDate() {
       return this.searchFilter.useDate.useDate
@@ -71,10 +71,9 @@ export default {
         searchWord: this.searchWord,
         fromTo: this.getFromTo(),
         sort: `${this.sortColumn},${this.sortDirection}`,
-        // status: this.status,
-        status: 'all',
+        status: this.status,
       }
-
+      console.log('params::', params)
       return params
     },
     getFromTo() {

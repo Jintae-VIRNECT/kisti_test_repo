@@ -100,13 +100,6 @@ export default {
         return
       }
 
-      // const sorted = list.sort((roomA, roomB) => {
-      //   return (
-      //     new Date(roomB.activeDate).getTime() -
-      //     new Date(roomA.activeDate).getTime()
-      //   )
-      // })
-
       await this.addAdditionalData(list)
 
       this.historyList = list

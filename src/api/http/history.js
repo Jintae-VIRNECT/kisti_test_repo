@@ -86,3 +86,13 @@ export const getHistorySingleItem = async function({ workspaceId, sessionId }) {
 
   return returnVal
 }
+
+/**
+ * 최근 협업 목록 중 진행중인 세션에 대한 내용 요청
+ * @param {String} workspaceId 워크스페이스 id
+ * @param {String} sessionId 세션 id
+ */
+export const getRoomInfo = async ({ workspaceId, sessionId }) => {
+  const returnVal = await http('ROOM_INFO', { workspaceId, sessionId })
+  return returnVal
+}
