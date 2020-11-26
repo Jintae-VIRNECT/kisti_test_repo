@@ -78,6 +78,7 @@ public class WorkspaceService {
      * @param workspaceCreateRequest - 생성 할 워크스페이스 정보
      * @return - 생성 된 워크스페이스 정보
      */
+    @CacheEvict(value = "userWorkspaces", key = "#workspaceCreateRequest.userId")
     @Transactional
     public WorkspaceInfoDTO createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
         //필수 값 체크
