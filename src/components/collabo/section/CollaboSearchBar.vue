@@ -2,10 +2,10 @@
   <section class="collabo-search-bar">
     <div class="collabo-search-bar__wrapper">
       <div class="collabo-search-bar__condition">
-        <!-- <label class="collabo-search-bar--label">{{
+        <label class="collabo-search-bar--label">{{
           $t('search.collabo_status')
-        }}</label> -->
-        <!-- <d-select
+        }}</label>
+        <d-select
           class="collabo-search-bar__status--list"
           :options="searchOpts"
           value="value"
@@ -13,7 +13,7 @@
           :selectedValue.sync="collaboSatus"
           :greyarrow="true"
           :sahdow="false"
-        ></d-select> -->
+        ></d-select>
       </div>
       <div class="collabo-search-bar__condition">
         <label class="collabo-search-bar--label">
@@ -52,9 +52,9 @@
 <script>
 import Datepicker from 'Datepicker'
 import CheckBox from 'CheckBox'
-// import DSelect from 'DashBoardSelect'
+import DSelect from 'DashBoardSelect'
 import confirmMixin from 'mixins/confirm'
-import { collabo } from 'utils/collabo'
+// import { collabo } from 'utils/collabo'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'CollaboSearchBar',
@@ -62,7 +62,7 @@ export default {
   components: {
     Datepicker,
     CheckBox,
-    // DSelect,
+    DSelect,
   },
   data() {
     return {
@@ -81,15 +81,15 @@ export default {
     searchOpts() {
       return [
         {
-          value: collabo.ALL,
+          value: 'all',
           text: this.$t('status.all'),
         },
         {
-          value: collabo.PROGRESS,
+          value: 'ing',
           text: this.$t('status.progress'),
         },
         {
-          value: collabo.FINISHED,
+          value: 'end',
           text: this.$t('status.finished'),
         },
       ]

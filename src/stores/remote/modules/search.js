@@ -1,12 +1,11 @@
 import { SEARCH } from '../mutation-types'
-import { collabo } from 'utils/collabo'
 
 const state = {
   input: {
     text: '',
     target: ['title', 'memberList[].nickName'],
   },
-  status: { status: collabo.ALL },
+  status: { status: 'all' },
   useDate: { useDate: false },
   date: {
     from: null,
