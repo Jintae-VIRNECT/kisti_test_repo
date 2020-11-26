@@ -20,16 +20,16 @@ public class RedirectProperty {
     private final String contactWeb;
     private final String accountWeb;
     private final String supportWeb;
-    private final String signupWeb;
+    private final String termsWeb;
     private final String membersWeb;
 
-    public RedirectProperty(String workspaceServer, String workstationWeb, String contactWeb, String accountWeb, String supportWeb, String signupWeb, String membersWeb) {
+    public RedirectProperty(String workspaceServer, String workstationWeb, String contactWeb, String accountWeb, String supportWeb, String termsWeb, String membersWeb) {
         this.workspaceServer = workspaceServer;
         this.workstationWeb = workstationWeb;
         this.contactWeb = contactWeb;
         this.accountWeb = accountWeb;
         this.supportWeb = supportWeb;
-        this.signupWeb = signupWeb;
+        this.termsWeb = termsWeb;
         this.membersWeb = membersWeb;
     }
 
@@ -41,7 +41,7 @@ public class RedirectProperty {
                 ", contactWeb='" + contactWeb + '\'' +
                 ", accountWeb='" + accountWeb + '\'' +
                 ", supportWeb='" + supportWeb + '\'' +
-                ", signupWeb='" + signupWeb + '\'' +
+                ", termsWeb='" + termsWeb + '\'' +
                 ", membersWeb='" + membersWeb + '\'' +
                 '}';
     }

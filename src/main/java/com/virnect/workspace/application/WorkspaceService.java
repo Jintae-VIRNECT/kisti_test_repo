@@ -908,7 +908,7 @@ public class WorkspaceService {
         if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
             log.info("[WORKSPACE INVITE ACCEPT] Invited User isMemberUser Info >> [{}]", inviteUserResponse.isMemberUser());
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getSignupWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang);
+            redirectView.setUrl(redirectProperty.getTermsWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang +"&email="+userInvite.getInvitedUserEmail());
             redirectView.setContentType("application/json");
             return redirectView;
 
