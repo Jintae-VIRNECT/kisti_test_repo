@@ -7,7 +7,6 @@ import com.virnect.workspace.dao.*;
 import com.virnect.workspace.dao.redis.UserInviteRepository;
 import com.virnect.workspace.domain.*;
 import com.virnect.workspace.domain.redis.UserInvite;
-import com.virnect.workspace.domain.rest.LicenseProductStatus;
 import com.virnect.workspace.domain.rest.LicenseStatus;
 import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.UserInfoDTO;
@@ -43,7 +42,6 @@ import org.springframework.web.servlet.view.RedirectView;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.time.Duration;
@@ -646,7 +644,7 @@ public class WorkspaceService {
     }*/
     public ApiResponse<Boolean> inviteWorkspace(
             String workspaceId, WorkspaceInviteRequest workspaceInviteRequest, Locale locale
-    ) {
+    ) {/*
         // 워크스페이스 플랜 조회하여 최대 초대 가능 명 수를 초과했는지 체크
         WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = licenseRestService.getWorkspaceLicenses(
                 workspaceId).getData();
@@ -719,7 +717,7 @@ public class WorkspaceService {
                 .stream()
                 .map(WorkspaceLicensePlanInfoResponse.LicenseProductInfoResponse::getLicenseType)
                 .collect(Collectors.toList())
-                .get(0);
+                .get(0);*/
 
         /**
          * 권한체크
@@ -775,9 +773,9 @@ public class WorkspaceService {
                         .planRemote(userInfo.isPlanRemote())
                         .planMake(userInfo.isPlanMake())
                         .planView(userInfo.isPlanView())
-                        .planRemoteType(licensePlanType)
-                        .planMakeType(licensePlanType)
-                        .planViewType(licensePlanType)
+         //               .planRemoteType(licensePlanType)
+//                        .planMakeType(licensePlanType)
+//                        .planViewType(licensePlanType)
                         .invitedDate(LocalDateTime.now())
                         .updatedDate(null)
                         .expireTime(Duration.ofDays(7).getSeconds())
@@ -892,7 +890,7 @@ public class WorkspaceService {
         historyRepository.save(history);
     }
 
-    public RedirectView inviteWorkspaceAccept(String sessionCode, String lang, HttpServletResponse httpServletResponse) throws IOException {
+    public RedirectView inviteWorkspaceAccept(String sessionCode, String lang) throws IOException {
         Locale locale = new Locale(lang, "");
         UserInvite userInvite = userInviteRepository.findById(sessionCode).orElse(null);
         if (userInvite == null) {

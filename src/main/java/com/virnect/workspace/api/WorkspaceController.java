@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
@@ -273,13 +272,12 @@ public class WorkspaceController {
     @GetMapping("/invite/{sessionCode}/accept")
     public RedirectView inviteWorkspaceAccept(
             @PathVariable("sessionCode") String sessionCode,
-            @RequestParam(value = "lang",required = false) String lang,
-            @ApiIgnore HttpServletResponse httpServletResponse
-    ) throws IOException {
+            @RequestParam(value = "lang", required = false) String lang
+            ) throws IOException {
         if (!StringUtils.hasText(sessionCode)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        RedirectView redirectView =workspaceService.inviteWorkspaceAccept(sessionCode, lang, httpServletResponse);
+        RedirectView redirectView = workspaceService.inviteWorkspaceAccept(sessionCode, lang);
         return redirectView;
     }
 
@@ -290,7 +288,7 @@ public class WorkspaceController {
     @GetMapping("/invite/{sessionCode}/reject")
     public RedirectView inviteWorkspaceReject(
             @PathVariable("sessionCode") String sessionCode,
-            @RequestParam(value = "lang",required = false) String lang
+            @RequestParam(value = "lang", required = false) String lang
     ) {
         if (!StringUtils.hasText(sessionCode)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);

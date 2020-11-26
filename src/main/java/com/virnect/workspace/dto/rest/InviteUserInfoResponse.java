@@ -2,6 +2,7 @@ package com.virnect.workspace.dto.rest;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Project: PF-Workspace
@@ -11,6 +12,7 @@ import lombok.Getter;
  * DESCRIPTION:
  */
 @Getter
+@Setter
 public class InviteUserInfoResponse {
     @ApiModelProperty(value = "회원 유저 여부")
     private boolean isMemberUser;
