@@ -25,7 +25,7 @@ export default {
       try {
         this.logger('SERVER RECORD', 'start')
 
-        let today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
+        const today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
 
         const options = {
           iceServers: RECORD_INFO['coturn'],
@@ -37,11 +37,13 @@ export default {
           RECORD_INFO['token']
         }&recorder=true&options=${JSON.stringify(options)}`
 
+        const fileName = `${today}_${this.roomInfo.sessionId}`
+
         const result = await startServerRecord({
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
           framerate: 20,
-          recordingFilename: today,
+          recordingFilename: fileName,
           recordingTimeLimit: Number.parseInt(this.serverRecord.time, 10),
           resolution: this.serverRecord.resolution,
           sessionId: this.roomInfo.sessionId,
@@ -121,7 +123,7 @@ export default {
         const elapsedTime = result.infos[0].duration
         this.recordingId = result.infos[0].recordingId
         this.elapsedTime = elapsedTime
-        const timeout = result.infos[0].timeLimit * 1000
+        const timeout = result.infos[0].timeLimit * 60 * 1000
         this.continueServerRecord(timeout)
       }
     },
