@@ -22,7 +22,10 @@
     "text":"검색어",
     "placeholder":"협업명 / 멤버를 입력해주세요",
     "use_date_search":"기간 검색 사용",
-    "execute":"검색하기"
+    "execute":"검색하기",
+    "over_period":"3개월이상 조회할 수 없습니다.",
+    "invalid_period":"유효하지 않은 기간입니다.",
+    "invalid_date":"올바른 날짜를 지정해주세요."
   },
 
   "list":{

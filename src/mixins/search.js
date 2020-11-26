@@ -39,14 +39,14 @@ export default {
 
       if (this.from === null || this.to === null) {
         if (showToast) {
-          this.toastDefault('올바른 날짜를 지정해주세요.')
+          this.toastDefault(this.$t('search.invalid_date'))
         }
         return 'INVALID_DATE'
       }
 
       if (dayjs(this.from).isAfter(dayjs(this.to))) {
         if (showToast) {
-          this.toastDefault('유효하지 않은 기간입니다.')
+          this.toastDefault(this.$t('search.invalid_period'))
         }
         return 'INVALID_PERIOD'
       }
@@ -55,7 +55,7 @@ export default {
 
       if (dayDiff > 90) {
         if (showToast) {
-          this.toastDefault('3개월이상 조회하실 수 없습니다.')
+          this.toastDefault(this.$t('search.over_period'))
         }
         return 'OVER_PERIOD'
       }
@@ -71,7 +71,8 @@ export default {
         searchWord: this.searchWord,
         fromTo: this.getFromTo(),
         sort: `${this.sortColumn},${this.sortDirection}`,
-        status: this.status,
+        // status: this.status,
+        status: 'all',
       }
 
       return params
