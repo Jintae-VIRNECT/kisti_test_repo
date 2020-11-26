@@ -45,6 +45,9 @@
         "updateFail": "Failed to setting up the Workspace details please try again later."
       }
     },
+    "invite": {
+      "invalid": "Failure to accept invitation"
+    },
     "onpremiseSetting": {
       "title": "Web Service Settings",
       "desc": "Change the customer's name, logo, and Favicon shown in the Web service. It does not apply to installed programs.",

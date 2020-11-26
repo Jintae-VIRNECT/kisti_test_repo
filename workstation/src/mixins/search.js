@@ -29,7 +29,10 @@ export default {
             ...this.searchParams,
             search: keyword && keyword.value,
             filter: filter && filter.value.join(','),
-            sort: (customParams && customParams.sort) || (sort && sort.value),
+            sort:
+              (customParams && customParams.sort) ||
+              (sort && sort.value) ||
+              this.searchParams.sort,
             page: page && page.value,
           }
           // null 삭제
