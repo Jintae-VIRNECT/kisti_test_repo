@@ -422,7 +422,7 @@ const _ = {
     }
   },
   changeProperty: (newValue, target = []) => {
-    if (_.openRoom) return
+    // if (_.openRoom) return
     const params = {
       type: CAMERA.STATUS,
       status: newValue ? CAMERA_STATUS.CAMERA_OFF : CAMERA_STATUS.CAMERA_NONE,
@@ -446,7 +446,7 @@ const _ = {
    * @param {Boolean} active
    */
   mic: (active, target = null) => {
-    if (_.openRoom) return
+    // if (_.openRoom) return
     if (_.publisher) {
       _.publisher.publishAudio(active)
     }

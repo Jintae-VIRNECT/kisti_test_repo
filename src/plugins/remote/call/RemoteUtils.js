@@ -174,6 +174,7 @@ export const addSessionEventListener = session => {
       ) {
         if (loading === true) return
         loading = true
+        _.publisher.stream.videoActive = true
         _.publisher.stream.initWebRtcPeerSend('initVideo', () => {
           loading = false
           const mediaStream = _.publisher.stream.mediaStream
@@ -195,13 +196,14 @@ export const addSessionEventListener = session => {
             height: settings.height,
             orientation: '',
           })
-          _.video(true)
+          _.video(Store.getters['video'].isOn)
           _.mic(Store.getters['mic'].isOn)
           _.speaker(Store.getters['speaker'].isOn)
           Store.commit('updateParticipant', {
             connectionId: session.connection.connectionId,
             stream: _.publisher.stream.mediaStream,
             hasVideo: true,
+            video: Store.getters['video'].isOn,
           })
           Store.dispatch('setMainView', { id: data.id, force: true })
         })
@@ -255,7 +257,7 @@ export const addSessionEventListener = session => {
           // const zoom = track.getSettings().zoom // bug....
           // console.log(zoom)
           _.currentZoomLevel = parseFloat(data.level)
-          _.video(true, [event.from.connectionId])
+          _.video(Store.getters['video'].isOn, [event.from.connectionId])
         })
       return
     }
