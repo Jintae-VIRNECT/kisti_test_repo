@@ -128,7 +128,7 @@
           {{ $t('service.setting_server_record') }}
         </p>
         <p v-if="serverRecording" class="rec-setting--warning">
-          {{ $t('서버 녹화 중에서는 설정을 변경 할 수 없습니다.') }}
+          {{ $t('service.setting_server_record_warning') }}
         </p>
         <div class="rec-setting__row" :class="{ disable: serverRecording }">
           <p class="rec-setting__text">
