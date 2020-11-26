@@ -2,7 +2,9 @@
   <section class="history" :class="{ loading: loading }">
     <div class="history__header">
       <div class="history__header--text index">
-        <span :class="{ active: sort.column === 'index' }">No</span>
+        <span @click="setSort('no')" :class="{ active: sort.column === 'no' }"
+          >No</span
+        >
       </div>
       <div class="history__header--text collabo-name">
         <span
@@ -68,7 +70,7 @@
           @mouseleave="hover = false"
         >
           <div class="history__text index">
-            <p>{{ history.index }}</p>
+            <p>{{ history.no }}</p>
           </div>
           <div class="history__text collabo-name">
             <p>{{ history.title }}</p>
