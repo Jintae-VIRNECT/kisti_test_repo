@@ -7,27 +7,29 @@
       <div class="history__header--text collabo-name">
         <span
           @click="setSort('title')"
-          :class="{ active: sort.column === 'collabo-name' }"
+          :class="{ active: sort.column === 'title' }"
         >
           {{ $t('list.room_title') }}
         </span>
       </div>
       <div class="history__header--text leader-name">
-        <span :class="{ active: sort.column === 'leader-name' }">{{
-          $t('list.room_leader')
-        }}</span>
+        <span
+          :class="{ active: sort.column === 'leaderNickName' }"
+          @click="setSort('leaderNickName')"
+          >{{ $t('list.room_leader') }}</span
+        >
       </div>
       <div class="history__header--text start-date">
         <span
           @click="setSort('activeDate')"
-          :class="{ active: sort.column === 'start-date' }"
+          :class="{ active: sort.column === 'activeDate' }"
           >{{ $t('list.room_active_date') }}</span
         >
       </div>
       <div class="history__header--text state">
         <span
-          @click="setSort('state')"
-          :class="{ active: sort.column === 'state' }"
+          @click="setSort('status')"
+          :class="{ active: sort.column === 'status' }"
           >{{ $t('list.room_status') }}</span
         >
       </div>
@@ -326,28 +328,28 @@ export default {
       }
       return result
     },
-    setSort() {
-      return
-      // if (this.sort.column === column) {
-      //   if (this.sort.direction === '') {
-      //     this.sort.direction = 'asc'
-      //   } else if (this.sort.direction === 'asc') {
-      //     this.sort.direction = 'desc'
-      //   } else if (this.sort.direction === 'desc') {
-      //     this.sort.direction = 'createdDate'
-      //     this.sort.column = 'asc'
-      //   }
-      // } else {
-      //   this.sort.column = column
-      //   this.sort.direction = 'asc'
-      // }
-      // this.setSearch({
-      //   sort: {
-      //     column: this.sort.column,
-      //     direction: this.sort.direction,
-      //   },
-      // })
-      // this.$eventBus.$emit('reload::list')
+    setSort(column) {
+      // return
+      if (this.sort.column === column) {
+        if (this.sort.direction === '') {
+          this.sort.direction = 'asc'
+        } else if (this.sort.direction === 'asc') {
+          this.sort.direction = 'desc'
+        } else if (this.sort.direction === 'desc') {
+          this.sort.direction = 'asc'
+          this.sort.column = 'activeDate'
+        }
+      } else {
+        this.sort.column = column
+        this.sort.direction = 'asc'
+      }
+      this.setSearch({
+        sort: {
+          column: this.sort.column,
+          direction: this.sort.direction,
+        },
+      })
+      this.$eventBus.$emit('reload::list')
     },
   },
 }
@@ -407,9 +409,9 @@ export default {
   text-align: center;
 
   & > span {
-    // &:hover {
-    //   cursor: pointer;
-    // }
+    &:hover {
+      cursor: pointer;
+    }
 
     &.active {
       font-weight: bold;

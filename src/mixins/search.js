@@ -71,7 +71,8 @@ export default {
         searchWord: this.searchWord,
         fromTo: this.getFromTo(),
         sort: `${this.sortColumn},${this.sortDirection}`,
-        status: this.status,
+        // status: this.status,
+        status: 'all',
       }
 
       return params
