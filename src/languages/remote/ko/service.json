@@ -102,6 +102,7 @@
     "setting_pointing_allow": "참가자 포인팅 허용",
     "setting_local_record": "로컬 녹화 설정",
     "setting_local_record_warning": "*로컬 녹화 중에서는 설정을 변경 할 수 없습니다.",
+    "setting_server_record_warning":"*서버 녹화 중에서는 설정을 변경 할 수 없습니다.",
     "setting_record_target": "녹화대상",
     "setting_record_max_time": "최대 녹화 시간",
     "setting_record_interval": "최대 녹화 간격",

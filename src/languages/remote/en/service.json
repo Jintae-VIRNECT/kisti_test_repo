@@ -102,6 +102,7 @@
     "setting_pointing_allow": "Allow pointing feature for paticipant",
     "setting_local_record": "Local recording settings",
     "setting_local_record_warning": "*Cannot change settings during local recording.",
+    "setting_server_record_warning":"*You cannot change the settings during server recording.",
     "setting_record_target": "Recording target",
     "setting_record_max_time": "Max. recording time",
     "setting_record_interval": "Max. recording interval",
