@@ -17,7 +17,7 @@
         <div class="history-info-table-column__info">
           <span>{{ room.title }}</span>
           <collabo-status
-            :status="room.status"
+            :status="localStatus"
             :customClass="'custom-collabo-status'"
           ></collabo-status>
         </div>
@@ -66,7 +66,7 @@
           {{ $t('room.unactive_date') }}
         </div>
         <div class="history-info-table-column__info time">
-          {{ room.unactiveDate | dateTimeFormat }}
+          {{ unactiveDate }}
         </div>
       </div>
       <div class="history-info__row">
@@ -74,7 +74,7 @@
           {{ $t('room.duration_sec') }}
         </div>
         <div class="history-info-table-column__info time">
-          {{ room.durationSec | durationFormat }}
+          {{ durationSec }}
         </div>
       </div>
     </div>
@@ -85,7 +85,7 @@
 import Modal from 'Modal'
 import ProfileList from 'ProfileList'
 import CollaboStatus from 'CollaboStatus'
-import { getHistorySingleItem } from 'api/http/history'
+import { getHistorySingleItem, getRoomInfo } from 'api/http/history'
 
 import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 export default {
@@ -99,12 +99,17 @@ export default {
     return {
       room: {},
       visibleFlag: false,
+      localStatus: true,
     }
   },
   props: {
     visible: {
       type: Boolean,
       default: false,
+    },
+    status: {
+      type: Boolean,
+      default: true,
     },
     sessionId: {
       type: String,
@@ -115,9 +120,6 @@ export default {
     dateTimeFormat(dateTime) {
       return dateTimeFormat(dateTime)
     },
-    durationFormat(time) {
-      return durationFormat(time)
-    },
   },
   computed: {
     leader() {
@@ -126,6 +128,14 @@ export default {
             return member.memberType === 'LEADER'
           })
         : ''
+    },
+    unactiveDate() {
+      return this.room.unactiveDate
+        ? dateTimeFormat(this.room.unactiveDate)
+        : ''
+    },
+    durationSec() {
+      return this.room.durationSec ? durationFormat(this.room.durationSec) : ''
     },
   },
 
@@ -139,15 +149,48 @@ export default {
   },
   methods: {
     async initHistory() {
+      this.room = {}
+      let info = null
+      this.localStatus = this.status
+
+      if (this.status) {
+        info = await this.getHistory()
+      } else {
+        info = await this.getRoom()
+        if (info === null) {
+          info = await this.getHistory()
+          this.localStatus = true
+        }
+      }
+      this.room = info
+    },
+    async getRoom() {
+      let result = null
       try {
-        this.room = {}
-        this.room = await getHistorySingleItem({
+        result = await getRoomInfo({
+          workspaceId: this.workspace.uuid,
+          sessionId: this.sessionId,
+        })
+      } catch (e) {
+        console.error(e)
+        if (e.code === 4002) {
+          //@TODO : MSG
+          console.error('room closed')
+        }
+      }
+      return result
+    },
+    async getHistory() {
+      let result = null
+      try {
+        result = await getHistorySingleItem({
           workspaceId: this.workspace.uuid,
           sessionId: this.sessionId,
         })
       } catch (err) {
         console.error(err)
       }
+      return result
     },
     beforeClose() {
       this.$emit('update:visible', false)

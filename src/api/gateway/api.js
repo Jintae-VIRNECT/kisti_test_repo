@@ -14,6 +14,9 @@ export default {
   HISTORY_ITEM: ['GET', '/remote/dashboard/history/{workspaceId}/{sessionId}'],
   ALL_HISTORY_LIST: ['GET', '/remote/dashboard/history/{workspaceId}'],
 
+  /* HISTORY - ROOM */
+  ROOM_INFO: ['GET', '/remote/dashboard/room/{workspaceId}/{sessionId}'],
+
   /* ATTACH FILE */
   FILES: ['GET', '/remote/dashboard/file/{workspaceId}/{sessionId}'],
   DELETE_FILE_ITEM: [

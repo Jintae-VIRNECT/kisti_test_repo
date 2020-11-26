@@ -63,7 +63,7 @@
           class="history__row"
           v-for="(history, index) in historys"
           :key="index"
-          @click="showHistory(history.sessionId)"
+          @click="showHistory(history.sessionId, history.status)"
           @mouseover="hover = true"
           @mouseleave="hover = false"
         >
@@ -120,6 +120,7 @@
         </div>
         <history-info
           :sessionId="sessionId"
+          :status="historyStatus"
           :visible.sync="historyInfo"
         ></history-info>
 
@@ -228,6 +229,7 @@ export default {
       sessionId: '',
       historyInfo: false,
       historyTitle: '',
+      historyStatus: true,
 
       //modal flag
       file: false,
@@ -266,9 +268,10 @@ export default {
           sameElse: 'YYYY.MM.DD',
         })
     },
-    showHistory(sessionId) {
+    showHistory(sessionId, status) {
       this.sessionId = sessionId
       this.historyInfo = true
+      this.historyStatus = status
     },
 
     async showFiles(type, history) {
