@@ -21,7 +21,7 @@
       <template v-if="loaded">
         <!-- 전체공유 표출 -->
         <transition name="opacity">
-          <div class="main-video__sharing" v-if="viewForce">
+          <div class="main-video__sharing" v-if="!openRoom && viewForce">
             <button
               v-if="isLeader"
               class="btn small main-video__sharing-button active"

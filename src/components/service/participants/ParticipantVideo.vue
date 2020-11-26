@@ -312,6 +312,7 @@ export default {
           return
         } else {
           this.$call.mainview(this.participant.id, true)
+          return
         }
       }
       if (this.account.roleType === ROLE.LEADER) {
