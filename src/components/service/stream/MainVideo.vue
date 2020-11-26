@@ -287,11 +287,8 @@ export default {
         }
       }
     },
-    localRecordStatus: {
-      handler(status) {
-        this.localRecord(status)
-      },
-      deep: true,
+    localRecordStatus(status) {
+      this.toggleLocalTimer(status)
     },
   },
   methods: {
@@ -382,7 +379,7 @@ export default {
         })
       }, 'image/png')
     },
-    localRecord(status) {
+    toggleLocalTimer(status) {
       if (status === 'START') {
         this.localStart = this.$dayjs().unix()
         this.localTimer = setInterval(() => {
@@ -398,7 +395,6 @@ export default {
         this.localTimer = null
       }
     },
-
     serverRecord(payload) {
       if (!payload.isStart) {
         this.closeServerTimer()
