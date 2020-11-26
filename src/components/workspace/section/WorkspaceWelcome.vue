@@ -61,11 +61,7 @@ export default {
   computed: {
     ...mapGetters(['expireLicense', 'useOpenRoom']),
     emptyWorkspace() {
-      if (!this.hasLicense || !(this.workspace && this.workspace.uuid)) {
-        return true
-      } else {
-        return false
-      }
+      return !this.hasLicense || !(this.workspace && this.workspace.uuid)
     },
     welcomeText() {
       if (!this.inited) {
@@ -84,11 +80,7 @@ export default {
       }
     },
     showRole() {
-      if (this.workspace.role === WORKSPACE_ROLE.MEMBER) {
-        return false
-      } else {
-        return true
-      }
+      return !(this.workspace.role === WORKSPACE_ROLE.MEMBER)
     },
   },
   props: {

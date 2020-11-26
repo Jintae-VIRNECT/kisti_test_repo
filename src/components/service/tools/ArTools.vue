@@ -53,21 +53,13 @@ export default {
   computed: {
     ...mapGetters(['viewAction']),
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     canDrawing() {
-      if (
+      return (
         this.account.roleType === ROLE.LEADER &&
         this.viewAction === ACTION.AR_DRAWING
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
     canPointing() {
       if (this.viewAction === ACTION.AR_POINTING) {

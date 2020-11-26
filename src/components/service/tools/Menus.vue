@@ -42,21 +42,13 @@ export default {
   computed: {
     ...mapGetters(['mainView']),
     isMainView() {
-      if (!(this.mainView && this.mainView.id)) {
-        return false
-      } else {
-        return true
-      }
+      return this.mainView && this.mainView.id
     },
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   props: {

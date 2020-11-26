@@ -66,10 +66,14 @@
     "setting_record_interval_tooltip": "When you create local recording files for a long time, your PC may experience a heavy load. <br>We recommed you to set recording time intervals.",
     "setting_record_resolution": "Video recording resolution",
     "setting_record_resolution_tooltip": "When setting the resolution of 720p (HD) or higher, <br>please be aware that the service depends on the PC's performance.",
+    "setting_record_setting_description":"The changes are applied at the start of recording.",
+    "setting_server_record":"Server recording settings",
     "setting_video": "Video settings",
     "setting_video_choice": "Camera",
     "setting_video_resolution": "Input resolution",
     "setting_video_preview": "Preview video",
+    "setting_video_preview_invalid1": "Resolution not supported by this device.",
+    "setting_video_preview_invalid2": "The camera/audio device is already in use by another system. Please shut down the system you are using.",
     "setting_camera": "Camera",
     "setting_translate": "Translation settings",
     "setting_translate_use": "Use translation",
@@ -140,6 +144,9 @@
     "license_expire_description": "If you want to use Remote 2.0, <br>please add/update plans from your workstation.",
     "license_no_title": "No available plan <br>to use VIRNECT Remote 2.0.",
     "license_no_description": "There is no Workspace to use the VIRNECT Remote 2.0. <br>Please ask your Master for plans.",
+    "license_expire_title_onpremise": "Your plans are all expired <br>to use Remote 2.0.",
+    "license_no_title_onpremise": "No available plan <br>to use Remote 2.0.",
+    "license_no_description_onpremise": "There is no Workspace to use the Remote 2.0. <br>Please ask your Master for plans.",
 
     "error_no_connected_device": "The connected microphone device could not be found. Please check the microphone.",
     "error_no_device": "Cannot find a device.",
@@ -148,6 +155,6 @@
     "plan_exceeded_desctiption": "The service is restricted because there were more users assigned to the plans than the number of plans you possess. Please request for plan management to the Master user.",
     "go_workspace_member": "Move to Workspace member list",
 
-    "cookie": "VIRNECT uses cookies to operate VIRNECT's services and improve customer experience. For more information,<br> check out our <a href='/policy/cookie' target='_blank'>cookie policy</a>. By clicking ‘OK’ or continuing to use the site, you agree to these cookie settings."
+    "cookie": "We use cookies and usage statistics to improve our service and customer experience. To learn more, <br>please check out our <a href='https://virnect.com/policy#10' target='_blank'>policy</a>. By clicking \"OK\" or continuing the use of site, you consent to the collection of cookies and usage statistics."
   }
 }

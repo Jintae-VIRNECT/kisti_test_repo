@@ -1,7 +1,9 @@
 'use strict'
 var Logger = console
-var MAX_RETRIES = 2000
-var RETRY_TIME_MS = 3000
+// var MAX_RETRIES = 2000
+// var RETRY_TIME_MS = 3000
+var MAX_RETRIES = 2
+var RETRY_TIME_MS = 2500
 var CONNECTING = 0
 var OPEN = 1
 var CLOSING = 2

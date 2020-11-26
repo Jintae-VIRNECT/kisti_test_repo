@@ -126,11 +126,14 @@
 .main-video__empty {
   position: absolute;
   top: 0;
-  left: 0;
+  left: 50%;
+  // left: 0;
   display: flex;
-  width: 100%;
+  width: 90%;
   height: 100%;
+  // margin: 0 auto;
   background-color: $color_darkgray;
+  transform: translateX(-50%);
 }
 .main-video__empty-inner {
   margin: auto;

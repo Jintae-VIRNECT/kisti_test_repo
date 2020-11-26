@@ -100,7 +100,7 @@
     margin-top: -1.071rem;
   }
   > figure {
-    max-width: 35.714rem;
+    max-width: 38.714rem;
     margin-top: 1.071rem;
     margin-right: 2.286rem;
     &:last-child {
@@ -139,6 +139,9 @@
     &:before {
       content: "\002A\00a0";
     }
+  }
+  &.warning {
+    color: #ff757b;
   }
 }
 

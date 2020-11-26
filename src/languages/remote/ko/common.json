@@ -32,7 +32,8 @@
     "stream_sharing_cancel": "전체 공유 취소",
     "stream_normal": "영상 보기",
     "exit_room": "협업 종료",
-    "progress": "진행"
+    "progress": "진행",
+    "reconnect": "재연결"
   },
   "date": {
     "lastday": "[어제] A",
@@ -54,7 +55,9 @@
     "video": "영상",
     "expiration": "기간 만료",
     "local_record_file": "로컬 녹화 파일",
-    "no_sharing_file": "공유된 파일이 없습니다."
+    "no_sharing_file": "공유된 파일이 없습니다.",
+    "workstation": "워크스테이션",
+    "dashboard": "대시보드"
   },
   "confirm": {
     "network_error": "서버와 통신이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.",

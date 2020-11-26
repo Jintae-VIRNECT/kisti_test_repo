@@ -21,7 +21,7 @@
       <template v-if="loaded">
         <!-- 전체공유 표출 -->
         <transition name="opacity">
-          <div class="main-video__sharing" v-if="viewForce">
+          <div class="main-video__sharing" v-if="!openRoom && viewForce">
             <button
               v-if="isLeader"
               class="btn small main-video__sharing-button active"
@@ -136,7 +136,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { ACTION } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
@@ -180,13 +180,11 @@ export default {
       initing: 'initing',
       viewForce: 'viewForce',
       openRoom: 'openRoom',
+      view: 'view',
+      localRecordStatus: 'localRecordStatus',
     }),
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -242,7 +240,11 @@ export default {
       }
     },
     isMuted() {
-      if (!this.speaker.isOn || this.mainView.id === this.account.uuid) {
+      if (
+        !this.speaker.isOn ||
+        this.mainView.id === this.account.uuid ||
+        this.view !== VIEW.STREAM
+      ) {
         return 'muted'
       }
       return false
@@ -260,10 +262,22 @@ export default {
       handler(view) {
         if (!view.id) {
           this.loaded = false
+          this.$eventBus.$emit('video:loaded', false)
           const videoBox = this.$el.querySelector('.main-video__box')
           videoBox.style.height = '100%'
           videoBox.style.width = '100%'
         }
+      },
+    },
+    cameraStatus: {
+      deep: true,
+      handler(status) {
+        if (status === -1) {
+          this.$eventBus.$emit('video:loaded', false)
+          return
+        }
+
+        this.$eventBus.$emit('video:loaded', status.state === 'on')
       },
     },
     viewForce(flag, oldFlag) {
@@ -286,6 +300,9 @@ export default {
         }
       }
     },
+    localRecordStatus(status) {
+      this.toggleLocalTimer(status)
+    },
   },
   methods: {
     ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
@@ -302,6 +319,7 @@ export default {
       this.$nextTick(() => {
         this.optimizeVideoSize()
         this.loaded = true
+        this.$eventBus.$emit('video:loaded', true)
       })
     },
     nextOptimize() {
@@ -375,8 +393,8 @@ export default {
         })
       }, 'image/png')
     },
-    localRecord(status) {
-      if (status.isStart) {
+    toggleLocalTimer(status) {
+      if (status === 'START') {
         this.localStart = this.$dayjs().unix()
         this.localTimer = setInterval(() => {
           const diff = this.$dayjs().unix() - this.localStart
@@ -391,7 +409,6 @@ export default {
         this.localTimer = null
       }
     },
-
     serverRecord(payload) {
       if (!payload.isStart) {
         this.closeServerTimer()
@@ -425,16 +442,14 @@ export default {
   /* Lifecycles */
   beforeDestroy() {
     this.$eventBus.$off('capture', this.doCapture)
-    this.$eventBus.$off('localRecord', this.localRecord)
     this.$eventBus.$off('serverRecord', this.serverRecord)
-    this.$eventBus.$off('fullscreen', this.changeFullScreen)
+    this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
-    this.$eventBus.$on('localRecord', this.localRecord)
     this.$eventBus.$on('serverRecord', this.serverRecord)
-    this.$eventBus.$on('fullscreen', this.changeFullScreen)
+    this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
     window.addEventListener('resize', this.nextOptimize)
   },
 }

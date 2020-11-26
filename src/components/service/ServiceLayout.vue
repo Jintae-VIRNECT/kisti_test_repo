@@ -36,7 +36,7 @@
       <user-list
         :class="{
           shareview: isLeader && currentView === 'drawing',
-          fullscreen: isFullScreen && currentView === 'stream',
+          fullscreen: isVideoLoaded && isFullScreen && currentView === 'stream',
         }"
       ></user-list>
       <!-- <div v-else>
@@ -55,6 +55,7 @@
       </div> -->
       <!-- <component :is="viewComponent"></component> -->
     </div>
+    <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
   </section>
 </template>
 
@@ -71,6 +72,7 @@ import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
 import { checkVideoInput } from 'utils/deviceCheck'
+import ReconnectModal from './modal/ReconnectModal'
 
 import { mapGetters } from 'vuex'
 export default {
@@ -88,6 +90,7 @@ export default {
   },
   mixins: [localRecorderMixin, serverRecordMixin, confirmMixin],
   components: {
+    ReconnectModal,
     HeaderSection,
     SubView,
     UserList,
@@ -102,16 +105,14 @@ export default {
       showDenied: false,
       callTimeout: null,
       isFullScreen: false,
+      connectVisible: false,
+      isVideoLoaded: false,
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox', 'participants', 'myInfo']),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'myInfo']),
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     currentView() {
       if (this.view === VIEW.STREAM) {
@@ -127,10 +128,8 @@ export default {
 
   methods: {
     changeOrientation(event) {
-      if (!(this.participants.length > 0)) return
-      const participant = this.participants[0]
-      if (!participant.me || !participant.stream) return
-      const tracks = participant.stream.getVideoTracks()
+      if (!this.myInfo || !this.myInfo.stream) return
+      const tracks = this.myInfo.stream.getVideoTracks()
       if (tracks.length === 0) return
       const track = tracks[0]
       const settings = track.getSettings()
@@ -189,6 +188,14 @@ export default {
     setFullScreen(flag) {
       this.isFullScreen = flag
     },
+    reconnect(event) {
+      if (event.reason === 'networkDisconnect') {
+        this.connectVisible = true
+      }
+    },
+    setVideoLoaded(flag) {
+      this.isVideoLoaded = flag
+    },
   },
 
   /* Lifecycles */
@@ -201,7 +208,9 @@ export default {
     this.onDeviceChange()
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
-    this.$eventBus.$on('fullscreen', this.setFullScreen)
+    this.$call.addListener('sessionDisconnected', this.reconnect)
+    this.$eventBus.$on('video:fullscreen', this.setFullScreen)
+    this.$eventBus.$on('video:loaded', this.setVideoLoaded)
   },
   beforeDestroy() {
     if (this.callTimeout) {
@@ -213,7 +222,8 @@ export default {
     window.removeEventListener('orientationchange', this.changeOrientation)
 
     this.stopLocalRecord()
-    this.$eventBus.$off('fullscreen', this.setFullScreen)
+    this.$eventBus.$off('video:fullscreen', this.setFullScreen)
+    this.$eventBus.$off('video:loaded', this.setVideoLoaded)
   },
 }
 </script>

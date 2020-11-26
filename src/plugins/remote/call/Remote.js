@@ -47,9 +47,11 @@ const _ = {
       if (process.env.NODE_ENV === 'production') {
         OV.enableProdMode()
       }
-      _.session = OV.initSession()
+      if (!_.session) {
+        _.session = OV.initSession()
+        addSessionEventListener(_.session, Store)
+      }
 
-      addSessionEventListener(_.session, Store)
       const metaData = {
         clientData: _.account.uuid,
         roleType: role,
@@ -420,7 +422,7 @@ const _ = {
     }
   },
   changeProperty: (newValue, target = []) => {
-    if (_.openRoom) return
+    // if (_.openRoom) return
     const params = {
       type: CAMERA.STATUS,
       status: newValue ? CAMERA_STATUS.CAMERA_OFF : CAMERA_STATUS.CAMERA_NONE,
@@ -444,7 +446,7 @@ const _ = {
    * @param {Boolean} active
    */
   mic: (active, target = null) => {
-    if (_.openRoom) return
+    // if (_.openRoom) return
     if (_.publisher) {
       _.publisher.publishAudio(active)
     }
@@ -612,7 +614,9 @@ const _ = {
     _.session.on(type, func)
   },
   removeListener: (type, func) => {
-    // _.session.off(type, func)
+    if (_.session) {
+      _.session.off(type, func)
+    }
   },
 }
 

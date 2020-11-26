@@ -143,15 +143,11 @@ export default {
   computed: {
     ...mapGetters(['useOpenRoom']),
     isOpenRoom() {
-      if (
+      return (
         this.room &&
         this.room.sessionType &&
         this.room.sessionType === ROOM_STATUS.OPEN
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
     titleValidMessage() {
       if (this.title.length < 2) {

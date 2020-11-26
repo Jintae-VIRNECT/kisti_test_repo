@@ -4,6 +4,7 @@ import {
   disconnect,
   setStreamingLimit,
   getTranscript,
+  splitStreaming,
   getJSON,
 } from 'plugins/remote/stt/api'
 import { startStreaming, stopStreaming } from 'plugins/remote/stt/audioUtils'
@@ -16,10 +17,9 @@ export default {
 
       audio: null,
       restartTime: 0,
-      transcriptObject: {},
-      transcriptList: [],
-      transcriptCounter: 0,
       audioContext: null,
+      outputText: '',
+      concatText: '',
     }
   },
   computed: {
@@ -41,9 +41,6 @@ export default {
       // this.setState({ audio: true, started: true })
       this.isListening = true
       getTranscript((err, transcriptObject) => {
-        this.transcriptObject = transcriptObject
-
-        this.transcriptList[this.transcriptCounter] = transcriptObject
         this.debug(
           'STT',
           'RECEIVE::',
@@ -54,10 +51,11 @@ export default {
 
         if (transcriptObject.transcript != undefined) {
           this.outputText = transcriptObject.transcript
-
+          if (this.outputText.length > 200) {
+            splitStreaming()
+          }
           if (transcriptObject.isFinal) {
             this.logger('STT', 'RECEIVED::FINAL::', transcriptObject.transcript)
-            this.transcriptCounter = this.transcriptCounter + 1
             this.outputText = transcriptObject.transcript
             if (typeof this.doSend === 'function') {
               this.doSend(this.outputText)

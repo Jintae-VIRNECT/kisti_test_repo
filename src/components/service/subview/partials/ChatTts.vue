@@ -13,18 +13,32 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['translate']),
+    ...mapGetters(['translate', 'speaker']),
   },
   methods: {
-    doTts(message) {
+    async doTts(message) {
+      if (!this.speaker.isOn) return
       if (!this.translate.ttsAllow) return
       if (!message || message.length === 0) return
-      const startTime = Date.now()
-      tts(message, this.translate.code).then(res => {
+      let ttsText = message
+      if (message.length > 200) {
+        ttsText = message.substr(0, 200)
+      }
+      await this.sendTts(ttsText)
+      this.doTts(message.substr(200))
+    },
+    sendTts(text) {
+      return new Promise(async resolve => {
+        const startTime = Date.now()
+        const res = await tts(text, this.translate.code)
         const ttsTime = Date.now() - startTime
         this.logger('TTS', 'DURING TIME: ', ttsTime)
         this.audioSrc = 'data:audio/wav;base64,' + res
-        this.$refs['ttsAudio'].load()
+        const audio = this.$refs['ttsAudio']
+        audio.onended = () => {
+          resolve(true)
+        }
+        audio.load()
       })
     },
   },

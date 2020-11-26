@@ -148,8 +148,20 @@ export default {
       selectedList: [],
     }
   },
+  props: {
+    show: {
+      type: Boolean,
+    },
+  },
   computed: {
     ...mapGetters(['view', 'roomInfo']),
+  },
+  watch: {
+    show(val) {
+      if (val) {
+        this.init()
+      }
+    },
   },
 
   methods: {
@@ -193,7 +205,9 @@ export default {
 
   mounted() {
     this.init()
-    this.$refs['chatFileListScrollbar'].scrollToY(99999)
+    if (this.$refs['chatFileListScrollbar']) {
+      this.$refs['chatFileListScrollbar'].scrollToY(99999)
+    }
     // this.chatFileList.push({
     //   id: 'cc',
     //   name: '1가나다라마바사아자차카타파하긴텍스트',

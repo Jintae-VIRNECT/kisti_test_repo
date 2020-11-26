@@ -18,10 +18,6 @@
         <div class="setting-view__header">{{ menus[tabIdx].text }}</div>
 
         <div class="setting-view__body">
-          <device-denied
-            :visible.sync="showDenied"
-            :modalless="true"
-          ></device-denied>
           <!-- <template v-if="menus[tabIdx].key === 'test'">
             <stt-test
               :micDevices="micDevices"
@@ -69,7 +65,6 @@ import SetTranslate from '../section/WorkspaceSetTranslate'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetServerRecord from '../section/WorkspaceSetServerRecord'
-import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 import { mapGetters } from 'vuex'
@@ -84,13 +79,10 @@ export default {
     SetRecord,
     SetServerRecord,
     MicTest,
-    DeviceDenied,
   },
   data() {
     return {
       tabIdx: 0,
-
-      showDenied: false,
 
       //device list
       videoDevices: [],
@@ -132,7 +124,7 @@ export default {
       return menu
     },
     onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   methods: {
@@ -170,40 +162,56 @@ export default {
         console.error(err)
       }
     },
+    async onDeviceChange() {
+      this.logger('device', 'changed')
+      let devices = await this.getMediaDevice()
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
+    },
   },
 
   /* Lifecycles */
   async created() {
-    try {
-      const permission = await getPermission()
+    navigator.mediaDevices.ondevicechange = this.onDeviceChange
+    const permission = await getPermission()
 
-      if (permission === true) {
-        const devices = await this.getMediaDevice()
-        this.videoDevices = devices.videos
-        this.micDevices = devices.mics
-        this.speakerDevices = devices.speakers
-      } else if (permission === 'prompt') {
-        let devices = await this.getMediaDevice()
-        let video = false,
-          audio = false
-        if (devices.videos.length > 0) {
-          video = true
-        }
-        if (devices.mics.length > 0) {
-          audio = true
-        }
-        await getUserMedia(audio, video)
-        devices = await this.getMediaDevice()
-        this.videoDevices = devices.videos
-        this.micDevices = devices.mics
-        this.speakerDevices = devices.speakers
-      } else {
-        this.showDenied = true
+    if (permission === true) {
+      const devices = await this.getMediaDevice()
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
+    } else if (permission === 'prompt') {
+      let devices = await this.getMediaDevice()
+      let video = false,
+        audio = false
+      if (devices.videos.length > 0) {
+        video = true
       }
-    } catch (err) {
-      console.error(err)
+      if (devices.mics.length > 0) {
+        audio = true
+      }
+      try {
+        const stream = await getUserMedia(audio, video)
+        stream.getTracks().forEach(track => {
+          track.stop()
+        })
+        devices = await this.getMediaDevice()
+      } catch (err) {
+        if (err.name && err.name === 'NotAllowedError') {
+          this.$eventBus.$emit('devicedenied:show')
+          return
+        }
+      }
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
+    } else {
+      this.$eventBus.$emit('devicedenied:show')
     }
   },
-  mounted() {},
+  beforeDestroy() {
+    navigator.mediaDevices.ondevicechange = () => {}
+  },
 }
 </script>

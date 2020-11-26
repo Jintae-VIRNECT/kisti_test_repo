@@ -110,7 +110,7 @@ export default {
       return this.$route.path === '/home'
     },
     onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   components: {

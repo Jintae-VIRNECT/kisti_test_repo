@@ -9,7 +9,7 @@
       @dblclick="show"
       @click="select"
     >
-      <img :src="imgInfo.img" />
+      <img :src="imageData" />
       <div class="sharing-image__item-active">
         <p>{{ $t('service.share_current') }}</p>
       </div>
@@ -69,6 +69,9 @@ export default {
     },
     remove() {
       this.removeHistory(this.imgInfo.id)
+      if (this.selected) {
+        this.$emit('unSelected', this.imgInfo.id)
+      }
     },
     select() {
       if (!this.clicking) {
@@ -87,6 +90,12 @@ export default {
   },
 
   /* Lifecycles */
-  mounted() {},
+  mounted() {
+    const fileReader = new FileReader()
+    fileReader.onload = e => {
+      this.imageData = e.target.result
+    }
+    fileReader.readAsDataURL(this.imgInfo.fileData)
+  },
 }
 </script>

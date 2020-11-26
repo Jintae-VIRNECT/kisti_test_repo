@@ -21,11 +21,7 @@ export default {
   computed: {
     ...mapGetters(['view', 'viewAction']),
     subView() {
-      if (VIEW.DRAWING === this.view || ACTION.AR_DRAWING === this.viewAction) {
-        return true
-      } else {
-        return false
-      }
+      return VIEW.DRAWING === this.view || ACTION.AR_DRAWING === this.viewAction
     },
   },
 }

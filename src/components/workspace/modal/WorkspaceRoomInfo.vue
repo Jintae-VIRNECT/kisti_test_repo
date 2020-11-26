@@ -111,11 +111,7 @@ export default {
       }
     },
     isOnpremise() {
-      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
-        return true
-      } else {
-        return false
-      }
+      return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
   },
   props: {

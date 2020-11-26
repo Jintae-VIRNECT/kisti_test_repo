@@ -1,7 +1,7 @@
 <template>
   <wide-card
     :key="user.uuid"
-    :customClass="['remoteinfo-usercard', { offline: isOffline }]"
+    :customClass="['remoteinfo-usercard', { offline: !isOnline }]"
     height="6.143em"
   >
     <div class="roominfo-userinfo">
@@ -71,19 +71,11 @@ export default {
       }
       return ''
     },
-    isOffline() {
-      if (this.user.memberStatus === STATUS.LOAD) {
-        return false
-      } else {
-        return true
-      }
+    isOnline() {
+      return this.user.memberStatus === STATUS.LOAD
     },
     canKick() {
-      if (this.isLeader && this.account.uuid === this.user.uuid) {
-        return true
-      } else {
-        return false
-      }
+      return this.isLeader && this.account.uuid === this.user.uuid
     },
   },
   methods: {},

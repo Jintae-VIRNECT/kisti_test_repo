@@ -15,9 +15,10 @@ export default {
     windowResizeHandler() {
       const html = document.querySelector('html')
       const windowWidth = window.innerWidth
+      const windowHeight = window.innerHeight
       let type = 'desktop'
 
-      if (windowWidth <= 1024) {
+      if (windowWidth <= 1024 || windowHeight <= 680) {
         type = 'tablet'
       } else if (windowWidth < 768) {
         type = 'mobile'
@@ -31,9 +32,10 @@ export default {
   created() {
     const html = document.querySelector('html')
     const windowWidth = window.innerWidth
+    const windowHeight = window.innerHeight
     let type = 'desktop'
 
-    if (windowWidth <= 1024) {
+    if (windowWidth <= 1024 || windowHeight <= 680) {
       type = 'tablet'
     } else if (windowWidth < 768) {
       type = 'mobile'

@@ -119,7 +119,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['roomInfo', 'participants']),
+    ...mapGetters(['roomInfo']),
     maxSelect() {
       return this.roomInfo.maxUserCount - this.currentLength
     },

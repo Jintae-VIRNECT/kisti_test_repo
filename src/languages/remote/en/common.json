@@ -32,7 +32,8 @@
     "stream_sharing_cancel": "Cancel sharing to everyone",
     "stream_normal": "View video",
     "exit_room": "End Collabo",
-    "progress": "Progress"
+    "progress": "Progress",
+    "reconnect": "Reconnect"
   },
   "date": {
     "lastday": "[Yesterday]",
@@ -54,7 +55,9 @@
     "video": "Video",
     "expiration": "Expired",
     "local_record_file": "Local recording file",
-    "no_sharing_file": "No shared files"
+    "no_sharing_file": "No shared files",
+    "workstation": "Workstation",
+    "dashboard": "Dashboard"
   },
   "confirm": {
     "network_error": "Unstable connection with the server. Please try again later.",

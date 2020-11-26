@@ -284,6 +284,10 @@ export default {
         audio: true,
         video: getWH(this.localRecord.resolution),
       })
+
+      displayStream.getVideoTracks()[0].onended = () => {
+        this.$eventBus.$emit('localRecord', { isStart: false })
+      }
       this.setScreenStream(displayStream)
     },
 

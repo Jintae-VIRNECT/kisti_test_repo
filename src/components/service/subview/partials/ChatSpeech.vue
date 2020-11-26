@@ -70,15 +70,9 @@ export default {
       }
     },
     sendActive() {
-      if (
-        this.speechText &&
-        this.speechText.length > 0 &&
-        this.progress === -1
-      ) {
-        return true
-      } else {
-        return false
-      }
+      return (
+        this.speechText && this.speechText.length > 0 && this.progress === -1
+      )
     },
   },
   methods: {

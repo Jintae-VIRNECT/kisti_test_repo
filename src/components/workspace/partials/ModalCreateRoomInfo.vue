@@ -61,7 +61,6 @@
     >
       {{ $t('button.start') }}
     </button>
-    <device-denied :visible.sync="showDenied"></device-denied>
   </section>
 </template>
 
@@ -69,7 +68,6 @@
 import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
-import DeviceDenied from '../modal/WorkspaceDeviceDenied'
 
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
@@ -81,7 +79,6 @@ export default {
     ProfileImage,
     InputRow,
     ProfileList,
-    DeviceDenied,
   },
   data() {
     return {
@@ -89,7 +86,6 @@ export default {
       description: '',
       image: null,
       titleValid: false,
-      showDenied: false,
     }
   },
   props: {
@@ -133,18 +129,10 @@ export default {
       }
     },
     btnDisabled() {
-      if (this.selection.length < 1) {
-        return true
-      } else if (this.titleValid) {
-        return true
-      } else {
-        return false
-      }
+      return this.selection.length < 1 || this.titleValid
     },
     titleValidMessage() {
-      if (this.selection.length < 1) {
-        return this.$t('workspace.create_remote_selected_empty')
-      } else if (this.title.length < 2) {
+      if (this.title.length < 2) {
         return this.$t('workspace.remote_name_valid1')
       } else {
         return this.$t('workspace.remote_name_valid2')
@@ -158,7 +146,13 @@ export default {
     },
     async startRemote() {
       if (this.btnDisabled) {
-        this.confirmDefault(this.titleValidMessage)
+        if (this.selection.length < 1) {
+          this.confirmDefault(this.$t('workspace.create_remote_selected_empty'))
+        } else if (this.title.length < 2) {
+          this.confirmDefault(this.$t('workspace.remote_name_valid1'))
+        } else {
+          this.confirmDefault(this.$t('workspace.remote_name_valid2'))
+        }
         return
       }
 
