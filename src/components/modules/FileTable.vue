@@ -97,6 +97,29 @@ export default {
     ToggleButton,
     PlayButton,
   },
+  computed: {
+    // onlyExpired() {
+    //   let isOnlyExpired = false
+    //   if (this.datas.length > 0) {
+    //     isOnlyExpired = this.datas.every(file => {
+    //       if (file.expirationDate) {
+    //         const diff = this.$dayjs().diff(
+    //           this.$dayjs(file.expirationDate),
+    //           'day',
+    //         )
+    //         if (file.expired || diff >= -20) {
+    //           return true
+    //         } else {
+    //           return false
+    //         }
+    //       } else {
+    //         return false
+    //       }
+    //     })
+    //   }
+    //   return isOnlyExpired
+    // },
+  },
   watch: {
     selectedArray: {
       handler(ary) {
@@ -195,11 +218,19 @@ export default {
         this.renderOpts.forEach(render => {
           if (Object.prototype.hasOwnProperty.call(newData, render.column)) {
             newData[render.column] = render.render(newData[render.column])
-            if (render.column === 'expirationDate' && data.expired) {
-              newData['expirationDate'] = this.$t('file.expired')
+            if (render.column === 'expirationDate') {
+              const diff = this.$dayjs().diff(
+                this.$dayjs(data.expirationDate),
+                'day',
+              )
+
+              if (data.expired || diff >= 8) {
+                newData['expirationDate'] = this.$t('file.expired')
+              }
             }
           }
         })
+
         if (newData['expirationDate'] === this.$t('file.expired')) {
           this.expiredArray.push(newData)
           return null

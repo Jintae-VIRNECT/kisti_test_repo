@@ -7,27 +7,29 @@
       <div class="history__header--text collabo-name">
         <span
           @click="setSort('title')"
-          :class="{ active: sort.column === 'collabo-name' }"
+          :class="{ active: sort.column === 'title' }"
         >
           {{ $t('list.room_title') }}
         </span>
       </div>
       <div class="history__header--text leader-name">
-        <span :class="{ active: sort.column === 'leader-name' }">{{
-          $t('list.room_leader')
-        }}</span>
+        <span
+          :class="{ active: sort.column === 'leaderNickName' }"
+          @click="setSort('leaderNickName')"
+          >{{ $t('list.room_leader') }}</span
+        >
       </div>
       <div class="history__header--text start-date">
         <span
           @click="setSort('activeDate')"
-          :class="{ active: sort.column === 'start-date' }"
+          :class="{ active: sort.column === 'activeDate' }"
           >{{ $t('list.room_active_date') }}</span
         >
       </div>
       <div class="history__header--text state">
         <span
-          @click="setSort('state')"
-          :class="{ active: sort.column === 'state' }"
+          @click="setSort('status')"
+          :class="{ active: sort.column === 'status' }"
           >{{ $t('list.room_status') }}</span
         >
       </div>
@@ -132,8 +134,8 @@
           :deletable="isMaster"
           :headers="getHeader('server')"
           :columns="getColumns('server')"
-          :downloadItems="downloadServer"
-          :deleteItems="deleteServer"
+          :download="download"
+          :deleteFile="deleteFile"
           :renderOpts="getRenderer('server')"
           :showToggleHeader="true"
           :showPlayButton="true"
@@ -150,8 +152,8 @@
           :deletable="isMaster"
           :headers="getHeader('local')"
           :columns="getColumns('local')"
-          :downloadItems="downloadLocal"
-          :deleteItems="deleteLocal"
+          :download="download"
+          :deleteFile="deleteFile"
           :renderOpts="getRenderer('local')"
           :showToggleHeader="true"
           :showPlayButton="true"
@@ -169,8 +171,8 @@
           :deletable="isMaster"
           :headers="getHeader('attach')"
           :columns="getColumns('attach')"
-          :downloadItems="downloadItems"
-          :deleteItems="deleteItems"
+          :download="download"
+          :deleteFile="deleteFile"
           :renderOpts="getRenderer('attach')"
           :showToggleHeader="true"
           :showPlayButton="false"
@@ -268,9 +270,26 @@ export default {
       this.sessionId = sessionId
       this.historyInfo = true
     },
+
     async showFiles(type, history) {
       this.historyTitle = history.title
+      this.fileList = await this.loadFiles(type, history)
 
+      switch (type) {
+        case 'server':
+          this.serverRecord = true
+          break
+        case 'local':
+          this.localRecord = true
+          break
+        case 'attach':
+          this.file = true
+          break
+      }
+    },
+
+    async loadFiles(type, history) {
+      let apiResult = null
       let result = null
 
       const params = {
@@ -281,47 +300,56 @@ export default {
 
       switch (type) {
         case 'server':
-          result = await getServerRecordFiles(params)
-          this.fileList = result.infos
-          this.serverRecord = true
+          apiResult = await getServerRecordFiles(params)
+          result = apiResult.infos.map(info => {
+            if (info.duration === 0) {
+              info.size = 0
+            }
+            return info
+          })
           break
+
         case 'local':
-          result = await getLocalRecordFiles(params)
-          this.fileList = result.fileDetailInfoList.filter(
-            info => !info.deleted,
-          )
-          this.localRecord = true
+          apiResult = await getLocalRecordFiles(params)
+          result = apiResult.fileDetailInfoList
+            .map(info => {
+              if (info.durationSec === 0) {
+                info.size = 0
+              }
+              return info
+            })
+            .filter(info => !info.deleted)
+
           break
         case 'attach':
-          result = await getAttachFiles(params)
-          this.fileList = result.fileInfoList.filter(info => !info.deleted)
-          this.file = true
+          apiResult = await getAttachFiles(params)
+          result = apiResult.fileInfoList.filter(info => !info.deleted)
           break
       }
+      return result
     },
-
-    setSort() {
-      return
-      // if (this.sort.column === column) {
-      //   if (this.sort.direction === '') {
-      //     this.sort.direction = 'asc'
-      //   } else if (this.sort.direction === 'asc') {
-      //     this.sort.direction = 'desc'
-      //   } else if (this.sort.direction === 'desc') {
-      //     this.sort.direction = 'createdDate'
-      //     this.sort.column = 'asc'
-      //   }
-      // } else {
-      //   this.sort.column = column
-      //   this.sort.direction = 'asc'
-      // }
-      // this.setSearch({
-      //   sort: {
-      //     column: this.sort.column,
-      //     direction: this.sort.direction,
-      //   },
-      // })
-      // this.$eventBus.$emit('reload::list')
+    setSort(column) {
+      // return
+      if (this.sort.column === column) {
+        if (this.sort.direction === '') {
+          this.sort.direction = 'asc'
+        } else if (this.sort.direction === 'asc') {
+          this.sort.direction = 'desc'
+        } else if (this.sort.direction === 'desc') {
+          this.sort.direction = 'asc'
+          this.sort.column = 'activeDate'
+        }
+      } else {
+        this.sort.column = column
+        this.sort.direction = 'asc'
+      }
+      this.setSearch({
+        sort: {
+          column: this.sort.column,
+          direction: this.sort.direction,
+        },
+      })
+      this.$eventBus.$emit('reload::list')
     },
   },
 }
@@ -381,9 +409,9 @@ export default {
   text-align: center;
 
   & > span {
-    // &:hover {
-    //   cursor: pointer;
-    // }
+    &:hover {
+      cursor: pointer;
+    }
 
     &.active {
       font-weight: bold;
