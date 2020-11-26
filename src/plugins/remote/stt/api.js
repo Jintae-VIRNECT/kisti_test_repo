@@ -48,6 +48,9 @@ export const setStreamingLimit = restartTime => {
 export const setSTTLanguageCode = sttCode => {
   socket.emit('sttLanguageCode', sttCode)
 }
+export const splitStreaming = () => {
+  socket.emit('splitStreaming')
+}
 export const getTimeout = () => {
   socket.on('audioTimeout', err => {
     console.log(err)

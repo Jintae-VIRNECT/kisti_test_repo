@@ -31,7 +31,7 @@ const getSocket = server => {
       sttLanguageCode: sttCode,
       currentResultEndTime: null,
       totalResultEndTime: 0,
-      streamingLimit: 60000,
+      streamingLimit: 30000,
     }
 
     socket.on('setStreamingLimit', function(data) {
@@ -61,6 +61,19 @@ const getSocket = server => {
 
     socket.on('disconnect', function() {
       logger.log(`SOCKET: ${socket.id} : DISCONNECT`, 'STT_STREAMING')
+    })
+
+    socket.on('splitStreaming', function() {
+      logger.log(`SOCKET: ${socket.id} : SPLIT STREAMING`, 'STT_STREAMING')
+      clientData[socket.id].recognizeStream.end()
+      clientData[socket.id].recognizeStream.removeListener(
+        'data',
+        speechCallback,
+      )
+      clientData[socket.id].recognizeStream = null
+      stopStreaming()
+      socket.emit('resetStreamOccurred', clientData[socket.id].streamingLimit)
+      startStreaming()
     })
 
     function intervalTimer(restartTime, interval) {

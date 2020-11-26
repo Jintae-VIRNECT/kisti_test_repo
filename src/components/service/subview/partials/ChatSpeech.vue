@@ -71,9 +71,7 @@ export default {
     },
     sendActive() {
       return (
-        this.speechText &&
-        this.speechText.length > 0 &&
-        this.progress === -1
+        this.speechText && this.speechText.length > 0 && this.progress === -1
       )
     },
   },
