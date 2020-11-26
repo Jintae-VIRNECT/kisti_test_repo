@@ -901,6 +901,7 @@ public class WorkspaceService {
             return redirectView;
         }
 
+
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
         InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
         if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
@@ -911,6 +912,11 @@ public class WorkspaceService {
             return redirectView;
 
         }
+        //비회원일경우 초대 session정보에 uuid가 안들어가므로 user서버에서 조회해서 가져온다.
+        InviteUserDetailInfoResponse inviteUserDetailInfoResponse = inviteUserResponse.getInviteUserDetailInfo();
+        userInvite.setInvitedUserEmail(inviteUserDetailInfoResponse.getEmail());
+        userInvite.setInvitedUserId(inviteUserDetailInfoResponse.getUserUUID());
+        userInviteRepository.save(userInvite);
 
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
@@ -941,7 +947,7 @@ public class WorkspaceService {
 
         List<LicenseProduct> licenseProductList = generatePlanList(userInvite.isPlanRemote(), userInvite.isPlanMake(), userInvite.isPlanView());
         for (LicenseProduct licenseProduct : licenseProductList) {
-            MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), userInvite.getInvitedUserId(), licenseProduct.toString()).getData();
+            MyLicenseInfoResponse grantResult = licenseRestService.grantWorkspaceLicenseToUser(workspace.getUuid(), inviteUserDetailInfoResponse.getUserUUID(), licenseProduct.toString()).getData();
             if (grantResult == null || !StringUtils.hasText(grantResult.getProductName())) {
                 failPlan.add(licenseProduct.toString());
                 licenseGrantResult = false;
@@ -1159,6 +1165,11 @@ public class WorkspaceService {
             redirectView.setContentType("application/json");
             return redirectView;
         }
+        //비회원일경우 초대 session정보에 uuid가 안들어가므로 user서버에서 조회해서 가져온다.
+        InviteUserDetailInfoResponse inviteUserDetailInfoResponse = inviteUserResponse.getInviteUserDetailInfo();
+        userInvite.setInvitedUserEmail(inviteUserDetailInfoResponse.getEmail());
+        userInvite.setInvitedUserId(inviteUserDetailInfoResponse.getUserUUID());
+        userInviteRepository.save(userInvite);
 
         userInviteRepository.delete(userInvite);
 
