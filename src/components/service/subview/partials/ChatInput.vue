@@ -51,6 +51,7 @@
         <textarea
           class="chat-input__form-write"
           v-model="inputText"
+          @keyup="checkLength"
           :placeholder="$t('service.chat_input')"
           @keydown.enter.exact="doSend($event)"
         />
@@ -119,9 +120,16 @@ export default {
     },
   },
   methods: {
+    checkLength() {
+      if (!this.translate.flag) return
+      if (this.inputText.length >= 200) {
+        this.inputText = this.inputText.substr(0, 200)
+        this.toastDefault(this.$t('service.chat_text_exceed'))
+      }
+    },
     doStt() {
       if (!this.mic.isOn) {
-        this.toastDefault('마이크가 활성화 되어있지 않습니다.')
+        this.toastDefault(this.$t('service.stt_mic_off'))
         return
       }
       this.$emit('update:speech', true)

@@ -166,6 +166,7 @@
     "chat_record_allow": "참가자 로컬 녹화가 허용되었습니다.",
     "chat_record_not_allow": "참가자 로컬 녹화가 취소되었습니다.",
     "chat_send_cancel": "<em>{name}</em> 님이 전송을 취소했습니다.",
+    "chat_text_exceed": "200자를 초과하여 입력할 수 없습니다.",
     "file": "파일",
     "file_validdatae": "유효기간  ",
     "file_choice_num": "{number} 개 선택",
