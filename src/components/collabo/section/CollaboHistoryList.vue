@@ -184,7 +184,7 @@ export default {
       }
     },
     addAdditionalData(list) {
-      this.setIndex(list)
+      // this.setIndex(list)
       this.setLeader(list)
     },
     async getHistoryByPage(page) {
