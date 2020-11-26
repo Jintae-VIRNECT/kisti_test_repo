@@ -61,7 +61,6 @@
     >
       {{ $t('button.start') }}
     </button>
-    <device-denied :visible.sync="showDenied"></device-denied>
   </section>
 </template>
 
@@ -69,7 +68,6 @@
 import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
-import DeviceDenied from '../modal/WorkspaceDeviceDenied'
 
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
@@ -81,7 +79,6 @@ export default {
     ProfileImage,
     InputRow,
     ProfileList,
-    DeviceDenied,
   },
   data() {
     return {
@@ -89,7 +86,6 @@ export default {
       description: '',
       image: null,
       titleValid: false,
-      showDenied: false,
     }
   },
   props: {

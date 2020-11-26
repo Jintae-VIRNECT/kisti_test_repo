@@ -18,10 +18,6 @@
         <div class="setting-view__header">{{ menus[tabIdx].text }}</div>
 
         <div class="setting-view__body">
-          <device-denied
-            :visible.sync="showDenied"
-            :modalless="true"
-          ></device-denied>
           <!-- <template v-if="menus[tabIdx].key === 'test'">
             <stt-test
               :micDevices="micDevices"
@@ -69,7 +65,6 @@ import SetTranslate from '../section/WorkspaceSetTranslate'
 import SetRecord from '../section/WorkspaceSetRecord'
 import MicTest from '../section/WorkspaceMicTest'
 import SetServerRecord from '../section/WorkspaceSetServerRecord'
-import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 import { mapGetters } from 'vuex'
@@ -84,13 +79,10 @@ export default {
     SetRecord,
     SetServerRecord,
     MicTest,
-    DeviceDenied,
   },
   data() {
     return {
       tabIdx: 0,
-
-      showDenied: false,
 
       //device list
       videoDevices: [],
@@ -170,10 +162,18 @@ export default {
         console.error(err)
       }
     },
+    async onDeviceChange() {
+      this.logger('device', 'changed')
+      let devices = await this.getMediaDevice()
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
+    },
   },
 
   /* Lifecycles */
   async created() {
+    navigator.mediaDevices.ondevicechange = this.onDeviceChange
     const permission = await getPermission()
 
     if (permission === true) {
@@ -192,18 +192,26 @@ export default {
         audio = true
       }
       try {
-        await getUserMedia(audio, video)
+        const stream = await getUserMedia(audio, video)
+        stream.getTracks().forEach(track => {
+          track.stop()
+        })
         devices = await this.getMediaDevice()
-        this.videoDevices = devices.videos
-        this.micDevices = devices.mics
-        this.speakerDevices = devices.speakers
       } catch (err) {
-        console.error(err)
+        if (err.name && err.name === 'NotAllowedError') {
+          this.$eventBus.$emit('devicedenied:show')
+          return
+        }
       }
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
     } else {
-      this.showDenied = true
+      this.$eventBus.$emit('devicedenied:show')
     }
   },
-  mounted() {},
+  beforeDestroy() {
+    navigator.mediaDevices.ondevicechange = () => {}
+  },
 }
 </script>

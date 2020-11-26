@@ -72,6 +72,8 @@
     "setting_video_choice": "카메라",
     "setting_video_resolution": "입력 해상도",
     "setting_video_preview": "영상 미리보기",
+    "setting_video_preview_invalid1": "장치에서 지원하지 않는 해상도 입니다.",
+    "setting_video_preview_invalid2": "카메라/오디오 장치를 이미 다른 시스템에서 사용 중 입니다. 사용중인 시스템을 종료해 주세요.",
     "setting_camera": "카메라",
     "setting_translate": "번역 설정",
     "setting_translate_use": "번역 사용",

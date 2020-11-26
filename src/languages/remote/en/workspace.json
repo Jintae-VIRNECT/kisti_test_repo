@@ -72,6 +72,8 @@
     "setting_video_choice": "Camera",
     "setting_video_resolution": "Input resolution",
     "setting_video_preview": "Preview video",
+    "setting_video_preview_invalid1": "Resolution not supported by this device.",
+    "setting_video_preview_invalid2": "The camera/audio device is already in use by another system. Please shut down the system you are using.",
     "setting_camera": "Camera",
     "setting_translate": "Translation settings",
     "setting_translate_use": "Use translation",

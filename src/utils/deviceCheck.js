@@ -47,7 +47,7 @@ export const checkPermission = async (checkVideo = true) => {
 
 export const getPermission = async () => {
   try {
-    if (!('permission' in navigator)) {
+    if (!('permissions' in navigator)) {
       return 'prompt'
     }
 

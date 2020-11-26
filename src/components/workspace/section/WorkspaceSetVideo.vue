@@ -31,8 +31,8 @@
     </div>
     <div class="setting-section__body">
       <figure class="setting__figure">
-        <p class="setting__label">
-          {{ this.$t('workspace.setting_video_preview') }}
+        <p class="setting__label" :class="{ warning: !!invalid }">
+          {{ sumnailTitle }}
         </p>
         <div class="setting-video">
           <video
@@ -67,6 +67,7 @@ export default {
       currentVideo: null,
       videoId: '',
       videoQuality: '',
+      invalid: false,
     }
   },
   props: {
@@ -95,6 +96,15 @@ export default {
           width: parseInt(size[0]),
           height: parseInt(size[1]),
         }
+      }
+    },
+    sumnailTitle() {
+      if (this.invalid === false) {
+        return this.$t('workspace.setting_video_preview')
+      } else if (this.invalid === 'OverconstrainedError') {
+        return this.$t('workspace.setting_video_preview_invalid1')
+      } else {
+        return this.$t('workspace.setting_video_preview_invalid2')
       }
     },
   },
@@ -126,21 +136,27 @@ export default {
     },
     async initStream() {
       if (this.videoDevices.length === 0) return
-      this.stream = null
+      if (this.stream) {
+        this.stream.getTracks().forEach(track => {
+          track.stop()
+        })
+        this.stream = null
+      }
+      this.invalid = false
       this.$nextTick(async () => {
         try {
-          const mediaRes = await getUserMedia(false, {
-            deviceId: {
-              exact: this.videoId,
-            },
+          const videoConstraint = {
             width: {
               exact: this.currentQuality.width,
             },
             height: {
               exact: this.currentQuality.height,
             },
-          })
-          this.stream = mediaRes
+            deviceId: {
+              exact: this.videoId,
+            },
+          }
+          this.stream = await getUserMedia(false, videoConstraint)
           const track = this.stream.getVideoTracks()[0]
           const settings = track.getSettings()
           const capability = track.getCapabilities()
@@ -151,12 +167,11 @@ export default {
           this.debug('call::setting::', settings)
           this.debug('call::capability::', capability)
         } catch (err) {
+          console.error(err)
           this.stream = null
-          if (typeof err === 'object') {
-            if (err.name && err.name.toLowerCase() === 'notallowederror') {
-              return 'device access deined'
-            }
-            if (err.name && err.name.toLowerCase() === 'overconstrainederror') {
+          if (typeof err === 'object' && err.name) {
+            this.invalid = err.name
+            if (err.name === 'OverconstrainedError') {
               const idx = resolution.findIndex(
                 resol => resol.value === this.videoQuality,
               )
@@ -164,19 +179,32 @@ export default {
                 // this.videoQuality = resolution[idx - 1].value
                 this.setQuality(resolution[idx - 1].value)
               }
+              // if (err.constraint === 'deviceId') {
+              //   this.invalid = true
+              // }
             }
-            if (err.name && err.name.toLowerCase() === 'notallowederror') {
+            if (err.name === 'NotReadableError') {
             }
             return err.name
+          } else {
+            this.invalid = true
           }
         }
       })
     },
   },
-  created() {
+  mounted() {
     this.initStream()
     this.videoId = this.video['deviceId']
     this.videoQuality = this.video['quality']
+  },
+  beforeDestroy() {
+    if (this.stream) {
+      this.stream.getTracks().forEach(track => {
+        track.stop()
+      })
+      this.stream = null
+    }
   },
 }
 </script>
