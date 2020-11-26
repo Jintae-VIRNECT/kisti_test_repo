@@ -376,17 +376,6 @@ export default {
 				if (res) {
 					this.message = ''
 					this.submitted = true
-					new Signup(
-						this.signup.email,
-						this.signup.password,
-						this.signup.firstName,
-						this.signup.lastName,
-						this.signup.birth,
-						this.marketInfoReceive,
-						this.joinInfoComp,
-						this.serviceInfoComp,
-						this.signup.sessionCode,
-					)
 					// console.log(this.signup)
 					if (this.signup) {
 						setTimeout(() => {
@@ -540,8 +529,6 @@ export default {
 			if (email && inviteSession) {
 				this.signup.email = email
 				this.signup.inviteSession = inviteSession
-				this.authLoading = true
-				this.check.isEmail = true
 			}
 		},
 	},
