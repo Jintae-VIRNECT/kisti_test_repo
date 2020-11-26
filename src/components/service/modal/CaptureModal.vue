@@ -105,8 +105,12 @@ export default {
       }
     },
     shareCapture() {
-      const history = this.getHistoryObject()
-
+      const history = {
+        id: this.file.id,
+        fileName: this.file.fileName,
+        fileData: this.file.fileData,
+        img: this.imageData,
+      }
       this.addHistory(history)
       this.setView('drawing')
       this.$nextTick(() => {
@@ -115,13 +119,6 @@ export default {
     },
     close() {
       this.clearCapture()
-    },
-    getHistoryObject() {
-      return {
-        id: this.file.id,
-        fileName: this.file.fileName,
-        img: this.imageData,
-      }
     },
   },
 

@@ -123,6 +123,7 @@ export default {
             ? this.pdfName
             : this.fileData.name,
         img: this.imageData,
+        fileData: this.fileData,
       }
     },
     shareImage() {
