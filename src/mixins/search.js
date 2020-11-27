@@ -73,7 +73,6 @@ export default {
         sort: `${this.sortColumn},${this.sortDirection}`,
         status: this.status,
       }
-      console.log('params::', params)
       return params
     },
     getFromTo() {
