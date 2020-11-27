@@ -64,9 +64,14 @@ public class HistoryRestController implements IHistoryRestAPI {
                         (userId != null ? userId : "{}"),
                 "getHistoryList"
         );
-        return ResponseEntity.ok(
-                this.historyDataRepository.loadRoomHistoryInfoList(workspaceId, userId, paging, pageable.of())
-        );
+
+        ApiResponse<RoomHistoryInfoListResponse> apiResponse;
+        if(paging) {
+            apiResponse = this.historyDataRepository.loadRoomHistoryPageList(workspaceId, userId, pageable.of());
+        } else {
+            apiResponse =  this.historyDataRepository.loadRoomHistoryList(workspaceId, userId,  pageable.of());
+        }
+        return ResponseEntity.ok(apiResponse);
     }
 
     @Override
