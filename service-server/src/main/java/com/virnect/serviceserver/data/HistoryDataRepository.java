@@ -261,6 +261,7 @@ public class HistoryDataRepository extends DataRepository {
                     // remove members who is evicted
                     memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
+                    // find and get extra information from use-server using uuid
                     fetchFromRepository();
 
                     // Set Member List to Room Detail Information Response
@@ -271,7 +272,6 @@ public class HistoryDataRepository extends DataRepository {
             }
 
             private void fetchFromRepository() {
-                // find and get extra information from use-server using uuid
                 if (!memberInfoList.isEmpty()) {
                     for (MemberInfoResponse memberInfoResponse : memberInfoList) {
                         ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());

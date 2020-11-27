@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -14,26 +15,26 @@ import java.util.List;
 @ApiModel
 public class RoomDetailInfoResponse {
     @ApiModelProperty(value = "Remote Session Identifier", example = "ses_NxKh1OiT2S")
-    private String sessionId;
+    private String sessionId = "";
 
     @ApiModelProperty(value = "Remote Session Title", position = 1, example = "Remote")
-    private String title;
+    private String title = "";
 
     @ApiModelProperty(value = "Remote Session Description", position = 2, example = "This is Remote Collaborate, or.. Conference Room(Session)!!")
-    private String description;
+    private String description = "";
 
     @ApiModelProperty(value = "Remote Session Profile Image URL", position = 3, example = "default")
-    private String profile;
+    private String profile = "";
 
     @ApiModelProperty(value = "Remote Session Maximum User Capacity", position = 4, example = "3")
-    private int maxUserCount;
+    private int maxUserCount = 0;
 
     @ApiModelProperty(value = "Remote Session Type", position = 6, example = "PRIVATE")
-    private SessionType sessionType;
+    private SessionType sessionType = SessionType.PRIVATE;
 
     @ApiModelProperty(value = "Remote Session Activation Date", position = 7, example = "2020-01-20T14:05:30")
-    private LocalDateTime activeDate;
+    private LocalDateTime activeDate = LocalDateTime.now();
 
     @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 8)
-    private List<MemberInfoResponse> memberList;
+    private List<MemberInfoResponse> memberList = new ArrayList<>();
 }

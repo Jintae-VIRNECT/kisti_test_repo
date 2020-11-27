@@ -304,7 +304,13 @@ public class SessionRestController implements ISessionRestAPI {
     public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId) {
-        log.info("REST API: GET {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId.toString() : "{}", sessionId != null ? sessionId.toString() : "{}");
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: GET " + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}"),
+                "getRoomById"
+        );
         if (workspaceId.isEmpty() || sessionId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
