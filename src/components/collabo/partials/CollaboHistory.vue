@@ -341,21 +341,26 @@ export default {
         } else if (this.sort.direction === 'asc') {
           this.sort.direction = 'desc'
         } else if (this.sort.direction === 'desc') {
-          this.sort.direction = 'asc'
-          this.sort.column = 'activeDate'
+          this.sort.direction = ''
+          this.sort.column = ''
         }
       } else {
         this.sort.column = column
         this.sort.direction = 'asc'
       }
+
       this.setSearch({
         sort: {
-          column: this.sort.column,
-          direction: this.sort.direction,
+          column: this.sort.column === '' ? 'activeDate' : this.sort.column,
+          direction: this.sort.direction === '' ? 'desc' : this.sort.direction,
         },
       })
       this.$eventBus.$emit('reload::list')
     },
+  },
+  mounted() {
+    // this.sort.direction = 'desc'
+    // this.sort.column = 'activeDate'
   },
 }
 </script>
