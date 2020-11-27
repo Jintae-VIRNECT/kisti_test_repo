@@ -154,7 +154,7 @@ const _ = {
             _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
             _.minZoomLevel = parseInt(capability.zoom.min)
           }
-          _.video(options.videoSource ? settingInfo.videoOn : 'NONE')
+          _.video(options.videoSource ? settingInfo.video.isOn : 'NONE')
           _.sendResolution({
             width: settings.width,
             height: settings.height,
