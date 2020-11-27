@@ -58,7 +58,7 @@
           {{ $t('room.active_date') }}
         </div>
         <div class="history-info-table-column__info time">
-          {{ room.activeDate | dateTimeFormat }}
+          {{ activeDate }}
         </div>
       </div>
       <div class="history-info__row">
@@ -128,6 +128,9 @@ export default {
             return member.memberType === 'LEADER'
           })
         : ''
+    },
+    activeDate() {
+      return this.room.activeDate ? dateTimeFormat(this.room.activeDate) : ''
     },
     unactiveDate() {
       return this.room.unactiveDate
