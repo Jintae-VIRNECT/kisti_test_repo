@@ -39,7 +39,7 @@
 import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
-import auth from 'utils/auth'
+import auth, { getSettings } from 'utils/auth'
 import { getLicense, getCompanyInfo } from 'api/http/account'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
@@ -58,6 +58,7 @@ export default {
     if (!hasToken) {
       auth.login()
     } else {
+      await getSettings()
       next()
     }
   },
