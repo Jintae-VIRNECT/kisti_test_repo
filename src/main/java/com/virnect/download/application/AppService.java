@@ -85,8 +85,9 @@ public class AppService {
 		}
 
 		// 1. find app device type, device, os information
-		Device device = getDeviceInfoByDeviceType(appUploadRequest.getDeviceType());
-		OS os = getOSInfo(appUploadRequest.getOperationSystem());
+		//Device device = getDeviceInfoByDeviceType(appUploadRequest.getDeviceType());
+		//OS os = getOSInfo(appUploadRequest.getOperationSystem());
+        Device device = getDeviceInfo(appUploadRequest.getDeviceType(),appUploadRequest.getOperationSystem());
 		Product product = productRepository.findByName(appUploadRequest.getProductName())
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_PRODUCT_INFO_NOT_FOUND));
 
@@ -103,41 +104,40 @@ public class AppService {
 			.uuid(generateAppUUID())
 			.device(device)
 			.product(product)
-			.os(os)
+			//.os(os)
 			.packageName(apkMeta.getPackageName())
 			.versionName(apkMeta.getVersionName())
 			.versionCode(apkMeta.getVersionCode())
-			.appOriginUrl(appUploadUrl)
 			.appUrl(appUploadUrl)
-			.image("")
+			.imageUrl("")
 			.signature(applicationSignature)
 			.build();
 
 		// Remote 가이드 문서 및 이미지 설정
-		if (product.getName().equals("REMOTE") && device.getName().equals("MOBILE")) {
+		if (product.getName().equals("REMOTE") && device.getType().equals("MOBILE")) {
 			apps.setGuideUrl(AppGuideUrl.REMOTE_USER_GUIDE.getUrl());
-			apps.setImage(AppImageUrl.REMOTE_MOBILE.getUrl());
-		} else if (product.getName().equals("REMOTE") && device.getName().equals("REALWEAR")) {
+			apps.setImageUrl(AppImageUrl.REMOTE_MOBILE.getUrl());
+		} else if (product.getName().equals("REMOTE") && device.getType().equals("REALWEAR")) {
 			apps.setGuideUrl(AppGuideUrl.REMOTE_USER_GUIDE.getUrl());
-			apps.setImage(AppImageUrl.REMOTE_REALWEAR.getUrl());
+			apps.setImageUrl(AppImageUrl.REMOTE_REALWEAR.getUrl());
 		}
 
 		//VIEW 가이드 문서 및 이미지 설정
-		if (product.getName().equals("VIEW") && device.getName().equals("MOBILE")) {
+		if (product.getName().equals("VIEW") && device.getType().equals("MOBILE")) {
 			apps.setGuideUrl(AppGuideUrl.VIEW_MOBILE_USER_GUIDE.getUrl());
-			apps.setImage(AppImageUrl.VIEW_MOBILE.getUrl());
-		} else if (product.getName().equals("VIEW") && device.getName().equals("REALWEAR")) {
+			apps.setImageUrl(AppImageUrl.VIEW_MOBILE.getUrl());
+		} else if (product.getName().equals("VIEW") && device.getType().equals("REALWEAR")) {
 			apps.setGuideUrl(AppGuideUrl.VIEW_REALWARE_USER_GUIDE.getUrl());
-			apps.setImage(AppImageUrl.VIEW_REALWEAR.getUrl());
+			apps.setImageUrl(AppImageUrl.VIEW_REALWEAR.getUrl());
 		} else if (product.getName().equals("MAKE")) {
 			apps.setGuideUrl(AppGuideUrl.MAKE_USER_GUIDE.getUrl());
-			apps.setImage(AppImageUrl.MAKE.getUrl());
+			apps.setImageUrl(AppImageUrl.MAKE.getUrl());
 		}
 		appRepository.save(apps);
 
 		AppUploadResponse appUploadResponse = new AppUploadResponse();
 		appUploadResponse.setDeviceType(appUploadRequest.getDeviceType());
-		appUploadResponse.setOperationSystem(os.getName());
+		appUploadResponse.setOperationSystem(appUploadRequest.getOperationSystem());
 		appUploadResponse.setPackageName(apps.getPackageName());
 		appUploadResponse.setUuid(apps.getUuid());
 		appUploadResponse.setVersion(apps.getVersionName());
@@ -145,9 +145,13 @@ public class AppService {
 		appUploadResponse.setProductName(apps.getProduct().getName());
 		return new ApiResponse<>(appUploadResponse);
 	}
+    private Device getDeviceInfo(String deviceType, String operationSystem) {
+        return deviceRepository.findByTypeAndOs(deviceType, operationSystem)
+                .orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND));
+    }
 
 	private Device getDeviceInfoByDeviceType(String deviceType) {
-		return deviceRepository.findByName(deviceType)
+		return deviceRepository.findByType(deviceType)
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND));
 	}
 
@@ -195,8 +199,8 @@ public class AppService {
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_PACKAGE_NAME_NOT_FOUND));
 		AppDetailInfoResponse appDetailInfoResponse = new AppDetailInfoResponse();
 		appDetailInfoResponse.setAppUrl(app.getAppUrl());
-		appDetailInfoResponse.setDeviceType(app.getDevice().getName());
-		appDetailInfoResponse.setOperationSystem(app.getOs().getName());
+		appDetailInfoResponse.setDeviceType(app.getDevice().getType());
+		appDetailInfoResponse.setOperationSystem(app.getDevice().getOs());
 		appDetailInfoResponse.setProductName(app.getProduct().getName());
 		appDetailInfoResponse.setSigningKey(app.getSignature());
 		appDetailInfoResponse.setUuid(app.getUuid());
@@ -235,7 +239,7 @@ public class AppService {
 				appInfo.setUuid(app.getUuid());
 				appInfo.setVersion(app.getVersionName());
 				appInfo.setDeviceType(app.getDevice().getType());
-				appInfo.setOperationSystem(app.getOs().getName());
+				appInfo.setOperationSystem(app.getDevice().getOs());
 				appInfo.setPackageName(app.getPackageName());
 				appInfo.setAppUrl(app.getAppUrl());
 				appInfo.setProductName(app.getProduct().getName());
@@ -266,8 +270,8 @@ public class AppService {
 
 		AppDetailInfoResponse appDetailInfoResponse = new AppDetailInfoResponse();
 		appDetailInfoResponse.setAppUrl(app.getAppUrl());
-		appDetailInfoResponse.setDeviceType(app.getDevice().getName());
-		appDetailInfoResponse.setOperationSystem(app.getOs().getName());
+		appDetailInfoResponse.setDeviceType(app.getDevice().getType());
+		appDetailInfoResponse.setOperationSystem(app.getDevice().getDescription());
 		appDetailInfoResponse.setProductName(app.getProduct().getName());
 		appDetailInfoResponse.setSigningKey(app.getSignature());
 		appDetailInfoResponse.setUuid(app.getUuid());
@@ -286,11 +290,11 @@ public class AppService {
 			appInfo.setId(app.getId());
 			appInfo.setUuid(app.getUuid());
 			appInfo.setVersionName(app.getVersionName());
-			appInfo.setDeviceName(app.getDevice().getName());
+			appInfo.setDeviceName(app.getDevice().getType());
 			appInfo.setAppUrl(app.getAppUrl());
 			appInfo.setPackageName(app.getPackageName());
 			appInfo.setGuideUrl(app.getGuideUrl());
-			appInfo.setImageUrl(app.getImage());
+			appInfo.setImageUrl(app.getImageUrl());
 			appInfo.setRegisterDate(app.getCreatedDate());
 			appInfo.setAppStatus(app.getAppStatus());
 			appInfo.setAppUpdateStatus(app.getAppUpdateStatus());

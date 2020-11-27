@@ -1,19 +1,11 @@
 package com.virnect.download.dao;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
+import com.virnect.download.domain.*;
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.download.domain.App;
-import com.virnect.download.domain.AppStatus;
-import com.virnect.download.domain.Product;
-import com.virnect.download.domain.QApp;
-import com.virnect.download.domain.QDevice;
-import com.virnect.download.domain.QOS;
-import com.virnect.download.domain.QProduct;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Project: PF-Download
@@ -30,7 +22,9 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	public List<App> getAppList(Product product) {
 		QApp qApp = QApp.app;
 		return jpaQueryFactory
-			.select(qApp).from(qApp).where(qApp.product.eq(product)).orderBy(qApp.versionCode.desc()).fetch();
+			.select(qApp).from(qApp).where(qApp.product.eq(product))
+                .groupBy(qApp.device)
+                .orderBy(qApp.versionCode.desc()).fetch();
 	}
 
 	@Override
@@ -45,14 +39,14 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	@Override
 	public Optional<App> getLatestVersionAppInfoByPackageName(String packageName) {
 		QApp qApp = QApp.app;
-		QOS qos = QOS.oS;
+		//QOS qos = QOS.oS;
 		QProduct qProduct = QProduct.product;
 		QDevice qDevice = QDevice.device;
 
 		return Optional.ofNullable(
 			jpaQueryFactory
 				.selectFrom(qApp)
-				.innerJoin(qApp.os, qos).fetchJoin()
+				//.innerJoin(qApp.os, qos).fetchJoin()
 				.innerJoin(qApp.product, qProduct).fetchJoin()
 				.innerJoin(qApp.device, qDevice).fetchJoin()
 				.where(qApp.packageName.eq(packageName))
@@ -65,13 +59,13 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
 	@Override
 	public List<App> findByPackageNameAndSignature(String packageName, String signature) {
 		QApp qApp = QApp.app;
-		QOS qos = QOS.oS;
+		//QOS qos = QOS.oS;
 		QProduct qProduct = QProduct.product;
 		QDevice qDevice = QDevice.device;
 
 		return jpaQueryFactory
 			.selectFrom(qApp)
-			.innerJoin(qApp.os, qos).fetchJoin()
+			//.innerJoin(qApp.os, qos).fetchJoin()
 			.innerJoin(qApp.product, qProduct).fetchJoin()
 			.innerJoin(qApp.device, qDevice).fetchJoin()
 			.where(qApp.packageName.eq(packageName).and(qApp.signature.eq(signature)))

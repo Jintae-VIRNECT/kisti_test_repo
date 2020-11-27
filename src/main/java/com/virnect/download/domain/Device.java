@@ -1,11 +1,6 @@
 package com.virnect.download.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,12 +25,18 @@ public class Device extends TimeEntity {
 	@Column(name = "device_id")
 	private Long id;
 
-	@Column(name = "name", nullable = false)
-	private String name;
+    @Column(name = "type", nullable = false)
+    private String type;
 
-	@Column(name = "dispaly_title", nullable = false)
-	private String displayTitle;
+    @Column(name = "type_description", nullable = false)
+    private String typeDescription;
 
-	@Column(name = "type")
-	private String type;
+    @Column(name = "os", nullable = false)
+    private String os;
+
+	@Column(name = "description", nullable = false)
+	private String description;
+
+
+
 }
