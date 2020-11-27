@@ -63,7 +63,6 @@ public class LocalFileManagementService implements IFileManagementService {
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/virnect-remote/";
     final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
 
-
     private static void disableSslVerification() throws NoSuchAlgorithmException, KeyManagementException {
         // Create a trust manager that does not validate certificate chains
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
@@ -104,8 +103,6 @@ public class LocalFileManagementService implements IFileManagementService {
         // Install the all-trusting host verifier
         HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);*/
     }
-
-
 
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
@@ -163,14 +160,6 @@ public class LocalFileManagementService implements IFileManagementService {
                                 "</LifecycleConfiguration>";
 
                 minioClient.setBucketLifeCycle(SetBucketLifeCycleArgs.builder().bucket(bucketName).config(lifeCycle).build());
-
-                //create file bucket
-                /*isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(profileBucketName).build());
-                if (isBucketExist) {
-                    log.info("Bucket {} is already exist.", profileBucketName);
-                } else {
-                    minioClient.makeBucket(MakeBucketArgs.builder().bucket(profileBucketName).build());
-                }*/
             } catch (ConnectException e) {
                 log.info("Bucket ConnectException error occured:: {}", e.getMessage());
                 this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
@@ -250,8 +239,7 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String uploadProfile(MultipartFile file, String dirPath)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String uploadProfile(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // check file is null
         if (file.getSize() == 0) {
             throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
@@ -306,8 +294,7 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Deprecated
-    public String uploadPolicyFile(MultipartFile file, String fileName)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String uploadPolicyFile(MultipartFile file, String fileName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 1. 빈 파일 여부 확인
         if (file.getSize() == 0) {
             throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);

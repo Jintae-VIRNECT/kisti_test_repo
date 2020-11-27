@@ -2,7 +2,7 @@ package com.virnect.service.api;
 
 import com.virnect.service.ApiResponse;
 import com.virnect.service.dto.PageRequest;
-import com.virnect.service.dto.ResultResponse;
+import com.virnect.service.dto.DeleteResultResponse;
 import com.virnect.service.dto.service.request.RoomHistoryDeleteRequest;
 import com.virnect.service.dto.service.request.RoomRequest;
 import com.virnect.service.dto.service.response.RoomHistoryDetailInfoResponse;
@@ -65,13 +65,13 @@ public interface IHistoryRestAPI {
 
     @ApiOperation(value = "Delete all Room Histories", notes = "모든 최근 기록 리스트를 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{workspaceId}/{userId}")
-    ResponseEntity<ApiResponse<ResultResponse>> deleteHistory(
+    ResponseEntity<ApiResponse<DeleteResultResponse>> deleteHistory(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("userId") String userId);
 
     @ApiOperation(value = "Delete a specific room", notes = "특정 최근기록을 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{workspaceId}")
-    ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryById(
+    ResponseEntity<ApiResponse<DeleteResultResponse>> deleteHistoryById(
             @PathVariable("workspaceId") String workspaceId,
             @RequestBody @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest,
             BindingResult result);

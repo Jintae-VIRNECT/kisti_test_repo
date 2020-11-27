@@ -62,7 +62,9 @@ public class HistoryService {
 
     @Transactional
     public void removeRoomHistory(MemberHistory memberHistory) {
-        memberHistory.setRoomHistory(null);
-        this.memberHistoryRepository.save(memberHistory);
+        if(memberHistory.getRoomHistory() != null) {
+            memberHistory.setRoomHistory(null);
+            this.memberHistoryRepository.save(memberHistory);
+        }
     }
 }

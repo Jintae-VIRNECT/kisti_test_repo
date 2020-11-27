@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @ApiModel
 @RequiredArgsConstructor
 public class ResultResponse {
-    @ApiModelProperty(value = "User Identifier", example = "ses_NxKh1OiT2S")
+    @ApiModelProperty(value = "User Identifier", example = "410df50ca6e32db0b6acba09bcb457ff")
     public String userId = "";
     @ApiModelProperty(value = "Responses result", position = 1, example = "true")
     public Boolean result = false;

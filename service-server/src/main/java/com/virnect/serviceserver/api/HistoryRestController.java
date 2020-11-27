@@ -6,7 +6,7 @@ import com.virnect.service.ApiResponse;
 import com.virnect.service.api.IHistoryRestAPI;
 import com.virnect.service.constraint.LicenseItem;
 import com.virnect.service.dto.PageRequest;
-import com.virnect.service.dto.ResultResponse;
+import com.virnect.service.dto.DeleteResultResponse;
 import com.virnect.service.dto.service.request.RoomHistoryDeleteRequest;
 import com.virnect.service.dto.service.request.RoomRequest;
 import com.virnect.service.dto.service.response.RoomHistoryDetailInfoResponse;
@@ -37,7 +37,6 @@ public class HistoryRestController implements IHistoryRestAPI {
     private static final String REST_PATH = "/remote/history";
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
-    //private final DataRepository dataRepository;
     private final ServiceSessionManager serviceSessionManager;
 
     private SessionDataRepository sessionDataRepository;
@@ -286,7 +285,7 @@ public class HistoryRestController implements IHistoryRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistory(String workspaceId, String userId) {
+    public ResponseEntity<ApiResponse<DeleteResultResponse>> deleteHistory(String workspaceId, String userId) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE " + REST_PATH +
@@ -305,7 +304,7 @@ public class HistoryRestController implements IHistoryRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryById(String workspaceId, @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest, BindingResult result) {
+    public ResponseEntity<ApiResponse<DeleteResultResponse>> deleteHistoryById(String workspaceId, @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest, BindingResult result) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE " + REST_PATH +
