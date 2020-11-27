@@ -4,7 +4,7 @@ import XLSX from 'xlsx'
 
 export const exportExcel = (raws, header) => {
   const keys = [
-    ['index'],
+    ['no'],
     ['title'],
     ['description'],
     ['leader', 'nickName'],
@@ -27,14 +27,17 @@ export const exportExcel = (raws, header) => {
             .map(member => {
               return member.nickName
             })
-            .join(' '),
+            .join(','),
         )
       } else if (key[0] === 'activeDate') {
-        row.push(dateTimeFormat(deepGet(raw, key)))
+        const activeDate = deepGet(raw, key)
+        activeDate ? row.push(dateTimeFormat(activeDate)) : row.push('')
       } else if (key[0] === 'unactiveDate') {
-        row.push(dateTimeFormat(deepGet(raw, key)))
+        const unactiveDate = deepGet(raw, key)
+        unactiveDate ? row.push(dateTimeFormat(unactiveDate)) : row.push('')
       } else if (key[0] === 'durationSec') {
-        row.push(durationFormat(deepGet(raw, key)))
+        const durationSec = deepGet(raw, key)
+        durationSec ? row.push(durationFormat(deepGet(raw, key))) : row.push('')
       } else {
         row.push(deepGet(raw, key))
       }
