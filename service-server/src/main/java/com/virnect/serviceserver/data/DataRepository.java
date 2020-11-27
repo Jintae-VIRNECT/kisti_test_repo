@@ -25,6 +25,7 @@ import com.virnect.serviceserver.feign.service.LicenseRestService;
 import com.virnect.serviceserver.feign.service.RecordRestService;
 import com.virnect.serviceserver.feign.service.UserRestService;
 import com.virnect.serviceserver.feign.service.WorkspaceRestService;
+import com.virnect.serviceserver.utils.PushMessageClient;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public abstract class DataRepository {
     protected SessionService sessionService;
     protected HistoryService historyService;
     protected FileService fileService;
+
+    protected PushMessageClient pushMessageClient;
 
     protected WorkspaceRestService workspaceRestService;
     protected UserRestService userRestService;
@@ -69,6 +72,12 @@ public abstract class DataRepository {
     @Autowired
     public void setFileService(FileService fileService) {
         this.fileService = fileService;
+    }
+
+    @Qualifier(value = "pushMessageClient")
+    @Autowired
+    public void setPushMessageClient(PushMessageClient pushMessageClient) {
+        this.pushMessageClient = pushMessageClient;
     }
 
     @Autowired

@@ -4,6 +4,7 @@ import com.virnect.data.dao.Company;
 import com.virnect.data.dao.Language;
 import com.virnect.data.dao.SessionType;
 import com.virnect.service.ApiResponse;
+import com.virnect.service.constraint.CompanyConstants;
 import com.virnect.service.constraint.LicenseItem;
 import com.virnect.service.constraint.TranslationItem;
 import com.virnect.service.dto.LanguageCode;
@@ -105,7 +106,7 @@ public class UtilDataRepository extends DataRepository {
 
             @Override
             DataProcess<CompanyResponse> invokeDataProcess() {
-                Company company = saveData(companyRequest);
+                Company company = saveData();
                 if(sessionService.createCompany(company) != null) {
                     CompanyResponse companyResponse = new CompanyResponse();
                     companyResponse.setWorkspaceId(company.getWorkspaceId());
@@ -117,7 +118,7 @@ public class UtilDataRepository extends DataRepository {
                 }
             }
 
-            private Company saveData(CompanyRequest companyRequest) {
+            private Company saveData() {
                 Company company = Company.builder()
                         .companyCode(companyRequest.getCompanyCode())
                         .workspaceId(companyRequest.getWorkspaceId())
@@ -202,7 +203,7 @@ public class UtilDataRepository extends DataRepository {
             @Override
             DataProcess<CompanyInfoResponse> invokeDataProcess() {
                 CompanyInfoResponse companyInfoResponse;
-                if(companyCode != 0) {
+                if(companyCode != CompanyConstants.COMPANY_VIRNECT) {
                     Company company = loadFromDatabase();
                     if(company != null) {
                         companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);

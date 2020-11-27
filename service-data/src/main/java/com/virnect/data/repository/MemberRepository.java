@@ -24,7 +24,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     List<Member> findByWorkspaceIdAndSessionIdAndRoomNotNull(final String workspaceId, final String sessionId);
 
-    Page<Member> findByWorkspaceIdAndUuidAndRoomNotNull(final String workspaceId, final String uuid, Pageable pageable);
+    //Page<Member> findByWorkspaceIdAndUuidAndRoomNotNull(final String workspaceId, final String uuid, Pageable pageable);
+
+    @Query("select m from Member m where m.room is not null and m.workspaceId = ?1 and m.uuid =?2")
+    Page<Member> findMemberByWorkspaceIdAndUuidAndRoomNotNull(final String workspaceId, final String uuid, Pageable pageable);
 
     List<Member> findByWorkspaceIdAndUuidAndRoomNotNull(final String workspaceId, final String uuid);
 
