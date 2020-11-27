@@ -283,10 +283,21 @@ public class SessionRestController implements ISessionRestAPI {
             @ApiIgnore PageRequest pageRequest
     ) {
         //@RequestParam(value = "webRtcStats", required = false, defaultValue = "false") boolean webRtcStats,
-        log.info("REST API: GET {}/{}/{}", REST_PATH, workspaceId != null ? workspaceId : "{}", userId != null ? userId : "{}");
-        return ResponseEntity.ok(
-                this.sessionDataRepository.loadRoomList(workspaceId, userId, paging, pageRequest.of())
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: GET " + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (userId != null ? userId : "{}"),
+                "getRoomList"
         );
+
+        ApiResponse<RoomInfoListResponse> apiResponse;
+        if(paging) {
+            apiResponse = this.sessionDataRepository.loadRoomPageList(workspaceId, userId, pageRequest.of());
+        } else {
+            apiResponse = this.sessionDataRepository.loadRoomList(workspaceId, userId, pageRequest.of());
+        }
+        return ResponseEntity.ok(apiResponse);
     }
 
     @Override

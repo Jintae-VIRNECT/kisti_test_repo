@@ -4,6 +4,7 @@ import com.virnect.data.dao.Room;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,6 +17,12 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     //Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
+
+    @Query("select r from Room r where r.workspaceId = ?1 and r.roomStatus = 0")
+    Page<Room> findRoomsByWorkspaceId(final String workspaceId, Pageable pageable);
+
+    @Query("select r from Room r where r.workspaceId = ?1 and r.roomStatus = 0")
+    Page<Room> findRoomByWorkspaceId(final String workspaceId, Pageable pageable);
 
     List<Room> findByWorkspaceId(final String workspaceId);
 

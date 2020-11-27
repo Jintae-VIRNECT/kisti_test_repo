@@ -129,6 +129,10 @@ public class SessionService {
         return roomList;
     }
 
+    public Page<Room> getRoomPageList(String workspaceId, Pageable pageable) {
+        return this.roomRepository.findRoomByWorkspaceId(workspaceId, pageable);
+    }
+
     //
     public List<Room> getRoomList(String workspaceId) {
         List<Room> roomList = new ArrayList<>();
@@ -168,7 +172,7 @@ public class SessionService {
     }
 
     public Page<Member> getMemberList(String workspaceId, String userId, Pageable pageable) {
-        return this.memberRepository.findByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId, pageable);
+        return this.memberRepository.findMemberByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId, pageable);
     }
 
     public List<MemberHistory> getMemberHistoryList(String userId) {

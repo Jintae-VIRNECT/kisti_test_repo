@@ -33,8 +33,6 @@ import java.util.stream.Collectors;
 public class HistoryDataRepository extends DataRepository {
     private static final String TAG = HistoryDataRepository.class.getSimpleName();
 
-
-
     //========================================= ROOM HISTORY INFORMATION RELATION ===========================================//
     public ApiResponse<RoomHistoryInfoListResponse> loadRoomHistoryPageList(
             String workspaceId,
