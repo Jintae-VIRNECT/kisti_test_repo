@@ -42,7 +42,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SessionRestController implements ISessionRestAPI {
     private static final String TAG = SessionRestController.class.getSimpleName();
-    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
+    private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/room";
 
     private SessionDataRepository sessionDataRepository;
@@ -62,13 +62,16 @@ public class SessionRestController implements ISessionRestAPI {
         this.sessionDataRepository = sessionDataRepository;
     }
 
+    @Deprecated
+    private HttpHeaders getResponseHeaders() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+        return responseHeaders;
+    }
+
     private boolean IsValidUserCapacity(RoomRequest roomRequest, LicenseItem licenseItem) {
         // check room request member count is over
-        if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-            return false;
-        } else {
-            return true;
-        }
+        return roomRequest.getParticipantIds().size() + 1 <= licenseItem.getUserCapacity();
     }
 
     @Deprecated
@@ -319,11 +322,7 @@ public class SessionRestController implements ISessionRestAPI {
         );
     }
 
-    private HttpHeaders getResponseHeaders() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return responseHeaders;
-    }
+
 
     @Override
     public ResponseEntity<ApiResponse<RoomDeleteResponse>> deleteRoomById(
@@ -331,7 +330,7 @@ public class SessionRestController implements ISessionRestAPI {
             @PathVariable("sessionId") String sessionId,
             @PathVariable("userId") String userId) {
         log.info("REST API: DELETE {}/{}/{}/{}", REST_PATH,
-                workspaceId != null ? workspaceId.toString() : "{}",
+                workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
                 userId != null ? userId : "{}");
 
@@ -398,26 +397,6 @@ public class SessionRestController implements ISessionRestAPI {
         }*/
     }
 
-    /*@Override
-    public ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> updateRoomProfile(
-            @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
-            @PathVariable("workspaceId") String workspaceId,
-            @PathVariable("sessionId") String sessionId,
-            BindingResult result) {
-        log.info("REST API: POST {}/{}/{}/profile",
-                REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sessionId != null ? sessionId : "{}");
-        if(result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-
-        return ResponseEntity.ok(
-                this.dataRepository.updateRoom(workspaceId, sessionId, roomProfileUpdateRequest)
-        );
-    }*/
-
     @Override
     public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> updateRoomById(
             @PathVariable("workspaceId") String workspaceId,
@@ -425,9 +404,16 @@ public class SessionRestController implements ISessionRestAPI {
             @RequestBody @Valid ModifyRoomInfoRequest modifyRoomInfoRequest,
             BindingResult result
     ) {
-        log.info("REST API: POST {}/{}/{}/info", REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sessionId != null ? sessionId : "{}");
+
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST " + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}")
+                        + "/info",
+                "updateRoomById"
+        );
+
         if(result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -482,9 +468,9 @@ public class SessionRestController implements ISessionRestAPI {
             @RequestParam("userId") String userId
     ) {
         log.info("REST API: POST {}/{}/{}/exit {}", REST_PATH,
-                workspaceId != null ? workspaceId.toString() : "{}",
+                workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
-                userId != null ? userId.toString() : "{}");
+                userId != null ? userId : "{}");
         if(sessionId.isEmpty() || userId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -557,7 +543,7 @@ public class SessionRestController implements ISessionRestAPI {
             BindingResult result
     ) {
         log.info("REST API: DELETE {}/{}/{}/member {}", REST_PATH,
-                workspaceId != null ? workspaceId.toString() : "{}",
+                workspaceId != null ? workspaceId : "{}",
                 sessionId != null ? sessionId : "{}",
                 kickRoomRequest != null ? kickRoomRequest.toString() : "{}");
 
@@ -642,7 +628,7 @@ public class SessionRestController implements ISessionRestAPI {
 
         log.info("REST API: POST {}/{}/{}/signal",
                 REST_PATH,
-                workspaceId != null ? workspaceId.toString() : "{}",
+                workspaceId != null ? workspaceId : "{}",
                 sendSignalRequest != null ? sendSignalRequest.toString() : "{}"
                 );
 

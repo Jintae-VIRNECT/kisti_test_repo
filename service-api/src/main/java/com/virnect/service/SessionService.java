@@ -882,8 +882,6 @@ public class SessionService {
 
     @Transactional
     public Room updateRoom(Room room, ModifyRoomInfoRequest modifyRoomInfoRequest) {
-        room.setTitle(modifyRoomInfoRequest.getTitle());
-        room.setDescription(modifyRoomInfoRequest.getDescription());
         return this.roomRepository.save(room);
     }
 
@@ -896,8 +894,8 @@ public class SessionService {
 
 
     @Transactional
-    public void updateRoom(Room room) {
-        roomRepository.save(room);
+    public Room updateRoom(Room room) {
+        return this.roomRepository.save(room);
     }
 
     @Transactional

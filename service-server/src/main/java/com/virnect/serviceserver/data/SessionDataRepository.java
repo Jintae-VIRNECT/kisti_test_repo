@@ -559,7 +559,6 @@ public class SessionDataRepository extends DataRepository {
 
                 Room room = loadFromDatabase();
                 if(room == null) {
-
                     return new DataProcess<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
                 } else {
                     if (room.getRoomStatus() != RoomStatus.ACTIVE) {
@@ -609,6 +608,9 @@ public class SessionDataRepository extends DataRepository {
             String sessionId,
             ModifyRoomInfoRequest modifyRoomInfoRequest) {
         return new RepoDecoder<Room, RoomDetailInfoResponse>(RepoDecoderType.UPDATE) {
+            Room room;
+            List<MemberInfoResponse> memberInfoList;
+
             @Override
             Room loadFromDatabase() {
                 return sessionService.getRoom(workspaceId, sessionId);
@@ -616,53 +618,64 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             DataProcess<RoomDetailInfoResponse> invokeDataProcess() {
-                log.info("ROOM INFO UPDATE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
-                Room room = loadFromDatabase();
-                room = sessionService.updateRoom(room, modifyRoomInfoRequest);
+                LogMessage.formedInfo(
+                        TAG,
+                        "invokeDataProcess",
+                        "updateRoom",
+                        "room info retrieve by session id",
+                        sessionId
+                );
+
+                room = loadFromDatabase();
+                String userId = room.getLeaderId();
                 if(room != null) {
-                    if(room.getLeaderId().equals(modifyRoomInfoRequest.getUuid())) {
+                    if(userId.equals(modifyRoomInfoRequest.getUuid())) {
+                        room = updateData();
+                        Room updatedRoom = sessionService.updateRoom(room);
+
                         // mapping data
-                        RoomDetailInfoResponse resultResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
-                        resultResponse.setSessionType(room.getSessionProperty().getSessionType());
+                        RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(updatedRoom, RoomDetailInfoResponse.class);
+                        roomDetailInfoResponse.setSessionType(updatedRoom.getSessionProperty().getSessionType());
                         // Get Member List by Room Session ID
                         // Mapping Member List Data to Member Information List
-                        List<MemberInfoResponse> memberInfoList = sessionService.getMemberList(resultResponse.getSessionId())
+                        memberInfoList = sessionService.getMemberList(roomDetailInfoResponse.getSessionId())
                                 .stream()
+                                .filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
                                 .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                                 .collect(Collectors.toList());
 
                         // find and get extra information from use-server using uuid
-                        if (!memberInfoList.isEmpty()) {
-                            for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                                ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
-                                log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-                                //todo://user infomation does not have role and role id change to workspace member info
-                                WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-                                memberInfoResponse.setRole(workspaceMemberData.getRole());
-                                //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-                                memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-                                memberInfoResponse.setName(workspaceMemberData.getName());
-                                memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-                                memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+                        fetchFromRepository();
 
-                                /*ApiResponse<UserInfoResponse> userInfo = userRestService.getUserInfoByUuid(memberInfoResponse.getUuid());
-                                log.debug("getUsers: " + userInfo.getData().toString());
-
-                                memberInfoResponse.setEmail(userInfo.getData().getEmail());
-                                memberInfoResponse.setFirstName(userInfo.getData().getFirstName());
-                                memberInfoResponse.setLastName(userInfo.getData().getLastName());
-                                memberInfoResponse.setNickname(userInfo.getData().getNickname());
-                                memberInfoResponse.setProfile(userInfo.getData().getProfile());*/
-                            }
-                        }
                         // Set Member List to Room Detail Information Response
-                        resultResponse.setMemberList(memberInfoList);
-                        return new DataProcess<>(resultResponse);
+                        roomDetailInfoResponse.setMemberList(memberInfoList);
+                        return new DataProcess<>(roomDetailInfoResponse);
                     } else {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                        return new DataProcess<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     }
                 } else {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return new DataProcess<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+            }
+
+            private Room updateData() {
+                room.setTitle(modifyRoomInfoRequest.getTitle());
+                room.setDescription(modifyRoomInfoRequest.getDescription());
+                return room;
+            }
+
+            private void fetchFromRepository() {
+                for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+                    ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                    log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                    //todo://user infomation does not have role and role id change to workspace member info
+                    WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                    memberInfoResponse.setRole(workspaceMemberData.getRole());
+                    //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                    memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                    memberInfoResponse.setName(workspaceMemberData.getName());
+                    memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                    memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                 }
             }
         }.asApiResponse();
