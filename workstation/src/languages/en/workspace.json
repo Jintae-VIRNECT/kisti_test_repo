@@ -49,29 +49,29 @@
       "invalid": "Failure to accept invitation"
     },
     "onpremiseSetting": {
-      "title": "Web Service Settings",
-      "desc": "Change the customer's name, logo, and Favicon shown in the Web service. It does not apply to installed programs.",
+      "title": "Web service settings",
+      "desc": "Changing the favicon, logo and company name displayed on the web service. It does not apply to the installation programme (Application).",
       "company": {
-        "title": "Change customer's name",
+        "title": "Change company name",
         "desc": "If you change the customer name, you will be exposed to the customer name instead of 'VIRNECT' in the Web Services tab / Service Title / Notification phrase.",
-        "tooltip": "Customer name change area",
-        "companyName": "Customer name",
-        "caution": "Changes can be made to a combination of Korean, English, numbers, and special characters (.!,@,#,$,%-,_,&) up to 20 characters."
+        "tooltip": "Company name area",
+        "companyName": "Company name",
+        "caution": "Company name can be changed to a combination of Korean, English, Number, Special character (.,!,@,#,$,%,-,_,&) up to 20 characters."
       },
       "logo": {
-        "title": "Change Logo",
-        "desc": "If you want to change your logo, please register your logo image. The VIRNECT logo is shown instead of the VIRNECT logo in your web service.",
-        "lightTheme": "Light theme",
-        "darkTheme": "Dark theme",
-        "tooltip": "Logo Change Area",
-        "caution": "Up to 3MB JPG and PNG files can be uploaded. <br>* Recommended size: 170 (lateral) * 32 (longitudinal, fixed)px / 72 DPI",
+        "title": "Change logo",
+        "desc": "If you wish to change a logo, please register a logo image. It will replace the VIRNECT logo from your web service.",
+        "lightTheme": "For bright interface",
+        "darkTheme": "For dark interface",
+        "tooltip": "Logo area",
+        "caution": "You can upload JPG and PNG files up to 3MB. <br>* Recommended size: 170(horizontal) * 32(vertical, fixed)px / 72 DPI",
         "submit": "Register"
       },
       "favicon": {
-        "title": "Change the Favicon",
-        "desc": "If you want to change the Favicon, please register the Favicon image. Web service Favicon will be changed.",
-        "tooltip": "Favicon Change Area",
-        "caution": "Up to 3MB of ICO, JPG, and PNG files can be uploaded. <br>* Recommended size: 32 (lateral) * 32 (longitudinal, fixed)px / 72 DPI",
+        "title": "Change favicon",
+        "desc": "If you wish to change a favicon, please register a favicon image.",
+        "tooltip": "Favicon area",
+        "caution": "You can upload JPG and PNG files up to 3MB. <br>* Recommended size: 170(horizontal) * 32(vertical, fixed)px / 72 DPI",
         "upload": "Upload Image",
         "submit": "Register"
       }

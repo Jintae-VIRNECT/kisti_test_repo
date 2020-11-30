@@ -40,7 +40,7 @@
             :placeholder="$t('members.password.placeholder2')"
           />
         </el-form-item>
-        <p>{{ $t('members.password.caution') }}</p>
+        <p v-html="$t('members.password.caution')" />
       </el-form>
     </div>
     <div slot="footer">
