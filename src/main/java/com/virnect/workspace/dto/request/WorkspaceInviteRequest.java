@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -31,6 +32,7 @@ public class WorkspaceInviteRequest {
     public static class UserInfo {
         @ApiModelProperty(value = "email", example = "ljk@virnect.com", position = 0)
         @NotBlank(message = "초대할 유저의 이메일 주소는 필수값입니다.")
+        @Email
         private String email;
         @ApiModelProperty(value = "role", example = "MEMBER", position = 1)
         @NotBlank(message = "초대할 유저의 워크스페이스 권한은 필수값입니다.")

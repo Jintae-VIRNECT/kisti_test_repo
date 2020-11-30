@@ -337,16 +337,30 @@ public class WorkspaceService {
                     .collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("nickname") && sortDirection.equalsIgnoreCase("asc")) {
-            return memberInfoDTOList.stream()
-                    .sorted(
-                            Comparator.comparing(MemberInfoDTO::getNickName, Comparator.nullsFirst(Comparator.naturalOrder())))
-                    .collect(Collectors.toList());
+            List<MemberInfoDTO> koList = memberInfoDTOList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[가-힣\\s]"))
+                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName)).collect(Collectors.toList());
+            List<MemberInfoDTO> enList = memberInfoDTOList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[a-zA-Z\\s]"))
+                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName)).collect(Collectors.toList());
+            List<MemberInfoDTO> etcList = memberInfoDTOList.stream().filter(memberInfoDTO -> !koList.contains(memberInfoDTO)).filter(memberInfoDTO -> !enList.contains(memberInfoDTO))
+                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName)).collect(Collectors.toList());
+            List<MemberInfoDTO> nullList = memberInfoDTOList.stream().filter(memberInfoDTO -> !StringUtils.hasText(memberInfoDTO.getNickName())).collect(Collectors.toList());
+            enList.addAll(etcList);
+            koList.addAll(enList);
+            nullList.addAll(koList);
+            return nullList;
         }
         if (sortName.equalsIgnoreCase("nickname") && sortDirection.equalsIgnoreCase("desc")) {
-            return memberInfoDTOList.stream()
-                    .sorted(
-                            Comparator.comparing(MemberInfoDTO::getNickName, Comparator.nullsFirst(Comparator.reverseOrder())))
-                    .collect(Collectors.toList());
+            List<MemberInfoDTO> koList = memberInfoDTOList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[가-힣\\s]"))
+                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName).reversed()).collect(Collectors.toList());
+            List<MemberInfoDTO> enList = memberInfoDTOList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[a-zA-Z\\s]"))
+                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName).reversed()).collect(Collectors.toList());
+            List<MemberInfoDTO> etcList = memberInfoDTOList.stream().filter(memberInfoDTO -> !koList.contains(memberInfoDTO)).filter(memberInfoDTO -> !enList.contains(memberInfoDTO))
+                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName).reversed()).collect(Collectors.toList());
+            List<MemberInfoDTO> nullList = memberInfoDTOList.stream().filter(memberInfoDTO -> !StringUtils.hasText(memberInfoDTO.getNickName())).collect(Collectors.toList());
+            enList.addAll(etcList);
+            koList.addAll(enList);
+            nullList.addAll(koList);
+            return nullList;
         } else {
             return memberInfoDTOList.stream()
                     .sorted(Comparator.comparing(
