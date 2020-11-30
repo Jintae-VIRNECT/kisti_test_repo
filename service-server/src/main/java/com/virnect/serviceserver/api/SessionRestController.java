@@ -329,10 +329,15 @@ public class SessionRestController implements ISessionRestAPI {
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId,
             @PathVariable("userId") String userId) {
-        log.info("REST API: DELETE {}/{}/{}/{}", REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sessionId != null ? sessionId : "{}",
-                userId != null ? userId : "{}");
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: DELETE "
+                        + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}")
+                        + (userId != null ? userId : "{}"),
+                "deleteRoomById"
+        );
 
         //check null or empty
         if(sessionId == null || sessionId.isEmpty()) {
@@ -404,10 +409,10 @@ public class SessionRestController implements ISessionRestAPI {
             @RequestBody @Valid ModifyRoomInfoRequest modifyRoomInfoRequest,
             BindingResult result
     ) {
-
         LogMessage.formedInfo(
                 TAG,
-                "REST API: POST " + REST_PATH
+                "REST API: POST "
+                        + REST_PATH
                         + (workspaceId != null ? workspaceId : "{}")
                         + (sessionId != null ? sessionId : "{}")
                         + "/info",
@@ -415,7 +420,15 @@ public class SessionRestController implements ISessionRestAPI {
         );
 
         if(result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+            result.getAllErrors().forEach(message ->
+                    LogMessage.formedError(
+                            TAG,
+                            "REST API: POST " + REST_PATH,
+                            "updateRoomById",
+                            LogMessage.PARAMETER_ERROR,
+                            message.toString()
+                    )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
@@ -431,17 +444,28 @@ public class SessionRestController implements ISessionRestAPI {
             @RequestBody @Valid JoinRoomRequest joinRoomRequest,
             BindingResult result
     ) {
-        log.info("REST API: POST {}/{}/{}/join {}", REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sessionId != null ? sessionId : "{}",
-                joinRoomRequest != null ? joinRoomRequest.toString() : "{}");
-        if (result.hasErrors()) {
-            log.info("has errors");
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST "
+                        + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}")
+                        + (joinRoomRequest != null ? joinRoomRequest : "{}")
+                        + "/join",
+                "joinRoomById"
+        );
+
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message ->
+                    LogMessage.formedError(
+                            TAG,
+                            "REST API: POST " + REST_PATH,
+                            "joinRoomById",
+                            LogMessage.PARAMETER_ERROR,
+                            message.toString()
+                    )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        else {
-            log.info("has no errors");
         }
 
         DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());

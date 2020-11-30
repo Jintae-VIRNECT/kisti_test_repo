@@ -98,18 +98,6 @@ public interface ISessionRestAPI {
             @PathVariable("userId") String userId);
 
 
-    /*@ApiOperation(value = "Update a Remote Room profile", notes = "원격협업 방 프로필을 업데이트 합니다.")
-    @PostMapping(value = "room/{workspaceId}/{sessionId}/profile")
-    @ApiImplicitParams({
-            @ApiImplicitParam(value = "변경할 프로필 이미지", name = "profile", paramType = "form", dataType = "__file")
-    })
-    @Deprecated
-    ResponseEntity<ApiResponse<RoomProfileUpdateResponse>> updateRoomProfile(
-            @ModelAttribute @Valid RoomProfileUpdateRequest roomProfileUpdateRequest,
-            @PathVariable("workspaceId") String workspaceId,
-            @PathVariable("sessionId") String sessionId,
-            BindingResult result);*/
-
     @ApiOperation(value = "Update Room Information", notes = "특정 원격협업 방 상세 정보를 수정하는 API 입니다.")
     @PostMapping(value = "room/{workspaceId}/{sessionId}/info")
     ResponseEntity<ApiResponse<RoomDetailInfoResponse>> updateRoomById(
