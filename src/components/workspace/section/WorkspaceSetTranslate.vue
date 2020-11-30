@@ -54,7 +54,7 @@
         :isFirst.sync="transMultiple"
       ></slider>
     </section>
-    <section class="setting-section list horizon">
+    <section class="setting-section list horizon translate">
       <figure class="setting-section__translate">
         <div class="setting-section__title">
           {{ $t('workspace.setting_stt') }}

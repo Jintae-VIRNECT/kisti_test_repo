@@ -36,10 +36,22 @@
 
 .workspace-welcome__name {
   display: flex;
+  flex-direction: row;
+  max-width: 100%;
   margin: 0.429rem 0 1.643rem;
   color: $color_text;
   font-weight: 500;
   font-size: 1.857rem;
+  > em {
+    flex: 0 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  > span {
+    flex: 0;
+    white-space: nowrap;
+  }
 }
 .workspace-welcome__nickname {
   overflow: hidden;

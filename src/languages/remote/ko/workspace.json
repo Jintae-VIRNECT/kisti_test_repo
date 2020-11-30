@@ -6,9 +6,9 @@
     "create_room": "원격 협업 생성",
     "create_open_room": "오픈 방 생성",
     "expire_license": "플랜 만료",
-    "welcome": "{name} 님, 반갑습니다.",
-    "welcome_license": "{name} 님, <br> 할당된 플랜이 없습니다.",
-    "welcome_expire": "{name} 님, <br> 플랜이 만료되었습니다.",
+    "welcome": "<em>{name}</em><span>&nbsp;님, 반갑습니다.</span>",
+    "welcome_license": "<span>{name}&nbsp;님, <br> 할당된 플랜이 없습니다.</span>",
+    "welcome_expire": "<span>{name}&nbsp;님, <br> 플랜이 만료되었습니다.</span>",
     "search_empty": "검색된 내용이 없습니다.",
     
     "select_workspace": "워크스페이스를 선택해 주세요.",

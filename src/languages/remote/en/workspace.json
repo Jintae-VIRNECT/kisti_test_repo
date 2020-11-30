@@ -6,9 +6,9 @@
     "create_room": "Create remote Collabo",
     "create_open_room": "Create an open room",
     "expire_license": "Plan expiration",
-    "welcome": "Hello {name}.",
-    "welcome_license": "{name}, <br>you don't have any plan allotted.",
-    "welcome_expire": "{name}, <br>your plan has been expired.",
+    "welcome": "<span>Hello &nbsp;</span><em>{name}</em>.",
+    "welcome_license": "<span>{name}, <br>you don't have any plan allotted.</span>",
+    "welcome_expire": "<span>{name}, <br>your plan has been expired.</span>",
     "search_empty": "No results",
 
     "select_workspace": "Select a Workspace.",

@@ -38,7 +38,7 @@ export default {
 .slider {
   position: relative;
   display: flex;
-  width: 28.571rem;
+  max-width: 28.571rem;
   min-height: 2.571rem;
   background-color: #1d1d1f;
   border: solid 1px #1d1d1f;
