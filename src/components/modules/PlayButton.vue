@@ -15,11 +15,6 @@
 <script>
 export default {
   name: 'PlayButton',
-  data() {
-    return {
-      select: false,
-    }
-  },
   props: {
     mediaUrl: {
       type: String,
@@ -29,6 +24,11 @@ export default {
       type: [Number, String],
       default: 12,
     },
+  },
+  data() {
+    return {
+      select: false,
+    }
   },
   computed: {
     imgSrc() {

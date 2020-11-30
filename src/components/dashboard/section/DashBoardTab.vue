@@ -38,6 +38,12 @@ export default {
     board: TabBoard,
     collabo: TabCollabo,
   },
+  props: {
+    fix: {
+      type: [Number, Boolean],
+      default: false,
+    },
+  },
   data() {
     return {
       component: 'board',
@@ -63,12 +69,6 @@ export default {
           text: this.$t('common.collabo_list'),
         },
       ]
-    },
-  },
-  props: {
-    fix: {
-      type: [Number, Boolean],
-      default: false,
     },
   },
   methods: {

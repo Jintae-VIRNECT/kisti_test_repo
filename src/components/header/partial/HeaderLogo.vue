@@ -39,7 +39,7 @@ export default {
 }
 
 .header-logo--image {
-  width: 9.5136rem;
+  max-width: 100%;
   height: 2.2286rem;
   margin-right: 0.8571rem;
   border-radius: 0rem;

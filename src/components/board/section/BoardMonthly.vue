@@ -73,12 +73,6 @@ import chartMixin from 'mixins/chart'
 export default {
   name: 'BoardMonthly',
   mixins: [chartMixin],
-  data() {
-    return {
-      monthlyChart: null,
-      today: new Date(),
-    }
-  },
   components: {
     Card,
     ChartLegend,
@@ -88,16 +82,19 @@ export default {
   props: {
     monthly: {
       type: Object, //my,total - count, time, set
-      default: () => {
-        return {}
-      },
+      default: () => {},
       require: true,
     },
     loading: {
       type: Boolean,
     },
   },
-
+  data() {
+    return {
+      monthlyChart: null,
+      today: new Date(),
+    }
+  },
   watch: {
     monthly: {
       handler(data) {
@@ -111,7 +108,15 @@ export default {
       deep: true,
     },
   },
-
+  methods: {
+    getLabel() {
+      const dayList = []
+      for (let i = 1; i <= this.monthly.my.set.length; i++) {
+        dayList.push(i + this.$t('chart.collabo_day'))
+      }
+      return dayList
+    },
+  },
   mounted() {
     const ctx = document.getElementById('chart-month').getContext('2d')
 
@@ -141,15 +146,6 @@ export default {
     }
 
     this.monthlyChart = new Chart(ctx, chartData)
-  },
-  methods: {
-    getLabel() {
-      const dayList = []
-      for (let i = 1; i <= this.monthly.my.set.length; i++) {
-        dayList.push(i + this.$t('chart.collabo_day'))
-      }
-      return dayList
-    },
   },
 }
 </script>

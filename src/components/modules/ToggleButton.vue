@@ -16,10 +16,6 @@
 <script>
 export default {
   name: 'ToggleButton',
-  components: {},
-  data() {
-    return {}
-  },
   props: {
     customClass: {
       type: String,
@@ -54,9 +50,6 @@ export default {
       }
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 

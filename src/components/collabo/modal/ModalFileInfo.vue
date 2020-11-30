@@ -61,7 +61,6 @@ export default {
     IconButton,
     Modal,
   },
-
   props: {
     type: {
       type: String,

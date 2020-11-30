@@ -36,15 +36,6 @@ import langMixin from 'mixins/language'
 export default {
   name: 'Datepicker',
   mixins: [langMixin],
-  data() {
-    return {
-      isActive: false,
-      langSet: {
-        ko: ko,
-        en: en,
-      },
-    }
-  },
   props: {
     pickerName: {
       type: String,
@@ -70,6 +61,15 @@ export default {
       type: [String, Date],
       default: null,
     },
+  },
+  data() {
+    return {
+      isActive: false,
+      langSet: {
+        ko: ko,
+        en: en,
+      },
+    }
   },
   computed: {
     ...mapGetters(['calendars']),
@@ -99,7 +99,6 @@ export default {
       this.$eventBus.$emit('toggle::calendar', this.pickerName)
     },
   },
-  mounted() {},
 }
 </script>
 <style lang="scss">

@@ -15,11 +15,6 @@
 <script>
 export default {
   name: 'CountButton',
-  data() {
-    return {
-      selected: false,
-    }
-  },
   props: {
     count: {
       type: Number,
@@ -33,6 +28,11 @@ export default {
       type: Boolean,
       default: false,
     },
+  },
+  data() {
+    return {
+      selected: false,
+    }
   },
   computed: {
     imgSrc() {

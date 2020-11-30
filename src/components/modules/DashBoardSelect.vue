@@ -39,26 +39,6 @@ export default {
   components: {
     Popover,
   },
-  data() {
-    return {
-      show: false,
-    }
-  },
-  computed: {
-    selected() {
-      const idx = this.options.findIndex(
-        option => option[this.value] === this.selectedValue,
-      )
-      if (idx < 0) {
-        return {
-          [this.value]: '',
-          [this.text]: '',
-        }
-      } else {
-        return this.options[idx]
-      }
-    },
-  },
   props: {
     disabled: {
       type: Boolean,
@@ -89,6 +69,26 @@ export default {
     sahdow: {
       type: Boolean,
       default: true,
+    },
+  },
+  data() {
+    return {
+      show: false,
+    }
+  },
+  computed: {
+    selected() {
+      const idx = this.options.findIndex(
+        option => option[this.value] === this.selectedValue,
+      )
+      if (idx < 0) {
+        return {
+          [this.value]: '',
+          [this.text]: '',
+        }
+      } else {
+        return this.options[idx]
+      }
     },
   },
   watch: {

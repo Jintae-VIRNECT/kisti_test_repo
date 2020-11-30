@@ -29,7 +29,6 @@ export default {
       type: Number,
     },
   },
-
   data() {
     return {
       curPage: 1,
@@ -37,8 +36,6 @@ export default {
       maxPage: 5,
     }
   },
-
-  computed: {},
   watch: {
     currentPage(page) {
       if (page === 0) {

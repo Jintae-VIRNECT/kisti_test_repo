@@ -95,12 +95,10 @@ export default {
     ProfileList,
     CollaboStatus,
   },
-  data() {
-    return {
-      room: {},
-      visibleFlag: false,
-      localStatus: true,
-    }
+  filters: {
+    dateTimeFormat(dateTime) {
+      return dateTimeFormat(dateTime)
+    },
   },
   props: {
     visible: {
@@ -116,10 +114,12 @@ export default {
       required: true,
     },
   },
-  filters: {
-    dateTimeFormat(dateTime) {
-      return dateTimeFormat(dateTime)
-    },
+  data() {
+    return {
+      room: {},
+      visibleFlag: false,
+      localStatus: true,
+    }
   },
   computed: {
     leader() {
@@ -141,7 +141,6 @@ export default {
       return this.room.durationSec ? durationFormat(this.room.durationSec) : ''
     },
   },
-
   watch: {
     visible(flag) {
       if (flag === true) {
