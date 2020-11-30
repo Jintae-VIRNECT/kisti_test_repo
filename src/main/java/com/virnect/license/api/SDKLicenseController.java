@@ -72,7 +72,7 @@ public class SDKLicenseController {
 		@ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(1부터 시작)", paramType = "query", defaultValue = "1"),
 		@ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
 	})
-	@GetMapping("/sdk/licenses")
+	@GetMapping("/sdk/list")
 	public ResponseEntity<ApiResponse<SDKLicenseInfoListResponse>> getSDKLicenseInfoList(
 		@RequestParam(value = "search", defaultValue = "ALL") String search, @ApiIgnore PageRequest pageable
 	) {
