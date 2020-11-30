@@ -1224,9 +1224,11 @@ public class TaskService {
 
 		log.info("actorUUID : {}, contentManagerUUID : {}", request.getActorUUID(), process.getContentManagerUUID());
 
+		/* https://virtualconnection.atlassian.net/secure/RapidBoard.jspa?rapidView=223&projectKey=DPLA&modal=detail&selectedIssue=DPLA-1126&assignee=5dbfb7e2ffc8c10df0ed7a13
+		이슈로 작업 종료 권한 체크 주석처리.
 		if (!request.getActorUUID().equals(process.getContentManagerUUID())) {
 			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
-		}
+		}*/
 
 		// 마감 상태로 변경
 		process.setState(State.CLOSED);
