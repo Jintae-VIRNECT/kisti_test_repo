@@ -58,15 +58,14 @@ public class Room extends BaseTimeEntity {
     @Column(name = "active_at")
     private LocalDateTime activeDate;
 
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
     //@ElementCollection
     //private Set<Member> members = new HashSet<>();
-    private List<Member> members = new ArrayList<>();
     //private Collection<Member> Member;
-
     //add active or un-active type later
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Member> members = new ArrayList<>();
 
-    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private SessionProperty sessionProperty;
 
     @Builder
