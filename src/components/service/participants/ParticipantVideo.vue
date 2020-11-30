@@ -3,7 +3,9 @@
     <div
       class="participant-video"
       :class="{ current: isCurrent }"
-      @click="changeMain"
+      @dblclick="changeMain"
+      @touchstart="touch"
+      @touchend="touchEnd"
     >
       <div class="participant-video__stream" v-if="participant.hasVideo">
         <video
@@ -132,13 +134,14 @@ import { CAMERA } from 'configs/device.config'
 import { proxyUrl } from 'utils/file'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import touchMixin from 'mixins/touch'
 
 import Profile from 'Profile'
 import Popover from 'Popover'
 
 export default {
   name: 'ParticipantVideo',
-  mixins: [confirmMixin, toastMixin],
+  mixins: [confirmMixin, toastMixin, touchMixin],
   components: {
     Profile,
     Popover,
@@ -149,7 +152,7 @@ export default {
       hover: false,
       btnActive: false,
       statusHover: {},
-      clickTime: false,
+      touched: null,
     }
   },
   props: {
@@ -284,18 +287,10 @@ export default {
     visible(val) {
       this.btnActive = val
     },
+    doEvent() {
+      this.changeMain()
+    },
     changeMain() {
-      if (this.clickTime === false) {
-        this.clickTime = new Date().getTime()
-        return
-      } else {
-        if (new Date().getTime() - this.clickTime < 500) {
-          this.clickTime = false
-        } else {
-          this.clickTime = new Date().getTime()
-          return
-        }
-      }
       if (!this.participant.hasCamera) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
