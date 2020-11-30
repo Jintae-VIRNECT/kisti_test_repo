@@ -283,12 +283,14 @@
   word-break: break-word;
   transition: opacity 0.3s ease-in-out;
   &::before {
-    position: absolute;
-    top: 0.357rem;
-    left: 0;
+    // top: 0.357rem;
+    // left: 0;
+    // position: absolute;
+    display: inline-block;
     width: 1rem;
     height: 1rem;
     background: center/100% no-repeat;
+    transform: translate(-4px, 2px);
     // transform: translateY(-1.429rem);
     content: "";
   }
