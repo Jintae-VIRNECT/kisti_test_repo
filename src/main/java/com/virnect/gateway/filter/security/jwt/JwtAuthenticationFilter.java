@@ -59,6 +59,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			requestUrlPath.startsWith("/licenses/allocate") ||
 			requestUrlPath.startsWith("/licenses/deallocate") ||
 			requestUrlPath.contains("/licenses/deallocate") ||
+			requestUrlPath.contains("/licenses/sdk/authentication") ||
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
 
 		if (isAuthenticateSkipUrl) {
