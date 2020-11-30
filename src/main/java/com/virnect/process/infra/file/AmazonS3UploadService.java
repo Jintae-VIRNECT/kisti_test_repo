@@ -145,4 +145,13 @@ public class AmazonS3UploadService implements FileUploadService {
 			new PutObjectRequest(bucketName, fileName, uploadFile).withCannedAcl(CannedAccessControlList.PublicRead));
 		return amazonS3Client.getUrl(bucketName, fileName).toString();
 	}
+
+	@Override
+	public String getFilePath(String fileName) {
+		String objectName = bucketResource + REPORT_DIRECTORY + "/" + fileName;
+		log.info("[GET FILE PATH] Request objectName >> [{}]", objectName);
+		String filePath = amazonS3Client.getUrl(bucketName, objectName).toExternalForm();
+		log.info("[GET FILE PATH] Response file Path >> [{}]", filePath);
+		return filePath;
+	}
 }

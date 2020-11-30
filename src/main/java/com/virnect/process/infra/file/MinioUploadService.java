@@ -127,4 +127,16 @@ public class MinioUploadService implements FileUploadService {
 		}
 	}
 
+	@Override
+	public String getFilePath(String fileName) {
+		String objectName = bucketResource + REPORT_DIRECTORY + "/" + fileName;
+		try {
+			return minioClient.getObjectUrl(bucketName, objectName);
+		} catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+			ServerException | XmlParserException | IOException exception) {
+			log.error(exception.getMessage());
+			throw new ProcessServiceException(ErrorCode.ERR_FILE_DOWNLOAD);
+		}
+	}
+
 }

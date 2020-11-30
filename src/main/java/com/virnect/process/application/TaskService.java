@@ -228,14 +228,17 @@ public class TaskService {
 			}
 
 			// 3-1-5. 타겟 등록
-			addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
-			//컨텐츠:작업=1:1 이므로, 해당 에러코드를 추가함. (VECHOSYS-1282)
-			/*if (contentDuplicate.getData().getTargets().size() > 1) {
-				throw new ProcessServiceException(ErrorCode.ERR_OVER_MAX_TARGET);
-			}*/
-			//float targetSize = contentDuplicate.getData().getTargets().get(0).getSize();
-			//TargetType targetType = contentDuplicate.getData().getTargets().get(0).getType();
-			//addTargetToProcess(newProcess, targetSize, targetType);//타겟 타입을 클라에서 받지 않고 contents 서버로 부터 받는 것으로 수정 >> 다시 복구
+			//타겟정보를 contents 서버에서 가지고 오는 것으로 수정함.
+			if (contentDuplicate.getData().getTargets() == null || contentDuplicate.getData().getTargets().isEmpty()) {
+				log.error("NOT FOUND TARGET INFO: {}" + contentDuplicate.getData().getTargets().toString());
+				throw new ProcessServiceException(ErrorCode.ERR_NO_CONTENT_TARGET);
+			}
+			ContentTargetResponse contentTargetResponse = contentDuplicate.getData().getTargets().get(0);
+			if (contentTargetResponse.getSize() == null) {
+				contentTargetResponse.setSize(10f);
+			}
+			addTargetToProcess(newProcess, contentTargetResponse.getSize(), contentTargetResponse.getType());
+			//addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
 
 			ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(
 				contentDuplicate.getData().getContentUUID());
@@ -271,12 +274,12 @@ public class TaskService {
 			}
 
 			// 3-2-1-2. 컨텐츠의 타겟이 없을 경우
-			if (contentInfo.getTargets().isEmpty()) {
+			if (contentInfo.getTargets() == null || contentInfo.getTargets().isEmpty()) {
 				throw new ProcessServiceException(ErrorCode.ERR_NO_CONTENT_TARGET);
 			}
 
 			// 3-2-2. 컨텐츠의 타겟값을 가져옴
-			ContentTargetResponse contentTarget = contentTransform.getData().getTargets().get(0);
+			ContentTargetResponse contentTarget = contentInfo.getTargets().get(0);
 
 			// 3-2-3. 기존 컨텐츠 식별자 등록
 			newProcess.setContentUUID(registerNewProcess.getContentUUID());
@@ -356,10 +359,23 @@ public class TaskService {
 			String targetData = UUID.randomUUID().toString();
 			// cd07565a-dfe8-4441-8924-b047d525ea79
 
-			log.info(">>>>>>>>>>>>>>>>>>> targetData : {}", targetData);
+			log.info(
+				">>>>>>>>>>>>>>>>>>> targetData : {}, targetSize: {}, targetType: {}", targetData, targetSize,
+				targetType.toString()
+			);
 
-			// 컨텐츠 서버에 담겨진 QR코드 경로는 원본 값을 QR코드로 만든 것이다.
-			String imgPath = getImgPath(targetData); //= this.fileUploadService.base64ImageUpload(targetData);
+			/*
+			복제 시나리오 -> 작업서버에서 신규 타겟 발급 시에 타겟 구분 추가
+			 */
+			String imgPath = null;
+			if (targetType.equals(TargetType.QR)) {
+				// 컨텐츠 서버에 담겨진 QR코드 경로는 원본 값을 QR코드로 만든 것이다.
+				imgPath = getImgPath(targetData); //= this.fileUploadService.base64ImageUpload(targetData);
+			}
+			if (targetType.equals(TargetType.VTarget)) {
+				//imgPath = fileUploadUrl + fileUploadPath + defaultVTarget;defaultVTarget
+				imgPath = fileUploadService.getFilePath("virnect_target.png");
+			}
 
 			// 컨텐츠 서버에 담겨진 targetData (= Make에서 제공하는 targetData) 는 AES256인코딩 후 URL인코딩을 한 값이다.
 			// 컨텐츠 서버와 targetData 인코딩을 맞춰주기 위해서 해당 인코딩을 수행한다.
@@ -405,12 +421,18 @@ public class TaskService {
 			TargetType targetType = contentTargetResponse.getType();
 			String imgPath = contentTargetResponse.getImgPath(); //this.fileUploadService.base64ImageUpload(targetData);
 
+			//타겟 사이즈가 없는 컨텐츠들의 기본값은 10.
+			float targetSize = 10f;
+			if (contentTargetResponse.getSize() != null) {
+				targetSize = contentTargetResponse.getSize();
+			}
+
 			Target target = Target.builder()
 				.type(targetType)
 				.process(newProcess)
 				.data(targetData)
 				.imgPath(imgPath)
-				.size(contentTargetResponse.getSize())
+				.size(targetSize)
 				.build();
 
 			this.targetRepository.save(target);
@@ -651,15 +673,18 @@ public class TaskService {
 				throw new ProcessServiceException(ErrorCode.ERR_PROCESS_REGISTER);
 			}
 
-			// 타겟
-			addTargetToProcess(newProcess, duplicateRequest.getTargetSize(), duplicateRequest.getTargetType());
-			//컨텐츠:작업=1:1 이므로, 해당 에러코드를 추가함. (VECHOSYS-1282)
-			/*if (contentDuplicate.getData().getTargets().size() > 1) {
-				throw new ProcessServiceException(ErrorCode.ERR_OVER_MAX_TARGET);
-			}*/
-			//float targetSize = contentDuplicate.getData().getTargets().get(0).getSize();
-			//TargetType targetType = contentDuplicate.getData().getTargets().get(0).getType();
-			//addTargetToProcess(newProcess, targetSize, targetType);
+			/*
+			타겟 정보 contents 서버에서 가져오는 것으로 수정.
+			*/
+			if (contentDuplicate.getData().getTargets() == null || contentDuplicate.getData().getTargets().isEmpty()) {
+				log.error("NOT FOUND TARGET INFO: {}" + contentDuplicate.getData().getTargets().toString());
+				throw new ProcessServiceException(ErrorCode.ERR_NO_CONTENT_TARGET);
+			}
+			ContentTargetResponse contentTargetResponse = contentDuplicate.getData().getTargets().get(0);
+			if (contentTargetResponse.getSize() == null) {
+				contentTargetResponse.setSize(10f);
+			}
+			addTargetToProcess(newProcess, contentTargetResponse.getSize(), contentTargetResponse.getType());
 
 			// addSubProcessOnProcess에 들어갈 객체
 			ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();

@@ -42,6 +42,7 @@ public enum ErrorCode {
 	ERR_UNSUPPORTED_FILE_EXTENSION(5801, "Content upload file. Unsupported extensions."),
 	ERR_FILE_UPLOAD(5802, "File upload fail."),
 	ERR_FILE_DELETE(5803, "File delete fail."),
+	ERR_FILE_DOWNLOAD(5804, "File download fail."),
 
 	ERR_PROCESS_REGISTER(5901, "Process Registration failed."),
 	ERR_SUB_PROCESS_REGISTER(5902, "SubProcess Registration failed."),
