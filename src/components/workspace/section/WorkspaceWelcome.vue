@@ -80,7 +80,10 @@ export default {
       }
     },
     showRole() {
-      return !(this.workspace.role === WORKSPACE_ROLE.MEMBER)
+      return (
+        this.workspace.role === WORKSPACE_ROLE.MASTER ||
+        this.workspace.role === WORKSPACE_ROLE.MANAGER
+      )
     },
   },
   props: {

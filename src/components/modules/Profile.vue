@@ -63,7 +63,7 @@ export default {
   },
   computed: {
     showRole() {
-      return this.role === WORKSPACE_ROLE.MEMBER || this.role === ROLE.UNKNOWN
+      return this.role === WORKSPACE_ROLE.MASTER || this.role === ROLE.MANAGER
     },
     useImage() {
       if (this.image && this.image.length > 0 && this.image !== 'default') {
