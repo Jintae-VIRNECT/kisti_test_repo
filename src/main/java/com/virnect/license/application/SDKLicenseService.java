@@ -93,6 +93,11 @@ public class SDKLicenseService {
 			);
 			log.info("[SDK_LICENSE_PERIOD_EXPIRED] - {}", appLicense.toString());
 
+			if (!appLicense.getStatus().equals(AppLicenseStatus.TERMINATE)) {
+				appLicense.setStatus(AppLicenseStatus.TERMINATE);
+				appLicenseRepository.save(appLicense);
+			}
+
 			throw new LicenseServiceException(ErrorCode.ERR_SDK_LICENSE_TERMINATE);
 		}
 
