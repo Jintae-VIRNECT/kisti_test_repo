@@ -28,10 +28,5 @@ export default {
   computed: {
     ...mapGetters(['expireLicense']),
   },
-  watch: {},
-  methods: {},
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>

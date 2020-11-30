@@ -63,7 +63,6 @@ import Datepicker from 'Datepicker'
 import CheckBox from 'CheckBox'
 import DSelect from 'DashBoardSelect'
 import confirmMixin from 'mixins/confirm'
-// import { collabo } from 'utils/collabo'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'CollaboSearchBar',

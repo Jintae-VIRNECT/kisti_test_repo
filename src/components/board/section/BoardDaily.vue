@@ -81,12 +81,6 @@ export default {
     FigureBoard,
     Datepicker,
   },
-  data() {
-    return {
-      dailyChart: null,
-      today: new Date(),
-    }
-  },
   props: {
     daily: {
       type: Object, //my,total - count, time, set
@@ -98,6 +92,12 @@ export default {
     loading: {
       type: Boolean,
     },
+  },
+  data() {
+    return {
+      dailyChart: null,
+      today: new Date(),
+    }
   },
   watch: {
     daily: {

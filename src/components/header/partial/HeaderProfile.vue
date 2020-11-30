@@ -78,9 +78,6 @@ export default {
       this.$eventBus.$emit('filelist:open')
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 <style lang="scss">

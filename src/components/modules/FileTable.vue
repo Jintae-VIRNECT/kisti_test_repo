@@ -97,6 +97,48 @@ export default {
     ToggleButton,
     PlayButton,
   },
+  props: {
+    type: {
+      type: String,
+      default: '',
+    },
+    showToggleHeader: {
+      type: Boolean,
+      default: false,
+    },
+    showPlayButton: {
+      type: Boolean,
+      default: false,
+    },
+    headers: {
+      type: Array,
+      default: () => [],
+    },
+    columns: {
+      type: Array,
+      default: () => [],
+    },
+    datas: {
+      type: Array,
+      default: () => [],
+    },
+    renderOpts: {
+      type: Array,
+      default: () => [],
+    },
+    emptyText: {
+      type: String,
+      default: '',
+    },
+  },
+  data() {
+    return {
+      selectedArray: [],
+      renderArray: [],
+      expiredArray: [],
+      toggleAllFlag: false,
+    }
+  },
   computed: {
     // onlyExpired() {
     //   let isOnlyExpired = false
@@ -139,48 +181,6 @@ export default {
       },
       deep: true,
       immediate: true,
-    },
-  },
-  data() {
-    return {
-      selectedArray: [],
-      renderArray: [],
-      expiredArray: [],
-      toggleAllFlag: false,
-    }
-  },
-  props: {
-    type: {
-      type: String,
-      default: '',
-    },
-    showToggleHeader: {
-      type: Boolean,
-      default: false,
-    },
-    showPlayButton: {
-      type: Boolean,
-      default: false,
-    },
-    headers: {
-      type: Array,
-      default: () => [],
-    },
-    columns: {
-      type: Array,
-      default: () => [],
-    },
-    datas: {
-      type: Array,
-      default: () => [],
-    },
-    renderOpts: {
-      type: Array,
-      default: () => [],
-    },
-    emptyText: {
-      type: String,
-      default: '',
     },
   },
   methods: {

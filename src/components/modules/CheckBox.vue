@@ -8,9 +8,6 @@
 <script>
 export default {
   name: 'CheckBox',
-  data() {
-    return {}
-  },
   props: {
     value: {
       type: Boolean,
@@ -21,15 +18,14 @@ export default {
       default: null,
     },
   },
-  computed: {},
+  data() {
+    return {}
+  },
   methods: {
     changeToggle() {
       this.$emit('update:value', !this.value)
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 

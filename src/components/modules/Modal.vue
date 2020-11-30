@@ -97,9 +97,6 @@ export default {
       default: false,
     },
   },
-  data() {
-    return {}
-  },
   computed: {
     innerWidth() {
       if (typeof this.width === 'string') {
@@ -157,9 +154,6 @@ export default {
       })
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 

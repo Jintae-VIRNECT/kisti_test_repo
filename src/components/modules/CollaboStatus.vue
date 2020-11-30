@@ -18,7 +18,6 @@ export default {
       default: '',
     },
   },
-
   computed: {
     collaboText() {
       switch (this.status) {
@@ -28,7 +27,6 @@ export default {
           return this.$t('status.finished')
         default:
           return this.$t('status.finished')
-        // return this.$t('status.unknown')
       }
     },
     getClass() {

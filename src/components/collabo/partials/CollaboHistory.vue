@@ -358,10 +358,6 @@ export default {
       this.$eventBus.$emit('reload::list')
     },
   },
-  mounted() {
-    // this.sort.direction = 'desc'
-    // this.sort.column = 'activeDate'
-  },
 }
 </script>
 

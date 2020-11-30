@@ -9,11 +9,6 @@
 <script>
 export default {
   name: 'Legend',
-  data() {
-    return {
-      toggle: false,
-    }
-  },
   props: {
     text: {
       type: String,
@@ -31,7 +26,11 @@ export default {
       default: '',
     },
   },
-  computed: {},
+  data() {
+    return {
+      toggle: false,
+    }
+  },
   methods: {
     clickListener() {
       if (typeof this.$listeners['click'] === 'function') {

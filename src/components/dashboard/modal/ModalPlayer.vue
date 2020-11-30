@@ -17,11 +17,6 @@ export default {
   components: {
     Modal,
   },
-  data() {
-    return {
-      visibleFlag: false,
-    }
-  },
   props: {
     visible: {
       type: Boolean,
@@ -31,6 +26,11 @@ export default {
       type: String,
       default: null,
     },
+  },
+  data() {
+    return {
+      visibleFlag: false,
+    }
   },
   watch: {
     async visible(flag) {
