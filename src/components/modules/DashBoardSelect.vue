@@ -184,7 +184,8 @@ export default {
     &::after {
       top: 0.7147rem;
       right: 1.071rem;
-      background: url(~assets/image/ic_dropdown_grey.svg) no-repeat 50%;
+      background: url(~assets/image/ic_dropdown_nobg.svg) no-repeat 50% #a4a4a4;
+      border-radius: 4px;
     }
   }
 }
