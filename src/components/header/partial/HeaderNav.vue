@@ -46,6 +46,7 @@ export default {
       height: 20px;
       background: url(~assets/image/ic_dropdown.svg) 50% no-repeat;
       border-radius: 4px;
+      // transform: rotateX(180deg);
       content: '';
     }
   }
