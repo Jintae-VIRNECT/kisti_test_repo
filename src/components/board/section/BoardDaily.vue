@@ -37,26 +37,30 @@
 
     <div class="board-figures">
       <figure-board
+        :header="$t('chart.daily_my_collabo_count')"
+        :my="true"
+        :count="daily ? daily.my.count : 0"
+        :imgSrc="require('assets/image/figure/ic_chart_daily_count.svg')"
+        type="daily"
+      ></figure-board>
+      <figure-board
+        :header="$t('chart.daily_my_collabo_time')"
+        :my="true"
+        :time="daily ? daily.my.time : 0"
+        :imgSrc="require('assets/image/figure/ic_chart_daily_time.svg')"
+        type="daily"
+      ></figure-board>
+      <figure-board
         :header="$t('chart.daily_total_collabo_count')"
         :count="daily ? daily.total.count : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
+        :imgSrc="require('assets/image/figure/ic_chart_daily_total_count.svg')"
+        type="daily"
       ></figure-board>
       <figure-board
         :header="$t('chart.daily_total_collabo_time')"
         :time="daily ? daily.total.time : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_date_all.svg')"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.daily_my_collabo_count')"
-        :onlyMe="true"
-        :count="daily ? daily.my.count : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_chart.svg')"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.daily_my_collabo_time')"
-        :onlyMe="true"
-        :time="daily ? daily.my.time : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_date_time.svg')"
+        :imgSrc="require('assets/image/figure/ic_chart_daily_total_time.svg')"
+        type="daily"
       ></figure-board>
     </div>
   </section>
