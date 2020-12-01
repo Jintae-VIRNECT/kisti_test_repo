@@ -21,12 +21,12 @@
         <chart-legend
           @click="toggle(monthlyChart, 'my')"
           :text="$t('chart.my_collabo_list')"
-          shape="square"
+          shape="circle"
         ></chart-legend>
         <chart-legend
           @click="toggle(monthlyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
-          shape="square"
+          shape="circle"
           customClass="grey"
         ></chart-legend>
       </figcaption>

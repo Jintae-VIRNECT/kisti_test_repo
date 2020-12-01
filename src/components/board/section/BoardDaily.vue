@@ -21,12 +21,12 @@
         <chart-legend
           @click="toggle(dailyChart, 'my')"
           :text="$t('chart.my_collabo_list')"
-          shape="round"
+          shape="double-circle"
         ></chart-legend>
         <chart-legend
           @click="toggle(dailyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
-          shape="round"
+          shape="double-circle"
           customClass="grey"
         ></chart-legend>
       </figcaption>
