@@ -365,13 +365,9 @@ export default {
 .history {
   position: relative;
   width: 100%;
-  border: 1px solid #eaedf3;
-  box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 
 .history__body {
-  height: 32rem;
-  background-color: #ffffff;
   &.nodata {
     display: flex;
     align-items: center;
@@ -404,9 +400,6 @@ export default {
   align-items: center;
   justify-content: center;
   height: 3.1429rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #eaedf3;
-  box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 .history__header--text {
   color: #4a5361;
@@ -464,10 +457,18 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 4.5714rem;
-  box-shadow: 0px 1px 0px 0px #eaedf3;
+
+  height: 78px;
+  margin-bottom: 10px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(240, 240, 240);
+  border-radius: 4px;
+  box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+
   &:hover {
-    background-color: #f5f9ff;
+    background: rgb(245, 249, 255);
+    border: 1px solid #93c3ff;
     cursor: pointer;
   }
 }
