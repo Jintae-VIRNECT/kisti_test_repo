@@ -35,13 +35,14 @@ export default {
   },
   computed: {
     ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
-    isMobileChrome() {
+    isTablet() {
       const userAgent = navigator.userAgent
-      const isChromeMobile =
+      return (
         userAgent.includes('Mobile') ||
+        userAgent.includes('iPad') ||
         userAgent.includes('CriOS') ||
         userAgent.includes('mobileApp')
-      return isChromeMobile
+      )
     },
     isScreenDesktop() {
       return 'desktop' === this.deviceType

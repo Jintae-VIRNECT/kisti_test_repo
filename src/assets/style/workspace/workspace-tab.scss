@@ -14,8 +14,8 @@
   border-bottom: solid 1px #2c2c2c;
   transition: background-color 0.3s;
   &.fix {
-    position: absolute;
-    top: 0;
+    position: fixed;
+    top: $header_height;
     z-index: 1;
     width: calc(100% - 0.714rem);
     background-color: #45474f;
@@ -91,7 +91,7 @@
   text-align: left;
   background-color: $color_bg_display;
   &.fix {
-    margin-top: 3.571rem;
+    margin-top: 4.857rem;
   }
   .groupcard-list,
   .workcard-list {
