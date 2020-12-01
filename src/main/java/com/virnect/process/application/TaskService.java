@@ -236,6 +236,7 @@ public class TaskService {
 			ContentTargetResponse contentTargetResponse = contentDuplicate.getData().getTargets().get(0);
 			if (contentTargetResponse.getSize() == null) {
 				contentTargetResponse.setSize(10f);
+
 			}
 			addTargetToProcess(newProcess, contentTargetResponse.getSize(), contentTargetResponse.getType());
 			//addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
@@ -674,16 +675,13 @@ public class TaskService {
 			}
 
 			/*
-			타겟 정보 contents 서버에서 가져오는 것으로 수정.
+			복제된 컨텐츠는 타겟정보가 없다. 따라서 클라이언트에서 받는다.
 			*/
-			if (contentDuplicate.getData().getTargets() == null || contentDuplicate.getData().getTargets().isEmpty()) {
-				log.error("NOT FOUND TARGET INFO: {}" + contentDuplicate.getData().getTargets().toString());
-				throw new ProcessServiceException(ErrorCode.ERR_NO_CONTENT_TARGET);
-			}
 			ContentTargetResponse contentTargetResponse = contentDuplicate.getData().getTargets().get(0);
-			if (contentTargetResponse.getSize() == null) {
-				contentTargetResponse.setSize(10f);
+			if (!StringUtils.hasText(duplicateRequest.getTargetType().toString())) {
+				throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
 			}
+
 			addTargetToProcess(newProcess, contentTargetResponse.getSize(), contentTargetResponse.getType());
 
 			// addSubProcessOnProcess에 들어갈 객체
