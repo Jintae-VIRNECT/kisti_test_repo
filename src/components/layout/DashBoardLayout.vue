@@ -2,14 +2,16 @@
   <div class="dashboard-layout">
     <dash-board-header></dash-board-header>
     <vue2-scrollbar classes="dashboard-wrapper">
-      <div class="dashboard-layout__contents">
-        <dash-board-tab
-          ref="tabSection"
-          @tabChange="tabChange"
-        ></dash-board-tab>
+      <div>
+        <div class="dashboard-layout__contents">
+          <dash-board-tab
+            ref="tabSection"
+            @tabChange="tabChange"
+          ></dash-board-tab>
+        </div>
+        <dash-board-footer></dash-board-footer>
       </div>
     </vue2-scrollbar>
-    <dash-board-footer></dash-board-footer>
     <player :url="url" :visible.sync="showPlayer"></player>
   </div>
 </template>
@@ -144,8 +146,8 @@ export default {
 .dashboard-layout__contents {
   position: relative;
   min-width: $content_min_width;
-  margin: 4.8571rem 22.8571rem 0px 22.8571rem;
-  padding-bottom: 12.2143rem;
+  margin: 0 22.8571rem 0px 22.8571rem;
+  padding-top: 4.8571rem;
   overflow: hidden;
 }
 </style>
