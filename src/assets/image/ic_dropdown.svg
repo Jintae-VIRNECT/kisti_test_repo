@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <title>E5733A24-9625-400A-B4C7-4FA942CBEA58@1x</title>
-    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-        <g id="BG_select" transform="translate(-504.000000, -8.000000)">
-            <g id="icon_dropdown" transform="translate(504.000000, 8.000000)">
-                <rect id="tr" x="0" y="0" width="24" height="24"></rect>
-                <path d="M6,9 C6,9 7.97706736,11 11.9312021,15 L18,9" id="Path-6" stroke="#FFFFFF" stroke-width="1.8" transform="translate(12.000000, 12.000000) scale(-1, 1) translate(-12.000000, -12.000000) "></path>
+    <title>14B989DF-3AD2-4750-A240-0FE7D46D8185@1x</title>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-1241.000000, -22.000000)">
+            <g id="BG_select" transform="translate(640.000000, 14.000000)">
+                <g id="icon_dropdown" transform="translate(601.000000, 8.000000)">
+                    <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                    <rect id="Rectangle" fill="#D8D8D8" opacity="0.200000003" x="2" y="2" width="20" height="20" rx="4"></rect>
+                    <path d="M7.32234493,9.66117246 C7.32234493,9.66117246 8.86368479,11.2203908 11.9463645,14.3388275 L16.6776551,9.66117246" id="Path-6" stroke="#FFFFFF" stroke-width="1.8" transform="translate(12.000000, 12.000000) scale(-1, 1) translate(-12.000000, -12.000000) "></path>
+                </g>
             </g>
         </g>
     </g>
