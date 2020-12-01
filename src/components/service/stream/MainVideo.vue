@@ -4,7 +4,7 @@
       class="main-video__box"
       @mouseenter="hoverTools = true"
       @mouseleave="hoverTools = false"
-      :class="{ shutter: showShutter }"
+      :class="{ shutter: showShutter, hidden: !loaded || emptyStream }"
     >
       <!-- 메인 비디오 뷰 -->
       <video
@@ -101,14 +101,7 @@
       </transition>
     </div>
     <transition name="opacity">
-      <div
-        class="main-video__empty"
-        v-if="
-          cameraStatus !== -1 &&
-            ((loaded && cameraStatus.state === 'off') ||
-              cameraStatus.state === 'background')
-        "
-      >
+      <div class="main-video__empty" v-if="emptyStream">
         <transition name="opacity">
           <!-- 영상 백그라운드 및 정지 표출 -->
           <div class="main-video__empty-inner" v-if="mainView.me !== true">
@@ -248,6 +241,13 @@ export default {
         return 'muted'
       }
       return false
+    },
+    emptyStream() {
+      return (
+        this.cameraStatus !== -1 &&
+        ((this.loaded && this.cameraStatus.state === 'off') ||
+          this.cameraStatus.state === 'background')
+      )
     },
   },
   watch: {
