@@ -214,7 +214,8 @@ public class TaskService {
 				newProcess.setContentManagerUUID(registerNewProcess.getOwnerUUID());
 
 				// 3-1-3. 컨텐츠의 전환상태 변경
-				this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
+				//컨텐츠 전환 상태 변경을 컨텐츠 복제할 때 같이 한다.
+				//this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
 
 				// 3-1-4. 작업 저장
 				this.processRepository.save(newProcess);
@@ -228,17 +229,7 @@ public class TaskService {
 			}
 
 			// 3-1-5. 타겟 등록
-			//타겟정보를 contents 서버에서 가지고 오는 것으로 수정함.
-			if (contentDuplicate.getData().getTargets() == null || contentDuplicate.getData().getTargets().isEmpty()) {
-				log.error("NOT FOUND TARGET INFO: {}" + contentDuplicate.getData().getTargets().toString());
-				throw new ProcessServiceException(ErrorCode.ERR_NO_CONTENT_TARGET);
-			}
-			ContentTargetResponse contentTargetResponse = contentDuplicate.getData().getTargets().get(0);
-			if (contentTargetResponse.getSize() == null) {
-				contentTargetResponse.setSize(10f);
-
-			}
-			addTargetToProcess(newProcess, contentTargetResponse.getSize(), contentTargetResponse.getType());
+			addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
 			//addTargetToProcess(newProcess, registerNewProcess.getTargetSize(), registerNewProcess.getTargetType());
 
 			ApiResponse<ContentRestDto> duplicatedContent = this.contentRestService.getContentMetadata(
@@ -661,7 +652,8 @@ public class TaskService {
 				newProcess.setContentManagerUUID(duplicateRequest.getOwnerUUID());
 
 				// 컨텐츠의 전환상태 변경
-				this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
+				//duplicate api에서 한꺼번에 하는 걸로 수정.
+				//this.contentRestService.contentConvertHandler(contentDuplicate.getData().getContentUUID(), YesOrNo.YES);
 
 				// 작업 저장
 				this.processRepository.save(newProcess);
@@ -677,12 +669,7 @@ public class TaskService {
 			/*
 			복제된 컨텐츠는 타겟정보가 없다. 따라서 클라이언트에서 받는다.
 			*/
-			ContentTargetResponse contentTargetResponse = contentDuplicate.getData().getTargets().get(0);
-			if (!StringUtils.hasText(duplicateRequest.getTargetType().toString())) {
-				throw new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
-			}
-
-			addTargetToProcess(newProcess, contentTargetResponse.getSize(), contentTargetResponse.getType());
+			addTargetToProcess(newProcess, duplicateRequest.getTargetSize(), duplicateRequest.getTargetType());
 
 			// addSubProcessOnProcess에 들어갈 객체
 			ProcessRegisterRequest registerNewProcess = new ProcessRegisterRequest();
