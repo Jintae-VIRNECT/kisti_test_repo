@@ -11,7 +11,7 @@
       class="header-logo--image"
       src="~assets/image/logo_symtext.svg"
     />
-    <div class="header-logo--text"></div>
+    <!-- <div class="header-logo--text"></div> -->
   </div>
 </template>
 

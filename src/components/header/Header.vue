@@ -2,7 +2,6 @@
   <div class="header">
     <div style="display:flex">
       <header-logo></header-logo>
-      <div class="header-divider"></div>
       <header-nav></header-nav>
     </div>
     <header-tools></header-tools>
