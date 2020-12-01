@@ -19,7 +19,7 @@ export default {
 .fab {
   position: fixed;
   right: 40px;
-  bottom: 130px;
+  bottom: 80px;
   z-index: 999;
   display: flex;
   align-items: center;
