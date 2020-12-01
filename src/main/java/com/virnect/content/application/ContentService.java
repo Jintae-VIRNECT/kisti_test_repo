@@ -852,9 +852,9 @@ public class ContentService {
 
         //2. 새로 생성하는 컨텐츠의 식별자
         String newContentUUID = UUID.randomUUID().toString();
-        log.info("CONTENT UPLOAD - contentUUID : {}", contentUUID);
+        log.info("CONTENT UPLOAD - contentUUID : {}", newContentUUID);
         //3. 새로 생성하는 컨텐츠의 ares (기존 ares와 내용은 같다.), 파일명은 컨텐츠 식별자(contentUUID)와 동일
-        String fileUploadPath = this.fileUploadService.uploadByFileInputStream(originFile, contentUUID + "");
+        String fileUploadPath = this.fileUploadService.uploadByFileInputStream(originFile, newContentUUID + "");
 
         Content newContent = Content.builder()
                 // TODO : 유효한 워크스페이스 인지 검증 필요.
