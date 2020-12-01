@@ -64,6 +64,7 @@
             :content="$t('service.setting_record_time_tooltip')"
             placement="right"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"
@@ -92,6 +93,7 @@
             :content="$t('service.setting_record_resolution_tooltip')"
             placement="right"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"

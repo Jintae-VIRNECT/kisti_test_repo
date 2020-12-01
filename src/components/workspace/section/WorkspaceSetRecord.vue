@@ -28,6 +28,7 @@
             :content="$t('workspace.setting_record_interval_tooltip')"
             placement="right"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"
@@ -57,6 +58,7 @@
             :content="$t('workspace.setting_record_resolution_tooltip')"
             placement="right"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"

@@ -4,6 +4,7 @@
     @mouseenter="enter"
     @mouseleave="leave"
     :class="customClass"
+    @touchstart="enter"
   >
     <slot name="body"></slot>
     <transition name="opacity">
@@ -33,6 +34,10 @@ export default {
       // false 일때 hover 해도 툴팁 미표출
       type: Boolean,
       default: true,
+    },
+    guide: {
+      type: Boolean,
+      default: false,
     },
     content: {
       type: String,
@@ -74,8 +79,18 @@ export default {
     },
   },
   methods: {
-    enter() {
-      this.show = true
+    enter(e) {
+      if (this.isScreenTablet) {
+        if (e.type === 'mouseenter') return
+        this.show = true
+        if (!this.guide) {
+          setTimeout(() => {
+            this.show = false
+          }, 1000)
+        }
+      } else {
+        this.show = true
+      }
       this.$nextTick(() => {
         const tooltip = this.$el.querySelector('.tooltiptext')
         const slot = this.$slots['body'][0].elm

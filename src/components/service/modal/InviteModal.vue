@@ -19,6 +19,7 @@
             :content="$t('service.invite_unconnected_remove')"
             placement="right"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"

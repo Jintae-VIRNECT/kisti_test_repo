@@ -24,6 +24,7 @@
               :content="$t('workspace.setting_translate_language_tooltip')"
               placement="right"
               effect="blue"
+              :guide="true"
             >
               <img
                 slot="body"
