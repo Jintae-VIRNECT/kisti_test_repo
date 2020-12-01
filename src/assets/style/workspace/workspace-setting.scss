@@ -165,13 +165,13 @@
 .setting-video {
   display: flex;
   max-width: 29rem;
-  min-height: 17rem;
-  max-height: 20.571rem;
+  // min-height: 17rem;
+  height: 20.571rem;
   background-color: #111012;
   border: solid 1px #363638;
   > video {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
     margin: auto;
   }
 }
