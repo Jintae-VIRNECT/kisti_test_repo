@@ -1,5 +1,6 @@
 {
   "members": {
+    "deletedUser": "Deleted User",
     "role": {
       "master": "MASTER",
       "manager": "MANAGER",

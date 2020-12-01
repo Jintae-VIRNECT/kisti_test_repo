@@ -8,8 +8,12 @@
   >
     <template slot-scope="scope">
       <!-- 툴팁 -->
-      <div v-if="type === 'tooltip'" class="column-user">
-        <el-tooltip :content="scope.row[nameProp]">
+      <div
+        v-if="type === 'tooltip'"
+        class="column-user"
+        :class="{ deleted: !scope.row[nameProp] }"
+      >
+        <el-tooltip :content="scope.row[nameProp] || $t('members.deletedUser')">
           <div class="avatar">
             <div
               class="image"
@@ -23,8 +27,12 @@
         </el-tooltip>
       </div>
       <!-- 일반 -->
-      <div v-else class="column-user">
-        <el-tooltip :content="scope.row[nameProp]">
+      <div
+        v-else
+        class="column-user"
+        :class="{ deleted: !scope.row[nameProp] }"
+      >
+        <el-tooltip :content="scope.row[nameProp] || $t('members.deletedUser')">
           <div>
             <div class="avatar">
               <div
@@ -36,7 +44,7 @@
                 "
               />
             </div>
-            <span>{{ scope.row[nameProp] }}</span>
+            <span>{{ scope.row[nameProp] || $t('members.deletedUser') }}</span>
           </div>
         </el-tooltip>
       </div>

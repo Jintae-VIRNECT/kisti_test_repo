@@ -13,6 +13,9 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  &.deleted {
+    opacity: 0.5;
+  }
 }
 
 .column-plan {
