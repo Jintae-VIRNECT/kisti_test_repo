@@ -295,9 +295,10 @@ public class SessionRestController implements ISessionRestAPI {
         //@RequestParam(value = "webRtcStats", required = false, defaultValue = "false") boolean webRtcStats,
         LogMessage.formedInfo(
                 TAG,
-                "REST API: GET " + REST_PATH
-                        + (workspaceId != null ? workspaceId : "{}")
-                        + (userId != null ? userId : "{}"),
+                "REST API: GET "
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
+                        + (userId != null ? userId : "{}") ,
                 "getRoomList"
         );
 
@@ -316,8 +317,9 @@ public class SessionRestController implements ISessionRestAPI {
             @PathVariable("sessionId") String sessionId) {
         LogMessage.formedInfo(
                 TAG,
-                "REST API: GET " + REST_PATH
-                        + (workspaceId != null ? workspaceId : "{}")
+                "REST API: GET "
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
                         + (sessionId != null ? sessionId : "{}"),
                 "getRoomById"
         );
@@ -337,9 +339,9 @@ public class SessionRestController implements ISessionRestAPI {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE "
-                        + REST_PATH
-                        + (workspaceId != null ? workspaceId : "{}")
-                        + (sessionId != null ? sessionId : "{}")
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
+                        + (sessionId != null ? sessionId : "{}") + "/"
                         + (userId != null ? userId : "{}"),
                 "deleteRoomById"
         );
@@ -384,10 +386,10 @@ public class SessionRestController implements ISessionRestAPI {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: POST "
-                        + REST_PATH
-                        + (workspaceId != null ? workspaceId : "{}")
-                        + (sessionId != null ? sessionId : "{}")
-                        + "/info",
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
+                        + (sessionId != null ? sessionId : "{}") + "/"
+                        + "info",
                 "updateRoomById"
         );
 
@@ -419,11 +421,11 @@ public class SessionRestController implements ISessionRestAPI {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: POST "
-                        + REST_PATH
-                        + (workspaceId != null ? workspaceId : "{}")
-                        + (sessionId != null ? sessionId : "{}")
-                        + (joinRoomRequest != null ? joinRoomRequest : "{}")
-                        + "/join",
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
+                        + (sessionId != null ? sessionId : "{}") + "/"
+                        + (joinRoomRequest != null ? joinRoomRequest : "{}") + "/"
+                        + "join",
                 "joinRoomById"
         );
 
@@ -472,11 +474,11 @@ public class SessionRestController implements ISessionRestAPI {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: POST "
-                        + REST_PATH
-                        + (workspaceId != null ? workspaceId : "{}")
-                        + (sessionId != null ? sessionId : "{}")
-                        + (userId != null ? userId : "{}")
-                        + "/exit",
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
+                        + (sessionId != null ? sessionId : "{}") + "/"
+                        + (userId != null ? userId : "{}") + "/"
+                        + "exit",
                 "exitRoomById"
         );
         if(sessionId.isEmpty() || userId.isEmpty()) {
@@ -498,11 +500,11 @@ public class SessionRestController implements ISessionRestAPI {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: POST "
-                        + REST_PATH
-                        + (workspaceId != null ? workspaceId : "{}")
-                        + (sessionId != null ? sessionId : "{}")
-                        + (inviteRoomRequest != null ? inviteRoomRequest.toString() : "{}")
-                        + "/member",
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
+                        + (sessionId != null ? sessionId : "{}") + "/"
+                        + (inviteRoomRequest != null ? inviteRoomRequest.toString() : "{}") + "/"
+                        + "member",
                 "inviteMember"
         );
 
@@ -545,11 +547,11 @@ public class SessionRestController implements ISessionRestAPI {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE "
-                        + REST_PATH
-                        + (workspaceId != null ? workspaceId : "{}")
-                        + (sessionId != null ? sessionId : "{}")
-                        + (kickRoomRequest != null ? kickRoomRequest.toString() : "{}")
-                        + "/member",
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
+                        + (sessionId != null ? sessionId : "{}") + "/"
+                        + (kickRoomRequest != null ? kickRoomRequest.toString() : "{}") + "/"
+                        + "member",
                 "kickOutMember"
         );
 
