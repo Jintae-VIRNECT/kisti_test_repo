@@ -15,6 +15,8 @@
     
     "confirm_remove_room": "협업을 삭제 하시겠습니까?",
     "confirm_removed_room": "협업을 삭제하였습니다.​",
+    "confirm_remove_history": "목록을 삭제 하시겠습니까?.​",
+    "confirm_removed_history": "목록을 삭제하였습니다.​",
     "confirm_removed_room_leader": "리더가 협업을 삭제하였습니다.",
     "confirm_kickout_leader": "리더가 협업에서 내보냈습니다.",
     "confirm_remove_all": "모든 목록을 삭제하시겠습니까?",

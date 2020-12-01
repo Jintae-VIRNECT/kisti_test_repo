@@ -2,7 +2,6 @@
   <modal
     :title="$t('workspace.create_remote')"
     width="78.429em"
-    height="54.286em"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"

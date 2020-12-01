@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     enter(e) {
-      if (this.isScreenTablet) {
+      if (this.isTablet) {
         if (e.type === 'mouseenter') return
         this.show = true
         if (!this.guide) {

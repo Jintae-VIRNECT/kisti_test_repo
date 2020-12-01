@@ -2,7 +2,6 @@
   <modal
     :title="$t('workspace.create_open')"
     width="28.786em"
-    height="46.929em"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"

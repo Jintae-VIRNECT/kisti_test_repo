@@ -164,7 +164,8 @@ export default {
   .modal--inner {
     display: flex;
     flex-direction: column;
-
+    max-width: 80%;
+    max-height: 90%;
     @include modal();
   }
   .modal--header {
