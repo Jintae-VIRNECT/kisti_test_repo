@@ -164,6 +164,11 @@ public class SessionService {
     }
 
     @Transactional
+    public void setRoom(Room room) {
+        this.roomRepository.save(room);
+    }
+
+    @Transactional
     public void setRoomHistory(RoomHistory roomHistory) {
         this.roomHistoryRepository.save(roomHistory);
     }
@@ -297,6 +302,7 @@ public class SessionService {
     }
 
     @Transactional
+    @Deprecated
     public void destroySession(String sessionId) {
         Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if(room == null) {
@@ -673,6 +679,7 @@ public class SessionService {
     }
 
     @Transactional
+    @Deprecated
     public void leaveSession(String sessionId, ClientMetaData clientMetaData) {
         //Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
         Room room = roomRepository.findBySessionId(sessionId).orElse(null);
@@ -712,6 +719,7 @@ public class SessionService {
     }
 
     @Transactional
+    @Deprecated
     public void disconnectSession(String sessionId, ClientMetaData clientMetaData) {
         Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if (room == null) {
