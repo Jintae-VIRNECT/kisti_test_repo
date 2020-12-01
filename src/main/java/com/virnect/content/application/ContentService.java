@@ -784,20 +784,25 @@ public class ContentService {
 	@Transactional
 	public ApiResponse<ContentUploadResponse> contentDuplicate(
 		final String contentUUID, final String workspaceUUID, final String userUUID
-	) {
+	) throws IOException {
 		// 컨텐츠 가져오기
-		Content content = this.contentRepository.findByUuid(contentUUID)
+		Content oldContents = this.contentRepository.findByUuid(contentUUID)
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
 		// 컨텐츠의 워크스페이스 확인
-		if (!content.getWorkspaceUUID().equals(workspaceUUID))
+		if (!oldContents.getWorkspaceUUID().equals(workspaceUUID))
 			throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);
 
 		// 컨텐츠 소유자 확인
-		if (!content.getUserUUID().equals(userUUID))
+		if (!oldContents.getUserUUID().equals(userUUID))
 			throw new ContentServiceException(ErrorCode.ERR_OWNERSHIP);
 
-		ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
+        /*
+        원래는 컨텐츠 생성 api의 로직에 해당 하는 메서드를 호출했지만 불필요한 로직이 포함되어 있고 시간이 오래걸려 수정함.
+         */
+        return contentsDuplicateHandler(contentUUID, workspaceUUID,userUUID, oldContents);
+
+		/*ContentUploadRequest uploadRequest = ContentUploadRequest.builder()
 			.workspaceUUID(workspaceUUID)
 			//.content(convertFileToMultipart(uploadPath.concat(contentUUID).concat(ARES_FILE_EXTENSION)))
 			//.content(convertFileToMultipart(contentUUID.concat(ARES_FILE_EXTENSION)))
@@ -811,10 +816,10 @@ public class ContentService {
 			.build();
 
 		//return contentUpload(uploadRequest);
-        /*
+        *//*
         컨텐츠 복제를 통한 작업 생성의 경우 target정보를 작업서버에서 생성하게 되는데, 이때 기준이 되는 값(targetSize, targetType)을 프론트에서 받지 않고
         컨텐츠서버에서 받아 처리하기 위해 아래 코드를 수정함.(VECHOSYS-1282)
-         */
+         *//*
 		ContentUploadResponse contentUploadResponse = contentUpload(uploadRequest).getData();
 		List<ContentTargetResponse> contentTargetResponseList = content.getTargetList().stream()
 			.map(target -> {
@@ -828,9 +833,58 @@ public class ContentService {
             }).collect(Collectors.toList());
 
 		contentUploadResponse.setTargets(contentTargetResponseList);
-		return new ApiResponse<>(contentUploadResponse);
-
+		return new ApiResponse<>(contentUploadResponse);*/
 	}
+
+    /**
+     * 컨텐츠 -> 작업 복제 또는 작업 -> 작업 복제 api 에서 '컨텐츠 복제' 하기 위함.
+     * @param contentUUID
+     * @param workspaceUUID
+     * @param userUUID
+     * @param oldContents
+     * @return
+     * @throws IOException
+     */
+	private ApiResponse<ContentUploadResponse> contentsDuplicateHandler(String contentUUID, String workspaceUUID, String userUUID, Content oldContents) throws IOException {
+        //1. 라이선스 체크
+        MultipartFile originFile = fileDownloadService.getMultipartfile(contentUUID.concat(ARES_FILE_EXTENSION));
+        LicenseInfoResponse licenseInfoResponse = checkLicenseStorage(workspaceUUID, originFile.getSize(), userUUID);
+
+        //2. 새로 생성하는 컨텐츠의 식별자
+        String newContentUUID = UUID.randomUUID().toString();
+        log.info("CONTENT UPLOAD - contentUUID : {}", contentUUID);
+        //3. 새로 생성하는 컨텐츠의 ares (기존 ares와 내용은 같다.), 파일명은 컨텐츠 식별자(contentUUID)와 동일
+        String fileUploadPath = this.fileUploadService.uploadByFileInputStream(originFile, contentUUID + "");
+
+        Content newContent = Content.builder()
+                // TODO : 유효한 워크스페이스 인지 검증 필요.
+                .workspaceUUID(workspaceUUID)
+                .uuid(newContentUUID)
+                .name(oldContents.getName())
+                .metadata(oldContents.getMetadata())
+                .properties(oldContents.getProperties())
+                .userUUID(userUUID)
+                .shared(INIT_IS_SHARED)//이건 언제바꾸냐?
+                .converted(YesOrNo.YES)
+                .deleted(INIT_IS_DELETED)
+                .size(originFile.getSize())
+                .path(fileUploadPath)
+                .build();
+
+        // 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
+        addSceneGroupToContent(newContent, newContent.getMetadata());
+        this.contentRepository.save(newContent);
+
+        ContentUploadResponse contentUploadResponse = this.modelMapper.map(newContent, ContentUploadResponse.class);
+        contentUploadResponse.setLicenseInfo(licenseInfoResponse);
+        contentUploadResponse.setContentUUID(newContentUUID);
+        //원래대로라면 빈 리스트 객체를 리턴하지만, 원래의 컨텐츠의 타겟을 리턴하도록 수정함.
+        List<ContentTargetResponse> contentTargetResponseList = oldContents.getTargetList().stream()
+                .map(target -> modelMapper.map(target,ContentTargetResponse.class)).collect(Collectors.toList());
+        contentUploadResponse.setTargets(contentTargetResponseList);
+        log.info("[RESPONSE LOGGER] :: [{}]", contentUploadResponse.toString());
+        return new ApiResponse<>(contentUploadResponse);
+    }
 
 	@Transactional(readOnly = true)
 	public ApiResponse<ContentPropertiesResponse> getContentPropertiesMetadata(String contentUUID, String userUUID) {
