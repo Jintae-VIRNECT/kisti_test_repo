@@ -14,14 +14,7 @@
         ></tab-button>
       </ul>
     </nav>
-    <button
-      v-if="component === 'board'"
-      @click="refresh"
-      class="dashboard-tab--refresh"
-    >
-      <img src="~assets/image/ic_refresh.svg" />
-      <p>{{ $t('button.refresh') }}</p>
-    </button>
+    <tab-refresh-button v-if="component === 'board'"></tab-refresh-button>
     <component :is="component" :class="{ fix: fix }"></component>
   </div>
 </template>
@@ -30,11 +23,13 @@
 import TabButton from 'components/partials/TabButton'
 import TabBoard from 'components/tab/TabBoard'
 import TabCollabo from 'components/tab/TabCollabo'
+import TabRefreshButton from 'components/partials/TabRefreshButton'
 import { mapGetters } from 'vuex'
 export default {
   name: 'DashBoardTab',
   components: {
     TabButton,
+    TabRefreshButton,
     board: TabBoard,
     collabo: TabCollabo,
   },
@@ -78,9 +73,6 @@ export default {
         this.component = tabName
         this.$emit('tabChange')
       })
-    },
-    refresh() {
-      this.$eventBus.$emit('refresh:chart')
     },
   },
 }
