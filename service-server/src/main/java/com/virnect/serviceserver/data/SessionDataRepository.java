@@ -954,6 +954,7 @@ public class SessionDataRepository extends DataRepository {
      * @param userId
      * @return
      */
+    @Deprecated
     public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Room, Boolean>(RepoDecoderType.READ) {
             @Override
@@ -1178,7 +1179,6 @@ public class SessionDataRepository extends DataRepository {
         return new RepoDecoder<Room, KickRoomResponse>(RepoDecoderType.DELETE) {
             @Override
             Room loadFromDatabase() {
-                //return sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
                 return sessionService.getRoom(workspaceId, sessionId);
 
             }
@@ -1196,12 +1196,7 @@ public class SessionDataRepository extends DataRepository {
                         member = participant;
                     }
                 }
-                //ResultResponse resultResponse = new ResultResponse();
-                //resultResponse.setResult(false);
-                //DataProcess<ResultResponse> response = new DataProcess<>(resultResponse);
-                //Room room = sessionService.getRoom(workspaceId, sessionId);
-                //Member member = loadFromDatabase();
-                //Member member = sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+
                  if(member == null) {
                     return new DataProcess<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                 } else {

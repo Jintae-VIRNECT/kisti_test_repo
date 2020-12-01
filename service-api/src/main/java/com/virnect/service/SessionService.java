@@ -844,7 +844,7 @@ public class SessionService {
     public void updateMember(Member member, MemberStatus memberStatus) {
         switch (memberStatus) {
             case EVICTED: {
-                member.setRoom(null);
+                //member.setRoom(null);
                 member.setMemberStatus(memberStatus);
             } break;
         }
@@ -857,6 +857,7 @@ public class SessionService {
     }
 
     @Transactional
+    @Deprecated
     public ErrorCode removeMember(Room room, String userId) {
         for (Member roomMember : room.getMembers()) {
             if (roomMember.getUuid().equals(userId)) {
