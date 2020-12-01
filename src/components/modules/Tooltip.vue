@@ -45,7 +45,7 @@ export default {
     },
     width: {
       type: String,
-      default: 'max-content',
+      default: 'auto',
     },
     customClass: {
       type: String,
@@ -204,6 +204,7 @@ export default {
   border-radius: 4px;
   > p {
     line-height: 1.8em;
+    white-space: nowrap;
   }
   .arrow {
     position: absolute;
