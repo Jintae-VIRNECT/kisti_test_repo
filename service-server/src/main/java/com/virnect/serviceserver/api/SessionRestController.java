@@ -94,7 +94,14 @@ public class SessionRestController implements ISessionRestAPI {
                 "sendPushMessageHandler"
         );
 
-        log.info("REST API: POST {} /message/push", REST_PATH);
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST "
+                        + REST_PATH
+                        + (pushSendRequest != null ? pushSendRequest.toString() : "{}")
+                        + "/message/push",
+                "sendPushMessageHandler"
+        );
 
         if(result.hasErrors()) {
             result.getAllErrors().forEach(message ->

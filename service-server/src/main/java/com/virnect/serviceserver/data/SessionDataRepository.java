@@ -481,7 +481,6 @@ public class SessionDataRepository extends DataRepository {
                     log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
                 }
 
-
                 Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
                         .filter(room -> {
                             for (Member member : room.getMembers()) {
@@ -508,8 +507,7 @@ public class SessionDataRepository extends DataRepository {
                     roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
                     // Mapping Member List Data to Member Information List
-                    List<MemberInfoResponse> memberInfoList = room.getMembers()
-                            .stream()
+                    List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
                             .filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
                             .map(member -> modelMapper.map(member, MemberInfoResponse.class))
                             .collect(Collectors.toList());
