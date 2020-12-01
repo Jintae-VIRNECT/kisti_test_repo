@@ -54,4 +54,6 @@ public interface FileUploadService {
 	 * @throws IOException
 	 */
 	String uploadByFileInputStream(MultipartFile file, String fileName) throws IOException;
+
+	String copyByFileObject(String sourceFileName, String destinationFileName);
 }
