@@ -159,6 +159,10 @@ public class SessionService {
         return roomList;
     }
 
+    public void setMember(Member member) {
+        this.memberRepository.save(member);
+    }
+
     public Member getMember(String workspaceId, String sessionId, String userId) {
         return memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);
     }

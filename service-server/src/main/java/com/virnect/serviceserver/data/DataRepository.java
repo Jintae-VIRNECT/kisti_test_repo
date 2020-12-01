@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.virnect.data.dao.Member;
-import com.virnect.data.dao.Room;
+import com.virnect.data.dao.*;
 import com.virnect.data.service.HistoryService;
 import com.virnect.mediaserver.core.Participant;
 import com.virnect.service.ApiResponse;
@@ -20,6 +19,7 @@ import com.virnect.service.dto.feign.StopRecordingResponse;
 import com.virnect.service.dto.feign.UserInfoResponse;
 import com.virnect.service.dto.rpc.ClientMetaData;
 import com.virnect.service.error.ErrorCode;
+import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.feign.service.LicenseRestService;
 import com.virnect.serviceserver.feign.service.RecordRestService;
@@ -220,17 +220,24 @@ public abstract class DataRepository {
 
     public DataProcess<Boolean> joinSession(Participant participant, String sessionId) {
         return new RepoDecoder<Room, Boolean>(RepoDecoderType.UPDATE) {
+            ClientMetaData clientMetaData = null;
+            Room room;
             @Override
             Room loadFromDatabase() {
-                return null;
+                return sessionService.getRoom(sessionId);
             }
 
             @Override
             DataProcess<Boolean> invokeDataProcess() {
+                room = loadFromDatabase();
+                if(room == null) {
+                    throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+
                 JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-                ClientMetaData clientMetaData = null;
+                clientMetaData = null;
                 try {
                     clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
                 } catch (JsonProcessingException e) {
@@ -242,7 +249,9 @@ public abstract class DataRepository {
                 log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
                 log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
-                sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
+                Member member = setData();
+                sessionService.setMember(member);
+                //sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
                 return new DataProcess<>(true);
 
                 /*if(!Objects.equals(clientMetaData.getRoleType(), MemberType.LEADER.name())
@@ -253,6 +262,26 @@ public abstract class DataRepository {
                 } else {
 
                 }*/
+            }
+
+            private Member setData() {
+                Member member = sessionService.getMember(room.getWorkspaceId(), sessionId, clientMetaData.getClientData());
+                if(member == null) {
+                    member = Member.builder()
+                            .room(room)
+                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
+                            .uuid(clientMetaData.getClientData())
+                            .workspaceId(room.getWorkspaceId())
+                            .sessionId(room.getSessionId())
+                            .build();
+                } else {
+                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                }
+                member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                member.setConnectionId(participant.getParticipantPublicId());
+                member.setMemberStatus(MemberStatus.LOAD);
+
+                return member;
             }
         }.asResponseData();
     }

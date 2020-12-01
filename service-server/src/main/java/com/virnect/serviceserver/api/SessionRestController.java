@@ -468,11 +468,17 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
+        // generate session id and token
+        JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
+        JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+        //
+        return ResponseEntity.ok(
+                this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest)
+        );
+
+        /*DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
         if(dataProcess.getData()) {
-            // 3. generate session id and token
-            //String customSessionId = sessionData.getCustomSessionId();
-            //String customSessionId = sessionId;
+            // generate session id and token
             JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
             return ResponseEntity.ok(
@@ -482,7 +488,7 @@ public class SessionRestController implements ISessionRestAPI {
             return ResponseEntity.ok(
                     new ApiResponse<>(dataProcess.getCode(), dataProcess.getMessage())
             );
-        }
+        }*/
     }
 
     @Override

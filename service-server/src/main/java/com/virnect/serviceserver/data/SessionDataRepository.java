@@ -784,7 +784,11 @@ public class SessionDataRepository extends DataRepository {
     }
 
     public ApiResponse<RoomResponse> joinRoom(String workspaceId, String sessionId, String sessionToken, JoinRoomRequest joinRoomRequest) {
-        return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.UPDATE) {
+        return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.READ) {
+            SessionTokenResponse sessionTokenResponse = null;
+            Room room;
+            SessionType sessionType;
+
             @Override
             Room loadFromDatabase() {
                 return sessionService.getRoom(workspaceId, sessionId);
@@ -792,52 +796,47 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             DataProcess<RoomResponse> invokeDataProcess() {
-                //ApiResponse<RoomResponse> response = new ApiResponse<>();
-                /*Room room = loadFromDatabase();
-                if (room == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    *//*response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    return response;*//*
-                }*/
-                Room room = loadFromDatabase();
-                sessionService.joinRoom(room, joinRoomRequest);
-
-                SessionTokenResponse sessionTokenResponse = null;
-                ObjectMapper objectMapper = new ObjectMapper();
-                try {
-                    sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+                room = loadFromDatabase();
+                if(room == null) {
+                    return new DataProcess<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
 
-                assert sessionTokenResponse != null;
+                sessionType = room.getSessionProperty().getSessionType();
 
-                RoomResponse roomResponse = new RoomResponse();
-                //not set session create at property
-                roomResponse.setSessionId(sessionId);
-                roomResponse.setToken(sessionTokenResponse.getToken());
+                preDataProcess();
 
-                roomResponse.setWss(ServiceServerApplication.wssUrl);
+                ErrorCode errorCode = getJoinStatus();
+                if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+                    RoomResponse roomResponse = new RoomResponse();
+                    //not set session create at property
+                    roomResponse.setSessionId(sessionId);
+                    roomResponse.setToken(sessionTokenResponse.getToken());
+                    roomResponse.setWss(ServiceServerApplication.wssUrl);
 
-                if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-                    for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
-                        CoturnResponse coturnResponse = new CoturnResponse();
-                        coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                        coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                        coturnResponse.setUrl(coturnUrl);
-                        roomResponse.getCoturn().add(coturnResponse);
+                    if(sessionType.equals(SessionType.OPEN)) {
+                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
+                            CoturnResponse coturnResponse = new CoturnResponse();
+                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                            coturnResponse.setUrl(coturnUrl);
+                            roomResponse.getCoturn().add(coturnResponse);
+                        }
+                    } else {
+                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+                            CoturnResponse coturnResponse = new CoturnResponse();
+                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                            coturnResponse.setUrl(coturnUrl);
+                            roomResponse.getCoturn().add(coturnResponse);
+                        }
                     }
+                    return new DataProcess<>(roomResponse);
                 } else {
-                    for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-                        CoturnResponse coturnResponse = new CoturnResponse();
-                        coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                        coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                        coturnResponse.setUrl(coturnUrl);
-                        roomResponse.getCoturn().add(coturnResponse);
-                    }
+                    return new DataProcess<>(new RoomResponse(), errorCode);
                 }
-                return new DataProcess<>(roomResponse);
 
+
+                //sessionService.joinRoom(room, joinRoomRequest);
                 /*ErrorCode errorCode = sessionService.joinRoom(room, joinRoomRequest);
                 switch (errorCode) {
                     case ERR_SUCCESS: {
@@ -877,6 +876,38 @@ public class SessionDataRepository extends DataRepository {
                         //return response;
                     }
                 }*/
+            }
+
+            private void preDataProcess() {
+                try {
+                    sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                assert sessionTokenResponse != null;
+            }
+
+
+            private ErrorCode getJoinStatus() {
+                for (Member member : room.getMembers()) {
+                    if (member.getUuid().equals(joinRoomRequest.getUuid())) {
+                        MemberStatus memberStatus = member.getMemberStatus();
+                        switch (memberStatus) {
+                            case UNLOAD:
+                                return ErrorCode.ERR_SUCCESS;
+                            case LOAD:
+                                return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
+                            case EVICTED:
+                                break;
+                        }
+                    }
+                }
+
+                if(sessionType.equals(SessionType.OPEN)) {
+                    return ErrorCode.ERR_SUCCESS;
+                } else {
+                    return ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
+                }
             }
         }.asApiResponse();
     }
