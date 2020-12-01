@@ -97,6 +97,50 @@ public class SessionDataRepository extends DataRepository {
         }.asResponseData();
     }
 
+    public DataProcess<PushResponse> sendInviteMessage(InviteRoomResponse inviteRoomResponse) {
+        return new RepoDecoder<Void, PushResponse>(RepoDecoderType.FETCH) {
+            UserInfoResponse userInfoResponse;
+            @Override
+            Void loadFromDatabase() {
+                return null;
+            }
+
+            @Override
+            DataProcess<PushResponse> invokeDataProcess() {
+
+                fetchFromRepository(inviteRoomResponse.getLeaderId());
+
+                pushMessageClient.setPush(
+                        PushConstants.PUSH_SERVICE_REMOTE ,
+                        PushConstants.SEND_PUSH_ROOM_INVITE ,
+                        inviteRoomResponse.getWorkspaceId() ,
+                        inviteRoomResponse.getLeaderId() ,
+                        inviteRoomResponse.getParticipantIds());
+
+                //set push message invite room contents
+                ApiResponse<PushResponse> pushResponse = pushMessageClient.sendPushInvite(
+                        inviteRoomResponse.getSessionId(),
+                        inviteRoomResponse.getTitle(),
+                        userInfoResponse.getNickname(),
+                        userInfoResponse.getProfile());
+
+                if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+                    log.info("push send message executed but not success");
+                    log.info("push response: [code] {}", pushResponse.getCode());
+                    log.info("push response: [message] {}", pushResponse.getMessage());
+                } else {
+                    log.info("push send message executed success {}", pushResponse.toString());
+                }
+                return new DataProcess<>(pushResponse.getData());
+            }
+
+            private void fetchFromRepository(String userId) {
+                DataProcess<UserInfoResponse> userInfo = checkUserValidation(userId);
+                userInfoResponse = userInfo.getData();
+            }
+        }.asResponseData();
+    }
+
     public ApiResponse<RoomResponse> generateRoom(
             RoomRequest roomRequest,
             LicenseItem licenseItem,
@@ -1156,41 +1200,54 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             DataProcess<InviteRoomResponse> invokeDataProcess() {
-                log.info("ROOM INVITE MEMBER UPDATE BY SESSION ID => [{}, {}]", workspaceId, sessionId);
                 Room room = loadFromDatabase();
-                if(room != null) {
-                    if(room.getLeaderId().equals(inviteRoomRequest.getLeaderId())) {
-                        //remove if member status is evicted
-                        //room.getMembers().removeIf(member -> member.getRoom() == null);
-                        room.getMembers().removeIf(member -> member.getMemberStatus().equals(MemberStatus.EVICTED));
+                if (room == null)
+                    return new DataProcess<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 
-                        //check room member is exceeded limitation
-                        if(room.getMembers().size() + inviteRoomRequest.getParticipantIds().size() > room.getMaxUserCount()) {
-                            return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+                if (!room.getLeaderId().equals(inviteRoomRequest.getLeaderId())) {
+                    return new DataProcess<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                } else {
+                    List<Member> members = room.getMembers().stream()
+                            .filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+                            .collect(Collectors.toList());
+
+                    //remove if member status is evicted
+                    //room.getMembers().removeIf(member -> member.getRoom() == null);
+                    //room.getMembers().removeIf(member -> member.getMemberStatus().equals(MemberStatus.EVICTED));
+
+                    //check room member is exceeded limitation
+                    if (members.size() + inviteRoomRequest.getParticipantIds().size() > room.getMaxUserCount()) {
+                        return new DataProcess<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+                    }
+
+                    //check invited member is already joined
+                    List<String> userIds = members.stream()
+                            .map(Member::getUuid)
+                            .collect(Collectors.toList());
+                    for (String participant : inviteRoomRequest.getParticipantIds()) {
+                        if (userIds.contains(participant)) {
+                            return new DataProcess<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
                         }
-
-                        //check invited member is already joined
-                        for(String participant : inviteRoomRequest.getParticipantIds()) {
-                            for(Member member: room.getMembers()) {
-                                if(participant.equals(member.getUuid()) && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-                                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                            /*for(Member member: members) {
+                                if(participant.equals(member.getUuid())) {
+                                    return new DataProcess<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
                                 }
-                            }
-                        }
+                            }*/
+                    }
 
-                        //update room member using iterator avoid to ConcurrentModificationException? ...
-                        sessionService.updateMember(room, inviteRoomRequest.getParticipantIds());
+                    //update room member using iterator avoid to ConcurrentModificationException? ...
+                    sessionService.updateMember(room, inviteRoomRequest.getParticipantIds());
 
-                        InviteRoomResponse response = new InviteRoomResponse();
-                        response.setWorkspaceId(workspaceId);
-                        response.setSessionId(sessionId);
-                        response.setLeaderId(inviteRoomRequest.getLeaderId());
-                        response.setParticipantIds(inviteRoomRequest.getParticipantIds());
-                        response.setTitle(room.getTitle());
+                    InviteRoomResponse response = new InviteRoomResponse();
+                    response.setWorkspaceId(workspaceId);
+                    response.setSessionId(sessionId);
+                    response.setLeaderId(inviteRoomRequest.getLeaderId());
+                    response.setParticipantIds(inviteRoomRequest.getParticipantIds());
+                    response.setTitle(room.getTitle());
 
-                        return new DataProcess<>(response);
+                    return new DataProcess<>(response);
 
-                        //sessionService.updateRoom(room, inviteRoomRequest.getParticipantIds());
+                    //sessionService.updateRoom(room, inviteRoomRequest.getParticipantIds());
                         /*for(String participant : inviteRoomRequest.getParticipantIds()) {
                             sessionService.createOrUpdateMember(room, participant);
                         }*/
@@ -1205,12 +1262,6 @@ public class SessionDataRepository extends DataRepository {
                             }
                             sessionService.createOrUpdateMember(room, participant);
                         }*/
-
-                    } else {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-                    }
-                } else {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
             }
         }.asApiResponse();

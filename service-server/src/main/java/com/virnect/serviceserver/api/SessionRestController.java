@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -462,10 +463,16 @@ public class SessionRestController implements ISessionRestAPI {
             @PathVariable("sessionId") String sessionId,
             @RequestParam("userId") String userId
     ) {
-        log.info("REST API: POST {}/{}/{}/exit {}", REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sessionId != null ? sessionId : "{}",
-                userId != null ? userId : "{}");
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST "
+                        + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}")
+                        + (userId != null ? userId : "{}")
+                        + "/exit",
+                "exitRoomById"
+        );
         if(sessionId.isEmpty() || userId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -481,53 +488,45 @@ public class SessionRestController implements ISessionRestAPI {
             String sessionId,
             @Valid InviteRoomRequest inviteRoomRequest,
             BindingResult result) {
-        log.info(TAG, "inviteMember");
 
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST "
+                        + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}")
+                        + (inviteRoomRequest != null ? inviteRoomRequest.toString() : "{}")
+                        + "/member",
+                "inviteMember"
+        );
+
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message ->
+                    LogMessage.formedError(
+                            TAG,
+                            "REST API: POST " + REST_PATH,
+                            "inviteMember",
+                            LogMessage.PARAMETER_ERROR,
+                            message.toString()
+                    )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+
         ApiResponse<InviteRoomResponse> response = this.sessionDataRepository.inviteMember(workspaceId, sessionId, inviteRoomRequest);
+        ApiResponse<ResultResponse> resultResponse;
+        if(response.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
+            //send push message
+            this.sessionDataRepository.sendInviteMessage(response.getData());
 
-        InviteRoomResponse inviteRoomResponse = response.getData();
-
-        //send push message or not?
-        //this send push message
-        if(inviteRoomResponse != null) {
-            // check user is valid
-            DataProcess<UserInfoResponse> userInfo = this.sessionDataRepository.checkUserValidation(response.getData().getLeaderId());
-
-            pushMessageClient.setPush(
-                    PushConstants.PUSH_SERVICE_REMOTE ,
-                    PushConstants.SEND_PUSH_ROOM_INVITE ,
-                    inviteRoomResponse.getWorkspaceId() ,
-                    inviteRoomResponse.getLeaderId() ,
-                    inviteRoomResponse.getParticipantIds());
-
-
-            //set push message invite room contents
-            ApiResponse<PushResponse> pushResponse = pushMessageClient.sendPushInvite(
-                    inviteRoomResponse.getSessionId(),
-                    inviteRoomResponse.getTitle(),
-                    userInfo.getData().getNickname(),
-                    userInfo.getData().getProfile());
-
-            if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-                log.info("push send message executed but not success");
-                log.info("push response: [code] {}", pushResponse.getCode());
-                log.info("push response: [message] {}", pushResponse.getMessage());
-            } else {
-                log.info("push send message executed success {}", pushResponse.toString());
-            }
-            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>(new ResultResponse());
-            resultResponse.getData().setResult(true);
-            return ResponseEntity.ok(resultResponse);
+            resultResponse = new ApiResponse<>(
+                    new ResultResponse(inviteRoomRequest.getLeaderId(), true, LocalDateTime.now()));
         } else {
-            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>();
+            resultResponse = new ApiResponse<>(new ResultResponse());
             resultResponse.setCode(response.getCode());
             resultResponse.setMessage(response.getMessage());
-            return ResponseEntity.ok(resultResponse);
         }
+        return ResponseEntity.ok(resultResponse);
     }
 
     @Override
