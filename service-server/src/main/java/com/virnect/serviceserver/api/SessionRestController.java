@@ -35,6 +35,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 @Slf4j
@@ -528,7 +529,8 @@ public class SessionRestController implements ISessionRestAPI {
             this.sessionDataRepository.sendInviteMessage(response.getData());
 
             resultResponse = new ApiResponse<>(
-                    new ResultResponse(inviteRoomRequest.getLeaderId(), true, LocalDateTime.now()));
+                    new ResultResponse(inviteRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>())
+            );
         } else {
             resultResponse = new ApiResponse<>(new ResultResponse());
             resultResponse.setCode(response.getCode());
@@ -576,7 +578,7 @@ public class SessionRestController implements ISessionRestAPI {
                 //send push message
                 this.sessionDataRepository.sendEvictMessage(apiResponse.getData());
                 resultResponse = new ApiResponse<>(new ResultResponse(
-                        kickRoomRequest.getLeaderId(), true, LocalDateTime.now()
+                        kickRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>()
                 ));
             } else {
                 //send rpc message to connection id user of the session id
@@ -600,7 +602,7 @@ public class SessionRestController implements ISessionRestAPI {
                     boolean forceResult = serviceSessionManager.evictParticipant(sessionId, connectionId);
                     log.info("evictParticipant :{}", forceResult);
                     resultResponse = new ApiResponse<>(new ResultResponse(
-                            kickRoomRequest.getLeaderId(), true, LocalDateTime.now()
+                            kickRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>()
                     ));
                 }
             }

@@ -1,11 +1,12 @@
 package com.virnect.serviceserver.data;
 
-import com.google.gson.JsonObject;
-import com.virnect.data.dao.*;
+import com.virnect.data.dao.MemberHistory;
+import com.virnect.data.dao.MemberStatus;
+import com.virnect.data.dao.MemberType;
+import com.virnect.data.dao.RoomHistory;
 import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.DeleteResultResponse;
 import com.virnect.service.dto.PageMetadataResponse;
-import com.virnect.service.dto.PageRequest;
+import com.virnect.service.dto.ResultResponse;
 import com.virnect.service.dto.feign.WorkspaceMemberInfoResponse;
 import com.virnect.service.dto.service.request.RoomHistoryDeleteRequest;
 import com.virnect.service.dto.service.response.MemberInfoResponse;
@@ -333,15 +334,15 @@ public class HistoryDataRepository extends DataRepository {
      * @param userId
      * @return
      */
-    public ApiResponse<DeleteResultResponse> removeRoomHistory(String workspaceId, String userId) {
-        return new RepoDecoder<List<MemberHistory>, DeleteResultResponse>(RepoDecoderType.DELETE) {
+    public ApiResponse<ResultResponse> removeRoomHistory(String workspaceId, String userId) {
+        return new RepoDecoder<List<MemberHistory>, ResultResponse>(RepoDecoderType.DELETE) {
             @Override
             List<MemberHistory> loadFromDatabase() {
                 return historyService.getMemberHistoryList(workspaceId, userId);
             }
 
             @Override
-            DataProcess<DeleteResultResponse> invokeDataProcess() {
+            DataProcess<ResultResponse> invokeDataProcess() {
                 LogMessage.formedInfo(
                         TAG,
                         "invokeDataProcess",
@@ -352,22 +353,22 @@ public class HistoryDataRepository extends DataRepository {
 
                 List<MemberHistory> memberHistoryList = loadFromDatabase();
                 historyService.removeRoomHistory(memberHistoryList);
-                DeleteResultResponse deleteResultResponse = processResult();
-                return new DataProcess<>(deleteResultResponse);
+                ResultResponse resultResponse = processResult();
+                return new DataProcess<>(resultResponse);
             }
 
-            private DeleteResultResponse processResult() {
-                DeleteResultResponse deleteResultResponse = new DeleteResultResponse();
-                deleteResultResponse.userId = userId;
-                deleteResultResponse.setResult(true);
+            private ResultResponse processResult() {
+                ResultResponse resultResponse = new ResultResponse();
+                resultResponse.userId = userId;
+                resultResponse.setResult(true);
 
-                return deleteResultResponse;
+                return resultResponse;
             }
         }.asApiResponse();
     }
 
-    public ApiResponse<DeleteResultResponse> removeRoomHistory(String workspaceId, RoomHistoryDeleteRequest roomHistoryDeleteRequest) {
-        return new RepoDecoder<MemberHistory, DeleteResultResponse>(RepoDecoderType.DELETE) {
+    public ApiResponse<ResultResponse> removeRoomHistory(String workspaceId, RoomHistoryDeleteRequest roomHistoryDeleteRequest) {
+        return new RepoDecoder<MemberHistory, ResultResponse>(RepoDecoderType.DELETE) {
             private String sessionId;
             private String userId;
 
@@ -376,7 +377,7 @@ public class HistoryDataRepository extends DataRepository {
                 return historyService.getMemberHistory(workspaceId, sessionId, userId);
             }
             @Override
-            DataProcess<DeleteResultResponse> invokeDataProcess() {
+            DataProcess<ResultResponse> invokeDataProcess() {
                 LogMessage.formedInfo(
                         TAG,
                         "invokeDataProcess",
@@ -402,16 +403,16 @@ public class HistoryDataRepository extends DataRepository {
                         );
                     }
                 }
-                DeleteResultResponse deleteResultResponse = processResult();
-                return new DataProcess<>(deleteResultResponse);
+                ResultResponse resultResponse = processResult();
+                return new DataProcess<>(resultResponse);
             }
 
-            private DeleteResultResponse processResult() {
-                DeleteResultResponse deleteResultResponse = new DeleteResultResponse();
-                deleteResultResponse.userId = roomHistoryDeleteRequest.getUuid();
-                deleteResultResponse.setResult(true);
+            private ResultResponse processResult() {
+                ResultResponse resultResponse = new ResultResponse();
+                resultResponse.userId = roomHistoryDeleteRequest.getUuid();
+                resultResponse.setResult(true);
 
-                return deleteResultResponse;
+                return resultResponse;
             }
         }.asApiResponse();
     }
