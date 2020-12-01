@@ -805,7 +805,7 @@ public class SessionDataRepository extends DataRepository {
 
                 preDataProcess();
 
-                ErrorCode errorCode = getJoinStatus();
+                ErrorCode errorCode = getErrorStatus();
                 if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
                     RoomResponse roomResponse = new RoomResponse();
                     //not set session create at property
@@ -888,7 +888,7 @@ public class SessionDataRepository extends DataRepository {
             }
 
 
-            private ErrorCode getJoinStatus() {
+            private ErrorCode getErrorStatus() {
                 for (Member member : room.getMembers()) {
                     if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                         MemberStatus memberStatus = member.getMemberStatus();
@@ -913,34 +913,49 @@ public class SessionDataRepository extends DataRepository {
     }
 
     public ApiResponse<ResultResponse> exitRoom(String workspaceId, String sessionId, String userId) {
-        return new RepoDecoder<Void, ResultResponse>(RepoDecoderType.DELETE) {
+        return new RepoDecoder<Room, ResultResponse>(RepoDecoderType.DELETE) {
+            Member member = null;
+
             @Override
-            Void loadFromDatabase() {
-                return null;
+            Room loadFromDatabase() {
+                return sessionService.getRoom(workspaceId, sessionId);
             }
 
             @Override
             DataProcess<ResultResponse> invokeDataProcess() {
-                Room room = sessionService.getRoom(workspaceId, sessionId);
-                Member member = sessionService.getMember(workspaceId, sessionId, userId);
-
+                Room room = loadFromDatabase();
                 if(room == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                } else if(member == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                    return new DataProcess<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
                 } else {
-                    if(room.getMembers().isEmpty()) {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
+                    for (Member participant : room.getMembers()) {
+                        if(participant.getUuid().equals(userId)) {
+                            member = participant;
+                        }
+                    }
+                    if(member == null) {
+                        return new DataProcess<>(new ResultResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                     } else {
-                        ErrorCode errorCode = sessionService.exitRoom(room, member);
+                        ErrorCode errorCode = getErrorStatus();
                         if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+                            sessionService.removeMember(room, member);
                             ResultResponse resultResponse = new ResultResponse();
+                            resultResponse.setUserId(userId);
                             resultResponse.setResult(true);
                             return new DataProcess<>(resultResponse);
                         } else {
-                            return new DataProcess<>(errorCode);
+                            return new DataProcess<>(new ResultResponse(), errorCode);
                         }
                     }
+                }
+            }
+
+            private ErrorCode getErrorStatus() {
+                if(member.getMemberType().equals(MemberType.LEADER)) {
+                    return ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
+                } else if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                    return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
+                } else {
+                    return ErrorCode.ERR_SUCCESS;
                 }
             }
         }.asApiResponse();

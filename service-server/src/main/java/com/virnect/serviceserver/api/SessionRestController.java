@@ -322,8 +322,6 @@ public class SessionRestController implements ISessionRestAPI {
         );
     }
 
-
-
     @Override
     public ResponseEntity<ApiResponse<RoomDeleteResponse>> deleteRoomById(
             @PathVariable("workspaceId") String workspaceId,

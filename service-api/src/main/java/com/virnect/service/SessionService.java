@@ -159,6 +159,7 @@ public class SessionService {
         return roomList;
     }
 
+    @Transactional
     public void setMember(Member member) {
         this.memberRepository.save(member);
     }
@@ -576,6 +577,7 @@ public class SessionService {
      * @param joinRoomRequest
      */
     @Transactional
+    @Deprecated
     public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
         if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
             Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(
@@ -672,6 +674,7 @@ public class SessionService {
      * @param clientMetaData
      */
     @Transactional
+    @Deprecated
     public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
         for (Member member : room.getMembers()) {
@@ -773,6 +776,7 @@ public class SessionService {
      * @return
      */
     @Transactional
+    @Deprecated
     public ErrorCode exitRoom(Room room, Member member) {
         for (Member roomMember : room.getMembers()) {
             if (member.getUuid().equals(roomMember.getUuid())) {
@@ -788,6 +792,12 @@ public class SessionService {
             }
         }
         return ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND;
+    }
+
+    @Transactional
+    public void removeMember(Room room, Member member) {
+        room.getMembers().remove(member);
+        roomRepository.save(room);
     }
 
     @Transactional
