@@ -812,8 +812,6 @@ public class ContentService {
                 .metadata(content.getMetadata())
                 .properties(content.getProperties())
                 .userUUID(userUUID)
-                .targetData(target.getData())
-                .targetType(target.getType())
                 .build();
 
         //return contentUpload(uploadRequest);
