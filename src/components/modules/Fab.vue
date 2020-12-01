@@ -30,5 +30,9 @@ export default {
   border: 1px solid rgb(227, 227, 227);
   border-radius: 50%;
   box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
+  transition: 0.2s;
+  &:active {
+    background: rgba(224, 224, 224, 0.774);
+  }
 }
 </style>
