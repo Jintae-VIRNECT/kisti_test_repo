@@ -335,15 +335,32 @@ export default {
   }
 }
 
-.tooltip.tooltip-guide .tooltiptext {
-  margin-left: 1.143rem;
-  padding: 1.143rem 1.714rem;
-  & > .arrow {
-    margin-top: -1rem;
-    border-width: 0.714rem;
-    &:after {
-      left: -0.571rem;
-      border-width: 0.643rem;
+.tooltip.tooltip-guide {
+  > .tooltiptext.blue {
+    padding: 1.143rem 1.714rem;
+    > .arrow {
+      border-width: 0.714rem;
+      &:after {
+        border-width: 0.643rem;
+      }
+    }
+    &.right {
+      margin-left: 0.8rem;
+      > .arrow {
+        margin-top: -1rem;
+        &:after {
+          left: -0.571rem;
+        }
+      }
+    }
+    &.bottom {
+      margin-top: 0.5rem;
+      > .arrow {
+        margin-left: -1rem;
+        &:after {
+          top: -0.571rem;
+        }
+      }
     }
   }
 }

@@ -62,7 +62,7 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('service.setting_record_time_tooltip')"
-            placement="right"
+            :placement="isTablet ? 'bottom' : 'right'"
             effect="blue"
             :guide="true"
           >
@@ -91,7 +91,7 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('service.setting_record_resolution_tooltip')"
-            placement="right"
+            :placement="isTablet ? 'bottom' : 'right'"
             effect="blue"
             :guide="true"
           >
@@ -182,7 +182,7 @@
             <tooltip
               customClass="tooltip-guide"
               :content="$t('service.setting_translate_language_tooltip')"
-              placement="right"
+              :placement="isTablet ? 'bottom' : 'right'"
               effect="blue"
             >
               <img

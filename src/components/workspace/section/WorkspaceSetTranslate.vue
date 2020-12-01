@@ -22,7 +22,7 @@
             <tooltip
               customClass="tooltip-guide"
               :content="$t('workspace.setting_translate_language_tooltip')"
-              placement="right"
+              :placement="isTablet ? 'bottom' : 'right'"
               effect="blue"
               :guide="true"
             >
