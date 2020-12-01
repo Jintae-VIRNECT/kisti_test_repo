@@ -85,9 +85,10 @@ export default {
 @import '~assets/style/mixin';
 
 .popover-profile {
-  background-color: #ffffff;
-  border: solid 1px #e3e3e3;
+  background-color: #252525;
+  border: 1px solid rgb(69, 69, 69);
   border-radius: 8px;
+  box-shadow: 0px 2px 4px 0px rgba(11, 31, 72, 0.22);
   transform: translateY(1.571rem);
   > .popover--body {
     padding: 0;
@@ -103,11 +104,11 @@ export default {
   }
   > .profile .profile--text .profile--maintext {
     margin: 0.286rem 0;
-    color: #0b1f48;
+    color: #ffffff;
     font-size: 1.214rem;
   }
   > .profile .profile--subtext {
-    color: #0b1f48;
+    color: #ffffff;
     font-weight: normal;
     opacity: 0.6;
   }
@@ -116,18 +117,18 @@ export default {
   margin: 0.143rem 0;
   padding: 0.929rem 2.143rem;
   &:hover {
-    background: #e3e7ed;
+    background: #424242;
   }
 
   > button {
-    color: #0b1f48;
+    color: #ffffff;
     font-weight: 500;
     font-size: 1.071rem;
     background: transparent;
 
-    &:active {
-      font-weight: 500;
-    }
+    // &:active {
+    //   font-weight: 500;
+    // }
   }
 }
 .popover-profile__version {
