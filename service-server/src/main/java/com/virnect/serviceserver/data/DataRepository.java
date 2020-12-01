@@ -26,6 +26,7 @@ import com.virnect.serviceserver.feign.service.LicenseRestService;
 import com.virnect.serviceserver.feign.service.RecordRestService;
 import com.virnect.serviceserver.feign.service.UserRestService;
 import com.virnect.serviceserver.feign.service.WorkspaceRestService;
+import com.virnect.serviceserver.utils.LogMessage;
 import com.virnect.serviceserver.utils.PushMessageClient;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -430,6 +431,12 @@ public abstract class DataRepository {
 
             @Override
             DataProcess<Boolean> invokeDataProcess() {
+                LogMessage.formedInfo(
+                        TAG,
+                        "destroySession",
+                        "invokeDataProcess",
+                        "destroy session",
+                        sessionId);
                 room = loadFromDatabase();
                 if(room == null) {
                     throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
@@ -563,7 +570,7 @@ public abstract class DataRepository {
                             .durationSec(roomMember.getDurationSec())
                             .build();
 
-                    sessionService.setMemberHistory(memberHistory);
+                    //sessionService.setMemberHistory(memberHistory);
                     roomHistory.getMemberHistories().add(memberHistory);
 
                     //delete member
@@ -597,19 +604,34 @@ public abstract class DataRepository {
             @Override
             DataProcess<Boolean> invokeDataProcess() {
                 Room room = loadFromDatabase();
-                log.info("STOP RECORD::#stopRecordSession::destroy session => [{}]",sessionId);
+                LogMessage.formedInfo(
+                        TAG,
+                        "stopRecordSession",
+                        "invokeDataProcess",
+                        "destroy session",
+                        sessionId);
+
                 if(room != null) {
                     ApiResponse<StopRecordingResponse> apiResponse = recordRestService.stopRecordingBySessionId(room.getWorkspaceId(), room.getLeaderId(), room.getSessionId());
                     if(apiResponse.getCode() == 200) {
                         if(apiResponse.getData() != null) {
                             for (String recordingId : apiResponse.getData().getRecordingIds()) {
-                                log.info("STOP RECORD::#stopRecordSession::response => [{}]", recordingId);
+                                LogMessage.formedInfo(
+                                        TAG,
+                                        "stopRecordSession",
+                                        "invokeDataProcess",
+                                        "recording id response",
+                                        recordingId);
                             }
                         }
                     } else {
-                        log.info("STOP RECORD::#stopRecordSession::err response => [{}]", apiResponse.getCode());
+                        LogMessage.formedInfo(
+                                TAG,
+                                "stopRecordSession",
+                                "invokeDataProcess",
+                                "recording api response error code",
+                                String.valueOf(apiResponse.getCode()));
                     }
-
                     return new DataProcess<>(true);
                 } else {
                     return new DataProcess<>(false);
