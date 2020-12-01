@@ -15,6 +15,25 @@
           :sahdow="false"
         ></d-select>
       </div>
+
+      <div class="collabo-search-bar__condition">
+        <div class="collabo-search-bar__condition--header">
+          <label class="collabo-search-bar--label">기간 선택</label>
+          <div class="collabo-search-bar__condition--divider"></div>
+          <check-box :text="'검색 사용'" :value.sync="useDate"></check-box>
+        </div>
+
+        <datepicker
+          :pickerName="'search-from'"
+          :highlighted="date"
+          :initValue="
+            $dayjs()
+              .subtract(7, 'day')
+              .format('YYYY-MM-DD')
+          "
+        ></datepicker>
+      </div>
+
       <div class="collabo-search-bar__condition">
         <label class="collabo-search-bar--label">
           {{ $t('search.text') }}</label
@@ -26,35 +45,16 @@
           v-on:input="searchText = $event.target.value"
         />
       </div>
-      <div class="collabo-search-bar__condition padding">
-        <datepicker
-          :pickerName="'search-from'"
-          :highlighted="date"
-          :initValue="
-            $dayjs()
-              .subtract(7, 'day')
-              .format('YYYY-MM-DD')
-          "
-        ></datepicker>
-        <span class="collabo-search-bar__condition--tilde"></span>
-        <datepicker
-          :pickerName="'search-to'"
-          :highlighted="date"
-          :initValue="$dayjs().format('YYYY-MM-DD')"
-        ></datepicker>
-        <check-box
-          :text="$t('search.use_date_search')"
-          :value.sync="useDate"
-        ></check-box>
+      <div class="collabo-search-bar__condition">
+        <button
+          v-on:keyup.enter="doSearch"
+          @click="doSearch"
+          class="collabo-search-bar--submit"
+        >
+          <span>SEARCH</span>
+        </button>
       </div>
     </div>
-    <button
-      v-on:keyup.enter="doSearch"
-      @click="doSearch"
-      class="collabo-search-bar--submit"
-    >
-      <span>{{ $t('search.execute') }}</span>
-    </button>
   </section>
 </template>
 
@@ -195,118 +195,163 @@ export default {
 
 .collabo-search-bar__wrapper {
   display: flex;
-  justify-content: center;
-  height: 7.7143rem;
-  background: #d7e0ec;
-  border: 1px solid #cdd2dc;
-  border-radius: 0px;
+  align-items: center;
+  justify-content: space-evenly;
+  height: 156px;
+  background: rgb(226, 235, 250);
+  border: 1px solid rgb(49, 139, 255);
+  border-radius: 10px;
+  box-shadow: 0px 16px 12px 0px rgba(0, 113, 255, 0.05);
 }
 
 .collabo-search-bar__condition {
   display: flex;
+  flex-direction: column;
   align-items: center;
 
   &.padding {
     padding-bottom: 0.3571rem;
   }
 
-  .vdp-datepicker--input {
-    height: 3.4286rem;
-    border: 1px solid #c2c6ce;
+  .datepicker {
+    width: 353px;
+    height: 48px;
+
+    .vdp-datepicker {
+      width: 305px;
+    }
+
+    .vdp-datepicker--input {
+      width: 305px;
+      height: 48.0004px;
+      border: 1px solid #c2c6ce;
+    }
   }
+
   .calendar-button {
-    height: 3.4286rem;
+    height: 48.0004px;
     border: 1px solid #c2c6ce;
   }
 
-  > .checkbox {
-    margin-left: 0.4286rem;
-  }
-}
+  .checkbox {
+    align-items: center;
+    // margin-left: 0.4286rem;
 
-.collabo-search-bar--input {
-  width: 17.0714rem;
-  height: 3.1429rem;
-  margin-right: 4.9286rem;
-  padding-left: 1.1429rem;
-  color: #0b1f48;
-  font-weight: 500;
-  font-size: 1.1429rem;
-  // line-height: 28px;
-  letter-spacing: 0px;
-  background: #ffffff;
-  border: 1px solid #c2c6ce;
-  border-radius: 4px;
-  outline: none;
-  &:focus {
-    width: 16.9286rem;
-    height: 3rem;
-    border: 2px solid #0f75f5;
-  }
+    padding: 0;
+    > .checkbox-toggle {
+      width: 18px;
+      height: 18px;
 
-  &::placeholder {
-    // padding-left: 1.1429rem;
-    color: #bac2cc;
-    font-weight: normal;
-    font-size: 1.1429rem;
-    // line-height: 28px;
-    letter-spacing: 0px;
-  }
-}
-
-.collabo-search-bar__status--list {
-  margin-right: 2.25rem;
-}
-
-.collabo-search-bar__status--list.popover--wrapper {
-  > .select-label {
-    min-width: 10.1429rem;
-    height: 3.4286rem;
-  }
-}
-
-.collabo-search-bar--label {
-  margin-right: 0.7143rem;
-  color: #434b58;
-  font-weight: 500;
-  font-size: 1.1429rem;
-}
-
-.collabo-search-bar--submit {
-  position: relative;
-  width: 100%;
-  height: 3.7143rem;
-  font-weight: 400;
-  font-size: 1.1429rem;
-  background-color: #9aa6bd;
-  border-radius: 0px;
-  transition: 0.3s;
-  &:hover {
-    background: #0f75f5;
-  }
-
-  & > span {
-    position: relative;
-    &::before {
-      position: absolute;
-      top: 0.1429rem;
-      // right: 50px;
-      left: -2.1429rem;
-      width: 1.5714rem;
-      height: 1.5714rem;
-      background: 50% url('~assets/image/ic_search.svg') no-repeat;
-      content: '';
+      &.toggle {
+        &:after {
+          position: absolute;
+          top: 4.002px;
+          left: 3.002px;
+          width: 8px;
+          height: 3px;
+          border-bottom: solid 2px #ffffff;
+          border-left: solid 2px #ffffff;
+          transform: rotate(-45deg);
+          content: '';
+        }
+      }
+    }
+    > .checkbox-text {
+      margin-left: 8px;
+      color: rgb(67, 75, 88);
+      font-weight: 500;
+      font-size: 12px;
+      opacity: 0.7;
     }
   }
 }
 
-.collabo-search-bar__condition--tilde {
-  margin: 0 0.6429rem;
-  &::after {
-    color: #757f91;
-    font-weight: 500;
-    font-size: 1rem;
-    content: '\223C';
+.collabo-search-bar--input {
+  width: 492px;
+  height: 46px;
+  padding: 0 0 0 1.1429rem;
+  color: #0b1f48;
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0px;
+  background: #ffffff;
+  border: 1px solid #c2c6ce;
+  border-radius: 6px;
+  outline: none;
+  &:hover,
+  &:focus {
+    border: 1px solid rgb(15, 117, 245);
   }
+  transition: 0.3s;
+
+  &::placeholder {
+    // padding-left: 1.1429rem;
+    color: #bac2cc;
+    font-weight: 500;
+    font-size: 15px;
+  }
+}
+
+.collabo-search-bar__status--list {
+}
+
+.collabo-search-bar__status--list.popover--wrapper {
+  > .select-label {
+    width: 154px;
+    min-width: 10.1429rem;
+    height: 48px;
+    color: rgb(11, 31, 72);
+    background: rgb(255, 255, 255);
+    border: 1px solid rgb(186, 194, 204);
+    border-radius: 6px;
+
+    &:hover {
+      border: 1px solid rgb(15, 117, 245);
+      border-radius: 6px;
+    }
+  }
+}
+
+.collabo-search-bar--label {
+  width: 100%;
+  margin-bottom: 11px;
+  color: #0b1f48;
+  font-weight: 500;
+  font-size: 15.0006px;
+  text-align: left;
+  opacity: 0.9;
+}
+
+.collabo-search-bar__condition--header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 11px;
+  > .collabo-search-bar--label {
+    width: 59px;
+    margin: 0;
+  }
+}
+
+.collabo-search-bar--submit {
+  width: 140px;
+  height: 48px;
+  margin-top: 35px;
+  font-weight: 500;
+  font-size: 1.0714rem;
+  background: rgb(10, 90, 191);
+  border-radius: 6px;
+  transition: 0.3s;
+  &:hover {
+    background: #0f75f5;
+  }
+}
+
+.collabo-search-bar__condition--divider {
+  width: 1px;
+  height: 16px;
+  margin: 0px 12.5px;
+  background: rgb(32, 51, 89);
+  opacity: 0.2;
 }
 </style>
