@@ -834,7 +834,12 @@ public class SessionService {
 
     @Transactional
     public void updateMember(Member member, MemberStatus memberStatus) {
-        member.setMemberStatus(memberStatus);
+        switch (memberStatus) {
+            case EVICTED: {
+                member.setRoom(null);
+                member.setMemberStatus(memberStatus);
+            } break;
+        }
         memberRepository.save(member);
     }
 

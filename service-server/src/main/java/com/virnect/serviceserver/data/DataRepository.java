@@ -394,6 +394,7 @@ public abstract class DataRepository {
         }.asResponseData();
     }
 
+    @Deprecated
     public DataProcess<String> evictParticipant(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Member, String>(RepoDecoderType.READ) {
             @Override

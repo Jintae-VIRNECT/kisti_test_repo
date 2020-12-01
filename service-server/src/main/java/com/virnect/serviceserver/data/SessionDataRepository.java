@@ -21,10 +21,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -137,6 +137,36 @@ public class SessionDataRepository extends DataRepository {
             private void fetchFromRepository(String userId) {
                 DataProcess<UserInfoResponse> userInfo = checkUserValidation(userId);
                 userInfoResponse = userInfo.getData();
+            }
+        }.asResponseData();
+    }
+
+    public DataProcess<PushResponse> sendEvictMessage(KickRoomResponse kickRoomResponse) {
+        return new RepoDecoder<Void, PushResponse>(RepoDecoderType.NONE) {
+            @Override
+            Void loadFromDatabase() {
+                return null;
+            }
+
+            @Override
+            DataProcess<PushResponse> invokeDataProcess() {
+                //if connection id cannot find, push message and just remove user
+                pushMessageClient.setPush(
+                        PushConstants.PUSH_SERVICE_REMOTE ,
+                        PushConstants.SEND_PUSH_ROOM_EVICT ,
+                        kickRoomResponse.getWorkspaceId() ,
+                        kickRoomResponse.getLeaderId() ,
+                        Arrays.asList(kickRoomResponse.getParticipantId()));
+
+                ApiResponse<PushResponse> pushResponse = pushMessageClient.sendPushEvict();
+                if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+                    log.info("push send message executed but not success");
+                    log.info("push response: [code] {}", pushResponse.getCode());
+                    log.info("push response: [message] {}", pushResponse.getMessage());
+                } else {
+                    log.info("push send message executed success {}", pushResponse.toString());
+                }
+                return new DataProcess<>(pushResponse.getData());
             }
         }.asResponseData();
     }
@@ -1146,43 +1176,68 @@ public class SessionDataRepository extends DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<ResultResponse> kickFromRoom(String workspaceId, String sessionId, KickRoomRequest kickRoomRequest) {
-        return new RepoDecoder<Member, ResultResponse>(RepoDecoderType.DELETE) {
+    public ApiResponse<KickRoomResponse> kickFromRoom(String workspaceId, String sessionId, KickRoomRequest kickRoomRequest) {
+        return new RepoDecoder<Room, KickRoomResponse>(RepoDecoderType.DELETE) {
             @Override
-            Member loadFromDatabase() {
-                return sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+            Room loadFromDatabase() {
+                //return sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+                return sessionService.getRoom(workspaceId, sessionId);
+
             }
 
             @Override
-            DataProcess<ResultResponse> invokeDataProcess() {
-                ResultResponse resultResponse = new ResultResponse();
-                resultResponse.setResult(false);
-                //DataProcess<ResultResponse> response = new DataProcess<>(resultResponse);
-                Room room = sessionService.getRoom(workspaceId, sessionId);
-                Member member = loadFromDatabase();
-                //Member member = sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+            DataProcess<KickRoomResponse> invokeDataProcess() {
+                Room room = loadFromDatabase();
                 if(room == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    //response.setErrorResponseData(ErrorCode.ERR_ROOM_NOT_FOUND);
-                } else if(member == null) {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-                    //response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+                    return new DataProcess<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+                }
+
+                Member member = null;
+                for (Member participant: room.getMembers()) {
+                    if(participant.getUuid().equals(kickRoomRequest.getParticipantId())) {
+                        member = participant;
+                    }
+                }
+                //ResultResponse resultResponse = new ResultResponse();
+                //resultResponse.setResult(false);
+                //DataProcess<ResultResponse> response = new DataProcess<>(resultResponse);
+                //Room room = sessionService.getRoom(workspaceId, sessionId);
+                //Member member = loadFromDatabase();
+                //Member member = sessionService.getMember(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+                 if(member == null) {
+                    return new DataProcess<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
                 } else {
-                    if (room.getMembers().isEmpty()) {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
-                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
-                    } else if (!room.getLeaderId().equals(kickRoomRequest.getLeaderId())) {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                    if (!room.getLeaderId().equals(kickRoomRequest.getLeaderId())) {
+                        return new DataProcess<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     } else {
-                        sessionService.updateMember(member, MemberStatus.EVICTED);
-                        if(sessionService.removeMember(room, kickRoomRequest.getParticipantId()).equals(ErrorCode.ERR_SUCCESS)) {
+                        String connectionId = member.getConnectionId();
+
+                        KickRoomResponse kickRoomResponse = new KickRoomResponse();
+                        kickRoomResponse.setWorkspaceId(room.getWorkspaceId());
+                        kickRoomResponse.setSessionId(room.getSessionId());
+                        kickRoomResponse.setLeaderId(room.getLeaderId());
+                        kickRoomResponse.setParticipantId(kickRoomRequest.getParticipantId());
+                        kickRoomResponse.setConnectionId(connectionId);
+                        //if connection id cannot find, push message and just remove user
+                        if(connectionId == null || connectionId.isEmpty()) {
+
+                            sessionService.updateMember(member, MemberStatus.EVICTED);
+                            /*return new DataProcess<>(new ResultResponse(
+                                    kickRoomRequest.getLeaderId(),
+                                    true,
+                                    LocalDateTime.now()
+                            ));*/
+                        }
+                        return new DataProcess<>(kickRoomResponse);
+
+                        /*if(sessionService.removeMember(room, kickRoomRequest.getParticipantId()).equals(ErrorCode.ERR_SUCCESS)) {
                             resultResponse.setResult(true);
                             return new DataProcess<>(resultResponse);
                             //resultResponse.setResult(true);
                         } else {
                             return new DataProcess<>(ErrorCode.ERR_ROOM_PROCESS_FAIL);
-                        }
+                        }*/
+
                     }
                 }
                 //return new DataProcess<>(resultResponse);
