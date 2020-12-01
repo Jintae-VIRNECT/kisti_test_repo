@@ -342,16 +342,9 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        /*if(!remoteGatewayService.getUserGrantValidity(sessionId, userId).equals(MemberType.LEADER)) {
-            throw new RemoteServiceException(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-        }*/
-
-        //ResultResponse resultResponse = new ResultResponse();
-        //resultResponse.setResult(false);
         DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
         ApiResponse<RoomDeleteResponse> apiResponse = this.sessionDataRepository.removeRoom(workspaceId, sessionId, userId);
 
-        //if(apiResponse.getData() != null) {
         if(apiResponse.getData().result) {
             //send rpc message to connection id user of the session id
             JsonObject jsonObject = serviceSessionManager.generateMessage(
@@ -361,7 +354,6 @@ public class SessionRestController implements ISessionRestAPI {
                     PushConstants.SEND_PUSH_ROOM_CLOSED
             );
 
-            //
             if(this.serviceSessionManager.closeActiveSession(sessionId)) {
                 //todo: to do sth, when close active session, if you need sth
                 return ResponseEntity.ok(apiResponse);
@@ -371,33 +363,8 @@ public class SessionRestController implements ISessionRestAPI {
                 //todo: do sth close not active session, if you need sth
                 return ResponseEntity.ok(apiResponse);
             }
-
-            /*if(this.serviceSessionManager.closeActiveSession(sessionId)) {
-                //resultResponse.setResult(true);
-                return ResponseEntity.ok(apiResponse);
-            }
-
-            if(this.serviceSessionManager.closeNotActiveSession(sessionId)) {
-                return ResponseEntity.ok(apiResponse);
-            } else {
-                return ResponseEntity.ok(apiResponse);
-            }*/
         }
         return ResponseEntity.ok(apiResponse);
-        /*if(apiResponse.getData().getResult()) {
-            //Session session = this.sessionManager.getSession(sessionId);
-            if(this.serviceSessionManager.closeActiveSession(sessionId)) {
-                resultResponse.setResult(true);
-                return ResponseEntity.ok(apiResponse);
-            }
-            if(this.serviceSessionManager.closeNotActiveSession(sessionId)) {
-                return ResponseEntity.ok(apiResponse);
-            } else {
-                return ResponseEntity.ok(apiResponse);
-            }
-        } else {
-            return ResponseEntity.ok(apiResponse);
-        }*/
     }
 
     @Override

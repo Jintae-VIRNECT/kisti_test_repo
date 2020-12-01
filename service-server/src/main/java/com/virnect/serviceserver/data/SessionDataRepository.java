@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -683,53 +684,193 @@ public class SessionDataRepository extends DataRepository {
 
     public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
+            Room room = null;
+
             @Override
             Room loadFromDatabase() {
-                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", sessionId);
                 return sessionService.getRoom(workspaceId, sessionId);
             }
 
             @Override
             DataProcess<RoomDeleteResponse> invokeDataProcess() {
-                Room room = loadFromDatabase();
-                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", room.getMembers().size());
-                DataProcess<RoomDeleteResponse> dataProcess = null;
-                try {
-                    dataProcess = new DataProcess<>(RoomDeleteResponse.class);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-                log.info("ROOM INFO DELETE BY dataProcess => [{}]", dataProcess.data.toString());
-
+                room = loadFromDatabase();
                 if(room == null) {
-                    dataProcess.setErrorCode(ErrorCode.ERR_ROOM_NOT_FOUND);
-                    return dataProcess;
+                    return new DataProcess<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
 
                 //check request user has valid permission
                 if(!room.getLeaderId().equals(userId)) {
-                    dataProcess.setErrorCode(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-                    return dataProcess;
+                    return new DataProcess<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                 }
 
-                //List<Member> members = room.getMembers();
-                List<Member> members = sessionService.getMemberList(room.getWorkspaceId(), room.getSessionId());
-                for (Member member: members) {
-                    log.info("ROOM INFO DELETE BY dataProcess => [{}]", member.getUuid());
-                    if(member.getUuid().equals(room.getLeaderId())
-                            && member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                        dataProcess.setErrorCode(ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
-                        return dataProcess;
+                for (Member member: room.getMembers()) {
+                    if(member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                        return new DataProcess<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
                     }
                 }
 
-                sessionService.removeRoom(room);
-                //sessionService.removeRoom(workspaceId, sessionId);
+                log.info("ROOM INFO DELETE BY SESSION ID => [{}]", room.getMembers().size());
+
+                setLogging();
+
+                sessionService.deleteRoom(room);
+
+                /*DataProcess<RoomDeleteResponse> dataProcess = null;
+                try {
+                    dataProcess = new DataProcess<>(RoomDeleteResponse.class);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    e.printStackTrace();
+                }*/
+                //log.info("ROOM INFO DELETE BY dataProcess => [{}]", dataProcess.data.toString());
+
                 return new DataProcess<>(new RoomDeleteResponse(
                         sessionId,
                         true,
                         LocalDateTime.now()
                 ));
+            }
+
+            private void setLogging() {
+                setHistory();
+                // check the same session id history room is already exist
+                /*RoomHistory roomHistory = sessionService.getRoomHistory(room.getSessionId());
+                if(roomHistory != null) {
+                    log.info("FOUND THE SAME SESSION ID => [{}]", roomHistory.getSessionId());
+                    derivedHistory(roomHistory);
+                } else {
+                    setHistory();
+                }*/
+            }
+
+            private void derivedHistory(RoomHistory roomHistory) {
+                roomHistory.setTitle(room.getTitle());
+                roomHistory.setDescription(room.getDescription());
+                roomHistory.setProfile(room.getProfile());
+                roomHistory.setMaxUserCount(room.getMaxUserCount());
+                roomHistory.setLicenseName(room.getLicenseName());
+
+                // Remote Session Property Entity Create
+                SessionProperty sessionProperty = room.getSessionProperty();
+                SessionPropertyHistory sessionPropertyHistory = roomHistory.getSessionPropertyHistory();
+                sessionPropertyHistory.setMediaMode(sessionProperty.getMediaMode());
+                sessionPropertyHistory.setRecordingMode(sessionProperty.getRecordingMode());
+                sessionPropertyHistory.setDefaultOutputMode(sessionProperty.getDefaultOutputMode());
+                sessionPropertyHistory.setDefaultRecordingLayout(sessionProperty.getDefaultRecordingLayout());
+                sessionPropertyHistory.setRecording(sessionProperty.isRecording());
+                sessionPropertyHistory.setKeepalive(sessionProperty.isKeepalive());
+                sessionPropertyHistory.setSessionType(sessionProperty.getSessionType());
+                sessionPropertyHistory.setRoomHistory(roomHistory);
+
+                roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+                // Set room member history
+                // Get Member history list and set room null
+                List<MemberHistory> memberHistoryList = roomHistory.getMemberHistories();
+                for (MemberHistory memberHistory: memberHistoryList) {
+                    memberHistory.setRoomHistory(null);
+                    sessionService.setMemberHistory(memberHistory);
+                }
+
+                // Get Member List by Room Session Ids
+                // Mapping Member List Data to Member History List
+                for (Member member : room.getMembers()) {
+                    MemberHistory memberHistory = MemberHistory.builder()
+                            .roomHistory(roomHistory)
+                            .workspaceId(member.getWorkspaceId())
+                            .uuid(member.getUuid())
+                            .memberType(member.getMemberType())
+                            .deviceType(member.getDeviceType())
+                            .sessionId(member.getSessionId())
+                            .startDate(member.getStartDate())
+                            .endDate(member.getEndDate())
+                            .durationSec(member.getDurationSec())
+                            .build();
+
+                    sessionService.setMemberHistory(memberHistory);
+                    roomHistory.getMemberHistories().add(memberHistory);
+
+                    //delete member
+                    sessionService.deleteMember(member);
+                }
+
+                //set active time do not update active date
+                //oldRoomHistory.setActiveDate(room.getActiveDate());
+                //set un active  time
+                LocalDateTime endTime = LocalDateTime.now();
+                roomHistory.setUnactiveDate(endTime);
+
+                //time diff seconds
+                Duration duration = Duration.between(room.getActiveDate(), endTime);
+                Long totalDuration = duration.getSeconds() + roomHistory.getDurationSec();
+                roomHistory.setDurationSec(totalDuration);
+
+                //save room history
+                sessionService.setRoomHistory(roomHistory);
+            }
+
+            private void setHistory() {
+                // Remote Room History Entity Create
+                RoomHistory roomHistory = RoomHistory.builder()
+                        .sessionId(room.getSessionId())
+                        .title(room.getTitle())
+                        .description(room.getDescription())
+                        .profile(room.getProfile())
+                        .leaderId(room.getLeaderId())
+                        .workspaceId(room.getWorkspaceId())
+                        .maxUserCount(room.getMaxUserCount())
+                        .licenseName(room.getLicenseName())
+                        .build();
+
+                // Remote Session Property Entity Create
+                SessionProperty sessionProperty = room.getSessionProperty();
+                SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
+                        .mediaMode(sessionProperty.getMediaMode())
+                        .recordingMode(sessionProperty.getRecordingMode())
+                        .defaultOutputMode(sessionProperty.getDefaultOutputMode())
+                        .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
+                        .recording(sessionProperty.isRecording())
+                        .keepalive(sessionProperty.isKeepalive())
+                        .sessionType(sessionProperty.getSessionType())
+                        .roomHistory(roomHistory)
+                        .build();
+
+                roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+                // Set room member history
+                // Mapping Member List Data to Member History List
+                for (Member roomMember : room.getMembers()) {
+                    MemberHistory memberHistory = MemberHistory.builder()
+                            .roomHistory(roomHistory)
+                            .workspaceId(roomMember.getWorkspaceId())
+                            .uuid(roomMember.getUuid())
+                            .memberType(roomMember.getMemberType())
+                            .deviceType(roomMember.getDeviceType())
+                            .sessionId(roomMember.getSessionId())
+                            .startDate(roomMember.getStartDate())
+                            .endDate(roomMember.getEndDate())
+                            .durationSec(roomMember.getDurationSec())
+                            .build();
+
+                    sessionService.setMemberHistory(memberHistory);
+                    roomHistory.getMemberHistories().add(memberHistory);
+
+                    //delete member
+                    sessionService.deleteMember(roomMember);
+                }
+
+                //set active time
+                roomHistory.setActiveDate(room.getActiveDate());
+
+                //set un active  time
+                LocalDateTime endTime = LocalDateTime.now();
+                roomHistory.setUnactiveDate(endTime);
+
+                //time diff seconds
+                Duration duration = Duration.between(room.getActiveDate(), endTime);
+                roomHistory.setDurationSec(duration.getSeconds());
+
+                //save room history
+                sessionService.setRoomHistory(roomHistory);
             }
         }.asApiResponse();
     }
