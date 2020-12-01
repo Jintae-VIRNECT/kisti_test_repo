@@ -6,7 +6,7 @@ import com.virnect.service.ApiResponse;
 import com.virnect.service.api.IHistoryRestAPI;
 import com.virnect.service.constraint.LicenseItem;
 import com.virnect.service.dto.PageRequest;
-import com.virnect.service.dto.DeleteResultResponse;
+import com.virnect.service.dto.ResultResponse;
 import com.virnect.service.dto.service.request.RoomHistoryDeleteRequest;
 import com.virnect.service.dto.service.request.RoomRequest;
 import com.virnect.service.dto.service.response.RoomHistoryDetailInfoResponse;
@@ -16,7 +16,6 @@ import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.HistoryDataRepository;
 import com.virnect.serviceserver.data.SessionDataRepository;
-import com.virnect.serviceserver.feign.service.MessageRestService;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
@@ -290,7 +289,7 @@ public class HistoryRestController implements IHistoryRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<DeleteResultResponse>> deleteHistory(String workspaceId, String userId) {
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistory(String workspaceId, String userId) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE " + REST_PATH +
@@ -309,7 +308,7 @@ public class HistoryRestController implements IHistoryRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<DeleteResultResponse>> deleteHistoryById(String workspaceId, @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest, BindingResult result) {
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryById(String workspaceId, @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest, BindingResult result) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE " + REST_PATH +
