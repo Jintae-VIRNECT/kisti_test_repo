@@ -226,6 +226,16 @@
       font-weight: 300;
       text-align: center;
       text-indent: 1.429rem;
+      &::before {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100%;
+        transform: translate(-4px, 2px);
+        content: "";
+      }
     }
   }
   &.opponent {
@@ -282,18 +292,6 @@
   // line-height: 1.57;
   word-break: break-word;
   transition: opacity 0.3s ease-in-out;
-  &::before {
-    // top: 0.357rem;
-    // left: 0;
-    // position: absolute;
-    display: inline-block;
-    width: 1rem;
-    height: 1rem;
-    background: center/100% no-repeat;
-    transform: translate(-4px, 2px);
-    // transform: translateY(-1.429rem);
-    content: "";
-  }
   &.inactive {
     height: 0;
     opacity: 0;
