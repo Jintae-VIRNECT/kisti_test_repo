@@ -31,7 +31,9 @@ export default {
       params.shareds = params.filter
       delete params.filter
     }
-    params.sort = params.sort && params.sort.replace('contentName', 'name')
+    params.sort =
+      params.sort &&
+      params.sort.replace('contentName', 'name').replace('targetType', 'type')
 
     const userUUID = params.mine && myProfileGetter().uuid
     const workspaceUUID = activeWorkspaceGetter().uuid
