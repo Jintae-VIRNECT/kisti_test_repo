@@ -9,7 +9,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @ApiModel
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 public class ResultResponse {
     @ApiModelProperty(value = "User Identifier", example = "410df50ca6e32db0b6acba09bcb457ff")
     public String userId = "";

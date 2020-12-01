@@ -9,7 +9,6 @@ import com.virnect.service.constraint.PushConstants;
 import com.virnect.service.dto.PageRequest;
 import com.virnect.service.dto.ResultResponse;
 import com.virnect.service.dto.feign.PushResponse;
-import com.virnect.service.dto.feign.UserInfoResponse;
 import com.virnect.service.dto.service.request.*;
 import com.virnect.service.dto.service.response.*;
 import com.virnect.service.error.ErrorCode;
@@ -34,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -322,8 +322,6 @@ public class SessionRestController implements ISessionRestAPI {
         );
     }
 
-
-
     @Override
     public ResponseEntity<ApiResponse<RoomDeleteResponse>> deleteRoomById(
             @PathVariable("workspaceId") String workspaceId,
@@ -344,16 +342,9 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        /*if(!remoteGatewayService.getUserGrantValidity(sessionId, userId).equals(MemberType.LEADER)) {
-            throw new RemoteServiceException(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-        }*/
-
-        //ResultResponse resultResponse = new ResultResponse();
-        //resultResponse.setResult(false);
         DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
         ApiResponse<RoomDeleteResponse> apiResponse = this.sessionDataRepository.removeRoom(workspaceId, sessionId, userId);
 
-        //if(apiResponse.getData() != null) {
         if(apiResponse.getData().result) {
             //send rpc message to connection id user of the session id
             JsonObject jsonObject = serviceSessionManager.generateMessage(
@@ -363,7 +354,6 @@ public class SessionRestController implements ISessionRestAPI {
                     PushConstants.SEND_PUSH_ROOM_CLOSED
             );
 
-            //
             if(this.serviceSessionManager.closeActiveSession(sessionId)) {
                 //todo: to do sth, when close active session, if you need sth
                 return ResponseEntity.ok(apiResponse);
@@ -373,33 +363,8 @@ public class SessionRestController implements ISessionRestAPI {
                 //todo: do sth close not active session, if you need sth
                 return ResponseEntity.ok(apiResponse);
             }
-
-            /*if(this.serviceSessionManager.closeActiveSession(sessionId)) {
-                //resultResponse.setResult(true);
-                return ResponseEntity.ok(apiResponse);
-            }
-
-            if(this.serviceSessionManager.closeNotActiveSession(sessionId)) {
-                return ResponseEntity.ok(apiResponse);
-            } else {
-                return ResponseEntity.ok(apiResponse);
-            }*/
         }
         return ResponseEntity.ok(apiResponse);
-        /*if(apiResponse.getData().getResult()) {
-            //Session session = this.sessionManager.getSession(sessionId);
-            if(this.serviceSessionManager.closeActiveSession(sessionId)) {
-                resultResponse.setResult(true);
-                return ResponseEntity.ok(apiResponse);
-            }
-            if(this.serviceSessionManager.closeNotActiveSession(sessionId)) {
-                return ResponseEntity.ok(apiResponse);
-            } else {
-                return ResponseEntity.ok(apiResponse);
-            }
-        } else {
-            return ResponseEntity.ok(apiResponse);
-        }*/
     }
 
     @Override
@@ -468,11 +433,17 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
+        // generate session id and token
+        JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
+        JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+        //
+        return ResponseEntity.ok(
+                this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest)
+        );
+
+        /*DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
         if(dataProcess.getData()) {
-            // 3. generate session id and token
-            //String customSessionId = sessionData.getCustomSessionId();
-            //String customSessionId = sessionId;
+            // generate session id and token
             JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
             return ResponseEntity.ok(
@@ -482,7 +453,7 @@ public class SessionRestController implements ISessionRestAPI {
             return ResponseEntity.ok(
                     new ApiResponse<>(dataProcess.getCode(), dataProcess.getMessage())
             );
-        }
+        }*/
     }
 
     @Override
@@ -491,10 +462,16 @@ public class SessionRestController implements ISessionRestAPI {
             @PathVariable("sessionId") String sessionId,
             @RequestParam("userId") String userId
     ) {
-        log.info("REST API: POST {}/{}/{}/exit {}", REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sessionId != null ? sessionId : "{}",
-                userId != null ? userId : "{}");
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST "
+                        + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}")
+                        + (userId != null ? userId : "{}")
+                        + "/exit",
+                "exitRoomById"
+        );
         if(sessionId.isEmpty() || userId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
@@ -510,53 +487,45 @@ public class SessionRestController implements ISessionRestAPI {
             String sessionId,
             @Valid InviteRoomRequest inviteRoomRequest,
             BindingResult result) {
-        log.info(TAG, "inviteMember");
 
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST "
+                        + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}")
+                        + (inviteRoomRequest != null ? inviteRoomRequest.toString() : "{}")
+                        + "/member",
+                "inviteMember"
+        );
+
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message ->
+                    LogMessage.formedError(
+                            TAG,
+                            "REST API: POST " + REST_PATH,
+                            "inviteMember",
+                            LogMessage.PARAMETER_ERROR,
+                            message.toString()
+                    )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
+
         ApiResponse<InviteRoomResponse> response = this.sessionDataRepository.inviteMember(workspaceId, sessionId, inviteRoomRequest);
+        ApiResponse<ResultResponse> resultResponse;
+        if(response.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
+            //send push message
+            this.sessionDataRepository.sendInviteMessage(response.getData());
 
-        InviteRoomResponse inviteRoomResponse = response.getData();
-
-        //send push message or not?
-        //this send push message
-        if(inviteRoomResponse != null) {
-            // check user is valid
-            DataProcess<UserInfoResponse> userInfo = this.sessionDataRepository.checkUserValidation(response.getData().getLeaderId());
-
-            pushMessageClient.setPush(
-                    PushConstants.PUSH_SERVICE_REMOTE ,
-                    PushConstants.SEND_PUSH_ROOM_INVITE ,
-                    inviteRoomResponse.getWorkspaceId() ,
-                    inviteRoomResponse.getLeaderId() ,
-                    inviteRoomResponse.getParticipantIds());
-
-
-            //set push message invite room contents
-            ApiResponse<PushResponse> pushResponse = pushMessageClient.sendPushInvite(
-                    inviteRoomResponse.getSessionId(),
-                    inviteRoomResponse.getTitle(),
-                    userInfo.getData().getNickname(),
-                    userInfo.getData().getProfile());
-
-            if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-                log.info("push send message executed but not success");
-                log.info("push response: [code] {}", pushResponse.getCode());
-                log.info("push response: [message] {}", pushResponse.getMessage());
-            } else {
-                log.info("push send message executed success {}", pushResponse.toString());
-            }
-            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>(new ResultResponse());
-            resultResponse.getData().setResult(true);
-            return ResponseEntity.ok(resultResponse);
+            resultResponse = new ApiResponse<>(
+                    new ResultResponse(inviteRoomRequest.getLeaderId(), true, LocalDateTime.now()));
         } else {
-            ApiResponse<ResultResponse> resultResponse = new ApiResponse<>();
+            resultResponse = new ApiResponse<>(new ResultResponse());
             resultResponse.setCode(response.getCode());
             resultResponse.setMessage(response.getMessage());
-            return ResponseEntity.ok(resultResponse);
         }
+        return ResponseEntity.ok(resultResponse);
     }
 
     @Override
@@ -566,17 +535,77 @@ public class SessionRestController implements ISessionRestAPI {
             @RequestBody @Valid KickRoomRequest kickRoomRequest,
             BindingResult result
     ) {
-        log.info("REST API: DELETE {}/{}/{}/member {}", REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sessionId != null ? sessionId : "{}",
-                kickRoomRequest != null ? kickRoomRequest.toString() : "{}");
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: DELETE "
+                        + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sessionId != null ? sessionId : "{}")
+                        + (kickRoomRequest != null ? kickRoomRequest.toString() : "{}")
+                        + "/member",
+                "kickOutMember"
+        );
 
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message ->
+                    LogMessage.formedError(
+                            TAG,
+                            "REST API: DELETE " + REST_PATH,
+                            "kickOutMember",
+                            LogMessage.PARAMETER_ERROR,
+                            message.toString()
+                    )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        DataProcess<String> dataProcess = this.sessionDataRepository.evictParticipant(workspaceId, sessionId, kickRoomRequest.getParticipantId());
+        ApiResponse<KickRoomResponse> apiResponse = this.sessionDataRepository.kickFromRoom(workspaceId, sessionId, kickRoomRequest);
+        ApiResponse<ResultResponse> resultResponse = null;
+        if(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
+            String connectionId = apiResponse.getData().getConnectionId();
+            if(connectionId == null || connectionId.isEmpty()) {
+                //send push message
+                this.sessionDataRepository.sendEvictMessage(apiResponse.getData());
+                resultResponse = new ApiResponse<>(new ResultResponse(
+                        kickRoomRequest.getLeaderId(), true, LocalDateTime.now()
+                ));
+            } else {
+                //send rpc message to connection id user of the session id
+                JsonObject jsonObject = serviceSessionManager.generateMessage(
+                        sessionId,
+                        Arrays.asList(connectionId),
+                        PushConstants.PUSH_SIGNAL_SYSTEM,
+                        PushConstants.SEND_PUSH_ROOM_EVICT
+                );
+
+                if(jsonObject.has("error")) {
+                    log.info("sendSignal :{}", jsonObject.get("error").getAsString());
+                    log.info("sendSignal :{}", jsonObject.get("status").getAsString());
+                    log.info("sendSignal :{}", jsonObject.get("message").getAsString());
+                    resultResponse = new ApiResponse<>(new ResultResponse());
+                    resultResponse.setCode(Integer.parseInt(jsonObject.get("status").getAsString()));
+                    resultResponse.setMessage(jsonObject.get("message").getAsString());
+                } else {
+                    //send force disconnected
+                    //todo:forceResult when get false do process something.
+                    boolean forceResult = serviceSessionManager.evictParticipant(sessionId, connectionId);
+                    log.info("evictParticipant :{}", forceResult);
+                    resultResponse = new ApiResponse<>(new ResultResponse(
+                            kickRoomRequest.getLeaderId(), true, LocalDateTime.now()
+                    ));
+                }
+            }
+        } else {
+            resultResponse = new ApiResponse<>(new ResultResponse());
+            resultResponse.setCode(apiResponse.getCode());
+            resultResponse.setMessage(apiResponse.getMessage());
+        }
+        return ResponseEntity.ok(resultResponse);
+
+
+
+
+        /*DataProcess<String> dataProcess = this.sessionDataRepository.evictParticipant(workspaceId, sessionId, kickRoomRequest.getParticipantId());
         if(dataProcess == null) {
             throw new RestServiceException(ErrorCode.ERR_SERVICE_PROCESS);
         } else {
@@ -631,17 +660,8 @@ public class SessionRestController implements ISessionRestAPI {
                 }
                 apiResponse.setData(response);
                 return ResponseEntity.ok(apiResponse);
-            }
-            //do not force disconnect.
-            /*String connectionId = dataProcess.getData();
-            if(serviceSessionManager.evictParticipant(sessionId, connectionId)) {
-                return ResponseEntity.ok(
-                        this.dataRepository.kickFromRoom(workspaceId, sessionId, kickRoomRequest)
-                );
-            } else {
-                throw new RestServiceException(ErrorCode.ERR_SERVICE_PROCESS);
             }*/
-        }
+        //}
     }
 
     @Override
@@ -650,22 +670,34 @@ public class SessionRestController implements ISessionRestAPI {
             @Valid SendSignalRequest sendSignalRequest,
             BindingResult result) {
 
-        log.info("REST API: POST {}/{}/{}/signal",
-                REST_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                sendSignalRequest != null ? sendSignalRequest.toString() : "{}"
-                );
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: POST "
+                        + REST_PATH
+                        + (workspaceId != null ? workspaceId : "{}")
+                        + (sendSignalRequest != null ? sendSignalRequest.toString() : "{}")
+                        + "/signal",
+                "inviteMember"
+        );
 
-        if (result.hasErrors()) {
-            result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+        if(result.hasErrors()) {
+            result.getAllErrors().forEach(message ->
+                    LogMessage.formedError(
+                            TAG,
+                            "REST API: POST " + REST_PATH,
+                            "sendSignal",
+                            LogMessage.PARAMETER_ERROR,
+                            message.toString()
+                    )
+            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        //Assert.assertTrue(jsonObject.get("name").getAsString().equals("Baeldung"));
+
+        //Assert.assertTrue(jsonObject.get("name").getAsString().equals("remote"));
         //Assert.assertTrue(jsonObject.get("java").getAsBoolean() == true);
+
         ApiResponse<ResultResponse> apiResponse = new ApiResponse<>();
         ResultResponse response = new ResultResponse();
-        response.setResult(false);
-
         JsonObject jsonObject = serviceSessionManager.generateMessage(
                 sendSignalRequest.getSessionId(),
                 sendSignalRequest.getTo(),

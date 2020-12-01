@@ -38,7 +38,6 @@ public class PushMessageClient {
         this.messageRestService = messageRestService;
     }*/
 
-    //@Builder
     public void setPush(String pushService,
                              String pushEvent,
                              String workspaceId,
@@ -51,11 +50,6 @@ public class PushMessageClient {
         pushSendRequest.setWorkspaceId(workspaceId);
         pushSendRequest.setUserId(userId);
         pushSendRequest.setTargetUserIds(targetUserIds);
-        /*this.pushService = pushService;
-        this.pushEvent = pushEvent;
-        this.workspaceId = workspaceId;
-        this.userId = userId;
-        this.targetUserIds = targetUserIds;*/
     }
 
     public ApiResponse<PushResponse> sendPushInvite(String sessionId,

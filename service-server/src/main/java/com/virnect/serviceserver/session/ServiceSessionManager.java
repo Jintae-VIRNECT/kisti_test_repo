@@ -583,43 +583,6 @@ public class ServiceSessionManager {
         //return new ResponseEntity<>(HttpStatus.OK);
     }
 
-
-
-    //
-    /*public void createSession(Session sessionNotActive) {
-        log.info("session create and sessionEventHandler is here");
-        dataRepository.generateRoomSession(sessionNotActive.getSessionId());
-    }
-
-    public void joinSession(Participant participant, String sessionId, Set<Participant> existingParticipants, Integer transactionId) {
-        log.info("session join and sessionEventHandler is here:[participant] {}", participant);
-        log.info("session join and sessionEventHandler is here:[sessionId] {}", sessionId);
-        log.info("session join and sessionEventHandler is here:[transactionId] {}", transactionId);
-        log.info("session join and sessionEventHandler is here:[existingParticipants] {}", existingParticipants);
-        dataRepository.joinSession(participant, sessionId);
-    }
-
-    public void leaveSession(Participant participant, String sessionId, Set<Participant> remainingParticipants, Integer transactionId, EndReason reason) {
-        log.info("session leave and sessionEventHandler is here:[participant] {}", participant);
-        log.info("session leave and sessionEventHandler is here:[clientMetadata] {}", participant.getClientMetadata());
-        log.info("session leave and sessionEventHandler is here:[sessionId] {}", sessionId);
-        log.info("session leave and sessionEventHandler is here:[remainingParticipants] {}", remainingParticipants);
-        log.info("session leave and sessionEventHandler is here:[transactionId] {}", transactionId);
-        log.info("session leave and sessionEventHandler is here:[reason] {}", reason);
-        if(reason.equals(EndReason.forceDisconnectByUser)) {
-            dataRepository.disconnectSession(participant, sessionId);
-        } else {
-            dataRepository.leaveSession(participant, sessionId);
-        }
-    }
-
-    public void destroySession(KurentoSession session, EndReason reason) {
-        log.info("session destroy and sessionEventHandler is here: [sessionId] {}", session.getSessionId());
-        log.info("session destroy and sessionEventHandler is here: [reason] {}", reason);
-        dataRepository.stopRecordSession(session.getSessionId());
-        dataRepository.destroySession(session.getSessionId());
-    }*/
-
     public boolean evictParticipant(String sessionId, String connectionId) {
         Session session = this.sessionManager.getSessionWithNotActive(sessionId);
         if(session == null) {

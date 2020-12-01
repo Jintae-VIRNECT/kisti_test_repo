@@ -105,7 +105,11 @@ public class SessionService {
     }
 
     public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
-        return  this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+        return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+    }
+
+    public RoomHistory getRoomHistory(String sessionId) {
+        return this.roomHistoryRepository.findBySessionId(sessionId).orElse(null);
     }
 
     /**
@@ -157,6 +161,26 @@ public class SessionService {
             }
         }
         return roomList;
+    }
+
+    @Transactional
+    public void setRoom(Room room) {
+        this.roomRepository.save(room);
+    }
+
+    @Transactional
+    public void setRoomHistory(RoomHistory roomHistory) {
+        this.roomHistoryRepository.save(roomHistory);
+    }
+
+    @Transactional
+    public void setMember(Member member) {
+        this.memberRepository.save(member);
+    }
+
+    @Transactional
+    public void setMemberHistory(MemberHistory memberHistory) {
+        this.memberHistoryRepository.save(memberHistory);
     }
 
     public Member getMember(String workspaceId, String sessionId, String userId) {
@@ -273,153 +297,12 @@ public class SessionService {
     }
 
     @Transactional
-    public void removeRoom(Room room) {
-        // save room and member History
-        log.info("ROOM INFO REMOVE => []");
-        // check the same session id history room is already exist
-        RoomHistory oldRoomHistory = roomHistoryRepository.findBySessionId(room.getSessionId()).orElse(null);
-        if(oldRoomHistory != null) {
-            log.info("FOUND THE SAME SESSION ID => [{}]", oldRoomHistory.getSessionId());
-            oldRoomHistory.setTitle(room.getTitle());
-            oldRoomHistory.setDescription(room.getDescription());
-            oldRoomHistory.setProfile(room.getProfile());
-            oldRoomHistory.setMaxUserCount(room.getMaxUserCount());
-            oldRoomHistory.setLicenseName(room.getLicenseName());
-
-            // Remote Session Property Entity Create
-            SessionProperty sessionProperty = room.getSessionProperty();
-            SessionPropertyHistory sessionPropertyHistory = oldRoomHistory.getSessionPropertyHistory();
-            sessionPropertyHistory.setMediaMode(sessionProperty.getMediaMode());
-            sessionPropertyHistory.setRecordingMode(sessionProperty.getRecordingMode());
-            sessionPropertyHistory.setDefaultOutputMode(sessionProperty.getDefaultOutputMode());
-            sessionPropertyHistory.setDefaultRecordingLayout(sessionProperty.getDefaultRecordingLayout());
-            sessionPropertyHistory.setRecording(sessionProperty.isRecording());
-            sessionPropertyHistory.setKeepalive(sessionProperty.isKeepalive());
-            sessionPropertyHistory.setSessionType(sessionProperty.getSessionType());
-            sessionPropertyHistory.setRoomHistory(oldRoomHistory);
-
-            oldRoomHistory.setSessionPropertyHistory(sessionPropertyHistory);
-
-            // Set room member history
-            // Get Member history list and set room null
-            List<MemberHistory> memberHistoryList = oldRoomHistory.getMemberHistories();
-            for (MemberHistory memberHistory: memberHistoryList) {
-                memberHistory.setRoomHistory(null);
-                this.memberHistoryRepository.save(memberHistory);
-            }
-
-            // Get Member List by Room Session Ids
-            //List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
-            //List<Member> memberList = room.getMembers();
-            List<Member> memberList = this.getMemberList(room.getWorkspaceId(), room.getSessionId());
-            // Mapping Member List Data to Member History List
-            for (Member member : memberList) {
-                MemberHistory memberHistory = MemberHistory.builder()
-                        .roomHistory(oldRoomHistory)
-                        .workspaceId(member.getWorkspaceId())
-                        .uuid(member.getUuid())
-                        .memberType(member.getMemberType())
-                        .deviceType(member.getDeviceType())
-                        .sessionId(member.getSessionId())
-                        .startDate(member.getStartDate())
-                        .endDate(member.getEndDate())
-                        .durationSec(member.getDurationSec())
-                        .build();
-                memberHistoryRepository.save(memberHistory);
-                oldRoomHistory.getMemberHistories().add(memberHistory);
-
-                //delete member
-                memberRepository.delete(member);
-            }
-
-            //set active time do not update active date
-            //oldRoomHistory.setActiveDate(room.getActiveDate());
-
-            //set un active  time
-            LocalDateTime endTime = LocalDateTime.now();
-            oldRoomHistory.setUnactiveDate(endTime);
-
-            //time diff seconds
-            Duration duration = Duration.between(room.getActiveDate(), endTime);
-            Long totalDuration = duration.getSeconds() + oldRoomHistory.getDurationSec();
-            oldRoomHistory.setDurationSec(totalDuration);
-
-            //save room history
-            roomHistoryRepository.save(oldRoomHistory);
-        } else {
-            // Remote Room History Entity Create
-            RoomHistory roomHistory = RoomHistory.builder()
-                    .sessionId(room.getSessionId())
-                    .title(room.getTitle())
-                    .description(room.getDescription())
-                    .profile(room.getProfile())
-                    .leaderId(room.getLeaderId())
-                    .workspaceId(room.getWorkspaceId())
-                    .maxUserCount(room.getMaxUserCount())
-                    .licenseName(room.getLicenseName())
-                    .build();
-
-            // Remote Session Property Entity Create
-            SessionProperty sessionProperty = room.getSessionProperty();
-            SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
-                    .mediaMode(sessionProperty.getMediaMode())
-                    .recordingMode(sessionProperty.getRecordingMode())
-                    .defaultOutputMode(sessionProperty.getDefaultOutputMode())
-                    .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
-                    .recording(sessionProperty.isRecording())
-                    .keepalive(sessionProperty.isKeepalive())
-                    .sessionType(sessionProperty.getSessionType())
-                    .roomHistory(roomHistory)
-                    .build();
-
-            roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
-
-            // Set room member history
-            // Get Member List by Room Session Ids
-            //List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
-            List<Member> memberList = room.getMembers();
-            //List<Member> memberList = this.getMemberList(room.getWorkspaceId(), room.getSessionId());
-            log.info("ROOM INFO REMOVE memberList size => [{}]", memberList.size());
-            // Mapping Member List Data to Member History List
-            for (Member roomMember : memberList) {
-                MemberHistory memberHistory = MemberHistory.builder()
-                        .roomHistory(roomHistory)
-                        .workspaceId(roomMember.getWorkspaceId())
-                        .uuid(roomMember.getUuid())
-                        .memberType(roomMember.getMemberType())
-                        .deviceType(roomMember.getDeviceType())
-                        .sessionId(roomMember.getSessionId())
-                        .startDate(roomMember.getStartDate())
-                        .endDate(roomMember.getEndDate())
-                        .durationSec(roomMember.getDurationSec())
-                        .build();
-
-                memberHistoryRepository.save(memberHistory);
-                roomHistory.getMemberHistories().add(memberHistory);
-
-                //delete member
-                memberRepository.delete(roomMember);
-            }
-
-            //set active time
-            roomHistory.setActiveDate(room.getActiveDate());
-
-            //set un active  time
-            LocalDateTime endTime = LocalDateTime.now();
-            roomHistory.setUnactiveDate(endTime);
-
-            //time diff seconds
-            Duration duration = Duration.between(room.getActiveDate(), endTime);
-            roomHistory.setDurationSec(duration.getSeconds());
-
-            //save room history
-            roomHistoryRepository.save(roomHistory);
-        }
-        //delete room
+    public void deleteRoom(Room room) {
         roomRepository.delete(room);
     }
 
     @Transactional
+    @Deprecated
     public void destroySession(String sessionId) {
         Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if(room == null) {
@@ -572,6 +455,7 @@ public class SessionService {
      * @param joinRoomRequest
      */
     @Transactional
+    @Deprecated
     public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
         if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
             Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(
@@ -668,6 +552,7 @@ public class SessionService {
      * @param clientMetaData
      */
     @Transactional
+    @Deprecated
     public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
         for (Member member : room.getMembers()) {
@@ -769,6 +654,7 @@ public class SessionService {
      * @return
      */
     @Transactional
+    @Deprecated
     public ErrorCode exitRoom(Room room, Member member) {
         for (Member roomMember : room.getMembers()) {
             if (member.getUuid().equals(roomMember.getUuid())) {
@@ -787,6 +673,13 @@ public class SessionService {
     }
 
     @Transactional
+    public void removeMember(Room room, Member member) {
+        room.getMembers().remove(member);
+        roomRepository.save(room);
+    }
+
+    @Transactional
+    @Deprecated
     public void leaveSession(String sessionId, ClientMetaData clientMetaData) {
         //Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
         Room room = roomRepository.findBySessionId(sessionId).orElse(null);
@@ -826,6 +719,7 @@ public class SessionService {
     }
 
     @Transactional
+    @Deprecated
     public void disconnectSession(String sessionId, ClientMetaData clientMetaData) {
         Room room = roomRepository.findBySessionId(sessionId).orElse(null);
         if (room == null) {
@@ -948,8 +842,18 @@ public class SessionService {
 
     @Transactional
     public void updateMember(Member member, MemberStatus memberStatus) {
-        member.setMemberStatus(memberStatus);
+        switch (memberStatus) {
+            case EVICTED: {
+                member.setRoom(null);
+                member.setMemberStatus(memberStatus);
+            } break;
+        }
         memberRepository.save(member);
+    }
+
+    @Transactional
+    public void deleteMember(Member member) {
+        this.memberRepository.delete(member);
     }
 
     @Transactional

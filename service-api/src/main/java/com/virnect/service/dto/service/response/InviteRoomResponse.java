@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,13 +14,13 @@ import java.util.List;
 @ApiModel
 public class InviteRoomResponse {
     @ApiModelProperty(value = "Workspace Identifier", example = "ses_NxKh1OiT2S")
-    private String workspaceId;
+    private String workspaceId = "";
 
     @ApiModelProperty(value = "Remote Session Identifier", position = 1, example = "ses_NxKh1OiT2S")
-    private String sessionId;
+    private String sessionId = "";
 
     @ApiModelProperty(value = "Leader User Unique Identifier", position = 2, example = "410df50ca6e32db0b6acba09bcb457ff")
-    private String leaderId;
+    private String leaderId = "";
 
     @ApiModelProperty(
             value = "Participants Identifier",
@@ -32,10 +33,10 @@ public class InviteRoomResponse {
                     "]"
     )
     @NotNull
-    private List<String> participantIds;
+    private List<String> participantIds = new ArrayList<>();
 
     @ApiModelProperty(value = "Remote Session Title", position = 4, example = "Remote")
-    private String title;
+    private String title = "";
 
     @Override
     public String toString() {
