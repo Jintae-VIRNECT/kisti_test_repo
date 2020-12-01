@@ -923,7 +923,7 @@ public class SessionDataRepository extends DataRepository {
                             .durationSec(roomMember.getDurationSec())
                             .build();
 
-                    sessionService.setMemberHistory(memberHistory);
+                    //sessionService.setMemberHistory(memberHistory);
                     roomHistory.getMemberHistories().add(memberHistory);
 
                     //delete member
