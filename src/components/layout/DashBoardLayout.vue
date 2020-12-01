@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-layout">
     <dash-board-header></dash-board-header>
-    <vue2-scrollbar classes="dashboard-wrapper">
+    <vue2-scrollbar ref="dashboardScroller" classes="dashboard-wrapper">
       <div>
         <div class="dashboard-layout__contents">
           <dash-board-tab
@@ -13,6 +13,7 @@
       </div>
     </vue2-scrollbar>
     <player :url="url" :visible.sync="showPlayer"></player>
+    <fab></fab>
   </div>
 </template>
 
@@ -26,6 +27,7 @@ import langMixin from 'mixins/language'
 import auth from 'utils/auth'
 
 import Player from 'components/dashboard/modal/ModalPlayer'
+import Fab from 'Fab'
 
 export default {
   name: 'DashBoardLayout',
@@ -58,6 +60,7 @@ export default {
     DashBoardFooter,
     DashBoardTab,
     Player,
+    Fab,
   },
 
   data() {
@@ -99,13 +102,18 @@ export default {
       this.showPlayer = true
       this.url = url
     },
+    scrollTop() {
+      this.$refs['dashboardScroller'].scrollToY(0)
+    },
   },
   mounted() {
     this.mx_changeLang()
     this.$eventBus.$on('open::player', this.openPlayer)
+    this.$eventBus.$on('scroll:reset:dashboard', this.scrollTop)
   },
   beforeDestroy() {
     this.$eventBus.$off('open::player')
+    this.$eventBus.$off('scroll:reset:dashboard')
   },
 }
 </script>
