@@ -10,6 +10,7 @@
           :key="tab.name"
           :active="hasWorkspace && component === tab.name"
           :text="tab.text"
+          :images="tab.images"
           @click.native="tabChange(tab.name)"
         ></tab-button>
       </ul>
@@ -58,10 +59,18 @@ export default {
         {
           name: 'board',
           text: this.$t('common.dashboard'),
+          images: {
+            off: require('assets/image/tab/ic_dashboard_off.svg'),
+            on: require('assets/image/tab/ic_dashboard_on.svg'),
+          },
         },
         {
           name: 'collabo',
           text: this.$t('common.collabo_list'),
+          images: {
+            off: require('assets/image/tab/ic_collabo_list_off.svg'),
+            on: require('assets/image/tab/ic_collabo_list_on.svg'),
+          },
         },
       ]
     },

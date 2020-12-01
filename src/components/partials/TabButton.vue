@@ -3,6 +3,7 @@
     <button
       :class="{ active: active, nolicense: !(hasLicense && !expireLicense) }"
     >
+      <img class="dashboard-tab__button--icon" :src="imgSrc" alt="" />
       {{ text }}
     </button>
   </li>
@@ -21,12 +22,18 @@ export default {
       type: Boolean,
       default: false,
     },
+    images: {
+      type: Object,
+    },
   },
   data() {
     return {}
   },
   computed: {
     ...mapGetters(['expireLicense']),
+    imgSrc() {
+      return this.active ? this.images.on : this.images.off
+    },
   },
 }
 </script>
