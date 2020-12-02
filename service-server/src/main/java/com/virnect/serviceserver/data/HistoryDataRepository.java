@@ -1,9 +1,6 @@
 package com.virnect.serviceserver.data;
 
-import com.virnect.data.dao.MemberHistory;
-import com.virnect.data.dao.MemberStatus;
-import com.virnect.data.dao.MemberType;
-import com.virnect.data.dao.RoomHistory;
+import com.virnect.data.dao.*;
 import com.virnect.service.ApiResponse;
 import com.virnect.service.dto.PageMetadataResponse;
 import com.virnect.service.dto.ResultResponse;
@@ -80,11 +77,15 @@ public class HistoryDataRepository extends DataRepository {
 
                 Map<RoomHistory, List<MemberHistory>> roomHistoryListMap = roomHistoryPage.getContent().stream()
                         .filter(roomHistory -> {
-                            for(MemberHistory memberHistory : roomHistory.getMemberHistories()) {
-                                if(memberHistory.getUuid().equals(userId) && memberHistory.getRoomHistory() != null)
-                                    return true;
+                            if(roomHistory.getSessionPropertyHistory().getSessionType().equals(SessionType.OPEN)) {
+                                return true;
+                            } else {
+                                for (MemberHistory memberHistory : roomHistory.getMemberHistories()) {
+                                    if (memberHistory.getUuid().equals(userId) && memberHistory.getRoomHistory() != null)
+                                        return true;
+                                }
+                                return false;
                             }
-                            return false;
                         })
                         .collect(Collectors.toMap(roomHistory -> roomHistory, RoomHistory::getMemberHistories));
 
@@ -185,11 +186,15 @@ public class HistoryDataRepository extends DataRepository {
 
                 Map<RoomHistory, List<MemberHistory>> roomHistoryListMap = roomHistoryPage.getContent().stream()
                         .filter(roomHistory -> {
-                            for(MemberHistory memberHistory : roomHistory.getMemberHistories()) {
-                                if(memberHistory.getUuid().equals(userId) && memberHistory.getRoomHistory() != null)
-                                    return true;
+                            if(roomHistory.getSessionPropertyHistory().getSessionType().equals(SessionType.OPEN)) {
+                                return true;
+                            } else {
+                                for (MemberHistory memberHistory : roomHistory.getMemberHistories()) {
+                                    if (memberHistory.getUuid().equals(userId) && memberHistory.getRoomHistory() != null)
+                                        return true;
+                                }
+                                return false;
                             }
-                            return false;
                         })
                         .collect(Collectors.toMap(roomHistory -> roomHistory, RoomHistory::getMemberHistories));
 
