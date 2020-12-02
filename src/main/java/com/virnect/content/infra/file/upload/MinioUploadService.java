@@ -132,7 +132,7 @@ public class MinioUploadService implements FileUploadService {
                 .stream(file.getInputStream(), file.getSize(), -1)
                 .build();
         try {
-            minioClient.putObject(new PutObjectArgs());
+            minioClient.putObject(putObjectArgs);
             return minioClient.getObjectUrl(bucketName, objectName);
         } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
                 ServerException | XmlParserException exception) {
