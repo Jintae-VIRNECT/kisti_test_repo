@@ -11,7 +11,7 @@
           size="1.714em"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
-          :inactiveSrc="require('assets/image/ic_uncheck.svg')"
+          :inactiveSrc="require('assets/image/ic_ckeck_select.svg')"
           @action="toggleAll"
         ></toggle-button>
       </div>
@@ -38,7 +38,7 @@
               size="1.714em"
               :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
-              :inactiveSrc="require('assets/image/ic_uncheck.svg')"
+              :inactiveSrc="require('assets/image/ic_ckeck_select.svg')"
             ></toggle-button>
           </div>
           <div
@@ -280,9 +280,9 @@ export default {
   align-items: center;
   justify-content: center;
   height: 4rem;
-  background-color: #f5f7fa;
+  // background-color: #f5f7fa;
   border-top: solid;
-  border-top-color: #eaedf3;
+  border-top-color: #dcdcdc;
   border-top-width: 1px;
 }
 .table__column--toggle {
@@ -313,18 +313,22 @@ export default {
 .table__row {
   display: flex;
   align-items: center;
-  width: 100%;
-  height: 4.4286rem;
+  width: 954px;
+  height: 62px;
+  margin-bottom: 8px;
+  background: rgb(255, 255, 255);
   border-bottom: 1px solid #eaedf3;
-  // margin-bottom: 0.5714rem;
-  // background: $color_darkgray_600;
-  transition: background-color 0.3s;
+  border-radius: 4px;
+  box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
 
   &.active {
-    background: #f5f9ff;
+    background: rgb(234, 242, 255);
+    border: 1px solid rgb(55, 144, 255);
   }
   &:hover {
-    background: #f5f9ff;
+    background: rgb(234, 242, 255);
+    border: 1px solid rgb(55, 144, 255);
     cursor: pointer;
   }
 

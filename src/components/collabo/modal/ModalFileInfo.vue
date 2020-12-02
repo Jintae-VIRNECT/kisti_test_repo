@@ -26,16 +26,20 @@
           <div class="table__tools">
             <icon-button
               :text="$t('button.select_download')"
+              :select="hasSelect"
               :imgSrc="require('assets/image/ic_down_off.svg')"
-              :active="hasSelect"
               :activeImgSrc="require('assets/image/ic_down_on.svg')"
+              :selectImgSrc="require('assets/image/ic_down_on.svg')"
+              :colored="true"
               @click="download(type, { selectedArray, fileList })"
             ></icon-button>
             <icon-button
               v-if="deletable"
               :text="$t('button.select_delete')"
+              :select="hasSelect"
               :imgSrc="require('assets/image/ic_delete.svg')"
-              :active="hasSelect"
+              :activeImgSrc="require('assets/image/ic_delete_select.svg')"
+              :selectImgSrc="require('assets/image/ic_delete_on.svg')"
               @click="deleteFile(type, { selectedArray, fileList })"
             ></icon-button>
           </div>
@@ -180,15 +184,16 @@ export default {
   .modal--header {
     height: 4.8571rem;
     padding: 1.5714rem 0rem 1.1429rem 1.9286rem;
-    color: #0b1f48;
+    color: #262626;
     font-weight: normal;
 
     font-size: 1.1429rem;
-    background-color: #f8f8fa;
+    background-color: #ffffff;
   }
 
   .modal--body {
     padding: 2.8571rem 3.2143rem 3.2143rem 3.2143rem;
+    background-color: #f8f8fa;
   }
 
   .modal--close {
@@ -204,23 +209,12 @@ export default {
 }
 
 .table__title {
-  color: #0b1f48;
+  color: #262626;
   font-weight: normal;
   font-size: 1.5714rem;
 }
 
 .table__tools {
   display: flex;
-
-  > button.icon-button {
-    opacity: 0.6;
-
-    &:hover {
-      opacity: 1;
-    }
-    &:active {
-      opacity: 0.8;
-    }
-  }
 }
 </style>

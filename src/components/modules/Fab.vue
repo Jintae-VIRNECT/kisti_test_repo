@@ -20,7 +20,7 @@ export default {
   position: fixed;
   right: 40px;
   bottom: 80px;
-  z-index: 999;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
