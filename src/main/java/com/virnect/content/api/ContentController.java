@@ -11,7 +11,6 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageRequest;
 import com.virnect.content.global.error.ErrorCode;
-import com.virnect.content.infra.file.download.FileDownloadService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -45,7 +44,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ContentController {
     private final ContentService contentService;
-    private final FileDownloadService fileDownloadService;
 
     @ApiOperation(value = "컨텐츠 목록 조회", notes = "컨텐츠의 목록을 조회. 워크스테이션은 옵션임.")
     @ApiImplicitParams({
@@ -144,12 +142,7 @@ public class ContentController {
             );
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        //ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentUpload(uploadRequest);
-        ApiResponse<ContentUploadResponse> uploadResponse = null;
-        System.out.println("결과 :: " + fileDownloadService.getFilePath("workspace/report/", "virnect_target.png"));
-
-        log.info("[UPLOAD RESPONSE] :: {}", uploadResponse.getData());
-
+        ApiResponse<ContentUploadResponse> uploadResponse = this.contentService.contentUpload(uploadRequest);
         return ResponseEntity.ok(uploadResponse);
     }
 
