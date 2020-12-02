@@ -182,7 +182,10 @@
         >
         </file-info>
       </template>
-      <span v-else class="history__body--nodata">{{ $t('list.no_data') }}</span>
+      <span v-else class="history__body--nodata">
+        <img src="~assets/image/image_no_data.svg" alt="no data" />
+        <p>{{ $t('list.no_data') }}</p></span
+      >
     </div>
   </section>
 </template>
@@ -368,10 +371,23 @@ export default {
 }
 
 .history__body {
+  min-height: 616px;
   &.nodata {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 430px;
+    background: #ffffff;
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
+
+    p {
+      color: #686868;
+      font-weight: normal;
+      font-size: 20px;
+      text-align: center;
+    }
   }
 }
 
