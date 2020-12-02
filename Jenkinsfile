@@ -140,12 +140,14 @@ pipeline {
                         }
 
                         script {
-                            def GIT_RELEASE_INFO = sh(returnStdout: true, script: 'curl -X GET https:/api.github.com/repos/$REPO_NAME/releases/tags/$GIT_TAG/?access_token=$securitykey')
-                            def RELEASE = readJSON text: '$GIT_RELEASE_INFO'
+                            def GIT_RELEASE_INFO = sh(returnStdout: true, script: 'curl -X GET https:/api.github.com/repos/$REPO_NAME/releases/tags/$GIT_TAG?access_token=$securitykey')
+                            def RELEASE = readJSON text: "$GIT_RELEASE_INFO"
                             def RELEASE_ID = RELEASE.id
                             def payload = """
                             {"prerelease": false}
-                            """                             
+                            """
+
+                            sh "echo '$RELEASE'"
 
                             sh "curl -d '$payload' -X PATCH 'https://api.github.com/repos/$REPO_NAME/releases/$RELEASE_ID?access_token=$securitykey'"
                         }
