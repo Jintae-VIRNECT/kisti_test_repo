@@ -325,8 +325,8 @@ export default {
   width: 954px;
   height: 62px;
   margin-bottom: 8px;
-  background: rgb(255, 255, 255);
-  border-bottom: 1px solid #eaedf3;
+  background: #ffffff;
+  border: 1px solid #ffffff;
   border-radius: 4px;
   box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
   transition: 0.3s;
