@@ -36,14 +36,14 @@ export default {
   computed: {
     ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
     isTablet() {
-      const userAgent = navigator.userAgent
+      const userAgent = navigator.userAgent || ''
       const isIpadSafari =
         !userAgent.includes('Chrome') &&
-        !(userAgent.includes('CriOS') || userAgent.includes('mobileApp')) &&
+        !userAgent.includes('CriOS') &&
         userAgent.includes('Safari')
       return (
         userAgent.includes('Mobile') ||
-        userAgent.includes('CriOS') ||
+        userAgent.includes('Android') ||
         userAgent.includes('mobileApp') ||
         isIpadSafari
       )
