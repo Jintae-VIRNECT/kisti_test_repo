@@ -325,9 +325,29 @@ public abstract class DataRepository {
                     throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
 
-                SessionType sessionType = room.getSessionProperty().getSessionType();
+                for (Member member : room.getMembers()) {
+                    if (member.getUuid().equals(clientMetaData.getClientData())) {
+                        //set status unload
+                        member.setMemberStatus(MemberStatus.UNLOAD);
+                        //set connection id to empty
+                        member.setConnectionId("");
+                        //set end time
+                        LocalDateTime endTime = LocalDateTime.now();
+                        member.setEndDate(endTime);
+
+                        //time diff seconds
+                        Long totalDuration = member.getDurationSec();
+                        Duration duration = Duration.between(member.getStartDate(), endTime);
+                        member.setDurationSec(totalDuration + duration.getSeconds());
+
+                        //save member
+                        sessionService.setMember(member);
+                    }
+                }
+
+                /*SessionType sessionType = room.getSessionProperty().getSessionType();
                 if(sessionType.equals(SessionType.OPEN)) {
-                    room.getMembers().removeIf(member -> member.getUuid().equals(clientMetaData.getClientData()));
+                    //room.getMembers().removeIf(member -> member.getUuid().equals(clientMetaData.getClientData()));
                     sessionService.setRoom(room);
                 } else {
                     for (Member member : room.getMembers()) {
@@ -349,7 +369,7 @@ public abstract class DataRepository {
                             sessionService.setMember(member);
                         }
                     }
-                }
+                }*/
                 return new DataProcess<>(true);
             }
         }.asResponseData();
