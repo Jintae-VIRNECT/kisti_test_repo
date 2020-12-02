@@ -450,20 +450,6 @@ public class SessionRestController implements ISessionRestAPI {
         return ResponseEntity.ok(
                 this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest)
         );
-
-        /*DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
-        if(dataProcess.getData()) {
-            // generate session id and token
-            JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
-            JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-            return ResponseEntity.ok(
-                    this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest)
-            );
-        } else {
-            return ResponseEntity.ok(
-                    new ApiResponse<>(dataProcess.getCode(), dataProcess.getMessage())
-            );
-        }*/
     }
 
     @Override
@@ -612,67 +598,6 @@ public class SessionRestController implements ISessionRestAPI {
             resultResponse.setMessage(apiResponse.getMessage());
         }
         return ResponseEntity.ok(resultResponse);
-
-
-
-
-        /*DataProcess<String> dataProcess = this.sessionDataRepository.evictParticipant(workspaceId, sessionId, kickRoomRequest.getParticipantId());
-        if(dataProcess == null) {
-            throw new RestServiceException(ErrorCode.ERR_SERVICE_PROCESS);
-        } else {
-            String connectionId = dataProcess.getData();
-            if(connectionId.isEmpty()) {
-                //if connection id cannot find, push message and just remove user
-                pushMessageClient.setPush(
-                        PushConstants.PUSH_SERVICE_REMOTE ,
-                        PushConstants.SEND_PUSH_ROOM_EVICT ,
-                        workspaceId ,
-                        kickRoomRequest.getLeaderId() ,
-                        Arrays.asList(kickRoomRequest.getParticipantId()));
-
-                ApiResponse<PushResponse> pushResponse = this.pushMessageClient.sendPushEvict();
-                if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-                    log.info("push send message executed but not success");
-                    log.info("push response: [code] {}", pushResponse.getCode());
-                    log.info("push response: [message] {}", pushResponse.getMessage());
-                } else {
-                    log.info("push send message executed success {}", pushResponse.toString());
-                }
-                return ResponseEntity.ok(
-                        this.sessionDataRepository.kickFromRoom(workspaceId, sessionId, kickRoomRequest)
-                );
-            } else {
-                //send rpc message to connection id user of the session id
-                ApiResponse<ResultResponse> apiResponse = new ApiResponse<>();
-                ResultResponse response = new ResultResponse();
-                response.setResult(false);
-
-                connectionId = dataProcess.getData();
-
-                JsonObject jsonObject = serviceSessionManager.generateMessage(
-                        sessionId,
-                        Arrays.asList(connectionId),
-                        PushConstants.PUSH_SIGNAL_SYSTEM,
-                        PushConstants.SEND_PUSH_ROOM_EVICT
-                );
-
-                if(jsonObject.has("error")) {
-                    log.info("sendSignal :{}", jsonObject.get("error").getAsString());
-                    log.info("sendSignal :{}", jsonObject.get("status").getAsString());
-                    log.info("sendSignal :{}", jsonObject.get("message").getAsString());
-                    apiResponse.setCode(Integer.parseInt(jsonObject.get("status").getAsString()));
-                    apiResponse.setMessage(jsonObject.get("message").getAsString());
-                } else {
-                    //send force disconnected
-                    //todo:forceResult when get false do process something.
-                    boolean forceResult = serviceSessionManager.evictParticipant(sessionId, connectionId);
-                    log.info("evictParticipant :{}", forceResult);
-                    response.setResult(true);
-                }
-                apiResponse.setData(response);
-                return ResponseEntity.ok(apiResponse);
-            }*/
-        //}
     }
 
     @Override
