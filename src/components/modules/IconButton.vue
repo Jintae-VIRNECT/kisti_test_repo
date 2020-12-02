@@ -129,14 +129,17 @@ export default {
     &.select {
       color: #ffffff;
       background-color: #0f75f5;
+      border: 1px solid #0f75f5;
     }
     &:active {
       color: #ffffff;
       background-color: #0960cd;
+      border: 1px solid #0960cd;
     }
     &:hover {
       color: #ffffff;
       background-color: #0960cd;
+      border: 1px solid #0960cd;
     }
   }
 

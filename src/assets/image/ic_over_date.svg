@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>mdpi/ic_over_date</title>
+    <defs>
+        <path d="M12,0 C5.376,0 0,5.376 0,12 C0,18.624 5.376,24 12,24 C18.624,24 24,18.624 24,12 C24,5.376 18.624,0 12,0 Z M12,21.6 C6.696,21.6 2.4,17.304 2.4,12 C2.4,9.78 3.156,7.74 4.428,6.12 L17.88,19.572 C16.26,20.844 14.22,21.6 12,21.6 Z M19.572,17.88 L6.12,4.428 C7.74,3.156 9.78,2.4 12,2.4 C17.304,2.4 21.6,6.696 21.6,12 C21.6,14.22 20.844,16.26 19.572,17.88 Z" id="path-1"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0340-_협업-내역_첨부-파일-리스트-(멤버)" transform="translate(-506.000000, -713.000000)">
+            <g id="popup" transform="translate(434.000000, 187.000000)">
+                <g id="list" transform="translate(49.000000, 227.000000)">
+                    <g id="list_05" transform="translate(0.000000, 280.000000)">
+                        <g id="ic_over_date" transform="translate(23.000000, 19.000000)">
+                            <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="icon/notification/do_disturb_24px" fill="#FF8484" fill-rule="nonzero" opacity="0.5" transform="translate(12.000000, 12.000000) scale(-1, 1) translate(-12.000000, -12.000000) " xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

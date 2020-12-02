@@ -44,7 +44,10 @@
           <div
             v-for="(value, key, innerIndex) in data"
             class="table__cell"
-            :class="{ name: innerIndex === 0 }"
+            :class="{
+              name: columns[innerIndex][0] === 'name',
+              size: columns[innerIndex][0] === 'size',
+            }"
             :key="innerIndex"
           >
             {{ value }}
@@ -65,12 +68,20 @@
           :key="index + 99"
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
-            <div style="width: 1.74em"></div>
+            <toggle-button
+              size="1.714em"
+              :disable="true"
+              :disableSrc="require('assets/image/ic_over_date.svg')"
+            ></toggle-button>
           </div>
           <div
             v-for="(value, key, innerIndex) in data"
             class="table__cell expired"
-            :class="{ 'expiration-date': key === 'expirationDate' }"
+            :class="{
+              'expiration-date': key === 'expirationDate',
+              name: columns[innerIndex][0] === 'name',
+              size: columns[innerIndex][0] === 'size',
+            }"
             :key="innerIndex + workspace.uuid"
           >
             {{ value }}
@@ -293,7 +304,6 @@ export default {
   flex-basis: 0;
   flex-grow: 1;
   flex-shrink: 1;
-  // color: #a7a7a7;
   color: #414a59;
   font-weight: normal;
   font-size: 1.0714rem;
@@ -303,7 +313,6 @@ export default {
 .table__column--cell:nth-child(2) {
   flex-grow: 2;
   text-align: left;
-  text-indent: 0.714rem;
 }
 
 .table__body {
@@ -333,8 +342,10 @@ export default {
   }
 
   &.expired {
+    border: none;
+    box-shadow: none;
     &:hover {
-      background: none;
+      background: rgb(255, 255, 255);
       cursor: auto;
     }
   }
@@ -350,23 +361,38 @@ export default {
   flex-grow: 1;
   flex-shrink: 1;
   overflow: hidden;
-  color: #757f91;
-  font-weight: 500;
+  color: #262626;
+  font-weight: normal;
   font-size: 1.0714rem;
+  letter-spacing: 0.96px;
   white-space: nowrap;
   text-align: center;
   text-overflow: ellipsis;
 
   &.name {
-    color: #0b1f48;
+    color: #262626;
+    font-weight: 500;
+  }
+
+  &.size {
+    font-weight: normal;
+    opacity: 0.6;
   }
 
   &.expired {
     color: #9097a2;
+    opacity: 0.4;
+
+    &.name {
+      color: #262626;
+      font-weight: normal;
+      opacity: 1;
+    }
   }
 
   &.expiration-date {
     color: #ff5757;
+    opacity: 1;
   }
 }
 .table__cell--toggle {
