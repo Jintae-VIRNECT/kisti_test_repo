@@ -46,6 +46,7 @@ export default {
       this.setPages()
       if (now === 0) {
         this.pages = []
+        this.curPage = 1
       }
     },
     curPage(page) {
@@ -62,7 +63,7 @@ export default {
 
       if (this.curPage === 1) {
         const remained = this.totalPage - this.curPage
-        const end = remained <= this.maxPage ? remained + 1 : this.maxPage
+        const end = remained < this.maxPage ? remained + 1 : this.maxPage
         for (let i = 1; i <= end; i++) {
           pagesArray.push(i)
         }
