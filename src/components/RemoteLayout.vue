@@ -20,14 +20,16 @@ export default {
         document.documentElement.style.setProperty('overflow', 'auto')
         const metaViewport = document.querySelector('meta[name=viewport]')
         // console.log(e.currentTarget.innerHeight)
-        const initialHeight = e
-          ? e.currentTarget.innerHeight
-          : window.innerHeight
+        const initialHeight =
+          e && e.currentTarget
+            ? e.currentTarget.innerHeight
+            : window.innerHeight
+        console.log(initialHeight)
         metaViewport.setAttribute(
           'content',
           `height=${initialHeight}px,${this.attr}`,
         )
-      }, 2000)
+      }, 1000)
     },
   },
   created() {
