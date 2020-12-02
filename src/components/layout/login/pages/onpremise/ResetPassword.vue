@@ -56,7 +56,7 @@
 							type="primary"
 							:disabled="answer == ''"
 							@click="checkAnswer()"
-							>다음</el-button
+							>{{ $t('onpremise.resetPass.next') }}</el-button
 						>
 					</div>
 				</div>
