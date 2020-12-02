@@ -41,9 +41,6 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 	@Value("${jwt.secret}")
 	private String secretKey;
 
-	@Value("${spring.profiles.active:none}")
-	private String serverMode;
-
 	@PostConstruct
 	protected void init() {
 		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
@@ -63,11 +60,6 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
 
 		if (isAuthenticateSkipUrl) {
-			return chain.filter(exchange);
-		}
-
-		if ((serverMode.equals("develop") || serverMode.equals("onpremise")) && requestUrlPath.contains(
-			"/v2/api-docs")) {
 			return chain.filter(exchange);
 		}
 
