@@ -15,8 +15,6 @@ export default {
   methods: {
     viewPointSetting(e) {
       setTimeout(() => {
-        let viewport = document.querySelector('meta[name=viewport]')
-        this.attr = viewport.getAttribute('content')
         document.documentElement.style.setProperty('overflow', 'auto')
         const metaViewport = document.querySelector('meta[name=viewport]')
         // console.log(e.currentTarget.innerHeight)
@@ -37,6 +35,8 @@ export default {
       this.key++
     })
     if (this.isTablet) {
+      let viewport = document.querySelector('meta[name=viewport]')
+      this.attr = viewport.getAttribute('content')
       document.body.onorientationchange = this.viewPointSetting
       // window.addEventListener('orientationchange', this.viewPointSetting)
       this.viewPointSetting()
