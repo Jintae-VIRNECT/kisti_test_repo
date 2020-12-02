@@ -105,7 +105,6 @@ export default {
   data() {
     return {
       selection: [],
-      nouser: false,
       visibleFlag: false,
       users: [],
       loading: false,
@@ -131,7 +130,6 @@ export default {
         this.init()
       } else {
         this.selection = []
-        this.nouser = false
         this.visibleFlag = false
         this.users = []
         this.loading = false

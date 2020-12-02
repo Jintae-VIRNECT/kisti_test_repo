@@ -41,11 +41,7 @@
       :count="50"
       showCount
     ></input-row>
-    <input-row
-      v-if="!nouser"
-      :title="$t('workspace.create_remote_selected')"
-      required
-    >
+    <input-row :title="$t('workspace.create_remote_selected')" required>
       <profile-list
         v-if="selection.length > 0"
         :users="selection"
@@ -94,10 +90,6 @@ export default {
       default: () => {
         return []
       },
-    },
-    nouser: {
-      type: Boolean,
-      default: true,
     },
     roomInfo: {
       type: Object,
