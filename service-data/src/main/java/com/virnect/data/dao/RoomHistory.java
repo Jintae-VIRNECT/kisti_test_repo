@@ -53,7 +53,7 @@ public class RoomHistory extends BaseTimeEntity {
         @Column(name = "duration_sec", nullable = false)
         private Long durationSec;
 
-        @OneToMany(mappedBy = "roomHistory", fetch = FetchType.LAZY, orphanRemoval = false)
+        @OneToMany(mappedBy = "roomHistory", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = false)
         private List<MemberHistory> memberHistories = new ArrayList<>();
 
         @OneToOne(mappedBy = "roomHistory", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -483,13 +483,16 @@ public class SessionDataRepository extends DataRepository {
 
                 Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
                         .filter(room -> {
-                            for (Member member : room.getMembers()) {
-                                if (member.getUuid().equals(userId)
-                                        && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-                                    return true;
+                            if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                                return true;
+                            } else {
+                                for (Member member : room.getMembers()) {
+                                    if (member.getUuid().equals(userId) && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
+                                        return true;
+                                    }
                                 }
+                                return false;
                             }
-                            return false;
                         })
                         .collect(Collectors.toMap(room -> room, Room::getMembers));
 
@@ -563,13 +566,17 @@ public class SessionDataRepository extends DataRepository {
 
                 Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
                         .filter(room -> {
-                            for (Member member : room.getMembers()) {
-                                if (member.getUuid().equals(userId)
-                                        && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-                                    return true;
+                            if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                                return true;
+                            } else {
+                                for (Member member : room.getMembers()) {
+                                    if (member.getUuid().equals(userId)
+                                            && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
+                                        return true;
+                                    }
                                 }
+                                return false;
                             }
-                            return false;
                         })
                         .collect(Collectors.toMap(room -> room, Room::getMembers));
 
