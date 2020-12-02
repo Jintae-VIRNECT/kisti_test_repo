@@ -2,8 +2,8 @@
   <div class="drawing-tools tools">
     <line-mode></line-mode>
     <line-width></line-width>
-    <text-mode v-if="!isTablet"></text-mode>
-    <text-size v-if="!isTablet"></text-size>
+    <text-mode></text-mode>
+    <text-size></text-size>
     <color></color>
     <div class="division"></div>
     <undo></undo>
