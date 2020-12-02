@@ -189,10 +189,11 @@ export default {
     height: 4.8571rem;
     padding: 1.5714rem 0rem 1.1429rem 1.9286rem;
     color: #262626;
-    font-weight: normal;
-
     font-size: 1.1429rem;
     background-color: #ffffff;
+  }
+  .modal--title {
+    font-weight: normal;
   }
 
   .modal--body {
