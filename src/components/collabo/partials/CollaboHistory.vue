@@ -66,8 +66,8 @@
           v-for="(history, index) in historys"
           :key="index"
           @click="showHistory(history.sessionId, history.status)"
-          @mouseover="hover = true"
-          @mouseleave="hover = false"
+          @mouseover="toggleHover(true, index)"
+          @mouseleave="toggleHover(false, index)"
         >
           <div class="history__text index">
             <p>{{ history.no }}</p>
@@ -95,6 +95,7 @@
                 default: require('assets/image/ic_rec_default.svg'),
               }"
               @click="showFiles('server', history, index)"
+              :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
           <div class="history__text count">
@@ -106,6 +107,7 @@
                 default: require('assets/image/ic_video_default.svg'),
               }"
               @click="showFiles('local', history, index)"
+              :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
           <div class="history__text count">
@@ -117,6 +119,7 @@
                 default: require('assets/image/ic_file_default.svg'),
               }"
               @click="showFiles('attach', history, index)"
+              :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
         </div>
@@ -245,6 +248,8 @@ export default {
       fileList: [],
 
       hover: false,
+      hoverIndex: -1,
+
       sort: { column: '', direction: '' },
     }
   },
@@ -359,6 +364,10 @@ export default {
         },
       })
       this.$eventBus.$emit('reload::list')
+    },
+    toggleHover(hover, index) {
+      this.hover = hover
+      this.hoverIndex = index
     },
   },
 }
