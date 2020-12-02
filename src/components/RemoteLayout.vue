@@ -22,7 +22,6 @@ export default {
           e && e.currentTarget
             ? e.currentTarget.innerHeight
             : window.innerHeight
-        console.log(initialHeight)
         metaViewport.setAttribute(
           'content',
           `height=${initialHeight}px,${this.attr}`,
