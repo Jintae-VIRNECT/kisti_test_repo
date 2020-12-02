@@ -7,15 +7,14 @@ import com.virnect.download.domain.Product;
 import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.exception.DownloadException;
-import com.virnect.download.global.common.ApiResponse;
 import com.virnect.download.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -49,15 +48,20 @@ public class DownloadService {
         Product product = productRepository.findByName(productName.toUpperCase())
                 .orElseThrow(() -> new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER));
         List<App> apps = appRepository.getAppList(product);
+        Map<List<Object>, List<App>> result = apps.stream().collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice(), app.getOs())));
 
-        List<AppInfoResponse> appInfoList = apps.stream().map(app -> {
-            AppInfoResponse appInfo = modelMapper.map(app, AppInfoResponse.class);
-            appInfo.setDeviceType(app.getDevice().getType().toString());
-            appInfo.setDeviceName(app.getDevice().getDescription());
-            appInfo.setReleaseTime(app.getCreatedDate());
-            appInfo.setVersion(app.getVersionName());
-            return appInfo;
+        List<AppInfoResponse> appInfoResponseList = result.values().stream().map(appList -> {
+            App app = appList.stream().findFirst().orElse(null);
+            AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
+            if(Objects.nonNull(app)){
+                appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
+                appInfoResponse.setDeviceName(app.getDevice().getModelDescription());
+                appInfoResponse.setReleaseTime(app.getCreatedDate());
+                appInfoResponse.setVersion(app.getVersionName());
+            }
+            return appInfoResponse;
         }).collect(Collectors.toList());
-        return new AppInfoListResponse(appInfoList);
+        return new AppInfoListResponse(appInfoResponseList);
     }
+
 }

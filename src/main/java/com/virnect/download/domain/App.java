@@ -45,10 +45,9 @@ public class App extends TimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
 
-/*
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "os_id", nullable = false)
-    private OS os;*/
+    private OS os;
 
     @Column(name = "version_name", nullable = false)
     private String versionName;
@@ -77,7 +76,7 @@ public class App extends TimeEntity {
     private Long guideDownloadCount;
 
     @Builder
-    App(String uuid, String appUrl, String guideUrl, String imageUrl, Device device, Product product,  String versionName, Long versionCode,
+    App(String uuid, String appUrl, String guideUrl, String imageUrl, Device device, Product product, OS os, String versionName, Long versionCode,
         String packageName, String signature, AppUpdateStatus appUpdateStatus, AppStatus appStatus) {
         this.uuid = uuid;
         this.appUrl = appUrl;
@@ -85,7 +84,7 @@ public class App extends TimeEntity {
         this.imageUrl = imageUrl;
         this.device = device;
         this.product = product;
-       // this.os = os;
+        this.os = os;
         this.versionName = versionName;
         this.versionCode = versionCode;
         this.packageName = packageName;
