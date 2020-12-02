@@ -42,9 +42,6 @@ const state = {
     ttsAllow: false,
   },
 
-  //stream for local stream(screen stream)
-  screenStream: null,
-
   localRecordTarget: RECORD_TARGET.WORKER,
   localRecordStatus: 'STOP',
 
@@ -95,10 +92,6 @@ const mutations = {
     state.language = language
   },
 
-  [SETTINGS.SET_SCREEN_STREAM](state, screenStream) {
-    state.screenStream = screenStream
-  },
-
   [SETTINGS.SET_LOCAL_RECORD_TARGET](state, localRecordTarget) {
     state.localRecordTarget = localRecordTarget
   },
@@ -122,9 +115,6 @@ const getters = {
   language: state => state.language,
 
   translate: state => state.translate,
-
-  //screen stream for local recording
-  screenStream: state => state.screenStream,
 
   // used Remote.js
   settingInfo: state => {

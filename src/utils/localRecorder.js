@@ -42,13 +42,6 @@ export default class LocalRecorder {
   }
 
   /**
-   * @param {Function} startCallback
-   */
-  setStartCallback(startCallback) {
-    this.startCallback = startCallback
-  }
-
-  /**
    * @param {Function} stopSignal
    */
   setStopSignal(stopSignal) {
@@ -62,17 +55,19 @@ export default class LocalRecorder {
     this.noQuotaCallback = noQuotaCallback
   }
 
+  /**
+   * init recorder
+   * @throws {String} 'idb init failed' : IDBHelper.initIDB
+   * @throws {String} 'quota overed' : this.checkQuota
+   * @throws {String} 'no streams'
+   */
   async initRecorder() {
-    if (!(await IDBHelper.initIDB())) {
-      return false
-    }
+    await IDBHelper.initIDB()
 
-    if ((await this.checkQuota()) === false) {
-      return false
-    }
+    await this.checkQuota()
 
     if (this.streams.length <= 0) {
-      return false
+      throw 'no streams'
     }
 
     //for group id
@@ -96,15 +91,12 @@ export default class LocalRecorder {
       const timeSlice = Number.parseInt(this.interval * 60 * 1000, 10)
       this.recorder.start(timeSlice)
 
-      if (this.startCallback) {
-        this.startCallback()
-      }
-
       this.timeMark = performance.now()
 
       logger(logType, 'start local record')
     } catch (e) {
       console.error(e)
+      throw e //흠흠..... 완전 이상 promise 넣어야할듯
     }
   }
 
@@ -140,10 +132,8 @@ export default class LocalRecorder {
 
       this.totalPlayTime = this.totalPlayTime + playTime / 60
 
-      if (!(await this.checkQuota())) {
-        this.stopSignal()
-        await IDBHelper.deleteGroupMediaChunk(this.groupId)
-      } else {
+      try {
+        await this.checkQuota()
         //insert IDB
         IDBHelper.addMediaChunk(
           this.groupId,
@@ -157,6 +147,9 @@ export default class LocalRecorder {
           this.roomTitle,
           this.sessionId,
         )
+      } catch (err) {
+        this.stopSignal()
+        await IDBHelper.deleteGroupMediaChunk(this.groupId)
       }
 
       if (this.maxTime === null) {
@@ -194,7 +187,7 @@ export default class LocalRecorder {
       if (this.noQuotaCallback) {
         this.noQuotaCallback()
       }
-      return false
+      throw 'quota overed'
     } else {
       return true
     }

@@ -36,7 +36,6 @@ export default {
   data() {
     return {
       active: 'pointing',
-      isRecording: false,
     }
   },
   computed: {

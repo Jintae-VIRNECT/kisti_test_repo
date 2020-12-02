@@ -9,7 +9,6 @@
     ></menu-button>
     <setting-modal
       :visible.sync="status"
-      :recording="recording"
       :serverRecording="serverRecording"
       :viewType="viewType"
     ></setting-modal>
@@ -31,7 +30,6 @@ export default {
   data() {
     return {
       status: false,
-      recording: false,
       serverRecording: false,
     }
   },
@@ -64,9 +62,6 @@ export default {
       }
       this.status = !this.status
     },
-    localRecord(status) {
-      this.recording = status.isStart
-    },
     serverRecord(status) {
       this.serverRecording = status.isStart
     },
@@ -74,11 +69,9 @@ export default {
 
   /* Lifecycles */
   beforeDestroy() {
-    this.$eventBus.$off('localRecord')
     this.$eventBus.$off('serverRecord')
   },
   mounted() {
-    this.$eventBus.$on('localRecord', this.localRecord)
     this.$eventBus.$on('serverRecord', this.serverRecord)
   },
 }

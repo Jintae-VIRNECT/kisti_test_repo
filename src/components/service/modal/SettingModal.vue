@@ -21,14 +21,14 @@
         </div>
       </template>
 
-      <p class="rec-setting--header" :class="{ disable: recording }">
+      <p class="rec-setting--header" :class="{ disable: isLocalRecording }">
         {{ $t('service.setting_local_record') }}
-      </p>
-      <p v-if="recording" class="rec-setting--warning">
-        {{ $t('service.setting_local_record_warning') }}
+        <span v-if="isLocalRecording" class="rec-setting--warning">
+          {{ $t('service.setting_local_record_warning') }}
+        </span>
       </p>
 
-      <div class="rec-setting__row" :class="{ disable: recording }">
+      <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
         <p class="rec-setting__text">
           {{ $t('service.setting_record_target') }}
         </p>
@@ -41,7 +41,7 @@
           ></r-radio>
         </div>
       </div>
-      <div class="rec-setting__row" :class="{ disable: recording }">
+      <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
         <p class="rec-setting__text">
           {{ $t('service.setting_record_max_time') }}
         </p>
@@ -54,7 +54,7 @@
         >
         </r-select>
       </div>
-      <div class="rec-setting__row" :class="{ disable: recording }">
+      <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
         <div class="rec-setting__text custom">
           <p>
             {{ $t('service.setting_record_interval') }}
@@ -83,7 +83,7 @@
         </r-select>
       </div>
 
-      <div class="rec-setting__row" :class="{ disable: recording }">
+      <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
         <div class="rec-setting__text custom">
           <p>
             {{ $t('service.setting_record_resolution') }}
@@ -115,7 +115,7 @@
       <div
         class="rec-setting__row"
         v-if="isLeader"
-        :class="{ disable: recording }"
+        :class="{ disable: isLocalRecording }"
       >
         <p class="rec-setting__text">
           {{ $t('service.setting_local_record_participant') }}
@@ -128,9 +128,9 @@
       <template v-if="isOnpremise">
         <p class="rec-setting--header" :class="{ disable: serverRecording }">
           {{ $t('service.setting_server_record') }}
-        </p>
-        <p v-if="serverRecording" class="rec-setting--warning">
-          {{ $t('service.setting_server_record_warning') }}
+          <span v-if="serverRecording" class="rec-setting--warning">
+            {{ $t('service.setting_server_record_warning') }}
+          </span>
         </p>
         <div class="rec-setting__row" :class="{ disable: serverRecording }">
           <p class="rec-setting__text">
@@ -264,10 +264,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    recording: {
-      type: Boolean,
-      default: false,
-    },
     serverRecording: {
       type: Boolean,
       default: false,
@@ -280,6 +276,7 @@ export default {
       'view',
       'serverRecord',
       'localRecord',
+      'localRecordStatus',
       'allowLocalRecord',
       'allowPointing',
       'translate',
@@ -333,6 +330,9 @@ export default {
     },
     isOnpremise() {
       return RUNTIME_ENV === RUNTIME.ONPREMISE
+    },
+    isLocalRecording() {
+      return this.localRecordStatus === 'START'
     },
   },
 
@@ -412,7 +412,6 @@ export default {
       switch (target) {
         case RECORD_TARGET.WORKER:
           this.setLocalRecordTarget(target)
-          this.setScreenStream(null)
           this.showToast()
           break
         case RECORD_TARGET.SCREEN:
@@ -450,7 +449,6 @@ export default {
     ...mapActions([
       'setRecord',
       'setServerRecord',
-      'setScreenStream',
       'setLocalRecordTarget',
       'addChat',
       'setTranslate',
