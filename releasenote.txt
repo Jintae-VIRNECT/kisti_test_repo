@@ -9,5 +9,5 @@ Bug Fixes
 - 워크스페이스 생성 시 유저 목록 세션 남아있는 이슈 개선
 
 Limitation
-
+- jvm 최소 메모리사이즈 변경
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
