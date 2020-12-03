@@ -6,8 +6,8 @@
       :description="`${$t('common.video')} on/off`"
       size="2.429rem"
       :active="video.isOn"
-      :activeSrc="require('assets/image/call/ic_video_on.svg')"
-      :inactiveSrc="require('assets/image/call/ic_video_off.svg')"
+      :activeSrc="require('assets/image/ic_video_on.svg')"
+      :inactiveSrc="require('assets/image/ic_video_off.svg')"
       @action="streamOnOff"
     ></toggle-button>
   </tooltip>

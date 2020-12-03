@@ -345,21 +345,7 @@ export default {
   watch: {
     isCurrentView(val) {
       if (val === true) {
-        this.initing = false
-        this.translateCode = this.translate.code
-        this.useTranslateAllow = this.translate.flag
-        this.maxRecordTime = this.localRecord.time
-        this.maxRecordInterval = this.localRecord.interval
-        this.recordResolution = this.localRecord.resolution
-        this.serverMaxRecordTime = this.serverRecord.time
-        this.serverRecordResolution = this.serverRecord.resolution
-        if (this.account.roleType === ROLE.LEADER) {
-          this.localRecording = this.allowLocalRecord
-          this.pointing = this.allowPointing
-        }
-        this.$nextTick(() => {
-          this.initing = true
-        })
+        this.init()
       }
     },
     visible(flag) {
@@ -376,40 +362,6 @@ export default {
       if (!this.isCurrentView) return
       this.$call.control(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
-    },
-    allowLocalRecord(val, bVal) {
-      if (this.initing === false) return
-      if (!this.isCurrentView) return
-      if (val !== bVal) {
-        if (val === true) {
-          this.addChat({
-            status: 'record-allow',
-            type: 'system',
-          })
-        } else {
-          this.addChat({
-            status: 'record-not-allow',
-            type: 'system',
-          })
-        }
-      }
-    },
-    allowPointing(val, bVal) {
-      if (this.initing === false) return
-      if (!this.isCurrentView) return
-      if (val !== bVal) {
-        if (val === true) {
-          this.addChat({
-            status: 'pointing-allow',
-            type: 'system',
-          })
-        } else {
-          this.addChat({
-            status: 'pointing-not-allow',
-            type: 'system',
-          })
-        }
-      }
     },
 
     recordTarget(target) {
@@ -456,7 +408,6 @@ export default {
       'setRecord',
       'setServerRecord',
       'setLocalRecordTarget',
-      'addChat',
       'setTranslate',
     ]),
     changeSetting(item, setting) {
@@ -488,25 +439,29 @@ export default {
     showToast() {
       this.toastNotify(this.$t('service.setting_save'))
     },
+    init() {
+      this.initing = false
+      this.translateCode = this.translate.code
+      this.useTranslateAllow = this.translate.flag
+      this.maxRecordTime = this.localRecord.time
+      this.maxRecordInterval = this.localRecord.interval
+      this.recordResolution = this.localRecord.resolution
+      if (this.account.roleType === ROLE.LEADER) {
+        this.localRecording = this.allowLocalRecord
+        this.pointing = this.allowPointing
+      }
+      if (this.isOnpremise) {
+        this.serverMaxRecordTime = this.serverRecord.time
+        this.serverRecordResolution = this.serverRecord.resolution
+      }
+      this.$nextTick(() => {
+        this.initing = true
+      })
+    },
   },
 
   created() {
-    this.translateCode = this.translate.code
-    this.useTranslateAllow = this.translate.flag
-    this.maxRecordTime = this.localRecord.time
-    this.maxRecordInterval = this.localRecord.interval
-    this.recordResolution = this.localRecord.resolution
-    if (this.account.roleType === ROLE.LEADER) {
-      this.localRecording = this.allowLocalRecord
-      this.pointing = this.allowPointing
-    }
-    if (this.isOnpremise) {
-      this.serverMaxRecordTime = this.serverRecord.time
-      this.serverRecordResolution = this.serverRecord.resolution
-    }
-    this.$nextTick(() => {
-      this.initing = true
-    })
+    this.init()
   },
 }
 </script>

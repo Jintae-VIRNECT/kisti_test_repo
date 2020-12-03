@@ -64,7 +64,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['chatList', 'roomInfo', 'view', 'viewAction']),
+    ...mapGetters([
+      'chatList',
+      'roomInfo',
+      'view',
+      'viewAction',
+      'allowLocalRecord',
+      'allowPointing',
+    ]),
     showChat() {
       return this.show === 'chat'
     },
@@ -100,6 +107,36 @@ export default {
           })
           // AR 영역이 설정되었습니다.
           return
+        }
+      }
+    },
+    allowLocalRecord(val, bVal) {
+      if (val !== bVal) {
+        if (val === true) {
+          this.addChat({
+            status: 'record-allow',
+            type: 'system',
+          })
+        } else {
+          this.addChat({
+            status: 'record-not-allow',
+            type: 'system',
+          })
+        }
+      }
+    },
+    allowPointing(val, bVal) {
+      if (val !== bVal) {
+        if (val === true) {
+          this.addChat({
+            status: 'pointing-allow',
+            type: 'system',
+          })
+        } else {
+          this.addChat({
+            status: 'pointing-not-allow',
+            type: 'system',
+          })
         }
       }
     },
