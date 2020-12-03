@@ -101,6 +101,10 @@
       "verification": {
         "title": "Failed to send verification email",
         "contents": "Failed to send email verification please try later"
+      },
+      "secessionEmail": {
+        "title": "Failed to send verification email",
+        "contents": "Secession User Email"
       }
     }
   }

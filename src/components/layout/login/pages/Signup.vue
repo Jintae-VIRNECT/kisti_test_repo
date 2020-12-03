@@ -246,6 +246,7 @@ export default {
 				joinInfo: '',
 				serviceInfo: '',
 				sessionCode: '',
+				inviteSession: '',
 			},
 			passwordConfirm: '',
 			birth: {
@@ -254,6 +255,7 @@ export default {
 				date: '',
 				mobile: '',
 			},
+			timeSet: dayjs(new Date()),
 			pickerOptions: {
 				disabledDate(time) {
 					return time.getTime() > Date.now()
@@ -315,25 +317,37 @@ export default {
 		},
 	},
 	watch: {
-		'birth.mobile'(newDate) {
-			this.birth.year = newDate
-			this.birth.month = newDate
-			this.birth.date = newDate
+		'birth.mobile'(newTime) {
+			this.birth.year = newTime
+			this.birth.month = newTime
+			this.birth.date = newTime
 		},
-		'birth.year'(newDate) {
-			const newYear = dayjs(newDate).year()
-			const newMonth = dayjs(newDate).month()
-			this.birth.month = dayjs(this.birth.month).year(newYear)
-			this.birth.date =
-				this.birth.date &&
-				dayjs(this.birth.date)
-					.year(newYear)
-					.month(newMonth)
+		'birth.year'(newTime) {
+			const newYear = dayjs(newTime).year()
+			this.timeSet = dayjs().year(newYear)
+
+			this.birth.month = this.timeSet
+			this.birth.date = this.timeSet
 		},
-		'birth.month'(newDate) {
-			const newMonth = dayjs(newDate).month()
-			this.birth.date =
-				this.birth.date && dayjs(this.birth.date).month(newMonth)
+		'birth.month'(newTime) {
+			const newYear = dayjs(this.timeSet).year()
+			const newMonth = dayjs(newTime).month()
+
+			this.timeSet = dayjs()
+				.year(newYear)
+				.month(newMonth)
+
+			this.birth.date = this.birth.date && dayjs(this.timeSet).month(newMonth)
+		},
+		'birth.date'(newTime) {
+			const newYear = dayjs(this.timeSet).year()
+			const newMonth = dayjs(this.timeSet).month()
+			const newDate = dayjs(newTime).date()
+
+			this.timeSet = dayjs()
+				.year(newYear)
+				.month(newMonth)
+				.date(newDate)
 		},
 	},
 	methods: {
@@ -362,17 +376,6 @@ export default {
 				if (res) {
 					this.message = ''
 					this.submitted = true
-					new Signup(
-						this.signup.email,
-						this.signup.password,
-						this.signup.firstName,
-						this.signup.lastName,
-						this.signup.birth,
-						this.marketInfoReceive,
-						this.joinInfoComp,
-						this.serviceInfoComp,
-						this.signup.sessionCode,
-					)
 					// console.log(this.signup)
 					if (this.signup) {
 						setTimeout(() => {
@@ -420,6 +423,12 @@ export default {
 					return this.alertMessage(
 						this.$t('signup.errors.duplicateEmail.title'), // 이메일 인증 메일 전송 실패
 						this.$t('signup.errors.duplicateEmail.contents'), // 이미 VIRNECT 회원으로 등록된 이메일 주소입니다.
+						'error',
+					)
+				else if (e.code === 2206)
+					return this.alertMessage(
+						this.$t('signup.errors.secessionEmail.title'), // 이메일 인증 메일 전송 실패
+						this.$t('signup.errors.secessionEmail.contents'), // 탈퇴한 유저입니다.
 						'error',
 					)
 				else
@@ -515,6 +524,13 @@ export default {
 				return (this.isMobile = true)
 			else return (this.isMobile = false)
 		},
+		notVirnectEmailCheck() {
+			const { email, inviteSession } = this.$route.query
+			if (email && inviteSession) {
+				this.signup.email = email
+				this.signup.inviteSession = inviteSession
+			}
+		},
 	},
 	created() {
 		this.$validator.extend('password', {
@@ -523,10 +539,12 @@ export default {
 		})
 	},
 	mounted() {
-		this.mobileCheck()
 		if (!this.policyAgree) {
 			this.$router.push('/')
 		}
+		this.mobileCheck()
+		this.notVirnectEmailCheck()
+
 		if (this.marketInfoReceive)
 			return (this.signup.marketInfoReceive = 'ACCEPT')
 		else return (this.signup.marketInfoReceive = 'REJECT')
