@@ -116,23 +116,33 @@ export default {
       } catch (err) {
         if (err && err.name) {
           if (err.name === 'NotAllowedError') {
-            this.toastDefault(this.$t('화면 공유 접근이 차단되었습니다.'))
+            if (err.message === 'Invalid state') {
+              this.toastError(this.$t('화면 공유가 불가능한 브라우저 입니다.'))
+            } else {
+              this.toastError(this.$t('화면 공유 접근이 차단되었습니다.'))
+            }
           } else if (err.name === 'NotSupportedError') {
-            this.toastDefault(
+            this.toastError(
               this.$t('로컬 녹화를 지원하지 않는 브라우저 입니다.'),
             )
           }
         } else {
           if (err === 'initRecorder Failed') {
             // 초기화 에러
-            this.toastDefault(this.$t('로컬 녹화에 실패하였습니다.'))
+            this.toastError(this.$t('로컬 녹화에 실패하였습니다.'))
           } else if (err === 'idb init failed') {
             // idb 초기화 에러
-            this.toastDefault(this.$t('로컬 녹화에 실패하였습니다.'))
+            this.toastError(this.$t('로컬 녹화에 실패하였습니다.'))
           } else if (err === 'quota overed') {
             // 용량 없음
           } else if (err === 'no streams') {
             // 스트림 없음
+          } else if (err === 'MediaRecorder is not support') {
+            this.toastError(
+              this.$t('로컬 녹화를 지원하지 않는 브라우저 입니다.'),
+            )
+          } else if (err === 'NotSupportDisplayError') {
+            this.toastError(this.$t('화면 공유가 불가능한 브라우저 입니다.'))
           }
         }
       }
@@ -218,6 +228,7 @@ export default {
             })
             this.screenStream = null
           }
+          if (this.localRecordStatus === 'STOP') return
 
           switch (stopType) {
             case 'nostream':
@@ -232,7 +243,7 @@ export default {
         console.error(e)
       } finally {
         this.recorder = null
-        await this.setLocalRecordStatus('STOP')
+        this.setLocalRecordStatus('STOP')
       }
     },
 
@@ -261,6 +272,12 @@ export default {
     },
 
     async setScreenCapture() {
+      if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices['getDisplayMedia']
+      ) {
+        throw 'NotSupportDisplayError'
+      }
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
         video: getWH(this.localRecord.resolution),
@@ -326,6 +343,6 @@ export default {
     this.audioContextDes = this.audioContext.createMediaStreamDestination()
   },
   beforeDestroy() {
-    this.$eventBus.$off('localRecord')
+    this.$eventBus.$off('localRecord', this.toggleLocalRecordStatus)
   },
 }
