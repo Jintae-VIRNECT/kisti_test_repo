@@ -1,11 +1,12 @@
 RELEASE
 
 New Features
-- 서버 ssl 적용
 
 Bug Fixes
-- 작업 검색 에러 개선
+- 컨텐츠 복제 시 타겟 정보 에러 개선
 
 Limitation
+- jvm 최소 메모리 사이즈 변경
+- 작업 종료 권한 체크 제거
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

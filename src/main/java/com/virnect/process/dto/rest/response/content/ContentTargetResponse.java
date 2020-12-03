@@ -1,10 +1,10 @@
 package com.virnect.process.dto.rest.response.content;
 
-import com.virnect.process.domain.TargetType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
+
+import com.virnect.process.domain.TargetType;
 
 /**
  * @author hangkee.min (henry)
@@ -15,12 +15,22 @@ import lombok.ToString;
  */
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 public class ContentTargetResponse {
-    private Long id;
-    private TargetType type;
-    private String data;
-    private String imgPath;
-    private Float size;
+	private Long id;
+	private TargetType type;
+	private String data;
+	private String imgPath;
+	private Float size;
+
+	@Override
+	public String toString() {
+		return "ContentTargetResponse{" +
+			"id=" + id +
+			", type=" + type +
+			", data='" + data + '\'' +
+			", imgPath='" + imgPath + '\'' +
+			", size=" + size +
+			'}';
+	}
 }
