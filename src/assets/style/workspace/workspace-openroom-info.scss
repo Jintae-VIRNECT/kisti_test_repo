@@ -1,16 +1,5 @@
 @import "~assets/style/vars";
 
-@mixin hide {
-  @media screen and (max-height: 825px) {
-    display: none;
-  }
-}
-@mixin smallHeight {
-  @media screen and (max-height: 650px) {
-    @content;
-  }
-}
-
 .openroom-info {
   position: relative;
   display: flex;
@@ -20,14 +9,6 @@
   margin: 2em auto;
   .inputrow {
     margin-top: 2.143em;
-    @include smallHeight {
-      margin-top: 0;
-    }
-  }
-  > .profile-image {
-    @include smallHeight {
-      display: none;
-    }
   }
 }
 .openroom-info_regist-image {
@@ -35,7 +16,6 @@
   margin: 1.143em auto 0.714em;
   font-size: 0.929em;
   line-height: 1.571em;
-  @include hide;
 }
 .btn.openroom-info__button {
   position: relative;

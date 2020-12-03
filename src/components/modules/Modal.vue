@@ -1,6 +1,14 @@
 <template>
   <transition name="modal">
-    <div v-if="visible" class="modal" :class="customClass" @wheel="scroll">
+    <div
+      v-if="visible"
+      class="modal"
+      :class="customClass"
+      @wheel="scroll"
+      @touchstart="touch"
+      @touchmove="touch"
+      @touchend="touch"
+    >
       <div
         class="modal--dimmed"
         @click.stop="dimClose ? doClose($event) : () => {}"
@@ -160,6 +168,10 @@ export default {
       this.$nextTick(() => {
         this.$emit('update:visible', false)
       })
+    },
+
+    touch(e) {
+      e.stopPropagation()
     },
   },
 

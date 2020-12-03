@@ -1,17 +1,6 @@
 @import "~assets/style/vars";
 @import "~assets/style/mixin";
 
-@mixin hide {
-  @media screen and (max-height: 825px) {
-    display: none;
-  }
-}
-@mixin smallHeight {
-  @media screen and (max-height: 650px) {
-    @content;
-  }
-}
-
 .createroom-info {
   position: relative;
   display: flex;
@@ -21,14 +10,6 @@
   margin: 3.571em 4.286em 2.143em 4em;
   .inputrow {
     margin-top: 2.143em;
-    @include smallHeight {
-      margin-top: 0;
-    }
-  }
-  > .profile-image {
-    @include smallHeight {
-      display: none;
-    }
   }
 }
 .createroom-info_regist-image {
@@ -36,7 +17,6 @@
   margin: 1.143em auto 0.714em;
   font-size: 0.929em;
   line-height: 1.571em;
-  @include hide;
 }
 .createroom-info__add-member {
   min-height: 2.714rem;
