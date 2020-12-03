@@ -33,6 +33,8 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 	static private final String USER_INFO_FORMAT = "[%s,%s,%s]";
 	@Value("${jwt.secret}")
 	private String secretKey;
+	@Value("${logging.enabled:true}")
+	private boolean loggingEnabled;
 
 	@PostConstruct
 	protected void init() {
@@ -44,32 +46,36 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 		ServerWebExchange exchange,
 		GatewayFilterChain chain
 	) {
-		ServerHttpRequest request = exchange.getRequest();
-		ServerHttpResponse response = exchange.getResponse();
-		GatewayAccessLog gatewayAccessLog = new GatewayAccessLog()
-			.address(fetchAddressFromRequest(request))
-			.port(request.getLocalAddress().getPort())
-			.method(request.getMethod().name())
-			.uri(request.getURI().toString())
-			.protocol("protocol")
-			.user(generateUserInfo(request));
+		if (loggingEnabled) {
+			ServerHttpRequest request = exchange.getRequest();
+			ServerHttpResponse response = exchange.getResponse();
+			GatewayAccessLog gatewayAccessLog = new GatewayAccessLog()
+				.address(fetchAddressFromRequest(request))
+				.method(request.getMethod().name())
+				.uri(request.getURI().toString())
+				.protocol("protocol")
+				.user(generateUserInfo(request));
 
-		if (request.getHeaders().get("user-agent") != null && request.getHeaders().get("user-agent").size() > 0) {
-			gatewayAccessLog.userAgent(request.getHeaders().get("user-agent").get(0));
+			if (request.getHeaders().get("user-agent") != null && request.getHeaders().get("user-agent").size() > 0) {
+				gatewayAccessLog.userAgent(request.getHeaders().get("user-agent").get(0));
+			}
+
+			return chain.filter(exchange).then(Mono.fromRunnable(() -> {
+				String responseStatus = String.format("%d %s", response.getRawStatusCode(),
+					HttpStatus.valueOf(response.getRawStatusCode()).name()
+				);
+
+				gatewayAccessLog
+					.status(responseStatus)
+					.contentType(
+						Optional.ofNullable(response.getHeaders().getContentType())
+							.orElse(new MediaType("-", "-"))
+							.toString())
+					.contentLength(response.getHeaders().getContentLength());
+				gatewayAccessLog.log();
+			}));
 		}
-
-		return chain.filter(exchange).then(Mono.fromRunnable(() -> {
-			String responseStatus = String.format("%d %s", response.getRawStatusCode(),
-				HttpStatus.valueOf(response.getRawStatusCode()).name()
-			);
-
-			gatewayAccessLog
-				.status(responseStatus)
-				.contentType(
-					Optional.ofNullable(response.getHeaders().getContentType()).orElse(new MediaType("-","-")).toString())
-				.contentLength(response.getHeaders().getContentLength());
-			gatewayAccessLog.log();
-		}));
+		return chain.filter(exchange);
 	}
 
 	private String fetchJwtTokenFromRequest(ServerHttpRequest request) {
@@ -88,9 +94,17 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 	}
 
 	private String fetchAddressFromRequest(ServerHttpRequest request) {
-		return Optional.ofNullable(
-			request.getHeaders().getFirst("X-Forwarded-For")
-		).orElse(request.getRemoteAddress().getHostName());
+		String clientIp = request.getHeaders().getFirst("X-Forwarded-For");
+
+		if (clientIp != null) {
+			return clientIp;
+		}
+
+		if (request.getRemoteAddress() != null) {
+			return request.getRemoteAddress().getAddress().getHostAddress();
+		}
+
+		return "-";
 	}
 
 	private String generateUserInfo(ServerHttpRequest request) {

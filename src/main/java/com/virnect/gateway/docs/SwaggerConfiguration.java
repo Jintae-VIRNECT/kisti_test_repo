@@ -16,7 +16,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -38,11 +39,11 @@ import springfox.documentation.swagger.web.SwaggerResourcesProvider;
  * @description
  * @since 2020.04.09
  */
-@Slf4j
 @Profile({"!staging", "!production"})
 @Configuration
 @RequiredArgsConstructor
 public class SwaggerConfiguration {
+	private static final Logger looger = Loggers.getLogger("com.virnect.gateway.docs.SwaggerConfiguration");
 	private final GatewayProperties gatewayProperties;
 
 	@Bean
@@ -74,8 +75,7 @@ public class SwaggerConfiguration {
 		swaggerResource.setName(name);
 		swaggerResource.setLocation(location + "v2/api-docs");
 		swaggerResource.setSwaggerVersion(version);
-
-		log.info(
+		looger.info(
 			"[{}}] - [{}] - [{}]", swaggerResource.getName(), swaggerResource.getUrl(),
 			swaggerResource.getSwaggerVersion()
 		);

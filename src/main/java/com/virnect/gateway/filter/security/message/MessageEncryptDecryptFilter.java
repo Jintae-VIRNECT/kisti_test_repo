@@ -42,17 +42,19 @@ import org.springframework.web.server.ServerWebExchange;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 
 import com.virnect.gateway.error.ErrorCode;
 import com.virnect.gateway.error.GatewaySecurityException;
 
-@Slf4j
 @Component
 public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<MessageEncryptDecryptFilter.Config> {
+	private static final Logger logger = Loggers.getLogger(
+		"com.virnect.gateway.filter.security.message.MessageEncryptDecryptFilter");
 	private static final String HEADER_ENCRYPT_KEY_NAME = "encrypt";
 	private static final String HEADER_DEVICE_AUTH_KEY_NAME = "deviceAuthKey";
 	private static final String HEADER_API_NAME = "apiName";
@@ -101,11 +103,11 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				return chain.filter(exchange);
 			}
 
-			log.info("Message Encrypt Decrypt Filter Start");
+			logger.info("Message Encrypt Decrypt Filter Start");
 			String deviceAuthKey = Objects.requireNonNull(httpHeaders.get(HEADER_DEVICE_AUTH_KEY_NAME)).get(0);
-			log.info("[DEVICE_AUTH_KEY] - {}", deviceAuthKey);
+			logger.info("[DEVICE_AUTH_KEY] - {}", deviceAuthKey);
 			Map<String, String> deviceAuth = redisTemplate.opsForHash().entries("DeviceAuth:" + deviceAuthKey);
-			log.info(deviceAuth.toString());
+			logger.info(deviceAuth.toString());
 			String secretKey = deviceAuth.get(SECRET_KEY_NAME);
 
 			if (Objects.equals(originRequest.getMethod(), HttpMethod.GET)
@@ -116,7 +118,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				return DataBufferUtils.join(exchange.getRequest().getBody()).flatMap(dataBuffer -> {
 					ServerHttpRequest mutatedHttpRequest = getServerHttpRequest(exchange, dataBuffer, secretKey);
 					ServerHttpResponse mutateHttpResponse = getServerHttpResponse(exchange, secretKey);
-					log.info("Message Encrypt Decrypt Filter End.");
+					logger.info("Message Encrypt Decrypt Filter End.");
 					return chain.filter(
 						exchange.mutate().request(mutatedHttpRequest).response(mutateHttpResponse).build());
 				});
@@ -130,12 +132,12 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 		DataBufferUtils.retain(dataBuffer);
 		Flux<DataBuffer> cachedFlux = Flux.defer(() -> Flux.just(dataBuffer.slice(0, dataBuffer.readableByteCount())));
 		String body = toRaw(cachedFlux);
-		log.info("[REQUEST_ORIGIN_RAW_MESSAGE] - {}", body);
+		logger.info("[REQUEST_ORIGIN_RAW_MESSAGE] - {}", body);
 		try {
 			EncryptDecryptMessage message = objectMapper.readValue(body, EncryptDecryptMessage.class);
-			log.info("[ENCRYPTED_MESSAGE] - {}", message.getData());
+			logger.info("[ENCRYPTED_MESSAGE] - {}", message.getData());
 			String decodeMessage = EncryptDecryptHelper.decrypt(secretKey, message.getData());
-			log.info("[DECRYPTED_MESSAGE] - {}", decodeMessage);
+			logger.info("[DECRYPTED_MESSAGE] - {}", decodeMessage);
 			byte[] decryptMessageBytes = decodeMessage.getBytes(StandardCharsets.UTF_8);
 
 			return new ServerHttpRequestDecorator(exchange.getRequest()) {
@@ -157,7 +159,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 				}
 			};
 		} catch (JsonProcessingException e) {
-			log.error("EncodingMessage JSON Parsing Error", e);
+			logger.error("EncodingMessage JSON Parsing Error", e);
 			throw new GatewaySecurityException(ErrorCode.ERR_MESSAGE_ENCRYPT_DECRYPT);
 		}
 	}

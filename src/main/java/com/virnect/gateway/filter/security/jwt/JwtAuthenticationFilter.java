@@ -19,8 +19,9 @@ import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -30,16 +31,15 @@ import reactor.core.publisher.Mono;
  * @since 2020.04.27
  */
 
-@Slf4j
 @Profile(value = {"staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter implements GlobalFilter {
+	private final static Logger logger = Loggers.getLogger(
+		"com.virnect.gateway.filter.security.jwt.JwtAuthenticationFilter");
+
 	@Value("${jwt.secret}")
 	private String secretKey;
-
-	@Value("${spring.profiles.active:none}")
-	private String serverMode;
 
 	@PostConstruct
 	protected void init() {
@@ -56,23 +56,20 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			requestUrlPath.startsWith("/licenses/allocate") ||
 			requestUrlPath.startsWith("/licenses/deallocate") ||
 			requestUrlPath.contains("/licenses/deallocate") ||
+			requestUrlPath.contains("/licenses/sdk/authentication") ||
 			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$");
 
 		if (isAuthenticateSkipUrl) {
 			return chain.filter(exchange);
 		}
 
-		if ((serverMode.equals("develop") || serverMode.equals("onpremise")) && requestUrlPath.contains("/v2/api-docs")) {
-			return chain.filter(exchange);
-		}
-
-		log.debug("JWT Authentication Filter Start");
+		logger.debug("JWT Authentication Filter Start");
 		String jwt = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()))
 			.orElseThrow(() -> new MalformedJwtException("JWT Token not exist"));
 		Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
 		Claims body = claims.getBody();
 
-		log.debug("[AUTHENTICATION TOKEN]: {}", body.toString());
+		logger.debug("[AUTHENTICATION TOKEN]: {}", body.toString());
 
 		ServerHttpRequest authenticateRequest = exchange.getRequest().mutate()
 			.header("X-jwt-uuid", body.get("uuid", String.class))
@@ -85,7 +82,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.build();
 
 		return chain.filter(exchange.mutate().request(authenticateRequest).build())
-			.then(Mono.fromRunnable(() -> log.debug("JWT Authentication Filter end")));
+			.then(Mono.fromRunnable(() -> logger.debug("JWT Authentication Filter end")));
 	}
 
 	private String getJwtTokenFromRequest(ServerHttpRequest request) {

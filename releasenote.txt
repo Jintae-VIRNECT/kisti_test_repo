@@ -2,13 +2,14 @@
 RELEASE
 
 New Features
-- 없음
+- SDK 라이선스 검증 API, 게이트웨이 인증 예외 리스트에 추가
+- Application JVM 옵션 변경 -> -"XX:+UseG1GC" 삭제 및 "-Xms" 옵션 추가
 
 Bug Fixes
-- Access Log, 타임존 문제 수정 (UTC -> KST)
+- AccessLogging 시 DNS Lookup을 일으키는 메서드 제거
 
 Limitation
-- JwtAuthentication Filter 의 log level 을 debug 일때만 출력됨.
+- 없음
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
