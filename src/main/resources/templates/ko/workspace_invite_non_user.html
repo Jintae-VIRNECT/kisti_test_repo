@@ -3,6 +3,10 @@
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Noto+Sans+KR&display=swap"
     />
+    <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Roboto:500&display=swap"
+    />
     <style>
         .info-table a:link, span.MsoHyperlink {
             mso-style-priority:100 !important;
@@ -11,6 +15,7 @@
             text-decoration:none !important;
         }
     </style>
+
     <div align="center">
         <table
                 width="680"
@@ -18,7 +23,6 @@
                 cellspacing="0"
                 background="#fff"
                 style="font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;background:#fff;border:1px solid #e8edf1;"
-                class="info-table"
         >
             <tbody>
             <tr style="margin:0;padding:0;">
@@ -40,10 +44,10 @@
                     <p
                             style="margin:0;padding:0;color:#333;font-size:15px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;line-height:1.6"
                     >
-                        [[${workspaceMasterNickName}]] 님이 <br/>
-                        <b>[[${workspaceName}]]</b>에 <b>[[${responseUserName}]]</b>의 참여를 요청했습니다. <br/>
-                        메일 수신일로부터 7일 이내에 참여 요청을 수락하면 [[${workspaceMasterNickName}]]님의 <br/>
-                        워크스페이스에서 할당된 플랜과 권한을 통해 버넥트 제품 이용 및 서비스 이용이 가능합니다.
+                        [[${masterUserName}]]님이 [[${workspaceName}]]에 참여를 요청했습니다.<br><br>
+                        메일 수신일로부터 7일 이내에 아래 회원 가입 링크로 접속해 <br>
+                        현재 이메일 계정으로 VIRNECT 회원 가입을 진행해 주시기 바랍니다. <br><br>
+                        회원 가입 시, [[${masterUserNickname}]]님의 워크스페이스에서 멤버로 추가됩니다.
                     </p>
 
                     <table
@@ -51,7 +55,6 @@
                             cellpadding="0"
                             cellspacing="0"
                             style="margin:0 0 8px;padding:0;"
-                            class="info-table"
                     >
                         <tr>
                             <td style="padding-top: 44px;font-family:'Noto Sans KR','Apple SD Gothic Neo', sans-serif,Dotum,Arial;font-weight:bold;text-align:left;">워크스페이스 정보</td>
@@ -71,9 +74,32 @@
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
-                                    colspan="2"
+                                    colspan="1"
                                     rowspan="1"
-                                    style="width:160px;height:40px;color:#1a1c1d;font-weight:600;line-height:40px;text-align:left;vertical-align:middle;"
+                                    style="width:160px;height:40px;color:#333333;font-weight:700;line-height:40px;text-align:left;vertical-align:middle;"
+                            >
+                                워크스페이스 정보
+                            </th>
+                        </tr>
+                        <tr style="margin:0;padding:0;">
+                            <th
+                                    colspan="1"
+                                    rowspan="1"
+                                    style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
+                            >
+                                워크스페이스 이름:
+                            </th>
+                            <td
+                                    style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
+                            >
+                                <p>[[${workspaceName}]]</p>
+                            </td>
+                        </tr>
+                        <tr style="margin:0;padding:0;">
+                            <th
+                                    colspan="1"
+                                    rowspan="1"
+                                    style="width:160px;height:40px;color:#333333;font-weight:700;line-height:40px;text-align:left;vertical-align:middle;"
                             >
                                 참여 요청 발신자
                             </th>
@@ -89,7 +115,7 @@
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
                             >
-                                <p>[[${workspaceMasterNickName}]]</p>
+                                <p>[[${masterUserNickname}]]</p>
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
@@ -103,31 +129,17 @@
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
                             >
-                                <p>[[${workspaceMasterEmail}]]</p>
+                                <p>[[${masterUserEmail}]]</p>
                             </td>
-                        </tr>
-                        <tr style="margin:0;padding:0;">
-                            <th
-                                    colspan="2"
-                                    rowspan="1"
-                                    style="padding-top: 16px;width:160px;height:40px;color:#1a1c1d;font-weight:600;line-height:40px;text-align:left;vertical-align:middle;"
-                            >
-                                참여 요청 수신자
-                            </th>
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
                                     colspan="1"
                                     rowspan="1"
-                                    style="width:160px;height:40px;color:#878d91;font-weight:400;line-height:40px;text-align:left;vertical-align:middle;"
+                                    style="width:160px;height:40px;color:#333333;font-weight:700;line-height:40px;text-align:left;vertical-align:middle;"
                             >
-                                멤버 닉네임:
+                                참여 요청 발신자
                             </th>
-                            <td
-                                    style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
-                            >
-                                <p>[[${responseUserNickName}]]</p>
-                            </td>
                         </tr>
                         <tr style="margin:0;padding:0;">
                             <th
@@ -140,7 +152,7 @@
                             <td
                                     style="height:40px;color:#333333;font-weight:700;text-align:left;vertical-align:middle;"
                             >
-                                <p>[[${responseUserEmail}]]</p>
+                                <p>[[${inviteUserEmail}]]</p>
                             </td>
                         </tr>
                         <tr style="margin:0;padding:0;">

@@ -1,10 +1,13 @@
 RELEASE
 
 New Features
+- 비회원 초대 기능 추가
+- 전체 워크스페이스 유저 조회 기능 추가
 
 Bug Fixes
-- 워크스페이스 목록이 빈값인 경우에도 캐싱되는 에러 개선
+- 워크스페이스 유저 목록 닉네임 정렬 순서 변경(국문-> 영문 -> 특수문자,숫자 순으로 정렬)
+- 워크스페이스 생성 시 유저 목록 세션 남아있는 이슈 개선
 
 Limitation
-
+- jvm 최소 메모리사이즈 변경
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

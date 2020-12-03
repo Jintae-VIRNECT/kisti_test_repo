@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Project: PF-Workspace
@@ -21,6 +22,8 @@ public interface WorkspaceUserRepository extends JpaRepository<WorkspaceUser, Lo
     Page<WorkspaceUser> findByUserId(String userId, Pageable pageable);
 
     WorkspaceUser findByUserIdAndWorkspace(String userId, Workspace workspace);
+
+    Optional<WorkspaceUser> findByUserIdAndWorkspace_Uuid(String userId, String workspaceId);
 
     List<WorkspaceUser> findTop4ByWorkspace_UuidOrderByCreatedDateDesc(String workspaceId);
 

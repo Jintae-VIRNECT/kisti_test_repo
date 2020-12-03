@@ -46,6 +46,9 @@ public final class PageRequest {
         if(properties!=null && properties.equalsIgnoreCase("role")){
             properties = "workspaceRole";
         }
+        if(properties!=null && properties.equalsIgnoreCase("joinDate")){
+            properties = "workspaceUser.createdDate";
+        }
 
         return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
 
