@@ -91,5 +91,7 @@ public class App extends TimeEntity {
         this.signature = signature;
         this.appUpdateStatus = appUpdateStatus;
         this.appStatus = appStatus;
+        this.appDownloadCount = 0L;
+        this.guideDownloadCount = 0L;
     }
 }
