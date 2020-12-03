@@ -20,6 +20,8 @@ public class RemoteStorageProperties extends PropertyService {
     private String secretKey;
     private String serverUrl;
     private boolean serviceEnabled;
+    private boolean policyEnabled;
+    private String policyLocation;
 
     public String getBucketName() {
         return this.bucketName;
@@ -57,9 +59,20 @@ public class RemoteStorageProperties extends PropertyService {
         this.serviceEnabled = enabled;
     }
 
+    public boolean isPolicyEnabled() {
+        return policyEnabled;
+    }
+
+    public String getPolicyLocation() {
+        return policyLocation;
+    }
+
 
 
     public void checkStorageProperties() {
+        this.policyEnabled = asBoolean("storage.policy.enabled");
+        this.policyLocation = getValue("storage.policy.location");
+
         this.serviceEnabled = asBoolean("storage.enabled");
         this.bucketName = getValue("storage.bucket.name");
         this.fileBucketName = getValue("storage.bucket.file");
@@ -69,8 +82,7 @@ public class RemoteStorageProperties extends PropertyService {
         this.secretKey = getValue("storage.secret-key");
         this.serverUrl = getValue("storage.serverUrl");
 
-
-        log.info("checkFileServiceProperties {}", bucketName);
+        /*log.info("checkFileServiceProperties {}", bucketName);
         log.info("checkFileServiceProperties {}", fileBucketName);
         log.info("checkFileServiceProperties {}", profileBucketName);
         log.info("checkFileServiceProperties {}", recordBucketName);
@@ -78,6 +90,9 @@ public class RemoteStorageProperties extends PropertyService {
         log.info("checkFileServiceProperties {}", secretKey);
         log.info("checkFileServiceProperties {}", serverUrl);
         log.info("checkFileServiceProperties {}", serviceEnabled);
+
+        log.info("checkFileServiceProperties {}", policyEnabled);
+        log.info("checkFileServiceProperties {}", policyLocation);*/
 
         ServiceServerApplication.storageUrl = serverUrl;
     }

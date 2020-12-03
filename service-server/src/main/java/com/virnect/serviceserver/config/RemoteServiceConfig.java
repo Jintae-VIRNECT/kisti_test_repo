@@ -35,10 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Configuration
 @EnableConfigurationProperties({
@@ -137,7 +134,11 @@ public class RemoteServiceConfig {
 	}
 
 	public Map<String, String> getConfigProps() {
-		return this.remoteServiceProperties.configProps;
+		Map<String, String> configMap = new HashMap<>();
+		configMap.putAll(this.remoteServiceProperties.configProps);
+		configMap.putAll(this.remoteStorageProperties.configProps);
+		return configMap;
+		//return this.remoteServiceProperties.configProps;
 	}
 
 	public List<String> getUserProperties() {
@@ -165,7 +166,10 @@ public class RemoteServiceConfig {
 			log.error("Exception checking configuration", e);
 			this.remoteServiceProperties.addError(null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());
 		}
-		userConfigProps = new ArrayList<>(this.remoteServiceProperties.configProps.keySet());
+		//userConfigProps = new ArrayList<>(this.remoteServiceProperties.configProps.keySet());
+		userConfigProps = new ArrayList<>();
+		userConfigProps.addAll(this.remoteServiceProperties.configProps.keySet());
+		userConfigProps.addAll(this.remoteStorageProperties.configProps.keySet());
 		userConfigProps.removeAll(getNonUserProperties());
 	}
 
