@@ -69,10 +69,10 @@ public class App extends TimeEntity {
     @Enumerated(EnumType.STRING)
     private AppStatus appStatus;
 
-    @Column(name = "app_download_count", columnDefinition = "BIGINT default 0")
+    @Column(name = "app_download_count", columnDefinition = "BIGINT default 0", nullable = false)
     private Long appDownloadCount;
 
-    @Column(name = "guide_download_count", columnDefinition = "BIGINT default 0")
+    @Column(name = "guide_download_count", columnDefinition = "BIGINT default 0", nullable = false)
     private Long guideDownloadCount;
 
     @Builder

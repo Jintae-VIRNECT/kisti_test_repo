@@ -10,7 +10,6 @@ import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.error.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -53,11 +52,11 @@ public class DownloadService {
         List<AppInfoResponse> appInfoResponseList = result.values().stream().map(appList -> {
             App app = appList.stream().findFirst().orElse(null);
             AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
-            if(Objects.nonNull(app)){
+            if (Objects.nonNull(app)) {
                 appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
                 appInfoResponse.setDeviceName(app.getDevice().getModelDescription());
                 appInfoResponse.setReleaseTime(app.getCreatedDate());
-                appInfoResponse.setVersion(app.getVersionName());
+                appInfoResponse.setVersion("v." + app.getVersionName());
             }
             return appInfoResponse;
         }).collect(Collectors.toList());

@@ -2,9 +2,9 @@ spring:
   application:
     name: download-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/downloads?characterEncoding=UTF-8&serverTimezone=UTC
-    username: virnect-downloads
-    password: virnect1234
+    url: jdbc:mysql://localhost:3306/download?characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: root
   jpa:
     hibernate:
       ddl-auto: update
@@ -41,8 +41,9 @@ eureka:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://192.168.6.3:8761/eureka
+      defaultZone: http://localhost:8761/eureka
     registry-fetch-interval-seconds: 3
+    enabled: false
 
 ## AWS Storage
 cloud:
