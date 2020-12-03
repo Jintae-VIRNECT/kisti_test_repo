@@ -76,8 +76,7 @@ export default {
       this.setServerRecordStatus('STOP')
       if (this.recordingId) {
         if (this.recordTimeout) {
-          clearTimeout(this.recordTimeout)
-          this.recordTimeout = null
+          this.clearServerRecordTimer()
         }
 
         this.logger('SERVER RECORD', 'stop')
@@ -118,6 +117,10 @@ export default {
         this.$eventBus.$emit('showServerTimer', elapsedTime)
         this.setServerRecordStatus('START')
       }
+    },
+    clearServerRecordTimer() {
+      clearTimeout(this.recordTimeout)
+      this.recordTimeout = null
     },
   },
 
