@@ -22,4 +22,5 @@ export default {
   //local record
   localRecordTarget: state => state.settings.localRecordTarget,
   localRecordStatus: state => state.settings.localRecordStatus,
+  serverRecordStatus: state => state.settings.serverRecordStatus,
 }

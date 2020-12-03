@@ -170,4 +170,11 @@ export default {
   setLocalRecordStatus({ commit }, status) {
     commit(types.SETTINGS.SET_LOCAL_RECORD_STATUS, status)
   },
+
+  /**
+   * update server record status
+   */
+  setServerRecordStatus({ commit }, status) {
+    commit(types.SETTINGS.SET_SERVER_RECORD_STATUS, status)
+  },
 }

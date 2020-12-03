@@ -126,13 +126,13 @@
         ></r-check>
       </div>
       <template v-if="isOnpremise">
-        <p class="rec-setting--header" :class="{ disable: serverRecording }">
+        <p class="rec-setting--header" :class="{ disable: isServerRecording }">
           {{ $t('service.setting_server_record') }}
-          <span v-if="serverRecording" class="rec-setting--warning">
+          <span v-if="isServerRecording" class="rec-setting--warning">
             {{ $t('service.setting_server_record_warning') }}
           </span>
         </p>
-        <div class="rec-setting__row" :class="{ disable: serverRecording }">
+        <div class="rec-setting__row" :class="{ disable: isServerRecording }">
           <p class="rec-setting__text">
             {{ $t('service.setting_record_max_time') }}
           </p>
@@ -146,7 +146,7 @@
           </r-select>
         </div>
 
-        <div class="rec-setting__row" :class="{ disable: serverRecording }">
+        <div class="rec-setting__row" :class="{ disable: isServerRecording }">
           <div class="rec-setting__text custom">
             <p>
               {{ $t('service.setting_record_resolution') }}
@@ -264,10 +264,6 @@ export default {
       type: Boolean,
       default: false,
     },
-    serverRecording: {
-      type: Boolean,
-      default: false,
-    },
     viewType: String,
   },
 
@@ -275,6 +271,7 @@ export default {
     ...mapGetters([
       'view',
       'serverRecord',
+      'serverRecordStatus',
       'localRecord',
       'localRecordStatus',
       'allowLocalRecord',
@@ -333,6 +330,9 @@ export default {
     },
     isLocalRecording() {
       return this.localRecordStatus === 'START'
+    },
+    isServerRecording() {
+      return this.serverRecordStatus !== 'STOP'
     },
   },
 

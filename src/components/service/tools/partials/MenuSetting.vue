@@ -7,11 +7,7 @@
       :src="require('assets/image/ic_setting.svg')"
       @click="setting"
     ></menu-button>
-    <setting-modal
-      :visible.sync="status"
-      :serverRecording="serverRecording"
-      :viewType="viewType"
-    ></setting-modal>
+    <setting-modal :visible.sync="status" :viewType="viewType"></setting-modal>
   </div>
 </template>
 
@@ -30,7 +26,6 @@ export default {
   data() {
     return {
       status: false,
-      serverRecording: false,
     }
   },
   props: {
@@ -62,17 +57,6 @@ export default {
       }
       this.status = !this.status
     },
-    serverRecord(status) {
-      this.serverRecording = status.isStart
-    },
-  },
-
-  /* Lifecycles */
-  beforeDestroy() {
-    this.$eventBus.$off('serverRecord')
-  },
-  mounted() {
-    this.$eventBus.$on('serverRecord', this.serverRecord)
   },
 }
 </script>

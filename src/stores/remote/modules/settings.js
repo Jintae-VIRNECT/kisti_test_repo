@@ -43,7 +43,8 @@ const state = {
   },
 
   localRecordTarget: RECORD_TARGET.WORKER,
-  localRecordStatus: 'STOP',
+  localRecordStatus: 'STOP', // 'START', 'STOP'
+  serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP'
 
   chatBox: false,
 }
@@ -98,6 +99,10 @@ const mutations = {
 
   [SETTINGS.SET_LOCAL_RECORD_STATUS](state, localRecordStatus) {
     state.localRecordStatus = localRecordStatus
+  },
+
+  [SETTINGS.SET_SERVER_RECORD_STATUS](state, serverRecordStatus) {
+    state.serverRecordStatus = serverRecordStatus
   },
 
   [TOGGLE_CHAT](state, flag) {

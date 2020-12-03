@@ -12,15 +12,19 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import toolMixin from './toolMixin'
 export default {
   name: 'ServerRecordMenu',
   mixins: [toolMixin],
-  data() {
-    return {
-      isRecording: false,
-      isWaiting: false,
-    }
+  computed: {
+    ...mapGetters(['serverRecordStatus']),
+    isWaiting() {
+      return this.serverRecordStatus === 'WAIT'
+    },
+    isRecording() {
+      return this.serverRecordStatus !== 'STOP'
+    },
   },
   methods: {
     recording() {
@@ -34,28 +38,11 @@ export default {
       }
     },
     start() {
-      this.$eventBus.$emit('serverRecord', {
-        isStart: true,
-        isWaiting: true,
-      })
+      this.$eventBus.$emit('serverRecord', 'WAIT')
     },
     stop() {
-      this.$eventBus.$emit('serverRecord', {
-        isStart: false,
-      })
+      this.$eventBus.$emit('serverRecord', 'STOP')
     },
-    toggleButton(payload) {
-      this.isRecording = payload.isStart
-      this.isWaiting = payload.isWaiting
-    },
-  },
-
-  /* Lifecycles */
-  mounted() {
-    this.$eventBus.$on('serverRecord', this.toggleButton)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off('serverRecord')
   },
 }
 </script>

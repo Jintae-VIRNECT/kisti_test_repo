@@ -175,6 +175,7 @@ export default {
       openRoom: 'openRoom',
       view: 'view',
       localRecordStatus: 'localRecordStatus',
+      serverRecordStatus: 'serverRecordStatus',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -303,6 +304,11 @@ export default {
     localRecordStatus(status) {
       this.toggleLocalTimer(status)
     },
+    serverRecordStatus(status) {
+      if (status === 'STOP') {
+        this.closeServerTimer()
+      }
+    },
   },
   methods: {
     ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
@@ -409,21 +415,13 @@ export default {
         this.localTimer = null
       }
     },
-    serverRecord(payload) {
-      if (!payload.isStart) {
-        this.closeServerTimer()
-      } else if (payload.isStart && !payload.isWaiting) {
-        this.showServerTimer(payload)
-      }
-    },
     closeServerTimer() {
       clearInterval(this.serverTimer)
       this.serverTime = 0
       this.serverTimer = null
     },
-    showServerTimer(payload) {
-      const elapsedTime = payload.elapsedTime ? payload.elapsedTime : 0
-
+    showServerTimer(elapsedTime = 0) {
+      if (this.serverTimer !== null) return
       this.serverStart = this.$dayjs().unix()
       this.serverTimer = setInterval(() => {
         const diff = this.$dayjs().unix() - this.serverStart + elapsedTime
@@ -442,13 +440,13 @@ export default {
   /* Lifecycles */
   beforeDestroy() {
     this.$eventBus.$off('capture', this.doCapture)
-    this.$eventBus.$off('serverRecord', this.serverRecord)
+    this.$eventBus.$off('showServerTimer', this.showServerTimer)
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
-    this.$eventBus.$on('serverRecord', this.serverRecord)
+    this.$eventBus.$on('showServerTimer', this.showServerTimer)
     this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
     window.addEventListener('resize', this.nextOptimize)
   },
