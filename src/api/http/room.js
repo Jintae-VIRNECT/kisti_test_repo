@@ -3,6 +3,9 @@ import { ROOM_STATUS } from 'configs/status.config'
 
 /**
  * 원격협업 통화방 생성
+ * @header {String} client
+ * @path {String} userId
+ * @query {Number} companyCode
  * @param {String} title
  * @param {String} description
  * @param {String} autoRecording
@@ -12,9 +15,11 @@ import { ROOM_STATUS } from 'configs/status.config'
  * @param {String} leaderId // 리더 아이디(uuid)
  * @param {Array[String]} participantIds // 참여자 리스트
  * @param {String} workspaceId
- * @param {String} companyCode
  */
 export const createRoom = async ({
+  client,
+  userId,
+  companyCode = 0,
   title,
   description,
   autoRecording = false,
@@ -24,25 +29,35 @@ export const createRoom = async ({
   leaderId,
   participantIds = [],
   workspaceId,
-  companyCode = 0,
 }) => {
-  const returnVal = await http('CREATE_ROOM', {
-    title,
-    description,
-    autoRecording,
-    translation,
-    keepAlive,
-    sessionType,
-    leaderId,
-    participantIds,
-    workspaceId,
-    companyCode,
-  })
+  const returnVal = await http(
+    'CREATE_ROOM',
+    {
+      userId,
+      companyCode,
+      title,
+      description,
+      autoRecording,
+      translation,
+      keepAlive,
+      sessionType,
+      leaderId,
+      participantIds,
+      workspaceId,
+    },
+    {
+      client,
+    },
+  )
 
   return returnVal
 }
 /**
  * 원격협업 통화방 재시작
+ * @header {String} client
+ * @path {String} userId
+ * @query {Number} companyCode
+ * @query {String} sessionId
  * @param {String} title
  * @param {String} description
  * @param {String} autoRecording
@@ -52,10 +67,12 @@ export const createRoom = async ({
  * @param {String} leaderId // 리더 아이디(uuid)
  * @param {Array[String]} participantIds // 참여자 리스트
  * @param {String} workspaceId
- * @query {String} companyCode
- * @query {String} sessionId
  */
 export const restartRoom = async ({
+  client,
+  userId,
+  companyCode = 0,
+  sessionId,
   title,
   description,
   autoRecording = false,
@@ -65,22 +82,27 @@ export const restartRoom = async ({
   leaderId,
   participantIds = [],
   workspaceId,
-  companyCode = 0,
-  sessionId,
 }) => {
-  const returnVal = await http('RESTART_ROOM', {
-    title,
-    description,
-    autoRecording,
-    translation,
-    keepAlive,
-    sessionType,
-    leaderId,
-    participantIds,
-    workspaceId,
-    companyCode,
-    sessionId,
-  })
+  const returnVal = await http(
+    'RESTART_ROOM',
+    {
+      userId,
+      companyCode,
+      sessionId,
+      title,
+      description,
+      autoRecording,
+      translation,
+      keepAlive,
+      sessionType,
+      leaderId,
+      participantIds,
+      workspaceId,
+    },
+    {
+      client,
+    },
+  )
 
   return returnVal
 }
@@ -117,7 +139,7 @@ export const getRoomList = async ({
   page = 0,
   paging = false,
   size = 10,
-  sort = 'activeDate,asc',
+  sort = 'createdDate,asc',
   userId,
   workspaceId,
 }) => {

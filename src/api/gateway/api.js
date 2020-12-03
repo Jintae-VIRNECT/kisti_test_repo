@@ -25,10 +25,10 @@ export default {
 
   /* Workspace - Room */
   ROOM_LIST: ['GET', '/remote/room?workspaceId={workspaceId}'],
-  CREATE_ROOM: ['POST', '/remote/room?companyCode={companyCode}'],
+  CREATE_ROOM: ['POST', '/remote/room/{userId}?companyCode={companyCode}'],
   RESTART_ROOM: [
     'POST',
-    '/remote/history?companyCode={companyCode}&sessionId={sessionId}',
+    '/remote/history/{userId}?companyCode={companyCode}&sessionId={sessionId}',
   ],
   UPDATE_ROOM_PROFILE: [
     'POST',

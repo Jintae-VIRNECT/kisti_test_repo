@@ -182,11 +182,6 @@ const _ = {
       _.session.publish(_.publisher)
       return true
     } catch (err) {
-      if (err && err.message && err.message.length > 0) {
-        console.error(`${err.message} (${err.code})`)
-      } else {
-        console.error(err)
-      }
       throw err
     }
   },

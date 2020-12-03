@@ -11,7 +11,6 @@
       <create-room-info
         :roomInfo="roomInfo"
         :selection="selection"
-        :nouser="users.length === 0"
         :btnLoading="clicked"
         @startRemote="startRemote"
       ></create-room-info>
@@ -175,6 +174,8 @@ export default {
           info.imageUrl !== 'default'
         ) {
           createdRes = await restartRoom({
+            client: 'DESKTOP',
+            userId: this.account.uuid,
             title: info.title,
             description: info.description,
             leaderId: this.account.uuid,
@@ -186,6 +187,8 @@ export default {
           })
         } else {
           createdRes = await createRoom({
+            client: 'DESKTOP',
+            userId: this.account.uuid,
             title: info.title,
             description: info.description,
             leaderId: this.account.uuid,
@@ -233,17 +236,23 @@ export default {
         }
       } catch (err) {
         this.clicked = false
+        this.roomClear()
         if (typeof err === 'string') {
+          console.error(err)
           if (err === 'nodevice') {
             this.toastError(this.$t('workspace.error_no_connected_device'))
+            return
           } else if (err.toLowerCase() === 'requested device not found') {
             this.toastError(this.$t('workspace.error_no_device'))
+            return
           } else if (err.toLowerCase() === 'device access deined') {
             this.$eventBus.$emit('devicedenied:show')
+            return
           }
+        } else {
+          console.error(`${err.message} (${err.code})`)
         }
-        this.roomClear()
-        console.error(err)
+        this.toastError(this.$t('confirm.network_error'))
       }
     },
   },
