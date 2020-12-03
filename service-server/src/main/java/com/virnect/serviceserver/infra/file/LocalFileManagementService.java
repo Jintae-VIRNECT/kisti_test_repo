@@ -172,7 +172,7 @@ public class LocalFileManagementService implements IFileManagementService {
         return fileAllowExtensionList;
     }
 
-   /* private void setBucketEncryption(String bucketName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    /*private void setBucketEncryption(String bucketName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
             minioClient.setBucketEncryption(
                     SetBucketEncryptionArgs.builder()
