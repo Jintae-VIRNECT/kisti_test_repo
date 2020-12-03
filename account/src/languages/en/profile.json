@@ -80,7 +80,7 @@
       "newPassword": "New Password",
       "newPasswordPlaceholder": "Enter your new password",
       "newPasswordRepeatPlaceholder": "Re-enter your new password",
-      "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. - Uppercase letter - Lowercase letter- Number - Special character ( .  ! @ # $ % ). Also your password must not contain consecutive numbers and more than four of same characters.",
+      "caution": "Your password must be between 8 and 20 characters long. Your password needs to be included with at least 3 of following character types. <br>- Uppercase letter <br>- Lowercase letter<br>- Number <br>- Special character ( .  ! @ # $ % ). <br>Also your password must not contain consecutive numbers and more than four of same characters.",
       "submit": "Edit",
       "message": {
         "success": "Succesfully updated your password",
@@ -137,9 +137,9 @@
       "contactPlaceholder": "Enter your phone number",
       "submit": "Edit",
       "message": {
+        "wrong": "Wrong phone number format",
         "success": "Succesfully updated your contact details",
-        "fail": "Failed to update contact details please try again later.",
-        "wrong": "Wrong phone number format"
+        "fail": "Failed to update contact details please try again later."
       }
     },
     "recoveryEmailChangeModal": {
@@ -147,9 +147,9 @@
       "recoveryEmail": "Recovery Email Address",
       "submit": "Edit",
       "message": {
+        "wrong": "Wrong email address format",
         "success": "Succesfully updated your recovery email address.",
-        "fail": "Failed to update your recovery email address please try again later.",
-        "wrong": "Wrong email address format"
+        "fail": "Failed to update your recovery email address please try again later."
       }
     }
   }

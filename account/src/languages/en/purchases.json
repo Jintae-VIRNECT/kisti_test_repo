@@ -18,7 +18,7 @@
       "nextPaymentDateDesc": "This is the next payment date information when using the automatic payment service.",
       "way": "Payment Method",
       "freePlan": "Free Trial",
-      "changePlans": "Manage Subscriptons"
+      "changePlans": "Manage Subscriptions"
     },
     "planMembersInfo": {
       "title": "User Info of Workspace Plans",
