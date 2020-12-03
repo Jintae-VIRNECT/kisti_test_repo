@@ -3,8 +3,9 @@ RELEASE
 New Features
 
 Bug Fixes
-- v타겟 컨텐츠 업로드 시 v타겟 이미지를 불러올때 발생하는 버그개선
 
 Limitation
+- jvm 최소 메모리 사이즈 변경
+- 컨텐츠 복제 시 파일 업로드 방식 변경(API 응답 속도 개선)
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
