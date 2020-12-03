@@ -101,11 +101,15 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    const fileReader = new FileReader()
-    fileReader.onload = e => {
-      this.imageData = e.target.result
+    if (this.imgInfo.fileData) {
+      const fileReader = new FileReader()
+      fileReader.onload = e => {
+        this.imageData = e.target.result
+      }
+      fileReader.readAsDataURL(this.imgInfo.fileData)
+    } else {
+      this.imageData = this.imgInfo.img
     }
-    fileReader.readAsDataURL(this.imgInfo.fileData)
   },
 }
 </script>
