@@ -1,8 +1,9 @@
-package com.virnect.file;
+package com.virnect.serviceserver.infra.file;
 
+import com.virnect.file.FileType;
+import com.virnect.serviceserver.model.UploadResult;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -15,8 +16,8 @@ public interface IFileManagementService {
 
     String LOG_MESSAGE_TAG = "[FILE MANAGEMENT SERVICE]::";
 
-
     int EXPIRE_DAY = 7; // 7 days expire time
+    List<String> FILE_PROFILE_ALLOW_EXTENSION = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");
     List<String> FILE_IMAGE_ALLOW_EXTENSION = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");
     List<String> FILE_DOCUMENT_ALLOW_EXTENSION = Arrays.asList("doc", "ppt", "xls", "dot", "docx", "xlsx", "pptx", "pdf");
     List<String> FILE_VIDEO_ALLOW_EXTENSION = Arrays.asList("mp4", "webm");
@@ -29,9 +30,9 @@ public interface IFileManagementService {
      * @return - 업로드된 파일 url
      * @throws IOException
      */
-    String upload(MultipartFile file, String dirPath, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+    UploadResult upload(MultipartFile file, String dirPath, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
-    String uploadProfile(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+    UploadResult uploadProfile(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     boolean removeObject(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 

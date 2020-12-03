@@ -3,32 +3,23 @@ package com.virnect.serviceserver.data;
 import com.virnect.data.dao.Room;
 import com.virnect.file.dao.File;
 import com.virnect.file.dao.RecordFile;
+import com.virnect.serviceserver.model.UploadResult;
 import com.virnect.service.ApiResponse;
-import com.virnect.service.FileService;
 import com.virnect.service.dto.PageMetadataResponse;
 import com.virnect.service.dto.ResultResponse;
 import com.virnect.service.dto.feign.UserInfoResponse;
 import com.virnect.file.FileType;
-import com.virnect.file.IFileManagementService;
+import com.virnect.serviceserver.infra.file.IFileManagementService;
 import com.virnect.service.dto.file.request.FileUploadRequest;
 import com.virnect.service.dto.file.request.RecordFileUploadRequest;
 import com.virnect.service.dto.file.request.RoomProfileUpdateRequest;
 import com.virnect.service.dto.file.response.*;
 import com.virnect.service.error.ErrorCode;
-import com.virnect.service.SessionService;
-import com.virnect.serviceserver.feign.service.UserRestService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -38,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.virnect.file.IFileManagementService.DEFAULT_ROOM_PROFILE;
+import static com.virnect.serviceserver.infra.file.IFileManagementService.DEFAULT_ROOM_PROFILE;
 
 @Slf4j
 @Service
@@ -76,12 +67,25 @@ public class FileDataRepository extends DataRepository {
             DataProcess<FileUploadResponse> invokeDataProcess() {
                 // upload to file storage
                 String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
-                String objectName;
+                String objectName = null;
                 try {
-                    objectName = fileManagementService.upload(fileUploadRequest.getFile(), bucketPath, FileType.FILE);
+                    UploadResult uploadResult = fileManagementService.upload(fileUploadRequest.getFile(), bucketPath, FileType.FILE);
+                    ErrorCode errorCode = uploadResult.getErrorCode();
+                    switch (errorCode) {
+                        case ERR_FILE_ASSUME_DUMMY:
+                        case ERR_FILE_UNSUPPORTED_EXTENSION:
+                        case ERR_FILE_SIZE_LIMIT:
+                            return new DataProcess<>(new FileUploadResponse(), errorCode);
+                        case ERR_SUCCESS:
+                            objectName = uploadResult.getResult();
+                            break;
+                    }
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     log.info("{}", exception.getMessage());
-                    return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
+                    return new DataProcess<>(
+                            new FileUploadResponse(),
+                            ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
+                            exception.getMessage());
                 }
 
                 File file = fileService.registerFile(fileUploadRequest, objectName);
@@ -89,7 +93,7 @@ public class FileDataRepository extends DataRepository {
                     FileUploadResponse fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
                     return new DataProcess<>(fileUploadResponse);
                 } else {
-                    return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
+                    return new DataProcess<>(new FileUploadResponse(), ErrorCode.ERR_FILE_UPLOAD_FAILED);
                 }
             }
         }.asApiResponse();
@@ -106,12 +110,25 @@ public class FileDataRepository extends DataRepository {
             DataProcess<FileUploadResponse> invokeDataProcess() {
                 // upload to file storage
                 String bucketPath = generateDirPath(recordFileUploadRequest.getWorkspaceId(), recordFileUploadRequest.getSessionId());
-                String objectName;
+                String objectName = null;
                 try {
-                    objectName = fileManagementService.upload(recordFileUploadRequest.getFile(), bucketPath, FileType.RECORD);
+                    UploadResult uploadResult = fileManagementService.upload(recordFileUploadRequest.getFile(), bucketPath, FileType.RECORD);
+                    ErrorCode errorCode = uploadResult.getErrorCode();
+                    switch (errorCode) {
+                        case ERR_FILE_ASSUME_DUMMY:
+                        case ERR_FILE_UNSUPPORTED_EXTENSION:
+                        case ERR_FILE_SIZE_LIMIT:
+                            return new DataProcess<>(new FileUploadResponse(), errorCode);
+                        case ERR_SUCCESS:
+                            objectName = uploadResult.getResult();
+                            break;
+                    }
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     log.info("{}", exception.getMessage());
-                    return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
+                    return new DataProcess<>(
+                            new FileUploadResponse(),
+                            ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
+                            exception.getMessage());
                 }
 
                 // save record file information
@@ -122,7 +139,7 @@ public class FileDataRepository extends DataRepository {
                     FileUploadResponse fileUploadResponse = modelMapper.map(recordFile, FileUploadResponse.class);
                     return new DataProcess<>(fileUploadResponse);
                 } else {
-                    return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_FAILED);
+                    return new DataProcess<>(new FileUploadResponse(), ErrorCode.ERR_FILE_UPLOAD_FAILED);
                 }
             }
         }.asApiResponse();
@@ -149,13 +166,27 @@ public class FileDataRepository extends DataRepository {
                     if(room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
                         if (roomProfileUpdateRequest.getProfile() != null) {
                             try {
-                                profileUrl = fileManagementService.uploadProfile(
+                                UploadResult uploadResult = fileManagementService.uploadProfile(
                                         roomProfileUpdateRequest.getProfile(),
                                         null);
+                                ErrorCode errorCode = uploadResult.getErrorCode();
+                                switch (errorCode) {
+                                    case ERR_FILE_ASSUME_DUMMY:
+                                    case ERR_FILE_UNSUPPORTED_EXTENSION:
+                                    case ERR_FILE_SIZE_LIMIT:
+                                        return new DataProcess<>(new RoomProfileUpdateResponse(), errorCode);
+                                    case ERR_SUCCESS:
+                                        profileUrl = uploadResult.getResult();
+                                        break;
+                                }
+
                                 fileManagementService.deleteProfile(room.getProfile());
                             } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                                 log.info("{}", exception.getMessage());
-                                return new DataProcess<>(ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(), exception.getMessage());
+                                return new DataProcess<>(
+                                        new RoomProfileUpdateResponse(),
+                                        ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
+                                        exception.getMessage());
                             }
                         }
                         profileUpdateResponse.setSessionId(sessionId);
@@ -163,10 +194,10 @@ public class FileDataRepository extends DataRepository {
                         sessionService.updateRoom(room, profileUrl);
                         return new DataProcess<>(profileUpdateResponse);
                     } else {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                        return new DataProcess<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     }
                 } else {
-                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return new DataProcess<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
             }
         }.asApiResponse();
