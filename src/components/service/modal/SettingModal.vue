@@ -28,7 +28,11 @@
         </span>
       </p>
 
-      <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
+      <div
+        class="rec-setting__row"
+        v-if="!isTablet"
+        :class="{ disable: isLocalRecording }"
+      >
         <p class="rec-setting__text">
           {{ $t('service.setting_record_target') }}
         </p>
@@ -41,77 +45,79 @@
           ></r-radio>
         </div>
       </div>
-      <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
-        <p class="rec-setting__text">
-          {{ $t('service.setting_record_max_time') }}
-        </p>
-        <r-select
-          class="rec-setting__selector"
-          :options="localRecTimeOpt"
-          value="value"
-          text="text"
-          :selectedValue.sync="maxRecordTime"
-        >
-        </r-select>
-      </div>
-      <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
-        <div class="rec-setting__text custom">
-          <p>
-            {{ $t('service.setting_record_interval') }}
+      <template v-if="!isSafari">
+        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
+          <p class="rec-setting__text">
+            {{ $t('service.setting_record_max_time') }}
           </p>
-          <tooltip
-            customClass="tooltip-guide"
-            :content="$t('service.setting_record_time_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
-            effect="blue"
-            :guide="true"
+          <r-select
+            class="rec-setting__selector"
+            :options="localRecTimeOpt"
+            value="value"
+            text="text"
+            :selectedValue.sync="maxRecordTime"
           >
-            <img
-              slot="body"
-              class="setting__tooltip--icon"
-              src="~assets/image/ic_tool_tip.svg"
-            />
-          </tooltip>
+          </r-select>
         </div>
-        <r-select
-          class="rec-setting__selector"
-          :options="localRecIntervalOpt"
-          value="value"
-          text="text"
-          :selectedValue.sync="maxRecordInterval"
-        >
-        </r-select>
-      </div>
-
-      <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
-        <div class="rec-setting__text custom">
-          <p>
-            {{ $t('service.setting_record_resolution') }}
-          </p>
-          <tooltip
-            customClass="tooltip-guide"
-            :content="$t('service.setting_record_resolution_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
-            effect="blue"
-            :guide="true"
+        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
+          <div class="rec-setting__text custom">
+            <p>
+              {{ $t('service.setting_record_interval') }}
+            </p>
+            <tooltip
+              customClass="tooltip-guide"
+              :content="$t('service.setting_record_time_tooltip')"
+              :placement="isTablet ? 'bottom' : 'right'"
+              effect="blue"
+              :guide="true"
+            >
+              <img
+                slot="body"
+                class="setting__tooltip--icon"
+                src="~assets/image/ic_tool_tip.svg"
+              />
+            </tooltip>
+          </div>
+          <r-select
+            class="rec-setting__selector"
+            :options="localRecIntervalOpt"
+            value="value"
+            text="text"
+            :selectedValue.sync="maxRecordInterval"
           >
-            <img
-              slot="body"
-              class="setting__tooltip--icon"
-              src="~assets/image/ic_tool_tip.svg"
-            />
-          </tooltip>
+          </r-select>
         </div>
 
-        <r-select
-          class="rec-setting__selector"
-          :options="localRecResOpt"
-          value="value"
-          text="text"
-          :selectedValue.sync="recordResolution"
-        >
-        </r-select>
-      </div>
+        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
+          <div class="rec-setting__text custom">
+            <p>
+              {{ $t('service.setting_record_resolution') }}
+            </p>
+            <tooltip
+              customClass="tooltip-guide"
+              :content="$t('service.setting_record_resolution_tooltip')"
+              :placement="isTablet ? 'bottom' : 'right'"
+              effect="blue"
+              :guide="true"
+            >
+              <img
+                slot="body"
+                class="setting__tooltip--icon"
+                src="~assets/image/ic_tool_tip.svg"
+              />
+            </tooltip>
+          </div>
+
+          <r-select
+            class="rec-setting__selector"
+            :options="localRecResOpt"
+            value="value"
+            text="text"
+            :selectedValue.sync="recordResolution"
+          >
+          </r-select>
+        </div>
+      </template>
       <div
         class="rec-setting__row"
         v-if="isLeader"
@@ -125,7 +131,7 @@
           :value.sync="localRecording"
         ></r-check>
       </div>
-      <template v-if="isOnpremise">
+      <template v-if="isLeader && isOnpremise">
         <p class="rec-setting--header" :class="{ disable: isServerRecording }">
           {{ $t('service.setting_server_record') }}
           <span v-if="isServerRecording" class="rec-setting--warning">

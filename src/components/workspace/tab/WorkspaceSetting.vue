@@ -18,13 +18,6 @@
         <div class="setting-view__header">{{ menus[tabIdx].text }}</div>
 
         <div class="setting-view__body">
-          <!-- <template v-if="menus[tabIdx].key === 'test'">
-            <stt-test
-              :micDevices="micDevices"
-              :speakerDevices="speakerDevices"
-            ></stt-test>
-          </template> -->
-
           <template v-if="menus[tabIdx].key === 'video'">
             <set-video
               :videoDevices="videoDevices"
@@ -42,7 +35,7 @@
           </template>
 
           <template v-else-if="menus[tabIdx].key === 'record'">
-            <set-record></set-record>
+            <set-record v-if="!isTablet"></set-record>
             <set-server-record v-if="onpremise"></set-server-record>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
@@ -93,28 +86,42 @@ export default {
   computed: {
     ...mapGetters(['useTranslate']),
     menus() {
-      const menu = [
-        // {
-        //   key: 'test',
-        //   text: 'TEST',
-        // },
-        {
-          key: 'video',
-          text: this.$t('workspace.setting_video'),
-        },
-        {
-          key: 'audio',
-          text: this.$t('workspace.setting_audio'),
-        },
-        {
-          key: 'record',
-          text: this.$t('workspace.setting_record'),
-        },
-        {
-          key: 'language',
-          text: this.$t('workspace.setting_language'),
-        },
-      ]
+      let menu
+      if (this.isSafari && !this.onpremise) {
+        menu = [
+          {
+            key: 'video',
+            text: this.$t('workspace.setting_video'),
+          },
+          {
+            key: 'audio',
+            text: this.$t('workspace.setting_audio'),
+          },
+          {
+            key: 'language',
+            text: this.$t('workspace.setting_language'),
+          },
+        ]
+      } else {
+        menu = [
+          {
+            key: 'video',
+            text: this.$t('workspace.setting_video'),
+          },
+          {
+            key: 'audio',
+            text: this.$t('workspace.setting_audio'),
+          },
+          {
+            key: 'record',
+            text: this.$t('workspace.setting_record'),
+          },
+          {
+            key: 'language',
+            text: this.$t('workspace.setting_language'),
+          },
+        ]
+      }
       if (this.useTranslate) {
         menu.push({
           key: 'translate',

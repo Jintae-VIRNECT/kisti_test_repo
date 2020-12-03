@@ -29,7 +29,7 @@
           {{ $t('common.dashboard') }}
         </button>
       </div>
-      <div class="popover-profile__link">
+      <div class="popover-profile__link" v-if="!isSafari">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
       <div class="popover-profile__link">
