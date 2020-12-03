@@ -1,16 +1,13 @@
 RELEASE
 
 New Features
-- 인터페이스 클래스 기반 파일 업로드 서비스 바인딩 기능 추가
-  production 환경에서는 aws s3 파일 업로드 서비스, onpremise 환경에서는 minio 파일 업로드 서비스를
-  사용하도록 수정
-- JVM GC 모델 변경: Parallel GC -> G1GC
+- JVM 최소 메모리 사이즈 변경
 
 Bug Fixes
 - 없음
 
 Limitation
-- 없음
+- 코드 리팩토링 및 테이블 스키마 변경
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
