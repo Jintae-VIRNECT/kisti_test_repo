@@ -2,6 +2,7 @@
   "common": {
     "workstation": "Workstation",
     "all": "All",
+    "back": "Back",
     "prev": "Previous",
     "next": "Next",
     "yes": "Yes",
@@ -14,7 +15,7 @@
     "list": "List",
     "numbersUnit": "",
     "paymentCenter": "Payment Center",
-    "back": "Back",
+    "plan": "Plan",
     "message": {
       "notAllowFileExtension": "Unsupported file type.",
       "notAllowFileSize": "Unsupported file size."

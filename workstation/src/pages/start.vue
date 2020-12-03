@@ -64,7 +64,7 @@ import workspaceSerivce from '@/services/workspace'
 export default {
   layout: 'noSidebar',
   middleware({ store, redirect }) {
-    if (store.getters['auth/myWorkspaces'].length) {
+    if (store.getters['auth/myWorkspaces'].some(w => w.role === 'MASTER')) {
       redirect('/')
     }
   },

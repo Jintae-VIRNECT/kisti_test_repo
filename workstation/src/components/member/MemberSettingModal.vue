@@ -3,7 +3,7 @@
     class="member-setting-modal"
     :visible.sync="showMe"
     :title="$t('members.setting.title')"
-    width="440px"
+    width="628px"
     top="11vh"
   >
     <div>
@@ -37,7 +37,7 @@
         @submit.native.prevent="submit"
       >
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon">
               <template slot="label">
                 <span>{{ $t('members.setting.role') }}</span>
@@ -65,64 +65,31 @@
           </el-tooltip>
         </dt>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.remote.label">
-              <el-select v-model="form.licenseRemote">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.remote.label"
-                  :disabled="!plansInfo.remote.unUsedAmount"
-                >
-                  <span>{{ plans.remote.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.remote.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.licenseRemote"
+                :label="plans.remote.label"
+                :amount="plansInfo.remote.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.make.label">
-              <el-select v-model="form.licenseMake">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.make.label"
-                  :disabled="!plansInfo.make.unUsedAmount"
-                >
-                  <span>{{ plans.make.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.make.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.licenseMake"
+                :label="plans.make.label"
+                :amount="plansInfo.make.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.view.label">
-              <el-select v-model="form.licenseView">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.view.label"
-                  :disabled="!plansInfo.view.unUsedAmount"
-                >
-                  <span>{{ plans.view.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.view.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.licenseView"
+                :label="plans.view.label"
+                :amount="plansInfo.view.unUsedAmount"
+              />
             </el-form-item>
           </el-col>
         </el-row>
@@ -143,6 +110,7 @@
 
 <script>
 import MemberRoleSelect from '@/components/member/MemberRoleSelect'
+import MemberPlanSelect from '@/components/member/MemberPlanSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import workspaceService from '@/services/workspace'
@@ -155,6 +123,7 @@ import filterMixin from '@/mixins/filters'
 export default {
   components: {
     MemberRoleSelect,
+    MemberPlanSelect,
   },
   mixins: [filterMixin, modalMixin],
   props: {
@@ -165,6 +134,7 @@ export default {
       plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
       form: {},
+      test: [],
     }
   },
   computed: {
@@ -274,7 +244,7 @@ export default {
   }
 
   .el-form {
-    margin: 20px 0;
+    margin: 20px 0 0;
     .el-form-item {
       margin-bottom: 20px;
     }
@@ -288,6 +258,15 @@ export default {
     .el-button:first-child {
       float: left;
     }
+  }
+}
+
+body .el-popper.el-select-dropdown.member-setting-select__dropdown {
+  .el-select-dropdown__list {
+    padding: 6px 0;
+  }
+  .el-select-dropdown__item.hover {
+    background: #e9ecf1;
   }
 }
 </style>

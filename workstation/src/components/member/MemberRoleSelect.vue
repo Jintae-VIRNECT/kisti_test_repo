@@ -80,5 +80,14 @@ body .el-popper.el-select-dropdown.is-multiple.member-role-select__dropdown {
   .el-select-dropdown__item::after {
     display: none;
   }
+  .el-select-dropdown__list {
+    padding: 6px 0;
+  }
+  .el-select-dropdown__item.hover {
+    background: #e9ecf1;
+  }
+  .el-select-dropdown__item {
+    padding-left: 11px;
+  }
 }
 </style>

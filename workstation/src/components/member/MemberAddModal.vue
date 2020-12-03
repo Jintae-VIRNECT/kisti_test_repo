@@ -3,17 +3,11 @@
     class="member-add-modal"
     :visible.sync="showMe"
     :title="$t('members.add.title')"
-    width="440px"
+    width="628px"
     top="11vh"
   >
     <div>
       <p>{{ $t('members.add.desc') }}</p>
-      <p>
-        <span>{{ $t('members.add.desc2') }}</span>
-        <el-tooltip :content="$t('members.add.desc3')" placement="bottom-start">
-          <img src="~assets/images/icon/ic-error.svg" />
-        </el-tooltip>
-      </p>
       <el-form
         ref="form"
         v-for="(form, index) in userInfoList"
@@ -23,7 +17,6 @@
         :rules="rules"
         :show-message="false"
       >
-        <el-divider />
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
           <span>{{ `${$t('members.add.addUser')} ${index + 1}` }}</span>
@@ -34,12 +27,6 @@
         <el-form-item class="horizon" prop="email" required>
           <template slot="label">
             <span>{{ $t('members.add.email') }}</span>
-            <el-tooltip
-              :content="$t('members.add.emailDesc')"
-              placement="bottom-start"
-            >
-              <img src="~assets/images/icon/ic-error.svg" />
-            </el-tooltip>
           </template>
           <el-input
             class="full"
@@ -48,7 +35,7 @@
           />
         </el-form-item>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon">
               <template slot="label">
                 <span>{{ $t('members.setting.role') }}</span>
@@ -76,70 +63,44 @@
           </el-tooltip>
         </label>
         <el-row>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.remote.label">
-              <el-select v-model="form.planRemote">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.remote.label"
-                  :disabled="!plansInfo.remote.unUsedAmount"
-                >
-                  <span>{{ plans.remote.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.remote.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.planRemote"
+                :label="plans.remote.label"
+                :amount="availablePlans.remote"
+                @change="choosePlan"
+              />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.make.label">
-              <el-select v-model="form.planMake">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.make.label"
-                  :disabled="!plansInfo.make.unUsedAmount"
-                >
-                  <span>{{ plans.make.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.make.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.planMake"
+                :label="plans.make.label"
+                :amount="availablePlans.make"
+                @change="choosePlan"
+              />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :span="8">
             <el-form-item class="horizon" :label="plans.view.label">
-              <el-select v-model="form.planView">
-                <el-option
-                  :value="false"
-                  :label="$t('members.setting.givePlansEmpty')"
-                />
-                <el-option
-                  :value="true"
-                  :label="plans.view.label"
-                  :disabled="!plansInfo.view.unUsedAmount"
-                >
-                  <span>{{ plans.view.label }}</span>
-                  <span class="right">
-                    {{ plansInfo.view.unUsedAmount }}
-                  </span>
-                </el-option>
-              </el-select>
+              <member-plan-select
+                v-model="form.planView"
+                :label="plans.view.label"
+                :amount="availablePlans.view"
+                @change="choosePlan"
+              />
             </el-form-item>
           </el-col>
         </el-row>
       </el-form>
     </div>
     <div slot="footer">
+      <div class="available">
+        <img src="~assets/images/icon/ic-person.svg" />
+        <span v-html="$tc('members.add.available', availableMember)" />
+      </div>
       <el-button @click="addMember">
         {{ $t('members.add.addMember') }}
       </el-button>
@@ -157,6 +118,7 @@
 
 <script>
 import MemberRoleSelect from '@/components/member/MemberRoleSelect'
+import MemberPlanSelect from '@/components/member/MemberPlanSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
@@ -168,12 +130,17 @@ import { mapGetters } from 'vuex'
 export default {
   components: {
     MemberRoleSelect,
+    MemberPlanSelect,
   },
   mixins: [modalMixin],
+  props: {
+    membersTotal: Number,
+  },
   data() {
     return {
       plans,
       roles: role.options.filter(({ value }) => value !== 'MASTER'),
+      availablePlans: { remote: 0, make: 0, view: 0 },
       userInfoList: [new InviteMember()],
       rules: {
         email: [{ required: true, trigger: 'blur' }],
@@ -188,20 +155,51 @@ export default {
     canChangeRole() {
       return this.activeWorkspace.role === 'MASTER'
     },
+    availableMember() {
+      return 49 - this.membersTotal - this.userInfoList.length
+    },
   },
   methods: {
-    opened() {
+    async reset() {
       this.userInfoList = [new InviteMember()]
       this.$refs.form.forEach(form => form.resetFields())
       if (!this.plansInfo.planStatus) {
-        this.$store.dispatch('plan/getPlansInfo')
+        await this.$store.dispatch('plan/getPlansInfo')
       }
+      this.initAvailablePlans()
+    },
+    opened() {
+      this.userInfoList = this.userInfoList.filter(form => form.email)
+      if (!this.userInfoList.length) this.reset()
     },
     addMember() {
-      this.userInfoList.push(new InviteMember())
+      if (this.availableMember < 1) {
+        this.$message.error({
+          dangerouslyUseHTMLString: true,
+          message: this.$t('members.add.message.memberOverflow'),
+          duration: 3000,
+          showClose: true,
+        })
+      } else {
+        this.userInfoList.push(new InviteMember())
+      }
     },
     clearMember(index) {
       this.userInfoList.splice(index, 1)
+      this.choosePlan()
+    },
+    initAvailablePlans() {
+      this.plansInfo.products.forEach(product => {
+        this.availablePlans[product.value.toLowerCase()] = product.unUsedAmount
+      })
+    },
+    choosePlan() {
+      this.initAvailablePlans()
+      this.userInfoList.forEach(user => {
+        if (user.planRemote) this.availablePlans.remote -= 1
+        if (user.planMake) this.availablePlans.make -= 1
+        if (user.planView) this.availablePlans.view -= 1
+      })
     },
     async submit() {
       // 유효성 검사
@@ -219,6 +217,7 @@ export default {
           showClose: true,
         })
         this.$emit('updated', this.form)
+        this.reset()
         this.showMe = false
       } catch (e) {
         const errCode = e.toString().match(/^Error: ([0-9]+)/)[1]
@@ -255,6 +254,7 @@ export default {
 <style lang="scss">
 #__nuxt .member-add-modal {
   .el-dialog__body {
+    padding-right: 24px;
     overflow-y: scroll;
   }
   p {
@@ -282,7 +282,14 @@ export default {
   }
 
   .el-form {
-    margin: 0 0 -8px;
+    margin: 20px 0;
+    padding: 20px 20px 4px;
+    border: solid 1px #e6e9ee;
+    box-shadow: 0 1px 3px 0 rgba(23, 43, 77, 0.1);
+
+    .el-icon-close:before {
+      font-weight: bold;
+    }
 
     h6 {
       margin-bottom: 20px;
@@ -299,7 +306,7 @@ export default {
       margin-bottom: 20px;
     }
     .el-input {
-      width: 180px;
+      width: 168px;
       &.full {
         width: 100%;
       }
@@ -308,8 +315,25 @@ export default {
   .el-dialog__footer {
     border-top: solid 1px #edf0f7;
 
-    .el-button:first-child {
+    .available {
       float: left;
+      & > img {
+        vertical-align: middle;
+        transform: scale(0.85);
+        opacity: 0.6;
+      }
+      & > span {
+        color: $font-color-desc;
+        vertical-align: middle;
+        size: 13px;
+      }
+      & > span > i {
+        color: $color-primary;
+      }
+    }
+
+    .el-button:last-child {
+      float: right;
     }
   }
 }
