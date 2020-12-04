@@ -4,6 +4,7 @@ import com.virnect.file.dao.File;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +21,8 @@ public interface FileRepository extends JpaRepository<File, Long> {
     Page<File> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId, Pageable pageable);
 
     Page<File> findByWorkspaceIdAndSessionIdAndDeletedIsTrue(final String workspaceId, final String sessionId, Pageable pageable);
+
+    //@Query("select f from File f where f.deleted is true")
+    Page<File> findByDeletedIsFalse();
+
 }

@@ -8,15 +8,16 @@ import org.springframework.batch.item.ItemProcessor;
 import java.time.LocalDateTime;
 
 
-/*public class FileItemProcessor implements ItemProcessor<File, File> {
+public class FileItemProcessor implements ItemProcessor<File, File> {
     private static final Logger log = LoggerFactory.getLogger(FileItemProcessor.class);
 
     @Override
     public File process(File item) throws Exception {
-        LocalDateTime expirationDate = item.getExpirationDate();
-
-
-        //log.info("Converting (" + item + ") into (" + transformedPerson + ")");
-        return null;
+        log.info("process");
+        if(item.getExpirationDate().isBefore(LocalDateTime.now())) {
+            log.info("Converting (" + item + ") to deleted");
+            item.setDeleted(true);
+        }
+        return item;
     }
-}*/
+}

@@ -7,7 +7,7 @@ import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.listener.JobExecutionListenerSupport;
 import org.springframework.stereotype.Component;
 
-/*@Component
+@Component
 public class JobCompletionNotificationListener extends JobExecutionListenerSupport {
     private static final String TAG = JobCompletionNotificationListener.class.getSimpleName();
 
@@ -24,4 +24,4 @@ public class JobCompletionNotificationListener extends JobExecutionListenerSuppo
             );
         }
     }
-}*/
+}
