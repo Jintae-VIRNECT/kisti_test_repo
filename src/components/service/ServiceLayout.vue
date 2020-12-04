@@ -216,12 +216,19 @@ export default {
     if (this.callTimeout) {
       clearTimeout(this.callTimeout)
     }
+
+    if (this.recordingId && this.recordTimeout) {
+      this.clearServerRecordTimer()
+    }
+
     window.onbeforeunload = () => {}
     navigator.mediaDevices.ondevicechange = () => {}
     window.removeEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.removeEventListener('orientationchange', this.changeOrientation)
 
     this.stopLocalRecord()
+    this.setServerRecordStatus('STOP')
+
     this.$eventBus.$off('video:fullscreen', this.setFullScreen)
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
   },
