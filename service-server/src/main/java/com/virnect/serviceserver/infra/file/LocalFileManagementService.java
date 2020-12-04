@@ -22,7 +22,10 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -33,6 +36,7 @@ import javax.net.ssl.X509TrustManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ConnectException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -172,6 +176,78 @@ public class LocalFileManagementService implements IFileManagementService {
         return fileAllowExtensionList;
     }
 
+    private List<String> setDefaultFileAllowExtensionList() {
+        fileAllowExtensionList = new ArrayList<>();
+
+        fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
+        fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
+        fileAllowExtensionList.addAll(FILE_VIDEO_ALLOW_EXTENSION);
+
+        return fileAllowExtensionList;
+    }
+
+    private InputStream getFileFromResourceAsStream(String fileName) {
+        return getClass().getClassLoader().getResourceAsStream(fileName);
+    }
+
+    private void loadStoragePolicy() {
+        try {
+            this.policyEnabled = this.remoteServiceConfig.remoteStorageProperties.isPolicyEnabled();
+            if (policyEnabled) {
+                this.policyLocation = this.remoteServiceConfig.remoteStorageProperties.getPolicyLocation();
+                if (this.policyLocation == null || this.policyLocation.isEmpty()) {
+                    LogMessage.formedInfo(
+                            TAG,
+                            "initialise local file service",
+                            "init",
+                            "storage policy file can not find, check file or directory path. " +
+                                    "try to load policy file from resources directory",
+                            policyLocation
+                    );
+
+                    InputStream inputStream = getFileFromResourceAsStream("policy/storagePolicy.json");
+                    if(inputStream == null) {
+                        LogMessage.formedInfo(
+                                TAG,
+                                "initialise local file service",
+                                "init",
+                                "cannot find storage policy file. try to set default policy.",
+                                ""
+                        );
+                        fileAllowExtensionList = setDefaultFileAllowExtensionList();
+                    } else {
+                        jsonUtil = new JsonUtil();
+                        JsonObject jsonObject = null;
+                        jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
+                        fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
+                        inputStream.close();
+                    }
+                } else {
+                    Path path = getPolicyFilePath(this.policyLocation);
+                    jsonUtil = new JsonUtil();
+                    JsonObject jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
+                    LogMessage.formedInfo(
+                            TAG,
+                            "initialise local file service",
+                            "init",
+                            "storage service policy is enabled",
+                            String.valueOf(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled())
+                    );
+                    fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
+                }
+            }
+        } catch (IOException e) {
+            LogMessage.formedError(
+                    TAG,
+                    "initialise local file service",
+                    "loadStoragePolicy",
+                    "load storage policy failed",
+                    e.getMessage()
+            );
+            fileAllowExtensionList = setDefaultFileAllowExtensionList();
+        }
+    }
+
     /*private void setBucketEncryption(String bucketName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         try {
             minioClient.setBucketEncryption(
@@ -223,7 +299,7 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @PostConstruct
-    public void init() throws NoSuchAlgorithmException, IOException, InvalidKeyException {
+    public void init() throws NoSuchAlgorithmException, InvalidKeyException {
         if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
             LogMessage.formedInfo(
                     TAG,
@@ -234,41 +310,17 @@ public class LocalFileManagementService implements IFileManagementService {
             );
             try {
                 disableSslVerification();
-            } catch (KeyManagementException e) {
-                e.printStackTrace();
-            }
-            this.policyEnabled = this.remoteServiceConfig.remoteStorageProperties.isPolicyEnabled();
-            if(policyEnabled) {
-                this.policyLocation = this.remoteServiceConfig.remoteStorageProperties.getPolicyLocation();
-                if(this.policyLocation != null && !this.policyLocation.isEmpty()) {
-                    Path path = getPolicyFilePath(this.policyLocation);
-                    jsonUtil = new JsonUtil();
-                    JsonObject jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
-                    LogMessage.formedInfo(
-                            TAG,
-                            "initialise local file service",
-                            "init",
-                            "storage service policy is enabled",
-                            String.valueOf(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled())
-                    );
-                    fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
-                }
-            }
 
-            this.bucketName = this.remoteServiceConfig.remoteStorageProperties.getBucketName();
-            this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
-            this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
-            this.recordBucketName = this.remoteServiceConfig.remoteStorageProperties.getRecordBucketName();
+                loadStoragePolicy();
 
-            String accessKey = this.remoteServiceConfig.remoteStorageProperties.getAccessKey();
-            String secretKey = this.remoteServiceConfig.remoteStorageProperties.getSecretKey();
-            String serverUrl = this.remoteServiceConfig.remoteStorageProperties.getServerUrl();
+                this.bucketName = this.remoteServiceConfig.remoteStorageProperties.getBucketName();
+                this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
+                this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
+                this.recordBucketName = this.remoteServiceConfig.remoteStorageProperties.getRecordBucketName();
 
-            try {
-                //fileAllowExtensionList.addAll(FILE_IMAGE_ALLOW_EXTENSION);
-                //fileAllowExtensionList.addAll(FILE_DOCUMENT_ALLOW_EXTENSION);
-                //fileAllowExtensionList.addAll(FILE_VIDEO_ALLOW_EXTENSION);
-
+                String accessKey = this.remoteServiceConfig.remoteStorageProperties.getAccessKey();
+                String secretKey = this.remoteServiceConfig.remoteStorageProperties.getSecretKey();
+                String serverUrl = this.remoteServiceConfig.remoteStorageProperties.getServerUrl();
                 LogMessage.formedInfo(
                         TAG,
                         "initialise local file service",
@@ -301,12 +353,14 @@ public class LocalFileManagementService implements IFileManagementService {
                 }
 
             } catch (ConnectException e) {
-                log.info("Bucket ConnectException error occured:: {}", e.getMessage());
+                log.info("Bucket ConnectException error occurred:: {}", e.getMessage());
                 this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
             } catch (MinioException e) {
                 log.info("Bucket error occured:: {}", e.getMessage());
             } catch (KeyManagementException e) {
-                log.info("KeyManagementException error occured:: {}", e.getMessage());
+                log.info("KeyManagementException error occurred:: {}", e.getMessage());
+            } catch (IOException e) {
+                log.info("IOException error occurred:: {}", e.getMessage());
             }
         } else {
             log.info("Remote storage service is disabled");
