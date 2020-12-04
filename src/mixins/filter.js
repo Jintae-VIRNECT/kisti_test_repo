@@ -60,18 +60,20 @@ export default {
               target.forEach(obj => {
                 if (!pushFlag) {
                   if (obj.hasOwnProperty(spts[1])) {
-                    if (
-                      obj[spts[1]]
-                        .toLowerCase()
-                        .includes(this.searchFilter.toLowerCase())
-                    ) {
-                      filterList.push(content)
-                      pushFlag = true
-                    } else if (
-                      ChosungSearch.is(this.searchFilter, obj[spts[1]], false)
-                    ) {
-                      filterList.push(content)
-                      pushFlag = true
+                    if (obj[spts[1]] && obj[spts[1]].length > 0) {
+                      if (
+                        obj[spts[1]]
+                          .toLowerCase()
+                          .includes(this.searchFilter.toLowerCase())
+                      ) {
+                        filterList.push(content)
+                        pushFlag = true
+                      } else if (
+                        ChosungSearch.is(this.searchFilter, obj[spts[1]], false)
+                      ) {
+                        filterList.push(content)
+                        pushFlag = true
+                      }
                     }
                   }
                 }
