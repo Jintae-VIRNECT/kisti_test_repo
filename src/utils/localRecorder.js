@@ -96,7 +96,7 @@ export default class LocalRecorder {
       logger(logType, 'start local record')
     } catch (e) {
       console.error(e)
-      throw e //흠흠..... 완전 이상 promise 넣어야할듯
+      throw e
     }
   }
 

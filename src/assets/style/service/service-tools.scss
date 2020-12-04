@@ -243,8 +243,10 @@
   left: 0;
   width: 0;
   height: 0.429rem;
+  margin-top: 1px;
   background-color: $color_primary;
   border-radius: 3px;
+  transform: translateY(-50%);
   pointer-events: none;
 }
 
