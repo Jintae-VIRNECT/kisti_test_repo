@@ -1,5 +1,5 @@
 <template>
-  <audio preload="auto" ref="ttsAudio" autoplay>
+  <audio preload="auto" ref="ttsAudio" autoplay playsinline>
     <source :src="audioSrc" />
   </audio>
 </template>

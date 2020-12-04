@@ -104,7 +104,7 @@
         <span>{{ $t('alarm.saved_duration') }}</span>
       </div> -->
     </div>
-    <audio preload="auto" ref="noticeAudio">
+    <audio preload="auto" ref="noticeAudio" playsinline>
       <source src="~assets/media/end.mp3" />
     </audio>
   </popover>

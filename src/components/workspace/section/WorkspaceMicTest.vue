@@ -28,6 +28,7 @@
         ref="audioComponent"
         :srcObject.prop="audioStream"
         autoplay
+        playsinline
       ></audio>
     </div>
   </section>
