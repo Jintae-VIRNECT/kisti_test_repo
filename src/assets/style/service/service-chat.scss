@@ -287,19 +287,22 @@
 
 .chat-item__body--text {
   position: relative;
+  margin-top: 0.643em;
+  padding-top: 0.643em;
   overflow: hidden;
   font-weight: 400;
   // line-height: 1.57;
   word-break: break-word;
+  border-top: dashed 1px #c7c7c7;
   transition: opacity 0.3s ease-in-out;
   &.inactive {
     height: 0;
     opacity: 0;
   }
-  &.multiple + &.multiple {
-    margin-top: 0.929rem;
-    padding-top: 0.786rem;
-    border-top: dashed 1px #c7c7c7;
+  &:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
   }
   &.init::before {
     background-image: url(~assets/image/call/ic_chat_remote.svg);
