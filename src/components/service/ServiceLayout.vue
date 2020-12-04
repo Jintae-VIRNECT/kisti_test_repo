@@ -137,7 +137,10 @@ export default {
       this.$call.sendResolution({
         width: settings.width,
         height: settings.height,
-        orientation: event.target.screen.orientation.type,
+        orientation:
+          window.orientation === 90 || window.orientation === -90
+            ? 'landscape-primary'
+            : 'portrait-primary',
       })
     },
     showTimeoutConfirm() {

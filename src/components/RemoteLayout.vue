@@ -45,6 +45,7 @@ export default {
     this.$eventBus.$off('reJoin', () => {
       this.key++
     })
+    document.body.onorientationchange = () => {}
   },
 }
 </script>
