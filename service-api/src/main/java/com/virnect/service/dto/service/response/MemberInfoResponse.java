@@ -13,19 +13,19 @@ import lombok.Setter;
 @ApiModel
 public class MemberInfoResponse {
     @ApiModelProperty(value = "User Unique Identifier", example = "498b1839dc29ed7bb2ee90ad6985c608")
-    private String uuid;
+    private String uuid = "";
 
     @ApiModelProperty(value = "User e-mail", position = 2, example = "example@remote.com")
-    private String email;
+    private String email = "";
 
     @ApiModelProperty(value = "User name", position = 3, example = "홍길동")
-    private String name;
+    private String name = "";
 
     @ApiModelProperty(value = "User Nick Name", position = 4, example = "리모트 데모")
-    private String nickName;
+    private String nickName = "";
 
     @ApiModelProperty(value = "User Profile image URL", position = 5, example = "url")
-    private String profile;
+    private String profile = "";
 
     @ApiModelProperty(
             value = "Member Type ( UNKNOWN, LEADER, EXPERT )",
@@ -35,7 +35,7 @@ public class MemberInfoResponse {
     @ApiModelProperty(
             value = "User Permission ( MASTER, MANAGER, MEMBER )",
             position = 7)
-    private String role;
+    private String role = "MEMBER";
 
     /*@ApiModelProperty(
             value = "User Permission Id ( MASTER(1), MANAGER(2), MEMBER(3) )",

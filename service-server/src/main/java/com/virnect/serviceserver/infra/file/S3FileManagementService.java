@@ -6,18 +6,15 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.google.common.io.Files;
 import com.virnect.file.FileType;
-import com.virnect.file.IFileManagementService;
+import com.virnect.serviceserver.model.UploadResult;
 import com.virnect.service.error.ErrorCode;
-import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.data.UtilDataRepository;
 import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,18 +77,31 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String upload(MultipartFile file, String dirPath, FileType fileType)
+    public UploadResult upload(MultipartFile file, String dirPath, FileType fileType)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // 1. check is file dummy
         if (file.getSize() == 0) {
-            throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
+            LogMessage.formedError(
+                    TAG,
+                    "file upload",
+                    "upload",
+                    "this file maybe dummy",
+                    String.valueOf(file.getSize())
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_ASSUME_DUMMY);
         }
 
         // 2. check file extension
         String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
         if (!fileAllowExtensionList.contains(fileExtension)) {
-            log.error("UPLOAD FILE::#upload::unsupported_file [{}]", file.getOriginalFilename());
-            throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
+            LogMessage.formedError(
+                    TAG,
+                    "file upload",
+                    "upload",
+                    "this file is not unsupported",
+                    file.getOriginalFilename()
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
 
         // 3. check file size
@@ -99,13 +109,13 @@ public class S3FileManagementService implements IFileManagementService {
          * if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) { throw new
          * RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT); }
          */
-        log.info("UPLOAD FILE::#upload::result => [originName: {}, name: {} , size: {}]",
+        /*log.info("UPLOAD FILE::#upload::result => [originName: {}, name: {} , size: {}]",
                 file.getOriginalFilename(),
                 file.getName(),
-                file.getSize());
+                file.getSize());*/
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
 
-        log.info("UPLOAD FILE::#upload::result => [{}, {}]", objectName, fileExtension);
+        //log.info("UPLOAD FILE::#upload::result => [{}, {}]", objectName, fileExtension);
 
         // 4. file upload
         // Create a InputStream for object upload.
@@ -120,7 +130,6 @@ public class S3FileManagementService implements IFileManagementService {
 
                 putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
                         CannedAccessControlList.PublicRead);
-                log.info("UPLOAD FILE::#upload:: {}, {}", objectPath.toString(), file.getContentType());
                 break;
             }
             case RECORD: {
@@ -132,44 +141,55 @@ public class S3FileManagementService implements IFileManagementService {
 
                 putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
                         CannedAccessControlList.PublicRead);
-                log.info("SAVE FILE_URL: {}, {}", objectPath.toString(), file.getContentType());
                 break;
             }
         }
-
-        return objectName;
+        return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
     }
 
     @Override
-    public String uploadProfile(MultipartFile file, String dirPath)
+    public UploadResult uploadProfile(MultipartFile file, String dirPath)
             throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // check file is dummy
         if (file.getSize() == 0) {
-            throw new RestServiceException(ErrorCode.ERR_FILE_ASSUME_DUMMY);
+            LogMessage.formedError(
+                    TAG,
+                    "profile image upload",
+                    "uploadProfile",
+                    "this file maybe dummy",
+                    String.valueOf(file.getSize())
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_ASSUME_DUMMY);
         }
 
         // check file extension
         String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
         if (!FILE_IMAGE_ALLOW_EXTENSION.contains(fileExtension)) {
-            log.error("[FILE_UPLOAD_SERVICE] [UNSUPPORTED_FILE] [{}]", file.getOriginalFilename());
-            throw new RestServiceException(ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
+            LogMessage.formedError(
+                    TAG,
+                    "profile image upload",
+                    "uploadProfile",
+                    "this file is not unsupported",
+                    file.getOriginalFilename()
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
 
         // check file size
         if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) {
-            throw new RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT);
+            LogMessage.formedError(
+                    TAG,
+                    "profile image upload",
+                    "uploadProfile",
+                    "this file size over the max size",
+                    String.valueOf(file.getSize())
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_SIZE_LIMIT);
         }
 
         // check profile directory name or path
         if (dirPath == null)
             dirPath = profileBucketName;
-
-        log.info("UPLOAD SERVICE: ==> originName: [{}], name: {} , size: {}",
-                file.getOriginalFilename(),
-                file.getName(),
-                file.getSize());
-
-        log.info("{}, {}, {}", bucketName, dirPath, fileExtension);
 
         // file upload with create a InputStream for object upload.
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
@@ -181,8 +201,13 @@ public class S3FileManagementService implements IFileManagementService {
         objectMetadata.setContentType(file.getContentType());
         objectMetadata.setContentLength(file.getSize());
 
-        return putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
+        String fileUrl = putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
                 CannedAccessControlList.PublicRead);
+        if(fileUrl != null) {
+            return new UploadResult(fileUrl, ErrorCode.ERR_SUCCESS);
+        } else {
+            return new UploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+        }
     }
 
     @Override
@@ -295,9 +320,26 @@ public class S3FileManagementService implements IFileManagementService {
                     file.getInputStream(),
                     objectMetadata)
                     .withCannedAcl(cannedAcl));
+
+            LogMessage.formedInfo(
+                    TAG,
+                    "file upload",
+                    "putObjectToAWSS3",
+                    "complete to upload profile",
+                    "originName: " + file.getOriginalFilename() + ", "
+                            + "name: " + file.getName() + ", "
+                            + "size: " + file.getSize() + ", "
+                            + "contentType: " + file.getContentType() + ", "
+            );
         } catch (IOException exception) {
             exception.printStackTrace();
-            log.info("Upload error occurred:: {}", exception.getMessage());
+            LogMessage.formedError(
+                    TAG,
+                    "file upload",
+                    "putObjectToAWSS3",
+                    "Upload error occurred",
+                    exception.getMessage()
+            );
         }
         return amazonS3Client.getUrl(bucketName, fileName).toString();
 

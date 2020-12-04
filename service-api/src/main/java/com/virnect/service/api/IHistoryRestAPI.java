@@ -21,7 +21,7 @@ import javax.validation.Valid;
 @RequestMapping("/remote")
 public interface IHistoryRestAPI {
 
-    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "Redial Remote Session")
+    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "This api will be deprecated")
     @PostMapping(value = "history")
     ResponseEntity<ApiResponse<RoomResponse>> redialRoomRequest(
             @RequestBody @Valid RoomRequest roomRequest,
@@ -30,6 +30,16 @@ public interface IHistoryRestAPI {
             BindingResult result
             );
 
+    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "Redial Remote Session")
+    @PostMapping(value = "history/{userId}")
+    ResponseEntity<ApiResponse<RoomResponse>> redialRoomRequestHandler(
+            @RequestHeader(name = "client", required = false) String client,
+            @PathVariable(name = "userId") String userId,
+            @RequestBody @Valid RoomRequest roomRequest,
+            @RequestParam(name = "sessionId") String sessionId,
+            @RequestParam(name = "companyCode") int companyCode,
+            BindingResult result);
+
     @ApiOperation(value = "Load Room History Information List", notes = "최근 기록 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "40f9bbee9d85dca7a34a0dd205aae718", required = true),
@@ -37,7 +47,7 @@ public interface IHistoryRestAPI {
             @ApiImplicitParam(name = "paging", value = "검색 결과 페이지네이션 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate, desc"),
     })
     @GetMapping(value = "history")
     ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(

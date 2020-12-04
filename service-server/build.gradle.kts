@@ -58,6 +58,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
+    implementation("org.springframework.boot:spring-boot-starter-batch")
 
     implementation("org.springframework.data:spring-data-envers")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -67,6 +68,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     //developmentOnly("org.springframework.boot:spring-boot-devtools") //Unresolved reference: developmentOnly under boot version 2.3.1
     runtimeOnly("mysql:mysql-connector-java")
+    runtimeOnly("org.hsqldb:hsqldb")
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     annotationProcessor("org.projectlombok:lombok")
@@ -75,6 +77,7 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.batch:spring-batch-test")
     //============================ SERVICE DEPENDENCIES ===========================================//
     // Eureka
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")

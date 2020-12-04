@@ -46,8 +46,6 @@ public enum LicenseItem {
             case COMPANY_KINTEX:
                 licenseItem = LicenseItem.ITEM_KINTEX;
                 break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + companyCode);
         }
         return licenseItem;
     }
