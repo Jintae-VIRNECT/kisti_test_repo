@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
@@ -71,6 +72,7 @@ public class WorkspaceService {
     private final LicenseRestService licenseRestService;
     private final WorkspaceSettingRepository workspaceSettingRepository;
     private final RedirectProperty redirectProperty;
+    private final CacheManager cacheManager;
 
     /**
      * 워크스페이스 생성
@@ -916,7 +918,6 @@ public class WorkspaceService {
             return redirectView;
         }
 
-
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
         InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
         if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
@@ -1021,6 +1022,7 @@ public class WorkspaceService {
         sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
 
         //redis 에서 삭제
+        cacheManager.getCache("userWorkspaces").evict(userInvite.getInvitedUserEmail());
         userInviteRepository.delete(userInvite);
 
         //history 저장
