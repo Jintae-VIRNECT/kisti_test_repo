@@ -16,6 +16,7 @@ export default {
     dblClick() {
       if (this.timeout) {
         clearTimeout(this.timeout)
+        this.timeout = null
         if (typeof this.doEvent === 'function') {
           this.doEvent()
         }
