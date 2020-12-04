@@ -6,6 +6,8 @@ import App from './App.vue'
 import Vue2Scrollbar from 'plugins/remote/scrollbar'
 import DayJS from 'plugins/remote/dayjs'
 import Datepicker from 'plugins/remote/datepicker'
+import VDatepicker from 'plugins/remote/vdatepicker'
+
 import i18n from 'plugins/remote/i18n'
 import globalMixin from 'mixins/global'
 
@@ -20,6 +22,7 @@ Vue.use(Vue2Scrollbar)
 Vue.use(DayJS)
 Vue.use(Datepicker)
 Vue.use(VueToasted)
+Vue.use(VDatepicker)
 Vue.mixin(globalMixin)
 
 Vue.config.productionTip = false

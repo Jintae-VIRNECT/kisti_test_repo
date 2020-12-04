@@ -22,16 +22,41 @@
           <div class="collabo-search-bar__condition--divider"></div>
           <check-box :text="'검색 사용'" :value.sync="useDate"></check-box>
         </div>
-
-        <datepicker
-          :pickerName="'search-from'"
-          :highlighted="date"
-          :initValue="
-            $dayjs()
-              .subtract(7, 'day')
-              .format('YYYY-MM-DD')
-          "
-        ></datepicker>
+        <v-date-picker
+          v-model="range"
+          :is-range="true"
+          :masks="masks"
+          :columns="$screens({ default: 2, lg: 2 })"
+          :popover="{ visibility: 'click' }"
+          @popoverWillShow="toggleCalendarBtn"
+          @popoverWillHide="toggleCalendarBtn"
+        >
+          <template v-slot="{ inputValue, inputEvents, togglePopover }">
+            <div class="collabo-search-bar__date">
+              <input
+                class="collabo-search-bar__date--input"
+                :value="inputValue.start + ' ~ ' + inputValue.end"
+                v-on="inputEvents.start"
+                readonly
+              />
+              <button
+                class="collabo-search-bar__date--buton"
+                @click="togglePopover({ placement: 'auto-start' })"
+              >
+                <img
+                  v-if="!calendarBtn"
+                  src="~assets/image/calendar/ic_calendar_default.svg"
+                  alt="calendar_hide"
+                />
+                <img
+                  v-else
+                  src="~assets/image/calendar/ic_calendar_active.svg"
+                  alt="calendar_active"
+                />
+              </button>
+            </div>
+          </template>
+        </v-date-picker>
       </div>
 
       <div class="collabo-search-bar__condition">
@@ -39,6 +64,7 @@
           {{ $t('search.text') }}</label
         >
         <input
+          readonly
           class="collabo-search-bar--input"
           type="text"
           :placeholder="$t('search.placeholder')"
@@ -59,7 +85,6 @@
 </template>
 
 <script>
-import Datepicker from 'Datepicker'
 import CheckBox from 'CheckBox'
 import DSelect from 'DashBoardSelect'
 import confirmMixin from 'mixins/confirm'
@@ -68,19 +93,34 @@ export default {
   name: 'CollaboSearchBar',
   mixins: [confirmMixin],
   components: {
-    Datepicker,
     CheckBox,
     DSelect,
   },
   data() {
+    let startDay = new Date()
+    let endDay = new Date()
+    endDay.setDate(endDay.getDate() - 7)
     return {
       collaboSatus: null,
       searchText: '',
       useDate: false,
+
       date: {
         from: null,
         to: null,
       },
+
+      range: {
+        start: startDay,
+        end: endDay,
+      },
+
+      masks: {
+        input: 'YYYY-MM-DD',
+        title: 'YYYY-MM',
+      },
+
+      calendarBtn: false,
     }
   },
   computed: {
@@ -132,6 +172,17 @@ export default {
         })
       },
     },
+    range: {
+      handler(range) {
+        this.setSearch({
+          date: {
+            from: this.$dayjs(range.start).format('YYYY-MM-DD'),
+            to: this.$dayjs(range.end).format('YYYY-MM-DD'),
+          },
+        })
+      },
+      deep: true,
+    },
   },
   methods: {
     ...mapActions(['setSearch']),
@@ -177,7 +228,11 @@ export default {
         },
       })
     },
+    toggleCalendarBtn() {
+      this.calendarBtn = !this.calendarBtn
+    },
   },
+
   mounted() {
     window.addEventListener('keypress', this.doSearch)
   },
@@ -292,9 +347,6 @@ export default {
   }
 }
 
-.collabo-search-bar__status--list {
-}
-
 .collabo-search-bar__status--list.popover--wrapper {
   > .select-label {
     width: 154px;
@@ -353,5 +405,50 @@ export default {
   margin: 0px 12.5px;
   background: rgb(32, 51, 89);
   opacity: 0.2;
+}
+
+.collabo-search-bar__date {
+  display: flex;
+  width: 353px;
+  height: 48px;
+  border: 1px solid rgb(186, 194, 204);
+  border-radius: 6px;
+  &:hover,
+  &:focus {
+    border: 1px solid rgb(15, 117, 245);
+    > .collabo-search-bar__date--buton {
+      border-left: 1px solid rgb(15, 117, 245);
+    }
+  }
+  transition: 0.3s;
+}
+
+.collabo-search-bar__date--input {
+  width: 100%;
+  height: 100%;
+  padding: 0px 0px 0px 14.5px;
+  color: rgb(11, 31, 72);
+  font-weight: 500;
+  font-size: 15px;
+  border: none;
+  border-radius: 6px 0px 0px 6px;
+}
+
+.collabo-search-bar__date--buton {
+  min-width: 48px;
+  height: 46x;
+  background: rgb(255, 255, 255);
+  border-left: 1px solid rgb(186, 194, 204);
+  border-radius: 0px 6px 6px 0px;
+  transition: 0.3s;
+  &:hover,
+  &:focus {
+    border-left: 1px solid rgb(15, 117, 245);
+  }
+}
+
+.vc-pane-container {
+  width: 600px;
+  height: 313px;
 }
 </style>
