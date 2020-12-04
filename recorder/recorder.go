@@ -58,6 +58,13 @@ type recorder struct {
 	timeoutCh    chan recordingTimeoutEvent
 }
 
+func newRecorder() *recorder {
+	return &recorder{
+		recordingMap: map[data.RecordingID]*recording{},
+		timeoutCh:    make(chan recordingTimeoutEvent, 512),
+	}
+}
+
 func (r *recorder) timeoutHandler() {
 	log := logger.NewLogger()
 	logEntry := logrus.NewEntry(log)
@@ -74,9 +81,14 @@ func (r *recorder) timeoutHandler() {
 }
 
 func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID,
-	userID string, containerID string, createTime time.Time, timeLimit int, timer *time.Timer) *recording {
+	userID string, containerID string, createTime time.Time, timeLimit int, timer *time.Timer) (*recording, error) {
 	r.mapMux.Lock()
 	defer r.mapMux.Unlock()
+
+	_, ok := r.recordingMap[recordingID]
+	if ok == true {
+		return nil, ErrRecordingIDAlreadyExists
+	}
 
 	rec := &recording{
 		recordingID,
@@ -90,7 +102,7 @@ func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.Ses
 	}
 	r.recordingMap[recordingID] = rec
 
-	return rec
+	return rec, nil
 }
 
 func (r *recorder) findRecordings(recordingID *data.RecordingID, workspaceID *data.WorkspaceID, sessionID *data.SessionID) []*recording {
@@ -190,10 +202,7 @@ func (r *recording) stop(ctx context.Context, reason Reason) {
 	}()
 }
 
-var mainRecorder = recorder{
-	recordingMap: map[data.RecordingID]*recording{},
-	timeoutCh:    make(chan recordingTimeoutEvent, 512),
-}
+var mainRecorder = newRecorder()
 
 func Init() {
 	driver := viper.GetString("database.driver")
