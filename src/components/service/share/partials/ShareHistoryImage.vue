@@ -8,6 +8,8 @@
       }"
       @dblclick="show"
       @click="select"
+      @touchstart="touch"
+      @touchend="touchEnd"
     >
       <img :src="imageData" />
       <div class="sharing-image__item-active">
@@ -24,14 +26,16 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import confirmMixin from 'mixins/confirm'
+import touchMixin from 'mixins/touch'
 export default {
   name: 'ShareHistoryImage',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, touchMixin],
   components: {},
   data() {
     return {
       imageData: '',
       clicking: false,
+      touched: null,
     }
   },
   props: {
@@ -48,6 +52,12 @@ export default {
   },
   methods: {
     ...mapActions(['showImage', 'removeHistory']),
+    doEvent() {
+      this.show()
+    },
+    oneClick() {
+      this.select()
+    },
     show() {
       this.clicking = false
       if (this.shareFile.id === this.imgInfo.id) return
@@ -91,11 +101,15 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    const fileReader = new FileReader()
-    fileReader.onload = e => {
-      this.imageData = e.target.result
+    if (this.imgInfo.fileData) {
+      const fileReader = new FileReader()
+      fileReader.onload = e => {
+        this.imageData = e.target.result
+      }
+      fileReader.readAsDataURL(this.imgInfo.fileData)
+    } else {
+      this.imageData = this.imgInfo.img
     }
-    fileReader.readAsDataURL(this.imgInfo.fileData)
   },
 }
 </script>

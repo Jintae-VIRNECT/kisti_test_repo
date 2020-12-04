@@ -96,6 +96,9 @@ export default {
   border: solid 1px #979797;
   border-radius: 50%;
   cursor: pointer;
+  > input {
+    opacity: 0;
+  }
   &.active {
     border-color: $color_primary;
     &::before {

@@ -102,7 +102,7 @@ export default {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate']),
+    ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate', 'useTranslate']),
     isOnpremise() {
       return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
@@ -121,7 +121,7 @@ export default {
   },
   methods: {
     checkLength() {
-      if (!this.translate.flag) return
+      if (!this.useTranslate) return
       if (this.inputText.length >= 200) {
         this.inputText = this.inputText.substr(0, 200)
         this.toastDefault(this.$t('service.chat_text_exceed'))

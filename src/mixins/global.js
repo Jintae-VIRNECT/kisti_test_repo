@@ -35,13 +35,26 @@ export default {
   },
   computed: {
     ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
-    isMobileChrome() {
-      const userAgent = navigator.userAgent
-      const isChromeMobile =
+    isSafari() {
+      const userAgent = navigator.userAgent || ''
+      return (
+        !userAgent.includes('Chrome') &&
+        !userAgent.includes('CriOS') &&
+        userAgent.includes('Safari')
+      )
+    },
+    isTablet() {
+      const userAgent = navigator.userAgent || ''
+      const isIpadSafari =
+        !userAgent.includes('Chrome') &&
+        !userAgent.includes('CriOS') &&
+        userAgent.includes('Safari')
+      return (
         userAgent.includes('Mobile') ||
-        userAgent.includes('CriOS') ||
-        userAgent.includes('mobileApp')
-      return isChromeMobile
+        userAgent.includes('Android') ||
+        userAgent.includes('mobileApp') ||
+        isIpadSafari
+      )
     },
     isScreenDesktop() {
       return 'desktop' === this.deviceType

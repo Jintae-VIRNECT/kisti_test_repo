@@ -26,8 +26,9 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('workspace.setting_record_interval_tooltip')"
-            placement="right"
+            :placement="isTablet ? 'bottom' : 'right'"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"
@@ -55,8 +56,9 @@
           <tooltip
             customClass="tooltip-guide"
             :content="$t('workspace.setting_record_resolution_tooltip')"
-            placement="right"
+            :placement="isTablet ? 'bottom' : 'right'"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"

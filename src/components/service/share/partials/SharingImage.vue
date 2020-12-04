@@ -1,6 +1,11 @@
 <template>
   <li class="sharing-image">
-    <button class="sharing-image__item" @dblclick="shareImage">
+    <button
+      class="sharing-image__item"
+      @dblclick="shareImage"
+      @touchstart="touch"
+      @touchend="touchEnd"
+    >
       <img :src="imageData" />
     </button>
     <p class="sharing-image__name">{{ fileData.name }}</p>
@@ -18,9 +23,10 @@
 import { mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
+import touchMixin from 'mixins/touch'
 export default {
   name: 'SharingImage',
-  mixins: [confirmMixin, toastMixin],
+  mixins: [confirmMixin, toastMixin, touchMixin],
   components: {},
   data() {
     return {
@@ -125,6 +131,9 @@ export default {
         img: this.imageData,
         fileData: this.fileData,
       }
+    },
+    doEvent() {
+      this.shareImage()
     },
     shareImage() {
       if (this.pdfPage > -1) {

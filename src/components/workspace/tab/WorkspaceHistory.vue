@@ -157,8 +157,9 @@ export default {
         uuid: this.account.uuid,
       })
 
-      if (result.data) {
-        this.confirmDefault(this.$t('workspace.confirm_removed_room'), {
+      if (result.result) {
+        this.pageMeta.totalElements--
+        this.confirmDefault(this.$t('workspace.confirm_removed_history'), {
           text: this.$t('button.confirm'),
         })
       }
@@ -175,7 +176,7 @@ export default {
     },
     deleteAll() {
       this.confirmCancel(
-        this.$t('workspace.confirm_remove_all'),
+        this.$t('workspace.confirm_remove_history'),
         {
           text: this.$t('button.remove'),
           action: () => {

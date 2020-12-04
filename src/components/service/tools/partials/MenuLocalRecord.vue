@@ -14,18 +14,12 @@
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
 
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'LocalRecordMenu',
   mixins: [toolMixin, toastMixin],
-  data() {
-    return {
-      isRecording: false,
-    }
-  },
-
   computed: {
     ...mapGetters(['allowLocalRecord', 'localRecordStatus']),
     canRecord() {
@@ -41,43 +35,22 @@ export default {
         return false
       }
     },
-  },
-  watch: {
-    allowLocalRecord(allow) {
-      if (allow === false && this.isRecording === true) {
-        this.toastDefault(this.$t('service.record_blocked'))
-        this.$eventBus.$emit('localRecord', { isStart: false })
-      }
+    isRecording() {
+      return this.localRecordStatus === 'START'
     },
   },
 
   methods: {
-    ...mapActions(['setLocalRecordStatus']),
     async recording() {
       if (this.disabled) return false
 
       if (!this.canRecord) {
-        // TODO: MESSAGE
         this.toastDefault(this.$t('service.record_blocked'))
         return false
       }
 
-      if (this.localRecordStatus === 'START') {
-        this.$eventBus.$emit('localRecord', { isStart: false })
-        return false
-      } else {
-        this.$eventBus.$emit('localRecord', { isStart: true })
-      }
+      this.$eventBus.$emit('localRecord')
     },
-    toggleButton(status) {
-      this.isRecording = status.isStart
-    },
-  },
-  mounted() {
-    this.$eventBus.$on('localRecord', this.toggleButton)
-  },
-  beforeDestroy() {
-    this.$eventBus.$off('localRecord')
   },
 }
 </script>

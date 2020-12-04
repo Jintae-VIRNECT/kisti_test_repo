@@ -19,6 +19,7 @@
             :content="$t('service.invite_unconnected_remove')"
             placement="right"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"
@@ -104,7 +105,6 @@ export default {
   data() {
     return {
       selection: [],
-      nouser: false,
       visibleFlag: false,
       users: [],
       loading: false,
@@ -130,7 +130,6 @@ export default {
         this.init()
       } else {
         this.selection = []
-        this.nouser = false
         this.visibleFlag = false
         this.users = []
         this.loading = false

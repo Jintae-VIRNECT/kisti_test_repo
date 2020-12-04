@@ -108,17 +108,19 @@ const getConfigs = async () => {
   setUrls(res.data)
 }
 
-const getSettings = async () => {
+export const getSettings = async () => {
   if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
-  const settings = await getSettingInfo()
-  document.title = `${settings.workspaceTitle} | Remote`
-  const favicon = document.querySelector("link[rel*='icon']")
-  favicon.href = settings.favicon
+  try {
+    const settings = await getSettingInfo()
+    document.title = `${settings.workspaceTitle} | Remote`
+    const favicon = document.querySelector("link[rel*='icon']")
+    favicon.href = settings.favicon
 
-  setConfigs({
-    whiteLogo: settings.whiteLogo,
-    defaultLogo: settings.defaultLogo,
-  })
+    setConfigs({
+      whiteLogo: settings.whiteLogo,
+      defaultLogo: settings.defaultLogo,
+    })
+  } catch (err) {}
 }
 
 export const cookieClear = () => {
@@ -159,7 +161,7 @@ class Auth {
   async init() {
     if (Cookies.get('accessToken')) {
       try {
-        await Promise.all([getMyInfo(), getSettings()])
+        await getMyInfo()
         isLogin = true
         tokenRenewal()
       } catch (e) {

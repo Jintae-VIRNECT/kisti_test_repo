@@ -15,10 +15,7 @@
           :opt="'expired'"
         ></role>
       </div>
-      <div class="workspace-welcome__name">
-        <!-- <span class="workspace-welcome__nickname">{{ account.nickname }}</span> -->
-        <span class="workspace-welcome__text" v-html="welcomeText"></span>
-      </div>
+      <div class="workspace-welcome__name" v-html="welcomeText"></div>
       <button
         v-if="!emptyWorkspace && !expireLicense"
         class="btn"
@@ -80,7 +77,10 @@ export default {
       }
     },
     showRole() {
-      return !(this.workspace.role === WORKSPACE_ROLE.MEMBER)
+      return (
+        this.workspace.role === WORKSPACE_ROLE.MASTER ||
+        this.workspace.role === WORKSPACE_ROLE.MANAGER
+      )
     },
   },
   props: {

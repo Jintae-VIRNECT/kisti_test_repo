@@ -12,24 +12,23 @@
           {{ $t('workspace.setting_mic_test') }}
         </button>
       </div>
-      <div class="mic-item">
+      <div class="mic-item__progress">
         <toggle-button
           class="mic-radius"
-          :description="''"
+          description=""
           size="2.429rem"
           :active="micTestMode"
           :activeSrc="require('assets/image/setting/ic_mic.svg')"
           :inactiveSrc="require('assets/image/setting/ic_mic_mute.svg')"
           @action="toggleMicTestMode"
         ></toggle-button>
-      </div>
-      <div class="mic-item progress">
         <progress-bar :value="soundWidth" :max="progress.max"></progress-bar>
       </div>
       <audio
         ref="audioComponent"
         :srcObject.prop="audioStream"
         autoplay
+        playsinline
       ></audio>
     </div>
   </section>
@@ -140,18 +139,21 @@ export default {
 .label-margin {
   margin: -0.7143rem 0 2.857rem 0;
 }
-.mic-radius {
-  border-radius: 50%;
-}
 
 .mic-item {
   flex: 0;
-  margin: auto 0.714rem;
-  &:first-child {
-    margin-left: 0;
-  }
-  &.progress {
-    flex: 1;
-  }
+  margin-right: 0.714rem;
+  margin-left: 0;
+}
+.mic-item__progress {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  margin-right: 2.286rem;
+}
+.mic-radius {
+  flex: 0 1 auto;
+  margin-right: 15px;
+  border-radius: 50%;
 }
 </style>

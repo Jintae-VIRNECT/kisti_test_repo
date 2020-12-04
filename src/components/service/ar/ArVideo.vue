@@ -7,7 +7,7 @@
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
         @loadeddata="optimizeVideoSize"
-        :muted="isMuted"
+        muted
         playsinline
         loop
       ></video>
@@ -67,7 +67,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'speaker', 'view', 'viewAction', 'resolutions']),
+    ...mapGetters(['mainView', 'view', 'viewAction', 'resolutions']),
     currentAction() {
       if (this.view !== VIEW.AR) return ''
       if (this.viewAction === ACTION.AR_AREA) {
@@ -92,21 +92,11 @@ export default {
       }
       return this.resolutions[idx]
     },
-    isMuted() {
-      if (
-        !this.speaker.isOn ||
-        this.mainView.id === this.account.uuid ||
-        this.view !== VIEW.AR
-      ) {
-        return 'muted'
-      }
-      return false
-    },
   },
   watch: {
     mainView: {
       deep: true,
-      handler(view, oldView) {
+      handler(view) {
         if (!view.id) {
           this.loaded = false
           const videoBox = this.$el.querySelector('.main-video__box')
@@ -114,12 +104,6 @@ export default {
             videoBox.style.height = '100%'
             videoBox.style.width = '100%'
           }
-        }
-        if (view.id && oldView.id && view.id !== oldView.id) {
-          this.$refs['arVideo'].pause()
-          this.$nextTick(() => {
-            this.$refs['arVideo'].play()
-          })
         }
       },
     },

@@ -47,7 +47,7 @@ export default {
       if (this.$route.name === 'workspace') {
         return true
       }
-      return !!this.myInfo.hasAudio
+      return !!this.myInfo.hasVideo
     },
     hasAudio() {
       if (this.$route.name === 'workspace') {

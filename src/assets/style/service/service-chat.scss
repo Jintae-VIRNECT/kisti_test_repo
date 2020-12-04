@@ -226,6 +226,16 @@
       font-weight: 300;
       text-align: center;
       text-indent: 1.429rem;
+      &::before {
+        display: inline-block;
+        width: 1rem;
+        height: 1rem;
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 100%;
+        transform: translate(-4px, 2px);
+        content: "";
+      }
     }
   }
   &.opponent {
@@ -277,29 +287,22 @@
 
 .chat-item__body--text {
   position: relative;
+  margin-top: 0.643em;
+  padding-top: 0.643em;
   overflow: hidden;
   font-weight: 400;
   // line-height: 1.57;
   word-break: break-word;
+  border-top: dashed 1px #c7c7c7;
   transition: opacity 0.3s ease-in-out;
-  &::before {
-    position: absolute;
-    top: 0.357rem;
-    left: 0;
-    width: 1rem;
-    height: 1rem;
-    background: center/100% no-repeat;
-    // transform: translateY(-1.429rem);
-    content: "";
-  }
   &.inactive {
     height: 0;
     opacity: 0;
   }
-  &.multiple + &.multiple {
-    margin-top: 0.929rem;
-    padding-top: 0.786rem;
-    border-top: dashed 1px #c7c7c7;
+  &:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
   }
   &.init::before {
     background-image: url(~assets/image/call/ic_chat_remote.svg);

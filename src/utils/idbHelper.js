@@ -44,7 +44,7 @@ async function initIDB() {
   } catch (e) {
     console.error(logType, 'init Failed')
     console.error(e)
-    return false
+    throw 'idb init failed'
   }
 }
 

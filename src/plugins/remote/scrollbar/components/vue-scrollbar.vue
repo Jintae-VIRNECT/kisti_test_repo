@@ -104,6 +104,7 @@ export default {
 
   methods: {
     scroll(e) {
+      e.stopPropagation()
       if (!this.canScroll) {
         return
       }
@@ -145,7 +146,7 @@ export default {
       // prevent Default only if scrolled content is not at the top/bottom
       if (!this.allowBodyScroll) {
         e.preventDefault()
-        e.stopPropagation()
+        // e.stopPropagation()
       }
     },
 

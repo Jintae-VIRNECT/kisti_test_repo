@@ -2,7 +2,6 @@ import toastMixin from 'mixins/toast'
 
 import LocalRecorder from 'utils/localRecorder'
 import { mapGetters, mapActions } from 'vuex'
-import { ROLE } from 'configs/remote.config'
 import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 
 export default {
@@ -16,6 +15,7 @@ export default {
       audioContext: null,
       audioContextDes: null,
       audioSourceMap: new Map(),
+      screenStream: null,
     }
   },
   computed: {
@@ -23,7 +23,6 @@ export default {
       'participants',
       'mainView',
       'localRecordTarget',
-      'screenStream',
       'localRecord',
       'resolutions',
       'allowLocalRecord',
@@ -45,51 +44,13 @@ export default {
       }
       return this.resolutions[idx]
     },
-    /**
-     * check role
-     */
-    canRecord() {
-      if (this.disabled) {
-        return false
-      }
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      }
-      if (this.allowLocalRecord) {
-        return true
-      } else {
-        return false
-      }
-    },
   },
   watch: {
-    participants: {
-      handler() {
-        //for joined
-        this.connectAudio()
-
-        //for leaved
-        this.disconnectAudio()
-
-        if (this.localRecordStatus === 'START') {
-          const anyStreamAlive = this.participants.some(participant => {
-            return participant.video === true
-          })
-
-          if (!anyStreamAlive && this.participants.length > 0) {
-            this.$eventBus.$emit('localRecord', {
-              isStart: false,
-              stopType: 'nostream',
-            })
-          }
-        }
-      },
-      deep: true,
-    },
+    'participants.length': 'participantsChanged',
     resolutions: {
       handler() {
         if (this.recorder !== null) {
-          if (this.screenStream === null) {
+          if (this.localRecordTarget === RECORD_TARGET.WORKER) {
             this.recorder.changeCanvasOrientation(this.resolution.orientation)
           } else {
             this.recorder.changeCanvasOrientation('landscape')
@@ -100,7 +61,10 @@ export default {
     },
     mainView: {
       handler(current) {
-        if (this.recorder !== null && this.screenStream === null) {
+        if (
+          this.recorder !== null &&
+          this.localRecordTarget === RECORD_TARGET.WORKER
+        ) {
           this.recorder.changeCanvasOrientation(this.resolution.orientation)
 
           this.changeVideoStream(
@@ -114,21 +78,73 @@ export default {
         }
       },
     },
+    allowLocalRecord(allow) {
+      if (allow === false && this.localRecordStatus === 'START') {
+        this.toastDefault(this.$t('service.record_blocked'))
+        this.stopLocalRecord()
+      }
+    },
   },
   methods: {
-    ...mapActions(['setScreenStream', 'setLocalRecordStatus']),
+    ...mapActions(['setLocalRecordStatus']),
+    participantsChanged() {
+      //for joined
+      this.connectAudio()
+
+      //for leaved
+      this.disconnectAudio()
+
+      if (this.localRecordStatus === 'START') {
+        if (this.participants.length === 0) return
+        const anyStreamAlive = this.participants.some(participant => {
+          return participant.video === true
+        })
+
+        if (!anyStreamAlive) {
+          this.stopLocalRecord('nostream')
+        }
+      }
+    },
 
     async startLocalRecord() {
       this.recorder = new LocalRecorder()
-
-      if (await this.initRecorder()) {
-        await this.setLocalRecordStatus('START')
+      try {
+        await this.initRecorder()
         this.recorder.startRecord()
-      } else {
-        //TODO : MESSAGE
-        //녹화 시작 실패시의 안내 메시지
-        this.$eventBus.$emit('localRecord', { isStart: false })
-        return false
+        this.setLocalRecordStatus('START')
+        this.toastDefault(this.$t('service.record_start_message'))
+      } catch (err) {
+        if (err && err.name) {
+          if (err.name === 'NotAllowedError') {
+            if (err.message === 'Invalid state') {
+              this.toastError(this.$t('화면 공유가 불가능한 브라우저 입니다.'))
+            } else {
+              this.toastError(this.$t('화면 공유 접근이 차단되었습니다.'))
+            }
+          } else if (err.name === 'NotSupportedError') {
+            this.toastError(
+              this.$t('로컬 녹화를 지원하지 않는 브라우저 입니다.'),
+            )
+          }
+        } else {
+          if (err === 'initRecorder Failed') {
+            // 초기화 에러
+            this.toastError(this.$t('로컬 녹화에 실패하였습니다.'))
+          } else if (err === 'idb init failed') {
+            // idb 초기화 에러
+            this.toastError(this.$t('로컬 녹화에 실패하였습니다.'))
+          } else if (err === 'quota overed') {
+            // 용량 없음
+          } else if (err === 'no streams') {
+            // 스트림 없음
+          } else if (err === 'MediaRecorder is not support') {
+            this.toastError(
+              this.$t('로컬 녹화를 지원하지 않는 브라우저 입니다.'),
+            )
+          } else if (err === 'NotSupportDisplayError') {
+            this.toastError(this.$t('화면 공유가 불가능한 브라우저 입니다.'))
+          }
+        }
       }
     },
 
@@ -139,36 +155,25 @@ export default {
       const config = {}
       config.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
 
-      switch (this.localRecordTarget) {
-        case RECORD_TARGET.WORKER:
-          config.options = {
-            video: getWH(
-              this.localRecord.resolution,
-              this.resolution.width,
-              this.resolution.height,
-            ),
-          }
-          break
-        case RECORD_TARGET.SCREEN:
-          config.options = {
-            video: getWH(this.localRecord.resolution),
-          }
-          break
-        default:
-          console.error(
-            'Unknown local record target ::',
-            this.localRecordTarget,
-          )
-          return false
+      if (this.localRecordTarget === RECORD_TARGET.WORKER) {
+        config.options = {
+          video: getWH(
+            this.localRecord.resolution,
+            this.resolution.width,
+            this.resolution.height,
+          ),
+        }
+      } else {
+        config.options = {
+          video: getWH(this.localRecord.resolution),
+        }
       }
 
       try {
         config.streams = await this.getStreams()
-      } catch (e) {
-        //TODO : MESSAGE
-        //필요한 영상, 음성을 가지고 오지 못했을 때에 대한 처리가 필요함.
-        console.error(e)
-        return false
+      } catch (err) {
+        // 필요한 영상, 음성을 가지고 오지 못했을 때에 대한 처리
+        throw err
       }
 
       config.maxTime = this.localRecord.time
@@ -189,13 +194,8 @@ export default {
         config.userId = this.account.uuid
       }
 
-      //set callbacks
-      this.recorder.setStartCallback(() => {
-        this.toastDefault(this.$t('service.record_start_message'))
-      })
-
       this.recorder.setStopSignal(() => {
-        this.$eventBus.$emit('localRecord', { isStart: false })
+        this.stopLocalRecord()
       })
 
       this.recorder.setNoQuotaCallback(() => {
@@ -205,7 +205,7 @@ export default {
       this.recorder.setConfig(config)
 
       if (await this.recorder.initRecorder()) {
-        if (this.screenStream === null) {
+        if (this.localRecordTarget === RECORD_TARGET.WORKER) {
           this.recorder.changeCanvasOrientation(this.resolution.orientation)
         } else {
           this.recorder.changeCanvasOrientation('landscape')
@@ -214,7 +214,7 @@ export default {
         return true
       } else {
         this.logger('LocalRecorder', 'initRecorder Failed')
-        return false
+        throw 'initRecorder Failed'
       }
     },
 
@@ -226,7 +226,9 @@ export default {
             this.screenStream.getTracks().forEach(track => {
               track.stop()
             })
+            this.screenStream = null
           }
+          if (this.localRecordStatus === 'STOP') return
 
           switch (stopType) {
             case 'nostream':
@@ -241,7 +243,7 @@ export default {
         console.error(e)
       } finally {
         this.recorder = null
-        await this.setLocalRecordStatus('STOP')
+        this.setLocalRecordStatus('STOP')
       }
     },
 
@@ -250,45 +252,41 @@ export default {
      */
     async getStreams() {
       const streams = []
-      const mainStream = this.mainView.stream
-
       streams.push(this.audioContextDes.stream)
 
-      switch (this.localRecordTarget) {
-        case RECORD_TARGET.WORKER:
-          if (mainStream && mainStream.getVideoTracks().length > 0) {
-            const videoStream = new MediaStream()
-            videoStream.addTrack(mainStream.getVideoTracks()[0])
-            streams.push(videoStream)
-          }
-          break
-        case RECORD_TARGET.SCREEN:
-          await this.setScreenCapture()
+      if (this.localRecordTarget === RECORD_TARGET.WORKER) {
+        const mainStream = this.mainView.stream
+        if (mainStream && mainStream.getVideoTracks().length > 0) {
+          const videoStream = new MediaStream()
+          videoStream.addTrack(mainStream.getVideoTracks()[0])
+          streams.push(videoStream)
+        }
+      } else {
+        await this.setScreenCapture()
 
-          if (this.screenStream) {
-            streams.push(this.screenStream)
-          }
-          break
-        default:
-          console.error(
-            'Unknown local record target ::',
-            this.localRecordTarget,
-          )
-          break
+        if (this.screenStream) {
+          streams.push(this.screenStream)
+        }
       }
       return streams
     },
 
     async setScreenCapture() {
+      if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices['getDisplayMedia']
+      ) {
+        throw 'NotSupportDisplayError'
+      }
       const displayStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
         video: getWH(this.localRecord.resolution),
       })
 
       displayStream.getVideoTracks()[0].onended = () => {
-        this.$eventBus.$emit('localRecord', { isStart: false })
+        this.stopLocalRecord()
       }
-      this.setScreenStream(displayStream)
+      this.screenStream = displayStream
     },
 
     changeVideoStream(videoStream, resolution) {
@@ -299,18 +297,15 @@ export default {
 
     stopLocalRecordByKeyPress(e) {
       if (e.key === 'Escape') {
-        this.$eventBus.$emit('localRecord', { isStart: false })
+        this.stopLocalRecord()
       }
     },
 
-    async toggleLocalRecordStatus(status) {
-      const isStart = status.isStart
-      const stopType = status.stopType
-
-      if (isStart && this.localRecordStatus === 'STOP') {
+    async toggleLocalRecordStatus() {
+      if (this.localRecordStatus === 'START') {
+        this.stopLocalRecord()
+      } else {
         this.startLocalRecord()
-      } else if (!isStart && this.localRecordStatus === 'START') {
-        this.stopLocalRecord(stopType)
       }
     },
 
@@ -348,6 +343,6 @@ export default {
     this.audioContextDes = this.audioContext.createMediaStreamDestination()
   },
   beforeDestroy() {
-    this.$eventBus.$off('localRecord')
+    this.$eventBus.$off('localRecord', this.toggleLocalRecordStatus)
   },
 }

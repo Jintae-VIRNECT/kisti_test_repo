@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="40px" viewBox="0 0 40 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>mdpi/ic_video_off</title>
+    <defs>
+        <path d="M29,24.75 L29,14.64 L25,18.64 L25,15.14 C25,14.59 24.55,14.14 24,14.14 L18.39,14.14 L29,24.75 Z M11.41,10 L10,11.41 L12.73,14.14 L12,14.14 C11.45,14.14 11,14.59 11,15.14 L11,25.14 C11,25.69 11.45,26.14 12,26.14 L24,26.14 C24.21,26.14 24.39,26.06 24.55,25.96 L27.73,29.14 L29.14,27.73 L11.41,10 Z" id="path-1"></path>
+    </defs>
+    <g id="V2.2-update" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RTT_0110-_첨부파일-제거-설정" transform="translate(-1464.000000, -600.000000)">
+            <g id="Group-3" transform="translate(1464.000000, 600.000000)">
+                <rect id="tr" x="0" y="0" width="40" height="40"></rect>
+                <g id="Group" transform="translate(10.000000, 10.000000)"></g>
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="icon/av/videocam_off_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+            </g>
+        </g>
+    </g>
+</svg>

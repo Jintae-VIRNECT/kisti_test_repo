@@ -3,24 +3,22 @@ import {
   stopServerRecord,
   getServerRecordList,
 } from 'api/http/record'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { RECORD_INFO } from 'configs/env.config'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   data() {
     return {
       recordingId: null,
       recordTimeout: null,
-
-      elapsedTime: 0,
-
-      isContinue: false,
     }
   },
   computed: {
-    ...mapGetters(['roomInfo', 'serverRecord']),
+    ...mapGetters(['roomInfo', 'serverRecord', 'serverRecordStatus']),
   },
   methods: {
+    ...mapActions(['setServerRecordStatus']),
     async startServerRecord() {
       try {
         this.logger('SERVER RECORD', 'start')
@@ -52,43 +50,33 @@ export default {
         })
         this.recordingId = result.recordingId
 
-        this.$eventBus.$emit('serverRecord', {
-          isStart: true,
-          isWaiting: false,
-        })
+        this.setServerRecordStatus('START')
+        this.$eventBus.$emit('showServerTimer')
 
         const timeout = Number.parseInt(this.serverRecord.time, 10) * 60 * 1000
 
         this.recordTimeout = setTimeout(() => {
-          this.$eventBus.$emit('serverRecord', {
-            isStart: false,
-          })
+          this.stopServerRecord()
         }, timeout)
 
         this.toastDefault(this.$t('service.record_server_start_message'))
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
-        console.error('SERVER RECORD::', e)
         if (e.code === 1001) {
           this.toastError(this.$t('service.record_server_over_max_count'))
         } else if (e.code === 1002) {
           this.toastError(this.$t('service.record_server_no_storage'))
         }
 
-        this.$eventBus.$emit('serverRecord', {
-          isStart: false,
-        })
+        this.stopServerRecord()
       }
     },
 
     async stopServerRecord() {
-      this.elapsedTime = 0
-      this.isContinue = false
-
+      this.setServerRecordStatus('STOP')
       if (this.recordingId) {
         if (this.recordTimeout) {
-          clearTimeout(this.recordTimeout)
-          this.recordTimeout = null
+          this.clearServerRecordTimer()
         }
 
         this.logger('SERVER RECORD', 'stop')
@@ -102,13 +90,12 @@ export default {
         this.toastDefault(this.$t('service.record_server_end_message'))
       }
     },
-    async toggleServerRecord(payload) {
-      if (this.isContinue) return
-
-      if (!payload.isStart) {
-        await this.stopServerRecord()
-      } else if (payload.isStart && payload.isWaiting) {
-        await this.startServerRecord()
+    toggleServerRecord(status) {
+      if (status === 'STOP') {
+        this.stopServerRecord()
+      } else if (status === 'WAIT') {
+        this.setServerRecordStatus('WAIT')
+        this.startServerRecord()
       }
     },
     async checkServerRecordings() {
@@ -119,37 +106,30 @@ export default {
       })
 
       if (this.isLeader && result.infos.length > 0) {
-        this.isContinue = true
         const elapsedTime = result.infos[0].duration
         this.recordingId = result.infos[0].recordingId
-        this.elapsedTime = elapsedTime
         const timeout = result.infos[0].timeLimit * 60 * 1000
-        this.continueServerRecord(timeout)
+
+        this.recordTimeout = setTimeout(() => {
+          this.toggleServerRecord('STOP')
+        }, timeout - elapsedTime * 1000)
+
+        this.$eventBus.$emit('showServerTimer', elapsedTime)
+        this.setServerRecordStatus('START')
       }
     },
-
-    async continueServerRecord(timeout) {
-      this.recordTimeout = setTimeout(() => {
-        this.$eventBus.$emit('serverRecord', {
-          isStart: false,
-        })
-      }, timeout - this.elapsedTime * 1000)
-
-      this.$eventBus.$emit('serverRecord', {
-        isStart: true,
-        elapsedTime: this.elapsedTime,
-        isContinue: this.isContinue,
-      })
-
-      this.isContinue = false
+    clearServerRecordTimer() {
+      clearTimeout(this.recordTimeout)
+      this.recordTimeout = null
     },
   },
 
   mounted() {
+    if (!this.account.roleType === ROLE.LEADER) return
     this.$eventBus.$on('serverRecord', this.toggleServerRecord)
     this.checkServerRecordings()
   },
   beforeDestroy() {
-    this.$eventBus.$off('serverRecord')
+    this.$eventBus.$off('serverRecord', this.toggleServerRecord)
   },
 }

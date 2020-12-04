@@ -42,11 +42,9 @@ const state = {
     ttsAllow: false,
   },
 
-  //stream for local stream(screen stream)
-  screenStream: null,
-
   localRecordTarget: RECORD_TARGET.WORKER,
-  localRecordStatus: 'STOP',
+  localRecordStatus: 'STOP', // 'START', 'STOP'
+  serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP'
 
   chatBox: false,
 }
@@ -95,16 +93,16 @@ const mutations = {
     state.language = language
   },
 
-  [SETTINGS.SET_SCREEN_STREAM](state, screenStream) {
-    state.screenStream = screenStream
-  },
-
   [SETTINGS.SET_LOCAL_RECORD_TARGET](state, localRecordTarget) {
     state.localRecordTarget = localRecordTarget
   },
 
   [SETTINGS.SET_LOCAL_RECORD_STATUS](state, localRecordStatus) {
     state.localRecordStatus = localRecordStatus
+  },
+
+  [SETTINGS.SET_SERVER_RECORD_STATUS](state, serverRecordStatus) {
+    state.serverRecordStatus = serverRecordStatus
   },
 
   [TOGGLE_CHAT](state, flag) {
@@ -122,9 +120,6 @@ const getters = {
   language: state => state.language,
 
   translate: state => state.translate,
-
-  //screen stream for local recording
-  screenStream: state => state.screenStream,
 
   // used Remote.js
   settingInfo: state => {

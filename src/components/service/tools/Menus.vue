@@ -2,12 +2,17 @@
   <div class="stream-menu menus">
     <div class="menus-box">
       <template v-if="isLeader">
-        <capture :disabled="!isMainView"></capture>
-        <server-record v-if="onpremise" :disabled="!isMainView"></server-record>
+        <capture :disabled="!isMainViewOn"></capture>
+        <server-record
+          v-if="onpremise"
+          :disabled="!hasMainView"
+        ></server-record>
       </template>
-      <local-record :disabled="!isMainView"></local-record>
-      <local-record-list></local-record-list>
-      <setting :viewType="viewType"></setting>
+      <template v-if="!isSafari">
+        <local-record :disabled="!hasMainView"></local-record>
+        <local-record-list></local-record-list>
+      </template>
+      <setting v-if="!isSafari || isLeader" :viewType="viewType"></setting>
     </div>
   </div>
 </template>
@@ -36,13 +41,15 @@ export default {
   data() {
     return {
       active: 'pointing',
-      isRecording: false,
     }
   },
   computed: {
     ...mapGetters(['mainView']),
-    isMainView() {
+    hasMainView() {
       return this.mainView && this.mainView.id
+    },
+    isMainViewOn() {
+      return this.mainView && this.mainView.id && this.mainView.video
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER

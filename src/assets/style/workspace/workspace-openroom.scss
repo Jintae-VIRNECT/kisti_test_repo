@@ -2,8 +2,8 @@
 @import "~assets/style/mixin";
 
 .openroom-modal .modal--inner {
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 90%;
+  // max-height: 90%;
 
   @include modal();
 }

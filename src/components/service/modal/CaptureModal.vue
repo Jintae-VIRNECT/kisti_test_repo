@@ -134,6 +134,7 @@ export default {
   position: absolute;
   right: 2.143rem;
   bottom: 2.143rem;
+  z-index: 9;
   background-color: $color_darkgray_500;
   border: solid 1px $color_darkgray_400;
   border-radius: 4px;

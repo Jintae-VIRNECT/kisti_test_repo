@@ -156,15 +156,6 @@ export default {
   },
 
   /**
-   * set screen stream for local recording
-   * @param {*} param0
-   * @param {*} payload
-   */
-  setScreenStream({ commit }, payload) {
-    commit(types.SETTINGS.SET_SCREEN_STREAM, payload)
-  },
-
-  /**
    * set local record target
    * @param {*} param0
    * @param {*} payload
@@ -178,5 +169,12 @@ export default {
    */
   setLocalRecordStatus({ commit }, status) {
     commit(types.SETTINGS.SET_LOCAL_RECORD_STATUS, status)
+  },
+
+  /**
+   * update server record status
+   */
+  setServerRecordStatus({ commit }, status) {
+    commit(types.SETTINGS.SET_SERVER_RECORD_STATUS, status)
   },
 }

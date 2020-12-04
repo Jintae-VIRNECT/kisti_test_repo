@@ -39,6 +39,7 @@
             v-if="stream"
             :srcObject.prop="stream"
             autoplay
+            muted
             playsinline
             loop
           ></video>

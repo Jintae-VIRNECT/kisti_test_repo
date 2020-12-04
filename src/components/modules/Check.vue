@@ -47,7 +47,7 @@ export default {
 @import '~assets/style/mixin';
 .check {
   display: flex;
-  width: 28.571rem;
+  max-width: 28.571rem;
   padding: 0.571rem;
   background-color: #212125;
   border: solid 1px #171718;

@@ -6,7 +6,7 @@ import Store from 'stores/remote/store'
  * @throw
  */
 export const checkPermission = async (checkVideo = true) => {
-  const devices = await navigator.mediaDevices.enumerateDevices()
+  let devices = await navigator.mediaDevices.enumerateDevices()
   const hasVideo = checkVideo
     ? devices.findIndex(device => device.kind.toLowerCase() === 'videoinput') >
       -1
@@ -19,6 +19,16 @@ export const checkPermission = async (checkVideo = true) => {
     throw 'nodevice'
   }
   const settingInfo = Store.getters['settingInfo']
+  const permission = await getPermission()
+  if (permission === 'prompt') {
+    const mediaResponse = await getUserMedia(true, hasVideo)
+    if (typeof mediaResponse !== 'object') {
+      throw mediaResponse
+    }
+    devices = await navigator.mediaDevices.enumerateDevices()
+  } else if (permission !== true) {
+    throw permission
+  }
   let audioSource =
     devices.findIndex(device => device.deviceId === settingInfo.mic) > -1
       ? settingInfo.mic
@@ -29,15 +39,6 @@ export const checkPermission = async (checkVideo = true) => {
       : undefined
     : false
 
-  const permission = await getPermission()
-  if (permission === 'prompt') {
-    const mediaResponse = await getUserMedia(true, hasVideo)
-    if (typeof mediaResponse !== 'object') {
-      throw mediaResponse
-    }
-  } else if (permission !== true) {
-    throw permission
-  }
   const options = {
     audioSource,
     videoSource,

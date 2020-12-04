@@ -14,7 +14,8 @@
   border-bottom: solid 1px #2c2c2c;
   transition: background-color 0.3s;
   &.fix {
-    position: absolute;
+    position: sticky;
+    // top: $header_height;
     top: 0;
     z-index: 1;
     width: calc(100% - 0.714rem);
@@ -90,9 +91,9 @@
   padding-bottom: 1.429rem;
   text-align: left;
   background-color: $color_bg_display;
-  &.fix {
-    margin-top: 3.571rem;
-  }
+  // &.fix {
+  //   margin-top: 4.857rem;
+  // }
   .groupcard-list,
   .workcard-list {
     display: grid;

@@ -8,6 +8,7 @@
         autoplay
         loop
         muted
+        playsinline
         :srcObject.prop="stream"
       ></video>
       <div v-else class="sub-video--no-stream"></div>

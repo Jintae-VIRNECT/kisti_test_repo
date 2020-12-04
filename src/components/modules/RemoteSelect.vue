@@ -15,7 +15,7 @@
       class="select-label"
       :class="{ active: show, disabled: disabled }"
     >
-      {{ selected[text] }}
+      <span>{{ selected[text] }}</span>
     </button>
     <div class="select-optionbox">
       <button
@@ -165,6 +165,13 @@ export default {
     &::after {
       opacity: 0.2;
     }
+  }
+  > span {
+    width: 100%;
+    padding-right: 1.429rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
 .popover.select-options {

@@ -154,7 +154,7 @@ const _ = {
             _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
             _.minZoomLevel = parseInt(capability.zoom.min)
           }
-          _.video(settingInfo.videoOn)
+          _.video(options.videoSource !== false ? settingInfo.videoOn : 'NONE')
           _.sendResolution({
             width: settings.width,
             height: settings.height,
@@ -182,11 +182,6 @@ const _ = {
       _.session.publish(_.publisher)
       return true
     } catch (err) {
-      if (err && err.message && err.message.length > 0) {
-        console.error(`${err.message} (${err.code})`)
-      } else {
-        console.error(err)
-      }
       throw err
     }
   },
