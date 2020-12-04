@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -918,6 +919,7 @@ public class WorkspaceService {
             return redirectView;
         }
 
+
         log.info("[WORKSPACE INVITE ACCEPT] Workspace invite session Info >> [{}]", userInvite.toString());
         InviteUserInfoResponse inviteUserResponse = userRestService.getUserInfoByEmail(userInvite.getInvitedUserEmail()).getData();
         if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
@@ -933,6 +935,11 @@ public class WorkspaceService {
         userInvite.setInvitedUserEmail(inviteUserDetailInfoResponse.getEmail());
         userInvite.setInvitedUserId(inviteUserDetailInfoResponse.getUserUUID());
         userInviteRepository.save(userInvite);
+
+        Cache cache = cacheManager.getCache("userWorkspaces");
+        if(cache!=null){
+            cache.evict(userInvite.getInvitedUserId());//레디스에 캐싱된 내 워크스페이스 목록 정보 삭제
+        }
 
         Workspace workspace = workspaceRepository.findByUuid(userInvite.getWorkspaceId()).orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
 
@@ -1022,7 +1029,6 @@ public class WorkspaceService {
         sendMailRequest(html, emailReceiverList, MailSender.MASTER.getValue(), subject);
 
         //redis 에서 삭제
-        cacheManager.getCache("userWorkspaces").evict(userInvite.getInvitedUserEmail());
         userInviteRepository.delete(userInvite);
 
         //history 저장
