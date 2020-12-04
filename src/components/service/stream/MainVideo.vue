@@ -13,7 +13,7 @@
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
         @loadeddata="optimizeVideoSize"
-        :muted="isMuted"
+        muted
         autoplay
         playsinline
         loop
@@ -167,13 +167,11 @@ export default {
   computed: {
     ...mapGetters({
       mainView: 'mainView',
-      speaker: 'speaker',
       viewAction: 'viewAction',
       resolutions: 'resolutions',
       initing: 'initing',
       viewForce: 'viewForce',
       openRoom: 'openRoom',
-      view: 'view',
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
     }),
@@ -232,16 +230,6 @@ export default {
       } else {
         return false
       }
-    },
-    isMuted() {
-      if (
-        !this.speaker.isOn ||
-        this.mainView.id === this.account.uuid ||
-        this.view !== VIEW.STREAM
-      ) {
-        return 'muted'
-      }
-      return false
     },
     emptyStream() {
       return (

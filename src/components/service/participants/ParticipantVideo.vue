@@ -209,11 +209,7 @@ export default {
       }
     },
     isMuted() {
-      if (
-        this.isMe ||
-        this.mainView.id === this.participant.id ||
-        this.speaker.isOn === false
-      ) {
+      if (this.isMe || this.speaker.isOn === false) {
         return 'muted'
       }
       return false
