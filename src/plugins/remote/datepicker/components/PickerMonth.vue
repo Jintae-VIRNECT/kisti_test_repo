@@ -1,38 +1,43 @@
 <template>
-  <div
-    :class="[calendarClass, 'vdp-datepicker__calendar']"
-    v-show="showMonthView"
-    :style="calendarStyle"
-    @mousedown.prevent
-  >
-    <slot name="beforeCalendarHeader"></slot>
-    <header>
-      <span
-        @click="isRtl ? nextYear() : previousYear()"
-        class="prev"
-        :class="{ disabled: isLeftNavDisabled }"
-      ></span>
-      <span
-        class="month__year_btn"
-        @click="showYearCalendar"
-        :class="allowedToShowView('year') ? 'up' : ''"
-        >{{ pageYearName }}</span
-      >
-      <span
-        @click="isRtl ? previousYear() : nextYear()"
-        class="next"
-        :class="{ disabled: isRightNavDisabled }"
-      ></span>
-    </header>
-    <span
-      class="cell month"
-      v-for="month in months"
-      :key="month.timestamp"
-      :class="{ selected: month.isSelected, disabled: month.isDisabled }"
-      @click.stop="selectMonth(month)"
-      >{{ month.month.replace(/\D/g, '') }}</span
+  <transition name="slide">
+    <div
+      :class="[calendarClass, 'vdp-datepicker__calendar']"
+      v-show="showMonthView"
+      :style="calendarStyle"
+      @mousedown.prevent
     >
-  </div>
+      <transition-group :name="transitionDirection">
+        <slot name="beforeCalendarHeader"></slot>
+        <header :key="'month-header'">
+          <span
+            @click="isRtl ? nextYear() : previousYear()"
+            class="prev"
+            :class="{ disabled: isLeftNavDisabled }"
+          ></span>
+          <span
+            class="month__year_btn"
+            @click="showYearCalendar"
+            :class="allowedToShowView('year') ? 'up' : ''"
+            >{{ pageYearName }}</span
+          >
+          <span
+            @click="isRtl ? previousYear() : nextYear()"
+            class="next"
+            :class="{ disabled: isRightNavDisabled }"
+          ></span>
+        </header>
+
+        <span
+          class="cell month"
+          v-for="month in months"
+          :key="month.timestamp"
+          :class="{ selected: month.isSelected, disabled: month.isDisabled }"
+          @click.stop="selectMonth(month)"
+          >{{ month.month.replace(/\D/g, '') }}</span
+        >
+      </transition-group>
+    </div>
+  </transition>
 </template>
 <script>
 import { makeDateUtils } from '../utils/DateUtils'
@@ -54,6 +59,7 @@ export default {
     const constructedDateUtils = makeDateUtils(this.useUtc)
     return {
       utils: constructedDateUtils,
+      transitionDirection: 'slide-left',
     }
   },
   computed: {
@@ -135,6 +141,7 @@ export default {
      */
     previousYear() {
       if (!this.isPreviousYearDisabled()) {
+        this.transitionDirection = 'slide-left'
         this.changeYear(-1)
       }
     },
@@ -156,6 +163,7 @@ export default {
      */
     nextYear() {
       if (!this.isNextYearDisabled()) {
+        this.transitionDirection = 'slide-right'
         this.changeYear(1)
       }
     },
