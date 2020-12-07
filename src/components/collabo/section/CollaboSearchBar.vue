@@ -40,8 +40,8 @@
                 readonly
               />
               <button
-                class="collabo-search-bar__date--buton"
-                @click="togglePopover({ placement: 'auto-start' })"
+                class="collabo-search-bar__date--button"
+                @click="togglePopover({ placement: 'bottom' })"
               >
                 <img
                   v-if="!calendarBtn"
@@ -242,7 +242,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .collabo-search-bar {
   margin-top: 3rem;
 }
@@ -433,7 +433,7 @@ export default {
   border-radius: 6px 0px 0px 6px;
 }
 
-.collabo-search-bar__date--buton {
+.collabo-search-bar__date--button {
   min-width: 48px;
   height: 46x;
   background: rgb(255, 255, 255);

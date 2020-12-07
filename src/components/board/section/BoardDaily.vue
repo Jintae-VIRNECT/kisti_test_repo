@@ -8,13 +8,47 @@
         <span class="board__header--description">
           {{ $t('chart.daily_collabo_description') }}
         </span>
-        <datepicker
+        <!-- <datepicker
           class="board__header--datepicker"
           :pickerName="'daily'"
           :minimumView="'day'"
           :maximumView="'day'"
           :initValue="today"
-        ></datepicker>
+        ></datepicker> -->
+        <v-date-picker
+          class="chart-picker"
+          v-model="date"
+          :masks="masks"
+          :popover="{ visibility: 'click' }"
+          @popoverWillShow="toggleCalendarBtn"
+          @popoverWillHide="toggleCalendarBtn"
+        >
+          <template v-slot="{ inputValue, inputEvents, togglePopover }">
+            <div class="collabo-search-bar__date">
+              <input
+                class="collabo-search-bar__date--input"
+                :value="inputValue"
+                v-on="inputEvents"
+                readonly
+              />
+              <button
+                class="collabo-search-bar__date--button"
+                @click="togglePopover({ placement: 'auto-start' })"
+              >
+                <img
+                  v-if="!calendarBtn"
+                  src="~assets/image/calendar/ic_calendar_default.svg"
+                  alt="calendar_hide"
+                />
+                <img
+                  v-else
+                  src="~assets/image/calendar/ic_calendar_active.svg"
+                  alt="calendar_active"
+                />
+              </button>
+            </div>
+          </template>
+        </v-date-picker>
       </div>
 
       <figcaption class="chart-legend">
@@ -68,7 +102,7 @@
 
 <script>
 import Card from 'Card'
-import Datepicker from 'Datepicker'
+// import Datepicker from 'Datepicker'
 import Chart from 'chart.js'
 import ChartLegend from 'Legend'
 import FigureBoard from 'FigureBoard'
@@ -76,6 +110,7 @@ import FigureBoard from 'FigureBoard'
 import { hourLabels } from 'utils/chartDatas'
 import chartMixin from 'mixins/chart'
 
+import { mapActions } from 'vuex'
 export default {
   name: 'BoardDaily',
   mixins: [chartMixin],
@@ -83,7 +118,7 @@ export default {
     Card,
     ChartLegend,
     FigureBoard,
-    Datepicker,
+    // Datepicker,
   },
   props: {
     daily: {
@@ -101,6 +136,12 @@ export default {
     return {
       dailyChart: null,
       today: new Date(),
+      date: new Date(),
+      masks: {
+        input: 'YYYY-MM-DD',
+        title: 'YYYY-MM',
+      },
+      calendarBtn: false,
     }
   },
   watch: {
@@ -114,8 +155,15 @@ export default {
       },
       deep: true,
     },
+    date() {
+      this.setCalendar({
+        name: 'daily',
+        date: this.date,
+      })
+    },
   },
   methods: {
+    ...mapActions(['setCalendar']),
     initChart() {
       this.$nextTick(() => {
         const ctx = document.getElementById('chart-dayily').getContext('2d')
@@ -159,6 +207,9 @@ export default {
           options: this.getOptionDaily(custom),
         })
       })
+    },
+    toggleCalendarBtn() {
+      this.calendarBtn = !this.calendarBtn
     },
   },
   mounted() {

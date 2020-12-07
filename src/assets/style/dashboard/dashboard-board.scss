@@ -6,6 +6,7 @@
 
 .board__header {
   position: relative;
+  // display: flex;
   height: 4.8571rem;
   padding: 1.4286rem 0px 1.2143rem 1.4286rem;
   border-bottom: 1px solid #e3e3e3;
@@ -196,5 +197,55 @@
     margin-right: 0.3571rem;
     margin-left: 0.3571rem;
     border-radius: 50%;
+  }
+}
+
+.chart-picker {
+  position: absolute;
+  top: 1rem;
+  right: 1.0714rem;
+
+  .vc-pane-container {
+    width: 280px;
+    height: 303px;
+  }
+
+  .vc-grid-cell:nth-child(1) {
+    .vc-pane {
+      .vc-header {
+        border-radius: 8px 8px 0px 0px;
+      }
+    }
+  }
+  .collabo-search-bar__date {
+    display: flex;
+    width: 185px;
+    height: 40px;
+    border: 1px solid #e3e3e3;
+    border-radius: 6px;
+    transition: 0.3s;
+  }
+
+  .collabo-search-bar__date--input {
+    width: 123px;
+    height: 100%;
+    padding: 0px 0px 0px 20px;
+    color: rgb(11, 31, 72);
+    font-weight: 500;
+    font-size: 16px;
+    font-family: Roboto;
+    border: none;
+    border-radius: 6px 0px 0px 6px;
+  }
+  .collabo-search-bar__date--button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 38px;
+    background: rgb(255, 255, 255);
+    border-left: 1px solid #e3e3e3;
+    border-radius: 0px 6px 6px 0px;
+    transition: 0.3s;
   }
 }
