@@ -434,8 +434,8 @@ export default {
 }
 
 .collabo-search-bar__date--button {
-  min-width: 48px;
-  height: 46x;
+  min-width: 3.4286rem;
+  height: 3.2857rem;
   background: rgb(255, 255, 255);
   border-left: 1px solid rgb(186, 194, 204);
   border-radius: 0px 6px 6px 0px;

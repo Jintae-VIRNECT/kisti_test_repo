@@ -148,5 +148,9 @@ export default {
   background: #ffffff;
   border: 1px solid #e3e3e3;
   border-radius: 0px 4px 4px 0px;
+  > img {
+    width: 1.7143rem;
+    height: 1.7143rem;
+  }
 }
 </style>
