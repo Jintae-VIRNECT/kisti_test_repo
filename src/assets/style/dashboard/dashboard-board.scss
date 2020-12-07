@@ -1,5 +1,5 @@
 .board {
-  height: 39.1429rem;
+  // height: 39.1429rem;
   margin-top: 2.4286rem;
   margin-bottom: 4.6429rem;
 }
@@ -42,11 +42,27 @@
   }
 }
 
+// .board-figures {
+//   display: flex;
+//   gap: 0px 1.1429rem;
+//   height: 8.5714rem;
+//   margin-top: 1.2857rem;
+// }
+
 .board-figures {
-  display: flex;
-  gap: 0px 1.1429rem;
-  height: 8.5714rem;
+  display: grid;
+
+  // align-items: stretch;
+  // height: 8.5714rem;
   margin-top: 1.2857rem;
+  @include desktop {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0px 1.1429rem;
+  }
+  @include tablet {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1429rem 1.1429rem;
+  }
 }
 
 .custom-card-chart {
