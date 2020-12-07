@@ -130,7 +130,7 @@ export default {
 .figure-board--number {
   color: #0b1f48;
   font-weight: bold;
-  font-size: 24px;
+  font-size: 1.7143rem;
 }
 
 .figure-board--text {
