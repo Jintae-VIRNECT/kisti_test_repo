@@ -7,7 +7,8 @@
         "disc": "Reset your password to keep it secured. Set the password recovery question & answer to use them when you for get your password.",
         "confirm": "Account management",
         "cancel": "Next time"
-      }
+      },
+      "error": "Unauthorized. Please check the ID and password and try again."
     },
     "resetPass": {
       "title": "Password reset",
