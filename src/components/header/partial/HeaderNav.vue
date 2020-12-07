@@ -18,7 +18,7 @@ export default {
 .header-workspace-lnb {
   position: relative;
   width: 38.5714rem;
-  height: 2.8571rem;
+  height: 2.9286rem;
   margin: auto 0;
   text-align: left;
   background: #424242;
@@ -31,12 +31,24 @@ export default {
     position: relative;
     width: 38.5714rem;
     height: 100%;
-    padding: 0 1.786rem 0 1.429rem;
+    padding: 0 1.786rem 0 42px;
     color: #dcdcdc;
     font-weight: normal;
     font-size: 1.0714rem;
     text-align: left;
     background: transparent;
+
+    &::before {
+      position: absolute;
+      top: 0.5715rem;
+      left: 0.7857rem;
+      width: 24px;
+      height: 24px;
+      background: url(~assets/image/ic_workspace.svg) 50% no-repeat;
+      // border-radius: 4px;
+      // transform: rotateX(180deg);
+      content: '';
+    }
 
     &::after {
       position: absolute;
