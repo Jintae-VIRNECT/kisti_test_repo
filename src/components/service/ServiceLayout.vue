@@ -131,17 +131,19 @@ export default {
       if (!this.myInfo || !this.myInfo.stream) return
       const tracks = this.myInfo.stream.getVideoTracks()
       if (tracks.length === 0) return
-      const track = tracks[0]
-      const settings = track.getSettings()
-      this.logger('call', `resolution::${settings.width}X${settings.height}`)
-      this.$call.sendResolution({
-        width: settings.width,
-        height: settings.height,
-        orientation:
-          window.orientation === 90 || window.orientation === -90
-            ? 'landscape-primary'
-            : 'portrait-primary',
-      })
+      setTimeout(() => {
+        const track = tracks[0]
+        const settings = track.getSettings()
+        this.logger('call', `resolution::${settings.width}X${settings.height}`)
+        this.$call.sendResolution({
+          width: settings.width,
+          height: settings.height,
+          orientation:
+            window.orientation === 90 || window.orientation === -90
+              ? 'landscape-primary'
+              : 'portrait-primary',
+        })
+      }, 3000)
     },
     showTimeoutConfirm() {
       if (this.callTimeout) {
