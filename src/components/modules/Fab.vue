@@ -18,14 +18,14 @@ export default {
 <style lang="scss">
 .fab {
   position: fixed;
-  right: 40px;
-  bottom: 80px;
+  right: 2.8571rem;
+  bottom: 5.7143rem;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 50px;
-  height: 50px;
+  width: 3.5714rem;
+  height: 3.5714rem;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(227, 227, 227);
   border-radius: 50%;
