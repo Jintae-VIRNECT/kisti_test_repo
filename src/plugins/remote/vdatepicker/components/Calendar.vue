@@ -204,7 +204,7 @@ export default {
                       props: {
                         rows: this.rows,
                         columns: this.columns,
-                        columnWidth: 'minmax(256px, 1fr)',
+                        columnWidth: 'minmax(18.2857rem, 1fr)',
                         disableFocus: true,
                       },
                       attrs: {
@@ -827,7 +827,7 @@ export default {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  padding: 8px 10px;
+  padding: 0.5714rem 0.7143rem;
   pointer-events: none;
   &.title-left {
     justify-content: flex-end;

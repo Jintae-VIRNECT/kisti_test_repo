@@ -27,6 +27,7 @@
             <div class="collabo-search-bar__date">
               <input
                 class="collabo-search-bar__date--input"
+                :class="{ active: calendarVisible }"
                 :value="inputValue"
                 v-on="inputEvents"
                 readonly
@@ -36,7 +37,7 @@
                 @click="togglePopover({ placement: 'auto-start' })"
               >
                 <img
-                  v-if="!calendarBtn"
+                  v-if="!calendarVisible"
                   src="~assets/image/calendar/ic_calendar_default.svg"
                   alt="calendar_hide"
                 />
@@ -141,7 +142,7 @@ export default {
         input: 'YYYY-MM-DD',
         title: 'YYYY-MM',
       },
-      calendarBtn: false,
+      calendarVisible: false,
     }
   },
   watch: {
@@ -209,7 +210,7 @@ export default {
       })
     },
     toggleCalendarBtn() {
-      this.calendarBtn = !this.calendarBtn
+      this.calendarVisible = !this.calendarVisible
     },
   },
   mounted() {

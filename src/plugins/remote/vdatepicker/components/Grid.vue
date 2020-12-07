@@ -219,15 +219,15 @@ export default {
 <style lang="scss" scoped>
 .vc-grid-container {
 	position: relative;
-	flex-shrink: 1;
 	display: grid;
+	flex-shrink: 1;
 	overflow: auto;
 	-webkit-overflow-scrolling: touch;
 }
 .vc-grid-cell {
 	display: flex;
-	justify-content: center;
 	align-items: center;
+	justify-content: center;
 }
 ::v-deep.vc-grid-cell:nth-child(1) {
 	.vc-pane {

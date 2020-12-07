@@ -11,7 +11,7 @@
 </template>
 
 <script>
-const _defSize = '26px';
+const _defSize = '1.8571rem';
 const _defViewBox = '0 0 32 32';
 
 const icons = {

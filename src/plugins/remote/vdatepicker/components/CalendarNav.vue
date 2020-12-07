@@ -13,7 +13,7 @@
         ref="prevButton"
       >
         <slot name="nav-left-button">
-          <svg-icon name="left-arrow" width="20px" height="24px" />
+          <svg-icon name="left-arrow" width="1.4286rem" height="1.7143rem" />
         </slot>
       </span>
       <!--Mode switch button-->
@@ -38,7 +38,7 @@
         ref="nextButton"
       >
         <slot name="nav-right-button">
-          <svg-icon name="right-arrow" width="20px" height="24px" />
+          <svg-icon name="right-arrow" width="1.4286rem" height="1.7143rem" />
         </slot>
       </span>
     </grid>
@@ -252,12 +252,12 @@ export default {
 <style lang="postcss">
 .vc-nav-arrow {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   line-height: var(--leading-snug);
-  border-width: 2px;
-  border-style: solid;
   border-color: transparent;
+  border-style: solid;
+  border-width: 2px;
   border-radius: var(--rounded);
   &.is-left {
     margin-right: auto;
@@ -274,14 +274,14 @@ export default {
 }
 
 .vc-nav-title {
+  padding: 4px 8px;
   color: var(--accent-100);
   font-weight: var(--font-bold);
   line-height: var(--leading-snug);
-  padding: 4px 8px;
-  border-radius: var(--rounded);
-  border-width: 2px;
-  border-style: solid;
   border-color: transparent;
+  border-style: solid;
+  border-width: 2px;
+  border-radius: var(--rounded);
   &:hover {
     background-color: var(--gray-900);
   }
@@ -292,15 +292,15 @@ export default {
 
 .vc-nav-item {
   width: 48px;
-  text-align: center;
-  line-height: var(--leading-snug);
-  font-weight: var(--font-semibold);
   padding: 4px 0;
-  cursor: pointer;
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-snug);
+  text-align: center;
   border-color: transparent;
-  border-width: 2px;
   border-style: solid;
+  border-width: 2px;
   border-radius: var(--rounded);
+  cursor: pointer;
   &:hover {
     color: var(--white);
     background-color: var(--gray-900);
@@ -311,9 +311,9 @@ export default {
   }
   &.is-active {
     color: var(--accent-900);
+    font-weight: var(--font-bold);
     background: var(--accent-100);
     border-color: transparent;
-    font-weight: var(--font-bold);
     box-shadow: var(--shadow);
   }
   &.is-inactive {

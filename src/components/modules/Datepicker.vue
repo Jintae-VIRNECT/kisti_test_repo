@@ -2,6 +2,7 @@
   <div class="datepicker" @click.stop>
     <vue-datepicker
       class="custom-date-picker"
+      :class="{ active: isActive }"
       :format="format"
       :pickerName="pickerName"
       :highlighted="highlighted"
@@ -104,11 +105,16 @@ export default {
 <style lang="scss">
 .datepicker {
   display: flex;
-
   width: 13.2143rem;
   height: 3rem;
 }
 .custom-date-picker {
+  &.vdp-datepicker.active {
+    input[type='text'] {
+      color: #0b1f48;
+    }
+  }
+
   &.vdp-datepicker {
     width: 10.2143rem;
     height: 3rem;
@@ -120,7 +126,7 @@ export default {
     .vdp-datepicker--input {
       position: relative;
       width: 10.2143rem;
-      padding: 0.7143rem 0 1rem 1.4286rem;
+      padding: 0px 0px 0px 1.4286rem;
       border-right: none;
       border-radius: 4px 0px 0px 4px;
     }

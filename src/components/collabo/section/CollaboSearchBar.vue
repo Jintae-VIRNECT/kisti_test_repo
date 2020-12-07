@@ -428,7 +428,7 @@ export default {
   padding: 0px 0px 0px 14.5px;
   color: rgb(11, 31, 72);
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
   border: none;
   border-radius: 6px 0px 0px 6px;
 }

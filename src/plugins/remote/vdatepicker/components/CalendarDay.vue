@@ -436,13 +436,13 @@ export default {
 <style lang="postcss" scoped>
 .vc-day {
   position: relative;
-  min-height: 28px;
+  z-index: 1;
   width: 100%;
   height: 100%;
-  z-index: 1;
+  min-height: 2rem;
   &.is-not-in-month * {
-    font-weight: normal;
     color: #b6b6b6;
+    font-weight: normal;
     opacity: 1;
     pointer-events: none;
   }
@@ -450,56 +450,56 @@ export default {
 
 .vc-day-layer {
   position: absolute;
-  left: 0;
-  right: 0;
   top: 0;
+  right: 0;
   bottom: 0;
+  left: 0;
   pointer-events: none;
 }
 
 .vc-day-box-center-center {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   height: 100%;
   transform-origin: 50% 50%;
 }
 
 .vc-day-box-left-center {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
+  justify-content: flex-start;
   height: 100%;
   transform-origin: 0% 50%;
 }
 
 .vc-day-box-right-center {
   display: flex;
-  justify-content: flex-end;
   align-items: center;
+  justify-content: flex-end;
   height: 100%;
   transform-origin: 100% 50%;
 }
 
 .vc-day-box-center-bottom {
   display: flex;
-  justify-content: center;
   align-items: flex-end;
+  justify-content: center;
 }
 
 .vc-day-content {
   display: flex;
-  justify-content: center;
   align-items: center;
-  font-size: var(--text-sm);
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin: 0.1143rem auto;
   /* font-weight: var(--font-medium); */
   font-weight: 500;
-  width: 28px;
-  height: 28px;
-  margin: 1.6px auto;
+  font-size: var(--text-sm);
   border-radius: var(--rounded-full);
-  user-select: none;
   cursor: pointer;
+  user-select: none;
   &:hover {
     background-color: hsla(211, 25%, 84%, 0.3);
   }
@@ -527,59 +527,59 @@ export default {
 }
 
 .vc-highlights {
+  z-index: -1;
   overflow: hidden;
   pointer-events: none;
-  z-index: -1;
 }
 
 .vc-highlight {
-  width: 28px;
-  height: 28px;
+  width: 2rem;
+  height: 2rem;
   &.vc-highlight-base-start {
     width: 50% !important;
-    border-radius: 0 !important;
     border-right-width: 0 !important;
+    border-radius: 0 !important;
   }
   &.vc-highlight-base-end {
     width: 50% !important;
-    border-radius: 0 !important;
     border-left-width: 0 !important;
+    border-radius: 0 !important;
   }
   &.vc-highlight-base-middle {
     width: 100%;
-    border-radius: 0 !important;
-    border-left-width: 0 !important;
-    border-right-width: 0 !important;
     margin: 0 -1px;
+    border-right-width: 0 !important;
+    border-left-width: 0 !important;
+    border-radius: 0 !important;
   }
 }
 
 .vc-dots {
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
 }
 
 .vc-dot {
-  width: 5px;
-  height: 5px;
+  width: 0.3571rem;
+  height: 0.3571rem;
   border-radius: 50%;
   transition: all var(--day-content-transition-time);
   &:not(:last-child) {
-    margin-right: 3px;
+    margin-right: 0.2143rem;
   }
 }
 
 .vc-bars {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
+  justify-content: flex-start;
   width: 75%;
 }
 
 .vc-bar {
   flex-grow: 1;
-  height: 3px;
+  height: 0.2143rem;
   transition: all var(--day-content-transition-time);
 }
 </style>

@@ -192,7 +192,7 @@ export default {
   display: flex;
   flex-shrink: 0;
   align-items: stretch;
-  height:  48px;
+  height:  3.4286rem;
   color: var(--gray-900);
   background-color:#516277 ;
   border-radius: 8px 8px 0px 0px;
@@ -226,15 +226,15 @@ export default {
 }
 
 .vc-title {
-  padding: 0 8px;
+  padding: 0 0.5714rem;
 
   /* font-size: var(--text-lg); */
   /* color: var(--gray-800); */
   color:#ffffff;
   font-weight: 500;
   /* font-weight: var(--font-semibold); */
-  font-size: 16px;
-  line-height: 27px;
+  font-size: 1.1429rem;
+  line-height: 1.9286rem;
   white-space: nowrap;
   cursor: pointer;
   user-select: none;
@@ -248,7 +248,7 @@ export default {
   flex: 1;
   align-items: center;
   justify-content: center;
-  padding: 5px 0;
+  padding: 0.3571rem 0;
   /* color: var(--gray-500); */
   color: #23355a;
   /* font-weight: var(--font-bold); */
@@ -262,7 +262,7 @@ export default {
   flex-grow: 1;
   flex-shrink: 1;
   /* padding: 5px 6px 7px 6px; */
-  padding: 14px 22px 30px 21.5px;
+  padding: 1rem 1.5714rem 2.1429rem 1.5357rem;
 }
 
 .vc-is-dark {
@@ -280,7 +280,7 @@ export default {
 
 <style>
 .vc-nav-popover-container {
-  padding: 4px;
+  padding: 0.2857rem;
   color: var(--white);
   font-weight: var(--font-semibold);
   font-size: var(--text-sm);
