@@ -36,10 +36,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/remote/index.html',
         },
         {
-          from: /sample(\/.*)?/,
-          to: '/sample/index.html',
-        },
-        {
           from: /account(\/.*)?/,
           to: '/account/index.html',
         },
@@ -49,10 +45,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         },
         {
           from: /policy(\/.*)?/,
-          to: '/extra/index.html',
-        },
-        {
-          from: /(\/)m(\/.*)?/,
           to: '/extra/index.html',
         },
         {
@@ -161,16 +153,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       template: './src/apps/account/app.html',
       filename: 'account/index.html',
       chunks: ['account'],
-    }),
-
-    // sample
-    new HtmlWebpackPlugin({
-      inject: 'body',
-      hash: true,
-      favicon: './src/assets/favicon.ico',
-      template: './src/apps/sample/app.html',
-      filename: 'sample/index.html',
-      chunks: ['sample'],
     }),
 
     // new BundleAnalyzerPlugin({
