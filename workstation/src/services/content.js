@@ -33,7 +33,9 @@ export default {
     }
     params.sort =
       params.sort &&
-      params.sort.replace('contentName', 'name').replace('targetType', 'type')
+      params.sort
+        .replace('contentName', 'name')
+        .replace('targetType', 'targetList.type')
 
     const userUUID = params.mine && myProfileGetter().uuid
     const workspaceUUID = activeWorkspaceGetter().uuid
