@@ -64,7 +64,6 @@
           {{ $t('search.text') }}</label
         >
         <input
-          readonly
           class="collabo-search-bar--input"
           type="text"
           :placeholder="$t('search.placeholder')"
