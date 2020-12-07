@@ -7,6 +7,7 @@ New Features
 
 Bug Fixes
 - AccessLogging 시 DNS Lookup을 일으키는 메서드 제거
+- 워크스페이스 초대 관련 메일 링크 형식 변경 사항 재적용 (https://virtualconnection.atlassian.net/browse/DPLA-1337)
 
 Limitation
 - 없음
