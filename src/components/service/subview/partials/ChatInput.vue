@@ -165,7 +165,12 @@ export default {
           this.clearUploadFile()
           this.fileList = []
         } catch (err) {
-          console.error(err)
+          if (err.code === 7003) {
+            this.toastDefault(this.$t('service.file_type_notsupport'))
+            this.clearUploadFile()
+          } else {
+            console.error(err)
+          }
         }
       } else if (this.inputText.length > 0) {
         this.$call.sendChat(this.inputText, this.translate.code)
