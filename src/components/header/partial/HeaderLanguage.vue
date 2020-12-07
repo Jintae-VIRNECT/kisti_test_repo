@@ -11,7 +11,10 @@
       class="language-button"
       slot="reference"
       :class="{ active: menuVisible }"
-    ></button>
+    >
+      <img v-if="menuVisible" src="~assets/image/ic_language_on.svg" />
+      <img v-else src="~assets/image/ic_language.svg" />
+    </button>
     <div>
       <div
         class="popover-language__button"
@@ -42,6 +45,14 @@ export default {
   mixins: [langMixin, confirmMixin],
   components: {
     Popover,
+  },
+  props: {
+    imgSrc: {
+      type: String,
+    },
+    activeSrc: {
+      type: String,
+    },
   },
   data() {
     return {
@@ -76,10 +87,8 @@ export default {
 .language-button {
   width: 2.4286rem;
   height: 2.4286rem;
-  background: url('~assets/image/ic_language.svg') 50% no-repeat;
-
-  &.active {
-    background: url('~assets/image/ic_language_on.svg') 50% no-repeat;
+  > img {
+    padding-top: 2px;
   }
 }
 
@@ -90,7 +99,7 @@ export default {
   border: 1px solid #454545;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
   > .popover--body {
-    padding: 7px 0;
+    padding: 0.5rem 0;
   }
 }
 

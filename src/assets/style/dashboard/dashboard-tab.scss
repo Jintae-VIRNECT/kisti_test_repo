@@ -3,7 +3,7 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  margin-top: 12.0006px;
+  margin-top: 0.8572rem;
   // height: calc(100% - #{$welcome_height});
   // height: calc(100% - 20rem);
 }
@@ -45,12 +45,12 @@
     display: flex;
     align-items: center;
 
-    padding: 1.571rem 1.571rem 13px 1.571rem;
+    padding: 1.571rem 1.571rem 0.9286rem 1.571rem;
     color: #0b1f48;
 
     font-weight: 300;
 
-    font-size: 20px;
+    font-size: 1.4286rem;
     line-height: 1.714rem;
     background-color: transparent;
 
@@ -58,9 +58,9 @@
     transition: opacity 0.3s;
 
     > img {
-      width: 28px;
-      height: 28px;
-      margin-right: 4.5px;
+      width: 2rem;
+      height: 2rem;
+      margin-right: 0.3214rem;
     }
 
     &:after {
@@ -68,7 +68,7 @@
       bottom: 0;
       left: 0;
       width: 0;
-      height: 4px;
+      height: 0.2857rem;
       background-color: #1f7ffa;
       transition: width 0.3s;
       content: "";

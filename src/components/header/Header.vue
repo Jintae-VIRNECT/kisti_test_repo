@@ -1,10 +1,10 @@
 <template>
   <div class="header">
-    <div style="display:flex">
+    <div class="header-wrapper offsetwidth">
       <header-logo></header-logo>
       <header-nav></header-nav>
+      <header-tools></header-tools>
     </div>
-    <header-tools></header-tools>
   </div>
 </template>
 

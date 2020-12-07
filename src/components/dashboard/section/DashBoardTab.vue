@@ -4,7 +4,8 @@
       class="dashboard-tab__nav"
       :class="{ fix: !!fix, nolicense: !(hasWorkspace && !expireLicense) }"
     >
-      <ul class="flex offsetwidth">
+      <!-- <ul class="flex offsetwidth"> -->
+      <ul class="flex">
         <tab-button
           v-for="tab of tabComponents"
           :key="tab.name"

@@ -3,7 +3,7 @@
     <dash-board-header></dash-board-header>
     <vue2-scrollbar ref="dashboardScroller" classes="dashboard-wrapper">
       <div>
-        <div class="dashboard-layout__contents">
+        <div class="dashboard-layout__contents offsetwidth">
           <dash-board-tab
             ref="tabSection"
             @tabChange="tabChange"
@@ -153,9 +153,17 @@ export default {
 
 .dashboard-layout__contents {
   position: relative;
-  min-width: $content_min_width;
+  // min-width: $content_min_width;
   margin: 0 22.8571rem 0px 22.8571rem;
   padding-top: 4.8571rem;
   overflow: hidden;
+}
+
+.offsetwidth {
+  position: relative;
+  width: 100%;
+  max-width: 67%;
+  margin-right: auto;
+  margin-left: auto;
 }
 </style>

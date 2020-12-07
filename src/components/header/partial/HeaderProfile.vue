@@ -10,7 +10,7 @@
       slot="reference"
       :image="account.profile"
       :size="30"
-      :thumbStyle="{ width: '36.002px', height: '36.002px' }"
+      :thumbStyle="{ width: '2.5716rem', height: '2.5716rem' }"
     ></profile>
     <div>
       <div class="popover-profile__myinfo">
