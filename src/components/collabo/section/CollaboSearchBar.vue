@@ -240,6 +240,16 @@ export default {
 
   mounted() {
     window.addEventListener('keypress', this.doSearch)
+
+    let to = new Date()
+    let from = new Date()
+    from.setDate(from.getDate() - 7)
+    this.setSearch({
+      date: {
+        from: from,
+        to: to,
+      },
+    })
   },
   beforeDestroy() {
     this.resetCondition()
