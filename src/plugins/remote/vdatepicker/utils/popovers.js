@@ -1,4 +1,4 @@
-import { elementContains } from './helpers';
+import { elementContains } from './helpers'
 
 export function showPopover(opts) {
   if (document) {
@@ -6,7 +6,7 @@ export function showPopover(opts) {
       new CustomEvent('show-popover', {
         detail: opts,
       }),
-    );
+    )
   }
 }
 
@@ -16,7 +16,7 @@ export function hidePopover(opts) {
       new CustomEvent('hide-popover', {
         detail: opts,
       }),
-    );
+    )
   }
 }
 
@@ -26,7 +26,7 @@ export function togglePopover(opts) {
       new CustomEvent('toggle-popover', {
         detail: opts,
       }),
-    );
+    )
   }
 }
 
@@ -36,62 +36,62 @@ export function updatePopover(opts) {
       new CustomEvent('update-popover', {
         detail: opts,
       }),
-    );
+    )
   }
 }
 
 export function getPopoverTriggerEvents(opts) {
-  const { visibility } = opts;
-  const click = visibility === 'click';
-  const hover = visibility === 'hover';
-  const hoverFocus = visibility === 'hover-focus';
-  const focus = visibility === 'focus';
-  opts.autoHide = !click;
-  let hovered = false;
-  let focused = false;
+  const { visibility } = opts
+  const click = visibility === 'click'
+  const hover = visibility === 'hover'
+  const hoverFocus = visibility === 'hover-focus'
+  const focus = visibility === 'focus'
+  opts.autoHide = !click
+  let hovered = false
+  let focused = false
   return {
     click(e) {
       if (click) {
-        opts.ref = e.target;
-        togglePopover(opts);
-        e.stopPropagation();
+        opts.ref = e.target
+        togglePopover(opts)
+        e.stopPropagation()
       }
     },
     mousemove(e) {
-      opts.ref = e.currentTarget;
+      opts.ref = e.currentTarget
       if (!hovered) {
-        hovered = true;
+        hovered = true
         if (hover || hoverFocus) {
-          showPopover(opts);
+          showPopover(opts)
         }
       }
     },
     mouseleave(e) {
-      opts.ref = e.target;
+      opts.ref = e.target
       if (hovered) {
-        hovered = false;
+        hovered = false
         if (hover || (hoverFocus && !focused)) {
-          hidePopover(opts);
+          hidePopover(opts)
         }
       }
     },
     focusin(e) {
-      opts.ref = e.currentTarget;
+      opts.ref = e.currentTarget
       if (!focused) {
-        focused = true;
+        focused = true
         if (focus || hoverFocus) {
-          showPopover(opts);
+          showPopover(opts)
         }
       }
     },
     focusout(e) {
-      opts.ref = e.currentTarget;
+      opts.ref = e.currentTarget
       if (focused && !elementContains(opts.ref, e.relatedTarget)) {
-        focused = false;
+        focused = false
         if (focus || (hoverFocus && !hovered)) {
-          hidePopover(opts);
+          hidePopover(opts)
         }
       }
     },
-  };
+  }
 }

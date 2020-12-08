@@ -1,8 +1,8 @@
 <script>
-import { createPopper } from '@popperjs/core';
-import { on, off, elementContains } from '../utils/helpers';
-import { addTapOrClickHandler } from '../utils/touch';
-import { isFunction } from '../utils/_';
+import { createPopper } from '@popperjs/core'
+import { on, off, elementContains } from '../utils/helpers'
+import { addTapOrClickHandler } from '../utils/touch'
+import { isFunction } from '../utils/_'
 
 export default {
   name: 'Popover',
@@ -61,7 +61,7 @@ export default {
           ],
         ),
       ],
-    );
+    )
   },
   props: {
     id: { type: String, required: true },
@@ -83,7 +83,7 @@ export default {
       hideDelay: 110,
       autoHide: false,
       popperEl: null,
-    };
+    }
   },
   computed: {
     content() {
@@ -97,7 +97,7 @@ export default {
             hide: opts => this.hide(opts),
           })) ||
         this.$slots.default
-      );
+      )
     },
     popperOptions() {
       return {
@@ -113,29 +113,29 @@ export default {
           ...(this.modifiers || []),
         ],
         onFirstUpdate: this.onPopperUpdate,
-      };
+      }
     },
     isVisible() {
-      return !!(this.ref && this.content);
+      return !!(this.ref && this.content)
     },
     direction() {
-      return (this.placement && this.placement.split('-')[0]) || 'bottom';
+      return (this.placement && this.placement.split('-')[0]) || 'bottom'
     },
     alignment() {
       const isLeftRight =
-        this.direction === 'left' || this.direction === 'right';
-      let alignment = this.placement.split('-');
-      alignment = alignment.length > 1 ? alignment[1] : '';
+        this.direction === 'left' || this.direction === 'right'
+      let alignment = this.placement.split('-')
+      alignment = alignment.length > 1 ? alignment[1] : ''
       if (['start', 'top', 'left'].includes(alignment)) {
-        return isLeftRight ? 'top' : 'left';
+        return isLeftRight ? 'top' : 'left'
       }
       if (['end', 'bottom', 'right'].includes(alignment)) {
-        return isLeftRight ? 'bottom' : 'right';
+        return isLeftRight ? 'bottom' : 'right'
       }
-      return isLeftRight ? 'middle' : 'center';
+      return isLeftRight ? 'middle' : 'center'
     },
     state() {
-      return this.$popovers[this.id];
+      return this.$popovers[this.id]
     },
   },
   watch: {
@@ -145,143 +145,143 @@ export default {
           ...oldVal,
           completed: !val,
           reason: val ? 'Overridden by action' : null,
-        });
+        })
       }
     },
   },
   mounted() {
-    this.popoverEl = this.$refs.popover;
-    this.addEvents();
+    this.popoverEl = this.$refs.popover
+    this.addEvents()
   },
   beforeDestroy() {
-    this.removeEvents();
+    this.removeEvents()
   },
   methods: {
     addEvents() {
-      on(this.popoverEl, 'click', this.onClick);
-      on(this.popoverEl, 'mouseover', this.onMouseOver);
-      on(this.popoverEl, 'mouseleave', this.onMouseLeave);
-      on(this.popoverEl, 'focusin', this.onFocusIn);
-      on(this.popoverEl, 'focusout', this.onFocusOut);
-      on(document, 'keydown', this.onDocumentKeydown);
+      on(this.popoverEl, 'click', this.onClick)
+      on(this.popoverEl, 'mouseover', this.onMouseOver)
+      on(this.popoverEl, 'mouseleave', this.onMouseLeave)
+      on(this.popoverEl, 'focusin', this.onFocusIn)
+      on(this.popoverEl, 'focusout', this.onFocusOut)
+      on(document, 'keydown', this.onDocumentKeydown)
       this.removeDocHandler = addTapOrClickHandler(
         document,
         this.onDocumentClick,
-      );
-      on(document, 'show-popover', this.onDocumentShowPopover);
-      on(document, 'hide-popover', this.onDocumentHidePopover);
-      on(document, 'toggle-popover', this.onDocumentTogglePopover);
-      on(document, 'update-popover', this.onDocumentUpdatePopover);
+      )
+      on(document, 'show-popover', this.onDocumentShowPopover)
+      on(document, 'hide-popover', this.onDocumentHidePopover)
+      on(document, 'toggle-popover', this.onDocumentTogglePopover)
+      on(document, 'update-popover', this.onDocumentUpdatePopover)
     },
     removeEvents() {
-      off(this.popoverEl, 'click', this.onClick);
-      off(this.popoverEl, 'mouseover', this.onMouseOver);
-      off(this.popoverEl, 'mouseleave', this.onMouseLeave);
-      off(this.popoverEl, 'focusin', this.onFocusIn);
-      off(this.popoverEl, 'focusout', this.onFocusOut);
-      off(document, 'keydown', this.onDocumentKeydown);
-      if (this.removeDocHandler) this.removeDocHandler();
-      off(document, 'show-popover', this.onDocumentShowPopover);
-      off(document, 'hide-popover', this.onDocumentHidePopover);
-      off(document, 'toggle-popover', this.onDocumentTogglePopover);
-      off(document, 'update-popover', this.onDocumentUpdatePopover);
+      off(this.popoverEl, 'click', this.onClick)
+      off(this.popoverEl, 'mouseover', this.onMouseOver)
+      off(this.popoverEl, 'mouseleave', this.onMouseLeave)
+      off(this.popoverEl, 'focusin', this.onFocusIn)
+      off(this.popoverEl, 'focusout', this.onFocusOut)
+      off(document, 'keydown', this.onDocumentKeydown)
+      if (this.removeDocHandler) this.removeDocHandler()
+      off(document, 'show-popover', this.onDocumentShowPopover)
+      off(document, 'hide-popover', this.onDocumentHidePopover)
+      off(document, 'toggle-popover', this.onDocumentTogglePopover)
+      off(document, 'update-popover', this.onDocumentUpdatePopover)
     },
     onClick(e) {
-      e.stopPropagation();
+      e.stopPropagation()
     },
     onMouseOver() {
-      this.isHovered = true;
-      if (this.isInteractive) this.show();
+      this.isHovered = true
+      if (this.isInteractive) this.show()
     },
     onMouseLeave() {
-      this.isHovered = false;
+      this.isHovered = false
       if (
         this.autoHide &&
         !this.isFocused &&
         (!this.ref || this.ref !== document.activeElement)
       ) {
-        this.hide();
+        this.hide()
       }
     },
     onFocusIn() {
-      this.isFocused = true;
-      if (this.isInteractive) this.show();
+      this.isFocused = true
+      if (this.isInteractive) this.show()
     },
     onFocusOut(e) {
       if (
         !e.relatedTarget ||
         !elementContains(this.popoverEl, e.relatedTarget)
       ) {
-        this.isFocused = false;
-        if (!this.isHovered && this.autoHide) this.hide();
+        this.isFocused = false
+        if (!this.isHovered && this.autoHide) this.hide()
       }
     },
     onDocumentClick(e) {
       if (!this.$refs.popover || !this.ref) {
-        return;
+        return
       }
       // Don't hide if target element is contained within popover ref or content
       if (
         elementContains(this.popoverEl, e.target) ||
         elementContains(this.ref, e.target)
       ) {
-        return;
+        return
       }
       // Hide the popover
-      this.hide();
+      this.hide()
     },
     onDocumentKeydown(e) {
       if (e.key === 'Esc' || e.key === 'Escape') {
-        this.hide();
+        this.hide()
       }
     },
     onDocumentShowPopover({ detail }) {
-      if (!detail.id || detail.id !== this.id) return;
-      this.show(detail);
+      if (!detail.id || detail.id !== this.id) return
+      this.show(detail)
     },
     onDocumentHidePopover({ detail }) {
-      if (!detail.id || detail.id !== this.id) return;
-      this.hide(detail);
+      if (!detail.id || detail.id !== this.id) return
+      this.hide(detail)
     },
     onDocumentTogglePopover({ detail }) {
-      if (!detail.id || detail.id !== this.id) return;
-      this.toggle(detail);
+      if (!detail.id || detail.id !== this.id) return
+      this.toggle(detail)
     },
     onDocumentUpdatePopover({ detail }) {
-      if (!detail.id || detail.id !== this.id) return;
-      this.update(detail);
+      if (!detail.id || detail.id !== this.id) return
+      this.update(detail)
     },
     show(opts = {}) {
-      opts.action = 'show';
-      const ref = opts.ref || this.ref;
-      const delay = opts.showDelay >= 0 ? opts.showDelay : this.showDelay;
+      opts.action = 'show'
+      const ref = opts.ref || this.ref
+      const delay = opts.showDelay >= 0 ? opts.showDelay : this.showDelay
       // Validate options
       if (!ref) {
         if (opts.callback) {
           opts.callback({
             completed: false,
             reason: 'Invalid reference element provided',
-          });
+          })
         }
-        return;
+        return
       }
-      clearTimeout(this.timeout);
-      this.opts = opts;
+      clearTimeout(this.timeout)
+      this.opts = opts
       const fn = () => {
-        Object.assign(this, opts);
-        this.setupPopper();
-        this.opts = null;
-      };
+        Object.assign(this, opts)
+        this.setupPopper()
+        this.opts = null
+      }
       if (delay > 0) {
-        this.timeout = setTimeout(() => fn(), delay);
+        this.timeout = setTimeout(() => fn(), delay)
       } else {
-        fn();
+        fn()
       }
     },
     hide(opts = {}) {
-      opts.action = 'hide';
-      const ref = opts.ref || this.ref;
-      const delay = opts.hideDelay >= 0 ? opts.hideDelay : this.hideDelay;
+      opts.action = 'hide'
+      const ref = opts.ref || this.ref
+      const delay = opts.hideDelay >= 0 ? opts.hideDelay : this.hideDelay
       if (!this.ref || ref !== this.ref) {
         if (opts.callback) {
           opts.callback({
@@ -290,78 +290,78 @@ export default {
             reason: this.ref
               ? 'Invalid reference element provided'
               : 'Popover already hidden',
-          });
+          })
         }
-        return;
+        return
       }
       const fn = () => {
-        this.ref = null;
-        this.opts = null;
-      };
-      clearTimeout(this.timeout);
-      this.opts = opts;
+        this.ref = null
+        this.opts = null
+      }
+      clearTimeout(this.timeout)
+      this.opts = opts
       if (delay > 0) {
-        this.timeout = setTimeout(fn, delay);
+        this.timeout = setTimeout(fn, delay)
       } else {
-        fn();
+        fn()
       }
     },
     toggle(opts = {}) {
       if (this.isVisible && opts.ref === this.ref) {
-        this.hide(opts);
+        this.hide(opts)
       } else {
-        this.show(opts);
+        this.show(opts)
       }
     },
     update(opts = {}) {
-      Object.assign(this, opts);
-      this.setupPopper();
+      Object.assign(this, opts)
+      this.setupPopper()
     },
     setupPopper() {
       this.$nextTick(() => {
-        if (!this.ref || !this.$refs.popover) return;
+        if (!this.ref || !this.$refs.popover) return
         if (this.popper && this.popper.reference !== this.ref) {
-          this.destroyPopper();
+          this.destroyPopper()
         }
         if (!this.popper) {
           this.popper = createPopper(
             this.ref,
             this.popoverEl,
             this.popperOptions,
-          );
+          )
         } else {
-          this.popper.update();
+          this.popper.update()
         }
-      });
+      })
     },
     onPopperUpdate(args) {
       if (args.placement) {
-        this.placement = args.placement;
+        this.placement = args.placement
       } else if (args.state) {
-        this.placement = args.state.placement;
+        this.placement = args.state.placement
       }
     },
     beforeEnter(e) {
-      this.$emit('beforeShow', e);
+      this.$emit('beforeShow', e)
     },
     afterEnter(e) {
-      this.$emit('afterShow', e);
+      this.$emit('afterShow', e)
     },
     beforeLeave(e) {
-      this.$emit('beforeHide', e);
+      this.$emit('beforeHide', e)
     },
     afterLeave(e) {
-      this.destroyPopper();
-      this.$emit('afterHide', e);
+      this.destroyPopper()
+      this.$emit('afterHide', e)
     },
     destroyPopper() {
       if (this.popper) {
-        this.popper.destroy();
-        this.popper = null;
+        this.popper.destroy()
+        this.popper = null
       }
     },
   },
-};
+}
 </script>
 
 <style lang="postcss" scoped>

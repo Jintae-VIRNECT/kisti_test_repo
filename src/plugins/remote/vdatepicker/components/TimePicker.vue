@@ -57,8 +57,8 @@
 </template>
 
 <script>
-import TimeSelect from './TimeSelect';
-import { pad } from '../utils/helpers';
+import TimeSelect from './TimeSelect'
+import { pad } from '../utils/helpers'
 
 export default {
   name: 'TimePicker',
@@ -76,15 +76,15 @@ export default {
       hours: 0,
       minutes: 0,
       isAM: true,
-    };
+    }
   },
   computed: {
     date() {
-      let date = this.locale.normalizeDate(this.value);
+      let date = this.locale.normalizeDate(this.value)
       if (this.value.hours === 24) {
-        date = new Date(date.getTime() - 1);
+        date = new Date(date.getTime() - 1)
       }
-      return date;
+      return date
     },
     hourOptions() {
       const options12 = [
@@ -100,7 +100,7 @@ export default {
         { value: 9, label: '9' },
         { value: 10, label: '10' },
         { value: 11, label: '11' },
-      ];
+      ]
       const options24 = [
         { value: 0, label: '00' },
         { value: 1, label: '01' },
@@ -126,89 +126,89 @@ export default {
         { value: 21, label: '21' },
         { value: 22, label: '22' },
         { value: 23, label: '23' },
-      ];
+      ]
 
-      if (this.is24hr) return options24;
-      return options12;
+      if (this.is24hr) return options24
+      return options12
     },
     minuteOptions() {
-      const options = [];
-      let m = 0;
-      let added = false;
+      const options = []
+      let m = 0
+      let added = false
       while (m <= 59) {
         options.push({
           value: m,
           label: pad(m, 2),
-        });
-        added = added || m === this.minutes;
-        m += this.minuteIncrement;
+        })
+        added = added || m === this.minutes
+        m += this.minuteIncrement
         // Add disabled option if interval has skipped it
         if (!added && m > this.minutes) {
-          added = true;
+          added = true
           options.push({
             value: this.minutes,
             label: pad(this.minutes, 2),
             disabled: true,
-          });
+          })
         }
       }
-      return options;
+      return options
     },
   },
   watch: {
     value() {
-      this.setup();
+      this.setup()
     },
     hours() {
-      this.updateValue();
+      this.updateValue()
     },
     minutes() {
-      this.updateValue();
+      this.updateValue()
     },
     isAM() {
-      this.updateValue();
+      this.updateValue()
     },
   },
   created() {
-    this.setup();
+    this.setup()
   },
   methods: {
     protected(fn) {
-      if (this.busy) return;
-      this.busy = true;
-      fn();
-      this.$nextTick(() => (this.busy = false));
+      if (this.busy) return
+      this.busy = true
+      fn()
+      this.$nextTick(() => (this.busy = false))
     },
     setup() {
       this.protected(() => {
-        let { hours } = this.value;
-        if (hours === 24) hours = 0;
-        let isAM = true;
+        let { hours } = this.value
+        if (hours === 24) hours = 0
+        let isAM = true
         if (!this.is24hr && hours >= 12) {
-          hours -= 12;
-          isAM = false;
+          hours -= 12
+          isAM = false
         }
-        this.hours = hours;
-        this.minutes = this.value.minutes;
-        this.isAM = isAM;
-      });
+        this.hours = hours
+        this.minutes = this.value.minutes
+        this.isAM = isAM
+      })
     },
     updateValue() {
       this.protected(() => {
-        let hours = this.hours;
+        let hours = this.hours
         if (!this.is24hr && !this.isAM) {
-          hours += 12;
+          hours += 12
         }
         this.$emit('input', {
           ...this.value,
           hours,
           minutes: this.minutes,
           seconds: 0,
-        });
-      });
+        })
+      })
     },
   },
-};
+}
 </script>
 
 <style lang="postcss" scoped>
@@ -217,8 +217,8 @@ export default {
   align-items: center;
   padding: 8px;
   &.vc-invalid {
-    pointer-events: none;
     opacity: 0.5;
+    pointer-events: none;
   }
   &.vc-bordered {
     border-top: 1px solid var(--gray-400);
@@ -238,26 +238,26 @@ export default {
 .vc-date {
   display: flex;
   align-items: center;
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  text-transform: uppercase;
-  padding: 0 0 4px 4px;
   margin-top: -4px;
+  padding: 0 0 4px 4px;
+  font-weight: var(--font-semibold);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
   & .vc-weekday {
     color: var(--gray-700);
     letter-spacing: var(--tracking-wide);
   }
   & .vc-month {
-    color: var(--accent-600);
     margin-left: 8px;
+    color: var(--accent-600);
   }
   & .vc-day {
-    color: var(--accent-600);
     margin-left: 4px;
+    color: var(--accent-600);
   }
   & .vc-year {
-    color: var(--gray-500);
     margin-left: 8px;
+    color: var(--gray-500);
   }
 }
 
@@ -269,20 +269,20 @@ export default {
 .vc-am-pm {
   display: flex;
   align-items: center;
-  background: var(--gray-200);
+  height: 30px;
   margin-left: 8px;
   padding: 4px;
+  background: var(--gray-200);
   border-radius: var(--rounded);
-  height: 30px;
   & button {
-    color: var(--gray-900);
-    font-size: var(--text-sm);
-    font-weight: var(--font-medium);
     padding: 0 4px;
+    color: var(--gray-900);
+    font-weight: var(--font-medium);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
     background: transparent;
     border: 2px solid transparent;
     border-radius: var(--rounded);
-    line-height: var(--leading-snug);
     &:hover {
       color: var(--gray-600);
     }
@@ -290,8 +290,8 @@ export default {
       border-color: var(--accent-400);
     }
     &.active {
-      background: var(--accent-600);
       color: var(--white);
+      background: var(--accent-600);
       &:hover {
         background: var(--accent-500);
       }
@@ -335,8 +335,8 @@ export default {
         border-color: var(--accent-500);
       }
       &.active {
-        background: var(--accent-500);
         color: var(--white);
+        background: var(--accent-500);
         &:hover {
           background: var(--accent-600);
         }

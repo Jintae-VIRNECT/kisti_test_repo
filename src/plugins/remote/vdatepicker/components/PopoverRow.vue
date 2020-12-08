@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { childMixin } from '../utils/mixins';
+import { childMixin } from '../utils/mixins'
 
 export default {
   name: 'PopoverRow',
@@ -25,10 +25,10 @@ export default {
   },
   computed: {
     indicator() {
-      const { highlight, dot, bar, popover } = this.attribute;
-      if (popover && popover.hideIndicator) return null;
+      const { highlight, dot, bar, popover } = this.attribute
+      if (popover && popover.hideIndicator) return null
       if (highlight) {
-        const { color, isDark } = highlight.start;
+        const { color, isDark } = highlight.start
         return {
           style: {
             ...this.theme.bgAccentHigh({
@@ -39,10 +39,10 @@ export default {
             height: '5px',
             borderRadius: '3px',
           },
-        };
+        }
       }
       if (dot) {
-        const { color, isDark } = dot.start;
+        const { color, isDark } = dot.start
         return {
           style: {
             ...this.theme.bgAccentHigh({
@@ -53,10 +53,10 @@ export default {
             height: '5px',
             borderRadius: '50%',
           },
-        };
+        }
       }
       if (bar) {
-        const { color, isDark } = bar.start;
+        const { color, isDark } = bar.start
         return {
           style: {
             ...this.theme.bgAccentHigh({
@@ -66,12 +66,12 @@ export default {
             width: '10px',
             height: '3px',
           },
-        };
+        }
       }
-      return null;
+      return null
     },
   },
-};
+}
 </script>
 
 <style lang="postcss" scoped>
@@ -86,9 +86,9 @@ export default {
 }
 .vc-day-popover-row-indicator {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-grow: 0;
+  align-items: center;
+  justify-content: center;
   width: 15px;
   margin-right: 3px;
   & span {
@@ -97,9 +97,9 @@ export default {
 }
 .vc-day-popover-row-content {
   display: flex;
-  align-items: center;
-  flex-wrap: none;
   flex-grow: 1;
+  flex-wrap: none;
+  align-items: center;
   width: max-content;
 }
 </style>

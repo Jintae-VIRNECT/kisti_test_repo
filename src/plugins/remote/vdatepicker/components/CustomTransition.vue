@@ -15,7 +15,7 @@ export default {
         },
       },
       [this.$slots.default],
-    );
+    )
   },
   props: {
     name: String,
@@ -23,20 +23,20 @@ export default {
   },
   computed: {
     name_() {
-      return this.name || 'none';
+      return this.name || 'none'
     },
   },
   methods: {
     beforeEnter(el) {
-      this.$emit('beforeEnter', el);
-      this.$emit('beforeTransition', el);
+      this.$emit('beforeEnter', el)
+      this.$emit('beforeTransition', el)
     },
     afterEnter(el) {
-      this.$emit('afterEnter', el);
-      this.$emit('afterTransition', el);
+      this.$emit('afterEnter', el)
+      this.$emit('afterTransition', el)
     },
   },
-};
+}
 </script>
 
 <style lang="postcss" scoped>
@@ -55,9 +55,9 @@ export default {
 .slide-up-leave-active,
 .slide-down-enter-active,
 .slide-down-leave-active {
+  backface-visibility: hidden;
   transition: transform var(--slide-duration) var(--slide-timing),
     opacity var(--slide-duration) var(--slide-timing);
-  backface-visibility: hidden;
 }
 
 .none-leave-active,

@@ -25,51 +25,51 @@ export default {
   props: {
     options: Array,
   },
-};
+}
 </script>
 
 <style lang="postcss" scoped>
 .vc-select {
   position: relative;
   & select {
-    flex-grow: 1;
     display: block;
-    appearance: none;
+    flex-grow: 1;
     width: 52px;
     height: 30px;
-    font-size: var(--text-base);
+    padding: 0 20px 0 8px;
+    color: var(--gray-900);
     font-weight: var(--font-medium);
+    font-size: var(--text-base);
+    line-height: var(--leading-tight);
     text-align: left;
+    text-indent: 0px;
     background-color: var(--gray-200);
     border: 2px solid;
     border-color: var(--gray-200);
-    color: var(--gray-900);
-    padding: 0 20px 0 8px;
     border-radius: var(--rounded);
-    line-height: var(--leading-tight);
-    text-indent: 0px;
     cursor: pointer;
+    appearance: none;
     -moz-padding-start: 3px;
     &:hover {
       color: var(--gray-600);
     }
     &:focus {
-      outline: 0;
-      border-color: var(--accent-400);
       background-color: var(--white);
+      border-color: var(--accent-400);
+      outline: 0;
     }
   }
 }
 .vc-select-arrow {
-  display: flex;
-  align-items: center;
-  pointer-events: none;
   position: absolute;
   top: 0;
-  bottom: 0;
   right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
   padding: 0 4px 0 0;
   color: var(--gray-500);
+  pointer-events: none;
   & svg {
     width: 16px;
     height: 16px;
@@ -78,15 +78,15 @@ export default {
 }
 .vc-is-dark {
   & select {
-    background: var(--gray-700);
     color: var(--gray-100);
+    background: var(--gray-700);
     border-color: var(--gray-700);
     &:hover {
       color: var(--gray-400);
     }
     &:focus {
-      border-color: var(--accent-500);
       background-color: var(--gray-800);
+      border-color: var(--accent-500);
     }
   }
 }

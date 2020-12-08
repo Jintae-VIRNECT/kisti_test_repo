@@ -1,6 +1,5 @@
-
-import {Calendar as VCalendar}  from './lib'
-import {DatePicker as VDatePicker } from './lib'
+import { Calendar as VCalendar } from './lib'
+import { DatePicker as VDatePicker } from './lib'
 import * as VDatePickerPlugin from './lib'
 
 export default {
@@ -9,7 +8,7 @@ export default {
       components: {
         VCalendar,
         VDatePicker,
-        VDatePickerPlugin
+        VDatePickerPlugin,
       },
     })
   },

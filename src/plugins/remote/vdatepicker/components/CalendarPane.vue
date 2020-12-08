@@ -1,11 +1,11 @@
 <script>
-import Popover from './Popover';
-import CalendarNav from './CalendarNav';
-import CalendarDay from './CalendarDay';
-import Grid from './Grid';
-import { childMixin, safeScopedSlotMixin } from '../utils/mixins';
-import { getPopoverTriggerEvents } from '../utils/popovers';
-import { createGuid } from '../utils/helpers';
+import Popover from './Popover'
+import CalendarNav from './CalendarNav'
+import CalendarDay from './CalendarDay'
+import Grid from './Grid'
+import { childMixin, safeScopedSlotMixin } from '../utils/mixins'
+import { getPopoverTriggerEvents } from '../utils/popovers'
+import { createGuid } from '../utils/helpers'
 
 export default {
   name: 'CalendarPane',
@@ -64,7 +64,7 @@ export default {
             ]),
           ],
         ),
-      ]);
+      ])
 
     // Weeks
     const weeks = h(
@@ -105,7 +105,7 @@ export default {
           }),
         ),
       ],
-    );
+    )
 
     return h(
       'div',
@@ -114,7 +114,7 @@ export default {
         ref: 'pane',
       },
       [header, weeks],
-    );
+    )
   },
   props: {
     page: Object,
@@ -128,20 +128,20 @@ export default {
   data() {
     return {
       navPopoverId: createGuid(),
-    };
+    }
   },
   computed: {
     navVisibility_() {
-      return this.propOrDefault('navVisibility', 'navVisibility');
+      return this.propOrDefault('navVisibility', 'navVisibility')
     },
     navPlacement() {
       switch (this.titlePosition) {
         case 'left':
-          return 'bottom-start';
+          return 'bottom-start'
         case 'right':
-          return 'bottom-end';
+          return 'bottom-end'
         default:
-          return 'bottom';
+          return 'bottom'
       }
     },
     navPopoverEvents() {
@@ -153,23 +153,23 @@ export default {
           { name: 'flip', options: { fallbackPlacements: ['bottom'] } },
         ],
         isInteractive: true,
-      });
+      })
     },
     weekdayLabels() {
       return this.locale
         .getWeekdayDates()
-        .map(d => this.format(d, this.masks.weekdays));
+        .map(d => this.format(d, this.masks.weekdays))
     },
   },
   methods: {
     move(page) {
-      this.$emit('update:page', page);
+      this.$emit('update:page', page)
     },
     refresh() {
-      this.$refs.days.forEach(d => d.refresh());
+      this.$refs.days.forEach(d => d.refresh())
     },
   },
-};
+}
 </script>
 
 <style lang="postcss" scoped>
@@ -187,14 +187,13 @@ export default {
   align-self: center;
 }
 
-
 .vc-header {
   display: flex;
   flex-shrink: 0;
   align-items: stretch;
-  height:  3.4286rem;
+  height: 3.4286rem;
   color: var(--gray-900);
-  background-color:#516277 ;
+  background-color: #516277;
   border-radius: 8px 8px 0px 0px;
   user-select: none;
   /* padding: 10px 10px 0 10px; */
@@ -230,7 +229,7 @@ export default {
 
   /* font-size: var(--text-lg); */
   /* color: var(--gray-800); */
-  color:#ffffff;
+  color: #ffffff;
   font-weight: 500;
   /* font-weight: var(--font-semibold); */
   font-size: 1.1429rem;

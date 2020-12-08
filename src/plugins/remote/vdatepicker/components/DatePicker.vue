@@ -1,9 +1,9 @@
 <script>
-import Calendar from './Calendar';
-import Popover from './Popover';
-import TimePicker from './TimePicker';
-import { rootMixin } from '../utils/mixins';
-import { addTapOrClickHandler } from '../utils/touch';
+import Calendar from './Calendar'
+import Popover from './Popover'
+import TimePicker from './TimePicker'
+import { rootMixin } from '../utils/mixins'
+import { addTapOrClickHandler } from '../utils/touch'
 import {
   pageForDate,
   datesAreEqual,
@@ -12,20 +12,20 @@ import {
   pageIsBetweenPages,
   on,
   off,
-} from '../utils/helpers';
-import { isObject, isArray, pick } from '../utils/_';
+} from '../utils/helpers'
+import { isObject, isArray, pick } from '../utils/_'
 import {
   showPopover as sp,
   hidePopover as hp,
   togglePopover as tp,
   getPopoverTriggerEvents,
-} from '../utils/popovers';
+} from '../utils/popovers'
 
 const _dateConfig = {
   type: 'auto',
   mask: 'iso', // String mask when `type === 'string'`
   timeAdjust: '', // 'HH:MM:SS', 'now'
-};
+}
 
 const _rangeConfig = {
   start: {
@@ -36,29 +36,29 @@ const _rangeConfig = {
     ..._dateConfig,
     timeAdjust: '23:59:59',
   },
-};
+}
 
 const PATCH_KEYS = {
   1: ['year', 'month', 'day', 'hours', 'minutes', 'seconds'],
   2: ['year', 'month', 'day'],
   3: ['hours', 'minutes', 'seconds'],
-};
+}
 
-const MODE_DATE = 'date';
-const MODE_DATE_TIME = 'datetime';
-const MODE_TIME = 'time';
+const MODE_DATE = 'date'
+const MODE_DATE_TIME = 'datetime'
+const MODE_TIME = 'time'
 
-const PATCH_DATE_TIME = 1;
-const PATCH_DATE = 2;
-const PATCH_TIME = 3;
+const PATCH_DATE_TIME = 1
+const PATCH_DATE = 2
+const PATCH_TIME = 3
 
 export default {
   name: 'DatePicker',
   render(h) {
     // Timepicker renderer
     const timePicker = () => {
-      if (!this.dateParts) return null;
-      const parts = this.isRange ? this.dateParts : [this.dateParts[0]];
+      if (!this.dateParts) return null
+      const parts = this.isRange ? this.dateParts : [this.dateParts[0]]
       return h('div', [
         ...parts.map((dp, idx) =>
           h(TimePicker, {
@@ -74,8 +74,8 @@ export default {
           }),
         ),
         this.$scopedSlots.footer && this.$scopedSlots.footer(),
-      ]);
-    };
+      ])
+    }
     // Calendar renderer
     const calendar = () =>
       h(Calendar, {
@@ -103,7 +103,7 @@ export default {
           footer: this.isDateTime ? timePicker : this.$scopedSlots.footer,
         },
         ref: 'calendar',
-      });
+      })
     // Content renderer
     const content = () => {
       if (this.isTime) {
@@ -117,10 +117,10 @@ export default {
             ],
           },
           [timePicker()],
-        );
+        )
       }
-      return calendar();
-    };
+      return calendar()
+    }
     return (
       (this.$scopedSlots.default &&
         // Convert this span to a fragment when supported in Vue
@@ -142,14 +142,14 @@ export default {
             },
             scopedSlots: {
               default() {
-                return content();
+                return content()
               },
             },
             ref: 'popover',
           }),
         ])) ||
       content()
-    );
+    )
   },
   mixins: [rootMixin],
   props: {
@@ -177,36 +177,36 @@ export default {
       updateTimeout: null,
       watchValue: true,
       datePickerPopoverId: createGuid(),
-    };
+    }
   },
   computed: {
     updateOnInput_() {
-      return this.propOrDefault('updateOnInput', 'datePicker.updateOnInput');
+      return this.propOrDefault('updateOnInput', 'datePicker.updateOnInput')
     },
     inputDebounce_() {
-      return this.propOrDefault('inputDebounce', 'datePicker.inputDebounce');
+      return this.propOrDefault('inputDebounce', 'datePicker.inputDebounce')
     },
     isDate() {
-      return this.mode.toLowerCase() === MODE_DATE;
+      return this.mode.toLowerCase() === MODE_DATE
     },
     isDateTime() {
-      return this.mode.toLowerCase() === MODE_DATE_TIME;
+      return this.mode.toLowerCase() === MODE_DATE_TIME
     },
     isTime() {
-      return this.mode.toLowerCase() === MODE_TIME;
+      return this.mode.toLowerCase() === MODE_TIME
     },
     isDragging() {
-      return !!this.dragValue;
+      return !!this.dragValue
     },
     inputMask() {
-      const masks = this.$locale.masks;
+      const masks = this.$locale.masks
       if (this.isTime) {
-        return this.is24hr ? masks.inputTime24hr : masks.inputTime;
+        return this.is24hr ? masks.inputTime24hr : masks.inputTime
       }
       if (this.isDateTime) {
-        return this.is24hr ? masks.inputDateTime24hr : masks.inputDateTime;
+        return this.is24hr ? masks.inputDateTime24hr : masks.inputDateTime
       }
-      return this.$locale.masks.input;
+      return this.$locale.masks.input
     },
     slotArgs() {
       const inputConfig = {
@@ -214,7 +214,7 @@ export default {
         mask: this.inputMask,
         patch: PATCH_DATE_TIME,
         timezone: this.timezone,
-      };
+      }
       const {
         isRange,
         isDragging,
@@ -222,13 +222,13 @@ export default {
         showPopover,
         hidePopover,
         togglePopover,
-      } = this;
+      } = this
       const inputValue = isRange
         ? {
             start: this.inputValues[0],
             end: this.inputValues[1],
           }
-        : this.inputValues[0];
+        : this.inputValues[0]
       const events = [true, false].map(isStart => ({
         input: this.onInputInput(inputConfig, isStart),
         change: this.onInputChange(inputConfig, isStart),
@@ -238,17 +238,17 @@ export default {
           id: this.datePickerPopoverId,
           callback: e => {
             if (e.action === 'show' && e.completed) {
-              this.onInputShow(isStart);
+              this.onInputShow(isStart)
             }
           },
         }),
-      }));
+      }))
       const inputEvents = isRange
         ? {
             start: events[0],
             end: events[1],
           }
-        : events[0];
+        : events[0]
       return {
         inputValue,
         inputEvents,
@@ -258,89 +258,89 @@ export default {
         hidePopover,
         togglePopover,
         getPopoverTriggerEvents,
-      };
+      }
     },
     popover_() {
-      return this.propOrDefault('popover', 'datePicker.popover', 'merge');
+      return this.propOrDefault('popover', 'datePicker.popover', 'merge')
     },
     canHidePopover() {
       return !(
         this.popover.keepVisibleOnInput ||
         this.popover_.visibility !== 'visible'
-      );
+      )
     },
     selectAttribute_() {
-      if (!this.hasValue(this.value_)) return null;
+      if (!this.hasValue(this.value_)) return null
       const attribute = {
         key: 'select-drag',
         ...this.selectAttribute,
         dates: this.value_,
         pinPage: true,
-      };
-      const { dot, bar, highlight, content } = attribute;
-      if (!dot && !bar && !highlight && !content) {
-        attribute.highlight = true;
       }
-      return attribute;
+      const { dot, bar, highlight, content } = attribute
+      if (!dot && !bar && !highlight && !content) {
+        attribute.highlight = true
+      }
+      return attribute
     },
     dragAttribute_() {
       if (!this.isRange || !this.hasValue(this.dragValue)) {
-        return null;
+        return null
       }
       const attribute = {
         key: 'select-drag',
         ...this.dragAttribute,
         dates: this.dragValue,
-      };
-      const { dot, bar, highlight, content } = attribute;
+      }
+      const { dot, bar, highlight, content } = attribute
       if (!dot && !bar && !highlight && !content) {
         attribute.highlight = {
           startEnd: {
             fillMode: 'outline',
           },
-        };
+        }
       }
-      return attribute;
+      return attribute
     },
     attributes_() {
-      const attrs = isArray(this.attributes) ? [...this.attributes] : [];
+      const attrs = isArray(this.attributes) ? [...this.attributes] : []
       if (this.dragAttribute_) {
-        attrs.push(this.dragAttribute_);
+        attrs.push(this.dragAttribute_)
       } else if (this.selectAttribute_) {
-        attrs.push(this.selectAttribute_);
+        attrs.push(this.selectAttribute_)
       }
-      return attrs;
+      return attrs
     },
   },
   watch: {
     inputMask() {
-      this.formatInput();
+      this.formatInput()
     },
     isRange: {
       immediate: true,
       handler() {
-        this.initDateConfig();
+        this.initDateConfig()
       },
     },
     value() {
-      if (!this.watchValue) return;
+      if (!this.watchValue) return
       this.forceUpdateValue(this.value, {
         config: this.modelConfig,
         notify: false,
         formatInput: true,
         hidePopover: false,
-      });
+      })
     },
     value_() {
-      this.refreshDateParts();
+      this.refreshDateParts()
     },
     dragValue() {
-      this.refreshDateParts();
+      this.refreshDateParts()
     },
     timezone() {
-      this.initDateConfig();
-      this.refreshDateParts();
-      this.forceUpdateValue(this.value_, { notify: true, formatInput: true });
+      this.initDateConfig()
+      this.refreshDateParts()
+      this.forceUpdateValue(this.value_, { notify: true, formatInput: true })
     },
   },
   created() {
@@ -349,31 +349,31 @@ export default {
       notify: false,
       formatInput: true,
       hidePopover: false,
-    });
-    this.refreshDateParts();
+    })
+    this.refreshDateParts()
   },
   mounted() {
     // Handle escape key presses
-    on(document, 'keydown', this.onDocumentKeyDown);
+    on(document, 'keydown', this.onDocumentKeyDown)
     // Clear drag on background click
     const offTapOrClickHandler = addTapOrClickHandler(document, e => {
       if (
         document.body.contains(e.target) &&
         !elementContains(this.$el, e.target)
       ) {
-        this.dragValue = null;
+        this.dragValue = null
       }
-    });
+    })
     // Clean up handlers
     this.$once('beforeDestroy', () => {
-      off(document, 'keydown', this.onDocumentKeyDown);
-      offTapOrClickHandler();
-    });
+      off(document, 'keydown', this.onDocumentKeyDown)
+      offTapOrClickHandler()
+    })
   },
   methods: {
     initDateConfig() {
-      let config;
-      const timezone = this.timezone;
+      let config
+      const timezone = this.timezone
       if (this.isRange) {
         config = {
           start: {
@@ -386,64 +386,64 @@ export default {
             ..._rangeConfig.end,
             ...(this.modelConfig.end || this.modelConfig),
           },
-        };
+        }
       } else {
-        config = { timezone, ..._dateConfig, ...this.modelConfig };
+        config = { timezone, ..._dateConfig, ...this.modelConfig }
       }
-      this.dateConfig = config;
+      this.dateConfig = config
     },
     getDateParts(date) {
-      return this.$locale.getDateParts(date, this.timezone);
+      return this.$locale.getDateParts(date, this.timezone)
     },
     getDateFromParts(parts) {
-      return this.$locale.getDateFromParts(parts, this.timezone);
+      return this.$locale.getDateFromParts(parts, this.timezone)
     },
     refreshDateParts() {
-      const value = this.dragValue || this.value_;
-      const dateParts = [];
+      const value = this.dragValue || this.value_
+      const dateParts = []
       if (this.isRange) {
         if (value && value.start) {
-          dateParts.push(this.getDateParts(value.start));
+          dateParts.push(this.getDateParts(value.start))
         } else {
-          dateParts.push({});
+          dateParts.push({})
         }
         if (value && value.end) {
-          dateParts.push(this.getDateParts(value.end));
+          dateParts.push(this.getDateParts(value.end))
         } else {
-          dateParts.push({});
+          dateParts.push({})
         }
       } else if (value) {
-        dateParts.push(this.getDateParts(value));
+        dateParts.push(this.getDateParts(value))
       } else {
-        dateParts.push({});
+        dateParts.push({})
       }
-      this.$nextTick(() => (this.dateParts = dateParts));
+      this.$nextTick(() => (this.dateParts = dateParts))
     },
     onDocumentKeyDown(e) {
       // Clear drag on escape keydown
       if (this.dragValue && e.key === 'Escape') {
-        this.dragValue = null;
+        this.dragValue = null
       }
     },
     onDayClick(day) {
-      this.handleDayClick(day);
+      this.handleDayClick(day)
       // Re-emit event
-      this.$emit('dayclick', day);
+      this.$emit('dayclick', day)
     },
     onDayKeydown(day) {
       switch (day.event.key) {
         case ' ':
         case 'Enter': {
-          this.handleDayClick(day);
-          day.event.preventDefault();
-          break;
+          this.handleDayClick(day)
+          day.event.preventDefault()
+          break
         }
         case 'Escape': {
-          this.hidePopover();
+          this.hidePopover()
         }
       }
       // Re-emit event
-      this.$emit('daykeydown', day);
+      this.$emit('daykeydown', day)
     },
     handleDayClick(day) {
       const opts = {
@@ -451,48 +451,48 @@ export default {
         adjustTime: true,
         formatInput: true,
         hidePopover: this.isDate,
-      };
+      }
       if (this.isRange) {
         if (!this.isDragging) {
-          this.dragTrackingValue = { ...day.range };
+          this.dragTrackingValue = { ...day.range }
         } else {
-          this.dragTrackingValue.end = day.range.start;
+          this.dragTrackingValue.end = day.range.start
         }
-        opts.isDragging = !this.isDragging;
-        opts.hidePopover = opts.hidePopover && !opts.isDragging;
-        this.updateValue(this.dragTrackingValue, opts);
+        opts.isDragging = !this.isDragging
+        opts.hidePopover = opts.hidePopover && !opts.isDragging
+        this.updateValue(this.dragTrackingValue, opts)
       } else {
-        this.updateValue(day.range.start, opts);
+        this.updateValue(day.range.start, opts)
       }
     },
     onDayMouseEnter(day) {
-      if (!this.isDragging) return;
-      this.dragTrackingValue.end = day.range.start;
+      if (!this.isDragging) return
+      this.dragTrackingValue.end = day.range.start
       this.updateValue(this.dragTrackingValue, {
         patch: PATCH_DATE,
         adjustTime: true,
-      });
+      })
     },
     onTimeInput(parts, idx) {
       const opts = {
         config: { timezone: this.timezone, type: 'object' },
         patch: PATCH_TIME,
-      };
+      }
       if (this.isRange) {
-        const start = idx === 0 ? parts : this.dateParts[0];
-        const end = idx === 0 ? this.dateParts[1] : parts;
-        this.updateValue({ start, end }, opts);
+        const start = idx === 0 ? parts : this.dateParts[0]
+        const end = idx === 0 ? this.dateParts[1] : parts
+        this.updateValue({ start, end }, opts)
       } else {
-        this.updateValue(parts, opts);
+        this.updateValue(parts, opts)
       }
     },
     onInputInput(config, isStart) {
       return e => {
-        if (!this.updateOnInput_) return;
-        let inputValue = e.target.value;
-        this.inputValues.splice(isStart ? 0 : 1, 1, inputValue);
+        if (!this.updateOnInput_) return
+        let inputValue = e.target.value
+        this.inputValues.splice(isStart ? 0 : 1, 1, inputValue)
         if (this.isRange) {
-          inputValue = { start: this.inputValues[0], end: this.inputValues[1] };
+          inputValue = { start: this.inputValues[0], end: this.inputValues[1] }
         }
         this.updateValue(inputValue, {
           config,
@@ -501,55 +501,55 @@ export default {
           hidePopover: false,
           debounce: this.inputDebounce_,
         }).then(() => {
-          this.adjustPageRange(isStart);
-        });
-      };
+          this.adjustPageRange(isStart)
+        })
+      }
     },
     onInputChange(config, isStart) {
       const opts = {
         config,
         formatInput: true,
         hidePopover: false,
-      };
+      }
       return e => {
-        const inputValue = e.target.value;
+        const inputValue = e.target.value
         if (this.isRange) {
-          this.inputValues.splice(isStart ? 0 : 1, 1, inputValue);
+          this.inputValues.splice(isStart ? 0 : 1, 1, inputValue)
           this.updateValue(
             { start: this.inputValues[0], end: this.inputValues[1] },
             opts,
-          );
+          )
         } else {
-          this.inputValues.splice(0, 1, inputValue);
-          this.updateValue(inputValue, opts);
+          this.inputValues.splice(0, 1, inputValue)
+          this.updateValue(inputValue, opts)
         }
-      };
+      }
     },
     onInputShow(isStart) {
-      this.adjustPageRange(isStart);
+      this.adjustPageRange(isStart)
     },
     onInputKeyup(e) {
       // Escape key only
-      if (e.key !== 'Escape') return;
+      if (e.key !== 'Escape') return
       this.updateValue(this.value_, {
         formatInput: true,
         hidePopover: true,
-      });
+      })
     },
     updateValue(value, opts = {}) {
-      clearTimeout(this.updateTimeout);
+      clearTimeout(this.updateTimeout)
       return new Promise(resolve => {
-        const { debounce, ...args } = opts;
+        const { debounce, ...args } = opts
         if (debounce > 0) {
           this.updateTimeout = setTimeout(() => {
-            this.forceUpdateValue(value, args);
-            resolve(this.value_);
-          }, debounce);
+            this.forceUpdateValue(value, args)
+            resolve(this.value_)
+          }, debounce)
         } else {
-          this.forceUpdateValue(value, args);
-          resolve(this.value_);
+          this.forceUpdateValue(value, args)
+          resolve(this.value_)
         }
-      });
+      })
     },
     forceUpdateValue(
       value,
@@ -569,11 +569,11 @@ export default {
         config,
         patch,
         isDragging,
-      );
+      )
 
       // Time Adjustment
       if (adjustTime) {
-        normalizedValue = this.adjustTimeForValue(normalizedValue, config);
+        normalizedValue = this.adjustTimeForValue(normalizedValue, config)
       }
 
       // 2. Validation (date or range)
@@ -582,20 +582,17 @@ export default {
         this.disabledAttribute &&
         this.disabledAttribute.intersectsDate(normalizedValue)
       ) {
-        if (isDragging) return;
-        normalizedValue = this.value_;
+        if (isDragging) return
+        normalizedValue = this.value_
       }
 
       // 3. Assignment
-      const valueKey = isDragging ? 'dragValue' : 'value_';
-      const valueChanged = !this.valuesAreEqual(
-        this[valueKey],
-        normalizedValue,
-      );
+      const valueKey = isDragging ? 'dragValue' : 'value_'
+      const valueChanged = !this.valuesAreEqual(this[valueKey], normalizedValue)
       if (valueChanged) {
-        this.$set(this, valueKey, normalizedValue);
+        this.$set(this, valueKey, normalizedValue)
         // Clear drag value if needed
-        if (!isDragging) this.dragValue = null;
+        if (!isDragging) this.dragValue = null
       }
 
       // 4. Denormalization/Notification
@@ -604,95 +601,95 @@ export default {
         const denormalizedValue = this.denormalizeValue(
           normalizedValue,
           this.dateConfig,
-        );
+        )
         // 4B. Notification
-        const event = this.isDragging ? 'drag' : 'input';
-        this.watchValue = false;
-        this.$emit(event, denormalizedValue);
-        this.$nextTick(() => (this.watchValue = true));
+        const event = this.isDragging ? 'drag' : 'input'
+        this.watchValue = false
+        this.$emit(event, denormalizedValue)
+        this.$nextTick(() => (this.watchValue = true))
       }
 
       // 5. Side effects for non-inline pickers
-      if (formatInput) this.formatInput();
-      if (hidePopover) this.hidePopover();
+      if (formatInput) this.formatInput()
+      if (hidePopover) this.hidePopover()
     },
     hasValue(value) {
       if (this.isRange) {
-        return isObject(value) && value.start && value.end;
+        return isObject(value) && value.start && value.end
       }
-      return !!value;
+      return !!value
     },
     normalizeValue(value, config, patch, isDragging) {
-      if (!this.hasValue(value)) return null;
-      const patchKeys = PATCH_KEYS[patch];
+      if (!this.hasValue(value)) return null
+      const patchKeys = PATCH_KEYS[patch]
       if (this.isRange) {
-        const start = this.normalizeDate(value.start, config.start || config);
-        const end = this.normalizeDate(value.end, config.end || config);
-        const result = this.sortRange({ start, end });
+        const start = this.normalizeDate(value.start, config.start || config)
+        const end = this.normalizeDate(value.end, config.end || config)
+        const result = this.sortRange({ start, end })
         if (patch !== PATCH_DATE_TIME) {
           const startParts = {
             ...this.dateParts[0],
             ...pick(this.getDateParts(result.start), patchKeys),
-          };
-          result.start = this.getDateFromParts(startParts);
+          }
+          result.start = this.getDateFromParts(startParts)
           const endParts = {
             ...this.dateParts[1],
             ...pick(this.getDateParts(result.end), patchKeys),
-          };
-          result.end = this.getDateFromParts(endParts);
+          }
+          result.end = this.getDateFromParts(endParts)
         }
-        return isDragging ? result : this.sortRange(result);
+        return isDragging ? result : this.sortRange(result)
       }
-      let result = this.normalizeDate(value, config);
-      if (patch === PATCH_DATE_TIME) return result;
+      let result = this.normalizeDate(value, config)
+      if (patch === PATCH_DATE_TIME) return result
       result = {
         ...this.dateParts[0],
         ...pick(this.getDateParts(result), patchKeys),
-      };
-      return this.getDateFromParts(result);
+      }
+      return this.getDateFromParts(result)
     },
     adjustTimeForValue(value, config) {
       if (this.isRange) {
-        if (!this.hasValue(value)) return null;
+        if (!this.hasValue(value)) return null
         return {
           start: this.$locale.adjustTimeForDate(
             value.start,
             config.start || config,
           ),
           end: this.$locale.adjustTimeForDate(value.end, config.end || config),
-        };
+        }
       }
-      return this.$locale.adjustTimeForDate(value, config);
+      return this.$locale.adjustTimeForDate(value, config)
     },
     sortRange(range) {
-      const { start, end } = range;
+      const { start, end } = range
       if (start > end) {
-        return { start: end, end: start };
+        return { start: end, end: start }
       }
-      return { start, end };
+      return { start, end }
     },
     denormalizeValue(value, config) {
       if (this.isRange) {
-        if (!this.hasValue(value)) return null;
+        if (!this.hasValue(value)) return null
         return {
           start: this.$locale.denormalizeDate(
             value.start,
             config.start || config,
           ),
           end: this.$locale.denormalizeDate(value.end, config.end || config),
-        };
+        }
       }
-      return this.$locale.denormalizeDate(value, config);
+      return this.$locale.denormalizeDate(value, config)
     },
     valuesAreEqual(a, b) {
       if (this.isRange) {
-        const aHasValue = this.hasValue(a);
-        const bHasValue = this.hasValue(b);
-        if (!aHasValue && !bHasValue) return true;
-        if (aHasValue !== bHasValue) return false;
-        return datesAreEqual(a.start, b.start) && datesAreEqual(a.end, b.end);
+        const aHasValue = this.hasValue(a)
+        const bHasValue = this.hasValue(b)
+        if (!aHasValue && !bHasValue) return true
+        if (aHasValue !== bHasValue) return false
+        return datesAreEqual(a.start, b.start) && datesAreEqual(a.end, b.end)
       }
-      return datesAreEqual(a, b);
+      return datesAreEqual(a, b)
     },
     formatInput() {
       this.$nextTick(() => {
@@ -700,17 +697,14 @@ export default {
           type: 'string',
           mask: this.inputMask,
           timezone: this.timezone,
-        };
-        const value = this.denormalizeValue(
-          this.dragValue || this.value_,
-          opts,
-        );
-        if (this.isRange) {
-          this.inputValues = [value && value.start, value && value.end];
-        } else {
-          this.inputValues = [value, ''];
         }
-      });
+        const value = this.denormalizeValue(this.dragValue || this.value_, opts)
+        if (this.isRange) {
+          this.inputValues = [value && value.start, value && value.end]
+        } else {
+          this.inputValues = [value, '']
+        }
+      })
     },
     showPopover(opts = {}) {
       sp({
@@ -718,10 +712,10 @@ export default {
         ...opts,
         isInteractive: true,
         id: this.datePickerPopoverId,
-      });
+      })
     },
     hidePopover(opts = {}) {
-      hp({ ...opts, id: this.datePickerPopoverId });
+      hp({ ...opts, id: this.datePickerPopoverId })
     },
     togglePopover(opts) {
       tp({
@@ -729,13 +723,13 @@ export default {
         ...opts,
         isInteractive: true,
         id: this.datePickerPopoverId,
-      });
+      })
     },
     adjustPageRange(isStart) {
       this.$nextTick(() => {
-        const calendar = this.$refs.calendar;
-        const page = this.getPageForValue(isStart);
-        const position = isStart ? 1 : -1;
+        const calendar = this.$refs.calendar
+        const page = this.getPageForValue(isStart)
+        const position = isStart ? 1 : -1
         if (
           page &&
           calendar &&
@@ -744,34 +738,34 @@ export default {
           calendar.move(page, {
             position,
             transition: 'fade',
-          });
+          })
         }
-      });
+      })
     },
     getPageForValue(isStart) {
       if (this.hasValue(this.value_)) {
         return pageForDate(
           this.isRange ? this.value_[isStart ? 'start' : 'end'] : this.value_,
-        );
+        )
       }
-      return null;
+      return null
     },
     move(args, opts) {
       if (this.$refs.calendar) {
-        return this.$refs.calendar.move(args, opts);
+        return this.$refs.calendar.move(args, opts)
       }
       return Promise.reject(
         new Error('Navigation disabled while calendar is not yet displayed'),
-      );
+      )
     },
     focusDate(date, opts) {
       if (this.$refs.calendar) {
-        return this.$refs.calendar.focusDate(date, opts);
+        return this.$refs.calendar.focusDate(date, opts)
       }
       return Promise.reject(
         new Error('Navigation disabled while calendar is not yet displayed'),
-      );
+      )
     },
   },
-};
+}
 </script>

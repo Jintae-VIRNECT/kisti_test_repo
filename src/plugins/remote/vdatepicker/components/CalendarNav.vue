@@ -68,13 +68,13 @@
 </template>
 
 <script>
-import Grid from './Grid';
-import SvgIcon from './SvgIcon';
-import { childMixin } from '../utils/mixins';
-import { head, last } from '../utils/_';
-import { pageForDate, onSpaceOrEnter } from '../utils/helpers';
+import Grid from './Grid'
+import SvgIcon from './SvgIcon'
+import { childMixin } from '../utils/mixins'
+import { head, last } from '../utils/_'
+import { pageForDate, onSpaceOrEnter } from '../utils/helpers'
 
-const _yearGroupCount = 12;
+const _yearGroupCount = 12
 
 export default {
   name: 'CalendarNav',
@@ -93,24 +93,24 @@ export default {
       yearIndex: 0,
       yearGroupIndex: 0,
       onSpaceOrEnter,
-    };
+    }
   },
   computed: {
     month() {
-      return this.value ? this.value.month || 0 : 0;
+      return this.value ? this.value.month || 0 : 0
     },
     year() {
-      return this.value ? this.value.year || 0 : 0;
+      return this.value ? this.value.year || 0 : 0
     },
     title() {
       return this.monthMode
         ? this.yearIndex
-        : `${this.firstYear} - ${this.lastYear}`;
+        : `${this.firstYear} - ${this.lastYear}`
     },
     monthItems() {
-      const { month: thisMonth, year: thisYear } = pageForDate(new Date());
+      const { month: thisMonth, year: thisYear } = pageForDate(new Date())
       return this.locale.getMonthDates().map((d, i) => {
-        const month = i + 1;
+        const month = i + 1
         return {
           label: this.locale.format(d, this.masks.navMonths),
           ariaLabel: this.locale.format(d, 'MMMM YYYY'),
@@ -118,14 +118,14 @@ export default {
           isCurrent: month === thisMonth && this.yearIndex === thisYear,
           isDisabled: !this.validator({ month, year: this.yearIndex }),
           click: () => this.monthClick(month),
-        };
-      });
+        }
+      })
     },
     yearItems() {
-      const { _, year: thisYear } = pageForDate(new Date());
-      const startYear = this.yearGroupIndex * _yearGroupCount;
-      const endYear = startYear + _yearGroupCount;
-      const items = [];
+      const { _, year: thisYear } = pageForDate(new Date())
+      const startYear = this.yearGroupIndex * _yearGroupCount
+      const endYear = startYear + _yearGroupCount
+      const items = []
       for (let year = startYear; year < endYear; year += 1) {
         items.push({
           year,
@@ -135,118 +135,118 @@ export default {
           isCurrent: year === thisYear,
           isDisabled: !this.validator({ month: this.month, year }),
           click: () => this.yearClick(year),
-        });
+        })
       }
-      return items;
+      return items
     },
     activeItems() {
-      return this.monthMode ? this.monthItems : this.yearItems;
+      return this.monthMode ? this.monthItems : this.yearItems
     },
     firstYear() {
-      return head(this.yearItems.map(i => i.year));
+      return head(this.yearItems.map(i => i.year))
     },
     lastYear() {
-      return last(this.yearItems.map(i => i.year));
+      return last(this.yearItems.map(i => i.year))
     },
   },
   watch: {
     year() {
-      this.yearIndex = this.year;
+      this.yearIndex = this.year
     },
     yearIndex(val) {
-      this.yearGroupIndex = this.getYearGroupIndex(val);
+      this.yearGroupIndex = this.getYearGroupIndex(val)
     },
   },
   created() {
-    this.yearIndex = this.year;
+    this.yearIndex = this.year
   },
   mounted() {
-    this.$refs.itemsGrid.tryFocus();
+    this.$refs.itemsGrid.tryFocus()
   },
   methods: {
     getItemClasses({ isActive, isCurrent, isDisabled }) {
-      const classes = ['vc-nav-item'];
+      const classes = ['vc-nav-item']
       if (isActive) {
-        classes.push('is-active', 'vc-grid-focus');
+        classes.push('is-active', 'vc-grid-focus')
       } else if (isCurrent) {
-        classes.push('is-inactive-current');
+        classes.push('is-inactive-current')
       } else {
-        classes.push('is-inactive');
+        classes.push('is-inactive')
       }
       if (isDisabled) {
-        classes.push('is-disabled');
+        classes.push('is-disabled')
       }
-      return classes;
+      return classes
     },
     getYearGroupIndex(year) {
-      return Math.floor(year / _yearGroupCount);
+      return Math.floor(year / _yearGroupCount)
     },
     monthClick(month) {
-      this.$emit('input', { month, year: this.yearIndex });
+      this.$emit('input', { month, year: this.yearIndex })
     },
     yearClick(year) {
-      this.yearIndex = year;
-      this.monthMode = true;
-      this.$refs.itemsGrid.tryFocus();
+      this.yearIndex = year
+      this.monthMode = true
+      this.$refs.itemsGrid.tryFocus()
     },
     toggleMode() {
-      this.monthMode = !this.monthMode;
+      this.monthMode = !this.monthMode
     },
     movePrev() {
       if (this.monthMode) {
-        this.movePrevYear();
+        this.movePrevYear()
       }
-      this.movePrevYearGroup();
+      this.movePrevYearGroup()
     },
     moveNext() {
       if (this.monthMode) {
-        this.moveNextYear();
+        this.moveNextYear()
       }
-      this.moveNextYearGroup();
+      this.moveNextYearGroup()
     },
     movePrevYear() {
-      this.yearIndex--;
+      this.yearIndex--
     },
     moveNextYear() {
-      this.yearIndex++;
+      this.yearIndex++
     },
     movePrevYearGroup() {
-      this.yearGroupIndex--;
+      this.yearGroupIndex--
     },
     moveNextYearGroup() {
-      this.yearGroupIndex++;
+      this.yearGroupIndex++
     },
     onHeaderRollover(e) {
       switch (e.direction) {
         case 'vertical-trailing':
-          this.$refs.itemsGrid.tryFocus();
-          break;
+          this.$refs.itemsGrid.tryFocus()
+          break
       }
-      e.handled = true;
+      e.handled = true
     },
     onItemsRollover(e) {
       switch (e.direction) {
         case 'horizontal-leading': {
-          this.movePrev();
-          break;
+          this.movePrev()
+          break
         }
         case 'horizontal-trailing': {
-          this.moveNext();
-          break;
+          this.moveNext()
+          break
         }
         case 'vertical-leading': {
-          this.$refs.headerGrid.tryFocus();
-          e.handled = true;
-          break;
+          this.$refs.headerGrid.tryFocus()
+          e.handled = true
+          break
         }
         case 'vertical-trailing': {
-          e.handled = true;
-          break;
+          e.handled = true
+          break
         }
       }
     },
   },
-};
+}
 </script>
 
 <style lang="postcss">

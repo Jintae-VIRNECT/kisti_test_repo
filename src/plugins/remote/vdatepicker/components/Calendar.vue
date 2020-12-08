@@ -1,16 +1,16 @@
 <script>
-import addDays from 'date-fns/addDays';
-import addMonths from 'date-fns/addMonths';
-import addYears from 'date-fns/addYears';
-import Popover from './Popover';
-import PopoverRow from './PopoverRow';
-import Grid from './Grid';
-import CalendarPane from './CalendarPane';
-import CustomTransition from './CustomTransition';
-import SvgIcon from './SvgIcon';
-import AttributeStore from '../utils/attributeStore';
-import { rootMixin, safeScopedSlotMixin } from '../utils/mixins';
-import { addHorizontalSwipeHandler } from '../utils/touch';
+import addDays from 'date-fns/addDays'
+import addMonths from 'date-fns/addMonths'
+import addYears from 'date-fns/addYears'
+import Popover from './Popover'
+import PopoverRow from './PopoverRow'
+import Grid from './Grid'
+import CalendarPane from './CalendarPane'
+import CustomTransition from './CustomTransition'
+import SvgIcon from './SvgIcon'
+import AttributeStore from '../utils/attributeStore'
+import { rootMixin, safeScopedSlotMixin } from '../utils/mixins'
+import { addHorizontalSwipeHandler } from '../utils/touch'
 import {
   pageForDate,
   pageForThisMonth,
@@ -23,7 +23,7 @@ import {
   createGuid,
   arrayHasItems,
   onSpaceOrEnter,
-} from '../utils/helpers';
+} from '../utils/helpers'
 import {
   isNumber,
   isDate,
@@ -32,8 +32,8 @@ import {
   omit,
   head,
   last,
-} from '../utils/_';
-import '../styles/base.scss';
+} from '../utils/_'
+import '../styles/base.scss'
 
 export default {
   name: 'Calendar',
@@ -56,12 +56,12 @@ export default {
           ...this.$listeners,
           'update:page': e => this.refreshPages({ page: e, position: i + 1 }),
           dayfocusin: e => {
-            this.lastFocusedDay = e;
-            this.$emit('dayfocusin', e);
+            this.lastFocusedDay = e
+            this.$emit('dayfocusin', e)
           },
           dayfocusout: e => {
-            this.lastFocusedDay = null;
-            this.$emit('dayfocusout', e);
+            this.lastFocusedDay = null
+            this.$emit('dayfocusout', e)
           },
         },
         scopedSlots: this.$scopedSlots,
@@ -69,12 +69,12 @@ export default {
         ref: 'pages',
         refInFor: true,
       }),
-    );
+    )
     // Renderer for calendar arrows
     const getArrowButton = isPrev => {
-      const click = () => this.move(isPrev ? -this.step_ : this.step_);
-      const keydown = e => onSpaceOrEnter(e, click);
-      const isDisabled = isPrev ? !this.canMovePrev : !this.canMoveNext;
+      const click = () => this.move(isPrev ? -this.step_ : this.step_)
+      const keydown = e => onSpaceOrEnter(e, click)
+      const isDisabled = isPrev ? !this.canMovePrev : !this.canMoveNext
       return h(
         'div',
         {
@@ -97,8 +97,8 @@ export default {
               },
             }),
         ],
-      );
-    };
+      )
+    }
     // Day popover
     const getDayPopover = () =>
       h(Popover, {
@@ -110,10 +110,10 @@ export default {
           default: ({ data: day, updateLayout, hide }) => {
             const attributes = Object.values(day.attributes).filter(
               a => a.popover,
-            );
-            const masks = this.$locale.masks;
-            const format = this.formatDate;
-            const dayTitle = format(day.date, masks.dayPopover);
+            )
+            const masks = this.$locale.masks
+            const format = this.formatDate
+            const dayTitle = format(day.date, masks.dayPopover)
             return (
               this.safeScopedSlot('day-popover', {
                 day,
@@ -143,10 +143,10 @@ export default {
                   }),
                 ),
               ])
-            );
+            )
           },
         },
-      });
+      })
 
     // Renderer for calendar container
     const getContainerGrid = () =>
@@ -189,10 +189,10 @@ export default {
                   },
                   on: {
                     beforeEnter: () => {
-                      this.inTransition = true;
+                      this.inTransition = true
                     },
                     afterEnter: () => {
-                      this.inTransition = false;
+                      this.inTransition = false
                     },
                   },
                 },
@@ -228,15 +228,15 @@ export default {
           ),
           getDayPopover(),
         ],
-      );
+      )
 
-    return getContainerGrid();
+    return getContainerGrid()
   },
   mixins: [rootMixin, safeScopedSlotMixin],
   provide() {
     return {
       sharedState: this.sharedState,
-    };
+    }
   },
   props: {
     rows: {
@@ -275,108 +275,108 @@ export default {
         masks: {},
         locale: {},
       },
-    };
+    }
   },
   computed: {
     titlePosition_() {
-      return this.propOrDefault('titlePosition', 'titlePosition');
+      return this.propOrDefault('titlePosition', 'titlePosition')
     },
     firstPage() {
-      return head(this.pages);
+      return head(this.pages)
     },
     lastPage() {
-      return last(this.pages);
+      return last(this.pages)
     },
     minPage_() {
-      return this.minPage || pageForDate(this.normalizeDate(this.minDate));
+      return this.minPage || pageForDate(this.normalizeDate(this.minDate))
     },
     maxPage_() {
-      return this.maxPage || pageForDate(this.normalizeDate(this.maxDate));
+      return this.maxPage || pageForDate(this.normalizeDate(this.maxDate))
     },
     count() {
-      return this.rows * this.columns;
+      return this.rows * this.columns
     },
     step_() {
-      return this.step || this.count;
+      return this.step || this.count
     },
     canMovePrev() {
       return (
         !pageIsValid(this.minPage_) ||
         pageIsAfterPage(this.pages[0], this.minPage_)
-      );
+      )
     },
     canMoveNext() {
       return (
         !pageIsValid(this.maxPage_) ||
         pageIsBeforePage(this.pages[this.pages.length - 1], this.maxPage_)
-      );
+      )
     },
   },
   watch: {
     $locale() {
-      this.refreshLocale();
-      this.refreshPages({ page: this.firstPage, ignoreCache: true });
-      this.initStore();
+      this.refreshLocale()
+      this.refreshPages({ page: this.firstPage, ignoreCache: true })
+      this.initStore()
     },
     $theme() {
-      this.refreshTheme();
-      this.initStore();
+      this.refreshTheme()
+      this.initStore()
     },
     timezone() {
       // Refresh pages to reset the time boundaries
-      this.refreshPages({ ignoreCache: true });
+      this.refreshPages({ ignoreCache: true })
       // Refresh attributes
-      this.refreshAttrs(this.pages, this.store.list, null, true);
+      this.refreshAttrs(this.pages, this.store.list, null, true)
     },
     fromDate() {
-      this.refreshPages();
+      this.refreshPages()
     },
     fromPage(val) {
-      const firstPage = this.pages && this.pages[0];
-      if (pageIsEqualToPage(val, firstPage)) return;
-      this.refreshPages();
+      const firstPage = this.pages && this.pages[0]
+      if (pageIsEqualToPage(val, firstPage)) return
+      this.refreshPages()
     },
     toPage(val) {
-      const lastPage = this.pages && this.pages[this.pages.length - 1];
-      if (pageIsEqualToPage(val, lastPage)) return;
-      this.refreshPages();
+      const lastPage = this.pages && this.pages[this.pages.length - 1]
+      if (pageIsEqualToPage(val, lastPage)) return
+      this.refreshPages()
     },
     count() {
-      this.refreshPages();
+      this.refreshPages()
     },
     attributes(val) {
-      const { adds, deletes } = this.store.refresh(val);
-      this.refreshAttrs(this.pages, adds, deletes);
+      const { adds, deletes } = this.store.refresh(val)
+      this.refreshAttrs(this.pages, adds, deletes)
     },
     pages(val) {
-      this.refreshAttrs(val, this.store.list, null, true);
+      this.refreshAttrs(val, this.store.list, null, true)
     },
     disabledAttribute() {
-      this.refreshDisabledDays();
+      this.refreshDisabledDays()
     },
     lastFocusedDay(val) {
       if (val) {
-        this.focusableDay = val.day;
-        this.refreshFocusableDays();
+        this.focusableDay = val.day
+        this.refreshFocusableDays()
       }
     },
     inTransition(val) {
       if (val) {
-        this.$emit('transition-start');
+        this.$emit('transition-start')
       } else {
-        this.$emit('transition-end');
+        this.$emit('transition-end')
         if (this.transitionPromise) {
-          this.transitionPromise.resolve(true);
-          this.transitionPromise = null;
+          this.transitionPromise.resolve(true)
+          this.transitionPromise = null
         }
       }
     },
   },
   created() {
-    this.refreshLocale();
-    this.refreshTheme();
-    this.initStore();
-    this.refreshPages();
+    this.refreshLocale()
+    this.refreshTheme()
+    this.initStore()
+    this.refreshPages()
   },
   mounted() {
     if (!this.disablePageSwipe) {
@@ -385,64 +385,64 @@ export default {
         this.$refs.container,
         ({ toLeft, toRight }) => {
           if (toLeft) {
-            this.moveNext();
+            this.moveNext()
           } else if (toRight) {
-            this.movePrev();
+            this.movePrev()
           }
         },
         this.$defaults.touch,
-      );
+      )
       // Clean up on destroy
-      this.$once('beforeDestroy', () => removeHandlers());
+      this.$once('beforeDestroy', () => removeHandlers())
     }
   },
   methods: {
     refreshLocale() {
-      this.sharedState.locale = this.$locale;
-      this.sharedState.masks = this.$locale.masks;
+      this.sharedState.locale = this.$locale
+      this.sharedState.masks = this.$locale.masks
     },
     refreshTheme() {
-      this.sharedState.theme = this.$theme;
+      this.sharedState.theme = this.$theme
     },
     canMove(page) {
-      return pageIsBetweenPages(page, this.minPage_, this.maxPage_);
+      return pageIsBetweenPages(page, this.minPage_, this.maxPage_)
     },
     movePrev(opts) {
-      return this.move(-this.step_, opts);
+      return this.move(-this.step_, opts)
     },
     moveNext(opts) {
-      return this.move(this.step_, opts);
+      return this.move(this.step_, opts)
     },
     move(arg, opts = {}) {
-      const page = this.$locale.toPage(arg, this.firstPage);
+      const page = this.$locale.toPage(arg, this.firstPage)
       // Pin position if arg is number
-      if (isNumber(arg)) opts.position = 1;
+      if (isNumber(arg)) opts.position = 1
       // Reject unresolved pages
       if (!page) {
-        return Promise.reject(new Error(`Invalid argument provided: ${arg}`));
+        return Promise.reject(new Error(`Invalid argument provided: ${arg}`))
       }
       // Set position if unspecified and out of current bounds
       if (!opts.position) {
         if (pageIsBeforePage(page, this.firstPage)) {
-          opts.position = -1;
+          opts.position = -1
         } else if (pageIsAfterPage(page, this.lastPage)) {
-          opts.position = 1;
+          opts.position = 1
         } else {
           // Page already displayed with no specified position, so we're done
-          return Promise.resolve(true);
+          return Promise.resolve(true)
         }
       }
       // Calculate new `fromPage`
-      const { fromPage } = this.getTargetPageRange(page, opts);
+      const { fromPage } = this.getTargetPageRange(page, opts)
       // Move to new `fromPage` if it's different from the current one
       if (fromPage && !pageIsEqualToPage(fromPage, this.firstPage)) {
         return this.refreshPages({
           ...opts,
           position: 1,
           page: fromPage,
-        });
+        })
       }
-      return Promise.resolve(true);
+      return Promise.resolve(true)
     },
     focusDate(date, opts = {}) {
       // Move to the given date
@@ -450,172 +450,172 @@ export default {
         // Set focus on the element for the date
         const focusableEl = this.$el.querySelector(
           `.id-${this.$locale.getDayId(date)}.in-month .vc-focusable`,
-        );
+        )
         if (focusableEl) {
-          focusableEl.focus();
-          return Promise.resolve(true);
+          focusableEl.focus()
+          return Promise.resolve(true)
         }
         return Promise.reject(
           new Error(
             'Day element not found. Consider using `force` option is date is disabled.',
           ),
-        );
-      });
+        )
+      })
     },
     showPageRange(range, opts) {
-      let fromPage;
-      let toPage;
+      let fromPage
+      let toPage
       if (isDate(range)) {
-        fromPage = pageForDate(range);
+        fromPage = pageForDate(range)
       } else if (isObject(range)) {
-        const { month, year } = range;
-        const { from, to } = range;
+        const { month, year } = range
+        const { from, to } = range
         if (isNumber(month) && isNumber(year)) {
-          fromPage = range;
+          fromPage = range
         } else if (from || to) {
-          fromPage = isDate(from) ? pageForDate(from) : from;
-          toPage = isDate(to) ? pageForDate(to) : to;
+          fromPage = isDate(from) ? pageForDate(from) : from
+          toPage = isDate(to) ? pageForDate(to) : to
         }
       } else {
-        return Promise.reject(new Error('Invalid page range provided.'));
+        return Promise.reject(new Error('Invalid page range provided.'))
       }
-      const lastPage = this.lastPage;
-      let page = fromPage;
+      const lastPage = this.lastPage
+      let page = fromPage
       // Offset page from the desired `toPage`
       if (pageIsAfterPage(toPage, lastPage)) {
-        page = addPages(toPage, -(this.pages.length - 1));
+        page = addPages(toPage, -(this.pages.length - 1))
       }
       // But no earlier than the desired `fromPage`
       if (pageIsBeforePage(page, fromPage)) {
-        page = fromPage;
+        page = fromPage
       }
-      return this.refreshPages({ ...opts, page });
+      return this.refreshPages({ ...opts, page })
     },
     getTargetPageRange(page, { position, force } = {}) {
       // Calculate the page to start displaying from
-      let fromPage = null;
+      let fromPage = null
       // 1. Try the page parameter
       if (pageIsValid(page)) {
         const pagesToAdd =
-          position > 0 ? 1 - position : -(this.count + position);
-        fromPage = addPages(page, pagesToAdd);
+          position > 0 ? 1 - position : -(this.count + position)
+        fromPage = addPages(page, pagesToAdd)
       } else {
         // 2. Try the fromPage prop
         fromPage =
-          this.fromPage || pageForDate(this.normalizeDate(this.fromDate));
+          this.fromPage || pageForDate(this.normalizeDate(this.fromDate))
         if (!pageIsValid(fromPage)) {
           // 3. Try the toPage prop
           const toPage =
-            this.toPage || pageForDate(this.normalizeDate(this.toPage));
+            this.toPage || pageForDate(this.normalizeDate(this.toPage))
           if (pageIsValid(toPage)) {
-            fromPage = addPages(toPage, 1 - this.count);
+            fromPage = addPages(toPage, 1 - this.count)
           } else {
             // 4. Try the first attribute
-            fromPage = this.getPageForAttributes();
+            fromPage = this.getPageForAttributes()
           }
         }
       }
       // 5. Fall back to today's page
-      fromPage = pageIsValid(fromPage) ? fromPage : pageForThisMonth();
-      let toPage = addPages(fromPage, this.count - 1);
+      fromPage = pageIsValid(fromPage) ? fromPage : pageForThisMonth()
+      let toPage = addPages(fromPage, this.count - 1)
       // 6. Adjust for min/max pages if not forced
       if (!force) {
         if (pageIsBeforePage(fromPage, this.minPage_)) {
-          fromPage = this.minPage_;
+          fromPage = this.minPage_
         } else if (pageIsAfterPage(toPage, this.maxPage_)) {
-          fromPage = addPages(this.maxPage_, 1 - this.count);
+          fromPage = addPages(this.maxPage_, 1 - this.count)
         }
-        toPage = addPages(fromPage, this.count - 1);
+        toPage = addPages(fromPage, this.count - 1)
       }
-      return { fromPage, toPage };
+      return { fromPage, toPage }
     },
     refreshPages({ page, position = 1, force, transition, ignoreCache } = {}) {
       return new Promise((resolve, reject) => {
         const { fromPage, toPage } = this.getTargetPageRange(page, {
           position,
           force,
-        });
+        })
         // Create the new pages
-        const pages = [];
+        const pages = []
         for (let i = 0; i < this.count; i++) {
-          pages.push(this.buildPage(addPages(fromPage, i), ignoreCache));
+          pages.push(this.buildPage(addPages(fromPage, i), ignoreCache))
         }
         // Refresh disabled days for new pages
-        this.refreshDisabledDays(pages);
+        this.refreshDisabledDays(pages)
         // Refresh focusable days for new pages
-        this.refreshFocusableDays(pages);
+        this.refreshFocusableDays(pages)
         // Assign the transition
         this.transitionName = this.getPageTransition(
           this.pages[0],
           pages[0],
           transition,
-        );
+        )
         // Assign the new pages
-        this.pages = pages;
+        this.pages = pages
         // Emit page update events
-        this.$emit('update:from-page', fromPage);
-        this.$emit('update:to-page', toPage);
+        this.$emit('update:from-page', fromPage)
+        this.$emit('update:to-page', toPage)
         if (this.transitionName && this.transitionName !== 'none') {
           this.transitionPromise = {
             resolve,
             reject,
-          };
+          }
         } else {
-          resolve(true);
+          resolve(true)
         }
-      });
+      })
     },
     refreshDisabledDays(pages) {
       this.getPageDays(pages).forEach(d => {
         d.isDisabled =
-          !!this.disabledAttribute && this.disabledAttribute.intersectsDay(d);
-      });
+          !!this.disabledAttribute && this.disabledAttribute.intersectsDay(d)
+      })
     },
     refreshFocusableDays(pages) {
       this.getPageDays(pages).forEach(d => {
-        d.isFocusable = d.inMonth && d.day === this.focusableDay;
-      });
+        d.isFocusable = d.inMonth && d.day === this.focusableDay
+      })
     },
     getPageDays(pages = this.pages) {
-      return pages.reduce((prev, curr) => prev.concat(curr.days), []);
+      return pages.reduce((prev, curr) => prev.concat(curr.days), [])
     },
     getPageTransition(oldPage, newPage, transition = this.transition) {
-      if (transition === 'none') return transition;
+      if (transition === 'none') return transition
       if (
         transition === 'fade' ||
         (!transition && this.count > 1) ||
         !pageIsValid(oldPage) ||
         !pageIsValid(newPage)
       ) {
-        return 'fade';
+        return 'fade'
       }
       // Moving to a previous page
-      const movePrev = pageIsBeforePage(newPage, oldPage);
+      const movePrev = pageIsBeforePage(newPage, oldPage)
       // Vertical slide
       if (transition === 'slide-v') {
-        return movePrev ? 'slide-down' : 'slide-up';
+        return movePrev ? 'slide-down' : 'slide-up'
       }
       // Horizontal slide
-      return movePrev ? 'slide-right' : 'slide-left';
+      return movePrev ? 'slide-right' : 'slide-left'
     },
     getPageForAttributes() {
-      let page = null;
-      const attr = this.store.pinAttr;
+      let page = null
+      const attr = this.store.pinAttr
       if (attr && attr.hasDates) {
-        let [date] = attr.dates;
-        date = date.start || date.date;
-        page = pageForDate(this.normalizeDate(date));
+        let [date] = attr.dates
+        date = date.start || date.date
+        page = pageForDate(this.normalizeDate(date))
       }
-      return page;
+      return page
     },
     buildPage({ month, year }, ignoreCache) {
-      const key = `${year.toString()}-${month.toString()}`;
-      let page = this.pages.find(p => p.key === key);
+      const key = `${year.toString()}-${month.toString()}`
+      let page = this.pages.find(p => p.key === key)
       if (!page || ignoreCache) {
-        const date = new Date(year, month - 1, 15);
-        const monthComps = this.$locale.getMonthComps(month, year);
-        const prevMonthComps = this.$locale.getPrevMonthComps(month, year);
-        const nextMonthComps = this.$locale.getNextMonthComps(month, year);
+        const date = new Date(year, month - 1, 15)
+        const monthComps = this.$locale.getMonthComps(month, year)
+        const prevMonthComps = this.$locale.getPrevMonthComps(month, year)
+        const nextMonthComps = this.$locale.getNextMonthComps(month, year)
         page = {
           key,
           month,
@@ -635,11 +635,11 @@ export default {
           movePrevMonth: () => this.move(prevMonthComps),
           moveNextMonth: () => this.move(nextMonthComps),
           refresh: true,
-        };
+        }
         // Assign day info
-        page.days = this.$locale.getCalendarDays(page, this.timezone);
+        page.days = this.$locale.getCalendarDays(page, this.timezone)
       }
-      return page;
+      return page
     },
     initStore() {
       // Create a new attribute store
@@ -647,123 +647,123 @@ export default {
         this.$theme,
         this.$locale,
         this.attributes,
-      );
+      )
       // Refresh attributes for existing pages
-      this.refreshAttrs(this.pages, this.store.list, [], true);
+      this.refreshAttrs(this.pages, this.store.list, [], true)
     },
     refreshAttrs(pages = [], adds = [], deletes = [], reset) {
-      if (!arrayHasItems(pages)) return;
+      if (!arrayHasItems(pages)) return
       // For each page...
       pages.forEach(p => {
         // For each day...
         p.days.forEach(d => {
-          let map = {};
+          let map = {}
           // If resetting...
           if (reset) {
-            d.refresh = true;
+            d.refresh = true
           } else if (hasAny(d.attributesMap, deletes)) {
             // Delete attributes from the delete list
-            map = omit(d.attributesMap, deletes);
+            map = omit(d.attributesMap, deletes)
             // Flag day for refresh
-            d.refresh = true;
+            d.refresh = true
           } else {
             // Get the existing attributes
-            map = d.attributesMap || {};
+            map = d.attributesMap || {}
           }
           // For each attribute to add...
           adds.forEach(attr => {
             // Add it if it includes the current day
-            const targetDate = attr.intersectsDay(d);
+            const targetDate = attr.intersectsDay(d)
             if (targetDate) {
               const newAttr = {
                 ...attr,
                 targetDate,
-              };
-              map[attr.key] = newAttr;
+              }
+              map[attr.key] = newAttr
               // Flag day for refresh
-              d.refresh = true;
+              d.refresh = true
             }
-          });
+          })
           // Reassign day attributes
           if (d.refresh) {
-            d.attributesMap = map;
+            d.attributesMap = map
           }
-        });
-      });
+        })
+      })
       // Refresh pages
       this.$nextTick(() => {
-        this.$refs.pages.forEach(p => p.refresh());
-      });
+        this.$refs.pages.forEach(p => p.refresh())
+      })
     },
     handleKeydown(e) {
-      const day = this.lastFocusedDay;
+      const day = this.lastFocusedDay
       if (day != null) {
-        day.event = e;
-        this.handleDayKeydown(day);
+        day.event = e
+        this.handleDayKeydown(day)
       }
     },
     handleDayKeydown(day) {
-      const { date, event } = day;
-      let newDate = null;
+      const { date, event } = day
+      let newDate = null
       switch (event.key) {
         case 'ArrowLeft': {
           // Move to previous day
-          newDate = addDays(date, -1);
-          break;
+          newDate = addDays(date, -1)
+          break
         }
         case 'ArrowRight': {
           // Move to next day
-          newDate = addDays(date, 1);
-          break;
+          newDate = addDays(date, 1)
+          break
         }
         case 'ArrowUp': {
           // Move to previous week
-          newDate = addDays(date, -7);
-          break;
+          newDate = addDays(date, -7)
+          break
         }
         case 'ArrowDown': {
           // Move to next week
-          newDate = addDays(date, 7);
-          break;
+          newDate = addDays(date, 7)
+          break
         }
         case 'Home': {
           // Move to first weekday position
-          newDate = addDays(date, -day.weekdayPosition + 1);
-          break;
+          newDate = addDays(date, -day.weekdayPosition + 1)
+          break
         }
         case 'End': {
           // Move to last weekday position
-          newDate = addDays(date, day.weekdayPositionFromEnd);
-          break;
+          newDate = addDays(date, day.weekdayPositionFromEnd)
+          break
         }
         case 'PageUp': {
           if (event.altKey) {
             // Move to previous year w/ Alt/Option key
-            newDate = addYears(date, -1);
+            newDate = addYears(date, -1)
           } else {
             // Move to previous month
-            newDate = addMonths(date, -1);
+            newDate = addMonths(date, -1)
           }
-          break;
+          break
         }
         case 'PageDown': {
           if (event.altKey) {
             // Move to next year w/ Alt/Option key
-            newDate = addYears(date, 1);
+            newDate = addYears(date, 1)
           } else {
             // Move to next month
-            newDate = addMonths(date, 1);
+            newDate = addMonths(date, 1)
           }
-          break;
+          break
         }
       }
       if (newDate) {
-        event.preventDefault();
-        this.focusDate(newDate);
+        event.preventDefault()
+        this.focusDate(newDate)
       }
     },
   },
-};
+}
 </script>
 
 <style lang="postcss">

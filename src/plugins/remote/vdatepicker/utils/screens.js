@@ -1,46 +1,46 @@
 // Vue won't get included in bundle as it is externalized
 // https://cli.vuejs.org/guide/build-targets.html#library
-import Vue from 'vue';
-import buildMediaQuery from './buildMediaQuery';
-import defaultScreens from './defaults/screens.json';
-import { isUndefined, mapValues, toPairs, has } from './_';
+import Vue from 'vue'
+import buildMediaQuery from './buildMediaQuery'
+import defaultScreens from './defaults/screens.json'
+import { isUndefined, mapValues, toPairs, has } from './_'
 
-let isSettingUp = false;
-let shouldRefreshQueries = false;
-let screensComp = null;
+let isSettingUp = false
+let shouldRefreshQueries = false
+let screensComp = null
 
 export function setupScreens(screens = defaultScreens, forceSetup) {
   if ((screensComp && !forceSetup) || isSettingUp) {
-    return;
+    return
   }
-  isSettingUp = true;
-  shouldRefreshQueries = true;
+  isSettingUp = true
+  shouldRefreshQueries = true
   // Use a private Vue component to store reactive screen matches
   screensComp = new Vue({
     data() {
       return {
         matches: [],
         queries: [],
-      };
+      }
     },
     methods: {
       refreshQueries() {
-        if (!window || !window.matchMedia) return;
+        if (!window || !window.matchMedia) return
         this.queries = mapValues(screens, v => {
-          const query = window.matchMedia(buildMediaQuery(v));
-          query.addEventListener('change', this.refreshMatches);
-          return query;
-        });
-        this.refreshMatches();
+          const query = window.matchMedia(buildMediaQuery(v))
+          query.addEventListener('change', this.refreshMatches)
+          return query
+        })
+        this.refreshMatches()
       },
       refreshMatches() {
         this.matches = toPairs(this.queries)
           .filter(p => p[1].matches)
-          .map(p => p[0]);
+          .map(p => p[0])
       },
     },
-  });
-  isSettingUp = false;
+  })
+  isSettingUp = false
 }
 
 // Global mixin that provides responsive '$screens' utility method
@@ -48,13 +48,13 @@ export function setupScreens(screens = defaultScreens, forceSetup) {
 Vue.mixin({
   beforeCreate() {
     if (!isSettingUp) {
-      setupScreens();
+      setupScreens()
     }
   },
   mounted() {
     if (shouldRefreshQueries && screensComp) {
-      screensComp.refreshQueries();
-      shouldRefreshQueries = false;
+      screensComp.refreshQueries()
+      shouldRefreshQueries = false
     }
   },
   computed: {
@@ -63,7 +63,7 @@ Vue.mixin({
         screensComp.matches.reduce(
           (prev, curr) => (has(config, curr) ? config[curr] : prev),
           isUndefined(def) ? config.default : def,
-        );
+        )
     },
   },
-});
+})

@@ -1,8 +1,8 @@
 <script>
-import { childMixin, safeScopedSlotMixin } from '../utils/mixins';
-import { arrayHasItems, mergeEvents } from '../utils/helpers';
-import { getPopoverTriggerEvents, updatePopover } from '../utils/popovers';
-import { last, get, defaults } from '../utils/_';
+import { childMixin, safeScopedSlotMixin } from '../utils/mixins'
+import { arrayHasItems, mergeEvents } from '../utils/helpers'
+import { getPopoverTriggerEvents, updatePopover } from '../utils/popovers'
+import { last, get, defaults } from '../utils/_'
 
 export default {
   name: 'CalendarDay',
@@ -31,7 +31,7 @@ export default {
             ],
           ),
         ),
-      );
+      )
 
     // Content layer
     const contentLayer = () =>
@@ -52,7 +52,7 @@ export default {
           ref: 'content',
         },
         [this.day.label],
-      );
+      )
 
     // Dots layer
     const dotsLayer = () =>
@@ -77,7 +77,7 @@ export default {
             ),
           ),
         ],
-      );
+      )
 
     // Bars layer
     const barsLayer = () =>
@@ -102,7 +102,7 @@ export default {
             ),
           ),
         ],
-      );
+      )
 
     // Root layer
     return h(
@@ -116,7 +116,7 @@ export default {
         ],
       },
       [backgroundsLayer(), contentLayer(), dotsLayer(), barsLayer()],
-    );
+    )
   },
   inject: ['sharedState'],
   props: {
@@ -126,129 +126,129 @@ export default {
     return {
       glyphs: {},
       dayContentEvents: {},
-    };
+    }
   },
   computed: {
     label() {
-      return this.day.label;
+      return this.day.label
     },
     startTime() {
-      return this.day.range.start.getTime();
+      return this.day.range.start.getTime()
     },
     endTime() {
-      return this.day.range.end.getTime();
+      return this.day.range.end.getTime()
     },
     inMonth() {
-      return this.day.inMonth;
+      return this.day.inMonth
     },
     isDisabled() {
-      return this.day.isDisabled;
+      return this.day.isDisabled
     },
     backgrounds() {
-      return this.glyphs.backgrounds;
+      return this.glyphs.backgrounds
     },
     hasBackgrounds() {
-      return !!arrayHasItems(this.backgrounds);
+      return !!arrayHasItems(this.backgrounds)
     },
     content() {
-      return this.glyphs.content;
+      return this.glyphs.content
     },
     dots() {
-      return this.glyphs.dots;
+      return this.glyphs.dots
     },
     hasDots() {
-      return !!arrayHasItems(this.dots);
+      return !!arrayHasItems(this.dots)
     },
     bars() {
-      return this.glyphs.bars;
+      return this.glyphs.bars
     },
     hasBars() {
-      return !!arrayHasItems(this.bars);
+      return !!arrayHasItems(this.bars)
     },
     popovers() {
-      return this.glyphs.popovers;
+      return this.glyphs.popovers
     },
     hasPopovers() {
-      return !!arrayHasItems(this.popovers);
+      return !!arrayHasItems(this.popovers)
     },
     dayContentClass() {
       return [
         'vc-day-content vc-focusable',
         { 'is-disabled': this.isDisabled },
         get(last(this.content), 'class') || '',
-      ];
+      ]
     },
     dayContentStyle() {
-      return get(last(this.content), 'style');
+      return get(last(this.content), 'style')
     },
     dayContentProps() {
-      let tabindex;
+      let tabindex
       if (this.day.isFocusable) {
-        tabindex = '0';
+        tabindex = '0'
       } else if (this.day.inMonth) {
-        tabindex = '-1';
+        tabindex = '-1'
       }
       return {
         tabindex,
         'aria-label': this.day.ariaLabel,
         'aria-disabled': this.day.isDisabled ? 'true' : 'false',
         role: 'button',
-      };
+      }
     },
     dayEvent() {
       return {
         ...this.day,
         el: this.$refs.content,
         popovers: this.popovers,
-      };
+      }
     },
   },
   watch: {
     theme() {
-      this.refresh();
+      this.refresh()
     },
     popovers() {
-      this.refreshPopovers();
+      this.refreshPopovers()
     },
   },
   mounted() {
-    this.refreshPopovers();
+    this.refreshPopovers()
   },
   methods: {
     getDayEvent(origEvent) {
       return {
         ...this.dayEvent,
         event: origEvent,
-      };
+      }
     },
     click(e) {
-      this.$emit('dayclick', this.getDayEvent(e));
+      this.$emit('dayclick', this.getDayEvent(e))
     },
     mouseenter(e) {
-      this.$emit('daymouseenter', this.getDayEvent(e));
+      this.$emit('daymouseenter', this.getDayEvent(e))
     },
     mouseleave(e) {
-      this.$emit('daymouseleave', this.getDayEvent(e));
+      this.$emit('daymouseleave', this.getDayEvent(e))
     },
     focusin(e) {
-      this.$emit('dayfocusin', this.getDayEvent(e));
+      this.$emit('dayfocusin', this.getDayEvent(e))
     },
     focusout(e) {
-      this.$emit('dayfocusout', this.getDayEvent(e));
+      this.$emit('dayfocusout', this.getDayEvent(e))
     },
     keydown(e) {
-      this.$emit('daykeydown', this.getDayEvent(e));
+      this.$emit('daykeydown', this.getDayEvent(e))
     },
     refresh() {
-      if (!this.day.refresh) return;
-      this.day.refresh = false;
+      if (!this.day.refresh) return
+      this.day.refresh = false
       const glyphs = {
         backgrounds: [],
         dots: [],
         bars: [],
         popovers: [],
         content: [],
-      };
+      }
       // Use $set to trigger reactivity in popovers, if needed
       this.$set(
         this.day,
@@ -256,15 +256,15 @@ export default {
         Object.values(this.day.attributesMap || {}).sort(
           (a, b) => a.order - b.order,
         ),
-      );
+      )
       this.day.attributes.forEach(attr => {
         // Add glyphs for each attribute
-        const { targetDate } = attr;
-        const { isDate, isComplex, startTime, endTime } = targetDate;
-        const onStart = this.startTime <= startTime;
-        const onEnd = this.endTime >= endTime;
-        const onStartAndEnd = onStart && onEnd;
-        const onStartOrEnd = onStart || onEnd;
+        const { targetDate } = attr
+        const { isDate, isComplex, startTime, endTime } = targetDate
+        const onStart = this.startTime <= startTime
+        const onEnd = this.endTime >= endTime
+        const onStartAndEnd = onStart && onEnd
+        const onStartOrEnd = onStart || onEnd
         const dateInfo = {
           isDate,
           isComplex,
@@ -272,125 +272,125 @@ export default {
           onEnd,
           onStartAndEnd,
           onStartOrEnd,
-        };
-        this.processHighlight(attr, dateInfo, glyphs);
-        this.processNonHighlight(attr, 'content', dateInfo, glyphs.content);
-        this.processNonHighlight(attr, 'dot', dateInfo, glyphs.dots);
-        this.processNonHighlight(attr, 'bar', dateInfo, glyphs.bars);
-        this.processPopover(attr, glyphs);
-      });
-      this.glyphs = glyphs;
+        }
+        this.processHighlight(attr, dateInfo, glyphs)
+        this.processNonHighlight(attr, 'content', dateInfo, glyphs.content)
+        this.processNonHighlight(attr, 'dot', dateInfo, glyphs.dots)
+        this.processNonHighlight(attr, 'bar', dateInfo, glyphs.bars)
+        this.processPopover(attr, glyphs)
+      })
+      this.glyphs = glyphs
     },
     processHighlight(
       { key, highlight },
       { isDate, isComplex, onStart, onEnd, onStartAndEnd },
       { backgrounds, content },
     ) {
-      if (!highlight) return;
-      const { base, start, end } = highlight;
-      
+      if (!highlight) return
+      const { base, start, end } = highlight
+
       if (isDate || isComplex) {
         backgrounds.push({
           key,
           wrapperClass: 'vc-day-layer vc-day-box-center-center',
           class: ['vc-highlight', start.class],
           style: start.style,
-        });
+        })
         content.push({
           key: `${key}-content`,
           class: start.contentClass,
           style: start.contentStyle,
-        });
+        })
       } else if (onStartAndEnd) {
         backgrounds.push({
           key,
           wrapperClass: 'vc-day-layer vc-day-box-center-center',
           class: ['vc-highlight', start.class],
           style: start.style,
-        });
+        })
         content.push({
           key: `${key}-content`,
           class: start.contentClass,
           style: start.contentStyle,
-        });
+        })
       } else if (onStart) {
         backgrounds.push({
           key: `${key}-base`,
           wrapperClass: 'vc-day-layer vc-day-box-right-center',
           class: ['vc-highlight vc-highlight-base-start', base.class],
           style: base.style,
-        });
+        })
         backgrounds.push({
           key,
           wrapperClass: 'vc-day-layer vc-day-box-center-center',
           class: ['vc-highlight', start.class],
           style: start.style,
-        });
+        })
         content.push({
           key: `${key}-content`,
           class: start.contentClass,
           style: start.contentStyle,
-        });
+        })
       } else if (onEnd) {
         backgrounds.push({
           key: `${key}-base`,
           wrapperClass: 'vc-day-layer vc-day-box-left-center',
           class: ['vc-highlight vc-highlight-base-end', base.class],
           style: base.style,
-        });
+        })
         backgrounds.push({
           key,
           wrapperClass: 'vc-day-layer vc-day-box-center-center',
           class: ['vc-highlight', end.class],
           style: end.style,
-        });
+        })
         content.push({
           key: `${key}-content`,
           class: end.contentClass,
           style: end.contentStyle,
-        });
+        })
       } else {
         backgrounds.push({
           key: `${key}-middle`,
           wrapperClass: 'vc-day-layer vc-day-box-center-center',
           class: ['vc-highlight vc-highlight-base-middle', base.class],
           style: base.style,
-        });
+        })
         content.push({
           key: `${key}-content`,
           class: base.contentClass,
           style: base.contentStyle,
-        });
+        })
       }
     },
     processNonHighlight(attr, itemKey, { isDate, onStart, onEnd }, list) {
-      if (!attr[itemKey]) return;
-      const { key } = attr;
-      const className = `vc-${itemKey}`;
-      const { base, start, end } = attr[itemKey];
+      if (!attr[itemKey]) return
+      const { key } = attr
+      const className = `vc-${itemKey}`
+      const { base, start, end } = attr[itemKey]
       if (isDate || onStart) {
         list.push({
           key,
           class: [className, start.class],
           style: start.style,
-        });
+        })
       } else if (onEnd) {
         list.push({
           key,
           class: [className, end.class],
           style: end.style,
-        });
+        })
       } else {
         list.push({
           key,
           class: [className, base.class],
           style: base.style,
-        });
+        })
       }
     },
     processPopover(attribute, { popovers }) {
-      const { key, customData, popover } = attribute;
-      if (!popover) return;
+      const { key, customData, popover } = attribute
+      if (!popover) return
       const resolvedPopover = defaults(
         {
           key,
@@ -403,15 +403,15 @@ export default {
           placement: 'bottom',
           isInteractive: !popover.label,
         },
-      );
-      popovers.splice(0, 0, resolvedPopover);
+      )
+      popovers.splice(0, 0, resolvedPopover)
     },
     refreshPopovers() {
-      let popoverEvents = {};
+      let popoverEvents = {}
       if (arrayHasItems(this.popovers)) {
         popoverEvents = getPopoverTriggerEvents(
           defaults({ id: this.dayPopoverId, data: this.day }, ...this.popovers),
-        );
+        )
       }
       this.dayContentEvents = mergeEvents(
         {
@@ -423,14 +423,14 @@ export default {
           keydown: this.keydown,
         },
         popoverEvents,
-      );
+      )
       updatePopover({
         id: this.dayPopoverId,
         data: this.day,
-      });
+      })
     },
   },
-};
+}
 </script>
 
 <style lang="postcss" scoped>

@@ -1,4 +1,4 @@
-import { toPairs } from '../_';
+import { toPairs } from '../_'
 
 const locales = {
   // Arabic
@@ -90,11 +90,11 @@ const locales = {
   uk: { dow: 2, L: 'DD.MM.YYYY' },
   // Vietnam
   vi: { dow: 2, L: 'DD/MM/YYYY' },
-};
-locales.en = locales['en-US'];
-locales.es = locales['es-ES'];
-locales.no = locales.nb;
-locales.zh = locales['zh-CN'];
+}
+locales.en = locales['en-US']
+locales.es = locales['es-ES']
+locales.no = locales.nb
+locales.zh = locales['zh-CN']
 
 // Remap from abbr. to intuitive property names
 toPairs(locales).forEach(([id, { dow, L }]) => {
@@ -102,7 +102,7 @@ toPairs(locales).forEach(([id, { dow, L }]) => {
     id,
     firstDayOfWeek: dow,
     masks: { L },
-  };
-});
+  }
+})
 
-export default locales;
+export default locales
