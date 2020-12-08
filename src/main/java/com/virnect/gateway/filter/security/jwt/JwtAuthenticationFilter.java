@@ -79,6 +79,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.header("X-jwt-country", body.get("country", String.class))
 			.header("X-jwt-countryCode", body.get("countryCode", String.class))
 			.header("X-jwt-jwtId", body.get("jwtId", String.class))
+			.header("X-jwt-authorities", body.get("authorities", String.class))
 			.build();
 
 		return chain.filter(exchange.mutate().request(authenticateRequest).build())
