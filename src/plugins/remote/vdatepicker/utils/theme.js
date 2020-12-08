@@ -1,6 +1,6 @@
-import { isObject, isString, has, hasAny, set, toPairs, defaults } from './_';
+import { isObject, isString, has, hasAny, set, toPairs, defaults } from './_'
 
-const targetProps = ['base', 'start', 'end', 'startEnd'];
+const targetProps = ['base', 'start', 'end', 'startEnd']
 const displayProps = [
   'class',
   'contentClass',
@@ -8,7 +8,7 @@ const displayProps = [
   'contentStyle',
   'color',
   'fillMode',
-];
+]
 const defConfig = {
   color: 'blue',
   isDark: false,
@@ -32,82 +32,82 @@ const defConfig = {
     start: {},
     end: {},
   },
-};
+}
 
 export default class Theme {
   constructor(config) {
-    Object.assign(this, defConfig, config);
+    Object.assign(this, defConfig, config)
   }
 
   // Normalizes attribute config to the structure defined by the properties
   normalizeAttr({ config, type }) {
-    let rootColor = this.color;
-    let root = {};
+    let rootColor = this.color
+    let root = {}
     // Get the normalized root config
-    const normAttr = this[type];
+    const normAttr = this[type]
     if (config === true || isString(config)) {
       // Assign default color for booleans or strings
-      rootColor = isString(config) ? config : rootColor;
+      rootColor = isString(config) ? config : rootColor
       // Set the default root
-      root = { ...normAttr };
+      root = { ...normAttr }
     } else if (isObject(config)) {
       if (hasAny(config, targetProps)) {
         // Mixin target configs
-        root = { ...config };
+        root = { ...config }
       } else {
         // Mixin display configs
         root = {
           base: { ...config },
           start: { ...config },
           end: { ...config },
-        };
+        }
       }
     } else {
-      return null;
+      return null
     }
     // Fill in missing targets
-    defaults(root, { start: root.startEnd, end: root.startEnd }, normAttr);
+    defaults(root, { start: root.startEnd, end: root.startEnd }, normAttr)
     // Normalize each target
     toPairs(root).forEach(([targetType, targetConfig]) => {
-      let targetColor = rootColor;
+      let targetColor = rootColor
       if (targetConfig === true || isString(targetConfig)) {
-        targetColor = isString(targetConfig) ? targetConfig : targetColor;
-        root[targetType] = { color: targetColor };
+        targetColor = isString(targetConfig) ? targetConfig : targetColor
+        root[targetType] = { color: targetColor }
       } else if (isObject(targetConfig)) {
         if (hasAny(targetConfig, displayProps)) {
-          root[targetType] = { ...targetConfig };
+          root[targetType] = { ...targetConfig }
         } else {
-          root[targetType] = {};
+          root[targetType] = {}
         }
       }
       // Set the theme color if it is missing
       if (!has(root, `${targetType}.color`)) {
-        set(root, `${targetType}.color`, targetColor);
+        set(root, `${targetType}.color`, targetColor)
       }
-    });
-    return root;
+    })
+    return root
   }
 
   normalizeHighlight(config) {
     const highlight = this.normalizeAttr({
       config,
       type: 'highlight',
-    });
+    })
     toPairs(highlight).forEach(([_, targetConfig]) => {
       const c = defaults(targetConfig, {
         isDark: this.isDark,
         color: this.color,
-      });
+      })
       targetConfig.style = {
         ...this.getHighlightBgStyle(c),
         ...targetConfig.style,
-      };
+      }
       targetConfig.contentStyle = {
         ...this.getHighlightContentStyle(c),
         ...targetConfig.contentStyle,
-      };
-    });
-    return highlight;
+      }
+    })
+    return highlight
   }
 
   getHighlightBgStyle({ fillMode, color, isDark }) {
@@ -121,32 +121,32 @@ export default class Theme {
           // borderColor: isDark ? `var(--${color}-200)` : `var(--${color}-700)`,
           borderColor: isDark ? `var(--${color}-200)` : 'var(--custom-blue)',
           borderRadius: 'var(--rounded-full)',
-        };
+        }
       case 'light':
         return {
           // backgroundColor: isDark
           //   ? `var(--${color}-800)`
           //   : `var(--${color}-200)`,
           backgroundColor: isDark
-          ? `var(--${color}-800)`
-          :'var(--custom-blue)',
+            ? `var(--${color}-800)`
+            : 'var(--custom-blue)',
           opacity: isDark ? 0.75 : 1,
           borderRadius: 'var(--rounded-full)',
-        };
+        }
       case 'solid':
         return {
           // backgroundColor: isDark
           //   ? `var(--${color}-500)`
           //   : `var(--${color}-600)`,
           backgroundColor: isDark
-          ? `var(--${color}-500)`
-          : 'var(--custom-blue)',
+            ? `var(--${color}-500)`
+            : 'var(--custom-blue)',
           borderRadius: 'var(--rounded-full)',
-        };
+        }
       default:
         return {
           borderRadius: 'var(--rounded-full)',
-        };
+        }
     }
   }
 
@@ -158,58 +158,58 @@ export default class Theme {
           // fontWeight: 'var(--font-bold)',
           // color: isDark ? `var(--${color}-100)` : `var(--${color}-900)`,
           color: 'var(--white)',
-        };
+        }
       case 'light':
         return {
           // fontWeight: 'var(--font-bold)',
           // color: isDark ? `var(--${color}-100)` : `var(--${color}-900)`,
           color: 'var(--white)',
-        };
+        }
       case 'solid':
         return {
           // fontWeight: 'var(--font-bold)',
           color: 'var(--white)',
-        };
+        }
       default:
-        return '';
+        return ''
     }
   }
 
   bgAccentHigh({ color, isDark }) {
     return {
       backgroundColor: isDark ? `var(--${color}-500)` : `var(--${color}-600)`,
-    };
+    }
   }
 
   contentAccent({ color, isDark }) {
-    if (!color) return null;
+    if (!color) return null
     return {
       // fontWeight: 'var(--font-bold)',
       color: isDark ? `var(--${color}-100)` : `var(--${color}-900)`,
-    };
+    }
   }
 
   normalizeDot(config) {
-    return this.normalizeNonHighlight('dot', config, this.bgAccentHigh);
+    return this.normalizeNonHighlight('dot', config, this.bgAccentHigh)
   }
 
   normalizeBar(config) {
-    return this.normalizeNonHighlight('bar', config, this.bgAccentHigh);
+    return this.normalizeNonHighlight('bar', config, this.bgAccentHigh)
   }
 
   normalizeContent(config) {
-    return this.normalizeNonHighlight('content', config, this.contentAccent);
+    return this.normalizeNonHighlight('content', config, this.contentAccent)
   }
 
   normalizeNonHighlight(type, config, styleFn) {
-    const attr = this.normalizeAttr({ type, config });
+    const attr = this.normalizeAttr({ type, config })
     toPairs(attr).forEach(([_, targetConfig]) => {
-      defaults(targetConfig, { isDark: this.isDark, color: this.color });
+      defaults(targetConfig, { isDark: this.isDark, color: this.color })
       targetConfig.style = {
         ...styleFn(targetConfig),
         ...targetConfig.style,
-      };
-    });
-    return attr;
+      }
+    })
+    return attr
   }
 }
