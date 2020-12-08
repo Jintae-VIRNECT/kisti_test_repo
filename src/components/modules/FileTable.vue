@@ -61,7 +61,7 @@
           </div>
 
           <play-button
-            class="table__cell--play"
+            class="table__cell play"
             :class="[type]"
             size="2.1429rem"
             v-if="showPlayButton"
@@ -361,7 +361,7 @@ export default {
 }
 
 .table__row .table__cell:nth-child(2) {
-  flex-grow: 2;
+  flex-grow: 2.1;
   text-align: left;
 }
 
@@ -399,6 +399,11 @@ export default {
     }
   }
 
+  &.play {
+    display: flex;
+    justify-content: center;
+  }
+
   &.expiration-date {
     color: #ff5757;
     opacity: 1;
@@ -409,22 +414,11 @@ export default {
   margin: 0 1.3571rem 0 1.5714rem;
 }
 
-.table__cell--play {
-  // display: flex;
-  &.local {
-    margin: 0 3.4286rem 0 3.4286rem;
-  }
-  &.server {
-    margin: 0 3.4286rem 0 4.4286rem;
-  }
-}
-
 .table__body--empty {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 31rem;
-  // background-color: $color_darkgray_600;
 }
 
 .table__body--empty-text {
