@@ -229,6 +229,9 @@ export default {
     },
     toggleCalendarBtn() {
       this.calendarBtn = !this.calendarBtn
+      if (this.calendarBtn) {
+        this.useDate = true
+      }
     },
   },
 
