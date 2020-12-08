@@ -131,8 +131,8 @@
 
         <file-info
           type="server"
-          :width="'1053px'"
-          :height="'706px'"
+          :width="'75.2143rem'"
+          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.server_record')"
           :fileList="fileList"
@@ -149,8 +149,8 @@
 
         <file-info
           type="local"
-          :width="'1053px'"
-          :height="'706px'"
+          :width="'75.2143rem'"
+          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.local_record')"
           :fileList="fileList"
@@ -168,8 +168,8 @@
 
         <file-info
           type="attach"
-          :width="'1053px'"
-          :height="'706px'"
+          :width="'75.2143rem'"
+          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.attach_file')"
           :fileList="fileList"
