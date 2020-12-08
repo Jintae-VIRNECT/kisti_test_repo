@@ -19,13 +19,14 @@
         v-for="(headerCell, index) in headers"
         class="table__column--cell"
         :class="{
+          name: headers[index] === $t('file.name'),
           'hide-tablet': headers[index] === $t('file.record_member'),
+          recordtime: headers[index] === $t('file.record_time'),
         }"
         :key="index"
       >
         {{ headerCell }}
       </div>
-      <div v-if="showPlayButton" class="table__column--cell"></div>
     </div>
     <div class="table__body">
       <scroller height="31rem" v-if="datas.length > 0">
@@ -48,7 +49,9 @@
             v-for="(value, key, innerIndex) in data"
             class="table__cell"
             :class="{
-              name: columns[innerIndex][0] === 'name',
+              name:
+                columns[innerIndex][0] === 'name' ||
+                columns[innerIndex][0] === 'filename',
               size: columns[innerIndex][0] === 'size',
               'hide-tablet': columns[innerIndex][0] === 'fileUserInfo',
             }"
@@ -58,7 +61,7 @@
           </div>
 
           <play-button
-            class="table__cell--play"
+            class="table__cell play"
             :class="[type]"
             size="2.1429rem"
             v-if="showPlayButton"
@@ -358,7 +361,7 @@ export default {
 }
 
 .table__row .table__cell:nth-child(2) {
-  flex-grow: 2;
+  flex-grow: 2.1;
   text-align: left;
 }
 
@@ -396,6 +399,11 @@ export default {
     }
   }
 
+  &.play {
+    display: flex;
+    justify-content: center;
+  }
+
   &.expiration-date {
     color: #ff5757;
     opacity: 1;
@@ -406,22 +414,11 @@ export default {
   margin: 0 1.3571rem 0 1.5714rem;
 }
 
-.table__cell--play {
-  // display: flex;
-  &.local {
-    margin: 0 3.4286rem 0 3.4286rem;
-  }
-  &.server {
-    margin: 0 3.4286rem 0 4.4286rem;
-  }
-}
-
 .table__body--empty {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 31rem;
-  // background-color: $color_darkgray_600;
 }
 
 .table__body--empty-text {
