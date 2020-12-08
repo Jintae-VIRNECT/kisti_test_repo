@@ -11,13 +11,16 @@
           size="1.714em"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
-          :inactiveSrc="require('assets/image/ic_uncheck.svg')"
+          :inactiveSrc="require('assets/image/ic_ckeck_select.svg')"
           @action="toggleAll"
         ></toggle-button>
       </div>
       <div
-        class="table__column--cell"
         v-for="(headerCell, index) in headers"
+        class="table__column--cell"
+        :class="{
+          'hide-tablet': headers[index] === $t('file.record_member'),
+        }"
         :key="index"
       >
         {{ headerCell }}
@@ -38,13 +41,17 @@
               size="1.714em"
               :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
-              :inactiveSrc="require('assets/image/ic_uncheck.svg')"
+              :inactiveSrc="require('assets/image/ic_ckeck_select.svg')"
             ></toggle-button>
           </div>
           <div
             v-for="(value, key, innerIndex) in data"
             class="table__cell"
-            :class="{ name: innerIndex === 0 }"
+            :class="{
+              name: columns[innerIndex][0] === 'name',
+              size: columns[innerIndex][0] === 'size',
+              'hide-tablet': columns[innerIndex][0] === 'fileUserInfo',
+            }"
             :key="innerIndex"
           >
             {{ value }}
@@ -65,12 +72,21 @@
           :key="index + 99"
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
-            <div style="width: 1.74em"></div>
+            <toggle-button
+              size="1.714em"
+              :disable="true"
+              :disableSrc="require('assets/image/ic_over_date.svg')"
+            ></toggle-button>
           </div>
           <div
             v-for="(value, key, innerIndex) in data"
             class="table__cell expired"
-            :class="{ 'expiration-date': key === 'expirationDate' }"
+            :class="{
+              'expiration-date': key === 'expirationDate',
+              name: columns[innerIndex][0] === 'name',
+              size: columns[innerIndex][0] === 'size',
+              'hide-tablet': columns[innerIndex][0] === 'fileUserInfo',
+            }"
             :key="innerIndex + workspace.uuid"
           >
             {{ value }}
@@ -280,9 +296,9 @@ export default {
   align-items: center;
   justify-content: center;
   height: 4rem;
-  background-color: #f5f7fa;
+  // background-color: #f5f7fa;
   border-top: solid;
-  border-top-color: #eaedf3;
+  border-top-color: #dcdcdc;
   border-top-width: 1px;
 }
 .table__column--toggle {
@@ -293,7 +309,6 @@ export default {
   flex-basis: 0;
   flex-grow: 1;
   flex-shrink: 1;
-  // color: #a7a7a7;
   color: #414a59;
   font-weight: normal;
   font-size: 1.0714rem;
@@ -303,7 +318,6 @@ export default {
 .table__column--cell:nth-child(2) {
   flex-grow: 2;
   text-align: left;
-  text-indent: 0.714rem;
 }
 
 .table__body {
@@ -314,23 +328,30 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
+  // width: 68.1429rem;
   height: 4.4286rem;
-  border-bottom: 1px solid #eaedf3;
-  // margin-bottom: 0.5714rem;
-  // background: $color_darkgray_600;
-  transition: background-color 0.3s;
+  margin-bottom: 8px;
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  border-radius: 4px;
+  box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
 
   &.active {
-    background: #f5f9ff;
+    background: rgb(234, 242, 255);
+    border: 1px solid rgb(55, 144, 255);
   }
   &:hover {
-    background: #f5f9ff;
+    background: rgb(234, 242, 255);
+    border: 1px solid rgb(55, 144, 255);
     cursor: pointer;
   }
 
   &.expired {
+    border: none;
+    box-shadow: none;
     &:hover {
-      background: none;
+      background: rgb(255, 255, 255);
       cursor: auto;
     }
   }
@@ -346,23 +367,38 @@ export default {
   flex-grow: 1;
   flex-shrink: 1;
   overflow: hidden;
-  color: #757f91;
-  font-weight: 500;
+  color: #262626;
+  font-weight: normal;
   font-size: 1.0714rem;
+  letter-spacing: 0.96px;
   white-space: nowrap;
   text-align: center;
   text-overflow: ellipsis;
 
   &.name {
-    color: #0b1f48;
+    color: #262626;
+    font-weight: 500;
+  }
+
+  &.size {
+    font-weight: normal;
+    opacity: 0.6;
   }
 
   &.expired {
     color: #9097a2;
+    opacity: 0.4;
+
+    &.name {
+      color: #262626;
+      font-weight: normal;
+      opacity: 1;
+    }
   }
 
   &.expiration-date {
     color: #ff5757;
+    opacity: 1;
   }
 }
 .table__cell--toggle {

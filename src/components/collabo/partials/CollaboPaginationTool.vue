@@ -104,8 +104,9 @@ export default {
 <style lang="scss">
 .pagination-tool {
   display: flex;
-  margin: auto;
-  margin-top: 1.5714rem;
+
+  margin-top: 34px;
+  margin-bottom: 80px;
 }
 
 .pagination-tool__container {

@@ -16,9 +16,9 @@ export default {
     },
     shape: {
       type: String,
-      default: 'round',
+      default: 'double-circle',
       validate(value) {
-        return ['round', 'square'].indexOf(value) >= 0
+        return ['double-circle', 'circle'].indexOf(value) >= 0
       },
     },
     customClass: {
@@ -51,7 +51,7 @@ export default {
   position: relative;
   margin-right: 1.5714rem;
 
-  &.round {
+  &.double-circle {
     &::before {
       position: absolute;
       top: 0.3571rem;
@@ -65,14 +65,15 @@ export default {
     }
   }
 
-  &.square {
+  &.circle {
     &::before {
       position: absolute;
       top: 0.3571rem;
       left: 0.4286rem;
       width: 0.8571rem;
       height: 0.8571rem;
-      background-color: #0f75f5;
+      background-color: #203cdd;
+      border-radius: 50%;
       content: '';
     }
   }

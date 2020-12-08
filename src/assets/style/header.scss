@@ -9,23 +9,20 @@
   left: 0;
   z-index: $header_z_index;
   display: flex;
-  // flex-direction: row;
-  // justify-content: space-between;
   justify-content: space-between;
   width: 100%;
   height: $header_height;
-  padding-right: 22.8571rem;
-  padding-left: 22.8571rem;
   background: #252525;
 }
 
-.header-divider {
-  width: 1px;
-  height: 1.571rem;
-  margin: auto 2.1429rem;
-  background-color: rgba(#d8d8d8, 0.2);
-}
-.header-logo {
+.header-wrapper {
   display: flex;
-  padding: 1.1429rem 0px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  width: 9.5136rem;
+  height: 2.2286rem;
+  margin-right: 1.4286rem;
 }

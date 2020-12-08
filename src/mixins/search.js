@@ -70,7 +70,8 @@ export default {
         page,
         searchWord: this.searchWord,
         fromTo: this.getFromTo(),
-        sort: `${this.sortColumn},${this.sortDirection}`,
+        sortProperties: this.sortColumn,
+        sortOrder: this.sortDirection,
         status: this.status,
       }
       return params

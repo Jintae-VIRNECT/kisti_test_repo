@@ -2,7 +2,12 @@
   ><button
     type="button"
     class="count-button"
-    :class="{ nodata: count <= 0, normal: count > 0, seleted: selected }"
+    :class="{
+      nodata: count <= 0,
+      normal: count > 0,
+      seleted: selected && !hover,
+      hover: hover && count > 0,
+    }"
     @click.stop="clickListener"
   >
     <img :src="imgSrc" />
@@ -28,12 +33,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
   },
-  data() {
-    return {
-      selected: false,
-    }
-  },
+
   computed: {
     imgSrc() {
       if (this.count > 0 && this.selected) {
@@ -45,13 +50,13 @@ export default {
       }
     },
   },
-  watch: {
-    hover(after) {
-      if (this.count > 0) {
-        after ? (this.selected = true) : (this.selected = false)
-      }
-    },
-  },
+  // watch: {
+  //   hover(after) {
+  //     if (this.count > 0) {
+  //       after ? (this.selected = true) : (this.selected = false)
+  //     }
+  //   },
+  // },
   methods: {
     clickListener() {
       if (this.count <= 0) return
@@ -81,6 +86,7 @@ export default {
   font-size: 1.0714rem;
   background: #f5f7fa;
   border-radius: 2px;
+  transition: 0.3s;
 
   &.nodata {
     background-color: #ffffff;
@@ -88,6 +94,10 @@ export default {
   }
   &.seleted {
     background: #1665d8;
+  }
+  &.hover {
+    background: rgb(215, 231, 255);
+    border-radius: 2px;
   }
 
   & > p {

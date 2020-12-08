@@ -22,20 +22,28 @@
         <div class="table__header">
           <div class="table__title">
             {{ tableTitle }}
+            <span class="table__count" v-if="fileList.length > 0">
+              {{ fileList.length }}
+            </span>
           </div>
+
           <div class="table__tools">
             <icon-button
               :text="$t('button.select_download')"
+              :select="hasSelect"
               :imgSrc="require('assets/image/ic_down_off.svg')"
-              :active="hasSelect"
               :activeImgSrc="require('assets/image/ic_down_on.svg')"
+              :selectImgSrc="require('assets/image/ic_down_on.svg')"
+              :colored="true"
               @click="download(type, { selectedArray, fileList })"
             ></icon-button>
             <icon-button
               v-if="deletable"
               :text="$t('button.select_delete')"
+              :select="hasSelect"
               :imgSrc="require('assets/image/ic_delete.svg')"
-              :active="hasSelect"
+              :activeImgSrc="require('assets/image/ic_delete_select.svg')"
+              :selectImgSrc="require('assets/image/ic_delete_on.svg')"
               @click="deleteFile(type, { selectedArray, fileList })"
             ></icon-button>
           </div>
@@ -180,15 +188,17 @@ export default {
   .modal--header {
     height: 4.8571rem;
     padding: 1.5714rem 0rem 1.1429rem 1.9286rem;
-    color: #0b1f48;
-    font-weight: normal;
-
+    color: #262626;
     font-size: 1.1429rem;
-    background-color: #f8f8fa;
+    background-color: #ffffff;
+  }
+  .modal--title {
+    font-weight: normal;
   }
 
   .modal--body {
     padding: 2.8571rem 3.2143rem 3.2143rem 3.2143rem;
+    background-color: #f8f8fa;
   }
 
   .modal--close {
@@ -204,23 +214,29 @@ export default {
 }
 
 .table__title {
-  color: #0b1f48;
+  display: flex;
+  align-items: center;
+  color: #262626;
   font-weight: normal;
   font-size: 1.5714rem;
 }
 
+.table__count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.2857rem;
+  height: 1.571rem;
+  margin-left: 6.004px;
+  color: #ffffff;
+  font-weight: 500;
+  font-size: 1rem;
+  background-color: #757f91;
+  border-radius: 0.857rem;
+  opacity: 0.8;
+}
+
 .table__tools {
   display: flex;
-
-  > button.icon-button {
-    opacity: 0.6;
-
-    &:hover {
-      opacity: 1;
-    }
-    &:active {
-      opacity: 0.8;
-    }
-  }
 }
 </style>

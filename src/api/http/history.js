@@ -6,7 +6,8 @@ import http from 'api/gateway'
  * @param {Number} page 페이지 번호
  * @param {Boolean} paging 페이징 유무
  * @param {Number} size 페이징 크기
- * @param {String} sort 정렬 옵션(ex activeDate,asc)
+ * @param {String} sortOrder 정렬 방향 (DESC)
+ * @param {String} sortProperties 정렬 대상(ACTIVE_DATE)
  * @param {String} userId 유저 id
  * @query {String} workspaceId 워크스페이스 id
  * @param {String} searchWord 검색할 협업명/멤버명(nickName)
@@ -18,18 +19,20 @@ export const getHistoryList = async function({
   page = 0,
   paging = false,
   size = 7,
-  sort = 'activeDate,desc',
+  sortOrder = 'DESC',
+  sortProperties = 'ACTIVE_DATE',
   userId,
   workspaceId,
   searchWord,
   fromTo,
-  status = 'all',
+  status = 'ALL',
 }) {
   const returnVal = await http('HISTORY_LIST', {
     page,
     paging,
     size,
-    sort,
+    sortOrder,
+    sortProperties,
     userId,
     workspaceId,
     searchWord,
@@ -46,7 +49,8 @@ export const getHistoryList = async function({
  * @param {Number} page 페이지 번호
  * @param {Boolean} paging 페이징 유무
  * @param {Number} size 페이징 크기
- * @param {String} sort 정렬 옵션(ex activeDate,asc)
+ * @param {String} sortOrder 정렬 방향 (DESC)
+ * @param {String} sortProperties 정렬 대상(ACTIVE_DATE)
  * @query {String} workspaceId 워크스페이스 id
  * @param {String} searchWord 검색할 협업명/멤버명(nickName)
  * @param {String} fromTo 기간(ex YYYY-MM-DD,YYYY-MM-DD)
@@ -56,17 +60,19 @@ export const getAllHistoryList = async function({
   page = 0,
   paging = false,
   size = 7,
-  sort = 'activeDate,desc',
+  sortOrder = 'DESC',
+  sortProperties = 'ACTIVE_DATE',
   workspaceId,
   searchWord,
   fromTo,
-  status = 'all',
+  status = 'ALL',
 }) {
   const returnVal = await http('ALL_HISTORY_LIST', {
     page,
     paging,
     size,
-    sort,
+    sortOrder,
+    sortProperties,
     workspaceId,
     searchWord,
     fromTo,

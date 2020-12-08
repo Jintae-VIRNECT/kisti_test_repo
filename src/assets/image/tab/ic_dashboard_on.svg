@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="29px" height="28px" viewBox="0 0 29 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>A5CA0DE8-7B44-4493-8500-F1CC9F8EC16F@1x</title>
+    <defs>
+        <path d="M13,5 L13,25 C7.93,24.5 4,20.21 4,15 C4,9.79 7.93,5.5 13,5 Z M15.03,5 L15.03,13.99 L24,13.99 C23.53,9.25 19.76,5.47 15.03,5 Z M15.03,16.01 L15.03,25 C19.77,24.53 23.53,20.75 24,16.01 L15.03,16.01 Z" id="path-1"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-331.000000, -101.000000)">
+            <g id="menu_Remote" transform="translate(320.000000, 90.000000)">
+                <g transform="translate(0.000000, 10.000000)" id="01">
+                    <g transform="translate(11.500000, 0.000000)">
+                        <rect id="tr" x="0" y="1" width="28" height="28"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/editor/pie_chart_24px" fill="#0F75F5" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

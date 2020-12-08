@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>2475E30E-F986-4CCA-98D1-D6C77D8D645C@1x</title>
+    <defs>
+        <linearGradient x1="18.3463542%" y1="-6.9388939e-16%" x2="72.281901%" y2="100%" id="linearGradient-1">
+            <stop stop-color="#2771D4" offset="0%"></stop>
+            <stop stop-color="#1B60C0" offset="100%"></stop>
+        </linearGradient>
+        <path d="M12,24 C21.0782609,24 24,21.0782609 24,12 C24,2.92173913 21.0782609,1.00953491e-15 12,0 C2.92173913,-1.00953491e-15 5.55883137e-16,2.92173913 0,12 C5.55883156e-16,21.0782609 2.92173913,24 12,24 Z" id="path-2"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-650.000000, -22.000000)">
+            <g id="BG_select" transform="translate(640.000000, 14.000000)">
+                <g id="user-profile" transform="translate(10.000000, 8.000000)">
+                    <path d="M12,24 C21.0782609,24 24,21.0782609 24,12 C24,2.92173913 21.0782609,1.00953491e-15 12,0 C2.92173913,-1.00953491e-15 5.55883137e-16,2.92173913 0,12 C5.55883156e-16,21.0782609 2.92173913,24 12,24 Z" id="base" fill="#474750"></path>
+                    <g id="workspace_profile">
+                        <mask id="mask-3" fill="white">
+                            <use xlink:href="#path-2"></use>
+                        </mask>
+                        <use id="base" fill="url(#linearGradient-1)" fill-rule="nonzero" xlink:href="#path-2"></use>
+                        <g id="Group-9" opacity="0.9" mask="url(#mask-3)" fill-rule="nonzero">
+                            <g transform="translate(6.336000, 5.400000)">
+                                <polygon id="Fill-1" fill="#A2BFE6" points="0 10.0708085 0 10.0705634 0 10.0708085 5.73132255 13.3797447 5.73132255 10.6279353 2.38365957 8.69478127 2.38365957 4.82896339 0 3.45293616"></polygon>
+                                <polygon id="Fill-2" fill="#D3E0F1" points="5.73129804 0.144 -2.45106383e-05 3.45293617 2.38363506 4.8289634 5.73129804 2.89605447"></polygon>
+                                <polygon id="Fill-3" fill="#FFFFFF" points="5.73129804 0.144 5.73129804 2.89605447 9.07896102 4.8289634 11.4626206 3.45293617"></polygon>
+                                <polygon id="Fill-4" fill="#779ED2" points="9.07905906 4.82901235 9.07905906 8.69483023 5.73139609 10.6277392 5.73139609 13.3797936 11.4627186 10.0708575 11.4624735 10.0708575 11.4627186 10.0708575 11.4627186 3.45298512"></polygon>
+                                <polygon id="Fill-6" fill="#779ED2" points="9.07915711 4.82901252 5.73124902 2.89585848 5.73124902 2.89610359 5.73124902 2.89634869 5.73124902 2.89610359 2.38358604 4.82876742 5.73124902 6.76192146 5.73124902 6.76167635 5.73124902 6.76192146"></polygon>
+                                <polygon id="Fill-5" fill="#FFFFFF" points="9.07915711 8.69470781 9.07915711 4.82913504 5.73149413 6.76179887"></polygon>
+                                <polygon id="Fill-8" fill="#D3E0F1" points="2.383488 4.8290124 2.383488 4.8290124 2.383488 8.69458517 5.73139609 6.76192134"></polygon>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -2,57 +2,57 @@
   <section class="history" :class="{ loading: loading }">
     <div class="history__header">
       <div class="history__header--text index">
-        <span @click="setSort('no')" :class="{ active: sort.column === 'no' }"
+        <span @click="setSort('NO')" :class="{ active: sort.column === 'NO' }"
           >No</span
         >
       </div>
       <div class="history__header--text collabo-name">
         <span
-          @click="setSort('title')"
-          :class="{ active: sort.column === 'title' }"
+          @click="setSort('TITLE')"
+          :class="{ active: sort.column === 'TITLE' }"
         >
           {{ $t('list.room_title') }}
         </span>
       </div>
       <div class="history__header--text leader-name">
         <span
-          :class="{ active: sort.column === 'leaderNickName' }"
-          @click="setSort('leaderNickName')"
+          :class="{ active: sort.column === 'LEADER_NICK_NAME' }"
+          @click="setSort('LEADER_NICK_NAME')"
           >{{ $t('list.room_leader') }}</span
         >
       </div>
-      <div class="history__header--text start-date">
+      <div class="history__header--text start-date hide-tablet">
         <span
-          @click="setSort('activeDate')"
-          :class="{ active: sort.column === 'activeDate' }"
+          @click="setSort('ACTIVE_DATE')"
+          :class="{ active: sort.column === 'ACTIVE_DATE' }"
           >{{ $t('list.room_active_date') }}</span
         >
       </div>
-      <div class="history__header--text state">
+      <div class="history__header--text state hide-tablet">
         <span
-          @click="setSort('status')"
-          :class="{ active: sort.column === 'status' }"
+          @click="setSort('STATUS')"
+          :class="{ active: sort.column === 'STATUS' }"
           >{{ $t('list.room_status') }}</span
         >
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('serverRecord')"
-          :class="{ active: sort.column === 'serverRecord' }"
+          @click="setSort('SERVER_RECORD_FILE_COUNT')"
+          :class="{ active: sort.column === 'SERVER_RECORD_FILE_COUNT' }"
           >{{ $t('list.room_server_record') }}</span
         >
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('localRecord')"
-          :class="{ active: sort.column === 'localRecord' }"
+          @click="setSort('LOCAL_RECORD_FILE_COUNT')"
+          :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
           >{{ $t('list.room_local_record') }}</span
         >
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('attach')"
-          :class="{ active: sort.column === 'attach' }"
+          @click="setSort('ATTACHED_FILE_COUNT')"
+          :class="{ active: sort.column === 'ATTACHED_FILE_COUNT' }"
           >{{ $t('list.room_attach_file') }}</span
         >
       </div>
@@ -66,8 +66,8 @@
           v-for="(history, index) in historys"
           :key="index"
           @click="showHistory(history.sessionId, history.status)"
-          @mouseover="hover = true"
-          @mouseleave="hover = false"
+          @mouseover="toggleHover(true, index)"
+          @mouseleave="toggleHover(false, index)"
         >
           <div class="history__text index">
             <p>{{ history.no }}</p>
@@ -80,10 +80,10 @@
               {{ history.leader.nickName }}
             </p>
           </div>
-          <div class="history__text start-date">
+          <div class="history__text start-date hide-tablet">
             {{ date(history.activeDate) }}
           </div>
-          <div class="history__text state">
+          <div class="history__text state hide-tablet">
             <collabo-status :status="history.status"> </collabo-status>
           </div>
           <div class="history__text count">
@@ -95,6 +95,7 @@
                 default: require('assets/image/ic_rec_default.svg'),
               }"
               @click="showFiles('server', history, index)"
+              :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
           <div class="history__text count">
@@ -106,6 +107,7 @@
                 default: require('assets/image/ic_video_default.svg'),
               }"
               @click="showFiles('local', history, index)"
+              :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
           <div class="history__text count">
@@ -117,6 +119,7 @@
                 default: require('assets/image/ic_file_default.svg'),
               }"
               @click="showFiles('attach', history, index)"
+              :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
         </div>
@@ -128,8 +131,8 @@
 
         <file-info
           type="server"
-          :width="'64.2857rem'"
-          :height="'50.4286rem'"
+          :width="'1053px'"
+          :height="'706px'"
           :title="historyTitle"
           :tableTitle="$t('file.server_record')"
           :fileList="fileList"
@@ -146,8 +149,8 @@
 
         <file-info
           type="local"
-          :width="'64.2857rem'"
-          :height="'50.4286rem'"
+          :width="'1053px'"
+          :height="'706px'"
           :title="historyTitle"
           :tableTitle="$t('file.local_record')"
           :fileList="fileList"
@@ -165,8 +168,8 @@
 
         <file-info
           type="attach"
-          :width="'64.2857rem'"
-          :height="'50.4286rem'"
+          :width="'1053px'"
+          :height="'706px'"
           :title="historyTitle"
           :tableTitle="$t('file.attach_file')"
           :fileList="fileList"
@@ -182,7 +185,10 @@
         >
         </file-info>
       </template>
-      <span v-else class="history__body--nodata">{{ $t('list.no_data') }}</span>
+      <span v-else class="history__body--nodata">
+        <img src="~assets/image/image_no_data.svg" alt="no data" />
+        <p>{{ $t('list.no_data') }}</p></span
+      >
     </div>
   </section>
 </template>
@@ -242,6 +248,8 @@ export default {
       fileList: [],
 
       hover: false,
+      hoverIndex: -1,
+
       sort: { column: '', direction: '' },
     }
   },
@@ -337,25 +345,29 @@ export default {
       // return
       if (this.sort.column === column) {
         if (this.sort.direction === '') {
-          this.sort.direction = 'asc'
-        } else if (this.sort.direction === 'asc') {
-          this.sort.direction = 'desc'
-        } else if (this.sort.direction === 'desc') {
+          this.sort.direction = 'ASC'
+        } else if (this.sort.direction === 'ASC') {
+          this.sort.direction = 'DESC'
+        } else if (this.sort.direction === 'DESC') {
           this.sort.direction = ''
           this.sort.column = ''
         }
       } else {
         this.sort.column = column
-        this.sort.direction = 'asc'
+        this.sort.direction = 'ASC'
       }
 
       this.setSearch({
         sort: {
-          column: this.sort.column === '' ? 'activeDate' : this.sort.column,
-          direction: this.sort.direction === '' ? 'desc' : this.sort.direction,
+          column: this.sort.column === '' ? 'ACTIVE_DATE' : this.sort.column,
+          direction: this.sort.direction === '' ? 'DESC' : this.sort.direction,
         },
       })
       this.$eventBus.$emit('reload::list')
+    },
+    toggleHover(hover, index) {
+      this.hover = hover
+      this.hoverIndex = index
     },
   },
 }
@@ -365,17 +377,26 @@ export default {
 .history {
   position: relative;
   width: 100%;
-  border: 1px solid #eaedf3;
-  box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 
 .history__body {
-  height: 32rem;
-  background-color: #ffffff;
+  min-height: 616px;
   &.nodata {
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 430px;
+    background: #ffffff;
+    border: 1px solid #e3e3e3;
+    border-radius: 10px;
+    box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
+
+    p {
+      color: #686868;
+      font-weight: normal;
+      font-size: 20px;
+      text-align: center;
+    }
   }
 }
 
@@ -404,9 +425,6 @@ export default {
   align-items: center;
   justify-content: center;
   height: 3.1429rem;
-  background-color: #ffffff;
-  border-bottom: 1px solid #eaedf3;
-  box-shadow: 0px 1px 0px 0px #eaedf3;
 }
 .history__header--text {
   color: #4a5361;
@@ -464,10 +482,18 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 4.5714rem;
-  box-shadow: 0px 1px 0px 0px #eaedf3;
+
+  height: 78px;
+  margin-bottom: 10px;
+  background: rgb(255, 255, 255);
+  border: 1px solid rgb(240, 240, 240);
+  border-radius: 4px;
+  box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+
   &:hover {
-    background-color: #f5f9ff;
+    background: rgb(245, 249, 255);
+    border: 1px solid #93c3ff;
     cursor: pointer;
   }
 }

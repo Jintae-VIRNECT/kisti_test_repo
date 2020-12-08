@@ -31,9 +31,14 @@ export default {
       type: String,
       default: null,
     },
+    disableSrc: String,
     active: {
       type: Boolean,
       default: true,
+    },
+    disable: {
+      type: Boolean,
+      default: false,
     },
     size: {
       type: [Number, String],
@@ -42,11 +47,15 @@ export default {
   },
   computed: {
     src() {
-      if (this.toggle) {
-        if (this.active) return this.activeSrc
-        else return this.inactiveSrc
+      if (this.disable) {
+        return this.disableSrc
       } else {
-        return this.activeSrc
+        if (this.toggle) {
+          if (this.active) return this.activeSrc
+          else return this.inactiveSrc
+        } else {
+          return this.activeSrc
+        }
       }
     },
   },

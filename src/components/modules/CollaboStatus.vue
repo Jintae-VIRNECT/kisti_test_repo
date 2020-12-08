@@ -58,7 +58,7 @@ export default {
   border-radius: 50%;
 
   &.progress {
-    background-color: #0f75f5;
+    background-color: #1dc98d;
   }
 }
 

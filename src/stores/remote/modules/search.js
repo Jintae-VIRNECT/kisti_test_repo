@@ -5,15 +5,15 @@ const state = {
     text: '',
     target: ['title', 'memberList[].nickName'],
   },
-  status: { status: 'all' },
+  status: { status: 'ALL' },
   useDate: { useDate: false },
   date: {
     from: null,
     to: null,
   },
   sort: {
-    column: 'activeDate',
-    direction: 'desc',
+    column: 'ACTIVE_DATE',
+    direction: 'DESC',
   },
 }
 

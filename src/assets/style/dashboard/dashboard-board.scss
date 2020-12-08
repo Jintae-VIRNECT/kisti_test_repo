@@ -1,11 +1,12 @@
 .board {
-  height: 39.1429rem;
+  // height: 39.1429rem;
   margin-top: 2.4286rem;
   margin-bottom: 4.6429rem;
 }
 
 .board__header {
   position: relative;
+  // display: flex;
   height: 4.8571rem;
   padding: 1.4286rem 0px 1.2143rem 1.4286rem;
   border-bottom: 1px solid #e3e3e3;
@@ -19,7 +20,7 @@
 }
 
 .board__header--description {
-  color: #7a7a7a;
+  color: #acacac;
   font-weight: normal;
   font-size: 1.0714rem;
 }
@@ -41,11 +42,27 @@
   }
 }
 
+// .board-figures {
+//   display: flex;
+//   gap: 0px 1.1429rem;
+//   height: 8.5714rem;
+//   margin-top: 1.2857rem;
+// }
+
 .board-figures {
-  display: flex;
-  gap: 0px 1.1429rem;
-  height: 8.5714rem;
+  display: grid;
+
+  // align-items: stretch;
+  // height: 8.5714rem;
   margin-top: 1.2857rem;
+  @include desktop {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 0px 1.1429rem;
+  }
+  @include tablet {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.1429rem 1.1429rem;
+  }
 }
 
 .custom-card-chart {
@@ -93,15 +110,15 @@
   height: 4.8571rem;
   padding-left: 2.1429rem;
 
-  & > .legend.round.grey {
+  & > .legend.double-circle.grey {
     &::before {
       border: 4px solid #bbc8d9;
     }
   }
 
-  & > .legend.square.grey {
+  & > .legend.circle.grey {
     &::before {
-      background-color: #bbc8d9;
+      background-color: #6ed6f1;
     }
   }
 }
@@ -196,5 +213,63 @@
     margin-right: 0.3571rem;
     margin-left: 0.3571rem;
     border-radius: 50%;
+  }
+}
+
+.chart-picker {
+  position: absolute;
+  top: 1rem;
+  right: 1.0714rem;
+
+  .vc-pane-container {
+    width: 20rem;
+    height: 21.6429rem;
+  }
+
+  .vc-grid-cell:nth-child(1) {
+    .vc-pane {
+      .vc-header {
+        border-radius: 8px 8px 0px 0px;
+      }
+    }
+  }
+  .collabo-search-bar__date {
+    display: flex;
+    width: 13.2143rem;
+    height: 2.8571rem;
+    border: 1px solid #e3e3e3;
+    border-radius: 6px;
+    transition: 0.3s;
+  }
+
+  .collabo-search-bar__date--input {
+    width: 8.7857rem;
+    height: 2.6429rem;
+    padding: 0px 0px 0px 1.4286rem;
+    color: #757f91;
+    font-weight: 500;
+    font-size: 1.1429rem;
+    font-family: Roboto;
+    border: none;
+    border-radius: 6px 0px 0px 6px;
+
+    &.active {
+      color: #0b1f48;
+    }
+  }
+  .collabo-search-bar__date--button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 2.7143rem;
+    background: rgb(255, 255, 255);
+    border-left: 1px solid #e3e3e3;
+    border-radius: 0px 6px 6px 0px;
+    transition: 0.3s;
+    > img {
+      width: 1.7143rem;
+      height: 1.7143rem;
+    }
   }
 }

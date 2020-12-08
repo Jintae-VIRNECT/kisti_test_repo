@@ -10,10 +10,10 @@ export default {}
 
 <style lang="scss">
 .footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  z-index: 999;
+  // position: fixed;
+  // bottom: 0;
+  // left: 0;
+  // z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;

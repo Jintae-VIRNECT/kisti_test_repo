@@ -1,16 +1,19 @@
 <template>
   <div class="dashboard-layout">
     <dash-board-header></dash-board-header>
-    <vue2-scrollbar classes="dashboard-wrapper">
-      <div class="dashboard-layout__contents">
-        <dash-board-tab
-          ref="tabSection"
-          @tabChange="tabChange"
-        ></dash-board-tab>
+    <vue2-scrollbar ref="dashboardScroller" classes="dashboard-wrapper">
+      <div>
+        <div class="dashboard-layout__contents offsetwidth">
+          <dash-board-tab
+            ref="tabSection"
+            @tabChange="tabChange"
+          ></dash-board-tab>
+        </div>
+        <dash-board-footer></dash-board-footer>
       </div>
     </vue2-scrollbar>
-    <dash-board-footer></dash-board-footer>
     <player :url="url" :visible.sync="showPlayer"></player>
+    <fab></fab>
   </div>
 </template>
 
@@ -24,6 +27,7 @@ import langMixin from 'mixins/language'
 import auth from 'utils/auth'
 
 import Player from 'components/dashboard/modal/ModalPlayer'
+import Fab from 'Fab'
 
 export default {
   name: 'DashBoardLayout',
@@ -56,6 +60,7 @@ export default {
     DashBoardFooter,
     DashBoardTab,
     Player,
+    Fab,
   },
 
   data() {
@@ -97,13 +102,18 @@ export default {
       this.showPlayer = true
       this.url = url
     },
+    scrollTop() {
+      this.$refs['dashboardScroller'].scrollToY(0)
+    },
   },
   mounted() {
     this.mx_changeLang()
     this.$eventBus.$on('open::player', this.openPlayer)
+    this.$eventBus.$on('scroll:reset:dashboard', this.scrollTop)
   },
   beforeDestroy() {
     this.$eventBus.$off('open::player')
+    this.$eventBus.$off('scroll:reset:dashboard')
   },
 }
 </script>
@@ -143,9 +153,22 @@ export default {
 
 .dashboard-layout__contents {
   position: relative;
-  min-width: $content_min_width;
-  margin: 4.8571rem 22.8571rem 0px 22.8571rem;
-  padding-bottom: 12.2143rem;
+  // min-width: $content_min_width;
+  margin: 0 22.8571rem 0px 22.8571rem;
+  padding-top: 4.8571rem;
   overflow: hidden;
+}
+
+.offsetwidth {
+  position: relative;
+  width: 100%;
+  max-width: 1280.0004px;
+  margin-right: auto;
+  margin-left: auto;
+
+  @include tablet {
+    padding-right: 2.8571rem;
+    padding-left: 2.8571rem;
+  }
 }
 </style>

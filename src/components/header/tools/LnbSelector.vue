@@ -80,9 +80,10 @@ export default {
 
 .header-lnb-selector.popover {
   // background-color: $color_bg_sub;
-  background-color: #ffffff;
-  border: solid 1px #e3e3e3;
+  background-color: #252525;
+  border: solid 1px #454545;
   border-radius: 0.286rem;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
   > .popover--body {
     padding: 0;
     > .vue-scrollbar__wrapper {
@@ -114,17 +115,15 @@ export default {
     &:hover {
       // color: rgba($color_text, 0.7);
       // background-color: rgba($color_bg_item, 0.7);
-      color: #0b1f48;
-      background-color: #eaedf3;
+      color: #fff;
+      background-color: #424242;
       // > .header-lnb-selector__check {
       //   border-color: rgba($color_text, 0.4);
       // }
     }
     &.active {
-      // color: $color_text;
-      color: #0b1f48;
-      // background-color: rgba($color_bg_item, 0.4);
-      background-color: #eaedf3;
+      color: #fff;
+      background-color: #424242;
       > .header-lnb-selector__check {
         border-color: $color_primary;
       }

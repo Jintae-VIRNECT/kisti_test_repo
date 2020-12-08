@@ -21,12 +21,12 @@
         <chart-legend
           @click="toggle(monthlyChart, 'my')"
           :text="$t('chart.my_collabo_list')"
-          shape="square"
+          shape="circle"
         ></chart-legend>
         <chart-legend
           @click="toggle(monthlyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
-          shape="square"
+          shape="circle"
           customClass="grey"
         ></chart-legend>
       </figcaption>
@@ -36,26 +36,32 @@
     </card>
     <div class="board-figures">
       <figure-board
+        :header="$t('chart.monthly_my_collabo_count')"
+        :my="true"
+        :count="monthly ? monthly.my.count : 0"
+        :imgSrc="require('assets/image/figure/ic_chart_monthly_count.svg')"
+        type="monthly"
+      ></figure-board>
+      <figure-board
+        :header="$t('chart.monthly_my_collabo_time')"
+        :my="true"
+        :time="monthly ? monthly.my.time : 0"
+        :imgSrc="require('assets/image/figure/ic_chart_monthly_time.svg')"
+        type="monthly"
+      ></figure-board>
+      <figure-board
         :header="$t('chart.monthly_total_collabo_count')"
         :count="monthly ? monthly.total.count : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
+        :imgSrc="
+          require('assets/image/figure/ic_chart_monthly_total_count.svg')
+        "
+        type="monthly"
       ></figure-board>
       <figure-board
         :header="$t('chart.monthly_total_collabo_time')"
         :time="monthly ? monthly.total.time : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_date_all.svg')"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.monthly_my_collabo_count')"
-        :onlyMe="true"
-        :count="monthly ? monthly.my.count : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_chart.svg')"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.monthly_my_collabo_time')"
-        :onlyMe="true"
-        :time="monthly ? monthly.my.time : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_date_time.svg')"
+        :imgSrc="require('assets/image/figure/ic_chart_monthly_total_time.svg')"
+        type="monthly"
       ></figure-board>
     </div>
   </section>
@@ -131,13 +137,13 @@ export default {
           {
             label: this.$t('chart.my_collabo_list'),
             data: this.monthly ? this.monthly.my.set : [],
-            backgroundColor: '#0f75f5',
+            backgroundColor: '#203cdd',
             barThickness: 9,
           },
           {
             label: this.$t('chart.total_collabo_list'),
             data: this.monthly ? this.monthly.total.set : [],
-            backgroundColor: '#bbc8d9',
+            backgroundColor: '#6ed6f1',
             barThickness: 9,
           },
         ],
