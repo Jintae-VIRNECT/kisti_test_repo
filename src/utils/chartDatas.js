@@ -37,16 +37,21 @@ export const getDays = date => {
   return days
 }
 
-export const getDailyData = async ({ workspaceId, userId, date }) => {
+export const getDailyData = async ({ workspaceId, userId, selectedDate }) => {
   const result = {
     total: {},
     my: {},
   }
 
-  date = dayjs(date).format('YYYY-MM-DD')
-  const time = new Date().getTimezoneOffset()
+  selectedDate = dayjs(selectedDate).format('YYYY-MM-DD')
+  const timeDifference = new Date().getTimezoneOffset()
 
-  let response = await getDailyCollabo({ workspaceId, userId, date, time })
+  let response = await getDailyCollabo({
+    workspaceId,
+    userId,
+    selectedDate,
+    timeDifference,
+  })
 
   result.total.time = response.entireDuration.reduce(sum, 0)
   result.total.count = response.entireHistory.reduce(sum, 0)
@@ -64,10 +69,15 @@ export const getMonthlyData = async ({ workspaceId, userId, date }) => {
     total: {},
     my: {},
   }
-  let month = dayjs(date).format('YYYY-MM')
+  let selectedMonth = dayjs(date).format('YYYY-MM')
 
-  const time = new Date().getTimezoneOffset()
-  let response = await getMonthlyCollabo({ workspaceId, userId, month, time })
+  const timeDifference = new Date().getTimezoneOffset()
+  let response = await getMonthlyCollabo({
+    workspaceId,
+    userId,
+    selectedMonth,
+    timeDifference,
+  })
 
   result.total.time = response.entireDuration.reduce(sum, 0)
   result.total.count = response.entireHistory.reduce(sum, 0)

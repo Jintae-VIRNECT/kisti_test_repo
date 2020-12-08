@@ -2,57 +2,57 @@
   <section class="history" :class="{ loading: loading }">
     <div class="history__header">
       <div class="history__header--text index">
-        <span @click="setSort('no')" :class="{ active: sort.column === 'no' }"
+        <span @click="setSort('NO')" :class="{ active: sort.column === 'NO' }"
           >No</span
         >
       </div>
       <div class="history__header--text collabo-name">
         <span
-          @click="setSort('title')"
-          :class="{ active: sort.column === 'title' }"
+          @click="setSort('TITLE')"
+          :class="{ active: sort.column === 'TITLE' }"
         >
           {{ $t('list.room_title') }}
         </span>
       </div>
       <div class="history__header--text leader-name">
         <span
-          :class="{ active: sort.column === 'leaderNickName' }"
-          @click="setSort('leaderNickName')"
+          :class="{ active: sort.column === 'LEADER_NICK_NAME' }"
+          @click="setSort('LEADER_NICK_NAME')"
           >{{ $t('list.room_leader') }}</span
         >
       </div>
       <div class="history__header--text start-date hide-tablet">
         <span
-          @click="setSort('activeDate')"
-          :class="{ active: sort.column === 'activeDate' }"
+          @click="setSort('ACTIVE_DATE')"
+          :class="{ active: sort.column === 'ACTIVE_DATE' }"
           >{{ $t('list.room_active_date') }}</span
         >
       </div>
       <div class="history__header--text state hide-tablet">
         <span
-          @click="setSort('status')"
-          :class="{ active: sort.column === 'status' }"
+          @click="setSort('STATUS')"
+          :class="{ active: sort.column === 'STATUS' }"
           >{{ $t('list.room_status') }}</span
         >
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('serverRecord')"
-          :class="{ active: sort.column === 'serverRecord' }"
+          @click="setSort('SERVER_RECORD_FILE_COUNT')"
+          :class="{ active: sort.column === 'SERVER_RECORD_FILE_COUNT' }"
           >{{ $t('list.room_server_record') }}</span
         >
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('localRecord')"
-          :class="{ active: sort.column === 'localRecord' }"
+          @click="setSort('LOCAL_RECORD_FILE_COUNT')"
+          :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
           >{{ $t('list.room_local_record') }}</span
         >
       </div>
       <div class="history__header--text count">
         <span
-          @click="setSort('attach')"
-          :class="{ active: sort.column === 'attach' }"
+          @click="setSort('ATTACHED_FILE_COUNT')"
+          :class="{ active: sort.column === 'ATTACHED_FILE_COUNT' }"
           >{{ $t('list.room_attach_file') }}</span
         >
       </div>
@@ -345,22 +345,22 @@ export default {
       // return
       if (this.sort.column === column) {
         if (this.sort.direction === '') {
-          this.sort.direction = 'asc'
-        } else if (this.sort.direction === 'asc') {
-          this.sort.direction = 'desc'
-        } else if (this.sort.direction === 'desc') {
+          this.sort.direction = 'ASC'
+        } else if (this.sort.direction === 'ASC') {
+          this.sort.direction = 'DESC'
+        } else if (this.sort.direction === 'DESC') {
           this.sort.direction = ''
           this.sort.column = ''
         }
       } else {
         this.sort.column = column
-        this.sort.direction = 'asc'
+        this.sort.direction = 'ASC'
       }
 
       this.setSearch({
         sort: {
-          column: this.sort.column === '' ? 'activeDate' : this.sort.column,
-          direction: this.sort.direction === '' ? 'desc' : this.sort.direction,
+          column: this.sort.column === '' ? 'ACTIVE_DATE' : this.sort.column,
+          direction: this.sort.direction === '' ? 'DESC' : this.sort.direction,
         },
       })
       this.$eventBus.$emit('reload::list')

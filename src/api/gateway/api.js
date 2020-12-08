@@ -10,7 +10,7 @@ export default {
   GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],
 
   /* HISTORY */
-  HISTORY_LIST: ['GET', '/remote/dashboard/my-history/{workspaceId}'],
+  HISTORY_LIST: ['GET', '/remote/dashboard/my-history/{workspaceId}/{userId}'],
   HISTORY_ITEM: ['GET', '/remote/dashboard/history/{workspaceId}/{sessionId}'],
   ALL_HISTORY_LIST: ['GET', '/remote/dashboard/history/{workspaceId}'],
 
@@ -59,11 +59,14 @@ export default {
   ],
 
   /** CHART */
-  DAILY_COLLABO: ['GET', '/remote/dashboard/history/count/date/{workspaceId}'],
+  DAILY_COLLABO: [
+    'GET',
+    '/remote/dashboard/history/count/date/{workspaceId}/{userId}',
+  ],
 
   MONTHLY_COLLABO: [
     'GET',
-    '/remote/dashboard/history/count/month/{workspaceId}',
+    '/remote/dashboard/history/count/month/{workspaceId}/{userId}',
   ],
 
   /* USER */

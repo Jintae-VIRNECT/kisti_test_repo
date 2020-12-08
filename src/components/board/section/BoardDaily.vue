@@ -215,6 +215,11 @@ export default {
   },
   mounted() {
     this.initChart()
+
+    this.setCalendar({
+      name: 'daily',
+      date: this.date,
+    })
   },
 }
 </script>

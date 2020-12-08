@@ -128,15 +128,15 @@ export default {
     searchOpts() {
       return [
         {
-          value: 'all',
+          value: 'ALL',
           text: this.$t('status.all'),
         },
         {
-          value: 'ing',
+          value: 'ONGOING',
           text: this.$t('status.progress'),
         },
         {
-          value: 'end',
+          value: 'END',
           text: this.$t('status.finished'),
         },
       ]
