@@ -19,13 +19,14 @@
         v-for="(headerCell, index) in headers"
         class="table__column--cell"
         :class="{
+          name: headers[index] === $t('file.name'),
           'hide-tablet': headers[index] === $t('file.record_member'),
+          recordtime: headers[index] === $t('file.record_time'),
         }"
         :key="index"
       >
         {{ headerCell }}
       </div>
-      <div v-if="showPlayButton" class="table__column--cell"></div>
     </div>
     <div class="table__body">
       <scroller height="31rem" v-if="datas.length > 0">
@@ -48,7 +49,9 @@
             v-for="(value, key, innerIndex) in data"
             class="table__cell"
             :class="{
-              name: columns[innerIndex][0] === 'name',
+              name:
+                columns[innerIndex][0] === 'name' ||
+                columns[innerIndex][0] === 'filename',
               size: columns[innerIndex][0] === 'size',
               'hide-tablet': columns[innerIndex][0] === 'fileUserInfo',
             }"
