@@ -162,8 +162,13 @@ export default {
 .offsetwidth {
   position: relative;
   width: 100%;
-  max-width: 67%;
+  max-width: 1280.0004px;
   margin-right: auto;
   margin-left: auto;
+
+  @include tablet {
+    padding-right: 2.8571rem;
+    padding-left: 2.8571rem;
+  }
 }
 </style>

@@ -16,8 +16,11 @@
         ></toggle-button>
       </div>
       <div
-        class="table__column--cell"
         v-for="(headerCell, index) in headers"
+        class="table__column--cell"
+        :class="{
+          'hide-tablet': headers[index] === $t('file.record_member'),
+        }"
         :key="index"
       >
         {{ headerCell }}
@@ -47,6 +50,7 @@
             :class="{
               name: columns[innerIndex][0] === 'name',
               size: columns[innerIndex][0] === 'size',
+              'hide-tablet': columns[innerIndex][0] === 'fileUserInfo',
             }"
             :key="innerIndex"
           >
@@ -81,6 +85,7 @@
               'expiration-date': key === 'expirationDate',
               name: columns[innerIndex][0] === 'name',
               size: columns[innerIndex][0] === 'size',
+              'hide-tablet': columns[innerIndex][0] === 'fileUserInfo',
             }"
             :key="innerIndex + workspace.uuid"
           >
@@ -322,8 +327,9 @@ export default {
 .table__row {
   display: flex;
   align-items: center;
-  width: 954px;
-  height: 62px;
+  width: 100%;
+  // width: 68.1429rem;
+  height: 4.4286rem;
   margin-bottom: 8px;
   background: #ffffff;
   border: 1px solid #ffffff;

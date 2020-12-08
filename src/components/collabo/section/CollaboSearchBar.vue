@@ -242,18 +242,72 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
+@import '~assets/style/mixin';
 .collabo-search-bar {
   margin-top: 3rem;
+  .collabo-search-bar__date {
+    display: flex;
+    width: 25.2143rem;
+    height: 3.4286rem;
+    border: 1px solid rgb(186, 194, 204);
+    border-radius: 6px;
+    transition: 0.3s;
+    &:hover,
+    &:focus {
+      border: 1px solid rgb(15, 117, 245);
+      > .collabo-search-bar__date--buton {
+        border-left: 1px solid rgb(15, 117, 245);
+      }
+    }
+    @include tablet {
+      width: 18.7857rem;
+    }
+  }
+
+  .collabo-search-bar__date--input {
+    width: 100%;
+    height: 100%;
+    padding: 0px 0px 0px 1.0357rem;
+    color: rgb(11, 31, 72);
+    font-weight: 500;
+    font-size: 1.0714rem;
+    border: none;
+    border-radius: 6px 0px 0px 6px;
+  }
+
+  .collabo-search-bar__date--button {
+    min-width: 3.4286rem;
+    // height: 3.2857rem;
+    background: rgb(255, 255, 255);
+    border-left: 1px solid rgb(186, 194, 204);
+    border-radius: 0px 6px 6px 0px;
+    transition: 0.3s;
+    &:hover,
+    &:focus {
+      border-left: 1px solid rgb(15, 117, 245);
+    }
+    > img {
+      width: 1.7143rem;
+      height: 1.7143rem;
+    }
+  }
+
+  .vc-pane-container {
+    width: 42.8571rem;
+    height: 22.3571rem;
+  }
 }
 
 .collabo-search-bar__wrapper {
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
-  height: 156px;
+  // justify-content: space-evenly;
+  justify-content: center;
+  height: 11.1429rem;
+  padding: 0rem 3.5rem 0rem 3.5714rem;
   background: rgb(226, 235, 250);
-  border: 1px solid rgb(49, 139, 255);
+  border: 1px solid rgb(120, 124, 128);
   border-radius: 10px;
   box-shadow: 0px 16px 12px 0px rgba(0, 113, 255, 0.05);
 }
@@ -262,28 +316,28 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-
+  padding-right: 1rem;
   &.padding {
     padding-bottom: 0.3571rem;
   }
 
   .datepicker {
-    width: 353px;
-    height: 48px;
+    width: 25.2143rem;
+    height: 3.4286rem;
 
     .vdp-datepicker {
-      width: 305px;
+      width: 21.7857rem;
     }
 
     .vdp-datepicker--input {
-      width: 305px;
-      height: 48.0004px;
+      width: 21.7857rem;
+      height: 3.4286rem;
       border: 1px solid #c2c6ce;
     }
   }
 
   .calendar-button {
-    height: 48.0004px;
+    height: 3.4286rem;
     border: 1px solid #c2c6ce;
   }
 
@@ -293,16 +347,16 @@ export default {
 
     padding: 0;
     > .checkbox-toggle {
-      width: 18px;
-      height: 18px;
+      width: 1.2857rem;
+      height: 1.2857rem;
 
       &.toggle {
         &:after {
           position: absolute;
-          top: 4.002px;
-          left: 3.002px;
-          width: 8px;
-          height: 3px;
+          top: 0.2859rem;
+          left: 0.2144rem;
+          width: 0.5714rem;
+          height: 0.2143rem;
           border-bottom: solid 2px #ffffff;
           border-left: solid 2px #ffffff;
           transform: rotate(-45deg);
@@ -311,46 +365,49 @@ export default {
       }
     }
     > .checkbox-text {
-      margin-left: 8px;
+      margin-left: 0.5714rem;
       color: rgb(67, 75, 88);
       font-weight: 500;
-      font-size: 12px;
+      font-size: 0.8571rem;
       opacity: 0.7;
     }
   }
 }
 
 .collabo-search-bar--input {
-  width: 492px;
-  height: 46px;
+  width: 33.8571rem;
+  height: 3.2857rem;
   padding: 0 0 0 1.1429rem;
   color: #0b1f48;
   font-weight: 500;
-  font-size: 15px;
+  font-size: 1.0714rem;
   letter-spacing: 0px;
   background: #ffffff;
   border: 1px solid #c2c6ce;
   border-radius: 6px;
   outline: none;
+  transition: 0.3s;
   &:hover,
   &:focus {
     border: 1px solid rgb(15, 117, 245);
   }
-  transition: 0.3s;
 
   &::placeholder {
     // padding-left: 1.1429rem;
     color: #bac2cc;
     font-weight: 500;
-    font-size: 15px;
+    font-size: 1.0714rem;
+  }
+  @include tablet {
+    width: 18.9286rem;
   }
 }
 
 .collabo-search-bar__status--list.popover--wrapper {
   > .select-label {
-    width: 154px;
+    width: 11rem;
     min-width: 10.1429rem;
-    height: 48px;
+    height: 3.4286rem;
     color: rgb(11, 31, 72);
     background: rgb(255, 255, 255);
     border: 1px solid rgb(186, 194, 204);
@@ -365,10 +422,10 @@ export default {
 
 .collabo-search-bar--label {
   width: 100%;
-  margin-bottom: 11px;
+  margin-bottom: 0.7857rem;
   color: #0b1f48;
   font-weight: 500;
-  font-size: 15.0006px;
+  font-size: 1.0715rem;
   text-align: left;
   opacity: 0.9;
 }
@@ -377,17 +434,17 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  margin-bottom: 11px;
+  margin-bottom: 0.7857rem;
   > .collabo-search-bar--label {
-    width: 59px;
+    width: 4.2143rem;
     margin: 0;
   }
 }
 
 .collabo-search-bar--submit {
-  width: 140px;
-  height: 48px;
-  margin-top: 35px;
+  width: 10rem;
+  height: 3.4286rem;
+  margin-top: 2.5rem;
   font-weight: 500;
   font-size: 1.0714rem;
   background: rgb(10, 90, 191);
@@ -396,58 +453,17 @@ export default {
   &:hover {
     background: #0f75f5;
   }
+
+  @include tablet {
+    width: 8.5714rem;
+  }
 }
 
 .collabo-search-bar__condition--divider {
   width: 1px;
-  height: 16px;
-  margin: 0px 12.5px;
+  height: 1.1429rem;
+  margin: 0px 0.8929rem;
   background: rgb(32, 51, 89);
   opacity: 0.2;
-}
-
-.collabo-search-bar__date {
-  display: flex;
-  width: 353px;
-  height: 48px;
-  border: 1px solid rgb(186, 194, 204);
-  border-radius: 6px;
-  &:hover,
-  &:focus {
-    border: 1px solid rgb(15, 117, 245);
-    > .collabo-search-bar__date--buton {
-      border-left: 1px solid rgb(15, 117, 245);
-    }
-  }
-  transition: 0.3s;
-}
-
-.collabo-search-bar__date--input {
-  width: 100%;
-  height: 100%;
-  padding: 0px 0px 0px 14.5px;
-  color: rgb(11, 31, 72);
-  font-weight: 500;
-  font-size: 1.0714rem;
-  border: none;
-  border-radius: 6px 0px 0px 6px;
-}
-
-.collabo-search-bar__date--button {
-  min-width: 3.4286rem;
-  height: 3.2857rem;
-  background: rgb(255, 255, 255);
-  border-left: 1px solid rgb(186, 194, 204);
-  border-radius: 0px 6px 6px 0px;
-  transition: 0.3s;
-  &:hover,
-  &:focus {
-    border-left: 1px solid rgb(15, 117, 245);
-  }
-}
-
-.vc-pane-container {
-  width: 600px;
-  height: 313px;
 }
 </style>

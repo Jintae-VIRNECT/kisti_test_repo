@@ -1,5 +1,5 @@
 <template>
-  <button class="fab" @click="toggleScroll">
+  <button class="fab hide-tablet" @click="toggleScroll">
     <img src="~assets/image/ic_arrow_up.svg" alt="arrow" />
   </button>
 </template>

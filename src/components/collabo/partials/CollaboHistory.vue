@@ -21,14 +21,14 @@
           >{{ $t('list.room_leader') }}</span
         >
       </div>
-      <div class="history__header--text start-date">
+      <div class="history__header--text start-date hide-tablet">
         <span
           @click="setSort('activeDate')"
           :class="{ active: sort.column === 'activeDate' }"
           >{{ $t('list.room_active_date') }}</span
         >
       </div>
-      <div class="history__header--text state">
+      <div class="history__header--text state hide-tablet">
         <span
           @click="setSort('status')"
           :class="{ active: sort.column === 'status' }"
@@ -80,10 +80,10 @@
               {{ history.leader.nickName }}
             </p>
           </div>
-          <div class="history__text start-date">
+          <div class="history__text start-date hide-tablet">
             {{ date(history.activeDate) }}
           </div>
-          <div class="history__text state">
+          <div class="history__text state hide-tablet">
             <collabo-status :status="history.status"> </collabo-status>
           </div>
           <div class="history__text count">
