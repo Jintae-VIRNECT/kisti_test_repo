@@ -28,6 +28,7 @@
           :masks="masks"
           :columns="$screens({ default: 2, lg: 2 })"
           :popover="{ visibility: 'click' }"
+          :locale="currentLanguage"
           @popoverWillShow="toggleCalendarBtn"
           @popoverWillHide="toggleCalendarBtn"
         >
@@ -87,10 +88,11 @@
 import CheckBox from 'CheckBox'
 import DSelect from 'DashBoardSelect'
 import confirmMixin from 'mixins/confirm'
+import langMixin from 'mixins/language'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'CollaboSearchBar',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, langMixin],
   components: {
     CheckBox,
     DSelect,
@@ -117,6 +119,7 @@ export default {
       masks: {
         input: 'YYYY-MM-DD',
         title: 'YYYY-MM',
+        weekdays: 'WWW',
       },
 
       calendarBtn: false,
@@ -237,6 +240,16 @@ export default {
 
   mounted() {
     window.addEventListener('keypress', this.doSearch)
+
+    let to = new Date()
+    let from = new Date()
+    from.setDate(from.getDate() - 7)
+    this.setSearch({
+      date: {
+        from: from,
+        to: to,
+      },
+    })
   },
   beforeDestroy() {
     this.resetCondition()

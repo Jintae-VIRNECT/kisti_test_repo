@@ -20,6 +20,7 @@
           v-model="date"
           :masks="masks"
           :popover="{ visibility: 'click' }"
+          :locale="currentLanguage"
           @popoverWillShow="toggleCalendarBtn"
           @popoverWillHide="toggleCalendarBtn"
         >
@@ -103,18 +104,17 @@
 
 <script>
 import Card from 'Card'
-// import Datepicker from 'Datepicker'
 import Chart from 'chart.js'
 import ChartLegend from 'Legend'
 import FigureBoard from 'FigureBoard'
 
 import { hourLabels } from 'utils/chartDatas'
 import chartMixin from 'mixins/chart'
-
+import langMixin from 'mixins/language'
 import { mapActions } from 'vuex'
 export default {
   name: 'BoardDaily',
-  mixins: [chartMixin],
+  mixins: [chartMixin, langMixin],
   components: {
     Card,
     ChartLegend,
@@ -141,6 +141,7 @@ export default {
       masks: {
         input: 'YYYY-MM-DD',
         title: 'YYYY-MM',
+        weekdays: 'WWW',
       },
       calendarVisible: false,
     }
