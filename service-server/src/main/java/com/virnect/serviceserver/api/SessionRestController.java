@@ -313,9 +313,9 @@ public class SessionRestController implements ISessionRestAPI {
 
         ApiResponse<RoomInfoListResponse> apiResponse;
         if(paging) {
-            apiResponse = this.sessionDataRepository.loadRoomPageList(workspaceId, userId, pageRequest.of());
+            apiResponse = this.sessionDataRepository.loadRoomPageList(workspaceId, userId, pageRequest.ofSortBy());
         } else {
-            apiResponse = this.sessionDataRepository.loadRoomList(workspaceId, userId, pageRequest.of());
+            apiResponse = this.sessionDataRepository.loadRoomList(workspaceId, userId, pageRequest.ofSortBy());
         }
         return ResponseEntity.ok(apiResponse);
     }
