@@ -22,6 +22,8 @@ public interface IFileManagementService {
     List<String> FILE_DOCUMENT_ALLOW_EXTENSION = Arrays.asList("doc", "ppt", "xls", "dot", "docx", "xlsx", "pptx", "pdf");
     List<String> FILE_VIDEO_ALLOW_EXTENSION = Arrays.asList("mp4", "webm");
 
+    void loadStoragePolicy();
+
     /**
      * File Upload
      *

@@ -1,22 +1,20 @@
 package com.virnect.serviceserver.data;
 
 import com.virnect.data.dao.Room;
+import com.virnect.file.FileType;
 import com.virnect.file.dao.File;
 import com.virnect.file.dao.RecordFile;
-import com.virnect.serviceserver.model.UploadResult;
 import com.virnect.service.ApiResponse;
 import com.virnect.service.dto.PageMetadataResponse;
 import com.virnect.service.dto.ResultResponse;
 import com.virnect.service.dto.feign.UserInfoResponse;
-import com.virnect.file.FileType;
-import com.virnect.serviceserver.infra.file.IFileManagementService;
 import com.virnect.service.dto.file.request.FileUploadRequest;
 import com.virnect.service.dto.file.request.RecordFileUploadRequest;
 import com.virnect.service.dto.file.request.RoomProfileUpdateRequest;
 import com.virnect.service.dto.file.response.*;
 import com.virnect.service.error.ErrorCode;
-
-import io.minio.messages.DeleteObject;
+import com.virnect.serviceserver.infra.file.IFileManagementService;
+import com.virnect.serviceserver.model.UploadResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

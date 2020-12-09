@@ -75,7 +75,6 @@ public class HistoryDataRepository extends DataRepository {
 
                 List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
                 for (MemberHistory memberHistory : memberHistoryPage.getContent()) {
-                    log.info("roomHistory::after " + memberHistory.getSessionId());
                     RoomHistory roomHistory = memberHistory.getRoomHistory();
                     RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
                     roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());

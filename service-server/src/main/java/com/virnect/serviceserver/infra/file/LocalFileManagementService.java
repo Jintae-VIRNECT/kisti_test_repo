@@ -5,27 +5,22 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 import com.google.gson.JsonObject;
-import com.virnect.serviceserver.model.UploadResult;
-import com.virnect.service.error.ErrorCode;
-import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.file.FileType;
+import com.virnect.service.error.ErrorCode;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.model.UploadResult;
 import com.virnect.serviceserver.utils.JsonUtil;
 import com.virnect.serviceserver.utils.LogMessage;
 import io.minio.*;
-import io.minio.errors.*;
-import io.minio.http.Method;
-import io.minio.messages.*;
-import lombok.extern.slf4j.Slf4j;
+import io.minio.errors.MinioException;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
 import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -46,13 +41,10 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 
 @Profile({"local", "onpremise", "develop"})
-@Slf4j
 @Component
 public class LocalFileManagementService implements IFileManagementService {
 
@@ -75,10 +67,9 @@ public class LocalFileManagementService implements IFileManagementService {
         this.remoteServiceConfig = remoteServiceConfig;
     }
 
-    private List<String> fileAllowExtensionList = null;
-
     private MinioClient minioClient = null;
 
+    private List<String> fileAllowExtensionList = null;
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/virnect-remote/";
     final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
 
@@ -191,7 +182,8 @@ public class LocalFileManagementService implements IFileManagementService {
         return getClass().getClassLoader().getResourceAsStream(fileName);
     }
 
-    private void loadStoragePolicy() {
+    @Override
+    public void loadStoragePolicy() {
         try {
             this.policyEnabled = this.remoteServiceConfig.remoteStorageProperties.isPolicyEnabled();
             this.policyLifeCycleEnabled = this.remoteServiceConfig.remoteStorageProperties.getPolicyLifeCycle() > 0;
@@ -208,7 +200,7 @@ public class LocalFileManagementService implements IFileManagementService {
                     );
 
                     InputStream inputStream = getFileFromResourceAsStream("policy/storagePolicy.json");
-                    if(inputStream == null) {
+                    if (inputStream == null) {
                         LogMessage.formedInfo(
                                 TAG,
                                 "initialise local file service",
@@ -355,17 +347,47 @@ public class LocalFileManagementService implements IFileManagementService {
                 }
 
             } catch (ConnectException e) {
-                log.info("Bucket ConnectException error occurred:: {}", e.getMessage());
+                LogMessage.formedError(
+                        TAG,
+                        "initialise local file service",
+                        "init",
+                        "Bucket ConnectException error occurred",
+                        e.getMessage()
+                );
                 this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
             } catch (MinioException e) {
-                log.info("Bucket error occured:: {}", e.getMessage());
+                LogMessage.formedError(
+                        TAG,
+                        "initialise local file service",
+                        "init",
+                        "Bucket error occurred",
+                        e.getMessage()
+                );
             } catch (KeyManagementException e) {
-                log.info("KeyManagementException error occurred:: {}", e.getMessage());
+                LogMessage.formedError(
+                        TAG,
+                        "initialise local file service",
+                        "init",
+                        "KeyManagementException error occurred",
+                        e.getMessage()
+                );
             } catch (IOException e) {
-                log.info("IOException error occurred:: {}", e.getMessage());
+                LogMessage.formedError(
+                        TAG,
+                        "initialise local file service",
+                        "init",
+                        "IOException error occurred",
+                        e.getMessage()
+                );
             }
         } else {
-            log.info("Remote storage service is disabled");
+            LogMessage.formedInfo(
+                    TAG,
+                    "initialise local file service",
+                    "init",
+                    "Remote storage service is disabled",
+                    ""
+            );
         }
     }
 
@@ -649,18 +671,36 @@ public class LocalFileManagementService implements IFileManagementService {
     @Override
     public void deleteProfile(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         if (DEFAULT_ROOM_PROFILE.equals(objectPathToName)) {
-            log.info("PROFILE REMOVE::#deleteProfile::do not delete default profile name");
+            LogMessage.formedInfo(
+                    TAG,
+                    "profile image delete",
+                    "deleteProfile",
+                    "do not delete default profile name",
+                    objectPathToName
+            );
         } else {
             boolean result;
             String objectName = objectPathToName.replaceAll(HOST_REGEX, "").replace("\\", "/");
             result = removeObject(objectName);
-            log.info("PROFILE REMOVE::#deleteProfile::for not using anymore::boolean => [{}, {}]", objectName, result);
+            LogMessage.formedInfo(
+                    TAG,
+                    "profile image delete",
+                    "deleteProfile",
+                    "for not using profile image anymore",
+                    objectName + "::" + result
+            );
         }
     }
 
     public void removeBucket(String bucketName, String dirPath, List<String> objects, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         if(this.policyLifeCycleEnabled) {
-            log.info("file REMOVE::#removeBucket::do not delete object");
+            LogMessage.formedInfo(
+                    TAG,
+                    "delete bucket objects",
+                    "removeBucket",
+                    "not support delete object",
+                    "life cycle is " + this.policyLifeCycleEnabled
+            );
         } else {
             try {
                 String targetBucket = bucketName != null ? bucketName : this.bucketName;
@@ -673,10 +713,12 @@ public class LocalFileManagementService implements IFileManagementService {
                         targetBucket = this.recordBucketName;
                         break;
                 }
-                log.info("file removeBucket::#removeBucket::{}, {}, {}",
-                        targetBucket,
-                        targetDir,
-                        dirPath + targetDir
+                LogMessage.formedInfo(
+                        TAG,
+                        "delete bucket objects",
+                        "removeBucket",
+                        "invoked bucket info",
+                        targetBucket + "::" + targetDir + "::" + dirPath + targetDir
                 );
 
                 List<DeleteObject> deleteObjects = new LinkedList<>();
@@ -693,8 +735,13 @@ public class LocalFileManagementService implements IFileManagementService {
 
                 for (Result<DeleteError> result : results) {
                     DeleteError error = result.get();
-                    System.out.println(
-                            "Error in deleting object " + error.objectName() + "; " + error.message());
+                    LogMessage.formedError(
+                            TAG,
+                            "delete bucket objects",
+                            "removeBucket",
+                            "error delete object",
+                            error.objectName() + "::" + error.message()
+                    );
                 }
             } catch (MinioException e) {
                 e.printStackTrace();
@@ -713,7 +760,7 @@ public class LocalFileManagementService implements IFileManagementService {
             fos.write(image);
             // 4. 파일 경로 추출
             String filePath = String.format("%s", convertImage.getPath()).replace("\\", "/");
-            log.info("SAVE FILE_URL: {}", filePath);
+            //log.info("SAVE FILE_URL: {}", filePath);
             return filePath;
         } catch (Exception e) {
             e.printStackTrace();
@@ -745,7 +792,13 @@ public class LocalFileManagementService implements IFileManagementService {
                                     .build()
                     );*/
                     url = minioClient.getObjectUrl(bucketName, objectPath.toString());
-                    log.info("DOWNLOAD FILE::#filePreSignedUrl::file result::[{}]", url);
+                    LogMessage.formedInfo(
+                            TAG,
+                            "download file url",
+                            "filePreSignedUrl",
+                            "file url result",
+                            url
+                    );
                     break;
                 }
 
@@ -759,13 +812,25 @@ public class LocalFileManagementService implements IFileManagementService {
                                     .expiry(1, TimeUnit.DAYS)
                                     .build());*/
                     url = minioClient.getObjectUrl(bucketName, objectPath.toString());
-                    log.info("DOWNLOAD FILE::#filePreSignedUrl::record result::[{}]", url);
+                    LogMessage.formedInfo(
+                            TAG,
+                            "download file url",
+                            "filePreSignedUrl",
+                            "record url result",
+                            url
+                    );
                     break;
                 }
             }
             return url;
         } catch (MinioException e) {
-            log.info("Download error occurred:: {}", e.getMessage());
+            LogMessage.formedError(
+                    TAG,
+                    "download file url",
+                    "filePreSignedUrl",
+                    "download error occurred",
+                    e.getMessage()
+            );
             return null;
         }
     }
