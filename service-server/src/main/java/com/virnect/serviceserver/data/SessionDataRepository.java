@@ -39,6 +39,38 @@ public class SessionDataRepository extends DataRepository {
 
     private final ObjectMapper objectMapper;
 
+    private CoturnResponse setCoturnResponse(SessionType sessionType) {
+        CoturnResponse coturnResponse = new CoturnResponse();
+        switch (sessionType) {
+            case OPEN: {
+                List<String> urlList = config.remoteServiceProperties.getCoturnUrisStreaming();
+                if(urlList.isEmpty()) {
+                    for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+                        coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                        coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                        coturnResponse.setUrl(coturnUrl);
+                    }
+                } else {
+                    for (String coturnUrl : urlList) {
+                        coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                        coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                        coturnResponse.setUrl(coturnUrl);
+                    }
+                }
+            } break;
+            case PUBLIC:
+            case PRIVATE: {
+                for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+                    coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+                    coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+                    coturnResponse.setUrl(coturnUrl);
+                }
+            }
+            break;
+        }
+        return coturnResponse;
+    }
+
     public DataProcess<PushResponse> sendSessionCreate(String sessionId) {
         return new RepoDecoder<Room, PushResponse>(RepoDecoderType.READ) {
             UserInfoResponse userInfoResponse;
@@ -216,23 +248,10 @@ public class SessionDataRepository extends DataRepository {
                     roomResponse.setSessionId(sessionResponse.getId());
                     roomResponse.setToken(sessionTokenResponse.getToken());
                     roomResponse.setWss(ServiceServerApplication.wssUrl);
-                    if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
-                            CoturnResponse coturnResponse = new CoturnResponse();
-                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                            coturnResponse.setUrl(coturnUrl);
-                            roomResponse.getCoturn().add(coturnResponse);
-                        }
-                    } else {
-                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-                            CoturnResponse coturnResponse = new CoturnResponse();
-                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                            coturnResponse.setUrl(coturnUrl);
-                            roomResponse.getCoturn().add(coturnResponse);
-                        }
-                    }
+
+                    CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+                    roomResponse.getCoturn().add(coturnResponse);
+
                     return new DataProcess<>(roomResponse);
                 } else {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
@@ -358,23 +377,9 @@ public class SessionDataRepository extends DataRepository {
                         roomResponse.setSessionId(sessionResponse.getId());
                         roomResponse.setToken(sessionTokenResponse.getToken());
                         roomResponse.setWss(ServiceServerApplication.wssUrl);
-                        if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-                            for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
-                                CoturnResponse coturnResponse = new CoturnResponse();
-                                coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                                coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                                coturnResponse.setUrl(coturnUrl);
-                                roomResponse.getCoturn().add(coturnResponse);
-                            }
-                        } else {
-                            for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-                                CoturnResponse coturnResponse = new CoturnResponse();
-                                coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                                coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                                coturnResponse.setUrl(coturnUrl);
-                                roomResponse.getCoturn().add(coturnResponse);
-                            }
-                        }
+
+                        CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+                        roomResponse.getCoturn().add(coturnResponse);
                         return new DataProcess<>(roomResponse);
                     } else {
                         return new DataProcess<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
@@ -1038,23 +1043,9 @@ public class SessionDataRepository extends DataRepository {
                     roomResponse.setToken(sessionTokenResponse.getToken());
                     roomResponse.setWss(ServiceServerApplication.wssUrl);
 
-                    if(sessionType.equals(SessionType.OPEN)) {
-                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisSteaming()) {
-                            CoturnResponse coturnResponse = new CoturnResponse();
-                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                            coturnResponse.setUrl(coturnUrl);
-                            roomResponse.getCoturn().add(coturnResponse);
-                        }
-                    } else {
-                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-                            CoturnResponse coturnResponse = new CoturnResponse();
-                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                            coturnResponse.setUrl(coturnUrl);
-                            roomResponse.getCoturn().add(coturnResponse);
-                        }
-                    }
+                    CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+                    roomResponse.getCoturn().add(coturnResponse);
+
                     return new DataProcess<>(roomResponse);
                 } else {
                     return new DataProcess<>(new RoomResponse(), errorCode);
