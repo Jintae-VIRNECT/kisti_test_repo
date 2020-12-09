@@ -495,6 +495,7 @@ export default {
   height: 2rem;
   margin: 0.1143rem auto;
   /* font-weight: var(--font-medium); */
+  color: #545454;
   font-weight: 500;
   font-size: var(--text-sm);
   border-radius: var(--rounded-full);
