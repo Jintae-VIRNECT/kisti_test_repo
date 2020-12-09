@@ -21,8 +21,4 @@ public interface FileRepository extends JpaRepository<File, Long> {
     Page<File> findByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId, Pageable pageable);
 
     Page<File> findByWorkspaceIdAndSessionIdAndDeletedIsTrue(final String workspaceId, final String sessionId, Pageable pageable);
-
-    //@Query("select f from File f where f.deleted is true")
-    Page<File> findByDeletedIsFalse();
-
 }
