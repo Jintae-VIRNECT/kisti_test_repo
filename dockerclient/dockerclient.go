@@ -35,7 +35,8 @@ type ContainerParam struct {
 }
 
 var (
-	ErrContainerAlreadyExists = docker.ErrContainerAlreadyExists
+	ErrContainerAlreadyExists = errors.New("Container Already Exists Error")
+	ErrContainerNoSuchImage   = errors.New("Container No Such Image Error")
 	ErrContainerInternal      = errors.New("Container Internal Error")
 )
 
@@ -71,6 +72,16 @@ func Init() {
 		panic(e)
 	}
 	go garbageCollector(ctx)
+	go monitoringRecordingImage(ctx)
+}
+
+func monitoringRecordingImage(ctx context.Context) {
+	period := time.Duration(10) * time.Second
+	ticker := time.NewTicker(period)
+	defer ticker.Stop()
+	for range ticker.C {
+		DownloadDockerImage(ctx)
+	}
 }
 
 func garbageCollector(ctx context.Context) {
@@ -160,7 +171,6 @@ func DownloadDockerImage(ctx context.Context) error {
 	imageName := viper.GetString("record.dockerImage")
 	image, err := cli.InspectImage(imageName)
 	if image != nil {
-		log.Info("already exist image:", imageName)
 		return nil
 	}
 
@@ -173,6 +183,7 @@ func DownloadDockerImage(ctx context.Context) error {
 		log.Error("PullImage:", err)
 		return ErrContainerInternal
 	}
+	logger.Info("Complete Downloading docker image:", imageName)
 
 	return nil
 }
@@ -245,9 +256,6 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 		},
 	}
 
-	// dev 서버에서는 build 후에 prune을 하고 있어 recording image가 삭제되어 있을 수 있다.
-	DownloadDockerImage(ctx)
-
 	createOpt.HostConfig = &docker.HostConfig{
 		Binds: []string{viper.GetString("record.dirOnHost") + ":" + viper.GetString("record.dirOnDocker")},
 	}
@@ -256,6 +264,8 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 		log.Error("CreateContainer:", err)
 		if err == docker.ErrContainerAlreadyExists {
 			return "", ErrContainerAlreadyExists
+		} else if err == docker.ErrNoSuchImage {
+			return "", ErrContainerNoSuchImage
 		}
 		return "", ErrContainerInternal
 	}
