@@ -29,7 +29,7 @@ export default {
             this.$t('file.name'),
             this.$t('file.record_time'),
             this.$t('file.size'),
-            this.$t('녹화 재생'),
+            this.$t('file.play'),
           ]
           break
         case 'local':
@@ -38,7 +38,7 @@ export default {
             this.$t('file.record_time'),
             this.$t('file.size'),
             this.$t('file.record_member'),
-            this.$t('녹화 재생'),
+            this.$t('file.play'),
           ]
           break
         default:

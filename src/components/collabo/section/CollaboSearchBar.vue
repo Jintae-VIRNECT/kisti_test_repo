@@ -18,9 +18,14 @@
 
       <div class="collabo-search-bar__condition">
         <div class="collabo-search-bar__condition--header">
-          <label class="collabo-search-bar--label">기간 선택</label>
+          <label class="collabo-search-bar--label">{{
+            $t('search.select_period')
+          }}</label>
           <div class="collabo-search-bar__condition--divider"></div>
-          <check-box :text="'검색 사용'" :value.sync="useDate"></check-box>
+          <check-box
+            :text="$t('search.enable_search')"
+            :value.sync="useDate"
+          ></check-box>
         </div>
         <v-date-picker
           v-model="range"
@@ -452,7 +457,9 @@ export default {
   width: 100%;
   margin-bottom: 0.7857rem;
   > .collabo-search-bar--label {
-    width: 4.2143rem;
+    width: auto;
+    // width: 4.2143rem;
+    // max-width: 8.5714rem;
     margin: 0;
   }
 }
