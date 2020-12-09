@@ -328,16 +328,20 @@ export default {
   height: 11.1429rem;
   padding: 0rem 3.5rem 0rem 3.5714rem;
   background: rgb(226, 235, 250);
-  border: 1px solid rgb(120, 124, 128);
+  border: 1px solid #318bff;
   border-radius: 10px;
   box-shadow: 0px 16px 12px 0px rgba(0, 113, 255, 0.05);
 }
 
 .collabo-search-bar__condition {
   display: flex;
+  // flex-basis: 0;
   flex-direction: column;
+  // flex-grow: 1;
+  // flex-shrink: 1;
   align-items: center;
   padding-right: 1rem;
+
   &.padding {
     padding-bottom: 0.3571rem;
   }
@@ -458,8 +462,6 @@ export default {
   margin-bottom: 0.7857rem;
   > .collabo-search-bar--label {
     width: auto;
-    // width: 4.2143rem;
-    // max-width: 8.5714rem;
     margin: 0;
   }
 }
