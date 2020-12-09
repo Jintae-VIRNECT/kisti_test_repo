@@ -298,6 +298,9 @@ export default {
   }
 
   .collabo-search-bar__date--button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     min-width: 3.4286rem;
     // height: 3.2857rem;
     background: rgb(255, 255, 255);

@@ -88,6 +88,11 @@ export default {
   border-radius: 2px;
   transition: 0.3s;
 
+  > img {
+    width: 1.7143rem;
+    height: 1.7143rem;
+  }
+
   &.nodata {
     background-color: #ffffff;
     border: 1px solid #edf0f4;
