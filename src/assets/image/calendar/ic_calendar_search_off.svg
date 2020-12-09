@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>EEED4C6C-AF31-4586-865D-3B873616377A@1x</title>
+    <defs>
+        <path d="M17,12 L7,12 L7,14 L17,14 L17,12 Z M19,5 L18,5 L18,3 L16,3 L16,5 L8,5 L8,3 L6,3 L6,5 L5,5 C3.89,5 3,5.9 3,7 L3,21 C3,22.1 3.89,23 5,23 L19,23 C20.1,23 21,22.1 21,21 L21,7 C21,5.9 20.1,5 19,5 Z M19,21 L5,21 L5,10 L19,10 L19,21 Z M14,16 L7,16 L7,18 L14,18 L14,16 Z" id="path-1"></path>
+    </defs>
+    <g id="Design_v-2.2_Tablet.ver" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="02-협업내역_반응형" transform="translate(-485.000000, -269.000000)">
+            <g id="Search_box" transform="translate(40.000000, 185.500000)">
+                <g id="term" transform="translate(218.000000, 40.500000)">
+                    <g id="form" transform="translate(0.000000, 31.000000)">
+                        <g id="ic_calender" transform="translate(227.000000, 12.000000)">
+                            <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="icon/notification/event_note_24px" fill="#203359" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

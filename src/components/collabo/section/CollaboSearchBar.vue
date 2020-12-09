@@ -41,6 +41,7 @@
             <div class="collabo-search-bar__date">
               <input
                 class="collabo-search-bar__date--input"
+                :class="{ active: calendarBtn }"
                 :value="inputValue.start + ' ~ ' + inputValue.end"
                 v-on="inputEvents.start"
                 readonly
@@ -50,6 +51,7 @@
                 @click="togglePopover({ placement: 'bottom' })"
               >
                 <img
+                  class="off"
                   v-if="!calendarBtn"
                   src="~assets/image/calendar/ic_calendar_default.svg"
                   alt="calendar_hide"
@@ -291,11 +293,14 @@ export default {
     width: 100%;
     height: 100%;
     padding: 0px 0px 0px 1.0357rem;
-    color: rgb(11, 31, 72);
+    color: #bac2cc;
     font-weight: 500;
     font-size: 1.0714rem;
     border: none;
     border-radius: 6px 0px 0px 6px;
+    &.active {
+      color: rgb(11, 31, 72);
+    }
   }
 
   .collabo-search-bar__date--button {
@@ -315,6 +320,10 @@ export default {
     > img {
       width: 1.7143rem;
       height: 1.7143rem;
+
+      // &.off {
+      //   padding-bottom: 1px;
+      // }
     }
   }
 
