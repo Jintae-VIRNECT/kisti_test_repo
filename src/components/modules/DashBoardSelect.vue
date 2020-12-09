@@ -9,6 +9,7 @@
     :scrollHide="true"
     :disabled="disabled"
     :sahdow="sahdow"
+    :topOffset="10"
     @visible="visible => (show = visible)"
   >
     <button
@@ -197,7 +198,7 @@ export default {
   background-color: #ffffff;
   // border: solid 1px #363638;
   border: solid 1px #c2c6ce;
-  border-top: none;
+  // border-top: none;
   border-radius: 3px;
   > .popover--body {
     padding: 0;
