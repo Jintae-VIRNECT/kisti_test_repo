@@ -125,10 +125,10 @@ export default {
     font-weight: 500;
     font-size: 1.071rem;
     background: transparent;
-
-    // &:active {
-    //   font-weight: 500;
-    // }
+    span {
+      font-weight: 500;
+      font-size: 1.071rem;
+    }
   }
 }
 .popover-profile__version {
