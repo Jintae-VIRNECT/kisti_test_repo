@@ -17,10 +17,12 @@ import com.virnect.serviceserver.ServiceServerApplication;
 import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -811,6 +813,7 @@ public class SessionDataRepository extends DataRepository {
 
             private void setLogging() {
                 setHistory();
+
                 // check the same session id history room is already exist
                 /*RoomHistory roomHistory = sessionService.getRoomHistory(room.getSessionId());
                 if(roomHistory != null) {
@@ -822,6 +825,7 @@ public class SessionDataRepository extends DataRepository {
             }
 
             private void derivedHistory(RoomHistory roomHistory) {
+
                 roomHistory.setTitle(room.getTitle());
                 roomHistory.setDescription(room.getDescription());
                 roomHistory.setProfile(room.getProfile());

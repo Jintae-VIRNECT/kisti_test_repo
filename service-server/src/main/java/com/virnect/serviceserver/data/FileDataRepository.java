@@ -16,6 +16,7 @@ import com.virnect.service.dto.file.request.RoomProfileUpdateRequest;
 import com.virnect.service.dto.file.response.*;
 import com.virnect.service.error.ErrorCode;
 
+import io.minio.messages.DeleteObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -356,11 +358,6 @@ public class FileDataRepository extends DataRepository {
                     log.info("getFileInfoList : {}", file.getObjectName());
                 }
 
-                List<FileInfoResponse> fileInfoList = filePage.toList()
-                        .stream()
-                        .map(file -> modelMapper.map(file, FileInfoResponse.class))
-                        .collect(Collectors.toList());
-
                 // Page Metadata
                 PageMetadataResponse pageMeta = PageMetadataResponse.builder()
                         .currentPage(pageable.getPageNumber())
@@ -370,6 +367,11 @@ public class FileDataRepository extends DataRepository {
                         .totalElements(filePage.getNumberOfElements())
                         .last(filePage.isLast())
                         .build();
+
+                List<FileInfoResponse> fileInfoList = filePage.toList()
+                        .stream()
+                        .map(file -> modelMapper.map(file, FileInfoResponse.class))
+                        .collect(Collectors.toList());
 
                 return new DataProcess<>(new FileInfoListResponse(fileInfoList, pageMeta));
             }
@@ -464,5 +466,74 @@ public class FileDataRepository extends DataRepository {
 
             }
         }.asApiResponse();
+    }
+
+    public DataProcess<Boolean> removeFiles(String workspaceId, String sessionId) {
+        return new RepoDecoder<List<String>, Boolean>(RepoDecoderType.DELETE) {
+            @Override
+            List<String> loadFromDatabase() {
+                List<String> objects = new ArrayList<>();
+                List<File> files = fileService.getFileList(workspaceId, sessionId);
+                for (File file: files) {
+                    objects.add(file.getObjectName());
+                }
+                return objects;
+            }
+
+            @Override
+            DataProcess<Boolean> invokeDataProcess() {
+                log.info("ROOM removeFiles {}, {}", workspaceId, sessionId);
+                try {
+                    List<String> listName = loadFromDatabase();
+                    if(!listName.isEmpty()) {
+                        String dirPath = generateDirPath(workspaceId, sessionId);
+                        fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
+                    }
+                } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+                    e.printStackTrace();
+                }
+                fileService.deleteFiles(workspaceId, sessionId);
+                return new DataProcess<>(true);
+            }
+        }.asResponseData();
+    }
+
+    public DataProcess<Boolean> removeFiles(String sessionId) {
+        return new RepoDecoder<String, Boolean>(RepoDecoderType.DELETE) {
+            String workspaceId = null;
+            @Override
+            String loadFromDatabase() {
+                Room room = sessionService.getRoom(sessionId);
+                return room != null ? room.getWorkspaceId() : null;
+            }
+
+            List<String> loadFromFiles() {
+                List<String> objects = new LinkedList<>();
+                List<File> files = fileService.getFileList(workspaceId, sessionId);
+                for (File file: files) {
+                    objects.add(file.getObjectName());
+                }
+                return objects;
+            }
+
+            @Override
+            DataProcess<Boolean> invokeDataProcess() {
+                workspaceId = loadFromDatabase();
+
+                if(workspaceId != null) {
+                    try {
+                        List<String> listName = loadFromFiles();
+                        if(!listName.isEmpty()) {
+                            String dirPath = generateDirPath(workspaceId, sessionId);
+                            fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
+                        }
+                    } catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+                        e.printStackTrace();
+                    }
+                    fileService.deleteFiles(workspaceId, sessionId);
+                }
+                return new DataProcess<>(true);
+            }
+        }.asResponseData();
     }
 }

@@ -63,6 +63,7 @@ public class LocalFileManagementService implements IFileManagementService {
     private String recordBucketName;
 
     private boolean policyEnabled;
+    private boolean policyLifeCycleEnabled;
     private String policyLocation;
 
     private JsonUtil jsonUtil;
@@ -193,6 +194,7 @@ public class LocalFileManagementService implements IFileManagementService {
     private void loadStoragePolicy() {
         try {
             this.policyEnabled = this.remoteServiceConfig.remoteStorageProperties.isPolicyEnabled();
+            this.policyLifeCycleEnabled = this.remoteServiceConfig.remoteStorageProperties.getPolicyLifeCycle() > 0;
             if (policyEnabled) {
                 this.policyLocation = this.remoteServiceConfig.remoteStorageProperties.getPolicyLocation();
                 if (this.policyLocation == null || this.policyLocation.isEmpty()) {
@@ -653,6 +655,50 @@ public class LocalFileManagementService implements IFileManagementService {
             String objectName = objectPathToName.replaceAll(HOST_REGEX, "").replace("\\", "/");
             result = removeObject(objectName);
             log.info("PROFILE REMOVE::#deleteProfile::for not using anymore::boolean => [{}, {}]", objectName, result);
+        }
+    }
+
+    public void removeBucket(String bucketName, String dirPath, List<String> objects, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        if(this.policyLifeCycleEnabled) {
+            log.info("file REMOVE::#removeBucket::do not delete object");
+        } else {
+            try {
+                String targetBucket = bucketName != null ? bucketName : this.bucketName;
+                String targetDir = null;
+                switch (fileType) {
+                    case FILE:
+                        targetDir = this.fileBucketName;
+                        break;
+                    case RECORD:
+                        targetBucket = this.recordBucketName;
+                        break;
+                }
+                log.info("file removeBucket::#removeBucket::{}, {}, {}",
+                        targetBucket,
+                        targetDir,
+                        dirPath + targetDir
+                );
+
+                List<DeleteObject> deleteObjects = new LinkedList<>();
+                for (String objectName : objects) {
+                    deleteObjects.add(new DeleteObject(dirPath + targetDir + "/" + objectName));
+                }
+
+                Iterable<Result<DeleteError>> results = minioClient.removeObjects(
+                        RemoveObjectsArgs.builder()
+                                .bucket(targetBucket)
+                                .objects(deleteObjects)
+                                .build()
+                );
+
+                for (Result<DeleteError> result : results) {
+                    DeleteError error = result.get();
+                    System.out.println(
+                            "Error in deleting object " + error.objectName() + "; " + error.message());
+                }
+            } catch (MinioException e) {
+                e.printStackTrace();
+            }
         }
     }
 

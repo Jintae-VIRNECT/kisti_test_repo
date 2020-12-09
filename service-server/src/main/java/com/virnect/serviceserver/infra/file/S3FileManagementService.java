@@ -10,6 +10,7 @@ import com.virnect.serviceserver.model.UploadResult;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.utils.LogMessage;
+import io.minio.messages.DeleteObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
@@ -227,6 +228,11 @@ public class S3FileManagementService implements IFileManagementService {
 
             log.info("PROFILE REMOVE::#deleteProfile::for not using anymore => [{}]", objectName);
         }
+    }
+
+    @Override
+    public void removeBucket(String bucketName, String dirPath, List<String> objects, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+
     }
 
     @Override

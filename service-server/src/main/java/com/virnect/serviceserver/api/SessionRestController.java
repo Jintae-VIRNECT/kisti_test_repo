@@ -14,6 +14,7 @@ import com.virnect.service.dto.service.response.*;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.data.DataProcess;
+import com.virnect.serviceserver.data.FileDataRepository;
 import com.virnect.serviceserver.data.SessionDataRepository;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import com.virnect.serviceserver.utils.LogMessage;
@@ -47,6 +48,7 @@ public class SessionRestController implements ISessionRestAPI {
     private static final String REST_PATH = "/remote/room";
 
     private SessionDataRepository sessionDataRepository;
+    private FileDataRepository fileDataRepository;
     private PushMessageClient pushMessageClient;
 
     private final ServiceSessionManager serviceSessionManager;
@@ -61,6 +63,12 @@ public class SessionRestController implements ISessionRestAPI {
     @Autowired
     public void setSessionDataRepository(SessionDataRepository sessionDataRepository) {
         this.sessionDataRepository = sessionDataRepository;
+    }
+
+    @Qualifier(value = "fileDataRepository")
+    @Autowired
+    public void setFileDataRepository(FileDataRepository fileDataRepository) {
+        this.fileDataRepository = fileDataRepository;
     }
 
     @Deprecated
@@ -355,6 +363,7 @@ public class SessionRestController implements ISessionRestAPI {
         DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
         ApiResponse<RoomDeleteResponse> apiResponse = this.sessionDataRepository.removeRoom(workspaceId, sessionId, userId);
 
+
         if(apiResponse.getData().result) {
             //send rpc message to connection id user of the session id
             JsonObject jsonObject = serviceSessionManager.generateMessage(
@@ -365,12 +374,22 @@ public class SessionRestController implements ISessionRestAPI {
             );
 
             if(this.serviceSessionManager.closeActiveSession(sessionId)) {
-                //todo: to do sth, when close active session, if you need sth
+                LogMessage.formedInfo(
+                        TAG,
+                        "serviceSessionManager",
+                        "closeActiveSession"
+                );
+                this.fileDataRepository.removeFiles(workspaceId, sessionId);
                 return ResponseEntity.ok(apiResponse);
             }
 
             if(this.serviceSessionManager.closeNotActiveSession(sessionId)) {
-                //todo: do sth close not active session, if you need sth
+                LogMessage.formedInfo(
+                        TAG,
+                        "serviceSessionManager",
+                        "closeNotActiveSession"
+                );
+                this.fileDataRepository.removeFiles(workspaceId, sessionId);
                 return ResponseEntity.ok(apiResponse);
             }
         }

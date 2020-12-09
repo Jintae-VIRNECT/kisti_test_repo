@@ -18,11 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.Nullable;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -170,7 +173,12 @@ public class SessionService {
 
     @Transactional
     public void setRoomHistory(RoomHistory roomHistory) {
-        this.roomHistoryRepository.save(roomHistory);
+        boolean result = this.roomHistoryRepository.existsByWorkspaceIdAndSessionId(roomHistory.getWorkspaceId(), roomHistory.getSessionId());
+        if(result) {
+            log.error("Duplicate entry {}", roomHistory.getSessionId());
+        } else {
+            this.roomHistoryRepository.save(roomHistory);
+        }
     }
 
     @Transactional
@@ -298,6 +306,7 @@ public class SessionService {
 
     @Transactional
     public void deleteRoom(Room room) {
+        //roomRepository.deleteByWorkspaceIdAndSessionId(room.getWorkspaceId(), room.getSessionId());
         roomRepository.delete(room);
     }
 
