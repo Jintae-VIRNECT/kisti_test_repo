@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Audited
 @Table(name = "members")
 //@EqualsAndHashCode(of = {"id", "uuid"}, callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

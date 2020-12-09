@@ -19,7 +19,6 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Audited
 @Table(name = "rooms")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Room extends BaseTimeEntity {

@@ -56,14 +56,8 @@ public class HistoryDataRepository extends DataRepository {
             @Override
             DataProcess<RoomHistoryInfoListResponse> invokeDataProcess() {
                 // get all member history by uuid
-                //Page<MemberHistory> memberPage = loadFromDatabase();
                 Page<RoomHistory> roomHistoryPage = loadFromDatabase();
 
-                // find specific member has room history and room history is not null
-                /*List<RoomHistory> roomHistoryList = memberPage.getContent().stream()
-                        .map(MemberHistory::getRoomHistory)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());*/
 
                 // Page Metadata
                 PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -75,13 +69,16 @@ public class HistoryDataRepository extends DataRepository {
                         .last(roomHistoryPage.isLast())
                         .build();
 
+                // find specific member has room history and room history is not null
                 Map<RoomHistory, List<MemberHistory>> roomHistoryListMap = roomHistoryPage.getContent().stream()
                         .filter(roomHistory -> {
                             if(roomHistory.getSessionPropertyHistory().getSessionType().equals(SessionType.OPEN)) {
                                 return true;
                             } else {
                                 for (MemberHistory memberHistory : roomHistory.getMemberHistories()) {
-                                    if (memberHistory.getUuid().equals(userId) && memberHistory.getRoomHistory() != null)
+                                    if (memberHistory.getUuid().equals(userId)
+                                            && memberHistory.getRoomHistory() != null
+                                            && !memberHistory.isHistoryDeleted())
                                         return true;
                                 }
                                 return false;
@@ -90,10 +87,7 @@ public class HistoryDataRepository extends DataRepository {
                         .collect(Collectors.toMap(roomHistory -> roomHistory, RoomHistory::getMemberHistories));
 
                 List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
-                //for (RoomHistory roomHistory : roomHistoryList) {
                 for (RoomHistory roomHistory : roomHistoryListMap.keySet()) {
-                    //sessionId = roomHistory.getSessionId();
-
                     RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
                     roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
@@ -101,15 +95,6 @@ public class HistoryDataRepository extends DataRepository {
                             .filter(memberHistory -> !memberHistory.getMemberType().equals(MemberType.SECESSION))
                             .map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
                             .collect(Collectors.toList());
-
-                    //List<MemberHistory> memberHistoryList = historyService.getMemberHistoryList(sessionId);
-                    // Mapping Member List Data to Member Information List
-                    /*List<MemberInfoResponse> memberInfoList = memberHistoryList.stream()
-                            .map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
-                            .collect(Collectors.toList());*/
-
-                    // remove members who is evicted
-                    //memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
                     // find and get extra information from use-server using uuid
                     for (MemberInfoResponse memberInfoResponse : memberInfoList) {
@@ -163,16 +148,7 @@ public class HistoryDataRepository extends DataRepository {
             @Override
             DataProcess<RoomHistoryInfoListResponse> invokeDataProcess() {
                 // get all member history by uuid
-                //PageRequest pageRequest = new PageRequest();
-                //Page<MemberHistory> memberPage = historyService.getMemberHistoryList(workspaceId, userId, pageRequest.of());
                 Page<RoomHistory> roomHistoryPage = loadFromDatabase();
-
-
-                // find specific member has room history and room history is not null
-                /*List<RoomHistory> roomHistoryList = memberPage.getContent().stream()
-                        .map(MemberHistory::getRoomHistory)
-                        .filter(Objects::nonNull)
-                        .collect(Collectors.toList());*/
 
                 // Page Metadata
                 PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -184,6 +160,7 @@ public class HistoryDataRepository extends DataRepository {
                         .last(roomHistoryPage.isLast())
                         .build();
 
+                // find specific member has room history and room history is not null
                 Map<RoomHistory, List<MemberHistory>> roomHistoryListMap = roomHistoryPage.getContent().stream()
                         .filter(roomHistory -> {
                             if(roomHistory.getSessionPropertyHistory().getSessionType().equals(SessionType.OPEN)) {
@@ -200,21 +177,9 @@ public class HistoryDataRepository extends DataRepository {
 
 
                 List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
-                //for (RoomHistory roomHistory : roomHistoryList) {
                 for (RoomHistory roomHistory : roomHistoryListMap.keySet()) {
-                    //sessionId = roomHistory.getSessionId();
-
                     RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
                     roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
-
-                    //List<MemberHistory> memberHistoryList = historyService.getMemberHistoryList(sessionId);
-                    // Mapping Member List Data to Member Information List
-                    /*List<MemberInfoResponse> memberInfoList = memberHistoryList.stream()
-                            .map(memberHistory -> modelMapper.map(memberHistory, MemberInfoResponse.class))
-                            .collect(Collectors.toList());*/
-
-                    // remove members who is evicted
-                    //memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
                     List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
                             .filter(memberHistory -> !memberHistory.getMemberType().equals(MemberType.SECESSION))

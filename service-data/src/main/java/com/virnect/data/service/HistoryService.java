@@ -59,7 +59,8 @@ public class HistoryService {
     public void removeRoomHistory(List<MemberHistory> memberHistoryList) {
         memberHistoryList.forEach(memberHistory -> {
             if(memberHistory.getRoomHistory() != null) {
-                memberHistory.setRoomHistory(null);
+                //memberHistory.setRoomHistory(null);
+                memberHistory.setHistoryDeleted(true);
                 this.memberHistoryRepository.save(memberHistory);
             }
         });
@@ -68,7 +69,8 @@ public class HistoryService {
     @Transactional
     public void removeRoomHistory(MemberHistory memberHistory) {
         if(memberHistory.getRoomHistory() != null) {
-            memberHistory.setRoomHistory(null);
+            //memberHistory.setRoomHistory(null);
+            memberHistory.setHistoryDeleted(true);
             this.memberHistoryRepository.save(memberHistory);
         }
     }

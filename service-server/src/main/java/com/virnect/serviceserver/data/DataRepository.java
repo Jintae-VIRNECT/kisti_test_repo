@@ -506,7 +506,7 @@ public abstract class DataRepository {
                 // Get Member history list and set room null
                 List<MemberHistory> memberHistoryList = roomHistory.getMemberHistories();
                 for (MemberHistory memberHistory: memberHistoryList) {
-                    memberHistory.setRoomHistory(null);
+                    memberHistory.setHistoryDeleted(true);
                     sessionService.setMemberHistory(memberHistory);
                 }
 
