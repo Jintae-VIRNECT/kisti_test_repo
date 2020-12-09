@@ -35,22 +35,23 @@ public final class PageRequest {
     public org.springframework.data.domain.PageRequest ofSortBy() {
         String strSort = Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate, DESC" : this.sort;
         String[] sortQuery = strSort.split(",");
-        String properties = sortQuery[0];
-        String sort = sortQuery[1].toUpperCase();
+        String properties = sortQuery[0].trim();
+        String sort = sortQuery[1].toLowerCase().trim();
 
-        if (properties == null || properties.isEmpty()) {
+        if (properties.isEmpty()) {
             properties = "createdDate";
         }
 
+        log.info("PAGING::#ofSortBy::sort::[{}]", sort);
         if(sort.equalsIgnoreCase("ASC")) {
-            log.info("PAGING::#ofSortBy::sorting::[{}]", strSort);
+            log.info("PAGING::#ofSortBy::sorting::[{}, {}]", properties, sort);
             return org.springframework.data.domain.PageRequest.of(page, size, Sort.by(properties).ascending());
         } else if(sort.equalsIgnoreCase("DESC")) {
-            log.info("PAGING::#ofSortBy::sorting::[{}]", strSort);
+            log.info("PAGING::#ofSortBy::sorting::[{}, {}]", properties, sort);
             return org.springframework.data.domain.PageRequest.of(page, size, Sort.by(properties).descending());
         } else {
             //default decening
-            log.info("PAGING::#ofSortBy::default sorting::[{}]", strSort);
+            log.error("PAGING::#ofSortBy::default sorting::[{}, {}]", properties, sort);
             return org.springframework.data.domain.PageRequest.of(page, size, Sort.by(properties).descending());
         }
     }

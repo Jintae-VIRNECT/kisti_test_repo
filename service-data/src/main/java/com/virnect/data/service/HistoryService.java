@@ -43,7 +43,8 @@ public class HistoryService {
     }
 
     public Page<MemberHistory> getMemberHistoryList(String workspaceId, String userId, Pageable pageable) {
-        return this.memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNull(workspaceId, userId, pageable);
+        return this.memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(workspaceId, userId, pageable);
+        //return this.memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNull(workspaceId, userId, pageable);
     }
 
     public Page<RoomHistory> getRoomHistory(String workspaceId,Pageable pageable) {
