@@ -1,7 +1,7 @@
 <template>
   <section class="collabo-search-bar">
     <div class="collabo-search-bar__wrapper">
-      <div class="collabo-search-bar__condition">
+      <div class="collabo-search-bar__condition status">
         <label class="collabo-search-bar--label">{{
           $t('search.collabo_status')
         }}</label>
@@ -16,7 +16,7 @@
         ></d-select>
       </div>
 
-      <div class="collabo-search-bar__condition">
+      <div class="collabo-search-bar__condition date">
         <div class="collabo-search-bar__condition--header">
           <label class="collabo-search-bar--label">{{
             $t('search.select_period')
@@ -65,7 +65,7 @@
         </v-date-picker>
       </div>
 
-      <div class="collabo-search-bar__condition">
+      <div class="collabo-search-bar__condition text">
         <label class="collabo-search-bar--label">
           {{ $t('search.text') }}</label
         >
@@ -76,7 +76,7 @@
           v-on:input="searchText = $event.target.value"
         />
       </div>
-      <div class="collabo-search-bar__condition">
+      <div class="collabo-search-bar__condition submit">
         <button
           v-on:keyup.enter="doSearch"
           @click="doSearch"
@@ -269,7 +269,8 @@ export default {
   margin-top: 3rem;
   .collabo-search-bar__date {
     display: flex;
-    width: 25.2143rem;
+    width: 100%;
+    // width: 25.2143rem;
     height: 3.4286rem;
     border: 1px solid rgb(186, 194, 204);
     border-radius: 6px;
@@ -281,9 +282,9 @@ export default {
         border-left: 1px solid rgb(15, 117, 245);
       }
     }
-    @include tablet {
-      width: 18.7857rem;
-    }
+    // @include tablet {
+    //   width: 18.7857rem;
+    // }
   }
 
   .collabo-search-bar__date--input {
@@ -338,16 +339,41 @@ export default {
 
 .collabo-search-bar__condition {
   display: flex;
+  flex: 1 1 0;
   // flex-basis: 0;
   flex-direction: column;
   // flex-grow: 1;
   // flex-shrink: 1;
-  align-items: center;
-  padding-right: 1rem;
+  // align-items: center;
+  min-width: 0;
+  // padding-right: 1rem;
+  margin-right: 1rem;
 
-  &.padding {
-    padding-bottom: 0.3571rem;
+  &.status {
+    flex-shrink: 1;
+    min-width: 9.5715rem;
+    max-width: 11rem;
   }
+
+  &.date {
+    flex-shrink: 0.5;
+    min-width: 12.5714rem;
+    max-width: 25.2143rem;
+  }
+
+  &.text {
+    flex-shrink: 1;
+    max-width: 35.1429rem;
+  }
+
+  &.submit {
+    flex-shrink: 2;
+    max-width: 10rem;
+  }
+
+  // &.padding {
+  //   padding-bottom: 0.3571rem;
+  // }
 
   .datepicker {
     width: 25.2143rem;
@@ -403,7 +429,8 @@ export default {
 }
 
 .collabo-search-bar--input {
-  width: 33.8571rem;
+  // width: 33.8571rem;
+  // width: 100%;
   height: 3.2857rem;
   padding: 0 0 0 1.1429rem;
   color: #0b1f48;
@@ -426,15 +453,16 @@ export default {
     font-weight: 500;
     font-size: 1.0714rem;
   }
-  @include tablet {
-    width: 18.9286rem;
-  }
+  // @include tablet {
+  //   width: 18.9286rem;
+  // }
 }
 
 .collabo-search-bar__status--list.popover--wrapper {
   > .select-label {
-    width: 11rem;
-    min-width: 10.1429rem;
+    width: 100%;
+    // width: 11rem;
+    // min-width: 10.1429rem;
     height: 3.4286rem;
     color: rgb(11, 31, 72);
     background: rgb(255, 255, 255);
@@ -470,7 +498,8 @@ export default {
 }
 
 .collabo-search-bar--submit {
-  width: 10rem;
+  // width: 10rem;
+  width: 100%;
   height: 3.4286rem;
   margin-top: 2.5rem;
   font-weight: 500;
@@ -482,9 +511,9 @@ export default {
     background: #0f75f5;
   }
 
-  @include tablet {
-    width: 8.5714rem;
-  }
+  // @include tablet {
+  //   width: 8.5714rem;
+  // }
 }
 
 .collabo-search-bar__condition--divider {
