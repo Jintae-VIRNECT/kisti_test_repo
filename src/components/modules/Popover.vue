@@ -105,6 +105,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    topOffset: {
+      type: Number, //px
+      default: 0,
+    },
   },
   data() {
     return {
@@ -213,6 +217,8 @@ export default {
             top -= (popover.offsetHeight - reference.offsetHeight) / 2
           }
         }
+        top = top + this.topOffset
+
         this.$set(this.style, 'top', top + 'px')
         this.$set(this.style, 'left', left + 'px')
         if (this.width === 0) {
