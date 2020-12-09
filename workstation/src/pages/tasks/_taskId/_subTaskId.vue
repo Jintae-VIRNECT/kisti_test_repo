@@ -262,10 +262,8 @@ export default {
     moveToIssue(stepId) {
       this.$router.replace(`${this.$router.currentRoute.path}/issues/${stepId}`)
     },
-    moveToPaper(paperId) {
-      this.$router.replace(
-        `${this.$router.currentRoute.path}/papers/${paperId}`,
-      )
+    moveToPaper(stepId) {
+      this.$router.replace(`${this.$router.currentRoute.path}/papers/${stepId}`)
     },
   },
   beforeMount() {

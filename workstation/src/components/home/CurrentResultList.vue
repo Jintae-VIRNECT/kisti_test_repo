@@ -178,8 +178,8 @@ export default {
     moveToSubTask({ taskId, subTaskId }) {
       this.$router.push(`/tasks/${taskId}/${subTaskId}`)
     },
-    moveToPaper({ taskId, subTaskId, paperId }) {
-      this.$router.push(`/tasks/${taskId}/${subTaskId}/papers/${paperId}`)
+    moveToPaper({ taskId, subTaskId, stepId }) {
+      this.$router.push(`/tasks/${taskId}/${subTaskId}/papers/${stepId}`)
     },
     moveToIssue({ taskId, subTaskId, stepId }) {
       this.$router.push(`/tasks/${taskId}/${subTaskId}/issues/${stepId}`)
