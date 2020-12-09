@@ -138,6 +138,31 @@ export default {
 		},
 	},
 	methods: {
+		async kospoToken() {
+			const token = this.$route.query.token
+			const redirectTarget = this.$route.query.continue
+			if (!token) {
+				location.href = this.$urls['sso']
+			}
+			try {
+				const res = await AuthService.login({ params: { token } })
+				if (res.code !== 200) throw new Error()
+			} catch (e) {
+				this.alertMessage(
+					this.$t('login.networkError.title'),
+					this.$t('login.networkError.contents'),
+					'error',
+				)
+			}
+
+			if (redirectTarget) {
+				location.href = /^https?:/.test(redirectTarget)
+					? redirectTarget
+					: `//${redirectTarget}`
+			} else if (this.auth.isLogin) {
+				location.href = this.$urls['workstation']
+			}
+		},
 		async checkToken() {
 			const redirectTarget = this.$route.query.continue
 			if (!this.auth.isLogin) return false
@@ -244,7 +269,8 @@ export default {
 		},
 	},
 	beforeMount() {
-		this.checkToken()
+		if (this.$env !== 'onpremise') this.checkToken()
+		else this.kospoToken()
 	},
 	mounted() {
 		if (this.rememberLogin === 'true') {
