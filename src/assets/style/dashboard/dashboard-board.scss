@@ -262,11 +262,12 @@
     align-items: center;
     justify-content: center;
     width: 3rem;
-    height: 2.7143rem;
+    // height: 2.7143rem;
     background: rgb(255, 255, 255);
     border-left: 1px solid #e3e3e3;
     border-radius: 0px 6px 6px 0px;
     transition: 0.3s;
+
     > img {
       width: 1.7143rem;
       height: 1.7143rem;

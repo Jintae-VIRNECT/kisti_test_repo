@@ -3,6 +3,7 @@
     trigger="click"
     placement="bottom-start"
     :width="0"
+    :topOffset="10"
     popperClass="header-lnb-selector"
   >
     <vue2-scrollbar>

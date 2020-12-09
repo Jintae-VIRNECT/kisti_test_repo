@@ -483,8 +483,8 @@ export default {
   align-items: center;
   justify-content: center;
 
-  height: 78px;
-  margin-bottom: 10px;
+  height: 5.5714rem;
+  margin-bottom: 0.7143rem;
   background: rgb(255, 255, 255);
   border: 1px solid rgb(240, 240, 240);
   border-radius: 4px;
