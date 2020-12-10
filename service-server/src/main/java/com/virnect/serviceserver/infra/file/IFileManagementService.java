@@ -2,6 +2,7 @@ package com.virnect.serviceserver.infra.file;
 
 import com.virnect.file.FileType;
 import com.virnect.serviceserver.model.UploadResult;
+import io.minio.messages.DeleteObject;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -11,16 +12,17 @@ import java.util.Arrays;
 import java.util.List;
 
 public interface IFileManagementService {
-
     String DEFAULT_ROOM_PROFILE = "default";
 
-    String LOG_MESSAGE_TAG = "[FILE MANAGEMENT SERVICE]::";
-
     int EXPIRE_DAY = 7; // 7 days expire time
+
+    //default file extension list
     List<String> FILE_PROFILE_ALLOW_EXTENSION = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");
     List<String> FILE_IMAGE_ALLOW_EXTENSION = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");
     List<String> FILE_DOCUMENT_ALLOW_EXTENSION = Arrays.asList("doc", "ppt", "xls", "dot", "docx", "xlsx", "pptx", "pdf");
     List<String> FILE_VIDEO_ALLOW_EXTENSION = Arrays.asList("mp4", "webm");
+
+    void loadStoragePolicy();
 
     /**
      * File Upload
@@ -41,6 +43,8 @@ public interface IFileManagementService {
      * @param url - 업로드된 파일 url
      */
     void deleteProfile(final String url) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+
+    void removeBucket(String bucketName, String dirPath, List<String> objects, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
     /**
      * base64로 인코딩된 이미지 파일 저장

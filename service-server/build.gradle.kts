@@ -58,7 +58,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
-    implementation("org.springframework.boot:spring-boot-starter-batch")
 
     implementation("org.springframework.data:spring-data-envers")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
@@ -77,7 +76,6 @@ dependencies {
         exclude(group = "org.junit.vintage", module = "junit-vintage-engine")
     }
     testImplementation("org.springframework.security:spring-security-test")
-    testImplementation("org.springframework.batch:spring-batch-test")
     //============================ SERVICE DEPENDENCIES ===========================================//
     // Eureka
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")

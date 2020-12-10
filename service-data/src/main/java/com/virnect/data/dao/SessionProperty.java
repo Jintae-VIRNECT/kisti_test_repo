@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Audited
 @Table(name = "session_property")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SessionProperty extends BaseTimeEntity {

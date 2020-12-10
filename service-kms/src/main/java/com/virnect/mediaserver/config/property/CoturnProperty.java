@@ -13,7 +13,7 @@ public class CoturnProperty {
     private String coturnUsername;
     private String coturnCredential;
     private List<String> coturnUrisConference;
-    private List<String> coturnUrisSteaming;
+    private List<String> coturnUrisStreaming;
     private String coturnIp;
 
     // Service Coturn Redis database properties
@@ -54,12 +54,12 @@ public class CoturnProperty {
         this.coturnUrisConference = coturnUrisConference;
     }
 
-    public List<String> getCoturnUrisSteaming() {
-        return coturnUrisSteaming;
+    public List<String> getCoturnUrisStreaming() {
+        return coturnUrisStreaming;
     }
 
-    public void setCoturnUrisSteaming(List<String> coturnUrisSteaming) {
-        this.coturnUrisSteaming = coturnUrisSteaming;
+    public void setCoturnUrisSteaming(List<String> coturnUrisStreaming) {
+        this.coturnUrisStreaming = coturnUrisStreaming;
     }
 
     public String getCoturnIp() {

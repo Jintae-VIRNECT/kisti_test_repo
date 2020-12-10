@@ -4,6 +4,7 @@ import com.virnect.data.dao.Room;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +32,10 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
     //Page<Room> findByTitleIsContaining(final String title, Pageable pageable);
 
     Page<Room> findByWorkspaceIdAndTitleIsContaining(final String workspaceId, final String title, Pageable pageable);
+
+    @Modifying
+    @Query("delete from Room r where r.workspaceId = ?1 and r.sessionId = ?2")
+    void deleteByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     //List<Room> findByTitleIsContaining(final String title);
 

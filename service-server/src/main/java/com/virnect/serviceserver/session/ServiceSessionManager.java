@@ -11,6 +11,7 @@ import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
 import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
+import com.virnect.serviceserver.data.FileDataRepository;
 import com.virnect.serviceserver.data.SessionDataRepository;
 import com.virnect.serviceserver.model.SessionData;
 import com.virnect.serviceserver.model.SessionTokenData;
@@ -41,6 +42,7 @@ public class ServiceSessionManager {
 
     SessionManager sessionManager;
     SessionDataRepository sessionDataRepository;
+    FileDataRepository fileDataRepository;
 
     @Autowired
     public void setSessionManager(SessionManager sessionManager) {
@@ -50,6 +52,11 @@ public class ServiceSessionManager {
     @Autowired
     public void setSessionDataRepository(SessionDataRepository sessionDataRepository) {
         this.sessionDataRepository = sessionDataRepository;
+    }
+
+    @Autowired
+    public void setFileDataRepository(FileDataRepository fileDataRepository) {
+        this.fileDataRepository = fileDataRepository;
     }
 
 
@@ -126,8 +133,10 @@ public class ServiceSessionManager {
                         "destroySession",
                         "session destroy and sessionEventHandler is here",
                         result);
+                fileDataRepository.removeFiles(session.getSessionId());
                 sessionDataRepository.stopRecordSession(session.getSessionId());
                 sessionDataRepository.destroySession(session.getSessionId());
+
             }
         };
     }
@@ -482,14 +491,14 @@ public class ServiceSessionManager {
                     try {
                         log.info("REST API: DELETE close sessionNotActive");
                         if (sessionNotActive.isClosed()) {
-                            return false;
+                            return true;
                         }
 
                         this.sessionManager.closeSessionAndEmptyCollections(
                                 sessionNotActive,
                                 EndReason.sessionClosedByServer,
                                 true);
-                        return false;
+                        return true;
                         //return ResponseEntity.status(HttpStatus.NO_CONTENT).body(apiResponse);
                     } finally {
                         sessionNotActive.closingLock.writeLock().unlock();

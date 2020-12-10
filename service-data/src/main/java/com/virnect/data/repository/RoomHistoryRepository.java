@@ -4,6 +4,7 @@ import com.virnect.data.dao.RoomHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -21,7 +22,9 @@ public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long> 
     @Query("select r from RoomHistory r where r.workspaceId = ?1")
     Page<RoomHistory> findRoomHistoryByWorkspaceId(final String workspaceId, Pageable pageable);
 
-    Page<RoomHistory> findByTitleIsContaining(final String title, Pageable pageable);
+    Page<RoomHistory> findByWorkspaceIdAndTitleIsContaining(final String workspaceId, final String title, Pageable pageable);
 
     List<RoomHistory> findByTitleIsContaining(final String title);
+
+    boolean existsByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 }

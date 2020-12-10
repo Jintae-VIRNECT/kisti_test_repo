@@ -130,8 +130,8 @@ public class RemoteServiceProperties extends PropertyService {
         return mediaServerProperties.coturnProperty.getCoturnUrisConference();
     }
 
-    public List<String> getCoturnUrisSteaming() {
-        return mediaServerProperties.coturnProperty.getCoturnUrisSteaming();
+    public List<String> getCoturnUrisStreaming() {
+        return mediaServerProperties.coturnProperty.getCoturnUrisStreaming();
     }
 
     public String getCoturnIp() {
@@ -179,7 +179,7 @@ public class RemoteServiceProperties extends PropertyService {
         mediaServerProperties.coturnProperty.setCoturnUrisConference(checkCoturnUris("service.coturn-uris-conference"));
         mediaServerProperties.coturnProperty.setCoturnUrisSteaming(checkCoturnUris("service.coturn-uris-streaming"));
         ServiceServerApplication.coturnConferenceUris = new ArrayList<>(mediaServerProperties.coturnProperty.getCoturnUrisConference());
-        ServiceServerApplication.coturnStreamingUris = new ArrayList<>(mediaServerProperties.coturnProperty.getCoturnUrisSteaming());
+        ServiceServerApplication.coturnStreamingUris = new ArrayList<>(mediaServerProperties.coturnProperty.getCoturnUrisStreaming());
 
         mediaServerProperties.coturnProperty.setCoturnRedisDbname(getValue("service.coturn-redis-dbname"));
         mediaServerProperties.coturnProperty.setCoturnRedisPassword(getValue("service.coturn-redis-password"));

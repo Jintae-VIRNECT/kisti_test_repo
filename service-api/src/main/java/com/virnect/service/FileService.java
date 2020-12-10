@@ -15,6 +15,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 //@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -81,6 +83,10 @@ public class FileService {
             return this.fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
     }
 
+    public List<File> getFileList(String workspaceId, String sessionId) {
+        return this.fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId);
+    }
+
     public Page<RecordFile> getRecordFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {
         if(isDeleted)
             return this.recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId, pageable);
@@ -96,5 +102,10 @@ public class FileService {
             file.setDeleted(true);
             fileRepository.save(file);
         }
+    }
+
+    @Transactional
+    public void deleteFiles(String workspaceId, String sessionId) {
+        fileRepository.deleteAllByWorkspaceIdAndSessionId(workspaceId, sessionId);
     }
 }
