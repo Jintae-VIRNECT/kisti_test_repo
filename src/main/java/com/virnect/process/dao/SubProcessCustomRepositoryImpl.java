@@ -1,9 +1,9 @@
 package com.virnect.process.dao;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -94,6 +94,20 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 		QSubProcess qSubProcess = QSubProcess.subProcess;
 		QProcess qProcess = QProcess.process;
 		JPQLQuery<SubProcess> query = from(qSubProcess).join(qSubProcess.process, qProcess);
+		List<SubProcess> subProcessList = query.fetch();
+
+		if (filter != null && !filter.isEmpty() && !filter.contains(Conditions.ALL)) {
+			List<SubProcess> filterdSubProcessList = new ArrayList<>();
+			subProcessList.forEach(subProcess -> {
+				filter.forEach(conditions -> {
+					if (conditions.equals(subProcess.getConditions())) {
+						filterdSubProcessList.add(subProcess);
+					}
+				});
+			});
+			subProcessList = filterdSubProcessList;
+			query = query.where(qSubProcess.in(subProcessList));
+		}
 
 		if (userUUIDList != null && userUUIDList.size() > 0) {
 			query = query.where(qSubProcess.workerUUID.in(userUUIDList));
@@ -111,15 +125,7 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 			query = query.where(qProcess.workspaceUUID.eq(workspaceUUID));
 		}
 
-		List<SubProcess> subProcessList = getQuerydsl().applyPagination(pageable, query).fetch();
-
-		if (filter != null && !filter.isEmpty() && !filter.contains(Conditions.ALL)) {
-			subProcessList = subProcessList
-				.stream()
-				.filter(subProcess -> filter.contains(subProcess.getConditions()))
-				.collect(Collectors.toList());
-			return new PageImpl<>(subProcessList, pageable, query.fetchCount());
-		}
+		subProcessList = getQuerydsl().applyPagination(pageable, query).fetch();
 
 		return new PageImpl<>(subProcessList, pageable, query.fetchCount());
 	}
