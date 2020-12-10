@@ -43,6 +43,15 @@ export default {
     text-overflow: ellipsis;
     background: transparent;
 
+    &.active {
+      outline: none;
+      outline-offset: 0;
+      &::after {
+        transform: rotate(-180deg);
+        content: '';
+      }
+    }
+
     &::before {
       position: absolute;
       top: 0.5715rem;
@@ -50,8 +59,6 @@ export default {
       width: 1.7143rem;
       height: 1.7143rem;
       background: url(~assets/image/ic_workspace.svg) 50% no-repeat;
-      // border-radius: 4px;
-      // transform: rotateX(180deg);
       content: '';
     }
 
@@ -63,7 +70,7 @@ export default {
       height: 1.4286rem;
       background: url(~assets/image/ic_dropdown.svg) 50% no-repeat;
       border-radius: 4px;
-      // transform: rotateX(180deg);
+      transition: transform 0.3s;
       content: '';
     }
   }
