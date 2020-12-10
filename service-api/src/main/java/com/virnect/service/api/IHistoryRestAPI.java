@@ -47,12 +47,30 @@ public interface IHistoryRestAPI {
             @ApiImplicitParam(name = "paging", value = "검색 결과 페이지네이션 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate, desc"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "endDate, desc"),
     })
     @GetMapping(value = "history")
     ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(
             @RequestParam(name = "workspaceId") String workspaceId,
             @RequestParam(name = "userId") String userId,
+            @RequestParam(name = "paging") boolean paging,
+            @ApiIgnore PageRequest pageable
+    );
+
+    @ApiOperation(value = "Load Room History Information List with search value", notes = "검색 기준으로 최근 기록 리스트를 조회하는 API 입니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "40f9bbee9d85dca7a34a0dd205aae718", required = true),
+            @ApiImplicitParam(name = "userId", value = "유저 uuid", defaultValue = "410df50ca6e32db0b6acba09bcb457ff", required = true),
+            @ApiImplicitParam(name = "paging", value = "검색 결과 페이지네이션 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "endDate, desc"),
+    })
+    @GetMapping(value = "history/search")
+    ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(
+            @RequestParam(name = "workspaceId") String workspaceId,
+            @RequestParam(name = "userId") String userId,
+            @RequestParam(name = "search", required = false) String search,
             @RequestParam(name = "paging") boolean paging,
             @ApiIgnore PageRequest pageable
     );

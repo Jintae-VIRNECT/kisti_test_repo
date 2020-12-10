@@ -22,6 +22,7 @@ public class RemoteStorageProperties extends PropertyService {
     private boolean serviceEnabled;
     private boolean policyEnabled;
     private String policyLocation;
+    private int policyLifeCycle;
 
     public String getBucketName() {
         return this.bucketName;
@@ -63,6 +64,10 @@ public class RemoteStorageProperties extends PropertyService {
         return policyEnabled;
     }
 
+    public int getPolicyLifeCycle() {
+        return policyLifeCycle;
+    }
+
     public String getPolicyLocation() {
         return policyLocation;
     }
@@ -71,7 +76,9 @@ public class RemoteStorageProperties extends PropertyService {
 
     public void checkStorageProperties() {
         this.policyEnabled = asBoolean("storage.policy.enabled");
+        this.policyLifeCycle = asNonNegativeInteger("storage.policy.lifecycle");
         this.policyLocation = getValue("storage.policy.location");
+
 
         this.serviceEnabled = asBoolean("storage.enabled");
         this.bucketName = getValue("storage.bucket.name");

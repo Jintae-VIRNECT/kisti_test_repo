@@ -31,5 +31,7 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
 
     Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNull(final String workspaceId, final String userId, Pageable pageable);
 
+    Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(final String workspaceId, final String userId, Pageable pageable);
+
     void deleteAllByUuid(final String userId);
 }

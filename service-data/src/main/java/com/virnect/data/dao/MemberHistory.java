@@ -47,6 +47,9 @@ public class MemberHistory extends BaseTimeEntity {
     @Column(name = "duration_sec", nullable = false)
     private Long durationSec;
 
+    @Column(name = "history_deleted", nullable = false)
+    private boolean historyDeleted;
+
     @ManyToOne(targetEntity = RoomHistory.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "room_history_id")
     private RoomHistory roomHistory;
@@ -73,6 +76,7 @@ public class MemberHistory extends BaseTimeEntity {
         this.startDate = startDate;
         this.endDate = endDate;
         this.durationSec = durationSec;
+        this.historyDeleted = false;
     }
 
     @Override
