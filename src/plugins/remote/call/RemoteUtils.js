@@ -54,7 +54,7 @@ export const addSessionEventListener = session => {
         // if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
         _.video(Store.getters['video'].isOn, [event.connection.connectionId])
       } else {
-        _.video(CAMERA_STATUS.CAMERA_NONE, [event.connection.connectionId])
+        _.video('NONE', [event.connection.connectionId])
       }
     }, 300)
   })
