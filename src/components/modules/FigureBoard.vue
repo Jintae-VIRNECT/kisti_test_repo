@@ -128,7 +128,7 @@ export default {
 }
 
 .figure-board--number {
-  color: #0b1f48;
+  color: #1e1e1e;
   font-weight: bold;
   font-size: 1.7143rem;
 }
@@ -136,7 +136,7 @@ export default {
 .figure-board--text {
   padding-right: 1rem;
   padding-left: 0.2857rem;
-  color: #0b1f48;
+  color: #1e1e1e;
   font-weight: normal;
   font-size: 1.0714rem;
 
