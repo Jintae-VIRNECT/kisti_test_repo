@@ -17,6 +17,7 @@ public interface WorkspaceRestService {
     ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
             @PathVariable("workspaceId") String workspaceId,
             @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size
             );

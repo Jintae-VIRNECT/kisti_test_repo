@@ -4,6 +4,7 @@ import com.virnect.data.dao.*;
 import com.virnect.service.ApiResponse;
 import com.virnect.service.dto.PageMetadataResponse;
 import com.virnect.service.dto.ResultResponse;
+import com.virnect.service.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.service.dto.feign.WorkspaceMemberInfoResponse;
 import com.virnect.service.dto.service.request.RoomHistoryDeleteRequest;
 import com.virnect.service.dto.service.response.MemberInfoResponse;
@@ -43,8 +44,6 @@ public class HistoryDataRepository extends DataRepository {
                         .map(MemberHistory::getRoomHistory)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
-
-
                 return new PageImpl<RoomHistory>(roomHistoryList, pageable, roomHistoryList.size());
             }
 
@@ -124,11 +123,31 @@ public class HistoryDataRepository extends DataRepository {
             String search,
             Pageable pageable) {
         return new RepoDecoder<Page<RoomHistory>, RoomHistoryInfoListResponse>(RepoDecoderType.READ) {
-            String sessionId;
-
             @Override
             Page<RoomHistory> loadFromDatabase() {
                 return historyService.getRoomHistory(workspaceId, search, pageable);
+
+            }
+
+            private void fetchFromRepository() {
+                ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
+                        workspaceId,
+                        "remote",
+                        search,
+                        pageable.getPageNumber(),
+                        pageable.getPageSize()
+                        );
+
+                List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
+                List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+                        .map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+                        .collect(Collectors.toList());
+
+                log.info("fetchFromRepository getPageMeta:: {}", feignResponse.getData().getPageMeta());
+
+                for (MemberInfoResponse memberInfoResponse: memberInfoList) {
+                    log.info("fetchFromRepository :: {}", memberInfoResponse.toString());
+                }
             }
 
             @Override
@@ -136,6 +155,7 @@ public class HistoryDataRepository extends DataRepository {
                 // for non-english systems.
                 //Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),", Pattern.UNICODE_CHARACTER_CLASS);
 
+                fetchFromRepository();
                 // get all member history by uuid
                 Page<RoomHistory> roomHistoryPage = loadFromDatabase();
 
