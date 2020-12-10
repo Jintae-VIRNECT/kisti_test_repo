@@ -374,18 +374,19 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/mixin';
 .history {
   position: relative;
   width: 100%;
 }
 
 .history__body {
-  min-height: 616px;
+  min-height: 44rem;
   &.nodata {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 430px;
+    height: 30.7143rem;
     background: #ffffff;
     border: 1px solid #e3e3e3;
     border-radius: 10px;
@@ -394,7 +395,7 @@ export default {
     p {
       color: #686868;
       font-weight: normal;
-      font-size: 20px;
+      font-size: 1.4286rem;
       text-align: center;
     }
   }
@@ -460,12 +461,14 @@ export default {
   }
 
   &.leader-name {
-    width: 14.2857rem;
+    width: 11.4286rem;
+    // max-width: 16.8572rem;
     text-align: left;
   }
 
   &.start-date {
-    width: 12.1429rem;
+    width: 14.2857rem;
+    margin-right: 4.3571rem;
   }
 
   &.state {
@@ -482,7 +485,7 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-
+  width: 100%;
   height: 5.5714rem;
   margin-bottom: 0.7143rem;
   background: rgb(255, 255, 255);
@@ -498,7 +501,7 @@ export default {
   }
 }
 .history__text {
-  color: #0b1f48;
+  color: #1e1e1e;
   font-weight: 600;
   font-size: 1.0714rem;
   text-align: center;
@@ -518,24 +521,34 @@ export default {
 
   &.collabo-name {
     width: 21.4286rem;
+    padding-right: 10px;
     text-align: left;
 
     & > p {
-      // width: 20.4286rem;
-      width: 100%;
+      width: 16.8572rem;
+      // width: 100%;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
+      @include tablet {
+        width: 12.8572rem;
+      }
     }
   }
 
   &.leader-name {
-    width: 14.2857rem;
+    width: 11.4286rem;
+    font-weight: normal;
     text-align: left;
+    opacity: 0.8;
   }
 
   &.start-date {
-    width: 12.1429rem;
+    width: 14.2857rem;
+    margin-right: 4.3571rem;
+    font-weight: normal;
+    font-family: Roboto;
+    opacity: 0.6;
   }
 
   &.state {

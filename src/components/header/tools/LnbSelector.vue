@@ -5,6 +5,7 @@
     :width="0"
     :topOffset="10"
     popperClass="header-lnb-selector"
+    @visible="toggle"
   >
     <vue2-scrollbar>
       <ul class="header-lnb-selector__layer">
@@ -30,7 +31,11 @@
       </ul>
     </vue2-scrollbar>
 
-    <button slot="reference" class="header-workspace-selector">
+    <button
+      slot="reference"
+      class="header-workspace-selector"
+      :class="{ active: isVisible }"
+    >
       {{ workspace.title }}
     </button>
   </popover>
@@ -47,6 +52,7 @@ export default {
   data() {
     return {
       popoverWidth: '14rem',
+      isVisible: false,
     }
   },
   computed: {
@@ -63,6 +69,9 @@ export default {
           '.header-workspace-selector',
         ).offsetWidth
       })
+    },
+    toggle(visible) {
+      this.isVisible = visible
     },
   },
 

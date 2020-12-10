@@ -132,8 +132,10 @@ export default {
     }
 
     .vdp-datepicker__calendar {
-      top: 3.0714rem;
-      right: -3rem;
+      // top: 3.0714rem;
+      // right: -3rem;
+      top: 0.004rem;
+      right: 11rem;
       border: 1px solid rgb(229, 231, 233);
       border-radius: 8px;
       box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);

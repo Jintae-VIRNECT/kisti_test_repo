@@ -331,6 +331,7 @@ export default {
               ticks: {
                 beginAtZero: true,
                 min: 0,
+                stepSize: 4,
               },
               stacked: true,
               gridLines: {

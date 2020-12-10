@@ -272,11 +272,12 @@
 
 /*month picker transition */
 .slide-enter-active {
-  transition-duration: 0.1s;
+  transition-duration: 0.2s;
   transition-property: transform, opacity;
 }
 .slide-enter {
-  transform: translateY(calc(-15px));
+  // transform: translateY(calc(-15px));
+  transform: translateX(calc(15px));
   opacity: 0;
 }
 .slide-leave-to {

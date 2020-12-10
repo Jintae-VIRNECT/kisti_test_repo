@@ -19,7 +19,7 @@
           class="chart-picker"
           v-model="date"
           :masks="masks"
-          :popover="{ visibility: 'click' }"
+          :popover="{ visibility: 'click', placement: 'auto-start' }"
           :locale="currentLanguage"
           @popoverWillShow="toggleCalendarBtn"
           @popoverWillHide="toggleCalendarBtn"

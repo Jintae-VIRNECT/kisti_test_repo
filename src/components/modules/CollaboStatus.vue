@@ -64,7 +64,7 @@ export default {
 
 .collabo-status--text {
   padding-left: 0.7143rem;
-  color: #0b1f48;
+  color: #1e1e1e;
   font-weight: 500;
   font-size: 1.0714rem;
 }
