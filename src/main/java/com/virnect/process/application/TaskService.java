@@ -1552,11 +1552,10 @@ public class TaskService {
 					&& (workspaceUUID == null || processWorkspaceUUID.equals(workspaceUUID))) {
 					ing++;
 				}*/
-				
-				// 공정 상태가 종료 또는 삭제가 아니고  && 세부공정 상태가 진행중일때 && 워크스페이스가 동일한 프로세스에 대해 필터링 함.
+
+				// 세부공정 상태가 진행중일때 && 워크스페이스가 동일한 프로세스에 대해 필터링 함.
 				//https://virtualconnection.atlassian.net/browse/DPLA-535?atlOrigin=eyJpIjoiMmI1MGU1ZWUzNjdjNGUxZGIwZDA5YmU4Mzg1ODZkNzciLCJwIjoiaiJ9 으로 아래와 같이 수정함
-				if ((state != State.CLOSED || state != State.DELETED)
-					&& subProcess.getConditions() == Conditions.PROGRESSING && (workspaceUUID == null
+				if (subProcess.getConditions() == Conditions.PROGRESSING && (workspaceUUID == null
 					|| processWorkspaceUUID.equals(workspaceUUID))) {
 					ing++;
 				}
@@ -1572,9 +1571,7 @@ public class TaskService {
 
 			int percent = 0;
 
-			if (subProcessList.size() > 0) {
-				System.out.println("!!!" + subProcessList.size());
-				System.out.println("!!!" + ing);
+			if (!subProcessList.isEmpty()) {
 				percent = (int)(((double)ing / (double)subProcessList.size()) * 100);
 			}
 

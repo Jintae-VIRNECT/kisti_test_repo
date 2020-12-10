@@ -2,7 +2,7 @@ spring:
   application:
     name: process-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/processes
+    url: jdbc:mysql://192.168.6.3:4336/op_processes
     username: virnect-process
     password: virnect1234
   jpa:
@@ -26,7 +26,7 @@ spring:
 logging:
   level:
     com.virnect: DEBUG
-    org.hibernate.type.descriptor.sql: trace
+#    org.hibernate.type.descriptor.sql: trace
 
 eureka:
   instance:

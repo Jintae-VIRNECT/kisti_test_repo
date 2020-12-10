@@ -197,9 +197,9 @@ public class SubTaskService {
 			userUUIDList = userInfos.stream().map(UserInfoResponse::getUuid).collect(Collectors.toList());
 		}
 
-		Page<SubProcess> subProcessPage = this.subProcessRepository.getSubProcessPage(
-			workspaceUUID, processId, search, userUUIDList, pageable);
-		
+		Page<SubProcess> subProcessPage = this.subProcessRepository.getFilteredSubProcessPage(
+			workspaceUUID, processId, search, userUUIDList, pageable, filter);
+/*
 		if (filter != null && !filter.isEmpty() && !filter.contains(Conditions.ALL)) {
 			List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream()
 				.filter(subProcess -> filter.contains(subProcess.getConditions()))
@@ -236,7 +236,7 @@ public class SubTaskService {
 				.totalElements(totalElements)
 				.build();
 			return new ApiResponse<>(new SubProcessesResponse(editSubProcessResponseList, pageMetadataResponse));
-		}
+		}*/
 
 		List<SubProcessReportedResponse> editSubProcessResponseList = subProcessPage.stream().map(subProcess -> {
 			ApiResponse<UserInfoResponse> userInfoResponse = this.userRestService.getUserInfoByUserUUID(
