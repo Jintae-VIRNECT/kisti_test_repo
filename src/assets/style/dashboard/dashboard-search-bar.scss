@@ -5,14 +5,14 @@
     display: flex;
     width: 100%;
     height: 3.4286rem;
-    border: 1px solid rgb(186, 194, 204);
+    border: 1px solid #bac2cc;
     border-radius: 6px;
     transition: 0.3s;
     &:hover,
     &:focus {
-      border: 1px solid rgb(15, 117, 245);
+      border: 1px solid #0f75f5;
       > .collabo-search-bar__date--button {
-        border-left: 1px solid rgb(15, 117, 245);
+        border-left: 1px solid #0f75f5;
       }
     }
   }
@@ -27,7 +27,7 @@
     border: none;
     border-radius: 6px 0px 0px 6px;
     &.active {
-      color: rgb(11, 31, 72);
+      color: #0b1f48;
     }
   }
 
@@ -36,13 +36,13 @@
     align-items: center;
     justify-content: center;
     min-width: 3.4286rem;
-    background: rgb(255, 255, 255);
+    background: #ffffff;
     border-left: 1px solid rgb(186, 194, 204);
     border-radius: 0px 6px 6px 0px;
     transition: 0.3s;
     &:hover,
     &:focus {
-      border-left: 1px solid rgb(15, 117, 245);
+      border-left: 1px solid #0f75f5;
     }
     > img {
       width: 1.7143rem;
@@ -62,7 +62,7 @@
   justify-content: center;
   height: 11.1429rem;
   padding: 0rem 3.5rem 0rem 3.5714rem;
-  background: rgb(226, 235, 250);
+  background: #e2ebfa;
   border: 1px solid #318bff;
   border-radius: 10px;
   box-shadow: 0px 16px 12px 0px rgba(0, 113, 255, 0.05);
