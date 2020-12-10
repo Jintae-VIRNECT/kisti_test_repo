@@ -6,6 +6,7 @@
     popperClass="popover-language"
     @visible="toggle"
     :scrollHide="true"
+    :topOffset="11"
   >
     <button
       class="language-button"
