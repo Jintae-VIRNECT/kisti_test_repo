@@ -465,7 +465,7 @@ public class S3FileManagementService implements IFileManagementService {
                 }
 
                 // Delete the objects.
-                DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(bucketName)
+                DeleteObjectsRequest deleteObjectsRequest = new DeleteObjectsRequest(targetBucket)
                         .withKeys(keyVersions)
                         .withQuiet(false);
 
