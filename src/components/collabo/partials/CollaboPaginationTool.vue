@@ -34,10 +34,14 @@ export default {
       curPage: 1,
       pages: [],
       maxPage: 5,
+
+      emitFlag: true,
     }
   },
   watch: {
     currentPage(page) {
+      this.emitFlag = false
+      this.curPage = page
       if (page === 0) {
         this.curPage = 1
       }
@@ -51,11 +55,14 @@ export default {
     },
     curPage(page) {
       this.setPages()
-      this.$emit('current-page', page)
+      if (this.emitFlag) {
+        this.$emit('current-page', page)
+      }
     },
   },
   methods: {
     setCurrrent(page) {
+      this.emitFlag = true
       this.curPage = page
     },
     setPages() {
@@ -84,11 +91,13 @@ export default {
       }
     },
     prevPage() {
+      this.emitFlag = true
       if (this.curPage > 1) {
         this.curPage--
       }
     },
     nextPage() {
+      this.emitFlag = true
       if (this.curPage + 1 <= this.totalPage) {
         this.curPage++
       }
