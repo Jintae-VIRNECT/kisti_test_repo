@@ -17,7 +17,7 @@
       <p class="profile--maintext">{{ mainText }}</p>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
-    <role v-if="showRole" :role="role">{{ 'Master' }}</role>
+    <role v-if="showRole" :role="role">{{ role }}</role>
   </figure>
 </template>
 
@@ -63,7 +63,11 @@ export default {
   },
   computed: {
     showRole() {
-      return this.role === WORKSPACE_ROLE.MASTER || this.role === ROLE.MANAGER
+      return (
+        this.role === WORKSPACE_ROLE.MASTER ||
+        this.role === WORKSPACE_ROLE.MANAGER ||
+        this.role === ROLE.LEADER
+      )
     },
     useImage() {
       if (this.image && this.image.length > 0 && this.image !== 'default') {
