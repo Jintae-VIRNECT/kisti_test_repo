@@ -2,12 +2,15 @@ package database
 
 import (
 	"RM-RecordServer/data"
+	"log"
+	"os"
+	"strings"
 	"time"
 
-	"github.com/biezhi/gorm-paginator/pagination"
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/spf13/viper"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 type RecordingFileDB struct {
@@ -33,13 +36,27 @@ type RecordingFile struct {
 }
 
 func NewTable(dbDriver string, parameter string) *RecordingFileDB {
-	db, err := gorm.Open(dbDriver, parameter)
-	if err != nil {
-		panic("failed to connect database: " + err.Error())
+	gormConf := &gorm.Config{}
+	if viper.GetBool("general.devMode") {
+		gormConf.Logger = logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+			logger.Config{
+				SlowThreshold: time.Second, // Slow SQL threshold
+				LogLevel:      logger.Info, // Log level
+				Colorful:      true,        // Disable color
+			},
+		)
 	}
 
-	if viper.GetBool("general.devMode") {
-		db.LogMode(true)
+	var db *gorm.DB
+	var err error
+	if strings.ToLower(dbDriver) == "mysql" {
+		db, err = gorm.Open(mysql.Open(parameter), gormConf)
+		if err != nil {
+			panic("failed to connect database: " + err.Error())
+		}
+	} else {
+		panic("Unsupported DB driver: " + dbDriver)
 	}
 
 	db.AutoMigrate(RecordingFile{})
@@ -125,27 +142,19 @@ func (m *RecordingFileDB) Select(filter *data.Filter) ([]RecordingFile, int, err
 			tx = tx.Where("created_at < ?", t.Time)
 		}
 	}
-
-	if filter.Page != nil && filter.Limit != nil {
-		param := &pagination.Param{
-			DB:    tx,
-			Page:  *filter.Page,
-			Limit: *filter.Limit,
-		}
-
-		if filter.OrderBy != nil {
-			param.OrderBy = []string{*filter.OrderBy}
-		}
-
-		p := pagination.Paging(param, &records)
-		return records, p.TotalPage, nil
-	}
-
-	if filter.OrderBy != nil {
-		tx = tx.Order(*filter.OrderBy)
-	}
 	if filter.Limit != nil {
 		tx = tx.Limit(*filter.Limit)
+
+		// if exist page and limit, perform pagination
+		if filter.Page != nil {
+			page := *filter.Page
+			pageSize := *filter.Limit
+			offset := page * pageSize
+			tx = tx.Offset(offset)
+		}
+	}
+	if filter.OrderBy != nil {
+		tx = tx.Order(*filter.OrderBy)
 	}
 	tx.Find(&records)
 	return records, 0, nil

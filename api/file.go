@@ -28,7 +28,7 @@ type RecordingFiles struct {
 
 type ListRecordingFilesResponse struct {
 	TotalPages  int              `json:"totalPages,omitempty"`
-	CurrentPage int              `json:"currentPage,omitempty"`
+	CurrentPage int              `json:"currentPage"`
 	FileInfos   []RecordingFiles `json:"infos"`
 }
 
@@ -53,8 +53,8 @@ type ListRecordingFilesQuery struct {
 	//   - lt: little (<)
 	// - example: /remote/recorder/file?createdAt=ge:2020-08-13T09:23:02Z&createdAt=le:2020-08-13T09:23:02Z"
 	CreatedAt string `json:"createdAt" example:"ge:2020-08-13T09:23:02Z"`
-	// the number of the page returned in the current request
-	Page int `json:"page" example:"1"`
+	// the number of the page returned in the current request. start at 0.
+	Page int `json:"page" example:"0"`
 	// to define the number of items returned in the response
 	Limit int `json:"limit" example:"5"`
 	// to define the order of the returned response
