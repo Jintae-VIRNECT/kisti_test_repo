@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -76,6 +77,99 @@ public class HistoryDataRepository extends DataRepository {
                 List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
                 for (MemberHistory memberHistory : memberHistoryPage.getContent()) {
                     RoomHistory roomHistory = memberHistory.getRoomHistory();
+                    RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+                    roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+
+                    List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
+                            .filter(member-> !member.getMemberType().equals(MemberType.SECESSION))
+                            .map(member -> modelMapper.map(member, MemberInfoResponse.class))
+                            .collect(Collectors.toList());
+
+                    // find and get extra information from use-server using uuid
+                    for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+                        if(memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
+                            ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                            log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                            //todo://user infomation does not have role and role id change to workspace member info
+                            WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                            memberInfoResponse.setRole(workspaceMemberData.getRole());
+                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                            memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                            memberInfoResponse.setName(workspaceMemberData.getName());
+                            memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                            memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+                        }
+                    }
+
+                    memberInfoList.sort((t1, t2) -> {
+                        if (t1.getMemberType().equals(MemberType.LEADER)) {
+                            return 1;
+                        }
+                        return 0;
+                    });
+                    // Set Member List to Room Information Response
+                    roomHistoryInfoResponse.setMemberList(memberInfoList);
+
+                    roomHistoryInfoList.add(roomHistoryInfoResponse);
+                }
+
+                return new DataProcess<>(new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta));
+            }
+        }.asApiResponse();
+    }
+
+    public ApiResponse<RoomHistoryInfoListResponse> searchRoomHistoryPageList(
+            String workspaceId,
+            String userId,
+            String search,
+            Pageable pageable) {
+        return new RepoDecoder<Page<RoomHistory>, RoomHistoryInfoListResponse>(RepoDecoderType.READ) {
+            String sessionId;
+
+            @Override
+            Page<RoomHistory> loadFromDatabase() {
+                return historyService.getRoomHistory(workspaceId, search, pageable);
+            }
+
+            @Override
+            DataProcess<RoomHistoryInfoListResponse> invokeDataProcess() {
+                // for non-english systems.
+                //Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),", Pattern.UNICODE_CHARACTER_CLASS);
+
+                // get all member history by uuid
+                Page<RoomHistory> roomHistoryPage = loadFromDatabase();
+
+                for (RoomHistory roomHistory: roomHistoryPage.getContent()) {
+                    log.info("searchRoomHistoryPageList :: {}, {}", search, roomHistory.getTitle());
+                }
+
+                // Page Metadata
+                PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+                        .currentPage(pageable.getPageNumber())
+                        .currentSize(pageable.getPageSize())
+                        .numberOfElements(roomHistoryPage.getNumberOfElements())
+                        .totalPage(roomHistoryPage.getTotalPages())
+                        .totalElements(roomHistoryPage.getTotalElements())
+                        .last(roomHistoryPage.isLast())
+                        .build();
+
+                // find specific member has room history and room history is not null
+                // .sorted((roomHistory, t1) -> roomHistory.getEndDate().compareTo(t1.getEndDate()))
+                Map<RoomHistory, List<MemberHistory>> roomHistoryListMap = roomHistoryPage.getContent().stream()
+                        .filter(roomHistory -> {
+                            for(MemberHistory memberHistory : roomHistory.getMemberHistories()) {
+                                if(memberHistory.getUuid().equals(userId)
+                                && memberHistory.getRoomHistory() != null
+                                && !memberHistory.isHistoryDeleted()) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })
+                        .collect(Collectors.toMap(roomHistory -> roomHistory, RoomHistory::getMemberHistories));
+
+                List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
+                for (RoomHistory roomHistory : roomHistoryListMap.keySet()) {
                     RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
                     roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 

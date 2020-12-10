@@ -58,9 +58,10 @@ public class HistoryRestController implements IHistoryRestAPI {
     public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(String workspaceId, String userId, boolean paging, PageRequest pageable) {
         LogMessage.formedInfo(
                 TAG,
-                "REST API: GET " + REST_PATH +
-                        (workspaceId != null ? workspaceId : "{}") +
-                        (userId != null ? userId : "{}"),
+                "REST API: GET "
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}") + "/"
+                        + (userId != null ? userId : "{}"),
                 "getHistoryList"
         );
 
@@ -70,6 +71,29 @@ public class HistoryRestController implements IHistoryRestAPI {
         } else {
             apiResponse =  this.historyDataRepository.loadRoomHistoryList(workspaceId, userId,  pageable.ofSortBy());
         }
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(String workspaceId, String userId, String search, boolean paging, PageRequest pageable) {
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: GET "
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}")  + "/"
+                        + (userId != null ? userId : "{}") + "/"
+                        + (search != null ? search : "{}"),
+                "getHistoryList"
+        );
+
+        ApiResponse<RoomHistoryInfoListResponse> apiResponse;
+        apiResponse = this.historyDataRepository.searchRoomHistoryPageList(workspaceId, userId, search, pageable.ofSortBy());
+        /*if(paging) {
+            apiResponse = this.historyDataRepository.searchRoomHistoryPageList(workspaceId, userId, pageable.ofSortBy());
+        } else {
+            apiResponse =  this.historyDataRepository.loadRoomHistoryList(workspaceId, userId,  pageable.ofSortBy());
+        }*/
+
         return ResponseEntity.ok(apiResponse);
     }
 

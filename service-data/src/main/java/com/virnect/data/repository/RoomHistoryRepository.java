@@ -22,7 +22,7 @@ public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long> 
     @Query("select r from RoomHistory r where r.workspaceId = ?1")
     Page<RoomHistory> findRoomHistoryByWorkspaceId(final String workspaceId, Pageable pageable);
 
-    Page<RoomHistory> findByTitleIsContaining(final String title, Pageable pageable);
+    Page<RoomHistory> findByWorkspaceIdAndTitleIsContaining(final String workspaceId, final String title, Pageable pageable);
 
     List<RoomHistory> findByTitleIsContaining(final String title);
 
