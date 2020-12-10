@@ -148,27 +148,22 @@ export default {
     },
   },
   watch: {
-    collaboSatus: {
-      handler(status) {
-        this.setSearch({ status: status })
-      },
+    collaboSatus(status) {
+      this.setSearch({ status: status })
     },
-    searchText: {
-      handler(searchText) {
-        this.setSearch({
-          input: {
-            text: searchText,
-          },
-        })
-      },
+    searchText(searchText) {
+      this.setSearch({
+        input: {
+          text: searchText,
+        },
+      })
     },
-    useDate: {
-      handler(useDate) {
-        this.setSearch({
-          useDate: { useDate: useDate },
-        })
-      },
+    useDate(useDate) {
+      this.setSearch({
+        useDate: { useDate: useDate },
+      })
     },
+
     range: {
       handler(range) {
         this.setSearch({
