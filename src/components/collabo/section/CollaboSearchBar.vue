@@ -113,11 +113,6 @@ export default {
       searchText: '',
       useDate: false,
 
-      date: {
-        from: null,
-        to: null,
-      },
-
       range: {
         start: startDay,
         end: endDay,
@@ -153,13 +148,6 @@ export default {
     },
   },
   watch: {
-    calendars: {
-      handler() {
-        this.fromDate()
-        this.toDate()
-      },
-      deep: true,
-    },
     collaboSatus: {
       handler(status) {
         this.setSearch({ status: status })
@@ -195,29 +183,6 @@ export default {
   },
   methods: {
     ...mapActions(['setSearch']),
-    fromDate() {
-      const index = this.calendars.findIndex(cal => cal.name === 'search-from')
-      if (index < 0) return null
-
-      this.date.from = this.calendars[index].date
-      this.setSearch({
-        date: {
-          from: this.date.from,
-          to: this.date.to,
-        },
-      })
-    },
-    toDate() {
-      const index = this.calendars.findIndex(cal => cal.name === 'search-to')
-      if (index < 0) return null
-      this.date.to = this.calendars[index].date
-      this.setSearch({
-        date: {
-          from: this.date.from,
-          to: this.date.to,
-        },
-      })
-    },
     doSearch(e) {
       if (e.type === 'keypress' && e.key === 'Enter') {
         this.$eventBus.$emit('reload::list')
@@ -243,20 +208,22 @@ export default {
         this.useDate = true
       }
     },
+    initDate() {
+      let to = new Date()
+      let from = new Date()
+      from.setDate(from.getDate() - 7)
+      this.setSearch({
+        date: {
+          from: from,
+          to: to,
+        },
+      })
+    },
   },
 
   mounted() {
+    this.initDate()
     window.addEventListener('keypress', this.doSearch)
-
-    let to = new Date()
-    let from = new Date()
-    from.setDate(from.getDate() - 7)
-    this.setSearch({
-      date: {
-        from: from,
-        to: to,
-      },
-    })
   },
   beforeDestroy() {
     this.resetCondition()
@@ -264,272 +231,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-@import '~assets/style/mixin';
-.collabo-search-bar {
-  margin-top: 3rem;
-  .collabo-search-bar__date {
-    display: flex;
-    width: 100%;
-    // width: 25.2143rem;
-    height: 3.4286rem;
-    border: 1px solid rgb(186, 194, 204);
-    border-radius: 6px;
-    transition: 0.3s;
-    &:hover,
-    &:focus {
-      border: 1px solid rgb(15, 117, 245);
-      > .collabo-search-bar__date--buton {
-        border-left: 1px solid rgb(15, 117, 245);
-      }
-    }
-    // @include tablet {
-    //   width: 18.7857rem;
-    // }
-  }
-
-  .collabo-search-bar__date--input {
-    width: 100%;
-    height: 100%;
-    padding: 0px 0px 0px 1.0357rem;
-    color: #bac2cc;
-    font-weight: 500;
-    font-size: 1.0714rem;
-    border: none;
-    border-radius: 6px 0px 0px 6px;
-    &.active {
-      color: rgb(11, 31, 72);
-    }
-  }
-
-  .collabo-search-bar__date--button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 3.4286rem;
-    // height: 3.2857rem;
-    background: rgb(255, 255, 255);
-    border-left: 1px solid rgb(186, 194, 204);
-    border-radius: 0px 6px 6px 0px;
-    transition: 0.3s;
-    &:hover,
-    &:focus {
-      border-left: 1px solid rgb(15, 117, 245);
-    }
-    > img {
-      width: 1.7143rem;
-      height: 1.7143rem;
-
-      // &.off {
-      //   padding-bottom: 1px;
-      // }
-    }
-  }
-
-  .vc-pane-container {
-    width: 42.8571rem;
-    height: 22.3571rem;
-  }
-}
-
-.collabo-search-bar__wrapper {
-  display: flex;
-  align-items: center;
-  // justify-content: space-evenly;
-  justify-content: center;
-  height: 11.1429rem;
-  padding: 0rem 3.5rem 0rem 3.5714rem;
-  background: rgb(226, 235, 250);
-  border: 1px solid #318bff;
-  border-radius: 10px;
-  box-shadow: 0px 16px 12px 0px rgba(0, 113, 255, 0.05);
-}
-
-.collabo-search-bar__condition {
-  display: flex;
-  flex: 1 1 0;
-  // flex-basis: 0;
-  flex-direction: column;
-  // flex-grow: 1;
-  // flex-shrink: 1;
-  // align-items: center;
-  min-width: 0;
-  // padding-right: 1rem;
-  margin-right: 1rem;
-
-  &.status {
-    flex-shrink: 1;
-    min-width: 9.5715rem;
-    max-width: 11rem;
-  }
-
-  &.date {
-    flex-shrink: 0.5;
-    min-width: 12.5714rem;
-    max-width: 25.2143rem;
-  }
-
-  &.text {
-    flex-shrink: 1;
-    max-width: 35.1429rem;
-  }
-
-  &.submit {
-    flex-shrink: 2;
-    max-width: 10rem;
-  }
-
-  // &.padding {
-  //   padding-bottom: 0.3571rem;
-  // }
-
-  .datepicker {
-    width: 25.2143rem;
-    height: 3.4286rem;
-
-    .vdp-datepicker {
-      width: 21.7857rem;
-    }
-
-    .vdp-datepicker--input {
-      width: 21.7857rem;
-      height: 3.4286rem;
-      border: 1px solid #c2c6ce;
-    }
-  }
-
-  .calendar-button {
-    height: 3.4286rem;
-    border: 1px solid #c2c6ce;
-  }
-
-  .checkbox {
-    align-items: center;
-    // margin-left: 0.4286rem;
-
-    padding: 0;
-    > .checkbox-toggle {
-      width: 1.2857rem;
-      height: 1.2857rem;
-
-      &.toggle {
-        &:after {
-          position: absolute;
-          top: 0.2859rem;
-          left: 0.2144rem;
-          width: 0.5714rem;
-          height: 0.2143rem;
-          border-bottom: solid 2px #ffffff;
-          border-left: solid 2px #ffffff;
-          transform: rotate(-45deg);
-          content: '';
-        }
-      }
-    }
-    > .checkbox-text {
-      margin-left: 0.5714rem;
-      color: rgb(67, 75, 88);
-      font-weight: 500;
-      font-size: 0.8571rem;
-      opacity: 0.7;
-    }
-  }
-}
-
-.collabo-search-bar--input {
-  // width: 33.8571rem;
-  // width: 100%;
-  height: 3.2857rem;
-  padding: 0 0 0 1.1429rem;
-  color: #0b1f48;
-  font-weight: 500;
-  font-size: 1.0714rem;
-  letter-spacing: 0px;
-  background: #ffffff;
-  border: 1px solid #c2c6ce;
-  border-radius: 6px;
-  outline: none;
-  transition: 0.3s;
-  &:hover,
-  &:focus {
-    border: 1px solid rgb(15, 117, 245);
-  }
-
-  &::placeholder {
-    // padding-left: 1.1429rem;
-    color: #bac2cc;
-    font-weight: 500;
-    font-size: 1.0714rem;
-  }
-  // @include tablet {
-  //   width: 18.9286rem;
-  // }
-}
-
-.collabo-search-bar__status--list.popover--wrapper {
-  > .select-label {
-    width: 100%;
-    // width: 11rem;
-    // min-width: 10.1429rem;
-    height: 3.4286rem;
-    color: rgb(11, 31, 72);
-    background: rgb(255, 255, 255);
-    border: 1px solid rgb(186, 194, 204);
-    border-radius: 6px;
-
-    &:hover {
-      border: 1px solid rgb(15, 117, 245);
-      border-radius: 6px;
-    }
-  }
-}
-
-.collabo-search-bar--label {
-  width: 100%;
-  margin-bottom: 0.7857rem;
-  color: #0b1f48;
-  font-weight: 500;
-  font-size: 1.0715rem;
-  text-align: left;
-  opacity: 0.9;
-}
-
-.collabo-search-bar__condition--header {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  margin-bottom: 0.7857rem;
-  > .collabo-search-bar--label {
-    width: auto;
-    margin: 0;
-  }
-}
-
-.collabo-search-bar--submit {
-  // width: 10rem;
-  width: 100%;
-  height: 3.4286rem;
-  margin-top: 2.5rem;
-  font-weight: 500;
-  font-size: 1.0714rem;
-  background: rgb(10, 90, 191);
-  border-radius: 6px;
-  transition: 0.3s;
-  &:hover {
-    background: #0f75f5;
-  }
-
-  // @include tablet {
-  //   width: 8.5714rem;
-  // }
-}
-
-.collabo-search-bar__condition--divider {
-  width: 1px;
-  height: 1.1429rem;
-  margin: 0px 0.8929rem;
-  background: rgb(32, 51, 89);
-  opacity: 0.2;
-}
-</style>
