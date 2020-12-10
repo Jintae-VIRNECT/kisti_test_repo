@@ -2,6 +2,26 @@
 
 @import "common";
 
-@import "./header/header-main.scss";
-@import "./header/header-service.scss";
-@import "./header/header-workspace.scss";
+.header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: $header_z_index;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  height: $header_height;
+  background: #252525;
+}
+
+.header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header-logo {
+  height: 2.2286rem;
+  margin-right: 0.7143rem;
+}

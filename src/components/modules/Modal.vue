@@ -7,7 +7,7 @@
         :style="[innerWidth, innerHeight]"
         @click="clickHander"
       >
-        <div class="modal--header">
+        <div v-if="showHeader" class="modal--header">
           <p class="modal--title" v-html="title">Modal Header</p>
           <button
             v-if="true === showClose"
@@ -68,6 +68,10 @@ export default {
       require: true,
     },
     title: String,
+    showHeader: {
+      type: Boolean,
+      default: true,
+    },
     showClose: {
       type: Boolean,
       default: true,
@@ -92,9 +96,6 @@ export default {
       type: Boolean,
       default: false,
     },
-  },
-  data() {
-    return {}
   },
   computed: {
     innerWidth() {
@@ -153,9 +154,6 @@ export default {
       })
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 
@@ -187,8 +185,8 @@ export default {
     background-color: #ffffff;
     border: 1px solid rgba(#a9a9a9, 0.08);
     border-radius: 0.714em;
-    box-shadow: 0 0 0.714em 0 rgba($color_darkgray_1000, 0.07),
-      0 0.857em 0.857em 0 rgba($color_darkgray_1000, 0.3);
+    // box-shadow: 0 0 0.714em 0 rgba($color_darkgray_1000, 0.07),
+    //   0 0.857em 0.857em 0 rgba($color_darkgray_1000, 0.3);
   }
 
   .modal--header {
@@ -201,9 +199,9 @@ export default {
   }
 
   .modal--title {
-    color: rgb(11, 31, 72);
+    color: #0b1f48;
     font-weight: 500;
-    font-size: 18px;
+    font-size: 1.2857rem;
   }
 
   .modal--close {
@@ -215,7 +213,7 @@ export default {
     height: 1.714em;
     overflow: hidden;
     text-indent: -99px;
-    background: url(~assets/img/ic_close.svg) 50%/2em no-repeat;
+    background: url(~assets/image/ic_close.svg) 50%/2em no-repeat;
     opacity: 0.5;
 
     &:hover {

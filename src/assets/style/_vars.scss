@@ -1,21 +1,24 @@
 /* Layout */
-$header_height: 4rem;
+$header_height: 4.8571rem;
 
-/* Layout - Workspace */
-$welcome_height: 17.143rem; //156px + 64px + 64px
+/* Layout content */
+$content_min_width: 64.2857rem;
 
-/* Layout - Service */
-$subview_width: 25.714rem;
-$video_height: 7.143rem;
-$videolist_height: $video_height + 4.286rem;
-$share_width: 14.286rem;
-$tool_height: 5.714rem;
+// /* Layout - Workspace */
+// $welcome_height: 17.143rem; //156px + 64px + 64px
+
+// /* Layout - Service */
+// $subview_width: 25.714rem;
+// $video_height: 7.143rem;
+// $videolist_height: $video_height + 4.286rem;
+// $share_width: 14.286rem;
+// $tool_height: 5.714rem;
 
 /* Primary Color */
-$color_primary_dark: #005561;
-$color_primary_700: #0092a5;
-$color_primary: #00bcd5;
-$color_primary_500: #6bb4f9;
+$color_primary_dark: #003986;
+$color_primary_700: #145fc6;
+$color_primary: #0f75f5;
+$color_primary_500: #5c98f0;
 $color_primary_400: #bfddff;
 $color_primary_300: #d7e7f8;
 
@@ -54,7 +57,7 @@ $color_link: $color_primary_400;
 
 /* Border Color */
 $color_sub_border: #979797;
-$color_line_border: #eaeeee;
+$color_line_border: #303030;
 
 /* Color - background, border */
 $color_bg_default: $color_bg;
@@ -87,3 +90,5 @@ $font_family: "Noto Sans KR";
 $font_family2: "Roboto";
 // $font_family2: "Noto Sans";
 $font_family3: "Noto Sans SC";
+
+$header_z_index: 11;

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="29px" height="28px" viewBox="0 0 29 28" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>CD195AC0-2CC5-4D7F-BC89-A4DB9F116252@1x</title>
+    <defs>
+        <path d="M6,17 L10,17 L10,13 L6,13 L6,17 Z M6,22 L10,22 L10,18 L6,18 L6,22 Z M6,12 L10,12 L10,8 L6,8 L6,12 Z M11,17 L23,17 L23,13 L11,13 L11,17 Z M11,22 L23,22 L23,18 L11,18 L11,22 Z M11,8 L11,12 L23,12 L23,8 L11,8 Z" id="path-1"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-487.000000, -101.000000)">
+            <g id="menu_Remote" transform="translate(320.000000, 90.000000)">
+                <g transform="translate(0.000000, 10.000000)" id="02">
+                    <g transform="translate(167.000000, 0.000000)">
+                        <rect id="tr" x="0.5" y="1" width="28" height="28"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/action/view_list_24px" fill="#ADADAE" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

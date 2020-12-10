@@ -40,7 +40,7 @@ module.exports = {
         vueIndentScriptAndStyle: false
       }
     ],
-    "no-console": process.env.NODE_ENV === "production" ? "error" : "off"
+    // "no-console": process.env.NODE_ENV === "production" ? "error" : "off"
   },
   overrides: [
     {

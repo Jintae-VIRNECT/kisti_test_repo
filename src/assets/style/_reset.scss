@@ -91,6 +91,9 @@ body {
   font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
   line-height: 1.6;
 }
+html {
+  overflow: hidden;
+}
 
 button {
   -webkit-tap-highlight-color: transparent;
@@ -134,6 +137,7 @@ section {
 }
 
 body {
+  overflow: auto;
   color: #fff;
   &:lang(en) {
     // font-family: $roboto, $noto, sans-serif;
@@ -212,4 +216,11 @@ em {
 
 img {
   max-width: 100%;
+}
+
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+  outline: none;
 }
