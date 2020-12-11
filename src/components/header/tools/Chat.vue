@@ -1,9 +1,9 @@
 <template>
-  <tooltip :content="`Chatting on/off`">
+  <tooltip :content="`${$t('common.chatting')} on/off`">
     <toggle-button
       slot="body"
       customClass="toggle-header__small header-tools__chatbox"
-      :description="`Chatting on/off`"
+      :description="`${$t('common.chatting')} on/off`"
       size="2.429rem"
       :activeSrc="require('assets/image/call/ic_chat_toggle.svg')"
       @action="toggle"
