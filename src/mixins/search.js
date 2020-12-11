@@ -90,5 +90,17 @@ export default {
         return `${defaultFrom},${defaultTo}`
       }
     },
+    resetCondition() {
+      this.setSearch({
+        date: {
+          from: null,
+          to: null,
+        },
+        useDate: { useDate: false },
+        input: {
+          text: '',
+        },
+      })
+    },
   },
 }

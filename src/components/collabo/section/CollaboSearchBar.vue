@@ -24,7 +24,7 @@
           <div class="collabo-search-bar__condition--divider"></div>
           <check-box
             :text="$t('search.enable_search')"
-            :value.sync="useDate"
+            :value.sync="useDateOpt"
           ></check-box>
         </div>
         <v-date-picker
@@ -97,10 +97,11 @@ import DSelect from 'DashBoardSelect'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
 import calendarMixin from 'mixins/calendar'
+import searchMixin from 'mixins/search'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'CollaboSearchBar',
-  mixins: [confirmMixin, langMixin, calendarMixin],
+  mixins: [confirmMixin, langMixin, calendarMixin, searchMixin],
   components: {
     CheckBox,
     DSelect,
@@ -109,10 +110,11 @@ export default {
     let startDay = new Date()
     let endDay = new Date()
     endDay.setDate(endDay.getDate() - 7)
+
     return {
       collaboSatus: null,
       searchText: '',
-      useDate: false,
+      useDateOpt: false,
 
       range: {
         start: startDay,
@@ -153,7 +155,7 @@ export default {
         },
       })
     },
-    useDate(useDate) {
+    useDateOpt(useDate) {
       this.setSearch({
         useDate: { useDate: useDate },
       })
@@ -174,28 +176,17 @@ export default {
   methods: {
     ...mapActions(['setSearch']),
     doSearch(e) {
-      if (e.type === 'keypress' && e.key === 'Enter') {
-        this.$eventBus.$emit('reload::list')
-      } else if (e.type === 'click') {
+      const isEnter = e.type === 'keypress' && e.key === 'Enter'
+      const isClick = e.type === 'click'
+
+      if (isEnter || isClick) {
         this.$eventBus.$emit('reload::list')
       }
-    },
-    resetCondition() {
-      this.setSearch({
-        date: {
-          from: null,
-          to: null,
-        },
-        useDate: { useDate: false },
-        input: {
-          text: '',
-        },
-      })
     },
     toggleCalendarBtn() {
       this.calendarBtn = !this.calendarBtn
       if (this.calendarBtn) {
-        this.useDate = true
+        this.useDateOpt = true
       }
     },
     initDate() {
