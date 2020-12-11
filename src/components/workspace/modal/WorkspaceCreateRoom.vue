@@ -249,6 +249,8 @@ export default {
             this.$eventBus.$emit('devicedenied:show')
             return
           }
+        } else if (err.code === 7004) {
+          this.toastError(this.$t('service.file_maxsize'))
         } else {
           console.error(`${err.message} (${err.code})`)
         }
