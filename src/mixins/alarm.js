@@ -133,13 +133,25 @@ export default {
       )
     },
     /**
-     * 라이선스 만료 메시지
+     * 라이선스 만료 메시지 (협업 진행 중)
      */
     alarmLicense() {
       this.callNotify({
         type: 'license',
         info: this.$t('alarm.expire_title'),
         description: this.$t('alarm.expire_logout'),
+        duration: ALARM_DURATION_BUTTON,
+      })
+    },
+    /**
+     * 라이선스 만료 메시지 (홈화면)
+     */
+    alarmLicenseHome() {
+      this.callNotify({
+        type: 'license',
+        info: this.$t('alarm.expire_title'),
+        description: this.$t('alarm.expire_logout_home'),
+        duration: ALARM_DURATION_BUTTON,
       })
     },
     /**
