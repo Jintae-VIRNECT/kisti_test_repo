@@ -8,13 +8,6 @@
         <span class="board__header--description">
           {{ $t('chart.daily_collabo_description') }}
         </span>
-        <!-- <datepicker
-          class="board__header--datepicker"
-          :pickerName="'daily'"
-          :minimumView="'day'"
-          :maximumView="'day'"
-          :initValue="today"
-        ></datepicker> -->
         <v-date-picker
           class="chart-picker"
           v-model="date"
@@ -139,7 +132,6 @@ export default {
     return {
       dailyChart: null,
 
-      today: new Date(),
       date: new Date(),
 
       calendarVisible: false,
