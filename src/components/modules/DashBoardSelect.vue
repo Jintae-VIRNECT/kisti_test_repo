@@ -8,7 +8,7 @@
     :fullwidth="true"
     :scrollHide="true"
     :disabled="disabled"
-    :sahdow="sahdow"
+    :shadow="shadow"
     :topOffset="10"
     @visible="visible => (show = visible)"
   >
@@ -67,7 +67,7 @@ export default {
       type: Boolean,
       default: false,
     },
-    sahdow: {
+    shadow: {
       type: Boolean,
       default: true,
     },

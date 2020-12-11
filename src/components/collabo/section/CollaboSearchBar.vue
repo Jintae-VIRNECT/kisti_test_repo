@@ -12,7 +12,7 @@
           text="text"
           :selectedValue.sync="collaboSatus"
           :greyarrow="true"
-          :sahdow="false"
+          :shadow="false"
         ></d-select>
       </div>
 
