@@ -141,7 +141,7 @@ export default {
 		async kospoToken() {
 			const token = this.$route.query.token
 			const redirectTarget = this.$route.query.continue
-			if (!token) {
+			if (!token && this.$route.path === '/') {
 				location.href = this.$urls['sso']
 			}
 			try {
