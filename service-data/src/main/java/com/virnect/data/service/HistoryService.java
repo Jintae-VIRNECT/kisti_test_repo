@@ -16,8 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.virnect.data.repository.HistorySpecifications.equalWorkspaceId;
-import static com.virnect.data.repository.HistorySpecifications.searchRoomHistory;
+import static com.virnect.data.repository.HistorySpecifications.*;
 import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
@@ -59,7 +58,8 @@ public class HistoryService {
     }
 
     public Page<RoomHistory> getRoomHistory(String workspaceId, String search, Pageable pageable) {
-        return this.roomHistoryRepository.findAll(where(equalWorkspaceId(workspaceId)).and(searchRoomHistory(search)), pageable);
+        return this.roomHistoryRepository.findAll(findByTest(workspaceId, search), pageable);
+        //return this.roomHistoryRepository.findAll(where(equalWorkspaceId(workspaceId)).and(searchRoomHistory(search)), pageable);
         //return this.roomHistoryRepository.findByWorkspaceIdAndTitleIsContaining(workspaceId, search, pageable);
     }
 

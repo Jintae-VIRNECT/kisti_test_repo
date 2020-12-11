@@ -27,23 +27,34 @@ public class HistorySpecifications {
     public static Specification<RoomHistory> findByTest(String workspaceId, String keyword) {
         return (Specification<RoomHistory>) ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+
+
+            Join<RoomHistory, MemberHistory> roomJoinMember = root.join("RoomHistory.room_history_id", JoinType.LEFT);
             if(workspaceId != null) {
+                predicates.add(criteriaBuilder.equal(roomJoinMember.get("workspaceId"), workspaceId));
+            }
+
+            if(keyword != null) {
+                predicates.add(criteriaBuilder.like(roomJoinMember.get("title"), "%" + keyword + "%"));
+            }
+
+            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+
+            /*if(workspaceId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("workspaceId"), workspaceId));
             }
 
             if(keyword != null) {
                 predicates.add(criteriaBuilder.like(root.get("title"), "%" + keyword + "%"));
-            }
-
-            Join<RoomHistory, MemberHistory> roomJoinMember = root.join("room_history_id");
-
-            Path
+            }*/
 
 
-            return query
-                    .where(criteriaBuilder.and(predicates.toArray()))
+
+            /*return query
+                    .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
                     .distinct(true)
-                    .getRestriction();
+                    .getRestriction();*/
 
             //criteriaBuilder.equal(root)
         });
