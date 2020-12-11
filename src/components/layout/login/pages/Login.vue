@@ -141,11 +141,8 @@ export default {
 		async kospoToken() {
 			const token = this.$route.query.token
 			const redirectTarget = this.$route.query.continue
-			if (!token) {
+			if (!token && !redirectTarget.match('/qr_login_center')) {
 				location.href = this.$urls['sso']
-			} else if (redirectTarget.match('/qr_login_center')) {
-				this.checkToken()
-				return false
 			}
 			try {
 				const res = await AuthService.login({ params: { token } })
