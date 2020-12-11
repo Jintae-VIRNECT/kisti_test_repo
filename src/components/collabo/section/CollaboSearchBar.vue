@@ -96,10 +96,11 @@ import CheckBox from 'CheckBox'
 import DSelect from 'DashBoardSelect'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
+import calendarMixin from 'mixins/calendar'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'CollaboSearchBar',
-  mixins: [confirmMixin, langMixin],
+  mixins: [confirmMixin, langMixin, calendarMixin],
   components: {
     CheckBox,
     DSelect,
@@ -116,12 +117,6 @@ export default {
       range: {
         start: startDay,
         end: endDay,
-      },
-
-      masks: {
-        input: 'YYYY-MM-DD',
-        title: 'YYYY-MM',
-        weekdays: 'WWW',
       },
 
       calendarBtn: false,

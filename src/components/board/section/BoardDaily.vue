@@ -111,10 +111,12 @@ import FigureBoard from 'FigureBoard'
 import { hourLabels } from 'utils/chartDatas'
 import chartMixin from 'mixins/chart'
 import langMixin from 'mixins/language'
+import calendarMixin from 'mixins/calendar'
+
 import { mapActions } from 'vuex'
 export default {
   name: 'BoardDaily',
-  mixins: [chartMixin, langMixin],
+  mixins: [chartMixin, langMixin, calendarMixin],
   components: {
     Card,
     ChartLegend,
@@ -136,13 +138,10 @@ export default {
   data() {
     return {
       dailyChart: null,
+
       today: new Date(),
       date: new Date(),
-      masks: {
-        input: 'YYYY-MM-DD',
-        title: 'YYYY-MM',
-        weekdays: 'WWW',
-      },
+
       calendarVisible: false,
     }
   },
