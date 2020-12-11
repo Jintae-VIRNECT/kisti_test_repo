@@ -52,7 +52,7 @@
         </div>
       </el-card>
       <!-- 계정 정보 -->
-      <el-card>
+      <!-- <el-card>
         <div slot="header">
           <h3>{{ $t('profile.account.title') }}</h3>
         </div>
@@ -91,7 +91,7 @@
             </el-button>
           </div>
         </div>
-      </el-card>
+      </el-card> -->
     </div>
     <!-- 모달 -->
     <image-change-modal
@@ -130,7 +130,7 @@ import filterMixin from '@/mixins/filters'
 
 export default {
   mixins: [filterMixin],
-  middleware: ['default', 'profile'],
+  middleware: ['default'],
   components: {
     ImageChangeModal,
     NicknameChangeModal,
