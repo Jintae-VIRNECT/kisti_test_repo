@@ -9,7 +9,7 @@
           {{ $t('chart.daily_collabo_description') }}
         </span>
         <v-date-picker
-          class="chart-picker"
+          class="board__picker"
           v-model="date"
           :masks="masks"
           :popover="{ visibility: 'click', placement: 'auto-start' }"
@@ -18,16 +18,16 @@
           @popoverWillHide="toggleCalendarBtn"
         >
           <template v-slot="{ inputValue, inputEvents, togglePopover }">
-            <div class="collabo-search-bar__date">
+            <div class="board__picker--wrapper">
               <input
-                class="collabo-search-bar__date--input"
+                class="board__picker--input"
                 :class="{ active: calendarVisible }"
                 :value="inputValue"
                 v-on="inputEvents"
                 readonly
               />
               <button
-                class="collabo-search-bar__date--button"
+                class="board__picker--button"
                 @click="togglePopover({ placement: 'auto-start' })"
               >
                 <img
