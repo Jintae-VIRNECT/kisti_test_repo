@@ -294,12 +294,12 @@ export default {
 .table {
   height: 100%;
 }
+
 .table__column {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 4rem;
-  // background-color: #f5f7fa;
   border-top: solid;
   border-top-color: #dcdcdc;
   border-top-width: 1px;
@@ -331,7 +331,6 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  // width: 68.1429rem;
   height: 4.4286rem;
   margin-bottom: 8px;
   background: #ffffff;
@@ -341,12 +340,12 @@ export default {
   transition: 0.3s;
 
   &.active {
-    background: rgb(234, 242, 255);
-    border: 1px solid rgb(55, 144, 255);
+    background: #eaf2ff;
+    border: 1px solid #3790ff;
   }
   &:hover {
-    background: rgb(234, 242, 255);
-    border: 1px solid rgb(55, 144, 255);
+    background: #eaf2ff;
+    border: 1px solid #3790ff;
     cursor: pointer;
   }
 
@@ -354,7 +353,7 @@ export default {
     border: none;
     box-shadow: none;
     &:hover {
-      background: rgb(255, 255, 255);
+      background: #ffffff;
       cursor: auto;
     }
   }
