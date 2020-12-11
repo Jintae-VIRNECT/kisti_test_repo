@@ -102,6 +102,7 @@ import ChartLegend from 'Legend'
 import FigureBoard from 'FigureBoard'
 
 import { hourLabels } from 'utils/chartDatas'
+
 import chartMixin from 'mixins/chart'
 import langMixin from 'mixins/language'
 import calendarMixin from 'mixins/calendar'
@@ -114,7 +115,6 @@ export default {
     Card,
     ChartLegend,
     FigureBoard,
-    // Datepicker,
   },
   props: {
     daily: {
