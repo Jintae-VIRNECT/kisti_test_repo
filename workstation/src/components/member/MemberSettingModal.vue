@@ -18,12 +18,12 @@
             />
           </div>
           <span>{{ data.nickname }}</span>
-          <el-button
+          <!-- <el-button
             v-if="$isOnpremise && canKick"
             @click="$emit('change-password')"
           >
             {{ $t('members.password.title') }}
-          </el-button>
+          </el-button> -->
         </dd>
         <dt>{{ $t('members.setting.email') }}</dt>
         <dd>{{ data.email }}</dd>
@@ -96,7 +96,11 @@
       </el-form>
     </div>
     <div slot="footer">
-      <el-button v-show="canKick" @click="$emit('kick')">
+      <el-button
+        v-show="canKick"
+        @click="$emit('kick')"
+        style="visibility: hidden;"
+      >
         {{
           $isOnpremise ? $t('members.delete.title') : $t('members.setting.kick')
         }}
