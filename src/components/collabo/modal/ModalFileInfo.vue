@@ -3,8 +3,8 @@
     :title="title"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
-    :width="width"
-    :height="height"
+    :width="'75.2143rem'"
+    :height="'50.4286rem'"
     customClass="file-info"
   >
     <div class="file-list">
@@ -12,10 +12,10 @@
         @play="openPlayModal"
         :showToggleHeader="showToggleHeader"
         :showPlayButton="showPlayButton"
-        :headers="headers"
-        :columns="columns"
+        :headers="getHeader(type)"
+        :columns="getColumns(type)"
         :datas="fileList"
-        :renderOpts="renderOpts"
+        :renderOpts="getRenderer(type)"
         :emptyText="''"
         :type="type"
       >
@@ -59,11 +59,13 @@ import IconButton from 'components/modules/IconButton'
 import FileTable from 'FileTable'
 import { proxyUrl } from 'utils/file'
 
+import fileInfoMixin from 'mixins/fileInfo'
+
 import { getLocalRecordFileUrl, getServerRecordFileUrl } from 'api/http/file'
 
 export default {
   name: 'ModalFileInfo',
-
+  mixins: [fileInfoMixin],
   components: {
     FileTable,
     IconButton,
@@ -92,27 +94,6 @@ export default {
     deletable: {
       type: Boolean,
       default: false,
-    },
-    columns: {
-      type: Array,
-    },
-    download: {
-      type: Function,
-    },
-    deleteFile: {
-      type: Function,
-    },
-    renderOpts: {
-      type: Array,
-    },
-    headers: {
-      type: Array,
-    },
-    height: {
-      type: String,
-    },
-    width: {
-      type: String,
     },
     showToggleHeader: {
       type: Boolean,

@@ -131,36 +131,22 @@
 
         <file-info
           type="server"
-          :width="'75.2143rem'"
-          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.server_record')"
           :fileList="fileList"
           :visible.sync="serverRecord"
           :deletable="isMaster"
-          :headers="getHeader('server')"
-          :columns="getColumns('server')"
-          :download="download"
-          :deleteFile="deleteFile"
-          :renderOpts="getRenderer('server')"
           :showToggleHeader="true"
           :showPlayButton="true"
         ></file-info>
 
         <file-info
           type="local"
-          :width="'75.2143rem'"
-          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.local_record')"
           :fileList="fileList"
           :visible.sync="localRecord"
           :deletable="isMaster"
-          :headers="getHeader('local')"
-          :columns="getColumns('local')"
-          :download="download"
-          :deleteFile="deleteFile"
-          :renderOpts="getRenderer('local')"
           :showToggleHeader="true"
           :showPlayButton="true"
         >
@@ -168,18 +154,11 @@
 
         <file-info
           type="attach"
-          :width="'75.2143rem'"
-          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.attach_file')"
           :fileList="fileList"
           :visible.sync="file"
           :deletable="isMaster"
-          :headers="getHeader('attach')"
-          :columns="getColumns('attach')"
-          :download="download"
-          :deleteFile="deleteFile"
-          :renderOpts="getRenderer('attach')"
           :showToggleHeader="true"
           :showPlayButton="false"
         >
@@ -207,12 +186,11 @@ import {
 } from 'api/http/file'
 
 import { mapActions } from 'vuex'
-import fileInfoMixin from 'mixins/fileInfo'
 import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'CollaboHistory',
-  mixins: [confirmMixin, fileInfoMixin],
+  mixins: [confirmMixin],
   components: {
     CountButton,
     CollaboStatus,
