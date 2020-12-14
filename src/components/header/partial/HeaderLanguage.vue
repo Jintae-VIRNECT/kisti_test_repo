@@ -85,11 +85,16 @@ export default {
 </script>
 
 <style lang="scss">
-.language-button {
-  width: 2.4286rem;
-  height: 2.4286rem;
-  > img {
-    padding-top: 2px;
+.popover--wrapper {
+  > .language-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > img {
+      width: 34px;
+      height: 34px;
+    }
   }
 }
 
