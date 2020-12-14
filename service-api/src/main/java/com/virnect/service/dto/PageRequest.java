@@ -56,6 +56,7 @@ public final class PageRequest {
         }
     }
 
+    @Deprecated
     public org.springframework.data.domain.PageRequest of() {
         String strSort = Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate, DESC" : this.sort;
         String[] sortQuery = strSort.split(",");

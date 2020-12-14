@@ -32,6 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.virnect.data.repository.RoomSpecifications.joinMember;
+
 @Slf4j
 @Service
 //@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
@@ -136,8 +138,21 @@ public class SessionService {
         return roomList;
     }
 
+    @Deprecated
     public Page<Room> getRoomPageList(String workspaceId, Pageable pageable) {
         return this.roomRepository.findRoomByWorkspaceId(workspaceId, pageable);
+    }
+
+    public Page<Room> getRoomPageList(String workspaceId, String userId, Pageable pageable) {
+        return this.roomRepository.findAll(joinMember(workspaceId, userId), pageable);
+    }
+
+    public Page<Room> getRoomPageList(String workspaceId, String userId, String search, Pageable pageable) {
+        return this.roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
+    }
+
+    public Page<Room> getRoomPageList(String workspaceId, List<String> userIds, String search, Pageable pageable) {
+        return this.roomRepository.findAll(joinMember(workspaceId, userIds, search), pageable);
     }
 
     //

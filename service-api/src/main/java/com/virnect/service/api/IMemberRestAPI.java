@@ -24,6 +24,7 @@ public interface IMemberRestAPI {
     ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(
             @PathVariable(name = "workspaceId") String workspaceId,
             @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size
     );
@@ -40,6 +41,7 @@ public interface IMemberRestAPI {
             @PathVariable(name = "workspaceId") String workspaceId,
             @PathVariable(name = "userId") String userId,
             @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size
     );
@@ -57,6 +59,7 @@ public interface IMemberRestAPI {
             @PathVariable(name = "sessionId") String sessionId,
             @PathVariable(name = "userId") String userId,
             @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size
     );

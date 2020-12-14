@@ -27,12 +27,12 @@ public class MemberDataRepository extends DataRepository {
     private static final String TAG = MemberDataRepository.class.getSimpleName();
 
     //========================================= MEMBER INFORMATION RELATION =================================================//
-    public ApiResponse<WorkspaceMemberInfoListResponse> loadMemberList(String workspaceId, String filter, int page, int size) {
+    public ApiResponse<WorkspaceMemberInfoListResponse> loadMemberList(String workspaceId, String filter, String search, int page, int size) {
         return new RepoDecoder<ApiResponse<WorkspaceMemberInfoListResponse>, WorkspaceMemberInfoListResponse>(RepoDecoderType.FETCH) {
             @Override
             ApiResponse<WorkspaceMemberInfoListResponse> loadFromDatabase() {
                 log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
-                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, page, size);
+                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, search, page, size);
             }
 
             @Override
@@ -51,12 +51,12 @@ public class MemberDataRepository extends DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<MemberInfoListResponse> loadMemberList(String workspaceId, String userId, String filter, int page, int size) {
+    public ApiResponse<MemberInfoListResponse> loadMemberList(String workspaceId, String userId, String filter, String search, int page, int size) {
         return new RepoDecoder<ApiResponse<WorkspaceMemberInfoListResponse>, MemberInfoListResponse>(RepoDecoderType.FETCH) {
             @Override
             ApiResponse<WorkspaceMemberInfoListResponse> loadFromDatabase() {
                 log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
-                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, page, size);
+                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, search, page, size);
             }
 
             @Override
@@ -98,12 +98,12 @@ public class MemberDataRepository extends DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<MemberInfoListResponse> loadMemberList(String workspaceId, String sessionId, String userId, String filter, int page, int size) {
+    public ApiResponse<MemberInfoListResponse> loadMemberList(String workspaceId, String sessionId, String userId, String filter, String search, int page, int size) {
         return new RepoDecoder<ApiResponse<WorkspaceMemberInfoListResponse>, MemberInfoListResponse>(RepoDecoderType.FETCH) {
             @Override
             ApiResponse<WorkspaceMemberInfoListResponse> loadFromDatabase() {
                 log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
-                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, page, size);
+                return workspaceRestService.getWorkspaceMemberInfoList(workspaceId, filter, search, page, size);
             }
 
             @Override
