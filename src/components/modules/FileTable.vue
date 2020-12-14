@@ -8,7 +8,7 @@
         v-show="showToggleHeader && datas.length > 0"
       >
         <toggle-button
-          size="1.714em"
+          size="1.75em"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
           :inactiveSrc="require('assets/image/ic_ckeck_select.svg')"
@@ -39,7 +39,7 @@
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
             <toggle-button
-              size="1.714em"
+              size="1.75em"
               :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
               :inactiveSrc="require('assets/image/ic_ckeck_select.svg')"
