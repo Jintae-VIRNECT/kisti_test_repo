@@ -30,6 +30,7 @@ export default {
       &:hover {
         opacity: 0.8;
       }
+      transition: 0.3s;
     }
   }
 }
