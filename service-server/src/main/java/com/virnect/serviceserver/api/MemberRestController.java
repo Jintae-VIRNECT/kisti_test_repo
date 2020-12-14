@@ -34,36 +34,49 @@ public class MemberRestController implements IMemberRestAPI {
     }
 
     @Override
-    public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(String workspaceId, String filter, int page, int size) {
+    public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(String workspaceId, String filter, String search, int page, int size) {
         //log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
         log.info("REST API: GET {}/{}",
                 REST_PATH,
                 workspaceId != null ? workspaceId: "{}");
         //increase page number + 1, cause page index starts 0
-        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(workspaceId, filter, page + 1, size);
+        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(workspaceId, filter, search, page + 1, size);
         return ResponseEntity.ok(apiResponse);
     }
 
     @Override
-    public ResponseEntity<ApiResponse<MemberInfoListResponse>> getMembers(String workspaceId, String userId, String filter, int page, int size) {
+    public ResponseEntity<ApiResponse<MemberInfoListResponse>> getMembers(String workspaceId, String userId, String filter, String search, int page, int size) {
         log.info("REST API: GET {}/{}/{}",
                 REST_PATH,
                 workspaceId != null ? workspaceId: "{}",
                 userId != null ? userId: "{}");
         //increase page number + 1, cause page index starts 0
-        ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(workspaceId, userId, filter, page + 1, size);
+        ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(
+                workspaceId,
+                userId,
+                filter,
+                search,
+                page + 1,
+                size);
         return ResponseEntity.ok(apiResponse);
     }
 
     @Override
-    public ResponseEntity<ApiResponse<MemberInfoListResponse>> getMembers(String workspaceId, String sessionId, String userId, String filter, int page, int size) {
+    public ResponseEntity<ApiResponse<MemberInfoListResponse>> getMembers(String workspaceId, String sessionId, String userId, String filter, String search, int page, int size) {
         log.info("REST API: GET {}/{}/{}/{}",
                 REST_PATH,
                 workspaceId != null ? workspaceId: "{}",
                 sessionId != null ? sessionId: "{}",
                 userId != null ? userId: "{}");
         //increase page number + 1, cause page index starts 0
-        ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(workspaceId, sessionId, userId, filter, page + 1, size);
+        ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(
+                workspaceId,
+                sessionId,
+                userId,
+                filter,
+                search,
+                page + 1,
+                size);
         return ResponseEntity.ok(apiResponse);
     }
 

@@ -69,13 +69,13 @@ public class HistoryRestController implements IHistoryRestAPI {
         if(paging) {
             apiResponse = this.historyDataRepository.loadRoomHistoryPageList(workspaceId, userId, pageable.ofSortBy());
         } else {
-            apiResponse =  this.historyDataRepository.loadRoomHistoryList(workspaceId, userId,  pageable.ofSortBy());
+            apiResponse =  this.historyDataRepository.loadRoomHistoryList(workspaceId, userId, pageable.ofSortBy());
         }
         return ResponseEntity.ok(apiResponse);
     }
 
     @Override
-    public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(String workspaceId, String userId, String search, boolean paging, PageRequest pageable) {
+    public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(String workspaceId, String userId, String search, PageRequest pageable) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: GET "
@@ -86,13 +86,11 @@ public class HistoryRestController implements IHistoryRestAPI {
                 "getHistoryList"
         );
 
-        ApiResponse<RoomHistoryInfoListResponse> apiResponse;
-        apiResponse = this.historyDataRepository.searchRoomHistoryPageList(workspaceId, userId, search, pageable.ofSortBy());
-        /*if(paging) {
-            apiResponse = this.historyDataRepository.searchRoomHistoryPageList(workspaceId, userId, pageable.ofSortBy());
-        } else {
-            apiResponse =  this.historyDataRepository.loadRoomHistoryList(workspaceId, userId,  pageable.ofSortBy());
-        }*/
+        ApiResponse<RoomHistoryInfoListResponse> apiResponse = this.historyDataRepository.searchRoomHistoryPageList(
+                workspaceId,
+                userId,
+                search,
+                pageable.ofSortBy());
 
         return ResponseEntity.ok(apiResponse);
     }

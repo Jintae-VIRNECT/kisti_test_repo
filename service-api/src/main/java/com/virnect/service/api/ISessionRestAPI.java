@@ -84,6 +84,20 @@ public interface ISessionRestAPI {
             @ApiIgnore PageRequest pageRequest
     );
 
+    @ApiOperation(value = "Search Room Information List", notes = "검색 기준으로 원격협헙 방 리스트 조회하는 API 입니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
+            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
+    })
+    @GetMapping(value = "room/search")
+    ResponseEntity<ApiResponse<RoomInfoListResponse>> getRoomList(
+            @RequestParam(name = "workspaceId") String workspaceId,
+            @RequestParam(name = "userId") String userId,
+            @RequestParam(name = "search", required = false) String search,
+            @ApiIgnore PageRequest pageRequest
+    );
+
     @ApiOperation(value = "Load Room Detail Information", notes = "특정 원격협업 방 상세 정보를 조회하는 API 입니다.")
     @GetMapping(value = "room/{workspaceId}/{sessionId}")
     ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomById(

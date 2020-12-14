@@ -21,4 +21,16 @@ public class PageMetadataResponse {
     private long totalElements;
     @ApiModelProperty(value = "Whether the last page", notes = "check last page", example = "false")
     private boolean last;
+
+    @Override
+    public String toString() {
+        return "PageMetadataResponse{" +
+                "currentPage='" + currentPage + '\'' +
+                ", currentSize='" + currentSize + '\'' +
+                ", numberOfElements='" + numberOfElements + '\'' +
+                ", totalPage='" + totalPage + '\'' +
+                ", totalElements='" + totalElements + '\'' +
+                ", last='" + last + '\'' +
+                '}';
+    }
 }
