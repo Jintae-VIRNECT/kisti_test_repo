@@ -146,11 +146,11 @@ export default {
 			}
 			try {
 				const res = await AuthService.login({ params: { token } })
-				if (res.code !== 200) throw new Error()
+				if (res.code !== 200) throw new Error(res.message)
 			} catch (e) {
 				this.alertMessage(
 					this.$t('login.networkError.title'),
-					this.$t('login.networkError.contents'),
+					e.toString(),
 					'error',
 				)
 			}
