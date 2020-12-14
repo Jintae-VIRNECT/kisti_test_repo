@@ -122,7 +122,7 @@ export default {
   methods: {
     checkLength() {
       if (!this.useTranslate) return
-      if (this.inputText.length >= 200) {
+      if (this.inputText.length > 200) {
         this.inputText = this.inputText.substr(0, 200)
         this.toastDefault(this.$t('service.chat_text_exceed'))
       }
@@ -168,6 +168,7 @@ export default {
           console.error(err)
         }
       } else if (this.inputText.length > 0) {
+        this.checkLength()
         this.$call.sendChat(this.inputText, this.translate.code)
       }
 
