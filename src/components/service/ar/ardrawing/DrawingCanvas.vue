@@ -219,6 +219,13 @@ export default {
         object.tId = aId
       }
     },
+    windowResize() {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.optimizeCanvasSize()
+        }, 1000)
+      })
+    },
     optimizeCanvasSize() {
       if (!this.file || !this.file.id) return
       const canvas = this.canvas
@@ -257,7 +264,7 @@ export default {
   },
   /* Lifecycles */
   created() {
-    window.addEventListener('resize', this.optimizeCanvasSize)
+    window.addEventListener('resize', this.windowResize)
     if (this.file && this.file.id) {
       setTimeout(() => {
         this.initCanvas()
@@ -265,7 +272,7 @@ export default {
     }
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.optimizeCanvasSize)
+    window.removeEventListener('resize', this.windowResize)
   },
 }
 </script>
