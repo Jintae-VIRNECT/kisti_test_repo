@@ -9,6 +9,7 @@ import com.virnect.service.constraint.PushConstants;
 import com.virnect.service.dto.*;
 import com.virnect.service.dto.feign.PushResponse;
 import com.virnect.service.dto.feign.UserInfoResponse;
+import com.virnect.service.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.service.dto.feign.WorkspaceMemberInfoResponse;
 import com.virnect.service.dto.service.request.*;
 import com.virnect.service.dto.service.response.*;
@@ -466,7 +467,7 @@ public class SessionDataRepository extends DataRepository {
         return new RepoDecoder<Page<Room>, RoomInfoListResponse>(RepoDecoderType.READ) {
             @Override
             Page<Room> loadFromDatabase() {
-                return sessionService.getRoomPageList(workspaceId, pageable);
+                return sessionService.getRoomPageList(workspaceId, userId, pageable);
             }
 
             @Override
@@ -488,7 +489,7 @@ public class SessionDataRepository extends DataRepository {
                     log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
                 }
 
-                Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
+                /*Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
                         .filter(room -> {
                             if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
                                 return true;
@@ -508,11 +509,11 @@ public class SessionDataRepository extends DataRepository {
                     for (Member member : roomListMap.get(room)) {
                         log.info("mapping value invokeDataProcess: {}", member.getUuid());
                     }
-                }
+                }*/
 
                 List<RoomInfoResponse> roomInfoList = new ArrayList<>();
-                //for (Room room : roomList) {
-                for (Room room: roomListMap.keySet()) {
+                //for (Room room: roomListMap.keySet()) {
+                for (Room room : roomPage.getContent()) {
                     RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
                     roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
@@ -546,6 +547,113 @@ public class SessionDataRepository extends DataRepository {
         }.asApiResponse();
     }
 
+    public ApiResponse<RoomInfoListResponse> searchRoomPageList(
+            String workspaceId,
+            String userId,
+            String search,
+            Pageable pageable) {
+        return new RepoDecoder<Page<Room>, RoomInfoListResponse>(RepoDecoderType.READ) {
+            List<MemberInfoResponse> memberInfoList = new ArrayList<>();
+
+            private List<MemberInfoResponse> fetchFromRepository() {
+                // fetch workspace member information
+                ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
+                        workspaceId,
+                        "remote",
+                        search,
+                        pageable.getPageNumber(),
+                        pageable.getPageSize()
+                );
+
+                List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
+                List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+                        .map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+                        .collect(Collectors.toList());
+
+                log.info("fetchFromRepository::searchRoomPageList:: {}", feignResponse.getData().getPageMeta());
+
+                for (MemberInfoResponse memberInfoResponse: memberInfoList) {
+                    log.info("fetchFromRepository::searchRoomPageList:: {}", memberInfoResponse.toString());
+                }
+
+                return memberInfoList;
+            }
+
+
+            @Override
+            Page<Room> loadFromDatabase() {
+                List<String> userIds = new ArrayList<>();
+                for (MemberInfoResponse memberInfo: memberInfoList) {
+                    if(memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
+                        //if memberInfo is empty
+                        log.info("loadFromDatabase::searchRoomPageList:: some member dose not have uuid");
+                    } else {
+                        userIds.add(memberInfo.getUuid());
+                    }
+                }
+                if(userIds.isEmpty()) {
+                    log.info("loadFromDatabase::searchRoomPageList::memberInfoList is empty can not find, search with room title");
+                    return sessionService.getRoomPageList(workspaceId, userId, search, pageable);
+                } else {
+                    log.info("loadFromDatabase::searchRoomPageList::memberInfoList is not empty");
+                    return sessionService.getRoomPageList(workspaceId, userIds, search, pageable);
+                }
+            }
+
+            @Override
+            DataProcess<RoomInfoListResponse> invokeDataProcess() {
+                memberInfoList = fetchFromRepository();
+
+                //search all activated room
+                Page<Room> roomPage = loadFromDatabase();
+
+                // Page Metadata
+                PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+                        .currentPage(pageable.getPageNumber())
+                        .currentSize(pageable.getPageSize())
+                        .numberOfElements(roomPage.getNumberOfElements())
+                        .totalPage(roomPage.getTotalPages())
+                        .totalElements(roomPage.getTotalElements())
+                        .last(roomPage.isLast())
+                        .build();
+
+                for (Room room : roomPage.getContent()) {
+                    log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
+                }
+
+                List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+                for (Room room: roomPage.getContent()) {
+                    RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+                    roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+                    // Mapping Member List Data to Member Information List
+                    List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
+                            .filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+                            .map(member -> modelMapper.map(member, MemberInfoResponse.class))
+                            .collect(Collectors.toList());
+
+                    // find and get extra information from workspace-server using uuid
+                    for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+                        if(memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
+                            ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                            log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                            WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                            memberInfoResponse.setRole(workspaceMemberData.getRole());
+                            memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                            memberInfoResponse.setName(workspaceMemberData.getName());
+                            memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                            memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+                        }
+                    }
+                    roomInfoResponse.setMemberList(memberInfoList);
+
+                    roomInfoList.add(roomInfoResponse);
+                }
+                return new DataProcess<>(new RoomInfoListResponse(roomInfoList, pageMeta));
+            }
+        }.asApiResponse();
+    }
+
     public ApiResponse<RoomInfoListResponse> loadRoomList(
             String workspaceId,
             String userId,
@@ -554,7 +662,7 @@ public class SessionDataRepository extends DataRepository {
         return new RepoDecoder<Page<Room>, RoomInfoListResponse>(RepoDecoderType.READ) {
             @Override
             Page<Room> loadFromDatabase() {
-               return sessionService.getRoomPageList(workspaceId, pageable);
+               return sessionService.getRoomPageList(workspaceId, userId, pageable);
             }
 
             @Override
@@ -571,7 +679,7 @@ public class SessionDataRepository extends DataRepository {
                         .last(roomPage.isLast())
                         .build();
 
-                Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
+                /*Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
                         .filter(room -> {
                             if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
                                 return true;
@@ -587,8 +695,10 @@ public class SessionDataRepository extends DataRepository {
                         })
                         .collect(Collectors.toMap(room -> room, Room::getMembers));
 
+                */
                 List<RoomInfoResponse> roomInfoList = new ArrayList<>();
-                for (Room room : roomListMap.keySet()) {
+                //for (Room room : roomListMap.keySet()) {
+                for (Room room : roomPage.getContent()) {
                     RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
                     roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 

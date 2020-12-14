@@ -66,6 +66,7 @@ public class HistorySpecifications {
             //where
             predicates.add(criteriaBuilder.equal(roomJoinMember.get("workspaceId"), workspaceId));
             predicates.add(criteriaBuilder.equal(roomJoinMember.get("uuid"), userId));
+
             predicates.add(criteriaBuilder.isNotNull(roomJoinMember.get("roomHistory")));
             predicates.add(criteriaBuilder.isFalse(roomJoinMember.get("historyDeleted")));
 

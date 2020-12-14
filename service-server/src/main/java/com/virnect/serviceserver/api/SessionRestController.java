@@ -321,6 +321,21 @@ public class SessionRestController implements ISessionRestAPI {
     }
 
     @Override
+    public ResponseEntity<ApiResponse<RoomInfoListResponse>> getRoomList(String workspaceId, String userId, String search, PageRequest pageRequest) {
+        LogMessage.formedInfo(
+                TAG,
+                "REST API: GET "
+                        + REST_PATH + "/"
+                        + (workspaceId != null ? workspaceId : "{}")  + "/"
+                        + (userId != null ? userId : "{}") + "/"
+                        + (search != null ? search : "{}"),
+                "getRoomList"
+        );
+        ApiResponse<RoomInfoListResponse> apiResponse = this.sessionDataRepository.searchRoomPageList(workspaceId, userId, search, pageRequest.ofSortBy());
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    @Override
     public ResponseEntity<ApiResponse<RoomDetailInfoResponse>> getRoomById(
             @PathVariable("workspaceId") String workspaceId,
             @PathVariable("sessionId") String sessionId) {

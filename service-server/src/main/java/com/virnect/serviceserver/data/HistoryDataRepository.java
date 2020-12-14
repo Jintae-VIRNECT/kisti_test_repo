@@ -140,10 +140,10 @@ public class HistoryDataRepository extends DataRepository {
                         .map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
                         .collect(Collectors.toList());
 
-                log.info("fetchFromRepository getPageMeta:: {}", feignResponse.getData().getPageMeta());
+                log.info("fetchFromRepository::searchRoomHistoryPageList::getPageMeta:: {}", feignResponse.getData().getPageMeta());
 
                 for (MemberInfoResponse memberInfoResponse: memberInfoList) {
-                    log.info("fetchFromRepository :: {}", memberInfoResponse.toString());
+                    log.info("fetchFromRepository::searchRoomHistoryPageList:: {}", memberInfoResponse.toString());
                 }
 
                 return memberInfoList;
@@ -155,17 +155,17 @@ public class HistoryDataRepository extends DataRepository {
                 for (MemberInfoResponse memberInfo: memberInfoList) {
                     if(memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
                         //if memberInfo is empty
-                        log.info("fetchFromRepository :: some member dose not have uuid");
+                        log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
                     } else {
                         userIds.add(memberInfo.getUuid());
                     }
                 }
 
                 if(userIds.isEmpty()) {
-                    log.info("fetchFromRepository :: memberInfoList is empty can not find, search with room title");
+                    log.info("loadFromDatabase::searchRoomHistoryPageList::memberInfoList is empty can not find, search with room title");
                     return historyService.getRoomHistory(workspaceId, userId, search, pageable);
                 } else {
-                    log.info("fetchFromRepository :: memberInfoList is not empty");
+                    log.info("loadFromDatabase::searchRoomHistoryPageList::memberInfoList is not empty");
                     return historyService.getRoomHistory(workspaceId, userIds, search, pageable);
                 }
             }
