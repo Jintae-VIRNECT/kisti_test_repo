@@ -134,7 +134,7 @@ export default {
       switch (this.trigger) {
         case 'click':
           window.addEventListener('click', this.windowClickHandler)
-          if (this.isSafari) {
+          if (this.isTablet) {
             this.$el.addEventListener('touchstart', this.togglePopover)
           } else {
             this.$el.addEventListener('click', this.togglePopover)
@@ -239,7 +239,7 @@ export default {
       }
     },
     togglePopover(e) {
-      if (this.isSafari) {
+      if (this.isTablet) {
         e.stopPropagation()
       }
       if (true === this.visible) {
