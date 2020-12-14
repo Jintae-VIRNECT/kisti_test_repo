@@ -64,14 +64,13 @@ public interface IHistoryRestAPI {
             @ApiImplicitParam(name = "paging", value = "검색 결과 페이지네이션 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
             @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
             @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "endDate, desc"),
+            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate, desc"),
     })
     @GetMapping(value = "history/search")
     ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(
             @RequestParam(name = "workspaceId") String workspaceId,
             @RequestParam(name = "userId") String userId,
             @RequestParam(name = "search", required = false) String search,
-            @RequestParam(name = "paging") boolean paging,
             @ApiIgnore PageRequest pageable
     );
 

@@ -123,20 +123,17 @@ public class HistoryDataRepository extends DataRepository {
             String search,
             Pageable pageable) {
         return new RepoDecoder<Page<RoomHistory>, RoomHistoryInfoListResponse>(RepoDecoderType.READ) {
-            @Override
-            Page<RoomHistory> loadFromDatabase() {
-                return historyService.getRoomHistory(workspaceId, search, pageable);
+            List<MemberInfoResponse> memberInfoList = new ArrayList<>();
 
-            }
-
-            private void fetchFromRepository() {
+            private List<MemberInfoResponse> fetchFromRepository() {
+                // fetch workspace member information
                 ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
                         workspaceId,
                         "remote",
                         search,
                         pageable.getPageNumber(),
                         pageable.getPageSize()
-                        );
+                );
 
                 List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
                 List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
@@ -148,20 +145,44 @@ public class HistoryDataRepository extends DataRepository {
                 for (MemberInfoResponse memberInfoResponse: memberInfoList) {
                     log.info("fetchFromRepository :: {}", memberInfoResponse.toString());
                 }
+
+                return memberInfoList;
+            }
+
+            @Override
+            Page<RoomHistory> loadFromDatabase() {
+                List<String> userIds = new ArrayList<>();
+                for (MemberInfoResponse memberInfo: memberInfoList) {
+                    if(memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
+                        //if memberInfo is empty
+                        log.info("fetchFromRepository :: some member dose not have uuid");
+                    } else {
+                        userIds.add(memberInfo.getUuid());
+                    }
+                }
+
+                if(userIds.isEmpty()) {
+                    log.info("fetchFromRepository :: memberInfoList is empty can not find, search with room title");
+                    return historyService.getRoomHistory(workspaceId, userId, search, pageable);
+                } else {
+                    log.info("fetchFromRepository :: memberInfoList is not empty");
+                    return historyService.getRoomHistory(workspaceId, userIds, search, pageable);
+                }
             }
 
             @Override
             DataProcess<RoomHistoryInfoListResponse> invokeDataProcess() {
-                // for non-english systems.
-                //Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),", Pattern.UNICODE_CHARACTER_CLASS);
+                memberInfoList = fetchFromRepository();
 
-                fetchFromRepository();
                 // get all member history by uuid
                 Page<RoomHistory> roomHistoryPage = loadFromDatabase();
 
-                for (RoomHistory roomHistory: roomHistoryPage.getContent()) {
+                /*for (RoomHistory roomHistory: roomHistoryPage.getContent()) {
                     log.info("searchRoomHistoryPageList :: {}, {}", search, roomHistory.getTitle());
-                }
+                    for (MemberHistory m : roomHistory.getMemberHistories()) {
+                        log.info("searchRoomHistoryPageList :: Members :: {}, {}", m.getWorkspaceId(), m.getUuid());
+                    }
+                }*/
 
                 // Page Metadata
                 PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -173,23 +194,8 @@ public class HistoryDataRepository extends DataRepository {
                         .last(roomHistoryPage.isLast())
                         .build();
 
-                // find specific member has room history and room history is not null
-                // .sorted((roomHistory, t1) -> roomHistory.getEndDate().compareTo(t1.getEndDate()))
-                Map<RoomHistory, List<MemberHistory>> roomHistoryListMap = roomHistoryPage.getContent().stream()
-                        .filter(roomHistory -> {
-                            for(MemberHistory memberHistory : roomHistory.getMemberHistories()) {
-                                if(memberHistory.getUuid().equals(userId)
-                                && memberHistory.getRoomHistory() != null
-                                && !memberHistory.isHistoryDeleted()) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
-                        .collect(Collectors.toMap(roomHistory -> roomHistory, RoomHistory::getMemberHistories));
-
                 List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
-                for (RoomHistory roomHistory : roomHistoryListMap.keySet()) {
+                for (RoomHistory roomHistory : roomHistoryPage.getContent()) {
                     RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
                     roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
@@ -203,10 +209,8 @@ public class HistoryDataRepository extends DataRepository {
                         if(memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
                             ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
                             log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-                            //todo://user infomation does not have role and role id change to workspace member info
                             WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
                             memberInfoResponse.setRole(workspaceMemberData.getRole());
-                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
                             memberInfoResponse.setEmail(workspaceMemberData.getEmail());
                             memberInfoResponse.setName(workspaceMemberData.getName());
                             memberInfoResponse.setNickName(workspaceMemberData.getNickName());

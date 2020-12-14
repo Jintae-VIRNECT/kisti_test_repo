@@ -58,9 +58,16 @@ public class HistoryService {
     }
 
     public Page<RoomHistory> getRoomHistory(String workspaceId, String search, Pageable pageable) {
-        return this.roomHistoryRepository.findAll(findByTest(workspaceId, search), pageable);
-        //return this.roomHistoryRepository.findAll(where(equalWorkspaceId(workspaceId)).and(searchRoomHistory(search)), pageable);
+        return this.roomHistoryRepository.findAll(where(equalWorkspaceId(workspaceId)).and(searchRoomHistory(search)), pageable);
         //return this.roomHistoryRepository.findByWorkspaceIdAndTitleIsContaining(workspaceId, search, pageable);
+    }
+
+    public Page<RoomHistory> getRoomHistory(String workspaceId, String userId, String search, Pageable pageable) {
+        return this.roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, search), pageable);
+    }
+
+    public Page<RoomHistory> getRoomHistory(String workspaceId, List<String> userIds, String search, Pageable pageable) {
+        return this.roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userIds, search), pageable);
     }
 
     public RoomHistory getRoomHistory(String workspaceId, String sessionId) {

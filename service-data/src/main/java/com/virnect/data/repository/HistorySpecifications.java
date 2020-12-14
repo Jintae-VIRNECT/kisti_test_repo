@@ -2,12 +2,14 @@ package com.virnect.data.repository;
 
 import com.virnect.data.dao.MemberHistory;
 import com.virnect.data.dao.RoomHistory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class HistorySpecifications {
 
     public static Specification<RoomHistory> searchRoomHistory(String keyword) {
@@ -24,22 +26,89 @@ public class HistorySpecifications {
         );
     }
 
-    public static Specification<RoomHistory> findByTest(String workspaceId, String keyword) {
+    public static Specification<RoomHistory> joinMemberHistory(String workspaceId, List<String> userIds, String keyword) {
+        return (Specification<RoomHistory>) ((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            Join<RoomHistory, MemberHistory> roomJoinMember = root.join("memberHistories", JoinType.LEFT);
+
+            //where
+            predicates.add(criteriaBuilder.equal(roomJoinMember.get("workspaceId"), workspaceId));
+            predicates.add(criteriaBuilder.isNotNull(roomJoinMember.get("roomHistory")));
+            predicates.add(criteriaBuilder.isFalse(roomJoinMember.get("historyDeleted")));
+
+            predicates.add(criteriaBuilder.in(roomJoinMember.get("uuid")).value(userIds));
+
+            predicates.add(criteriaBuilder.like(root.get("title"), "%" + keyword + "%"));
+
+            //predicates.add(criteriaBuilder.or(criteriaBuilder.like(root.get("title"), "%" + keyword + "%")));
+            //predicates.add(criteriaBuilder.or(like(root.get("title"), "%" + keyword + "%"));
+
+            return query
+                    .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+                    .distinct(true)
+                    .getRestriction();
+
+            /*return query
+                    .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+                    .where(criteriaBuilder.or(criteriaBuilder.like(root.get("title"), "%" + keyword + "%")))
+                    .distinct(true)
+                    .getRestriction();*/
+        });
+    }
+
+    public static Specification<RoomHistory> joinMemberHistory(String workspaceId, String userId, String keyword) {
+        return (Specification<RoomHistory>) ((root, query, criteriaBuilder) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            Join<RoomHistory, MemberHistory> roomJoinMember = root.join("memberHistories", JoinType.LEFT);
+
+            //where
+            predicates.add(criteriaBuilder.equal(roomJoinMember.get("workspaceId"), workspaceId));
+            predicates.add(criteriaBuilder.equal(roomJoinMember.get("uuid"), userId));
+            predicates.add(criteriaBuilder.isNotNull(roomJoinMember.get("roomHistory")));
+            predicates.add(criteriaBuilder.isFalse(roomJoinMember.get("historyDeleted")));
+
+            predicates.add(criteriaBuilder.like(root.get("title"), "%" + keyword + "%"));
+
+            return query
+                    .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+                    .distinct(true)
+                    .getRestriction();
+        });
+    }
+
+
+    public static Specification<RoomHistory> findByTest(String workspaceId, String userId, String keyword) {
         return (Specification<RoomHistory>) ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
 
+            //root.fetch("", JoinType.LEFT);
+            Join<RoomHistory, MemberHistory> roomJoinMember = root.join("memberHistories", JoinType.LEFT);
 
-            Join<RoomHistory, MemberHistory> roomJoinMember = root.join("RoomHistory.room_history_id", JoinType.LEFT);
             if(workspaceId != null) {
                 predicates.add(criteriaBuilder.equal(roomJoinMember.get("workspaceId"), workspaceId));
             }
 
-            if(keyword != null) {
-                predicates.add(criteriaBuilder.like(roomJoinMember.get("title"), "%" + keyword + "%"));
+            if(userId != null) {
+                predicates.add(criteriaBuilder.equal(roomJoinMember.get("uuid"), userId));
             }
 
-            return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+            if(keyword != null) {
+                predicates.add(criteriaBuilder.like(root.get("title"), "%" + keyword + "%"));
+            }
+
+
+
+            return query
+                    .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
+                    .distinct(true)
+                    .getRestriction();
+
+
+
+            //return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
 
             /*if(workspaceId != null) {
                 predicates.add(criteriaBuilder.equal(root.get("workspaceId"), workspaceId));
