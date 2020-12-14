@@ -150,7 +150,7 @@ export default {
     },
     searchText(searchText) {
       this.setSearch({
-        input: {
+        keyword: {
           text: searchText,
         },
       })

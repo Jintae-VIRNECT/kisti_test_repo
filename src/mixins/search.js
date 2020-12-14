@@ -14,7 +14,7 @@ export default {
       return this.searchFilter.date.to
     },
     searchWord() {
-      return this.searchFilter.input.text
+      return this.searchFilter.keyword.text
     },
     status() {
       return this.searchFilter.status
@@ -97,7 +97,7 @@ export default {
           to: null,
         },
         useDate: { useDate: false },
-        input: {
+        keyword: {
           text: '',
         },
       })
