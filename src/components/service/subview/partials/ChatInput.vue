@@ -124,7 +124,9 @@ export default {
       if (!this.useTranslate) return
       if (this.inputText.length > 200) {
         this.inputText = this.inputText.substr(0, 200)
-        this.toastDefault(this.$t('service.chat_text_exceed'))
+        this.toastDefault(this.$t('service.chat_text_exceed'), {
+          position: this.isTablet ? 'bottom-center' : 'top-center',
+        })
       }
     },
     doStt() {
