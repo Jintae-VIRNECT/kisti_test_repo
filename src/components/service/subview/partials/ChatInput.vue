@@ -118,6 +118,7 @@ export default {
       },
       deep: true,
     },
+    'inputText.length': 'checkLength',
   },
   methods: {
     checkLength() {
@@ -170,7 +171,6 @@ export default {
           console.error(err)
         }
       } else if (this.inputText.length > 0) {
-        this.checkLength()
         this.$call.sendChat(this.inputText, this.translate.code)
       }
 
