@@ -32,7 +32,7 @@
           :is-range="true"
           :masks="masks"
           :columns="$screens({ default: 2, lg: 2 })"
-          :popover="{ visibility: 'click' }"
+          :popover="{ visibility: 'click', placement: 'auto-start' }"
           :locale="currentLanguage"
           @popoverWillShow="toggleCalendarBtn"
           @popoverWillHide="toggleCalendarBtn"
@@ -48,7 +48,7 @@
               />
               <button
                 class="collabo-search-bar__date--button"
-                @click="togglePopover({ placement: 'bottom' })"
+                @click="togglePopover({ placement: 'auto-start' })"
               >
                 <img
                   class="off"
