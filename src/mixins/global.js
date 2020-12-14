@@ -48,7 +48,8 @@ export default {
       const isIpadSafari =
         !userAgent.includes('Chrome') &&
         !userAgent.includes('CriOS') &&
-        userAgent.includes('Safari')
+        userAgent.includes('Safari') &&
+        navigator.maxTouchPoints !== 0
       return (
         userAgent.includes('Mobile') ||
         userAgent.includes('Android') ||
