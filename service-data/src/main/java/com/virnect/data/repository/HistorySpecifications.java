@@ -37,23 +37,15 @@ public class HistorySpecifications {
             predicates.add(criteriaBuilder.isNotNull(roomJoinMember.get("roomHistory")));
             predicates.add(criteriaBuilder.isFalse(roomJoinMember.get("historyDeleted")));
 
-            predicates.add(criteriaBuilder.in(roomJoinMember.get("uuid")).value(userIds));
-
-            predicates.add(criteriaBuilder.like(root.get("title"), "%" + keyword + "%"));
-
-            //predicates.add(criteriaBuilder.or(criteriaBuilder.like(root.get("title"), "%" + keyword + "%")));
-            //predicates.add(criteriaBuilder.or(like(root.get("title"), "%" + keyword + "%"));
+            //predicates.add(criteriaBuilder.in(roomJoinMember.get("uuid")).value(userIds));
+            //predicates.add(criteriaBuilder.like(root.get("title"), "%" + keyword + "%"));
 
             return query
+                    .where(criteriaBuilder.in(roomJoinMember.get("uuid")).value(userIds))
+                    .where(criteriaBuilder.or(criteriaBuilder.like(root.get("title"), "%" + keyword + "%")))
                     .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
                     .distinct(true)
                     .getRestriction();
-
-            /*return query
-                    .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
-                    .where(criteriaBuilder.or(criteriaBuilder.like(root.get("title"), "%" + keyword + "%")))
-                    .distinct(true)
-                    .getRestriction();*/
         });
     }
 
