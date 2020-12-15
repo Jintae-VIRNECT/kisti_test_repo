@@ -261,7 +261,7 @@ export default {
   flex-grow: 1;
   flex-shrink: 1;
   /* padding: 5px 6px 7px 6px; */
-  padding: 1rem 1.5714rem 2.1429rem 1.5357rem;
+  padding: 1rem 1.5714rem 2.2858rem 1.5357rem;
 }
 
 .vc-is-dark {
