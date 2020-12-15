@@ -51,7 +51,7 @@ type ListRecordingFilesQuery struct {
 	//   - gt: greater (>)
 	//   - le: little or equal (<=)
 	//   - lt: little (<)
-	// - example: /remote/recorder/file?createdAt=ge:2020-08-13T09:23:02Z&createdAt=le:2020-08-13T09:23:02Z"
+	// - example: /remote/recorder/workspaces/workspaceId/users/userId/files?createdAt=ge:2020-08-13T09:23:02Z&createdAt=le:2020-08-13T09:23:02Z"
 	CreatedAt string `json:"createdAt" example:"ge:2020-08-13T09:23:02Z"`
 	// the number of the page returned in the current request. start at 0.
 	Page int `json:"page" example:"0"`
@@ -59,7 +59,7 @@ type ListRecordingFilesQuery struct {
 	Limit int `json:"limit" example:"5"`
 	// to define the order of the returned response
 	//  - format: [key].[asc|desc]
-	//  - example: /remote/recorder/file?order=createdAt.asc
+	//  - example: /remote/recorder/workspaces/workspaceId/users/userId/files?order=createdAt.asc
 	Order string `json:"order" example:"createdAt.asc"`
 }
 
