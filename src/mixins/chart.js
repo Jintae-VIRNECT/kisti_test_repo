@@ -6,7 +6,7 @@ export default {
     initMonthlyChart(chartId) {
       this.setRoundedBar()
 
-      const custom = this.initTooltips(chartId, 'chartjs-noarrow')
+      const custom = this.initTooltips(chartId, 'tooltip-no-arrow')
       return {
         type: 'roundedBar',
         data: {
@@ -30,7 +30,7 @@ export default {
       }
     },
     initDailyChart(chartId) {
-      const custom = this.initTooltips(chartId, 'chartjs-tooltip', 'inner')
+      const custom = this.initTooltips(chartId, 'tooltip-arrow', 'inner')
       const chartData = {
         type: 'line',
         data: {
@@ -410,7 +410,7 @@ export default {
 
     toggle(chart, target) {
       if (chart) {
-        let index
+        let index = -1
         switch (target) {
           case 'my':
             index = 0
@@ -418,6 +418,8 @@ export default {
           case 'total':
             index = 1
             break
+          default:
+            return
         }
         const hidden = chart.data.datasets[index].hidden
         chart.data.datasets[index].hidden = !hidden
