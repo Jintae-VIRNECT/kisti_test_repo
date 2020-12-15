@@ -49,13 +49,13 @@ export default {
     src() {
       if (this.disable) {
         return this.disableSrc
+      }
+
+      if (this.toggle) {
+        if (this.active) return this.activeSrc
+        else return this.inactiveSrc
       } else {
-        if (this.toggle) {
-          if (this.active) return this.activeSrc
-          else return this.inactiveSrc
-        } else {
-          return this.activeSrc
-        }
+        return this.activeSrc
       }
     },
   },
