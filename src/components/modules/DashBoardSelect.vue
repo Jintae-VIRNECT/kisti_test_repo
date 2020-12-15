@@ -227,7 +227,7 @@ export default {
     padding-bottom: 1.143rem;
   }
   &.active {
-    color: #0b1f48;
+    color: $color_text_main;
     text-decoration: underline;
     background-color: #e3e7ed;
   }

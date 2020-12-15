@@ -405,7 +405,7 @@ export default {
 }
 
 .history__body--nodata {
-  color: #0b1f48;
+  color: $color_text_main;
   font-weight: 500;
   font-size: 1.2857rem;
 }
@@ -490,7 +490,7 @@ export default {
   }
 }
 .history__text {
-  color: #1e1e1e;
+  color: $color_text_main_1000;
   font-weight: 600;
   font-size: 1.0714rem;
   text-align: center;

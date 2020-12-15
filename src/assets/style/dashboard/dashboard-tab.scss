@@ -45,7 +45,7 @@
     align-items: center;
 
     padding: 1.571rem 1.571rem 0.9286rem 1.571rem;
-    color: #1e1e1e;
+    color: $color_text_main_1000;
 
     font-weight: 300;
 
@@ -104,7 +104,7 @@
   border-radius: 4px;
   &:hover {
     & > p {
-      color: #0b1f48;
+      color: $color_text_main;
     }
   }
 

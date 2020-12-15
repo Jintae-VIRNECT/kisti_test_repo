@@ -112,7 +112,7 @@ export default {
 .custom-date-picker {
   &.vdp-datepicker.active {
     input[type='text'] {
-      color: #0b1f48;
+      color: $color_text_main;
     }
   }
 

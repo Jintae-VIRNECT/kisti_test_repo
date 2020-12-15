@@ -117,10 +117,10 @@ export default {
   transition: 0.3s;
 
   &:hover {
-    color: #0b1f48;
+    color: $color_text_main;
   }
   &.active {
-    color: #0b1f48;
+    color: $color_text_main;
   }
   &.select {
     color: #757f91;

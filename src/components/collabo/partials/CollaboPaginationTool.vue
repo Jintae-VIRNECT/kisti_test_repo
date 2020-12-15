@@ -137,7 +137,7 @@ $color_paging_border: #e9edf4;
   position: relative;
   width: 2.7143rem;
   height: 100%;
-  color: #0b1f48;
+  color: $color_text_main;
   font-weight: normal;
   font-size: 1rem;
   text-align: center;

@@ -100,7 +100,7 @@ export default {
   }
 
   & > p {
-    color: #0b1f48;
+    color: $color_text_main;
     font-weight: 500;
     font-size: 1.0714rem;
     &.nodata {

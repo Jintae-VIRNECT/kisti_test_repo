@@ -421,7 +421,7 @@ export default {
 }
 
 .table__body--empty-text {
-  color: #0b1f48;
+  color: $color_text_main;
   font-weight: 500;
   font-size: 1.1429rem;
 }

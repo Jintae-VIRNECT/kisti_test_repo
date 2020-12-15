@@ -199,7 +199,7 @@ export default {
   }
 
   .modal--title {
-    color: #0b1f48;
+    color: $color_text_main;
     font-weight: 500;
     font-size: 1.2857rem;
   }
