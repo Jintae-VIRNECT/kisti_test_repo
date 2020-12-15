@@ -56,7 +56,7 @@
           @click="toggle(dailyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
           shape="double-circle"
-          customClass="grey"
+          customClass="total"
         ></chart-legend>
       </figcaption>
       <div class="chart-holder" :class="{ loading: loading }">

@@ -27,7 +27,7 @@
           @click="toggle(monthlyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
           shape="circle"
-          customClass="grey"
+          customClass="total"
         ></chart-legend>
       </figcaption>
       <div class="chart-holder" :class="{ loading: loading }">
