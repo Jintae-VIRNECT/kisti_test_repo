@@ -133,7 +133,6 @@ export default {
   min-height: 2.857rem;
   padding: 0.643em 1.429rem;
   overflow: hidden;
-  // color: rgba($color_text, 0.76);
   color: #757f91;
   font-weight: 500;
   font-size: 1.1429rem;
@@ -141,7 +140,6 @@ export default {
   white-space: nowrap;
   text-align: left;
   text-overflow: ellipsis;
-  // background-color: $color_darkgray;
   background-color: #ffffff;
   border: 1px solid #c2c6ce;
   border-radius: 4px;
@@ -161,7 +159,6 @@ export default {
   &:hover,
   &:active,
   &:focus {
-    // background-color: $color_darkgray;
     background-color: #ffffff;
   }
   &.active {
@@ -194,11 +191,8 @@ export default {
   min-width: 10.1429rem;
   min-height: 2.143rem;
   margin-top: -0.286rem;
-  // background-color: $color_darkgray;
   background-color: #ffffff;
-  // border: solid 1px #363638;
   border: solid 1px #c2c6ce;
-  // border-top: none;
   border-radius: 3px;
   > .popover--body {
     padding: 0;
@@ -224,7 +218,6 @@ export default {
 .select-option {
   width: 100%;
   padding: 0.571em 1.429rem;
-  // color: rgba($color_text, 0.5);
   color: #757f91;
   font-weight: 500;
   font-size: 1.1429rem;
@@ -234,13 +227,11 @@ export default {
     padding-bottom: 1.143rem;
   }
   &.active {
-    // color: rgba($color_text, 0.76);
     color: #0b1f48;
     text-decoration: underline;
     background-color: #e3e7ed;
   }
   &:hover {
-    // color: rgba($color_text, 0.76);
     background-color: #e3e7ed;
   }
 }

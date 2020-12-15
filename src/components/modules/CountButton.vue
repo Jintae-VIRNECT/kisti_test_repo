@@ -50,13 +50,6 @@ export default {
       }
     },
   },
-  // watch: {
-  //   hover(after) {
-  //     if (this.count > 0) {
-  //       after ? (this.selected = true) : (this.selected = false)
-  //     }
-  //   },
-  // },
   methods: {
     clickListener() {
       if (this.count <= 0) return
