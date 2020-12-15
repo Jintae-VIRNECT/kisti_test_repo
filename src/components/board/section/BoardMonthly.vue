@@ -31,7 +31,7 @@
         ></chart-legend>
       </figcaption>
       <div class="chart-holder" :class="{ loading: loading }">
-        <canvas id="chart-month" width="1250" height="250"></canvas>
+        <canvas :id="chartId" width="1250" height="250"></canvas>
       </div>
     </card>
     <div class="board-figures">
@@ -99,22 +99,31 @@ export default {
     return {
       monthlyChart: null,
       today: new Date(),
+      chartId: 'chart-month',
     }
   },
   watch: {
     monthly: {
       handler(data) {
-        if (this.monthlyChart) {
-          this.monthlyChart.data.labels = this.getLabel()
-          this.monthlyChart.data.datasets[0].data = data.my.set
-          this.monthlyChart.data.datasets[1].data = data.total.set
-          this.monthlyChart.update()
-        }
+        this.updateChart(data)
       },
       deep: true,
     },
   },
   methods: {
+    initCart() {
+      const ctx = document.getElementById(this.chartId).getContext('2d')
+      const chartData = this.initMonthlyChart(this.chartId)
+      this.monthlyChart = new Chart(ctx, chartData)
+    },
+    updateChart(data) {
+      if (this.monthlyChart) {
+        this.monthlyChart.data.labels = this.getLabel()
+        this.monthlyChart.data.datasets[0].data = data.my.set
+        this.monthlyChart.data.datasets[1].data = data.total.set
+        this.monthlyChart.update()
+      }
+    },
     getLabel() {
       const dayList = []
       for (let i = 1; i <= this.monthly.my.set.length; i++) {
@@ -124,34 +133,7 @@ export default {
     },
   },
   mounted() {
-    const ctx = document.getElementById('chart-month').getContext('2d')
-
-    this.setRoundedBar()
-    const custom = this.customTooltips('chart-month', 'chartjs-noarrow')
-
-    const chartData = {
-      type: 'roundedBar',
-      data: {
-        labels: [],
-        datasets: [
-          {
-            label: this.$t('chart.my_collabo_list'),
-            data: this.monthly ? this.monthly.my.set : [],
-            backgroundColor: '#203cdd',
-            barThickness: 9,
-          },
-          {
-            label: this.$t('chart.total_collabo_list'),
-            data: this.monthly ? this.monthly.total.set : [],
-            backgroundColor: '#6ed6f1',
-            barThickness: 9,
-          },
-        ],
-      },
-      options: this.getOptionMonthly(custom),
-    }
-
-    this.monthlyChart = new Chart(ctx, chartData)
+    this.initCart()
   },
 }
 </script>

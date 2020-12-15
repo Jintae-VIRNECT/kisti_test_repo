@@ -1,8 +1,72 @@
 import Chart from 'chart.js'
+import { hourLabels } from 'utils/chartDatas'
 
 export default {
   methods: {
-    customTooltips(chartId, toolTipId, legendShape) {
+    initMonthlyChart(chartId) {
+      this.setRoundedBar()
+
+      const custom = this.initTooltips(chartId, 'chartjs-noarrow')
+      return {
+        type: 'roundedBar',
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: this.$t('chart.my_collabo_list'),
+              data: this.monthly ? this.monthly.my.set : [],
+              backgroundColor: '#203cdd',
+              barThickness: 9,
+            },
+            {
+              label: this.$t('chart.total_collabo_list'),
+              data: this.monthly ? this.monthly.total.set : [],
+              backgroundColor: '#6ed6f1',
+              barThickness: 9,
+            },
+          ],
+        },
+        options: this.getOptionMonthly(custom),
+      }
+    },
+    initDailyChart(chartId) {
+      const custom = this.initTooltips(chartId, 'chartjs-tooltip', 'inner')
+      const chartData = {
+        type: 'line',
+        data: {
+          labels: hourLabels,
+          datasets: [
+            {
+              label: this.$t('chart.my_collabo_list'),
+              data: this.daily ? this.daily.my.set : [],
+              borderColor: '#0f75f5',
+              borderWidth: 4,
+              pointRadius: 0,
+              pointBackgroundColor: '#ffffff',
+              borderJoinStyle: 'bevel',
+              lineTension: 0,
+              fill: false,
+              hoverBorderWidth: 4,
+            },
+            {
+              label: this.$t('chart.total_collabo_list'),
+              data: this.daily ? this.daily.total.set : [],
+              borderColor: '#bbc8d9',
+              borderWidth: 4,
+              pointRadius: 0,
+              pointBackgroundColor: '#ffffff',
+              borderJoinStyle: 'bevel',
+              lineTension: 0,
+              fill: false,
+              hoverBorderWidth: 4,
+            },
+          ],
+        },
+        options: this.getOptionDaily(custom),
+      }
+      return chartData
+    },
+    initTooltips(chartId, toolTipId, legendShape) {
       return tooltipModel => {
         // Tooltip Element
         let tooltipEl = document.getElementById(toolTipId)

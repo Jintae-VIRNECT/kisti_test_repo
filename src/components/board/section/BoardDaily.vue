@@ -60,7 +60,7 @@
         ></chart-legend>
       </figcaption>
       <div class="chart-holder" :class="{ loading: loading }">
-        <canvas id="chart-dayily" width="1250" height="250"></canvas>
+        <canvas :id="chartId" width="1250" height="250"></canvas>
       </div>
     </card>
 
@@ -101,8 +101,6 @@ import Chart from 'chart.js'
 import ChartLegend from 'Legend'
 import FigureBoard from 'FigureBoard'
 
-import { hourLabels } from 'utils/chartDatas'
-
 import chartMixin from 'mixins/chart'
 import langMixin from 'mixins/language'
 import calendarMixin from 'mixins/calendar'
@@ -131,20 +129,15 @@ export default {
   data() {
     return {
       dailyChart: null,
-
       date: new Date(),
-
       calendarVisible: false,
+      chartId: 'chart-dayily',
     }
   },
   watch: {
     daily: {
       handler(data) {
-        if (this.dailyChart) {
-          this.dailyChart.data.datasets[0].data = data.my.set
-          this.dailyChart.data.datasets[1].data = data.total.set
-          this.dailyChart.update()
-        }
+        this.updateChart(data)
       },
       deep: true,
     },
@@ -158,48 +151,16 @@ export default {
   methods: {
     ...mapActions(['setCalendar']),
     initChart() {
-      this.$nextTick(() => {
-        const ctx = document.getElementById('chart-dayily').getContext('2d')
-
-        const custom = this.customTooltips(
-          'chart-dayily',
-          'chartjs-tooltip',
-          'inner',
-        )
-        this.dailyChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: hourLabels,
-            datasets: [
-              {
-                label: this.$t('chart.my_collabo_list'),
-                data: this.daily ? this.daily.my.set : [],
-                borderColor: '#0f75f5',
-                borderWidth: 4,
-                pointRadius: 0,
-                pointBackgroundColor: '#ffffff',
-                borderJoinStyle: 'bevel',
-                lineTension: 0,
-                fill: false,
-                hoverBorderWidth: 4,
-              },
-              {
-                label: this.$t('chart.total_collabo_list'),
-                data: this.daily ? this.daily.total.set : [],
-                borderColor: '#bbc8d9',
-                borderWidth: 4,
-                pointRadius: 0,
-                pointBackgroundColor: '#ffffff',
-                borderJoinStyle: 'bevel',
-                lineTension: 0,
-                fill: false,
-                hoverBorderWidth: 4,
-              },
-            ],
-          },
-          options: this.getOptionDaily(custom),
-        })
-      })
+      const ctx = document.getElementById(this.chartId).getContext('2d')
+      const chartData = this.initDailyChart(this.chartId)
+      this.dailyChart = new Chart(ctx, chartData)
+    },
+    updateChart(data) {
+      if (this.dailyChart) {
+        this.dailyChart.data.datasets[0].data = data.my.set
+        this.dailyChart.data.datasets[1].data = data.total.set
+        this.dailyChart.update()
+      }
     },
     toggleCalendarBtn() {
       this.calendarVisible = !this.calendarVisible
