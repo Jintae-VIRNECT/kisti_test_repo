@@ -120,7 +120,7 @@ export default {
     height: 3rem;
     .vdp-wrapper {
       // width: 143px;
-      height: 42px;
+      height: 3rem;
     }
 
     .vdp-datepicker--input {
@@ -132,8 +132,6 @@ export default {
     }
 
     .vdp-datepicker__calendar {
-      // top: 3.0714rem;
-      // right: -3rem;
       top: 0.004rem;
       right: 11rem;
       border: 1px solid rgb(229, 231, 233);

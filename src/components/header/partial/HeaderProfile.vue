@@ -86,7 +86,7 @@ export default {
 
 .popover-profile {
   background-color: #252525;
-  border: 1px solid rgb(69, 69, 69);
+  border: 1px solid #454545;
   border-radius: 8px;
   box-shadow: 0px 2px 4px 0px rgba(11, 31, 72, 0.22);
   transform: translateY(1.571rem);
