@@ -34,36 +34,7 @@
         <canvas :id="chartId" width="1250" height="250"></canvas>
       </div>
     </card>
-    <div class="board-figures">
-      <figure-board
-        :header="$t('chart.monthly_my_collabo_count')"
-        :my="true"
-        :count="monthly ? monthly.my.count : 0"
-        :imgSrc="require('assets/image/figure/ic_chart_monthly_count.svg')"
-        type="monthly"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.monthly_my_collabo_time')"
-        :my="true"
-        :time="monthly ? monthly.my.time : 0"
-        :imgSrc="require('assets/image/figure/ic_chart_monthly_time.svg')"
-        type="monthly"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.monthly_total_collabo_count')"
-        :count="monthly ? monthly.total.count : 0"
-        :imgSrc="
-          require('assets/image/figure/ic_chart_monthly_total_count.svg')
-        "
-        type="monthly"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.monthly_total_collabo_time')"
-        :time="monthly ? monthly.total.time : 0"
-        :imgSrc="require('assets/image/figure/ic_chart_monthly_total_time.svg')"
-        type="monthly"
-      ></figure-board>
-    </div>
+    <figure-boards :figureBoardInfos="figureBoardInfos"></figure-boards>
   </section>
 </template>
 
@@ -72,7 +43,7 @@ import Card from 'Card'
 import Datepicker from 'Datepicker'
 import Chart from 'chart.js'
 import ChartLegend from 'Legend'
-import FigureBoard from 'FigureBoard'
+import FigureBoards from '../partial/FigureBoards'
 
 import chartMixin from 'mixins/chart'
 
@@ -82,8 +53,8 @@ export default {
   components: {
     Card,
     ChartLegend,
-    FigureBoard,
     Datepicker,
+    FigureBoards,
   },
   props: {
     monthly: {
@@ -100,14 +71,17 @@ export default {
       monthlyChart: null,
       today: new Date(),
       chartId: 'chart-month',
+      figureBoardInfos: [],
     }
   },
   watch: {
     monthly: {
       handler(data) {
         this.updateChart(data)
+        this.setFigureInfos()
       },
       deep: true,
+      immediate: true,
     },
   },
   methods: {
@@ -130,6 +104,38 @@ export default {
         dayList.push(i + this.$t('chart.collabo_day'))
       }
       return dayList
+    },
+    setFigureInfos() {
+      this.figureBoardInfos = [
+        {
+          header: this.$t('chart.monthly_my_collabo_count'),
+          my: true,
+          count: this.monthly ? this.monthly.my.count : null,
+          imgSrc: require('assets/image/figure/ic_chart_monthly_count.svg'),
+          type: 'monthly',
+        },
+        {
+          header: this.$t('chart.monthly_my_collabo_time'),
+          my: true,
+          time: this.monthly ? this.monthly.my.time : null,
+          imgSrc: require('assets/image/figure/ic_chart_monthly_time.svg'),
+          type: 'monthly',
+        },
+        {
+          header: this.$t('chart.monthly_total_collabo_count'),
+          my: false,
+          count: this.monthly ? this.monthly.total.count : null,
+          imgSrc: require('assets/image/figure/ic_chart_monthly_total_count.svg'),
+          type: 'monthly',
+        },
+        {
+          header: this.$t('chart.monthly_total_collabo_time'),
+          my: false,
+          time: this.monthly ? this.monthly.total.time : null,
+          imgSrc: require('assets/image/figure/ic_chart_monthly_total_time.svg'),
+          type: 'monthly',
+        },
+      ]
     },
   },
   mounted() {

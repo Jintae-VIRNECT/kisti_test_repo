@@ -63,35 +63,7 @@
         <canvas :id="chartId" width="1250" height="250"></canvas>
       </div>
     </card>
-
-    <div class="board-figures">
-      <figure-board
-        :header="$t('chart.daily_my_collabo_count')"
-        :my="true"
-        :count="daily ? daily.my.count : 0"
-        :imgSrc="require('assets/image/figure/ic_chart_daily_count.svg')"
-        type="daily"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.daily_my_collabo_time')"
-        :my="true"
-        :time="daily ? daily.my.time : 0"
-        :imgSrc="require('assets/image/figure/ic_chart_daily_time.svg')"
-        type="daily"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.daily_total_collabo_count')"
-        :count="daily ? daily.total.count : 0"
-        :imgSrc="require('assets/image/figure/ic_chart_daily_total_count.svg')"
-        type="daily"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.daily_total_collabo_time')"
-        :time="daily ? daily.total.time : 0"
-        :imgSrc="require('assets/image/figure/ic_chart_daily_total_time.svg')"
-        type="daily"
-      ></figure-board>
-    </div>
+    <figure-boards :figureBoardInfos="figureBoardInfos"></figure-boards>
   </section>
 </template>
 
@@ -99,7 +71,7 @@
 import Card from 'Card'
 import Chart from 'chart.js'
 import ChartLegend from 'Legend'
-import FigureBoard from 'FigureBoard'
+import FigureBoards from '../partial/FigureBoards'
 
 import chartMixin from 'mixins/chart'
 import langMixin from 'mixins/language'
@@ -112,7 +84,7 @@ export default {
   components: {
     Card,
     ChartLegend,
-    FigureBoard,
+    FigureBoards,
   },
   props: {
     daily: {
@@ -130,16 +102,20 @@ export default {
     return {
       dailyChart: null,
       date: new Date(),
-      calendarVisible: false,
       chartId: 'chart-dayily',
+      figureBoardInfos: [],
+
+      calendarVisible: false,
     }
   },
   watch: {
     daily: {
       handler(data) {
         this.updateChart(data)
+        this.setFigureInfos()
       },
       deep: true,
+      immediate: true,
     },
     date() {
       this.setCalendar({
@@ -164,6 +140,38 @@ export default {
     },
     toggleCalendarBtn() {
       this.calendarVisible = !this.calendarVisible
+    },
+    setFigureInfos() {
+      this.figureBoardInfos = [
+        {
+          header: this.$t('chart.daily_my_collabo_count'),
+          my: true,
+          count: this.daily ? this.daily.my.count : 0,
+          imgSrc: require('assets/image/figure/ic_chart_daily_count.svg'),
+          type: 'daily',
+        },
+        {
+          header: this.$t('chart.daily_my_collabo_time'),
+          my: true,
+          time: this.daily ? this.daily.my.time : 0,
+          imgSrc: require('assets/image/figure/ic_chart_daily_time.svg'),
+          type: 'daily',
+        },
+        {
+          header: this.$t('chart.daily_total_collabo_count'),
+          my: false,
+          count: this.daily ? this.daily.total.count : 0,
+          imgSrc: require('assets/image/figure/ic_chart_daily_total_count.svg'),
+          type: 'daily',
+        },
+        {
+          header: this.$t('chart.daily_total_collabo_time'),
+          my: false,
+          time: this.daily ? this.daily.total.time : 0,
+          imgSrc: require('assets/image/figure/ic_chart_daily_total_time.svg'),
+          type: 'daily',
+        },
+      ]
     },
   },
   mounted() {
