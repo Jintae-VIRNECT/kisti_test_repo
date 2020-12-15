@@ -103,6 +103,7 @@ export default {
 }
 </script>
 <style lang="scss">
+@import '~assets/style/vars';
 .datepicker {
   display: flex;
   width: 13.2143rem;
@@ -145,8 +146,8 @@ export default {
   width: 3rem;
   height: 3rem;
   padding-top: 0.2143rem;
-  background: #ffffff;
-  border: 1px solid #e3e3e3;
+  background: $color_white;
+  border: 1px solid $color_border;
   border-radius: 0px 4px 4px 0px;
   > img {
     width: 1.7143rem;

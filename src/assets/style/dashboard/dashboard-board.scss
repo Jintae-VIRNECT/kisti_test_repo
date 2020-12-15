@@ -4,10 +4,9 @@
 
 .board__header {
   position: relative;
-  // display: flex;
   height: 4.8571rem;
   padding: 1.4286rem 0px 1.2143rem 1.4286rem;
-  border-bottom: 1px solid #e3e3e3;
+  border-bottom: 1px solid $color_border;
 }
 
 .board__header--title {
@@ -32,12 +31,12 @@
 
   .vdp-datepicker--input {
     height: 2.8571rem;
-    border: 0.0714rem solid #e3e3e3;
+    border: 0.0714rem solid $color_border;
   }
 
   .calendar-button {
     height: 2.8571rem;
-    border: 0.0714rem solid #e3e3e3;
+    border: 0.0714rem solid $color_border;
   }
 }
 
@@ -74,7 +73,7 @@
       left: 0px;
       width: 100%;
       height: 100%;
-      background-color: #ffffff;
+      background-color: $color_white;
       content: "";
     }
 
@@ -126,7 +125,7 @@
   pointer-events: none;
 
   .chartjs-tooltip-head {
-    color: #ffffff;
+    color: $color_white;
     font-weight: 400;
     font-size: 1.0714rem;
     text-align: left;
@@ -180,7 +179,7 @@
   pointer-events: none;
 
   .chartjs-tooltip-head {
-    color: #ffffff;
+    color: $color_white;
     font-weight: 400;
     font-size: 1.0714rem;
     text-align: left;
@@ -226,7 +225,7 @@
   display: flex;
   width: 13.2143rem;
   height: 2.8571rem;
-  border: 1px solid #e3e3e3;
+  border: 1px solid $color_border;
   border-radius: 6px;
   transition: 0.3s;
 }
@@ -251,8 +250,8 @@
   align-items: center;
   justify-content: center;
   width: 3rem;
-  background: #ffffff;
-  border-left: 1px solid #e3e3e3;
+  background: $color_white;
+  border-left: 1px solid $color_border;
   border-radius: 0px 6px 6px 0px;
   transition: 0.3s;
 

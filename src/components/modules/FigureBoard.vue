@@ -76,6 +76,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .custom-figure-board {
   width: 100%;
   // width: 21.5rem;
@@ -109,7 +110,7 @@ export default {
   &.daily {
     background: #bbc8d9;
     &.my {
-      background: #0f75f5;
+      background: $color_primary;
     }
   }
 

@@ -102,7 +102,7 @@ body.modal-open {
     &:hover,
     &:active {
       color: #fff;
-      background-color: #38383a;
+      background-color: $color_darkgray_400;
     }
   }
   &.line {

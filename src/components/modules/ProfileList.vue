@@ -156,7 +156,7 @@ export default {
   max-width: 5em;
   margin-left: 0.714em;
   overflow: hidden;
-  color: #fff;
+  color: $color_white;
   line-height: 2.714em;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -166,7 +166,7 @@ export default {
   width: 2.714em;
   height: 2.714em;
   margin-left: 0.429em;
-  color: #fff;
+  color: $color_white;
   line-height: 2.714em;
   text-align: center;
   cursor: default;
@@ -179,8 +179,7 @@ export default {
 
 .otheruser-popover {
   min-width: 10.714em;
-  // background-color: $color_bg_sub;
-  background-color: #252525;
+  background-color: $color_bg_sub;
   border: solid 1px #3a3a3d;
   transform: translateX(0.714em);
   .popover--body {

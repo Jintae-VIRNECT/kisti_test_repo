@@ -66,6 +66,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .count-button {
   display: flex;
   align-items: center;
@@ -87,11 +88,11 @@ export default {
   }
 
   &.nodata {
-    background-color: #ffffff;
+    background-color: $color_white;
     border: 1px solid #edf0f4;
   }
   &.seleted {
-    background: #1665d8;
+    background: $color_primary;
   }
   &.hover {
     background: rgb(215, 231, 255);
@@ -106,7 +107,7 @@ export default {
       color: #757f91;
     }
     &.seleted {
-      color: #ffffff;
+      color: $color_white;
       font-size: 1.0714rem;
     }
   }

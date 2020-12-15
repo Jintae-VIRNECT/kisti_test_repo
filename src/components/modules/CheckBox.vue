@@ -51,7 +51,7 @@ export default {
   position: relative;
   width: 1.7147rem;
   height: 1.7147rem;
-  background-color: #ffffff;
+  background-color: $color_white;
   border: 1px solid #c2c6ce;
   border-radius: 2px;
   transition: all 0.3s;
@@ -65,8 +65,8 @@ export default {
       left: 0.3573rem;
       width: 0.8569rem;
       height: 0.3576rem;
-      border-bottom: solid 2px #ffffff;
-      border-left: solid 2px #ffffff;
+      border-bottom: solid 2px $color_white;
+      border-left: solid 2px$color_white;
       transform: rotate(-45deg);
       content: '';
     }

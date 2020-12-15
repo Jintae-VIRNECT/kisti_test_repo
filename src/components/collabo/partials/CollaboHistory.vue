@@ -376,8 +376,8 @@ export default {
     align-items: center;
     justify-content: center;
     height: 30.7143rem;
-    background: #ffffff;
-    border: 1px solid #e3e3e3;
+    background: $color_white;
+    border: 1px solid $color_border;
     border-radius: 10px;
     box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
 

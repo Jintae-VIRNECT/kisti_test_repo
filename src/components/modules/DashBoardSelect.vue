@@ -140,7 +140,7 @@ export default {
   white-space: nowrap;
   text-align: left;
   text-overflow: ellipsis;
-  background-color: #ffffff;
+  background-color: $color_white;
   border: 1px solid #c2c6ce;
   border-radius: 4px;
   transition: all 0.3s;
@@ -159,7 +159,7 @@ export default {
   &:hover,
   &:active,
   &:focus {
-    background-color: #ffffff;
+    background-color: $color_white;
   }
   &.active {
     outline: none;
@@ -171,7 +171,7 @@ export default {
   }
   &.disabled {
     color: rgba($color_text, 0.2);
-    border-color: #000000;
+    border-color: $color_darkgray_1000;
     outline-offset: 0;
     cursor: default;
     &::after {
@@ -191,7 +191,7 @@ export default {
   min-width: 10.1429rem;
   min-height: 2.143rem;
   margin-top: -0.286rem;
-  background-color: #ffffff;
+  background-color: $color_white;
   border: solid 1px #c2c6ce;
   border-radius: 3px;
   > .popover--body {

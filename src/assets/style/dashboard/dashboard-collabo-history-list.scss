@@ -47,12 +47,12 @@
 
   &.disable {
     color: #bdc5cc;
-    background-color: #ffffff;
+    background-color: $color_white;
     border: 1px solid #bdc5cc;
 
     &:hover {
       color: #bdc5cc;
-      background-color: #ffffff;
+      background-color: $color_white;
       border: 1px solid #bdc5cc;
     }
   }

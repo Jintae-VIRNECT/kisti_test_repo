@@ -333,8 +333,8 @@ export default {
   width: 100%;
   height: 4.4286rem;
   margin-bottom: 8px;
-  background: #ffffff;
-  border: 1px solid #ffffff;
+  background: $color_white;
+  border: 1px solid $color_white;
   border-radius: 4px;
   box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
   transition: 0.3s;
@@ -353,7 +353,7 @@ export default {
     border: none;
     box-shadow: none;
     &:hover {
-      background: #ffffff;
+      background: $color_white;
       cursor: auto;
     }
   }

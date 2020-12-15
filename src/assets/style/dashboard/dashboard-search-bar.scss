@@ -10,9 +10,9 @@
     transition: 0.3s;
     &:hover,
     &:focus {
-      border: 1px solid #0f75f5;
+      border: 1px solid $color_primary;
       > .collabo-search-bar__date--button {
-        border-left: 1px solid #0f75f5;
+        border-left: 1px solid $color_primary;
       }
     }
   }
@@ -36,13 +36,13 @@
     align-items: center;
     justify-content: center;
     min-width: 3.4286rem;
-    background: #ffffff;
+    background: $color_white;
     border-left: 1px solid rgb(186, 194, 204);
     border-radius: 0px 6px 6px 0px;
     transition: 0.3s;
     &:hover,
     &:focus {
-      border-left: 1px solid #0f75f5;
+      border-left: 1px solid $color_primary;
     }
     > img {
       width: 1.7143rem;
@@ -111,8 +111,8 @@
           left: 0.2144rem;
           width: 0.5714rem;
           height: 0.2143rem;
-          border-bottom: solid 2px #ffffff;
-          border-left: solid 2px #ffffff;
+          border-bottom: solid 2px $color_white;
+          border-left: solid 2px $color_white;
           transform: rotate(-45deg);
           content: "";
         }
@@ -135,14 +135,14 @@
   font-weight: 500;
   font-size: 1.0714rem;
   letter-spacing: 0px;
-  background: #ffffff;
+  background: $color_white;
   border: 1px solid #c2c6ce;
   border-radius: 6px;
   outline: none;
   transition: 0.3s;
   &:hover,
   &:focus {
-    border: 1px solid #0f75f5;
+    border: 1px solid $color_primary;
   }
 
   &::placeholder {
@@ -157,12 +157,12 @@
     width: 100%;
     height: 3.4286rem;
     color: #0b1f48;
-    background: #ffffff;
+    background: $color_white;
     border: 1px solid #bac2cc;
     border-radius: 6px;
 
     &:hover {
-      border: 1px solid #0f75f5;
+      border: 1px solid $color_primary;
       border-radius: 6px;
     }
   }
@@ -203,10 +203,10 @@
   margin-top: 2.5rem;
   font-weight: 500;
   font-size: 1.0714rem;
-  background: #0a5abf;
+  background: $color_primary;
   border-radius: 6px;
   transition: 0.3s;
   &:hover {
-    background: #0f75f5;
+    background: #0a5abf;
   }
 }

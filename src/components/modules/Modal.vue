@@ -182,7 +182,7 @@ export default {
   .modal--inner {
     position: relative;
     min-width: 25.714em;
-    background-color: #ffffff;
+    background-color: $color_white;
     border: 1px solid rgba(#a9a9a9, 0.08);
     border-radius: 0.714em;
     // box-shadow: 0 0 0.714em 0 rgba($color_darkgray_1000, 0.07),
@@ -193,7 +193,7 @@ export default {
     position: relative;
     height: 5em;
     padding: 1.571em 2.143em;
-    background-color: #ffffff;
+    background-color: $color_white;
     border-bottom: 1px solid rgba(#7f7f7f, 0.2);
     border-radius: 0.714em 0.714em 0 0;
   }
