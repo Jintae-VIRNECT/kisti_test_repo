@@ -68,7 +68,7 @@ export default {
         userId: this.account.uuid,
         paging: paging,
         page,
-        searchWord: this.searchWord,
+        searchWord: encodeURIComponent(this.searchWord),
         fromTo: this.getFromTo(),
         sortProperties: this.sortColumn,
         sortOrder: this.sortDirection,
