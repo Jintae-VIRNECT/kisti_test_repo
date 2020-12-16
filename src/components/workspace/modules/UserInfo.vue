@@ -65,8 +65,7 @@ export default {
         case DEVICE.MOBILE:
           return require('assets/image/workspace/ic_mobile.svg')
         case DEVICE.GLASSES:
-        case DEVICE.HOLOLENS1:
-        case DEVICE.HOLOLENS2:
+        case DEVICE.HOLOLENS:
           return require('assets/image/workspace/ic_hololens.svg')
       }
       return ''
