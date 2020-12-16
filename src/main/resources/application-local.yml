@@ -2,7 +2,7 @@ spring:
   application:
     name: process-server
   datasource:
-    url: jdbc:mysql://192.168.6.3:4336/op_processes
+    url: jdbc:mysql://192.168.6.3:4336/processes
     username: virnect-process
     password: virnect1234
   jpa:
@@ -13,7 +13,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
   servlet:
     multipart:
       max-file-size: 300MB

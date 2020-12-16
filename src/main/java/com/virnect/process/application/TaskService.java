@@ -1121,15 +1121,17 @@ public class TaskService {
 		else {
 			if (Objects.nonNull(myUUID)) {
 				// 내 작업 목록
-				processPage = this.processRepository.getMyTask(myUUID, workspaceUUID, search, pageable);
+				processPage = this.processRepository.getMyTask(filter, myUUID, workspaceUUID, search, pageable);
 			} else {
 				processPage = this.processRepository.getProcessPageSearchUser(
-					workspaceUUID, search, userUUIDList, pageable);
+					filter, workspaceUUID, search, userUUIDList, pageable
+				);
 			}
 
+			/* 페이징을 거치고 난 후의 값이 아닌 전체 process 데이터를 기준으로 필터링 하기 위해 아래 코드는 주석처리하고 위에서 처리함.
 			if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
 				processPage = filterConditionsProcessPage(processPage, filter, pageable);
-			}
+			}*/
 		}
 		//
 		//        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {

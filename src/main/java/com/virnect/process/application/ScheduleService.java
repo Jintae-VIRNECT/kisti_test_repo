@@ -42,8 +42,6 @@ public class ScheduleService {
 	// 때문에 UTC로 스케줄을 돌리고 저장되는 일시도 UTC로 저장됨. 그러므로 '일자별 통계' API에서 일시 반환시 UTC -> KST로 서버에서 변환하여 보내기로 함.
 	//@Scheduled(cron = "55 59 14 * * *") // 해당 스케줄러는 정상적인 작동을 하지 않아서  주석처리함. https://virtualconnection.atlassian.net/browse/DPLA-688?atlOrigin=eyJpIjoiZmNiM2I0OWVlMGVmNDFkNTkzZmM4ZjFkZWE0OWZiZmMiLCJwIjoiaiJ9
 	public void saveDailyTotal() {
-		System.out.println("~~~~~~~~~~~~~~~~~~~");
-
 		// 공정목록 조회
 		List<Process> processes = this.processRepository.findByWorkspaceUUID(null);
 
