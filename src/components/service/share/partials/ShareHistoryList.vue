@@ -5,6 +5,7 @@
         <ol class="upload-list">
           <history-image
             v-for="img of historyList"
+            :id="'history_' + img.id"
             :key="'history_' + img.id"
             :imgInfo="img"
             :selected="selected.findIndex(id => id === img.id) > -1"

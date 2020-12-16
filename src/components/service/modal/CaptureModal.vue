@@ -108,7 +108,7 @@ export default {
       const history = {
         id: this.file.id,
         fileName: this.file.fileName,
-        fileData: this.file.fileData,
+        // fileData: this.file.fileData,
         img: this.imageData,
       }
       this.addHistory(history)
