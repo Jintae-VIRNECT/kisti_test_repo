@@ -1,7 +1,5 @@
 @charset "utf-8";
 
-@import "common";
-
 .header {
   position: absolute;
   top: 0;
@@ -12,7 +10,7 @@
   justify-content: space-between;
   width: 100%;
   height: $header_height;
-  background: #252525;
+  background: $color_bg_sub;
 }
 
 .header-wrapper {

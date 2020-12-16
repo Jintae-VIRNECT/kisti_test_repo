@@ -91,7 +91,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  color: #fff;
+  color: $color_white;
   background-color: transparent;
   @include ir();
   &:hover {

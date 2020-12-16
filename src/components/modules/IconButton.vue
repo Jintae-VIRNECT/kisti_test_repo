@@ -102,6 +102,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .icon-button {
   display: flex;
   margin-left: 0.643em;
@@ -110,16 +111,16 @@ export default {
   font-weight: normal;
   font-size: 0.9286rem;
   line-height: 1.429em;
-  background: #ffffff 0.929em 50%/1.571em no-repeat;
+  background: $color_white 0.929em 50%/1.571em no-repeat;
   border: 1px solid #d6d6d8;
   border-radius: 2px;
   transition: 0.3s;
 
   &:hover {
-    color: #0b1f48;
+    color: $color_text_main;
   }
   &.active {
-    color: #0b1f48;
+    color: $color_text_main;
   }
   &.select {
     color: #757f91;
@@ -127,17 +128,17 @@ export default {
 
   &.colored {
     &.select {
-      color: #ffffff;
-      background-color: #0f75f5;
-      border: 1px solid #0f75f5;
+      color: $color_white;
+      background-color: $color_primary;
+      border: 1px solid $color_primary;
     }
     &:active {
-      color: #ffffff;
+      color: $color_white;
       background-color: #0960cd;
       border: 1px solid #0960cd;
     }
     &:hover {
-      color: #ffffff;
+      color: $color_white;
       background-color: #0960cd;
       border: 1px solid #0960cd;
     }

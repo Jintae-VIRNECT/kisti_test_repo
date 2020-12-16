@@ -24,8 +24,8 @@ export default {
   },
 
   setSearch({ commit }, payload) {
-    if ('input' in payload) {
-      commit(types.SEARCH.INPUT, payload['input'])
+    if ('keyword' in payload) {
+      commit(types.SEARCH.KEYWORD, payload['keyword'])
     }
 
     if ('status' in payload) {

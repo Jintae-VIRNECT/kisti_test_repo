@@ -85,19 +85,25 @@ export default {
 </script>
 
 <style lang="scss">
-.language-button {
-  width: 2.4286rem;
-  height: 2.4286rem;
-  > img {
-    padding-top: 2px;
+@import '~assets/style/vars';
+.popover--wrapper {
+  > .language-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > img {
+      width: 34px;
+      height: 34px;
+    }
   }
 }
 
 .popover-language {
   min-width: 5.1429rem;
   height: 6.5714rem;
-  background: #252525;
-  border: 1px solid #454545;
+  background: $color_bg_sub;
+  border: 1px solid $color_bg_sub_border;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
   > .popover--body {
     padding: 0.5rem 0;
@@ -122,7 +128,7 @@ export default {
 
   > button {
     width: 100%;
-    color: #ffffff;
+    color: $color_white;
     font-weight: 500;
     font-size: 1.0714rem;
     background: transparent;

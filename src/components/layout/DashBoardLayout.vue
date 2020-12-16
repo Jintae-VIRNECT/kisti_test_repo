@@ -119,56 +119,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~assets/style/layout.scss';
 @import '~assets/style/dashboard.scss';
-.dashboard-layout {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #f8f8fa;
-  > .vue-scrollbar__wrapper {
-    height: 100%;
-    margin-right: 0px;
-    margin-bottom: 0px;
-
-    > .vue-scrollbar__area {
-      height: 100%;
-      transition: none;
-    }
-  }
-}
-.dashboard-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  margin-right: 0;
-  padding-bottom: 0;
-}
-
-.dashboard-layout__contents {
-  position: relative;
-  // min-width: $content_min_width;
-  margin: 0 22.8571rem 0px 22.8571rem;
-  padding-top: 4.8571rem;
-  overflow: hidden;
-}
-
-.offsetwidth {
-  position: relative;
-  width: 100%;
-  max-width: 1280.0004px;
-  margin-right: auto;
-  margin-left: auto;
-
-  @include tablet {
-    padding-right: 2.8571rem;
-    padding-left: 2.8571rem;
-  }
-}
 </style>

@@ -47,6 +47,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .legend {
   position: relative;
   margin-right: 1.5714rem;
@@ -58,8 +59,8 @@ export default {
       left: 0.4286rem;
       width: 0.3571rem;
       height: 0.3571rem;
-      background-color: #ffffff;
-      border: 4px solid #0f75f5;
+      background-color: $color_white;
+      border: 4px solid $color_primary;
       border-radius: 50%;
       content: '';
     }

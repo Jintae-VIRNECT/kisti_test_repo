@@ -8,7 +8,7 @@
 
 .collabo-history-list__header--title {
   margin-right: 0.7143rem;
-  color: #1e1e1e;
+  color: $color_text_main_1000;
   font-weight: 500;
   font-size: 1.5714rem;
 }
@@ -47,12 +47,12 @@
 
   &.disable {
     color: #bdc5cc;
-    background-color: #ffffff;
+    background-color: $color_white;
     border: 1px solid #bdc5cc;
 
     &:hover {
       color: #bdc5cc;
-      background-color: #ffffff;
+      background-color: $color_white;
       border: 1px solid #bdc5cc;
     }
   }
