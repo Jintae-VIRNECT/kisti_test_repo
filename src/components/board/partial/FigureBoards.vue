@@ -20,12 +20,11 @@ export default {
   components: {
     FigureBoard,
   },
-
   props: {
     figureBoardInfos: {
       type: Array,
       default: () => [],
-      require,
+      require: true,
     },
   },
 }
