@@ -95,7 +95,7 @@ export default {
       if (posY > 1) posY = 1
       if (posX < -1) posX = -1
       if (posY < -1) posY = -1
-      this.$call.pointing({
+      this.$call.sendPointing({
         targetUserId: this.mainView.id,
         color: hexToAHEX(this.pointingColor, 1),
         opacity: 1,

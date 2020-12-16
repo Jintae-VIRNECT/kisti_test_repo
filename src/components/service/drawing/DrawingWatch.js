@@ -8,6 +8,7 @@ export default {
     file: {
       deep: true,
       handler(value) {
+        this.isInit = false
         if (value && value.id) {
           this.$emit('loadingStart')
           setTimeout(() => {

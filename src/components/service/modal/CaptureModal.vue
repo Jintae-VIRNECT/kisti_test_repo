@@ -94,7 +94,7 @@ export default {
             {
               text: this.$t('button.exit'),
               action: () => {
-                this.$call.stopArFeature()
+                this.$call.sendArFeatureStop()
                 this.shareCapture()
               },
             },
@@ -108,7 +108,7 @@ export default {
       const history = {
         id: this.file.id,
         fileName: this.file.fileName,
-        fileData: this.file.fileData,
+        // fileData: this.file.fileData,
         img: this.imageData,
       }
       this.addHistory(history)

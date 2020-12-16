@@ -58,7 +58,7 @@ export default {
         type: this.fileInfo.contentType,
       })
       switch (extension) {
-        case '3d':
+        case 'threed':
           return require('assets/image/call/chat/ic_3d_w.svg')
         case 'zip':
           return require('assets/image/call/chat/ic_zip_w.svg')

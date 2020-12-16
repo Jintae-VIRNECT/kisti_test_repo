@@ -124,8 +124,12 @@
   margin-bottom: 1.071rem;
   color: $color_text;
   font-size: 1.286rem;
+  transition: opacity 0.3s;
   &::first-letter {
     text-transform: capitalize;
+  }
+  &.disabled {
+    opacity: 0.3;
   }
 }
 .setting-section__translate {

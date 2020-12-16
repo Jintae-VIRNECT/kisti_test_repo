@@ -43,7 +43,7 @@ export default {
       if (this.viewAction === ACTION.AR_DRAWING) {
         return true
       } else {
-        // this.$call.arDrawing(AR_DRAWING.END_DRAWING)
+        // this.$call.sendArDrawing(AR_DRAWING.END_DRAWING)
         return false
       }
     },
@@ -51,7 +51,7 @@ export default {
   watch: {
     viewAction(val, beforeVal) {
       if (beforeVal === ACTION.AR_DRAWING) {
-        this.$call.arDrawing(AR_DRAWING.END_DRAWING)
+        this.$call.sendArDrawing(AR_DRAWING.END_DRAWING)
       }
     },
   },
@@ -148,11 +148,11 @@ export default {
       // for (let i = 0; i < chunk.length; i++) {
       //   params.chunk = chunk[i]
       //   if (i === 0) {
-      //     this.$call.arDrawing(AR_DRAWING.FIRST_FRAME, params)
+      //     this.$call.sendArDrawing(AR_DRAWING.FIRST_FRAME, params)
       //   } else if (i === chunk.length - 1) {
-      //     this.$call.arDrawing(AR_DRAWING.LAST_FRAME, params)
+      //     this.$call.sendArDrawing(AR_DRAWING.LAST_FRAME, params)
       //   } else {
-      //     this.$call.arDrawing(AR_DRAWING.FRAME, params)
+      //     this.$call.sendArDrawing(AR_DRAWING.FRAME, params)
       //   }
       // }
     },

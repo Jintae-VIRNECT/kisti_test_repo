@@ -30,8 +30,8 @@
     <div class="chat-speach__textarea">
       <textarea
         :placeholder="$t('service.stt_sync_placeholder')"
-        :disabled="status !== 'wait'"
-        v-model="speechText"
+        :disabled="status !== 'wait' || speechText.length === 0"
+        v-model="chatText"
       />
     </div>
     <button class="chat-speech__close" @click="$emit('hidespeech')">
@@ -55,6 +55,7 @@ export default {
       circumference: 52 * Math.PI,
       strokeDashoffset: 0,
       progress: -1,
+      chatText: '',
       speechText: '',
     }
   },
@@ -70,9 +71,7 @@ export default {
       }
     },
     sendActive() {
-      return (
-        this.speechText && this.speechText.length > 0 && this.progress === -1
-      )
+      return this.chatText && this.chatText.length > 0 && this.progress === -1
     },
   },
   methods: {
@@ -83,6 +82,7 @@ export default {
       }
       if (this.timer) clearInterval(this.timer)
       this.initRecord(this.myInfo.stream)
+      this.chatText = ''
       this.speechText = ''
       this.strokeDashoffset = this.circumference
       try {
@@ -116,14 +116,16 @@ export default {
           this.toastDefault(this.$t('service.stt_no_voice'))
         } else {
           this.speechText = text
+          this.chatText = text
         }
       } else {
         this.startSpeechRecord()
       }
     },
     async doSend() {
-      this.$call.sendChat(this.speechText, this.translate.code)
+      this.$call.sendChat(this.chatText, this.translate.code)
 
+      this.chatText = ''
       this.speechText = ''
     },
   },

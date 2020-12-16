@@ -169,6 +169,7 @@ export default {
       'removeAlarm',
       'updateAlarm',
       'inviteResponseAlarm',
+      'clearWorkspace',
     ]),
     setVisible(value) {
       this.visible = value
@@ -240,11 +241,16 @@ export default {
           this.alarmLicenseExpiration(body.contents.leftLicenseTime)
           break
         case EVENT.LICENSE_EXPIRED:
-          this.alarmLicense()
-          setTimeout(() => {
-            this.$call.leave()
-            this.$router.push({ name: 'workspace' })
-          }, 60000)
+          if (this.$route.name === 'workspace') {
+            this.clearWorkspace()
+            this.alarmLicenseHome()
+          } else {
+            this.alarmLicense()
+            setTimeout(() => {
+              this.$call.leave()
+              this.$router.push({ name: 'workspace' })
+            }, 60000)
+          }
           break
         default:
           return

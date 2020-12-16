@@ -110,7 +110,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox', 'myInfo']),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'myInfo', 'video']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -188,7 +188,13 @@ export default {
     async onDeviceChange() {
       const hasVideo = await checkVideoInput()
       if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
-      this.$call.changeProperty(hasVideo)
+      this.$call.sendCamera(
+        hasVideo
+          ? this.video.isOn
+            ? CAMERA.CAMERA_ON
+            : CAMERA.CAMERA_OFF
+          : CAMERA.CAMERA_NONE,
+      )
     },
     setFullScreen(flag) {
       this.isFullScreen = flag
@@ -210,7 +216,6 @@ export default {
       return true
     }
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
-    this.onDeviceChange()
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
     this.$call.addListener('sessionDisconnected', this.reconnect)

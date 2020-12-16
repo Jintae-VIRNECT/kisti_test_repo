@@ -11,7 +11,7 @@
       @touchstart="touch"
       @touchend="touchEnd"
     >
-      <img :src="imageData" />
+      <img :id="'history_image_' + imgInfo.id" :src="imgInfo.img" />
       <div class="sharing-image__item-active">
         <p>{{ $t('service.share_current') }}</p>
       </div>
@@ -33,7 +33,6 @@ export default {
   components: {},
   data() {
     return {
-      imageData: '',
       clicking: false,
       touched: null,
     }
@@ -97,19 +96,6 @@ export default {
         }, 300)
       }
     },
-  },
-
-  /* Lifecycles */
-  mounted() {
-    if (this.imgInfo.fileData) {
-      const fileReader = new FileReader()
-      fileReader.onload = e => {
-        this.imageData = e.target.result
-      }
-      fileReader.readAsDataURL(this.imgInfo.fileData)
-    } else {
-      this.imageData = this.imgInfo.img
-    }
   },
 }
 </script>

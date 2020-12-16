@@ -154,7 +154,13 @@ const _ = {
             _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
             _.minZoomLevel = parseInt(capability.zoom.min)
           }
-          _.video(options.videoSource !== false ? settingInfo.videoOn : 'NONE')
+          // _.sendCamera(
+          //   options.videoSource !== false
+          //     ? settingInfo.videoOn
+          //       ? CAMERA_STATUS.CAMERA_ON
+          //       : CAMERA_STATUS.CAMERA_OFF
+          //     : CAMERA_STATUS.CAMERA_NONE,
+          // )
           _.sendResolution({
             width: settings.width,
             height: settings.height,
@@ -174,7 +180,9 @@ const _ = {
               params.hasCamera = true
             }
             Store.commit('updateParticipant', params)
-            _.video(!hasCamera ? 'NONE' : false)
+            // _.sendCamera(
+            //   !hasCamera ? CAMERA_STATUS.CAMERA_NONE : CAMERA_STATUS.CAMERA_OFF,
+            // )
           })
         }
       })
@@ -251,7 +259,7 @@ const _ = {
    * @param {String} uuid
    * @param {Boolean} force true / false
    */
-  mainview: (uuid, force = false, target = null) => {
+  sendVideo: (uuid, force = false, target = null) => {
     if (_.account.roleType !== ROLE.LEADER) return
     if (!uuid) uuid = _.account.uuid
     const params = {
@@ -270,7 +278,7 @@ const _ = {
    * @param {Object} params
    *  = {color, opacity, width, posX, posY}
    */
-  pointing: params => {
+  sendPointing: params => {
     if (!_.session) return
     _.session.signal({
       data: JSON.stringify(params),
@@ -284,7 +292,7 @@ const _ = {
    * @param {String} type = remote.config.DRAWING
    * @param {Object} params
    */
-  drawing: (type, params = {}, target = null) => {
+  sendDrawing: (type, params = {}, target = null) => {
     params.type = type
     _.session.signal({
       type: SIGNAL.DRAWING,
@@ -298,7 +306,7 @@ const _ = {
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
-  control: (type, enable, target = null) => {
+  sendControl: (type, enable, target = null) => {
     const params = {
       type,
       enable,
@@ -314,7 +322,7 @@ const _ = {
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  startArFeature: targetId => {
+  sendArFeatureStart: targetId => {
     const params = {
       type: AR_FEATURE.START_AR_FEATURE,
       targetUserId: targetId,
@@ -330,7 +338,7 @@ const _ = {
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  stopArFeature: () => {
+  sendArFeatureStop: () => {
     const params = {
       type: AR_FEATURE.STOP_AR_FEATURE,
     }
@@ -346,7 +354,7 @@ const _ = {
    * @param {String} type = remote.config.AR_POINTING
    * @param {Object} params (문서참조)
    */
-  arPointing: (type, params = {}, target = null) => {
+  sendArPointing: (type, params = {}, target = null) => {
     params.type = type
     _.session.signal({
       data: JSON.stringify(params),
@@ -359,7 +367,7 @@ const _ = {
    * request screen capture permission
    * @param {Object} params
    */
-  permission: (target = null) => {
+  sendCapturePermission: (target = null) => {
     const params = {
       type: 'request',
     }
@@ -375,7 +383,7 @@ const _ = {
    * @param {String} type = remote.config.AR_DRAWING
    * @param {Object} params (문서참조)
    */
-  arDrawing: (type, params = {}, target = null) => {
+  sendArDrawing: (type, params = {}, target = null) => {
     if (!_.session) return
     params.type = type
     _.session.signal({
@@ -388,39 +396,21 @@ const _ = {
    * @BROADCATE
    * @TARGET
    * my video stream control
-   * @param {Boolean, String} active true / false / 'NONE'
+   * @param {Boolean, String} status CAMERA_STATUS
    */
-  video: (active, target = null) => {
+  sendCamera: (status = CAMERA_STATUS.CAMERA_NONE, target = null) => {
     if (!_.publisher) return
     // if (!_.publisher.stream.hasVideo) return
-    if (active === 'NONE') {
-      active = CAMERA_STATUS.CAMERA_NONE
-    } else {
-      _.publisher.publishVideo(active)
-      active = active ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF
+    if (
+      status === CAMERA_STATUS.CAMERA_ON ||
+      status === CAMERA_STATUS.CAMERA_OFF
+    ) {
+      _.publisher.publishVideo(status === CAMERA_STATUS.CAMERA_ON)
     }
 
     const params = {
       type: CAMERA.STATUS,
-      status: active,
-      currentZoomLevel: _.currentZoomLevel,
-      maxZoomLevel: _.maxZoomLevel,
-    }
-    try {
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: target,
-        type: SIGNAL.CAMERA,
-      })
-    } catch (err) {
-      return false
-    }
-  },
-  changeProperty: (newValue, target = []) => {
-    // if (_.openRoom) return
-    const params = {
-      type: CAMERA.STATUS,
-      status: newValue ? CAMERA_STATUS.CAMERA_OFF : CAMERA_STATUS.CAMERA_NONE,
+      status: status,
       currentZoomLevel: _.currentZoomLevel,
       maxZoomLevel: _.maxZoomLevel,
     }
@@ -440,7 +430,7 @@ const _ = {
    * my mic control
    * @param {Boolean} active
    */
-  mic: (active, target = null) => {
+  sendMic: (active, target = null) => {
     // if (_.openRoom) return
     if (_.publisher) {
       _.publisher.publishAudio(active)
@@ -465,7 +455,7 @@ const _ = {
    * my speaker control
    * @param {Boolean} active
    */
-  speaker: (active, target = null) => {
+  sendSpeaker: (active, target = null) => {
     for (let subscriber of _.subscribers) {
       subscriber.subscribeToAudio(active)
     }
@@ -488,7 +478,7 @@ const _ = {
    * other user's flash control
    * @param {Boolean} active
    */
-  flashStatus: (status = FLASH_STATUS.FLASH_NONE, target = null) => {
+  sendFlashStatus: (status = FLASH_STATUS.FLASH_NONE, target = null) => {
     const params = {
       status: status,
       type: FLASH.STATUS,
@@ -506,7 +496,7 @@ const _ = {
    * @param {Boolean} active
    * @param {String} id : target id
    */
-  flash: (active, target) => {
+  sendFlash: (active, target) => {
     const params = {
       enable: active,
       type: FLASH.FLASH,
@@ -523,7 +513,7 @@ const _ = {
    * other user's camera control
    * @param {Boolean} active
    */
-  zoom: (level, target) => {
+  sendCameraZoom: (level, target) => {
     const params = {
       type: CAMERA.ZOOM,
       level: level,
@@ -550,7 +540,6 @@ const _ = {
       return
     }
     _.subscribers[idx].subscribeToAudio(!mute)
-    // TODO: 이건머냐!!!!
     Store.commit('updateParticipant', {
       connectionId: connectionId,
       mute: mute,

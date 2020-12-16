@@ -179,10 +179,14 @@ export default {
             this.$eventBus.$emit('devicedenied:show')
             return
           }
+        } else if (err.code === 7003) {
+          this.toastError(this.$t('service.file_type'))
+        } else if (err.code === 7004) {
+          this.toastError(this.$t('service.file_maxsize'))
         } else {
           console.error(`${err.message} (${err.code})`)
+          this.toastError(this.$t('confirm.network_error'))
         }
-        this.toastError(this.$t('confirm.network_error'))
       }
     },
   },
