@@ -94,7 +94,7 @@ export default {
             {
               text: this.$t('button.exit'),
               action: () => {
-                this.$call.stopArFeature()
+                this.$call.sendArFeatureStop()
                 this.shareCapture()
               },
             },

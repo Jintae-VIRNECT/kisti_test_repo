@@ -354,13 +354,13 @@ export default {
     localRecording(flag) {
       if (this.initing === false) return
       if (!this.isCurrentView) return
-      this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
+      this.$call.sendControl(CONTROL.LOCAL_RECORD, !!flag)
       this.$localStorage.setAllow('localRecord', !!flag)
     },
     pointing(flag) {
       if (this.initing === false) return
       if (!this.isCurrentView) return
-      this.$call.control(CONTROL.POINTING, !!flag)
+      this.$call.sendControl(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
     },
 

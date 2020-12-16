@@ -101,7 +101,7 @@ export default {
         this.stackClear() // 전체 삭제
 
         if (this.$call) {
-          this.$call.drawing(DRAWING.CLEAR_ALL, { imgId: this.file.id })
+          this.$call.sendDrawing(DRAWING.CLEAR_ALL, { imgId: this.file.id })
         }
       }
     },

@@ -307,7 +307,7 @@ export default {
         type: 'system',
       })
       this.setMainView({ force: false })
-      this.$call.mainview(this.mainView.id, false)
+      this.$call.sendVideo(this.mainView.id, false)
     },
     mediaPlay() {
       this.$nextTick(() => {

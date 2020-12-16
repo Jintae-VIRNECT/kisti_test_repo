@@ -37,7 +37,7 @@ export default {
           isOn: mic,
         },
       })
-      this.$call.mic(mic)
+      this.$call.sendMic(mic)
       this.$localStorage.setDevice('mic', 'isOn', mic)
     },
   },
