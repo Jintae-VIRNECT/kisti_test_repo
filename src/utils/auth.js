@@ -83,7 +83,7 @@ const getMyInfo = async () => {
   }
 }
 
-const getConfigs = async () => {
+export const getConfigs = async () => {
   if (window.urls && window.urls['api']) return
   const res = await axios.get(
     `${location.origin}/configs?origin=${location.hostname}`,
