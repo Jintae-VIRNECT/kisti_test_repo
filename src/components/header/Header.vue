@@ -21,4 +21,3 @@ export default {
   },
 }
 </script>
-<style lang="scss" src="assets/style/header.scss"></style>

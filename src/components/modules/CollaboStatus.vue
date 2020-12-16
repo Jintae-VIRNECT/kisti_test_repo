@@ -44,6 +44,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .collabo-status {
   position: relative;
   display: flex;
@@ -64,7 +65,7 @@ export default {
 
 .collabo-status--text {
   padding-left: 0.7143rem;
-  color: #1e1e1e;
+  color: $color_text_main_1000;
   font-weight: 500;
   font-size: 1.0714rem;
 }

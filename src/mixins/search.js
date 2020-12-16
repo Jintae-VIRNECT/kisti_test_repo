@@ -14,7 +14,7 @@ export default {
       return this.searchFilter.date.to
     },
     searchWord() {
-      return this.searchFilter.input.text
+      return this.searchFilter.keyword.text
     },
     status() {
       return this.searchFilter.status
@@ -68,7 +68,7 @@ export default {
         userId: this.account.uuid,
         paging: paging,
         page,
-        searchWord: this.searchWord,
+        searchWord: encodeURIComponent(this.searchWord),
         fromTo: this.getFromTo(),
         sortProperties: this.sortColumn,
         sortOrder: this.sortDirection,
@@ -89,6 +89,18 @@ export default {
           .format('YYYY-MM-DD')
         return `${defaultFrom},${defaultTo}`
       }
+    },
+    resetCondition() {
+      this.setSearch({
+        date: {
+          from: null,
+          to: null,
+        },
+        useDate: { useDate: false },
+        keyword: {
+          text: '',
+        },
+      })
     },
   },
 }

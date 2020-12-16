@@ -3,8 +3,8 @@
     :title="title"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
-    :width="width"
-    :height="height"
+    :width="'75.2143rem'"
+    :height="'50.4286rem'"
     customClass="file-info"
   >
     <div class="file-list">
@@ -12,10 +12,10 @@
         @play="openPlayModal"
         :showToggleHeader="showToggleHeader"
         :showPlayButton="showPlayButton"
-        :headers="headers"
-        :columns="columns"
+        :headers="getHeader(type)"
+        :columns="getColumns(type)"
         :datas="fileList"
-        :renderOpts="renderOpts"
+        :renderOpts="getRenderer(type)"
         :emptyText="''"
         :type="type"
       >
@@ -59,11 +59,13 @@ import IconButton from 'components/modules/IconButton'
 import FileTable from 'FileTable'
 import { proxyUrl } from 'utils/file'
 
+import fileInfoMixin from 'mixins/fileInfo'
+
 import { getLocalRecordFileUrl, getServerRecordFileUrl } from 'api/http/file'
 
 export default {
   name: 'ModalFileInfo',
-
+  mixins: [fileInfoMixin],
   components: {
     FileTable,
     IconButton,
@@ -92,27 +94,6 @@ export default {
     deletable: {
       type: Boolean,
       default: false,
-    },
-    columns: {
-      type: Array,
-    },
-    download: {
-      type: Function,
-    },
-    deleteFile: {
-      type: Function,
-    },
-    renderOpts: {
-      type: Array,
-    },
-    headers: {
-      type: Array,
-    },
-    height: {
-      type: String,
-    },
-    width: {
-      type: String,
     },
     showToggleHeader: {
       type: Boolean,
@@ -182,61 +163,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.modal.file-info {
-  .modal--header {
-    height: 4.8571rem;
-    padding: 1.5714rem 0rem 1.1429rem 1.9286rem;
-    color: #262626;
-    font-size: 1.1429rem;
-    background-color: #ffffff;
-  }
-  .modal--title {
-    font-weight: normal;
-  }
-
-  .modal--body {
-    padding: 2.8571rem 3.2143rem 3.2143rem 3.2143rem;
-    background-color: #f8f8fa;
-  }
-
-  .modal--close {
-    width: 1rem;
-    height: 1rem;
-  }
-}
-
-.table__header {
-  display: flex;
-  justify-content: space-between;
-  margin: 0px 0px 1rem 0px;
-}
-
-.table__title {
-  display: flex;
-  align-items: center;
-  color: #262626;
-  font-weight: normal;
-  font-size: 1.5714rem;
-}
-
-.table__count {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.2857rem;
-  height: 1.571rem;
-  margin-left: 6.004px;
-  color: #ffffff;
-  font-weight: 500;
-  font-size: 1rem;
-  background-color: #757f91;
-  border-radius: 0.857rem;
-  opacity: 0.8;
-}
-
-.table__tools {
-  display: flex;
-}
-</style>

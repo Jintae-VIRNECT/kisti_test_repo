@@ -1,9 +1,8 @@
 import { SEARCH } from '../mutation-types'
 
 const state = {
-  input: {
+  keyword: {
     text: '',
-    target: ['title', 'memberList[].nickName'],
   },
   status: { status: 'ALL' },
   useDate: { useDate: false },
@@ -18,8 +17,8 @@ const state = {
 }
 
 const mutations = {
-  [SEARCH.INPUT](state, input) {
-    Object.assign(state.input, input)
+  [SEARCH.KEYWORD](state, input) {
+    Object.assign(state.keyword, input)
   },
   [SEARCH.STATUS](state, status) {
     state.status = status

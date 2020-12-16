@@ -76,6 +76,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .custom-figure-board {
   width: 100%;
   // width: 21.5rem;
@@ -109,7 +110,7 @@ export default {
   &.daily {
     background: #bbc8d9;
     &.my {
-      background: #0f75f5;
+      background: $color_primary;
     }
   }
 
@@ -128,7 +129,7 @@ export default {
 }
 
 .figure-board--number {
-  color: #1e1e1e;
+  color: $color_text_main_1000;
   font-weight: bold;
   font-size: 1.7143rem;
 }
@@ -136,7 +137,7 @@ export default {
 .figure-board--text {
   padding-right: 1rem;
   padding-left: 0.2857rem;
-  color: #1e1e1e;
+  color: $color_text_main_1000;
   font-weight: normal;
   font-size: 1.0714rem;
 
