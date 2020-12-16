@@ -45,22 +45,25 @@
           </button>
         </div>
       </section>
-      <room-info
-        v-if="tabview === 'group'"
-        :room="room"
-        :image.sync="image"
-        :isLeader="isLeader"
-        @update="update"
-      ></room-info>
 
-      <participants-info
-        v-else-if="tabview === 'user'"
-        :participants="memberList"
-        :isLeader="isLeader"
-        :sessionId="sessionId"
-        @kickout="kickout"
-      ></participants-info>
-      <room-download v-else :sessionId="sessionId"></room-download>
+      <keep-alive>
+        <room-info
+          v-if="tabview === 'group'"
+          :room="room"
+          :image.sync="image"
+          :isLeader="isLeader"
+          @update="update"
+        ></room-info>
+
+        <participants-info
+          v-else-if="tabview === 'user'"
+          :participants="memberList"
+          :isLeader="isLeader"
+          :sessionId="sessionId"
+          @kickout="kickout"
+        ></participants-info>
+        <room-download v-else :sessionId="sessionId"></room-download>
+      </keep-alive>
     </div>
   </modal>
 </template>
@@ -79,7 +82,6 @@ import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
 import confirmMixin from 'mixins/confirm'
-import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 import { mapGetters } from 'vuex'
 
 export default {
