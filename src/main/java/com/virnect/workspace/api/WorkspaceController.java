@@ -122,7 +122,7 @@ public class WorkspaceController {
 
     @ApiOperation(
             value = "워크스페이스 멤버 검색(워크스페이스 멤버 목록 조회)",
-            notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다."
+            notes = "워크스페이스 멤버 검색으로 멤버를 조회합니다. \n 필터링 우선순위 : 검색어 > 필터(권한 또는 라이선스) > 페이징"
     )
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", defaultValue = "45ea004001c56a3380d48168b9db0492", required = true),
@@ -212,8 +212,8 @@ public class WorkspaceController {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        UserInfoDTO responese = workspaceService.getMemberInfo(workspaceId, userId);
-        return ResponseEntity.ok(new ApiResponse<>(responese));
+        UserInfoDTO response = workspaceService.getMemberInfo(workspaceId, userId);
+        return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
     @ApiOperation(
