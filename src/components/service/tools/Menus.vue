@@ -4,7 +4,7 @@
       <template v-if="isLeader">
         <capture :disabled="!isMainViewOn"></capture>
         <server-record
-          v-if="onpremise"
+          v-if="useRecording"
           :disabled="!hasMainView"
         ></server-record>
       </template>
@@ -27,7 +27,6 @@ import {
 } from './partials'
 import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'Menus',
@@ -44,7 +43,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView']),
+    ...mapGetters(['mainView', 'useRecording']),
     hasMainView() {
       return this.mainView && this.mainView.id
     },
@@ -53,9 +52,6 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
-    },
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   props: {

@@ -7,7 +7,7 @@
         </div>
       </div>
 
-      <ul class="chat-header__menu" v-if="isOnpremise">
+      <ul class="chat-header__menu" v-if="useStorage">
         <li class="chat-header__selector" :class="{ active: showChat }">
           <button
             class="chat-header__selector--button"
@@ -47,7 +47,6 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
-import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 
 import ChatMsgList from './partials/ChatMsgList'
 import ChatFileList from './partials/ChatFileList'
@@ -71,12 +70,10 @@ export default {
       'viewAction',
       'allowLocalRecord',
       'allowPointing',
+      'useStorage',
     ]),
     showChat() {
       return this.show === 'chat'
-    },
-    isOnpremise() {
-      return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
   },
   watch: {
@@ -144,10 +141,6 @@ export default {
   methods: {
     ...mapActions(['addChat']),
     toggleMenu(menu) {
-      if (!this.isOnpremise && menu === 'file') {
-        this.unsupport()
-        return
-      }
       this.show = menu
     },
   },

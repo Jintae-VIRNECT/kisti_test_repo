@@ -68,18 +68,6 @@ export default {
     },
   },
   methods: {
-    unsupport() {
-      this.$toasted.show(this.$t('confirm.unsupport_feature'), {
-        position: 'bottom-center',
-        duration: 5000,
-        action: {
-          icon: 'close',
-          onClick: (e, toastObject) => {
-            toastObject.goAway(0)
-          },
-        },
-      })
-    },
     onImageError(event) {
       // console.log(event.target)
       // event.target.src = require('assets/image/img_user_profile.svg')
