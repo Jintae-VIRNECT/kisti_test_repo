@@ -224,7 +224,7 @@ public class WorkspaceService {
 
         //권한으로 필터를 건 경우
         if (StringUtils.hasText(filter) && (filter.toUpperCase().contains("MASTER") || filter.toUpperCase().contains("MANAGER") || filter.toUpperCase().contains("MEMBER"))) {
-            workspaceUserPermissionPage = workspaceUserPermissionRepository.getRoleFilteredUserList(filter, newPageable, workspaceId);
+            workspaceUserPermissionPage = workspaceUserPermissionRepository.getRoleFilteredUserList(workspaceUserPermissionPage.toList(),filter, newPageable, workspaceId);
             String[] userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
             userInfoListRestResponse = userRestService.getUserInfoList(search, userIds).getData();//필터링 된 유저목록을 다시 검색한다.
         }
