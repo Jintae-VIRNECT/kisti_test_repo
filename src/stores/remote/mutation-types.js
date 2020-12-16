@@ -13,11 +13,8 @@ export const SEARCH_CONDITION = 'SEARCH_CONDITION'
 //Calendar
 export const CALENDAR_SET = 'CALENDAR_SET'
 
-export const TOGGLE_CHAT = 'TOGGLE_CHAT'
-export const SET_DEVICE = 'SET_DEVICE'
-
 export const SEARCH = {
-  INPUT: 'INPUT',
+  KEYWORD: 'KEYWORD',
   STATUS: 'STATUS',
   DATE: 'DATE',
   DATE_TOGGLE: 'DATE_TOGGLE',

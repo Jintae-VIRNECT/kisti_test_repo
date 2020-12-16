@@ -8,7 +8,7 @@
         v-show="showToggleHeader && datas.length > 0"
       >
         <toggle-button
-          size="1.714em"
+          size="1.75em"
           :active="toggleAllFlag"
           :activeSrc="require('assets/image/ic_check.svg')"
           :inactiveSrc="require('assets/image/ic_ckeck_select.svg')"
@@ -39,7 +39,7 @@
         >
           <div v-if="showToggleHeader" class="table__cell--toggle">
             <toggle-button
-              size="1.714em"
+              size="1.75em"
               :active="selectedArray[index]"
               :activeSrc="require('assets/image/ic_check.svg')"
               :inactiveSrc="require('assets/image/ic_ckeck_select.svg')"
@@ -294,12 +294,12 @@ export default {
 .table {
   height: 100%;
 }
+
 .table__column {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 4rem;
-  // background-color: #f5f7fa;
   border-top: solid;
   border-top-color: #dcdcdc;
   border-top-width: 1px;
@@ -331,22 +331,21 @@ export default {
   display: flex;
   align-items: center;
   width: 100%;
-  // width: 68.1429rem;
   height: 4.4286rem;
   margin-bottom: 8px;
-  background: #ffffff;
-  border: 1px solid #ffffff;
+  background: $color_white;
+  border: 1px solid $color_white;
   border-radius: 4px;
   box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
   transition: 0.3s;
 
   &.active {
-    background: rgb(234, 242, 255);
-    border: 1px solid rgb(55, 144, 255);
+    background: #eaf2ff;
+    border: 1px solid #3790ff;
   }
   &:hover {
-    background: rgb(234, 242, 255);
-    border: 1px solid rgb(55, 144, 255);
+    background: #eaf2ff;
+    border: 1px solid #3790ff;
     cursor: pointer;
   }
 
@@ -354,7 +353,7 @@ export default {
     border: none;
     box-shadow: none;
     &:hover {
-      background: rgb(255, 255, 255);
+      background: $color_white;
       cursor: auto;
     }
   }
@@ -422,7 +421,7 @@ export default {
 }
 
 .table__body--empty-text {
-  color: #0b1f48;
+  color: $color_text_main;
   font-weight: 500;
   font-size: 1.1429rem;
 }

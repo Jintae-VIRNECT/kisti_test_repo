@@ -111,6 +111,9 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
+$color_paging_border: #e9edf4;
+
 .pagination-tool {
   display: flex;
 
@@ -125,16 +128,16 @@ export default {
   height: 2.7143rem;
 
   margin: auto;
-  background-color: #ffffff;
-  border: 1px solid #eaedf3;
-  box-shadow: 0px 1px 0px 0px #eaedf3;
+  background-color: $color_white;
+  border: 1px solid #e2e6ee;
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.08);
 }
 
 .pagination-tool__link {
   position: relative;
   width: 2.7143rem;
   height: 100%;
-  color: #0b1f48;
+  color: $color_text_main;
   font-weight: normal;
   font-size: 1rem;
   text-align: center;
@@ -157,10 +160,10 @@ export default {
 
   &.prev::after {
     position: absolute;
-    top: 0.1429rem;
+    top: 0.2143rem;
     left: 0.1429rem;
     height: 2.1429rem;
-    border-right: 1px solid #e9edf4;
+    border-right: 1px solid $color_paging_border;
     content: '';
   }
 
@@ -172,10 +175,10 @@ export default {
 
   &.next::before {
     position: absolute;
-    top: 0.2143rem;
-    right: 2.5714rem;
+    top: 2.9998px;
+    right: 2.5rem;
     height: 2.1429rem;
-    border-right: 1px solid #e9edf4;
+    border-right: 1px solid $color_paging_border;
     content: '';
   }
 
@@ -184,9 +187,9 @@ export default {
     height: 2.2857rem;
     margin: 0.3571rem 0.2143rem 0.3571rem 0.2143rem;
     padding-top: 0.2857rem;
-    color: #ffffff;
+    color: $color_white;
     font-weight: 500;
-    background: #1665d8;
+    background: $color_primary;
   }
 }
 </style>

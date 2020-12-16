@@ -2,7 +2,22 @@ import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 import { deepGet } from 'utils/util'
 import XLSX from 'xlsx'
 
-export const exportExcel = (raws, header) => {
+export const exportExcel = (raws, i18n) => {
+  // 'No,협업명,협업내용,리더,참가자,시작시간,종료시간,진행시간,서버녹화,로컬녹화,첨부파일'
+  const header = [
+    'No',
+    i18n.$t('excel.room_title'),
+    i18n.$t('excel.room_description'),
+    i18n.$t('excel.room_leader'),
+    i18n.$t('excel.room_member_list'),
+    i18n.$t('excel.room_active_date'),
+    i18n.$t('excel.room_unactive_date'),
+    i18n.$t('excel.room_duration_sec'),
+    i18n.$t('excel.file_server_record'),
+    i18n.$t('excel.file_local_record'),
+    i18n.$t('excel.file_attach_file'),
+  ]
+
   const keys = [
     ['no'],
     ['title'],

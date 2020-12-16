@@ -227,6 +227,7 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 ::v-deep.vc-grid-cell:nth-child(1) {
   .vc-pane {
     .vc-header {
@@ -239,6 +240,9 @@ export default {
   .vc-pane {
     .vc-header {
       border-radius: 0px 8px 0px 0px;
+    }
+    .vc-grid-container:nth-child(2) {
+      border-left: 1px solid #e5e7e9;
     }
   }
 }

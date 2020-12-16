@@ -227,7 +227,7 @@
   --leading-snug: 1.375;
 
   --rounded: 0.25rem;
-  --rounded-lg: 0.5714rem;
+  --rounded-lg: 7.9996px;
   --rounded-full: 9999px;
 
   --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
@@ -248,8 +248,9 @@
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     "Helvetica", "Arial", sans-serif; */
   background-color: var(--white);
-  border: 1px solid;
-  border-color: var(--gray-400);
+  // border: 1px solid;
+  // border-color: var(--gray-400);
+  border-color: #e5e7e9;
   border-radius: var(--rounded-lg);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

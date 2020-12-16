@@ -89,9 +89,8 @@ export default {
 @import '~assets/style/vars';
 
 .header-lnb-selector.popover {
-  // background-color: $color_bg_sub;
-  background-color: #252525;
-  border: solid 1px #454545;
+  background-color: $color_bg_sub;
+  border: solid 1px $color_bg_sub_border;
   border-radius: 0.286rem;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
   > .popover--body {
@@ -125,14 +124,14 @@ export default {
     &:hover {
       // color: rgba($color_text, 0.7);
       // background-color: rgba($color_bg_item, 0.7);
-      color: #fff;
+      color: $color_white;
       background-color: #424242;
       // > .header-lnb-selector__check {
       //   border-color: rgba($color_text, 0.4);
       // }
     }
     &.active {
-      color: #fff;
+      color: $color_white;
       background-color: #424242;
       > .header-lnb-selector__check {
         border-color: $color_primary;

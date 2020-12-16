@@ -40,7 +40,8 @@ $color_busy: #ef3e33;
 
 /* Text Color */
 $color_text: #fff;
-$color_text_main: #d2d2d2;
+$color_text_main: #0b1f48;
+$color_text_main_1000: #1e1e1e;
 $color_text_sub: #fafafa;
 $color_text_red: #f55560;
 
@@ -56,24 +57,18 @@ $color_yellow: #ffd059;
 $color_link: $color_primary_400;
 
 /* Border Color */
+$color_border: #e3e3e3;
 $color_sub_border: #979797;
 $color_line_border: #303030;
 
 /* Color - background, border */
 $color_bg_default: $color_bg;
+$color_bg_sub: #252525;
 $color_bg_display: #1e1e20;
 $color_bg_border: #434346;
+$color_bg_sub_border: #454545;
 $color_bg_shadow: rgba(16, 16, 17, 0.2);
 $color_bg_shadow_border: 1px solid #040810;
-
-$color_chat_bg_default: #26262a;
-$color_chat_header: #38383a;
-$color_chat_bg_me: $color_primary_400;
-$color_chat_bg_opponent: #fafafa;
-
-$color_state_good_bg: rgba(#0e2805, 0.6);
-$color_state_normal_bg: rgba(#1a1e00, 0.6);
-$color_state_bad_bg: rgba(#2c070c, 0.72);
 
 /* Screen Size */
 $size_pc_max: 1920px;

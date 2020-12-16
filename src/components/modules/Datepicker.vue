@@ -103,6 +103,7 @@ export default {
 }
 </script>
 <style lang="scss">
+@import '~assets/style/vars';
 .datepicker {
   display: flex;
   width: 13.2143rem;
@@ -111,7 +112,7 @@ export default {
 .custom-date-picker {
   &.vdp-datepicker.active {
     input[type='text'] {
-      color: #0b1f48;
+      color: $color_text_main;
     }
   }
 
@@ -120,7 +121,7 @@ export default {
     height: 3rem;
     .vdp-wrapper {
       // width: 143px;
-      height: 42px;
+      height: 3rem;
     }
 
     .vdp-datepicker--input {
@@ -132,11 +133,9 @@ export default {
     }
 
     .vdp-datepicker__calendar {
-      // top: 3.0714rem;
-      // right: -3rem;
       top: 0.004rem;
       right: 11rem;
-      border: 1px solid rgb(229, 231, 233);
+      // border: 1px solid rgb(229, 231, 233);
       border-radius: 8px;
       box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
     }
@@ -147,8 +146,8 @@ export default {
   width: 3rem;
   height: 3rem;
   padding-top: 0.2143rem;
-  background: #ffffff;
-  border: 1px solid #e3e3e3;
+  background: $color_white;
+  border: 1px solid $color_border;
   border-radius: 0px 4px 4px 0px;
   > img {
     width: 1.7143rem;

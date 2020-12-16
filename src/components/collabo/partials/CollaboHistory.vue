@@ -131,36 +131,22 @@
 
         <file-info
           type="server"
-          :width="'75.2143rem'"
-          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.server_record')"
           :fileList="fileList"
           :visible.sync="serverRecord"
           :deletable="isMaster"
-          :headers="getHeader('server')"
-          :columns="getColumns('server')"
-          :download="download"
-          :deleteFile="deleteFile"
-          :renderOpts="getRenderer('server')"
           :showToggleHeader="true"
           :showPlayButton="true"
         ></file-info>
 
         <file-info
           type="local"
-          :width="'75.2143rem'"
-          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.local_record')"
           :fileList="fileList"
           :visible.sync="localRecord"
           :deletable="isMaster"
-          :headers="getHeader('local')"
-          :columns="getColumns('local')"
-          :download="download"
-          :deleteFile="deleteFile"
-          :renderOpts="getRenderer('local')"
           :showToggleHeader="true"
           :showPlayButton="true"
         >
@@ -168,18 +154,11 @@
 
         <file-info
           type="attach"
-          :width="'75.2143rem'"
-          :height="'50.4286rem'"
           :title="historyTitle"
           :tableTitle="$t('file.attach_file')"
           :fileList="fileList"
           :visible.sync="file"
           :deletable="isMaster"
-          :headers="getHeader('attach')"
-          :columns="getColumns('attach')"
-          :download="download"
-          :deleteFile="deleteFile"
-          :renderOpts="getRenderer('attach')"
           :showToggleHeader="true"
           :showPlayButton="false"
         >
@@ -207,12 +186,11 @@ import {
 } from 'api/http/file'
 
 import { mapActions } from 'vuex'
-import fileInfoMixin from 'mixins/fileInfo'
 import confirmMixin from 'mixins/confirm'
 
 export default {
   name: 'CollaboHistory',
-  mixins: [confirmMixin, fileInfoMixin],
+  mixins: [confirmMixin],
   components: {
     CountButton,
     CollaboStatus,
@@ -302,7 +280,6 @@ export default {
     },
 
     async loadFiles(type, history) {
-      let apiResult = null
       let result = null
 
       const params = {
@@ -313,34 +290,46 @@ export default {
 
       switch (type) {
         case 'server':
-          apiResult = await getServerRecordFiles(params)
-          result = apiResult.infos.map(info => {
-            if (info.duration === 0) {
-              info.size = 0
-            }
-            return info
-          })
+          result = this.getServerRecordFile(params)
           break
-
         case 'local':
-          apiResult = await getLocalRecordFiles(params)
-          result = apiResult.fileDetailInfoList
-            .map(info => {
-              if (info.durationSec === 0) {
-                info.size = 0
-              }
-              return info
-            })
-            .filter(info => !info.deleted)
-
+          result = this.getLocalRecordFileInfo(params)
           break
         case 'attach':
-          apiResult = await getAttachFiles(params)
-          result = apiResult.fileInfoList.filter(info => !info.deleted)
+          result = this.getAttachFileInfo(params)
           break
       }
       return result
     },
+    async getAttachFileInfo(params) {
+      let files = await getAttachFiles(params)
+      let result = files.fileInfoList.filter(info => !info.deleted)
+      return result
+    },
+    async getLocalRecordFileInfo(params) {
+      let files = await getLocalRecordFiles(params)
+      let result = files.fileDetailInfoList
+        .map(info => {
+          if (info.durationSec === 0) {
+            info.size = 0
+          }
+          return info
+        })
+        .filter(info => !info.deleted)
+      return result
+    },
+
+    async getServerRecordFile(params) {
+      let files = await getServerRecordFiles(params)
+      let result = files.infos.map(info => {
+        if (info.duration === 0) {
+          info.size = 0
+        }
+        return info
+      })
+      return result
+    },
+
     setSort(column) {
       // return
       if (this.sort.column === column) {
@@ -387,8 +376,8 @@ export default {
     align-items: center;
     justify-content: center;
     height: 30.7143rem;
-    background: #ffffff;
-    border: 1px solid #e3e3e3;
+    background: $color_white;
+    border: 1px solid $color_border;
     border-radius: 10px;
     box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.05);
 
@@ -416,7 +405,7 @@ export default {
 }
 
 .history__body--nodata {
-  color: #0b1f48;
+  color: $color_text_main;
   font-weight: 500;
   font-size: 1.2857rem;
 }
@@ -501,7 +490,7 @@ export default {
   }
 }
 .history__text {
-  color: #1e1e1e;
+  color: $color_text_main_1000;
   font-weight: 600;
   font-size: 1.0714rem;
   text-align: center;

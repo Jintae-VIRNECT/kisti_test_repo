@@ -50,13 +50,6 @@ export default {
       }
     },
   },
-  // watch: {
-  //   hover(after) {
-  //     if (this.count > 0) {
-  //       after ? (this.selected = true) : (this.selected = false)
-  //     }
-  //   },
-  // },
   methods: {
     clickListener() {
       if (this.count <= 0) return
@@ -73,6 +66,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .count-button {
   display: flex;
   align-items: center;
@@ -94,11 +88,11 @@ export default {
   }
 
   &.nodata {
-    background-color: #ffffff;
+    background-color: $color_white;
     border: 1px solid #edf0f4;
   }
   &.seleted {
-    background: #1665d8;
+    background: $color_primary;
   }
   &.hover {
     background: rgb(215, 231, 255);
@@ -106,14 +100,14 @@ export default {
   }
 
   & > p {
-    color: #0b1f48;
+    color: $color_text_main;
     font-weight: 500;
     font-size: 1.0714rem;
     &.nodata {
       color: #757f91;
     }
     &.seleted {
-      color: #ffffff;
+      color: $color_white;
       font-size: 1.0714rem;
     }
   }

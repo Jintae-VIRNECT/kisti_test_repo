@@ -1,7 +1,5 @@
 import http from 'api/gateway'
 
-//서버 녹화파일 / 로컬 녹화 파일 / 첨부파일 API 전부
-
 /**
  * 세션내의 서버 녹화 파일을 불러오는 API
  * @query {String} workspaceId 워크스페이스 id
@@ -23,7 +21,10 @@ export const getServerRecordFiles = async ({
 
 /**
  * 특정 서버 녹화 파일을 삭제하는 API
- * @param {*} param0
+ *
+ * @query {String} workspaceId 워크스페이스 id
+ * @query {String} userId 유저 id
+ * @query {String} id 레코딩 id
  */
 export const deleteServerRecordFileItem = async ({
   workspaceId,
@@ -40,6 +41,7 @@ export const deleteServerRecordFileItem = async ({
 
 /**
  * 특정 서버 녹화파일을 다운로드 하기위한 URL을 반환하는 API
+ *
  * @query {String} workspaceId 워크스페이스 id
  * @query {String} userId 유저 id
  * @query {String} id 레코딩 id
@@ -62,13 +64,12 @@ export const getServerRecordFileUrl = async ({ workspaceId, userId, id }) => {
  * @param {Boolean} deleted 삭제된 파일 필터
  * @param {Number}  page 페이지 번호
  * @param {Boolean} paging 페이징 유무
- * @param {Number}  size 페이징 사이즈
  */
 export const getAttachFiles = async ({
   workspaceId,
   userId,
   sessionId,
-  opts = { deleted: false, page: 0, size: 100, paging: false },
+  opts = { deleted: false, page: 0, paging: false },
 }) => {
   const returnVal = await http('FILES', {
     workspaceId,
@@ -117,7 +118,11 @@ export const getLocalRecordFiles = async ({
 
 /**
  * 특정 로컬 녹화 파일을 삭제하는 API
- * @param {*} param0
+ *
+ * @param {String} objectName 파일의 고유 이름
+ * @query {String} sessionId 세션 id
+ * @param {String} userId 사용자 고유 식별자
+ * @query {workspaceId } workspaceId  워크스페이스 id
  */
 export const deleteLocalRecordFileItem = async ({
   objectName,
@@ -137,10 +142,10 @@ export const deleteLocalRecordFileItem = async ({
 /**
  * 로컬 녹화파일을 다운로드 하기위한 URL을 반환하는 API
  *
- * @query {String} workspaceId 워크스페이스 id
+ * @param {String} objectName 파일의 고유 이름
  * @query {String} sessionId 세션 id
- * @param {String} objectName minio 고유 파일명
- * @param {String} userId 유저 id
+ * @param {String} userId 사용자 고유 식별자
+ * @query {workspaceId } workspaceId  워크스페이스 id
  */
 export const getLocalRecordFileUrl = async ({
   objectName,
@@ -158,8 +163,12 @@ export const getLocalRecordFileUrl = async ({
 }
 
 /**
- * 특정 파일을 삭제하는 API
- * @param {*} param0
+ * 첨부 파일을 삭제하는 API
+ *
+ * @param {String} objectName 파일의 고유 이름
+ * @query {String} sessionId 세션 id
+ * @param {String} userId 사용자 고유 식별자
+ * @query {workspaceId } workspaceId  워크스페이스 id
  */
 export const deleteFileItem = async ({
   objectName,
@@ -177,8 +186,12 @@ export const deleteFileItem = async ({
 }
 
 /**
- * 특정 파일의 다운로드 URL을 반환하는 API
- * @param {*} param0
+ * 첨부 파일의 다운로드 URL을 반환하는 API
+ *
+ * @param {String} objectName 파일의 고유 이름
+ * @query {String} sessionId 세션 id
+ * @param {String} userId 사용자 고유 식별자
+ * @query {workspaceId } workspaceId  워크스페이스 id
  */
 export const getFileDownloadUrl = async ({
   objectName,

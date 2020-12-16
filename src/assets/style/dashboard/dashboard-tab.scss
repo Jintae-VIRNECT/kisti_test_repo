@@ -11,8 +11,7 @@
 .dashboard-tab__nav {
   flex: 0;
   width: 100%;
-  // background-color: $color_bg_default;
-  border-bottom: solid 1px #e3e3e3;
+  border-bottom: solid 1px $color_border;
   transition: background-color 0.3s;
   &.fix {
     position: absolute;
@@ -46,7 +45,7 @@
     align-items: center;
 
     padding: 1.571rem 1.571rem 0.9286rem 1.571rem;
-    color: #1e1e1e;
+    color: $color_text_main_1000;
 
     font-weight: 300;
 
@@ -100,12 +99,12 @@
   width: 7.7143rem;
   height: 3rem;
   padding: 0.5rem 0.7857rem 0.6429rem 0.7857rem;
-  background: #ffffff;
-  border: 1px solid #e3e3e3;
+  background: $color_white;
+  border: 1px solid $color_border;
   border-radius: 4px;
   &:hover {
     & > p {
-      color: #0b1f48;
+      color: $color_text_main;
     }
   }
 
