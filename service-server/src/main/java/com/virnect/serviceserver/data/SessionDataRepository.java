@@ -525,18 +525,16 @@ public class SessionDataRepository extends DataRepository {
 
                     // find and get extra information from workspace-server using uuid
                     for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                        if(memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
-                            ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
-                            log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-                            //todo://user infomation does not have role and role id change to workspace member info
-                            WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-                            memberInfoResponse.setRole(workspaceMemberData.getRole());
-                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-                            memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-                            memberInfoResponse.setName(workspaceMemberData.getName());
-                            memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-                            memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-                        }
+                        ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                        log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                        //todo://user infomation does not have role and role id change to workspace member info
+                        WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                        memberInfoResponse.setRole(workspaceMemberData.getRole());
+                        //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                        memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                        memberInfoResponse.setName(workspaceMemberData.getName());
+                        memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                        memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                     }
                     roomInfoResponse.setMemberList(memberInfoList);
 
@@ -596,7 +594,7 @@ public class SessionDataRepository extends DataRepository {
                     return sessionService.getRoomPageList(workspaceId, userId, search, pageable);
                 } else {
                     log.info("loadFromDatabase::searchRoomPageList::memberInfoList is not empty");
-                    return sessionService.getRoomPageList(workspaceId, userIds, search, pageable);
+                    return sessionService.getRoomPageList(workspaceId, userId, userIds, search, pageable);
                 }
             }
 
@@ -634,16 +632,14 @@ public class SessionDataRepository extends DataRepository {
 
                     // find and get extra information from workspace-server using uuid
                     for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                        if(memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
-                            ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
-                            log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-                            WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-                            memberInfoResponse.setRole(workspaceMemberData.getRole());
-                            memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-                            memberInfoResponse.setName(workspaceMemberData.getName());
-                            memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-                            memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-                        }
+                        ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                        log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                        WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                        memberInfoResponse.setRole(workspaceMemberData.getRole());
+                        memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                        memberInfoResponse.setName(workspaceMemberData.getName());
+                        memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                        memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                     }
                     roomInfoResponse.setMemberList(memberInfoList);
 
@@ -712,18 +708,16 @@ public class SessionDataRepository extends DataRepository {
 
                     // find and get extra information from workspace-server using uuid
                     for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-                        if(memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
-                            ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
-                            log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-                            //todo://user infomation does not have role and role id change to workspace member info
-                            WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-                            memberInfoResponse.setRole(workspaceMemberData.getRole());
-                            //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-                            memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-                            memberInfoResponse.setName(workspaceMemberData.getName());
-                            memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-                            memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-                        }
+                        ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+                        log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+                        //todo://user infomation does not have role and role id change to workspace member info
+                        WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+                        memberInfoResponse.setRole(workspaceMemberData.getRole());
+                        //memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+                        memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+                        memberInfoResponse.setName(workspaceMemberData.getName());
+                        memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+                        memberInfoResponse.setProfile(workspaceMemberData.getProfile());
                     }
                     roomInfoResponse.setMemberList(memberInfoList);
 

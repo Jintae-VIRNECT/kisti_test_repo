@@ -166,7 +166,7 @@ public class HistoryDataRepository extends DataRepository {
                     return historyService.getRoomHistory(workspaceId, userId, search, pageable);
                 } else {
                     log.info("loadFromDatabase::searchRoomHistoryPageList::memberInfoList is not empty");
-                    return historyService.getRoomHistory(workspaceId, userIds, search, pageable);
+                    return historyService.getRoomHistory(workspaceId, userId, userIds, search, pageable);
                 }
             }
 

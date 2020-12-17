@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.virnect.data.dao.*;
 import com.virnect.data.service.HistoryService;
+import com.virnect.mediaserver.core.EndReason;
 import com.virnect.mediaserver.core.Participant;
 import com.virnect.service.ApiResponse;
 import com.virnect.service.FileService;
@@ -290,7 +291,7 @@ public abstract class DataRepository {
         }.asResponseData();
     }
 
-    public DataProcess<Boolean> leaveSession(Participant participant, String sessionId) {
+    public DataProcess<Boolean> leaveSession(Participant participant, String sessionId, EndReason reason) {
         return new RepoDecoder<Room, Boolean>(RepoDecoderType.UPDATE) {
             ClientMetaData clientMetaData = null;
             Room room = null;
@@ -322,26 +323,31 @@ public abstract class DataRepository {
 
                 room = loadFromDatabase();
                 if(room == null) {
-                    throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
-                }
+                    LogMessage.formedError(
+                            TAG,
+                            "LEAVE SESSION EVENT",
+                            "leaveSession",
+                            reason.toString(),
+                            ErrorCode.ERR_ROOM_NOT_FOUND.getMessage());
+                } else {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(clientMetaData.getClientData())) {
+                            //set status unload
+                            member.setMemberStatus(MemberStatus.UNLOAD);
+                            //set connection id to empty
+                            member.setConnectionId("");
+                            //set end time
+                            LocalDateTime endTime = LocalDateTime.now();
+                            member.setEndDate(endTime);
 
-                for (Member member : room.getMembers()) {
-                    if (member.getUuid().equals(clientMetaData.getClientData())) {
-                        //set status unload
-                        member.setMemberStatus(MemberStatus.UNLOAD);
-                        //set connection id to empty
-                        member.setConnectionId("");
-                        //set end time
-                        LocalDateTime endTime = LocalDateTime.now();
-                        member.setEndDate(endTime);
+                            //time diff seconds
+                            Long totalDuration = member.getDurationSec();
+                            Duration duration = Duration.between(member.getStartDate(), endTime);
+                            member.setDurationSec(totalDuration + duration.getSeconds());
 
-                        //time diff seconds
-                        Long totalDuration = member.getDurationSec();
-                        Duration duration = Duration.between(member.getStartDate(), endTime);
-                        member.setDurationSec(totalDuration + duration.getSeconds());
-
-                        //save member
-                        sessionService.setMember(member);
+                            //save member
+                            sessionService.setMember(member);
+                        }
                     }
                 }
 
@@ -375,7 +381,129 @@ public abstract class DataRepository {
         }.asResponseData();
     }
 
-    public DataProcess<Boolean> disconnectSession(Participant participant, String sessionId) {
+    public DataProcess<Boolean> closeSession(Participant participant, String sessionId, EndReason reason) {
+        return new RepoDecoder<Room, Boolean>(RepoDecoderType.UPDATE) {
+            ClientMetaData clientMetaData = null;
+            Room room = null;
+
+            private void preDataProcess() {
+                JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+                try {
+                    clientMetaData = objectMapper.readValue(jsonObject.toString(), ClientMetaData.class);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                assert clientMetaData != null;
+
+                log.info("session leave and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
+                log.info("session leave and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
+                log.info("session leave and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
+            }
+
+            @Override
+            Room loadFromDatabase() {
+                return sessionService.getRoom(sessionId);
+            }
+
+            @Override
+            DataProcess<Boolean> invokeDataProcess() {
+                preDataProcess();
+
+                room = loadFromDatabase();
+                if(room == null) {
+                    LogMessage.formedInfo(
+                            TAG,
+                            "LEAVE SESSION EVENT",
+                            "leaveSession",
+                            reason.toString());
+                    return new DataProcess<>(true);
+                } else {
+                    LogMessage.formedError(
+                            TAG,
+                            "LEAVE SESSION EVENT",
+                            "leaveSession",
+                            reason.toString(),
+                            ErrorCode.ERR_ROOM_CLOSE_FAIL.getMessage());
+                    //do update room data
+                    setLogging();
+                    sessionService.deleteRoom(room);
+                    return new DataProcess<>(false);
+                }
+            }
+            private void setLogging() {
+                setHistory();
+            }
+
+            private void setHistory() {
+                // Remote Room History Entity Create
+                RoomHistory roomHistory = RoomHistory.builder()
+                        .sessionId(room.getSessionId())
+                        .title(room.getTitle())
+                        .description(room.getDescription())
+                        .profile(room.getProfile())
+                        .leaderId(room.getLeaderId())
+                        .workspaceId(room.getWorkspaceId())
+                        .maxUserCount(room.getMaxUserCount())
+                        .licenseName(room.getLicenseName())
+                        .build();
+
+                // Remote Session Property Entity Create
+                SessionProperty sessionProperty = room.getSessionProperty();
+                SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
+                        .mediaMode(sessionProperty.getMediaMode())
+                        .recordingMode(sessionProperty.getRecordingMode())
+                        .defaultOutputMode(sessionProperty.getDefaultOutputMode())
+                        .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
+                        .recording(sessionProperty.isRecording())
+                        .keepalive(sessionProperty.isKeepalive())
+                        .sessionType(sessionProperty.getSessionType())
+                        .roomHistory(roomHistory)
+                        .build();
+
+                roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+                // Set room member history
+                // Mapping Member List Data to Member History List
+                for (Member roomMember : room.getMembers()) {
+                    MemberHistory memberHistory = MemberHistory.builder()
+                            .roomHistory(roomHistory)
+                            .workspaceId(roomMember.getWorkspaceId())
+                            .uuid(roomMember.getUuid())
+                            .memberType(roomMember.getMemberType())
+                            .deviceType(roomMember.getDeviceType())
+                            .sessionId(roomMember.getSessionId())
+                            .startDate(roomMember.getStartDate())
+                            .endDate(roomMember.getEndDate())
+                            .durationSec(roomMember.getDurationSec())
+                            .build();
+
+                    //sessionService.setMemberHistory(memberHistory);
+                    roomHistory.getMemberHistories().add(memberHistory);
+
+                    //delete member
+                    sessionService.deleteMember(roomMember);
+                }
+
+                //set active time
+                roomHistory.setActiveDate(room.getActiveDate());
+
+                //set un active  time
+                LocalDateTime endTime = LocalDateTime.now();
+                roomHistory.setUnactiveDate(endTime);
+
+                //time diff seconds
+                Duration duration = Duration.between(room.getActiveDate(), endTime);
+                roomHistory.setDurationSec(duration.getSeconds());
+
+                //save room history
+                sessionService.setRoomHistory(roomHistory);
+            }
+        }.asResponseData();
+    }
+
+    public DataProcess<Boolean> disconnectSession(Participant participant, String sessionId, EndReason reason) {
         return new RepoDecoder<Room, Boolean>(RepoDecoderType.DELETE) {
             Room room = null;
             ClientMetaData clientMetaData = null;
@@ -440,7 +568,7 @@ public abstract class DataRepository {
 
     }
 
-    public DataProcess<Boolean> destroySession(String sessionId) {
+    public DataProcess<Boolean> destroySession(String sessionId, EndReason reason) {
         return new RepoDecoder<Room, Boolean>(RepoDecoderType.DELETE) {
             Room room = null;
 
@@ -451,22 +579,28 @@ public abstract class DataRepository {
 
             @Override
             DataProcess<Boolean> invokeDataProcess() {
-                LogMessage.formedInfo(
-                        TAG,
-                        "destroySession",
-                        "invokeDataProcess",
-                        "destroy session",
-                        sessionId);
                 room = loadFromDatabase();
                 if(room == null) {
-                    throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    LogMessage.formedError(
+                            TAG,
+                            "DESTROY SESSION EVENT",
+                            "destroySession",
+                            reason.toString(),
+                            ErrorCode.ERR_ROOM_NOT_FOUND.getMessage());
+                    return new DataProcess<>(false);
+                } else {
+                    LogMessage.formedInfo(
+                            TAG,
+                            "DESTROY SESSION EVENT",
+                            "destroySession",
+                            reason.toString(),
+                            sessionId);
+                    setLogging();
+                    sessionService.deleteRoom(room);
+                    //sessionService.destroySession(sessionId);
+                    return new DataProcess<>(true);
                 }
 
-                setLogging();
-
-                sessionService.deleteRoom(room);
-                //sessionService.destroySession(sessionId);
-                return new DataProcess<>(true);
             }
 
             private void setLogging() {

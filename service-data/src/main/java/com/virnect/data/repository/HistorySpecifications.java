@@ -2,6 +2,7 @@ package com.virnect.data.repository;
 
 import com.virnect.data.dao.MemberHistory;
 import com.virnect.data.dao.RoomHistory;
+import com.virnect.data.dao.SessionType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -26,23 +27,25 @@ public class HistorySpecifications {
         );
     }
 
-    public static Specification<RoomHistory> joinMemberHistory(String workspaceId, List<String> userIds, String keyword) {
+    public static Specification<RoomHistory> joinMemberHistory(String workspaceId, String userId, List<String> userIds, String keyword) {
         return (Specification<RoomHistory>) ((root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             Join<RoomHistory, MemberHistory> roomJoinMember = root.join("memberHistories", JoinType.LEFT);
 
+            Predicate p1 = criteriaBuilder.and(
+                    criteriaBuilder.in(roomJoinMember.get("uuid")).value(userId),
+                    criteriaBuilder.equal(roomJoinMember.get("uuid"), userId));
+
+            predicates.add(p1);
+
             //where
             predicates.add(criteriaBuilder.equal(roomJoinMember.get("workspaceId"), workspaceId));
             predicates.add(criteriaBuilder.isNotNull(roomJoinMember.get("roomHistory")));
             predicates.add(criteriaBuilder.isFalse(roomJoinMember.get("historyDeleted")));
-
-            //predicates.add(criteriaBuilder.in(roomJoinMember.get("uuid")).value(userIds));
-            //predicates.add(criteriaBuilder.like(root.get("title"), "%" + keyword + "%"));
+            predicates.add(criteriaBuilder.like(root.get("title"), "%" + keyword + "%"));
 
             return query
-                    .where(criteriaBuilder.in(roomJoinMember.get("uuid")).value(userIds))
-                    .where(criteriaBuilder.or(criteriaBuilder.like(root.get("title"), "%" + keyword + "%")))
                     .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
                     .distinct(true)
                     .getRestriction();

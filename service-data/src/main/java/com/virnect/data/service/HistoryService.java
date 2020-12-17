@@ -66,8 +66,8 @@ public class HistoryService {
         return this.roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, search), pageable);
     }
 
-    public Page<RoomHistory> getRoomHistory(String workspaceId, List<String> userIds, String search, Pageable pageable) {
-        return this.roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userIds, search), pageable);
+    public Page<RoomHistory> getRoomHistory(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable) {
+        return this.roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, userIds, search), pageable);
     }
 
     public RoomHistory getRoomHistory(String workspaceId, String sessionId) {

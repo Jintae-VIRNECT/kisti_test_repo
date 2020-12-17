@@ -52,6 +52,7 @@ public enum  ErrorCode {
     ERR_ROOM_MEMBER_MAX_COUNT(4021, "Current Room member is over the limit"),
     ERR_ROOM_LICENSE_COMPANY_CODE(4022, "Can not find license for company code"),
     ERR_ROOM_MEMBER_NOT_EVICTED(4023, "This member need to force disconnect."),
+    ERR_ROOM_CLOSE_FAIL(4024, "Current Room was not removed beforehand."),
 
     // error code for service validation
     ERR_LICENSE_NOT_VALIDITY(5001, "License has no validity"),
