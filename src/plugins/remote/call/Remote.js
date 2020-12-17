@@ -137,8 +137,14 @@ const _ = {
           connectionId: _.publisher.stream.connection.connectionId,
           stream: mediaStream,
           hasVideo: _.publisher.stream.hasVideo,
+          hasCamera: _.publisher.stream.hasVideo,
           video: settingInfo.videoOn,
           audio: _.publisher.stream.audioActive,
+          cameraStatus: _.publisher.stream.hasVideo
+            ? settingInfo.videoOn
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_OFF
+            : CAMERA_STATUS.CAMERA_NONE,
         })
         if (_.publisher.stream.hasVideo) {
           const track = mediaStream.getVideoTracks()[0]
@@ -174,6 +180,7 @@ const _ = {
             }
             if (!hasCamera) {
               params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
+              params.hasCamera = false
               // _.changeProperty(true)
             } else {
               params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
