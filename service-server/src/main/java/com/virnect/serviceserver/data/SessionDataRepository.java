@@ -594,7 +594,7 @@ public class SessionDataRepository extends DataRepository {
                     return sessionService.getRoomPageList(workspaceId, userId, search, pageable);
                 } else {
                     log.info("loadFromDatabase::searchRoomPageList::memberInfoList is not empty");
-                    return sessionService.getRoomPageList(workspaceId, userIds, search, pageable);
+                    return sessionService.getRoomPageList(workspaceId, userId, userIds, search, pageable);
                 }
             }
 
