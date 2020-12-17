@@ -148,6 +148,19 @@ export default {
 			try {
 				const res = await AuthService.login({ params: { token } })
 				if (res.code !== 200) throw new Error(res.message)
+				else {
+					const cookieOption = {
+						secure: true,
+						sameSite: 'None',
+						expires: res.data.expireIn / 3600000,
+						domain:
+							location.hostname.split('.').length === 3
+								? location.hostname.replace(/.*?\./, '')
+								: location.hostname,
+					}
+					Cookies.set('accessToken', res.data.accessToken, cookieOption)
+					Cookies.set('refreshToken', res.data.refreshToken, cookieOption)
+				}
 			} catch (e) {
 				this.alertMessage(
 					this.$t('login.networkError.title'),
