@@ -151,8 +151,8 @@ public class SessionService {
         return this.roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
     }
 
-    public Page<Room> getRoomPageList(String workspaceId, List<String> userIds, String search, Pageable pageable) {
-        return this.roomRepository.findAll(joinMember(workspaceId, userIds, search), pageable);
+    public Page<Room> getRoomPageList(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable) {
+        return this.roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
     }
 
     //
