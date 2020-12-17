@@ -580,7 +580,11 @@
 .chat-input__form-filetext {
   flex: 1;
   align-self: center;
+  overflow: scroll;
   color: rgba($color_text_sub, 0.42);
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .chat-input__form-button {
