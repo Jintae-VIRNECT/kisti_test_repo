@@ -16,6 +16,11 @@ public class LogMessage {
         log.info("{} => {}", comment, result);
     }
 
+    public static void formedInfo(String tag, String process , String methodName, String reason){
+        String comment = String.format("%s::%s::#%s::%s", tag, process, methodName, reason);
+        log.info("{} => not return result", comment);
+    }
+
     public static void formedError(String tag, String process , String methodName, String reason, String result){
         String comment = String.format("%s::%s::#%s::[%s]", tag, process, methodName, reason);
         log.error("{} => {}", comment, result);

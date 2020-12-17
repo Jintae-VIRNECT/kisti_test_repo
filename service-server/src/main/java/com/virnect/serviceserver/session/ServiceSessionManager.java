@@ -117,9 +117,11 @@ public class ServiceSessionManager {
                         "session leave and sessionEventHandler is here",
                         result);
                 if(reason.equals(EndReason.forceDisconnectByUser)) {
-                    sessionDataRepository.disconnectSession(participant, sessionId);
+                    sessionDataRepository.disconnectSession(participant, sessionId, reason);
+                } else if(reason.equals(EndReason.sessionClosedByServer)) {
+                    sessionDataRepository.closeSession(participant, sessionId, reason);
                 } else {
-                    sessionDataRepository.leaveSession(participant, sessionId);
+                    sessionDataRepository.leaveSession(participant, sessionId, reason);
                 }
             }
 
@@ -135,7 +137,7 @@ public class ServiceSessionManager {
                         result);
                 fileDataRepository.removeFiles(session.getSessionId());
                 sessionDataRepository.stopRecordSession(session.getSessionId());
-                sessionDataRepository.destroySession(session.getSessionId());
+                sessionDataRepository.destroySession(session.getSessionId(), reason);
 
             }
         };
