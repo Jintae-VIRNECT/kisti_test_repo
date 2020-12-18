@@ -34,7 +34,9 @@
         <div class="history-info-table-column__header">
           {{ $t('room.leader') }}
         </div>
-        <div class="history-info-table-column__info">{{ leader.nickName }}</div>
+        <div class="history-info-table-column__info">
+          {{ room.leaderNickName }}
+        </div>
       </div>
       <div class="history-info__row">
         <div class="history-info-table-column__header">

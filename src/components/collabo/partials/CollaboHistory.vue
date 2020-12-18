@@ -77,7 +77,7 @@
           </div>
           <div class="history__text leader-name">
             <p>
-              {{ history.leader.nickName }}
+              {{ history.leaderNickName }}
             </p>
           </div>
           <div class="history__text start-date hide-tablet">

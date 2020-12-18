@@ -110,7 +110,6 @@ export default {
         return
       }
 
-      this.setLeader(list)
       this.historyList = list
       this.loading = false
     },
@@ -142,15 +141,6 @@ export default {
       }
     },
 
-    setLeader(list) {
-      list.forEach(history => {
-        const leader = history.memberList.find(member => {
-          return member.memberType === 'LEADER'
-        })
-        history.leader = leader
-      })
-    },
-
     async createExcel() {
       try {
         if (this.historyList.length <= 0 || this.excelLoading) return
@@ -165,7 +155,6 @@ export default {
           return
         }
 
-        this.setLeader(historys)
         exportExcel(historys, this)
 
         this.excelLoading = false
