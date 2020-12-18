@@ -22,7 +22,7 @@ export const exportExcel = (raws, i18n) => {
     ['no'],
     ['title'],
     ['description'],
-    ['leader', 'nickName'],
+    ['leaderNickName'],
     ['memberList'],
     ['activeDate'],
     ['unactiveDate'],
