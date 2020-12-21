@@ -895,7 +895,7 @@ public class SessionDataRepository extends DataRepository {
 
                 for (Member member: room.getMembers()) {
                     if(member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                        return new DataProcess<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED);
+                        return new DataProcess<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
                     }
                 }
 
@@ -1232,7 +1232,7 @@ public class SessionDataRepository extends DataRepository {
                 if(member.getMemberType().equals(MemberType.LEADER)) {
                     return ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
                 } else if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                    return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
+                    return ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                 } else {
                     return ErrorCode.ERR_SUCCESS;
                 }
