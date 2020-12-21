@@ -121,8 +121,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		*//*auth.inMemoryAuthentication().withUser("remote").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
 				.roles("ADMIN");*//*
-		*//*auth.inMemoryAuthentication().withUser("OPENVIDUAPP").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
-				.roles("ADMIN");*//*
 	}*/
 
 }

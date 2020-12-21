@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.virnect.client.RemoteServiceException;
+import com.virnect.client.RemoteServiceException.Code;
 import com.virnect.data.dao.*;
 import com.virnect.data.service.HistoryService;
 import com.virnect.mediaserver.core.EndReason;
@@ -254,6 +256,9 @@ public abstract class DataRepository {
                 log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
                 log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
+
+                //throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+
                 Member member = setData();
                 sessionService.setMember(member);
                 //sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
@@ -270,23 +275,33 @@ public abstract class DataRepository {
             }
 
             private Member setData() {
-                Member member = sessionService.getMember(room.getWorkspaceId(), sessionId, clientMetaData.getClientData());
-                if(member == null) {
-                    member = Member.builder()
-                            .room(room)
-                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
-                            .uuid(clientMetaData.getClientData())
-                            .workspaceId(room.getWorkspaceId())
-                            .sessionId(room.getSessionId())
-                            .build();
-                } else {
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                }
-                member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                member.setConnectionId(participant.getParticipantPublicId());
-                member.setMemberStatus(MemberStatus.LOAD);
+                try {
+                    Member member = sessionService.getMember(room.getWorkspaceId(), sessionId, clientMetaData.getClientData());
+                    if (member == null) {
+                        member = Member.builder()
+                                .room(room)
+                                .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
+                                .uuid(clientMetaData.getClientData())
+                                .workspaceId(room.getWorkspaceId())
+                                .sessionId(room.getSessionId())
+                                .build();
+                    } else {
+                        member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                    }
+                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                    member.setConnectionId(participant.getParticipantPublicId());
+                    member.setMemberStatus(MemberStatus.LOAD);
 
-                return member;
+                    return member;
+                } catch (NullPointerException exception) {
+                    LogMessage.formedError(
+                            TAG,
+                            "JOIN SESSION EVENT",
+                            "joinSession",
+                            exception.getClass().getName(),
+                            exception.getMessage());
+                    throw new RemoteServiceException(Code.USER_METADATA_FORMAT_INVALID_ERROR_CODE, "Invalid metadata lacking parameter");
+                }
             }
         }.asResponseData();
     }
