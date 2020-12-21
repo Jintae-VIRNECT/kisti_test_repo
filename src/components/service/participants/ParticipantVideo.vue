@@ -166,7 +166,6 @@ export default {
       'viewForce',
       'view',
       'initing',
-      'openRoom',
     ]),
     profileUrl() {
       if (!this.participant.path) {
@@ -290,21 +289,6 @@ export default {
       if (!this.participant.hasCamera) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
-      }
-      if (this.openRoom) {
-        if (!this.participant.hasVideo) {
-          if (
-            this.account.roleType === ROLE.LEADER &&
-            this.participant.cameraStatus === CAMERA.CAMERA_OFF
-          ) {
-            this.requestVideo()
-            return
-          }
-          return
-        } else {
-          this.$call.sendVideo(this.participant.id, true)
-          return
-        }
       }
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {

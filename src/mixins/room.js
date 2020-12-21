@@ -31,7 +31,7 @@ export default {
         } else {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
-        const options = await checkPermission(!room.open)
+        const options = await checkPermission()
 
         const res = await joinRoom({
           uuid: this.account.uuid,
@@ -41,7 +41,7 @@ export default {
           workspaceId: this.workspace.uuid,
         })
 
-        const joinRtn = await this.$call.connect(res, role, options, room.open)
+        const joinRtn = await this.$call.connect(res, role, options)
         if (joinRtn) {
           this.$nextTick(() => {
             this.$router.push({ name: 'service' })

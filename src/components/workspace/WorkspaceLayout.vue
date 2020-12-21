@@ -163,8 +163,8 @@ export default {
           userId: this.account.uuid,
         })
       } catch (err) {
-        this.clearWorkspace(this.workspace.uuid)
         if (err.code === 5003) {
+          this.clearWorkspace(this.workspace.uuid)
           this.toastError(this.$t('workspace.no_license'))
         }
       }
