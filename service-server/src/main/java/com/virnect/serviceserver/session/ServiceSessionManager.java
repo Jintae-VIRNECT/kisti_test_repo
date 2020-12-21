@@ -100,6 +100,8 @@ public class ServiceSessionManager {
                         "joinSession",
                         "session join and sessionEventHandler is here",
                         result);
+                //todo-::InterruptException existing user for participant RECORDER of session ses_WjuSf0dqPJ in joinRoom => return true for participant publication id equals to RECODER
+
                 DataProcess<ErrorCode> dataProcess = sessionDataRepository.joinSession(participant, sessionId);
                 if(dataProcess.getCode() == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID.getCode()) {
                     LogMessage.formedError(
