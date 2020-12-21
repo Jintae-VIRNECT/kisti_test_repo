@@ -677,7 +677,7 @@ public class SessionService {
      * @param member
      * @return
      */
-    @Transactional
+    /*@Transactional
     @Deprecated
     public ErrorCode exitRoom(Room room, Member member) {
         for (Member roomMember : room.getMembers()) {
@@ -694,7 +694,7 @@ public class SessionService {
             }
         }
         return ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND;
-    }
+    }*/
 
     @Transactional
     public void removeMember(Room room, Member member) {
