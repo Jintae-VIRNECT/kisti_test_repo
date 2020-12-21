@@ -142,19 +142,21 @@ export default {
             const info = authInfo.workspace.find(
               work => work.uuid === workspace.workspaceId,
             )
-            if (!info || !info.workspaceId) continue
+            if (!info || !info.uuid) continue
             workspace['role'] = info.role
           }
           this.initWorkspace(workspaces)
         }
         this.$nextTick(() => {
           this.inited = true
-          this.checkLicense()
         })
       }
     },
     async checkLicense(uuid) {
       uuid = uuid || this.workspace.uuid
+      if (!uuid) {
+        return
+      }
       try {
         await workspaceLicense({
           workspaceId: uuid,
@@ -252,6 +254,9 @@ export default {
   created() {
     this.savedStorageDatas()
     this.init()
+    if (this.workspace && this.workspace.uuid) {
+      this.checkLicense(this.workspace.uuid)
+    }
   },
   mounted() {
     this.mx_changeLang()
