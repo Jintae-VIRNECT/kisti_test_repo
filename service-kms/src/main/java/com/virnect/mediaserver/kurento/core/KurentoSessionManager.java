@@ -156,12 +156,18 @@ public class KurentoSessionManager extends SessionManager {
 				if (kSession.joinLeaveLock.tryLock(15, TimeUnit.SECONDS)) {
 					try {
 						//flags-join : session join and sessionEventHandler is here
-						existingParticipants = getParticipants(sessionId);
-						kSession.join(participant);
-						sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants, transactionId, null);
-						//flags-join
-						kurentoSessionListener.joinSession(participant, sessionId, existingParticipants, transactionId);
-
+						if(kurentoSessionListener.joinSession(participant, sessionId, transactionId)) {
+							existingParticipants = getParticipants(sessionId);
+							kSession.join(participant);
+							sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants, transactionId, null);
+							//flags-join
+							//kurentoSessionListener.joinSession(participant, sessionId, existingParticipants, transactionId);
+							String result = "[participant] " + participant + "\n"
+									+ "[sessionId]" + sessionId + "\n"
+									+ "[transactionId]" + transactionId + "\n"
+									+ "[existingParticipants]" + existingParticipants + "\n";
+							log.info("session join with following result {}", result);
+						}
 					} finally {
 						kSession.joinLeaveLock.unlock();
 					}

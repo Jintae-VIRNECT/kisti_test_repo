@@ -89,11 +89,15 @@ public class ServiceSessionManager {
             }
 
             @Override
-            public void joinSession(Participant participant, String sessionId, Set<Participant> existingParticipants, Integer transactionId) {
-                String result = "[participant] " + participant + "\n"
+            public boolean joinSession(Participant participant, String sessionId, Integer transactionId) {
+                /*String result = "[participant] " + participant + "\n"
                         + "[sessionId]" + sessionId + "\n"
                         + "[transactionId]" + transactionId + "\n"
-                        + "[existingParticipants]" + existingParticipants + "\n";
+                        + "[existingParticipants]" + existingParticipants + "\n";*/
+                String result = "[participant] " + participant + "\n"
+                        + "[sessionId]" + sessionId + "\n"
+                        + "[transactionId]" + transactionId + "\n";
+
                 LogMessage.formedInfo(
                         TAG,
                         "JOIN SESSION EVENT",
@@ -107,12 +111,20 @@ public class ServiceSessionManager {
                             "JOIN SESSION EVENT_ERROR_force",
                             "joinSession",
                             dataProcess.getMessage(),
+                            "return false");
+                    return false;
+                    /*LogMessage.formedError(
+                            TAG,
+                            "JOIN SESSION EVENT_ERROR_force",
+                            "joinSession",
+                            dataProcess.getMessage(),
                             EndReason.forceDisconnectByServer.toString());
 
                     Session session = sessionManager.getSessionWithNotActive(sessionId);
                     Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
-                    sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);
+                    sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);*/
                 }
+                return true;
             }
 
             @Override
