@@ -90,10 +90,6 @@ public class ServiceSessionManager {
 
             @Override
             public boolean joinSession(Participant participant, String sessionId, Integer transactionId) {
-                /*String result = "[participant] " + participant + "\n"
-                        + "[sessionId]" + sessionId + "\n"
-                        + "[transactionId]" + transactionId + "\n"
-                        + "[existingParticipants]" + existingParticipants + "\n";*/
                 String result = "[participant] " + participant + "\n"
                         + "[sessionId]" + sessionId + "\n"
                         + "[transactionId]" + transactionId + "\n";
@@ -108,7 +104,7 @@ public class ServiceSessionManager {
                 if(dataProcess.getCode() == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID.getCode()) {
                     LogMessage.formedError(
                             TAG,
-                            "JOIN SESSION EVENT_ERROR_force",
+                            "JOIN SESSION EVENT_ERROR",
                             "joinSession",
                             dataProcess.getMessage(),
                             "return false");
