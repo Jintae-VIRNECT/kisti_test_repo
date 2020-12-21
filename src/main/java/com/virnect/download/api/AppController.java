@@ -80,7 +80,7 @@ public class AppController {
 
 	@ApiOperation(value = "앱 서명키 등록")
 	@PostMapping("/signingkey")
-	public ResponseEntity<ApiResponse<AppSigningKetRegisterResponse>> registerAppSigingKey(
+	public ResponseEntity<ApiResponse<AppSigningKetRegisterResponse>> registerAppSigningKey(
 		@RequestBody AppSigningKeyRegisterRequest signingKeyRegisterRequest, BindingResult result
 	) {
 		log.info("Request: {}", signingKeyRegisterRequest.toString());

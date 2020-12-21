@@ -97,7 +97,9 @@ public class AppService {
                 .appUrl(appUploadUrl)
                 .imageUrl("")
                 .signature(applicationSignature)
-                .build();
+				.appStatus(AppStatus.INACTIVE)
+				.appUpdateStatus(AppUpdateStatus.OPTIONAL)
+			.build();
 
         // Remote 가이드 문서 및 이미지 설정
         if (product.getName().equals("REMOTE") && device.getType().equals("MOBILE")) {
