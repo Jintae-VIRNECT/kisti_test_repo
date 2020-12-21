@@ -104,7 +104,7 @@ public class ServiceSessionManager {
                 if(dataProcess.getCode() == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID.getCode()) {
                     LogMessage.formedError(
                             TAG,
-                            "JOIN SESSION EVENT",
+                            "JOIN SESSION EVENT_ERROR_force",
                             "joinSession",
                             dataProcess.getMessage(),
                             EndReason.forceDisconnectByServer.toString());
