@@ -10,6 +10,7 @@
     "welcome_license": "<span>{name}&nbsp;님, <br> 할당된 플랜이 없습니다.</span>",
     "welcome_expire": "<span>{name}&nbsp;님, <br> 플랜이 만료되었습니다.</span>",
     "search_empty": "검색된 내용이 없습니다.",
+    "no_license": "할당된 플랜이 없습니다.",
     
     "select_workspace": "워크스페이스를 선택해 주세요.",
     

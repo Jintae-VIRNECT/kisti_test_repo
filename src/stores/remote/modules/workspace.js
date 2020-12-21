@@ -70,6 +70,7 @@ const mutations = {
         )
         if (idx > -1) {
           state.current = state.workspaceList[idx]
+          window.localStorage.setItem('workspace', null)
         }
       } else {
         if (state.workspaceList.length === 1) {
@@ -92,6 +93,7 @@ const mutations = {
       }
     }
     state.current = {}
+    window.localStorage.setItem('workspace', null)
   },
   [SET_COMPANY_INFO](state, payload) {
     for (let key in payload) {

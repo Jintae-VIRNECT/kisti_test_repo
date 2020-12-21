@@ -10,6 +10,7 @@
     "welcome_license": "<span>{name}, <br>you don't have any plan allotted.</span>",
     "welcome_expire": "<span>{name}, <br>your plan has been expired.</span>",
     "search_empty": "No results",
+    "no_license": "you don't have any plan allotted.",
 
     "select_workspace": "Select a Workspace.",
 

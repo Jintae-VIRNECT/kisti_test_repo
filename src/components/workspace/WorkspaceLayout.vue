@@ -40,10 +40,11 @@ import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
 import auth, { getSettings } from 'utils/auth'
-import { getLicense, getCompanyInfo } from 'api/http/account'
+import { getLicense, workspaceLicense, getCompanyInfo } from 'api/http/account'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
+import toastMixin from 'mixins/toast'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
 import FileUpload from './modal/WorkspaceRecordFileUpload'
@@ -62,7 +63,7 @@ export default {
       next()
     }
   },
-  mixins: [confirmMixin, langMixin],
+  mixins: [confirmMixin, langMixin, toastMixin],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -93,6 +94,7 @@ export default {
       if (val.uuid && val.uuid !== oldVal.uuid) {
         this.checkPlan(val)
         this.checkCompany(val.uuid)
+        this.checkLicense(val.uuid)
       }
     },
   },
@@ -113,6 +115,7 @@ export default {
       'setTranslate',
       'setCompanyInfo',
       'setServerRecord',
+      'clearWorkspace',
     ]),
     async init() {
       this.inited = false
@@ -146,7 +149,22 @@ export default {
         }
         this.$nextTick(() => {
           this.inited = true
+          this.checkLicense()
         })
+      }
+    },
+    async checkLicense(uuid) {
+      uuid = uuid || this.workspace.uuid
+      try {
+        await workspaceLicense({
+          workspaceId: uuid,
+          userId: this.account.uuid,
+        })
+      } catch (err) {
+        this.clearWorkspace(this.workspace.uuid)
+        if (err.code === 5003) {
+          this.toastError(this.$t('workspace.no_license'))
+        }
       }
     },
     handleMaxScroll(event) {
