@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.virnect.client.RemoteServiceException;
+import com.virnect.client.RemoteServiceException.Code;
 import com.virnect.data.dao.*;
 import com.virnect.data.service.HistoryService;
 import com.virnect.mediaserver.core.EndReason;
@@ -223,8 +225,8 @@ public abstract class DataRepository {
         }.asApiResponse();
     }*/
 
-    public DataProcess<Boolean> joinSession(Participant participant, String sessionId) {
-        return new RepoDecoder<Room, Boolean>(RepoDecoderType.UPDATE) {
+    public DataProcess<ErrorCode> joinSession(Participant participant, String sessionId) {
+        return new RepoDecoder<Room, ErrorCode>(RepoDecoderType.UPDATE) {
             ClientMetaData clientMetaData = null;
             Room room;
             @Override
@@ -233,7 +235,7 @@ public abstract class DataRepository {
             }
 
             @Override
-            DataProcess<Boolean> invokeDataProcess() {
+            DataProcess<ErrorCode> invokeDataProcess() {
                 room = loadFromDatabase();
                 if(room == null) {
                     throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
@@ -254,10 +256,34 @@ public abstract class DataRepository {
                 log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
                 log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
-                Member member = setData();
-                sessionService.setMember(member);
-                //sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
-                return new DataProcess<>(true);
+                //throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+
+                Member member = sessionService.getMember(room.getWorkspaceId(), sessionId, clientMetaData.getClientData());
+                try {
+                    if (member == null) {
+                        member = setData();
+                    } else {
+                        if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                            return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID); //Code.EXISTING_USER_IN_ROOM_ERROR_CODE
+                        } else {
+                            member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                            member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                            member.setConnectionId(participant.getParticipantPublicId());
+                            member.setMemberStatus(MemberStatus.LOAD);
+                        }
+                    }
+                    sessionService.setMember(member);
+                    //sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
+                } catch (NullPointerException exception) {
+                    LogMessage.formedError(
+                            TAG,
+                            "JOIN SESSION EVENT",
+                            "joinSession",
+                            exception.getClass().getName(),
+                            exception.getMessage());
+                    throw new RemoteServiceException(Code.USER_METADATA_FORMAT_INVALID_ERROR_CODE, "Invalid metadata lacking parameter");
+                }
+                return new DataProcess<>(ErrorCode.ERR_SUCCESS);
 
                 /*if(!Objects.equals(clientMetaData.getRoleType(), MemberType.LEADER.name())
                 || !Objects.equals(clientMetaData.getRoleType(), MemberType.EXPERT.name())
@@ -270,18 +296,14 @@ public abstract class DataRepository {
             }
 
             private Member setData() {
-                Member member = sessionService.getMember(room.getWorkspaceId(), sessionId, clientMetaData.getClientData());
-                if(member == null) {
-                    member = Member.builder()
-                            .room(room)
-                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
-                            .uuid(clientMetaData.getClientData())
-                            .workspaceId(room.getWorkspaceId())
-                            .sessionId(room.getSessionId())
-                            .build();
-                } else {
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                }
+                Member member = Member.builder()
+                        .room(room)
+                        .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
+                        .uuid(clientMetaData.getClientData())
+                        .workspaceId(room.getWorkspaceId())
+                        .sessionId(room.getSessionId())
+                        .build();
+
                 member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
                 member.setConnectionId(participant.getParticipantPublicId());
                 member.setMemberStatus(MemberStatus.LOAD);

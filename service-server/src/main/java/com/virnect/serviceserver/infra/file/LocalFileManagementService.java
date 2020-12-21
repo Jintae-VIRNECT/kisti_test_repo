@@ -71,7 +71,8 @@ public class LocalFileManagementService implements IFileManagementService {
 
     private List<String> fileAllowExtensionList = null;
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/virnect-remote/";
-    final long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
+
+
 
     private static void disableSslVerification() throws NoSuchAlgorithmException, KeyManagementException {
         // Create a trust manager that does not validate certificate chains
@@ -418,25 +419,23 @@ public class LocalFileManagementService implements IFileManagementService {
             return new UploadResult(null, ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
         }
 
-        // check file size
-        /*
-         * if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) { throw new
-         * RestServiceException(ErrorCode.ERR_FILE_SIZE_LIMIT); }
-         */
-        /*log.info("UPLOAD FILE::#upload::result => [originName: {}, name: {} , size: {}]",
-                file.getOriginalFilename(),
-                file.getName(),
-                file.getSize());*/
-
+        // file upload to create a InputStream for object upload.
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
-
-        //log.info("UPLOAD FILE::#upload::result => [{}, {}]", objectName, fileExtension);
-
-        // ile upload
-        // Create a InputStream for object upload.
         StringBuilder objectPath = new StringBuilder();
         switch (fileType) {
             case FILE: {
+                // check file size
+                if (file.getSize() > MAX_FILE_SIZE) {
+                    LogMessage.formedError(
+                            TAG,
+                            "file upload",
+                            "upload",
+                            "this file size over the max size",
+                            String.valueOf(file.getSize())
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_SIZE_LIMIT);
+                }
+
                 try {
                     objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
                     minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
@@ -519,7 +518,7 @@ public class LocalFileManagementService implements IFileManagementService {
         }
 
         // check file size
-        if (file.getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) {
+        if (file.getSize() > MAX_FILE_SIZE) {
             LogMessage.formedError(
                     TAG,
                     "profile image upload",
