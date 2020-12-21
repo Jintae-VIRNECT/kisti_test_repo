@@ -32,12 +32,6 @@ export default {
           wsUri: RECORD_INFO['wss'],
         }
 
-        const token = `${
-          RECORD_INFO['token']
-        }&recorder=true&options=${JSON.stringify(options)}`
-
-        const fileName = `${today}_${this.roomInfo.sessionId}`
-
         const metaData = {
           clientData: this.account.uuid,
           roleType: ROLE.EXPERT,
@@ -45,7 +39,14 @@ export default {
           device: 0,
         }
 
-        // return
+        const token = `${
+          RECORD_INFO['token']
+        }&recorder=true&options=${JSON.stringify(
+          options,
+        )}&metaData=${JSON.stringify(metaData)}`
+
+        const fileName = `${today}_${this.roomInfo.sessionId}`
+
         const result = await startServerRecord({
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
@@ -55,7 +56,7 @@ export default {
           resolution: this.serverRecord.resolution,
           sessionId: this.roomInfo.sessionId,
           token: token,
-          metaData: metaData,
+          metaData: {},
         })
         this.recordingId = result.recordingId
 
