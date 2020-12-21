@@ -68,7 +68,6 @@ export async function api(name, option = {}) {
 	if (accessToken) {
 		axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`
 	}
-	axios.defaults.headers.common['client'] = 'web'
 	try {
 		const response = await axios[method](uri, params, headers)
 		const { code, data, message } = response.data

@@ -46,7 +46,7 @@ export default {
 			this.showSection.login = true
 			this.showSection.profile = false
 			this.showSection.link = false
-			// location.replace(`${this.$urls['console']}/?continue=${location.href}`)
+			location.replace(`${this.$urls['console']}/?continue=${location.href}`)
 		}
 	},
 }

@@ -138,45 +138,6 @@ export default {
 		},
 	},
 	methods: {
-		async kospoToken() {
-			const token = this.$route.query.token
-			const redirectTarget = this.$route.query.continue
-
-			if (!token) {
-				location.href = this.$urls['sso']
-			}
-			try {
-				const res = await AuthService.login({ params: { token } })
-				if (res.code !== 200) throw new Error(res.message)
-				else {
-					const cookieOption = {
-						secure: true,
-						sameSite: 'None',
-						expires: res.data.expireIn / 3600000,
-						domain:
-							location.hostname.split('.').length === 3
-								? location.hostname.replace(/.*?\./, '')
-								: location.hostname,
-					}
-					Cookies.set('accessToken', res.data.accessToken, cookieOption)
-					Cookies.set('refreshToken', res.data.refreshToken, cookieOption)
-				}
-			} catch (e) {
-				this.alertMessage(
-					this.$t('login.networkError.title'),
-					e.toString(),
-					'error',
-				)
-			}
-
-			if (redirectTarget) {
-				location.href = /^https?:/.test(redirectTarget)
-					? redirectTarget
-					: `//${redirectTarget}`
-			} else if (this.auth.isLogin) {
-				location.href = this.$urls['workstation']
-			}
-		},
 		async checkToken() {
 			const redirectTarget = this.$route.query.continue
 			if (!this.auth.isLogin) return false
@@ -283,8 +244,7 @@ export default {
 		},
 	},
 	beforeMount() {
-		if (this.$env !== 'onpremise') this.checkToken()
-		else this.kospoToken()
+		this.checkToken()
 	},
 	mounted() {
 		if (this.rememberLogin === 'true') {

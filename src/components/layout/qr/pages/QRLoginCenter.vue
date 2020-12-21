@@ -114,7 +114,7 @@ export default {
 					throw otp.data
 				}
 			} catch (e) {
-				// location.replace(`${window.urls['console']}/?continue=${location.href}`)
+				location.replace(`${window.urls['console']}/?continue=${location.href}`)
 			}
 		},
 		timeRunner() {
