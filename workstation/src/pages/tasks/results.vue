@@ -83,15 +83,15 @@ export default {
     activeTab(tab) {
       let pathTo = ''
       if (tab === 'task') {
-        pathTo = `/tasks/results`
+        pathTo = '/tasks/results'
         this.searchSubTasks()
         this.myResult = this.$t('results.myTask')
       } else if (tab === 'issue') {
-        pathTo = `/tasks/results/issues`
+        pathTo = '/tasks/results/issues'
         this.searchIssues()
         this.myResult = this.$t('results.myIssue')
       } else if (tab === 'paper') {
-        pathTo = `/tasks/results/papers`
+        pathTo = '/tasks/results/papers'
         this.searchPapers()
         this.myResult = this.$t('results.myPaper')
       }
@@ -100,6 +100,7 @@ export default {
   },
   methods: {
     changedSearchParams() {
+      console.log('test')
       if (this.activeTab === 'task') this.searchSubTasks()
       else if (this.activeTab === 'issue') this.searchIssues()
       else if (this.activeTab === 'paper') this.searchPapers()
@@ -132,10 +133,10 @@ export default {
     this.resultsSearch = this.$route.query.search
     this.searchParams.search = this.$route.query.search
 
-    const tab = this.$route.path.match(/[a-z]*?$/)[0]
-    if (tab === 'results') this.activeTab = 'task'
-    else if (tab === 'issues') this.activeTab = 'issue'
-    else if (tab === 'papers') this.activeTab = 'paper'
+    const { path } = this.$route
+    if (path === '/tasks/results') this.activeTab = 'task'
+    else if (path === '/tasks/results/issues') this.activeTab = 'issue'
+    else if (path === '/tasks/results/papers') this.activeTab = 'paper'
 
     workspaceService.watchActiveWorkspace(this, () => {
       if (this.activeTab === 'task') this.searchSubTasks()

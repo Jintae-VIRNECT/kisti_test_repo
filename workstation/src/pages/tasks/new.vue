@@ -46,7 +46,8 @@
             <column-default
               :label="$t('contents.allContents.column.id')"
               prop="contentUUID"
-              :width="140"
+              customFilter="slice8"
+              :width="130"
             />
             <column-default
               :label="$t('contents.allContents.column.name')"

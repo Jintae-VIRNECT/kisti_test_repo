@@ -48,7 +48,8 @@
             <column-default
               :label="$t('contents.allContents.column.id')"
               prop="contentUUID"
-              :width="140"
+              customFilter="slice8"
+              :width="120"
             />
             <column-default
               :label="$t('contents.allContents.column.name')"
@@ -168,7 +169,6 @@ export default {
           duration: 2000,
           showClose: true,
         })
-        this.emitChangedSearchParams()
       } catch (errors) {
         errors.forEach((e, index) => {
           setTimeout(() => {
@@ -178,12 +178,13 @@ export default {
                   ? this.$t('contents.info.message.deleteShared')
                   : this.$t('contents.info.message.deleteFail') +
                     `\n(${e.msg} / contentUUID: ${e.contentUUID})`,
-              duration: 2000,
+              duration: 4000,
               showClose: true,
             })
           }, index * 100)
         })
       }
+      this.emitChangedSearchParams()
     },
   },
   beforeMount() {
