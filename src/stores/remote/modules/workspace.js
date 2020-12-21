@@ -108,6 +108,8 @@ const getters = {
     return state.companyInfo.sessionType === 'OPEN'
   },
   languageCodes: state => state.companyInfo.languageCodes,
+  useRecording: state => state.companyInfo.recording,
+  useStorage: state => state.companyInfo.storage,
 }
 
 export default {

@@ -7,10 +7,14 @@ export default {
     updateHistory() {
       const json = this.canvas.toJSON().objects
       const url = this.backCanvas.toDataURL({
-        multiplier: this.img.width / this.canvas.getWidth(),
+        multiplier: 1,
         left: 0,
         top: 0,
       })
+      // if (this.img.width / this.canvas.getWidth() > 1) {
+      // } else {
+      //   url = this.backCanvas.toDataURL()
+      // }
       const params = {
         id: this.file.id,
         img: url,

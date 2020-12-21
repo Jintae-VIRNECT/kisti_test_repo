@@ -3,7 +3,10 @@
     <div class="menus-box">
       <template v-if="isLeader">
         <capture :disabled="!isMainViewOn"></capture>
-        <server-record :disabled="!hasMainView"></server-record>
+        <server-record
+          v-if="useRecording"
+          :disabled="!hasMainView"
+        ></server-record>
       </template>
       <template v-if="!isSafari">
         <local-record :disabled="!hasMainView"></local-record>
@@ -24,7 +27,6 @@ import {
 } from './partials'
 import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'Menus',
@@ -41,7 +43,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView']),
+    ...mapGetters(['mainView', 'useRecording']),
     hasMainView() {
       return this.mainView && this.mainView.id
     },
@@ -50,9 +52,6 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
-    },
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   props: {

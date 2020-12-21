@@ -159,7 +159,7 @@ export default {
 
           this.isInit = true
           this.$emit('loading')
-          this.$call.arDrawing(AR_DRAWING.START_DRAWING, {}, [
+          this.$call.sendArDrawing(AR_DRAWING.START_DRAWING, {}, [
             this.mainView.connectionId,
           ])
         })
@@ -201,13 +201,15 @@ export default {
       }
 
       if ([AR_DRAWING.UNDO, AR_DRAWING.REDO, AR_DRAWING.CLEAR].includes(type)) {
-        this.$call.arDrawing(type, { ...param, ...custom }, [
+        this.$call.sendArDrawing(type, { ...param, ...custom }, [
           this.mainView.connectionId,
         ])
       } else {
-        this.$call.arDrawing(AR_DRAWING.AR_DRAWING, { ...param, ...custom }, [
-          this.mainView.connectionId,
-        ])
+        this.$call.sendArDrawing(
+          AR_DRAWING.AR_DRAWING,
+          { ...param, ...custom },
+          [this.mainView.connectionId],
+        )
       }
 
       // tId 업데이트
@@ -218,6 +220,13 @@ export default {
       ) {
         object.tId = aId
       }
+    },
+    windowResize() {
+      this.$nextTick(() => {
+        setTimeout(() => {
+          this.optimizeCanvasSize()
+        }, 1000)
+      })
     },
     optimizeCanvasSize() {
       if (!this.file || !this.file.id) return
@@ -257,7 +266,7 @@ export default {
   },
   /* Lifecycles */
   created() {
-    window.addEventListener('resize', this.optimizeCanvasSize)
+    window.addEventListener('resize', this.windowResize)
     if (this.file && this.file.id) {
       setTimeout(() => {
         this.initCanvas()
@@ -265,7 +274,7 @@ export default {
     }
   },
   beforeDestroy() {
-    window.removeEventListener('resize', this.optimizeCanvasSize)
+    window.removeEventListener('resize', this.windowResize)
   },
 }
 </script>

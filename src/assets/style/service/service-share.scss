@@ -294,6 +294,7 @@ $share_savebtn_height: 2.929rem;
 .share-body__backbutton {
   flex: 0;
   width: calc(100% - 2.857rem);
+  min-height: 2.143rem;
   margin: 1.429rem;
 }
 .share-body__backbutton-text {

@@ -106,7 +106,7 @@ export default {
           val.id !== oldVal.id &&
           this.account.roleType === ROLE.LEADER
         ) {
-          this.$call.stopArFeature()
+          this.$call.sendArFeatureStop()
           this.goTabConfirm(VIEW.STREAM)
         }
       },
@@ -127,7 +127,7 @@ export default {
             {
               text: this.$t('button.exit'),
               action: () => {
-                this.$call.stopArFeature()
+                this.$call.sendArFeatureStop()
                 this.goTabConfirm(type)
               },
             },
@@ -135,7 +135,7 @@ export default {
           // this.confirmCancel(this.$t('service.toast_exit_ar'), {
           //   text: this.$t('button.exit'),
           //   action: () => {
-          //     this.$call.stopArFeature()
+          //     this.$call.sendArFeatureStop()
           //     this.goTabConfirm(type)
           //   },
           // })
@@ -147,7 +147,7 @@ export default {
             this.confirmCancel(this.$t('service.toast_exit_drawing'), {
               text: this.$t('button.exit'),
               action: () => {
-                this.$call.drawing(DRAWING.END_DRAWING)
+                this.$call.sendDrawing(DRAWING.END_DRAWING)
                 this.goTabConfirm(type)
               },
             })
@@ -218,7 +218,7 @@ export default {
           name: this.mainView.nickname,
           type: 'system',
         })
-        this.$call.startArFeature(this.mainView.id)
+        this.$call.sendArFeatureStart(this.mainView.id)
         this.setView(VIEW.AR)
       } else if (permission === false) {
         this.toastDefault(this.$t('service.toast_refused_ar'))
@@ -251,7 +251,7 @@ export default {
         this.toastDefault(this.$t('service.toast_refused_ar'))
         return
       }
-      this.$call.permission([this.mainView.connectionId])
+      this.$call.sendCapturePermission([this.mainView.connectionId])
       this.toastDefault(this.$t('service.toast_request_permission'))
     },
 

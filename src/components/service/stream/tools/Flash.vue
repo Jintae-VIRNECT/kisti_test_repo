@@ -60,7 +60,7 @@ export default {
         return
       }
       const toStatus = !this.status
-      this.$call.flash(toStatus, [this.mainView.connectionId])
+      this.$call.sendFlash(toStatus, [this.mainView.connectionId])
     },
     flashListener(status) {
       // 응답

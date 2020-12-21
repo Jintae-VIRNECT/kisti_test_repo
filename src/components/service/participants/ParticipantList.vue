@@ -127,7 +127,7 @@ export default {
           }
         }
       }
-      this.$call.mainview(select.id, force)
+      this.$call.sendVideo(select.id, force)
       this.setMainView({ id: select.id, force })
     },
     more() {

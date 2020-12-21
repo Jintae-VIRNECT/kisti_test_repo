@@ -42,7 +42,7 @@
           {{ $t('service.translate') }}
         </button>
         <button
-          v-if="isOnpremise"
+          v-if="useStorage"
           class="chat-input__form-upload"
           @click="clickUpload"
         >
@@ -86,7 +86,6 @@
 import { mapGetters } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
-import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
@@ -102,10 +101,14 @@ export default {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate', 'useTranslate']),
-    isOnpremise() {
-      return RUNTIME_ENV === RUNTIME.ONPREMISE
-    },
+    ...mapGetters([
+      'chatList',
+      'roomInfo',
+      'mic',
+      'translate',
+      'useTranslate',
+      'useStorage',
+    ]),
   },
   watch: {
     fileList: {
@@ -118,13 +121,16 @@ export default {
       },
       deep: true,
     },
+    'inputText.length': 'checkLength',
   },
   methods: {
     checkLength() {
       if (!this.useTranslate) return
-      if (this.inputText.length >= 200) {
+      if (this.inputText.length > 200) {
         this.inputText = this.inputText.substr(0, 200)
-        this.toastDefault(this.$t('service.chat_text_exceed'))
+        this.toastDefault(this.$t('service.chat_text_exceed'), {
+          position: this.isTablet ? 'bottom-center' : 'top-center',
+        })
       }
     },
     doStt() {
@@ -165,7 +171,20 @@ export default {
           this.clearUploadFile()
           this.fileList = []
         } catch (err) {
-          console.error(err)
+          if (err && err.code) {
+            if (err.code === 7002) {
+              this.toastError(this.$t('service.file_dummy_assumed'))
+            } else if (err.code === 7003) {
+              this.toastError(this.$t('service.file_extension_unsupport'))
+            } else if (err.code === 7004) {
+              this.toastError(this.$t('service.file_size_exceeded'))
+            }
+
+            this.clearUploadFile()
+            this.fileList = []
+          } else {
+            console.error(err)
+          }
         }
       } else if (this.inputText.length > 0) {
         this.$call.sendChat(this.inputText, this.translate.code)
@@ -174,8 +193,7 @@ export default {
       this.inputText = ''
     },
     clickUpload() {
-      if (!this.isOnpremise) {
-        this.unsupport()
+      if (!this.useStorage) {
         return
       }
       if (this.fileList.length > 0) {
@@ -286,7 +304,7 @@ export default {
       // console.log(event);
     },
     dropHandler(event) {
-      if (!this.isOnpremise) return
+      if (!this.useStorage) return
       const file = event.dataTransfer.files[0]
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE

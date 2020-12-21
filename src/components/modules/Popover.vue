@@ -127,13 +127,18 @@ export default {
       this.$el.removeEventListener('mouseenter', this.showPopover)
       this.$el.removeEventListener('mouseleave', this.hidePopover)
       this.$el.removeEventListener('click', this.togglePopover)
+      this.$el.removeEventListener('touchstart', this.togglePopover)
       this.$el.removeEventListener('focus', this.showPopover)
       this.$el.removeEventListener('blur', this.hidePopover)
 
       switch (this.trigger) {
         case 'click':
-          this.$el.addEventListener('click', this.togglePopover)
           window.addEventListener('click', this.windowClickHandler)
+          if (this.isTablet) {
+            this.$el.addEventListener('touchstart', this.togglePopover)
+          } else {
+            this.$el.addEventListener('click', this.togglePopover)
+          }
           break
         case 'hover':
           this.$el.addEventListener('mouseenter', this.showPopover)
@@ -233,7 +238,10 @@ export default {
         this.hide()
       }
     },
-    togglePopover() {
+    togglePopover(e) {
+      if (this.isTablet) {
+        e.stopPropagation()
+      }
       if (true === this.visible) {
         this.hidePopover()
       } else {

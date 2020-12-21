@@ -83,7 +83,7 @@ const getMyInfo = async () => {
   }
 }
 
-const getConfigs = async () => {
+export const getConfigs = async () => {
   if (window.urls && window.urls['api']) return
   const res = await axios.get(
     `${location.origin}/configs?origin=${location.hostname}`,
@@ -176,7 +176,7 @@ class Auth {
   }
   login() {
     cookieClear()
-    location.href = `${URLS['console']}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${location.href}&token=123`
     return this
   }
   logout() {
@@ -184,7 +184,7 @@ class Auth {
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    location.href = `${URLS['console']}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${location.href}&token=123`
     return this
   }
 }

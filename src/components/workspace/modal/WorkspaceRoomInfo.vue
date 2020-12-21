@@ -35,7 +35,7 @@
             {{ $t('workspace.info_remote_member') }}
           </button>
           <button
-            v-if="isOnpremise"
+            v-if="useStorage"
             class="roominfo-nav__menu"
             :class="{ active: tabview === 'download' }"
             :data-text="$t('button.download')"
@@ -45,25 +45,25 @@
           </button>
         </div>
       </section>
-      <room-info
-        v-if="tabview === 'group'"
-        :room="room"
-        :image.sync="image"
-        :isLeader="isLeader"
-        @update="update"
-      ></room-info>
 
-      <participants-info
-        v-else-if="tabview === 'user'"
-        :participants="memberList"
-        :isLeader="isLeader"
-        :sessionId="sessionId"
-        @kickout="kickout"
-      ></participants-info>
-      <room-download
-        v-else-if="isOnpremise"
-        :sessionId="sessionId"
-      ></room-download>
+      <keep-alive>
+        <room-info
+          v-if="tabview === 'group'"
+          :room="room"
+          :image.sync="image"
+          :isLeader="isLeader"
+          @update="update"
+        ></room-info>
+
+        <participants-info
+          v-else-if="tabview === 'user'"
+          :participants="memberList"
+          :isLeader="isLeader"
+          :sessionId="sessionId"
+          @kickout="kickout"
+        ></participants-info>
+        <room-download v-else :sessionId="sessionId"></room-download>
+      </keep-alive>
     </div>
   </modal>
 </template>
@@ -82,7 +82,7 @@ import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
 import confirmMixin from 'mixins/confirm'
-import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'WorkspaceRoomInfo',
@@ -103,15 +103,13 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['useStorage']),
     memberList() {
       if (this.room) {
         return this.room.memberList
       } else {
         return []
       }
-    },
-    isOnpremise() {
-      return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
   },
   props: {

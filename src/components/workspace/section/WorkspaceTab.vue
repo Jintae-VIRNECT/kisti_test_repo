@@ -31,7 +31,9 @@
       <workspace-select
         v-else-if="!workspace || !workspace.uuid"
       ></workspace-select>
-      <component v-else :is="component" :class="{ fix: fix }"></component>
+      <keep-alive v-else>
+        <component :is="component" :class="{ fix: fix }"></component>
+      </keep-alive>
     </template>
     <transition name="opacity">
       <workspace-skeleton v-if="!inited"></workspace-skeleton>

@@ -1,5 +1,5 @@
 <template>
-  <div class="slider" @click="$emit('update:isFirst', !isFirst)">
+  <div class="slider" :class="{ disabled }" @click="toggleSlider">
     <span
       class="slider-bg"
       :class="{ first: isFirst, second: !isFirst }"
@@ -25,8 +25,20 @@ export default {
       type: Boolean,
       default: true,
     },
+    disabled: {
+      type: Boolean,
+      dfault: false,
+    },
   },
-  computed: {},
+  methods: {
+    toggleSlider() {
+      if (this.disabled) {
+        this.$emit('slider:disable')
+        return
+      }
+      this.$emit('update:isFirst', !this.isFirst)
+    },
+  },
 
   /* Lifecycles */
   mounted() {},
@@ -44,6 +56,11 @@ export default {
   border: solid 1px #1d1d1f;
   border-radius: 3px;
   cursor: pointer;
+  transition: opacity 0.3s;
+  &.disabled {
+    cursor: default;
+    opacity: 0.3;
+  }
 }
 .slider-option {
   z-index: 1;

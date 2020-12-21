@@ -46,33 +46,45 @@
       </div>
     </section>
     <section class="setting-section list">
-      <div class="setting-section__title">
+      <div class="setting-section__title" :class="{ disabled: !useTranslate }">
         {{ $t('workspace.setting_translate_output') }}
       </div>
       <slider
         :first="$t('workspace.setting_translate_output_both')"
         :second="$t('workspace.setting_translate_output_each')"
         :isFirst.sync="transMultiple"
+        :disabled="!useTranslate"
+        @slider:disable="disableTranslate"
       ></slider>
     </section>
     <section class="setting-section list horizon translate">
       <figure class="setting-section__translate">
-        <div class="setting-section__title">
+        <div
+          class="setting-section__title"
+          :class="{ disabled: !useTranslate }"
+        >
           {{ $t('workspace.setting_stt') }}
         </div>
         <slider
           :first="$t('workspace.setting_stt_sync')"
           :second="$t('workspace.setting_stt_streaming')"
           :isFirst.sync="sttSync"
+          :disabled="!useTranslate"
+          @slider:disable="disableTranslate"
         ></slider>
       </figure>
       <figure class="setting-section__translate">
-        <div class="setting-section__title">
+        <div
+          class="setting-section__title"
+          :class="{ disabled: !useTranslate }"
+        >
           {{ $t('workspace.setting_tts') }}
         </div>
         <check
           :text="$t('workspace.setting_tts_allow')"
           :value.sync="ttsAllow"
+          :disabled="!useTranslate"
+          @check:disable="disableTranslate"
         ></check>
       </figure>
     </section>
@@ -83,10 +95,12 @@ import Check from 'Check'
 import RSelect from 'RemoteSelect'
 import Slider from 'Slider'
 import Tooltip from 'Tooltip'
+import toastMixin from 'mixins/toast'
 import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'WorkspaceSetTranslate',
+  mixins: [toastMixin],
   components: {
     Check,
     Tooltip,
@@ -124,6 +138,9 @@ export default {
   },
   methods: {
     ...mapActions(['setTranslate']),
+    disableTranslate() {
+      this.toastDefault(this.$t('workspace.setting_translate_disable_message'))
+    },
     setTranslateFlag(flag) {
       this.setTranslate({
         flag,
@@ -135,7 +152,6 @@ export default {
       this.$localStorage.setTranslate('code', code)
     },
     setTranslateMultiple(multiple) {
-      console.log(multiple)
       this.setTranslate({ multiple })
       this.$localStorage.setTranslate('multiple', multiple)
     },
