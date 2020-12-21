@@ -10,8 +10,9 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
-import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
+import reactor.util.Logger;
+import reactor.util.Loggers;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -21,11 +22,11 @@ import reactor.core.publisher.Mono;
  * @since 2020.04.24
  */
 
-@Slf4j
-@Profile({"local", "develop"})
 @Component
+@Profile({"local", "develop"})
 public class HttpsToHttpFilter implements GlobalFilter, Ordered {
 	private static final int HTTPS_TO_HTTP_FILTER_ORDER = 10099;
+	private final static Logger logger = Loggers.getLogger("com.virnect.gateway.filter.redirect.HttpsToHttpFilter");
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -65,7 +66,7 @@ public class HttpsToHttpFilter implements GlobalFilter, Ordered {
 			}
 		}
 		ServerHttpRequest build = mutate.build();
-		log.info("{}", sb.toString());
+		logger.info("{}", sb.toString());
 		return chain.filter(exchange.mutate().request(build).build());
 	}
 

@@ -1,30 +1,28 @@
 # Build Stage
-FROM openjdk:8 AS builder
+FROM gradle:6.0.1-jdk8 AS builder
+ENV APP_HOME=/usr/app/
+WORKDIR $APP_HOME
 
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle .
-COPY settings.gradle .
-COPY src src
+# Only copy dependency-related files
+COPY build.gradle settings.gradle ./
+
+# Copy Sourcefile
 COPY virnect.pfx .
-COPY virnect_2.pfx .
-COPY safari.pfx .
+COPY src src
 
-RUN chmod +x ./gradlew
-RUN ./gradlew build -x test
+# build soruce file with dependnecies
+RUN gradle build -x test --stacktrace
 
 # Runtime Stage
 FROM openjdk:8-jre-alpine
 
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
-ARG buildDir=build/unpack
+ARG buildDir=${APP_HOME}/build/unpack
 
-COPY --from=builder virnect.pfx .
-COPY --from=builder virnect_2.pfx .
-COPY --from=builder safari.pfx .
+COPY --from=builder ${APP_HOME}/virnect.pfx ./
 COPY --from=builder ${buildDir}/lib BOOT-INF/lib
 COPY --from=builder ${buildDir}/app .
 
 EXPOSE 8073
-CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]
+CMD ["java", "-Xms400M", "-Xmx400M", "org.springframework.boot.loader.JarLauncher"]

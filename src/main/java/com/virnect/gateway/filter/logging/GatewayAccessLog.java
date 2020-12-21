@@ -15,7 +15,7 @@ final class GatewayAccessLog {
 	static final DateTimeFormatter DATE_TIME_FORMATTER =
 		DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z");
 	static final String COMMON_LOG_FORMAT =
-		"[{}] - {} - [{}] \"{} {} [{}] [{}]\" [{}] [{}] [{} ms] [{}]";
+		"[{}] - {} - [{}] \"{} {} [{}] [{}]\" [{}] [{} ms] [{}]";
 	static final String MISSING = "-";
 	final String zonedDateTime;
 	String address = MISSING;
@@ -28,7 +28,6 @@ final class GatewayAccessLog {
 	String userAgent = MISSING;
 	long contentLength;
 	long startTime = System.currentTimeMillis();
-	int port;
 
 	GatewayAccessLog() {
 		this.zonedDateTime = ZonedDateTime.now(ZoneId.of("Asia/Seoul")).format(DATE_TIME_FORMATTER);
@@ -36,11 +35,6 @@ final class GatewayAccessLog {
 
 	GatewayAccessLog address(String address) {
 		this.address = Objects.requireNonNull(address, "address");
-		return this;
-	}
-
-	GatewayAccessLog port(int port) {
-		this.port = port;
 		return this;
 	}
 
@@ -90,7 +84,7 @@ final class GatewayAccessLog {
 
 	void log() {
 		LOGGER.info(COMMON_LOG_FORMAT, zonedDateTime, user, address, method, uri, contentType, status,
-			(contentLength > -1 ? contentLength : MISSING), port, duration(), userAgent
+			(contentLength > -1 ? contentLength : MISSING), duration(), userAgent
 		);
 	}
 }
