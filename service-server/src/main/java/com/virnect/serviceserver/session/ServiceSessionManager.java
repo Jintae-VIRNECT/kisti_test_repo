@@ -9,6 +9,7 @@ import com.virnect.mediaserver.kurento.core.KurentoSession;
 import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
+import com.virnect.service.error.ErrorCode;
 import com.virnect.serviceserver.data.DataProcess;
 import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.data.FileDataRepository;
@@ -99,7 +100,16 @@ public class ServiceSessionManager {
                         "joinSession",
                         "session join and sessionEventHandler is here",
                         result);
-                sessionDataRepository.joinSession(participant, sessionId);
+                DataProcess<ErrorCode> dataProcess = sessionDataRepository.joinSession(participant, sessionId);
+                if(dataProcess.getCode() == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID.getCode()) {
+                    LogMessage.formedError(
+                            TAG,
+                            "JOIN SESSION EVENT",
+                            "joinSession",
+                            dataProcess.getMessage(),
+                            EndReason.forceDisconnectByServer.toString());
+                    sessionManager.evictParticipant(participant, null, null, EndReason.forceDisconnectByServer);
+                }
             }
 
             @Override
