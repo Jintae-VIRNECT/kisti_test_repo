@@ -82,7 +82,15 @@ const mutations = {
     state.current = workspace
     window.localStorage.setItem('workspace', workspace.uuid)
   },
-  [CLEAR_WORKSPACE](state) {
+  [CLEAR_WORKSPACE](state, uuid) {
+    if (uuid) {
+      const idx = state.workspaceList.findIndex(
+        workspace => workspace.uuid === uuid,
+      )
+      if (idx > -1) {
+        state.workspaceList.splice(idx, 1)
+      }
+    }
     state.current = {}
   },
   [SET_COMPANY_INFO](state, payload) {

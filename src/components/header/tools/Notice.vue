@@ -181,7 +181,6 @@ export default {
       this.$refs['noticeAudio'].play()
     },
     async alarmListener(listen) {
-      if (!this.onPush) return
       const body = JSON.parse(listen.body)
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
@@ -191,6 +190,7 @@ export default {
 
       switch (body.event) {
         case EVENT.INVITE:
+          if (!this.onPush) return
           this.addAlarm({
             type: 'invite',
             info: this.$t('alarm.member_name_from', {
@@ -212,6 +212,8 @@ export default {
           )
           break
         case EVENT.INVITE_ACCEPTED:
+          if (!this.onPush) return
+
           this.addAlarm({
             type: 'info_user',
             info: this.$t('alarm.member_name_from', {
@@ -225,6 +227,7 @@ export default {
           this.alarmInviteAccepted(body.contents.nickName)
           break
         case EVENT.INVITE_DENIED:
+          if (!this.onPush) return
           this.addAlarm({
             type: 'info_user',
             info: this.$t('alarm.member_name_from', {
@@ -242,10 +245,11 @@ export default {
           break
         case EVENT.LICENSE_EXPIRED:
           if (this.$route.name === 'workspace') {
-            this.clearWorkspace()
+            this.clearWorkspace(this.workspace.uuid)
             this.alarmLicenseHome()
           } else {
             this.alarmLicense()
+            this.clearWorkspace(this.workspace.uuid)
             setTimeout(() => {
               this.$call.leave()
               this.$router.push({ name: 'workspace' })
