@@ -170,7 +170,7 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 		String token = getStringParam(request, ProtocolElements.JOINROOM_TOKEN_PARAM);
 		String secret = getStringParam(request, ProtocolElements.JOINROOM_SECRET_PARAM);
 		String platform = getStringParam(request, ProtocolElements.JOINROOM_PLATFORM_PARAM);
-		String participantPrivatetId = rpcConnection.getParticipantPrivateId();
+		String participantPrivateId = rpcConnection.getParticipantPrivateId();
 
 		final com.virnect.mediaserver.core.Session session = sessionManager.getSessionWithNotActive(sessionId);
 		if (session == null) {
@@ -234,7 +234,7 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 		boolean generateRecorderParticipant = false;
 
 		if (mediaServerProperties.serverProperty.isServiceSecret(secret)) {
-			sessionManager.newInsecureParticipant(participantPrivatetId);
+			sessionManager.newInsecureParticipant(participantPrivateId);
 			token = IdentifierPrefixes.TOKEN_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
 					+ RandomStringUtils.randomAlphanumeric(15);
 			try {
@@ -262,10 +262,10 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 						}
 						Participant participant;
 						if (generateRecorderParticipant) {
-							participant = sessionManager.newRecorderParticipant(sessionId, participantPrivatetId,
+							participant = sessionManager.newRecorderParticipant(sessionId, participantPrivateId,
 									tokenObj, clientMetadata);
 						} else {
-							participant = sessionManager.newParticipant(sessionId, participantPrivatetId, tokenObj,
+							participant = sessionManager.newParticipant(sessionId, participantPrivateId, tokenObj,
 									clientMetadata, location, platform,
 									httpSession.getId().substring(0, Math.min(16, httpSession.getId().length())));
 						}
@@ -279,7 +279,7 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 				} else {
 					log.error(
 							"ERROR: The session {} is in the process of closing while participant {} (privateId) was joining",
-							sessionId, participantPrivatetId);
+							sessionId, participantPrivateId);
 					throw new RemoteServiceException(Code.ROOM_CLOSED_ERROR_CODE,
 							"Unable to join the session. Session " + sessionId + " was in the process of closing");
 				}
