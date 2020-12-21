@@ -156,6 +156,33 @@ export const getRoomList = async ({
 }
 
 /**
+ * 원격협업 목록 검색
+ * @param {String} userId
+ * @query {String} workspaceId
+ */
+export const searchRoomList = async ({
+  search = '',
+  page = 0,
+  paging = false,
+  size = 10,
+  sort = 'createdDate,asc',
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('ROOM_SEARCH', {
+    search,
+    page,
+    paging,
+    size,
+    sort,
+    userId,
+    workspaceId,
+  })
+
+  return returnVal
+}
+
+/**
  * 원격협업 참가
  * @param {String} uuid
  * @param {String} memberType

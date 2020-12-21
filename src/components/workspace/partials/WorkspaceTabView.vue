@@ -15,6 +15,7 @@
           v-if="placeholder.length > 0"
           :placeholder="placeholder"
           appendClass="tab-view__search"
+          @search="text => $emit('search', text)"
         ></search>
         <icon-button
           v-if="showDeleteButton"

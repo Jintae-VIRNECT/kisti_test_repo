@@ -26,7 +26,8 @@ export default {
   ],
 
   /* Workspace - Room */
-  ROOM_LIST: ['GET', '/remote/room?workspaceId={workspaceId}'],
+  ROOM_LIST: ['GET', '/remote/room'],
+  ROOM_SEARCH: ['GET', '/remote/room/search'],
   CREATE_ROOM: ['POST', '/remote/room/{userId}?companyCode={companyCode}'],
   RESTART_ROOM: [
     'POST',
