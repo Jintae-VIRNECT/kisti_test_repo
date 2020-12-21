@@ -108,7 +108,10 @@ public class ServiceSessionManager {
                             "joinSession",
                             dataProcess.getMessage(),
                             EndReason.forceDisconnectByServer.toString());
-                    sessionManager.evictParticipant(participant, null, null, EndReason.forceDisconnectByServer);
+
+                    Session session = sessionManager.getSessionWithNotActive(sessionId);
+                    Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
+                    sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);
                 }
             }
 
