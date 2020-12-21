@@ -70,7 +70,10 @@ const mutations = {
         )
         if (idx > -1) {
           state.current = state.workspaceList[idx]
-          window.localStorage.setItem('workspace', null)
+          window.localStorage.setItem(
+            'workspace',
+            state.workspaceList[idx].uuid,
+          )
         }
       } else {
         if (state.workspaceList.length === 1) {
@@ -90,10 +93,10 @@ const mutations = {
       )
       if (idx > -1) {
         state.workspaceList.splice(idx, 1)
+        window.localStorage.setItem('workspace', null)
       }
     }
     state.current = {}
-    window.localStorage.setItem('workspace', null)
   },
   [SET_COMPANY_INFO](state, payload) {
     for (let key in payload) {

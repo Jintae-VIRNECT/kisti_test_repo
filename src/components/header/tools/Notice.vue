@@ -150,13 +150,13 @@ export default {
     ...mapGetters(['alarmList']),
   },
   watch: {
-    // onPush(push) {
-    //   if (push) {
-    //     this.$localStorage.setItem('push', 'true')
-    //   } else {
-    //     this.$localStorage.setItem('push', 'false')
-    //   }
-    // },
+    onPush(push) {
+      if (push) {
+        this.$localStorage.setItem('push', 'true')
+      } else {
+        this.$localStorage.setItem('push', 'false')
+      }
+    },
     workspace(val, oldVal) {
       if (val.uuid && !oldVal.uuid) {
         this.pushInit()
@@ -339,6 +339,11 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.pushInit()
+      let push = true
+      if (this.$localStorage.getItem('push')) {
+        push = this.$localStorage.getItem('push') === 'true'
+      }
+      this.onPush = push
     })
   },
   beforeDestroy() {
