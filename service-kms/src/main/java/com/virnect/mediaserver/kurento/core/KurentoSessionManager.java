@@ -167,6 +167,12 @@ public class KurentoSessionManager extends SessionManager {
 									+ "[transactionId]" + transactionId + "\n"
 									+ "[existingParticipants]" + existingParticipants + "\n";
 							log.info("session join with following result {}", result);
+						} else {
+							log.error(
+									"InterruptException existing user for participant {} of session {} in joinRoom",
+									participant.getParticipantPublicId(), sessionId);
+							sessionEventsHandler.onParticipantJoined(participant, sessionId, null, transactionId,
+									new RemoteServiceException(Code.EXISTING_USER_IN_ROOM_ERROR_CODE, "Existing user for session lock"));
 						}
 					} finally {
 						kSession.joinLeaveLock.unlock();
