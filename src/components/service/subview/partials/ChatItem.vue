@@ -12,11 +12,14 @@
         </span>
         <div v-if="isFile" class="chat-item__file">
           <div class="chat-item__file--wrapper">
-            <div class="chat-item__file--name" :class="extension">
-              {{ chat.file.name }}
+            <div class="chat-item__file--name" :class="fileType">
+              {{ fileInfo.name }}
             </div>
           </div>
-          <p class="chat-item__file--size">{{ fileSize }}</p>
+          <span class="chat-item__file--exp">
+            {{ fileInfo.exp }}
+          </span>
+          <span class="chat-item__file--size">{{ fileSize }}</span>
         </div>
         <div class="chat-item__body--textbox">
           <p
@@ -49,7 +52,11 @@
         >
           {{ $t('service.translate') }}
         </button>
-        <button v-if="isFile" class="chat-item__file--button" @click="download">
+        <button
+          v-if="isFile && chat.type === 'opponent'"
+          class="chat-item__file--button"
+          @click="download"
+        >
           <span class="button-text">{{ $t('button.download') }}</span>
         </button>
       </div>
@@ -154,7 +161,7 @@ export default {
 
       return false
     },
-    extension() {
+    fileType() {
       const file = this.chat.file
       if (file) {
         return checkFileType({
@@ -163,6 +170,21 @@ export default {
         })
       } else {
         return ''
+      }
+    },
+    fileInfo() {
+      const file = this.chat.file
+      if (file) {
+        const idx = file.name.lastIndexOf('.')
+        return {
+          exp: file.name.toLowerCase().substr(idx + 1),
+          name: file.name.substr(0, idx),
+        }
+      } else {
+        return {
+          exp: '',
+          name: '',
+        }
       }
     },
     subClass() {

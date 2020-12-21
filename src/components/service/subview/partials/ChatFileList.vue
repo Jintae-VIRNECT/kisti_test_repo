@@ -6,7 +6,7 @@
           v-for="(file, idx) in fileList"
           :key="idx"
           :checked="file.checked"
-          :fileInfo="file"
+          :file="file"
           @toggle="selectFile(file, idx)"
         ></chat-file-item>
       </div>
