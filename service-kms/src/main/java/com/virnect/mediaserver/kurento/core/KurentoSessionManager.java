@@ -161,7 +161,6 @@ public class KurentoSessionManager extends SessionManager {
 							kSession.join(participant);
 							sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants, transactionId, null);
 							//flags-join
-							//kurentoSessionListener.joinSession(participant, sessionId, existingParticipants, transactionId);
 							String result = "[participant] " + participant + "\n"
 									+ "[sessionId]" + sessionId + "\n"
 									+ "[transactionId]" + transactionId + "\n"
