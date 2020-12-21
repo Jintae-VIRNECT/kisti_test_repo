@@ -28,9 +28,9 @@
         </el-col>
         <el-col class="right">
           <searchbar-keyword ref="keyword" :value.sync="memberSearch" />
-          <!-- <el-button type="primary" @click="addMember" v-if="canAddMember">
+          <el-button type="primary" @click="addMember" v-if="canAddMember">
             {{ $t('members.allMembers.addMember') }}
-          </el-button> -->
+          </el-button>
         </el-col>
       </el-row>
       <!-- 멤버 목록 -->
