@@ -36,7 +36,7 @@
 
           <template v-else-if="menus[tabIdx].key === 'record'">
             <set-record v-if="!isTablet"></set-record>
-            <set-server-record v-if="onpremise"></set-server-record>
+            <set-server-record></set-server-record>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
