@@ -1,7 +1,6 @@
 const url = new URL(window.location.href)
 const token = url.searchParams.get('token')
 let metaData = url.searchParams.get('metaData')
-
 let options = url.searchParams.get('options')
 
 var OV = new OpenVidu()
@@ -18,6 +17,7 @@ var session = OV.initSession()
 // const metaData = {}
 
 options = JSON.parse(options)
+metaData = JSON.parse(metaData)
 
 let streamCount = 0
 
