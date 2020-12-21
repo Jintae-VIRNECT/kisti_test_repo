@@ -9,7 +9,9 @@ import java.util.Set;
 public interface KurentoSessionListener {
     void createSession(Session sessionNotActive);
 
-    void joinSession(Participant participant, String sessionId, Set<Participant> existingParticipants, Integer transactionId);
+    //boolean joinSession(Participant participant, String sessionId, Set<Participant> existingParticipants, Integer transactionId);
+
+    boolean joinSession(Participant participant, String sessionId, Integer transactionId);
 
     void leaveSession(Participant participant, String sessionId, Set<Participant> remainingParticipants, Integer transactionId, EndReason reason);
 
