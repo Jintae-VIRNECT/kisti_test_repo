@@ -6,6 +6,7 @@ import {
 import { mapGetters, mapActions } from 'vuex'
 import { RECORD_INFO } from 'configs/env.config'
 import { ROLE } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
 
 export default {
   data() {
@@ -37,6 +38,14 @@ export default {
 
         const fileName = `${today}_${this.roomInfo.sessionId}`
 
+        const metaData = {
+          clientData: this.account.uuid,
+          roleType: ROLE.EXPERT,
+          deviceType: DEVICE.WEB,
+          device: 0,
+        }
+
+        // return
         const result = await startServerRecord({
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
@@ -46,7 +55,7 @@ export default {
           resolution: this.serverRecord.resolution,
           sessionId: this.roomInfo.sessionId,
           token: token,
-          metaData: {},
+          metaData: metaData,
         })
         this.recordingId = result.recordingId
 

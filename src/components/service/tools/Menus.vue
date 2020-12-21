@@ -3,10 +3,7 @@
     <div class="menus-box">
       <template v-if="isLeader">
         <capture :disabled="!isMainViewOn"></capture>
-        <server-record
-          v-if="onpremise"
-          :disabled="!hasMainView"
-        ></server-record>
+        <server-record :disabled="!hasMainView"></server-record>
       </template>
       <template v-if="!isSafari">
         <local-record :disabled="!hasMainView"></local-record>
