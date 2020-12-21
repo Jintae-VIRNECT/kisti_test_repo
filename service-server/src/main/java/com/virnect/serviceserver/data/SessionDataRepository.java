@@ -1074,7 +1074,7 @@ public class SessionDataRepository extends DataRepository {
      * @param userId
      * @return
      */
-    @Deprecated
+    /*@Deprecated
     public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Room, Boolean>(RepoDecoderType.READ) {
             @Override
@@ -1115,7 +1115,7 @@ public class SessionDataRepository extends DataRepository {
                 }
             }
         }.asResponseData();
-    }
+    }*/
 
     public ApiResponse<RoomResponse> joinRoom(String workspaceId, String sessionId, String sessionToken, JoinRoomRequest joinRoomRequest) {
         return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.READ) {
@@ -1154,48 +1154,6 @@ public class SessionDataRepository extends DataRepository {
                 } else {
                     return new DataProcess<>(new RoomResponse(), errorCode);
                 }
-
-
-                //sessionService.joinRoom(room, joinRoomRequest);
-                /*ErrorCode errorCode = sessionService.joinRoom(room, joinRoomRequest);
-                switch (errorCode) {
-                    case ERR_SUCCESS: {
-                        SessionTokenResponse sessionTokenResponse = null;
-                        ObjectMapper objectMapper = new ObjectMapper();
-                        try {
-                            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-
-                        assert sessionTokenResponse != null;
-
-                        RoomResponse roomResponse = new RoomResponse();
-                        //not set session create at property
-                        roomResponse.setSessionId(sessionId);
-                        roomResponse.setToken(sessionTokenResponse.getToken());
-
-                        roomResponse.setWss(ServiceServerApplication.wssUrl);
-                        for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisList()) {
-                            CoturnResponse coturnResponse = new CoturnResponse();
-                            coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
-                            coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-                            coturnResponse.setUrl(coturnUrl);
-                            roomResponse.getCoturn().add(coturnResponse);
-                        }
-                        return new DataProcess<>(roomResponse);
-                    }
-                    case ERR_ROOM_MEMBER_ALREADY_JOINED: {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
-                        //response.setErrorResponseData(errorCode);
-                        //return response;
-                    }
-                    default: {
-                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
-                        //response.setErrorResponseData(ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
-                        //return response;
-                    }
-                }*/
             }
 
             private void preDataProcess() {
@@ -1216,7 +1174,8 @@ public class SessionDataRepository extends DataRepository {
                             case UNLOAD:
                                 return ErrorCode.ERR_SUCCESS;
                             case LOAD:
-                                return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
+                                return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
+                                //return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
                             case EVICTED:
                                 break;
                         }
@@ -1382,11 +1341,6 @@ public class SessionDataRepository extends DataRepository {
                         if (userIds.contains(participant)) {
                             return new DataProcess<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
                         }
-                            /*for(Member member: members) {
-                                if(participant.equals(member.getUuid())) {
-                                    return new DataProcess<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
-                                }
-                            }*/
                     }
 
                     //update room member using iterator avoid to ConcurrentModificationException? ...
