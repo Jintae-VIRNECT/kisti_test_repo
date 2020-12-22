@@ -115,7 +115,8 @@ func (c *Client) Upload(ctx context.Context, src string, target string) error {
 		file,
 		fileStat.Size(),
 		minio.PutObjectOptions{
-			ContentType: "application/octet-stream",
+			ContentType:  "video/*",
+			UserMetadata: map[string]string{"x-amz-acl": "public-read"},
 		},
 	)
 	if err != nil {
