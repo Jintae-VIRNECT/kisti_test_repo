@@ -124,6 +124,16 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 		if (workspaceUUID != null) {
 			query = query.where(qProcess.workspaceUUID.eq(workspaceUUID));
 		}
+		if (pageable.getSort()
+			.stream()
+			.anyMatch(order -> order.getProperty().equals("taskName") && order.getDirection().isDescending())) {
+			query = query.orderBy(qProcess.name.desc());
+		}
+		if (pageable.getSort()
+			.stream()
+			.anyMatch(order -> order.getProperty().equals("taskName") && order.getDirection().isDescending())) {
+			query = query.orderBy(qProcess.name.asc());
+		}
 
 		subProcessList = getQuerydsl().applyPagination(pageable, query).fetch();
 
