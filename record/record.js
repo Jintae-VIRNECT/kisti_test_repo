@@ -4,17 +4,9 @@ let metaData = url.searchParams.get('metaData')
 let options = url.searchParams.get('options')
 
 var OV = new OpenVidu()
-// OV.enableProdMode()
+OV.enableProdMode()
 
 var session = OV.initSession()
-
-// const metaData = {
-//   clientData: '40247ff4cbe04a1e8ae3203298996f4c',
-//   device: 0,
-//   deviceType: 'DESKTOP',
-//   roleType: 'EXPERT',
-// }
-// const metaData = {}
 
 options = JSON.parse(options)
 metaData = JSON.parse(metaData)

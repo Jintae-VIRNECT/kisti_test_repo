@@ -39,11 +39,11 @@ export default {
           device: 0,
         }
 
-        const token = `${
-          RECORD_INFO['token']
-        }&recorder=true&options=${JSON.stringify(
-          options,
-        )}&metaData=${JSON.stringify(metaData)}`
+        const optionString = JSON.stringify(options)
+        const metaDataString = JSON.stringify(metaData)
+        const tokenInfo = RECORD_INFO['token']
+
+        const token = `${tokenInfo}&recorder=true&options=${optionString}&metaData=${metaDataString}`
 
         const fileName = `${today}_${this.roomInfo.sessionId}`
 
