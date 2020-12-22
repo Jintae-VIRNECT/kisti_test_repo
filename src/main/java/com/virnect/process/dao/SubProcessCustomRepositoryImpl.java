@@ -7,6 +7,7 @@ import java.util.Objects;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
@@ -127,11 +128,13 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 		if (pageable.getSort()
 			.stream()
 			.anyMatch(order -> order.getProperty().equals("taskName") && order.getDirection().isDescending())) {
+			pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 			query = query.orderBy(qProcess.name.desc());
 		}
 		if (pageable.getSort()
 			.stream()
-			.anyMatch(order -> order.getProperty().equals("taskName") && order.getDirection().isDescending())) {
+			.anyMatch(order -> order.getProperty().equals("taskName") && order.getDirection().isAscending())) {
+			pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize());
 			query = query.orderBy(qProcess.name.asc());
 		}
 
