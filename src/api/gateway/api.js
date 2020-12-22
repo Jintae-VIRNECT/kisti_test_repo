@@ -8,10 +8,12 @@ export default {
 
   /* LICENSE */
   GET_LICENSE: ['GET', '/licenses/plan/{userId}?size=30'],
-  COMPANY_INFO: ['GET', '/remote/company/{workspaceId}/{userId}'],
+  COMPANY_INFO: ['GET', '/remote/company'],
+  CHECK_LICENSE: ['GET', '/remote/licenses/{workspaceId}/{userId}'],
 
   /* Workspace - History */
-  HISTORY_LIST: ['GET', '/remote/history?userId={userId}'],
+  HISTORY_LIST: ['GET', '/remote/history'],
+  HISTORY_SEARCH: ['GET', '/remote/history/search'],
   HISTORY_ITEM: ['GET', '/remote/history/{workspaceId}/{sessionId}'],
   DELETE_HISTORY_ITEM: ['DELETE', '/remote/history/{workspaceId}'],
   DELETE_HISTORY_ALL: ['DELETE', '/remote/history/{workspaceId}/{userId}'],
@@ -24,7 +26,8 @@ export default {
   ],
 
   /* Workspace - Room */
-  ROOM_LIST: ['GET', '/remote/room?workspaceId={workspaceId}'],
+  ROOM_LIST: ['GET', '/remote/room'],
+  ROOM_SEARCH: ['GET', '/remote/room/search'],
   CREATE_ROOM: ['POST', '/remote/room/{userId}?companyCode={companyCode}'],
   RESTART_ROOM: [
     'POST',

@@ -6,6 +6,7 @@ import {
 import { mapGetters, mapActions } from 'vuex'
 import { RECORD_INFO } from 'configs/env.config'
 import { ROLE } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
 
 export default {
   data() {
@@ -31,9 +32,18 @@ export default {
           wsUri: RECORD_INFO['wss'],
         }
 
-        const token = `${
-          RECORD_INFO['token']
-        }&recorder=true&options=${JSON.stringify(options)}`
+        const metaData = {
+          clientData: this.account.uuid,
+          roleType: ROLE.EXPERT,
+          deviceType: DEVICE.WEB,
+          device: 0,
+        }
+
+        const optionString = JSON.stringify(options)
+        const metaDataString = JSON.stringify(metaData)
+        const tokenInfo = RECORD_INFO['token']
+
+        const token = `${tokenInfo}&recorder=true&options=${optionString}&metaData=${metaDataString}`
 
         const fileName = `${today}_${this.roomInfo.sessionId}`
 

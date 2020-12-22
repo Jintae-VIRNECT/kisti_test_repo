@@ -1,11 +1,17 @@
 <template>
   <section class="setting-section">
     <div class="setting-section__title">
-      {{ $t('workspace.setting_inout_device') }}
+      {{
+        isSafari
+          ? $t('workspace.setting_input_device')
+          : $t('workspace.setting_inout_device')
+      }}
     </div>
     <div class="setting-section__body horizon first">
       <figure class="setting__figure">
-        <p class="setting__label">{{ $t('workspace.setting_input_device') }}</p>
+        <p class="setting__label" v-if="!isSafari">
+          {{ $t('workspace.setting_input_device') }}
+        </p>
         <r-select
           class="setting__r-selecter"
           :options="micDevices"
@@ -16,7 +22,7 @@
         </r-select>
       </figure>
 
-      <figure class="setting__figure">
+      <figure class="setting__figure" v-if="!isSafari">
         <p class="setting__label">
           {{ $t('workspace.setting_output_device') }}
         </p>

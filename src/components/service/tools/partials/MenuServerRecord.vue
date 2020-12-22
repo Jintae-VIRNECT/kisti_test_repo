@@ -23,7 +23,7 @@ export default {
       return this.serverRecordStatus === 'WAIT'
     },
     isRecording() {
-      return this.serverRecordStatus !== 'STOP'
+      return this.serverRecordStatus !== 'STOP' && !this.disabled
     },
   },
   methods: {

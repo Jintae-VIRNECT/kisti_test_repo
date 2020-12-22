@@ -21,9 +21,9 @@
       <template v-if="loaded">
         <!-- 전체공유 표출 -->
         <transition name="opacity">
-          <div class="main-video__sharing" v-if="openRoom || viewForce">
+          <div class="main-video__sharing" v-if="viewForce">
             <button
-              v-if="!openRoom && isLeader"
+              v-if="isLeader"
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
@@ -78,15 +78,15 @@
         <div class="main-video__empty-inner" v-if="resolutions.length === 0">
           <img src="~assets/image/img_novideo.svg" />
           <p>{{ $t('service.stream_no_video') }}</p>
-          <p v-if="!openRoom" class="inner-discription">
+          <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
           </p>
-          <p v-else-if="isLeader" class="inner-discription">
+          <!-- <p v-else-if="isLeader" class="inner-discription">
             {{ $t('service.stream_choose_stream') }}
           </p>
           <p v-else class="inner-discription">
             {{ $t('service.stream_no_stream') }}
-          </p>
+          </p> -->
         </div>
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/call/img_select_video.svg" />
@@ -171,7 +171,6 @@ export default {
       resolutions: 'resolutions',
       initing: 'initing',
       viewForce: 'viewForce',
-      openRoom: 'openRoom',
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
     }),

@@ -1,6 +1,6 @@
 {
   "workspace": {
-    "search_room": "협업, 멤버 이름 검색",
+    "search_room": "협업 이름 검색",
     "search_member": "멤버 검색",
     "tab_empty_description": "원격 협업을 시작해보세요.",
     "create_room": "원격 협업 생성",
@@ -10,6 +10,7 @@
     "welcome_license": "<span>{name}&nbsp;님, <br> 할당된 플랜이 없습니다.</span>",
     "welcome_expire": "<span>{name}&nbsp;님, <br> 플랜이 만료되었습니다.</span>",
     "search_empty": "검색된 내용이 없습니다.",
+    "no_license": "할당된 플랜이 없습니다.",
     
     "select_workspace": "워크스페이스를 선택해 주세요.",
     

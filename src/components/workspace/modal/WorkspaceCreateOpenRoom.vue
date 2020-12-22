@@ -98,7 +98,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission(false)
+        const options = await checkPermission()
         let createdRes
         if (this.sessionId && this.sessionId.length > 0) {
           createdRes = await restartRoom({
@@ -138,7 +138,6 @@ export default {
           createdRes,
           ROLE.LEADER,
           options,
-          true,
         )
 
         const roomInfo = await getRoomInfo({

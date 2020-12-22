@@ -175,6 +175,7 @@ export default {
         img: imgUrl,
         width: data.width,
         height: data.height,
+        fileName: data.imgName,
       }
 
       this.showImage(imageInfo)

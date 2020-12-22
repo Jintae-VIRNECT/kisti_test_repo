@@ -11,7 +11,7 @@ import http from 'api/gateway'
  *
  */
 export const getHistoryList = async function({
-  page = 1,
+  page = 0,
   paging = false,
   size = 10,
   sort = 'createdDate,desc',
@@ -21,6 +21,36 @@ export const getHistoryList = async function({
   const returnVal = await http('HISTORY_LIST', {
     page,
     paging,
+    size,
+    sort,
+    userId,
+    workspaceId,
+  })
+
+  return returnVal
+}
+
+/**
+ * 최근 협업 목록 검색
+ * @param {Number} page size 대로 나눠진 페이지를 조회할 번호(1부터 시작)
+ * @param {String} search 검색할 텍스트
+ * @param {Number} size 페이징 사이즈
+ * @param {String} sort 정렬 옵션 데이터
+ * @param {String} userId 필수값
+ * @param {String} workspaceId 필수값
+ *
+ */
+export const searchHistoryList = async function({
+  page = 0,
+  search = '',
+  size = 10,
+  sort = 'createdDate,desc',
+  userId,
+  workspaceId,
+}) {
+  const returnVal = await http('HISTORY_SEARCH', {
+    page,
+    search,
     size,
     sort,
     userId,
