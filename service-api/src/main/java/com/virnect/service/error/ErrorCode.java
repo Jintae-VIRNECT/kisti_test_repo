@@ -44,7 +44,7 @@ public enum  ErrorCode {
     ERR_ROOM_MEMBER_NOT_ALLOWED(4013, "Not allowed member cannot join the room"),
     ERR_ROOM_MEMBER_NOT_ASSIGNED(4014, "any member not assigned, cannot join the room"),
     ERR_ROOM_LEADER_INVALID_EXIT(4015, "Room leader can not exit the room, must delete."),
-    ERR_ROOM_MEMBER_ALREADY_JOINED(4016, "This member is already joined, Duplicate participation has occured."),
+    ERR_ROOM_MEMBER_ALREADY_JOINED(4016, "This member is already joined, Duplicate participation has occurred."),
     ERR_ROOM_MEMBER_STATUS_INVALID(4017, "This member status is invalid"),
     ERR_ROOM_MEMBER_KICK_FAIL(4018, "This member cannot enforce disconnect."),
     ERR_ROOM_CREATE_FAIL(4019, "Room Create fail"),

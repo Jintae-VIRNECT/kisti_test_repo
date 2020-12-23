@@ -1069,10 +1069,6 @@ public class SessionDataRepository extends DataRepository {
 
     /**
      * Prepare to join the room the user is....
-     * @param workspaceId
-     * @param sessionId
-     * @param userId
-     * @return
      */
     /*@Deprecated
     public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
@@ -1171,11 +1167,14 @@ public class SessionDataRepository extends DataRepository {
                     if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                         MemberStatus memberStatus = member.getMemberStatus();
                         switch (memberStatus) {
-                            case UNLOAD:
+                            case UNLOAD: {
+                                member.setMemberStatus(MemberStatus.LOADING);
+                                sessionService.setMember(member);
                                 return ErrorCode.ERR_SUCCESS;
+                            }
                             case LOAD:
+                            case LOADING:
                                 return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-                                //return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
                             case EVICTED:
                                 break;
                         }

@@ -256,8 +256,6 @@ public abstract class DataRepository {
                 log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
                 log.info("session join and clientMetaData is :[DeviceType] {}", clientMetaData.getDeviceType());
 
-                //throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-
                 Member member = sessionService.getMember(room.getWorkspaceId(), sessionId, clientMetaData.getClientData());
                 try {
                     if (member == null) {
