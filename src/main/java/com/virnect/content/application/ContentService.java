@@ -414,6 +414,7 @@ public class ContentService {
             if (content == null) {
                 ContentDeleteResponse contentDeleteResponse = new ContentDeleteResponse();
                 contentDeleteResponse.setContentUUID(contentUUID);
+                contentDeleteResponse.setWorkspaceUUID(contentDeleteRequest.getWorkspaceUUID());
                 contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_NOT_FOUND.getMessage());
                 contentDeleteResponse.setResult(false);
                 contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_NOT_FOUND.getCode());
