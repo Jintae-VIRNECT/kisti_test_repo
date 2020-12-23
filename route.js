@@ -44,7 +44,7 @@ router.get('/home', function(req, res) {
     if (IsMobileBrowser(req)) {
       res.redirect(remoteAddr + '/support')
     } else {
-      res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
+      res.sendFile(path.join(__dirname, '/dist/index.html'))
     }
   } else {
     res.redirect(remoteAddr + '/support')
