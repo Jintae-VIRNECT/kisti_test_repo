@@ -203,7 +203,17 @@ export default {
         sessionId: this.roomInfo.sessionId,
         userId: this.account.uuid,
       })
-      this.users = res.memberList
+      this.users = res.memberList.sort((A, B) => {
+        if (A.role === 'MASTER') {
+          return -1
+        } else if (B.role === 'MASTER') {
+          return 1
+        } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
+          return -1
+        } else {
+          return 0
+        }
+      })
       this.loading = false
       this.selection = []
     },
