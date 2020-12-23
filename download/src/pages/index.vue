@@ -50,6 +50,7 @@ export default {
         remote: [],
         make: [],
         view: [],
+        track: [],
       },
     }
   },
@@ -110,6 +111,7 @@ export default {
         '/remote': 'remote',
         '/make': 'make',
         '/view': 'view',
+        '/track': 'track',
       }[this.$route.path] || 'remote'
     window.addEventListener('scroll', this.snbNav)
   },
