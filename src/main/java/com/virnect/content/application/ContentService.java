@@ -409,8 +409,17 @@ public class ContentService {
         List<ContentDeleteResponse> deleteResponseList = new ArrayList<>();
         for (String contentUUID : contentUUIDs) {
             // 1. 컨텐츠들 조회
-            Content content = this.contentRepository.findByUuid(contentUUID)
-                    .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+            Content content = this.contentRepository.findByUuid(contentUUID).orElse(null);
+
+            if (content == null) {
+                ContentDeleteResponse contentDeleteResponse = new ContentDeleteResponse();
+                contentDeleteResponse.setContentUUID(contentUUID);
+                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_NOT_FOUND.getMessage());
+                contentDeleteResponse.setResult(false);
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_NOT_FOUND.getCode());
+                deleteResponseList.add(contentDeleteResponse);
+                continue;
+            }
 
             ContentDeleteResponse contentDeleteResponse = ContentDeleteResponse.builder()
                     .workspaceUUID(content.getWorkspaceUUID())
