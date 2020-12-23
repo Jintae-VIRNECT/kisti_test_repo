@@ -1153,12 +1153,19 @@ public class SessionDataRepository extends DataRepository {
             }
 
             private void preDataProcess() {
+                for (Member member : room.getMembers()) {
+                    if (member.getUuid().equals(joinRoomRequest.getUuid()) && member.getMemberStatus().equals(MemberStatus.UNLOAD)) {
+                        member.setMemberStatus(MemberStatus.LOADING);
+                        sessionService.setMember(member);
+                    }
+                }
+
                 try {
                     sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-                assert sessionTokenResponse != null;
+                //assert sessionTokenResponse != null;
             }
 
 
@@ -1167,11 +1174,8 @@ public class SessionDataRepository extends DataRepository {
                     if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                         MemberStatus memberStatus = member.getMemberStatus();
                         switch (memberStatus) {
-                            case UNLOAD: {
-                                member.setMemberStatus(MemberStatus.LOADING);
-                                sessionService.setMember(member);
+                            case UNLOAD:
                                 return ErrorCode.ERR_SUCCESS;
-                            }
                             case LOAD:
                             case LOADING:
                                 return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
