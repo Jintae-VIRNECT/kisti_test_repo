@@ -106,6 +106,11 @@ module.exports = async () => {
           component: resolve(__dirname, 'src/pages/index.vue'),
           name: 'View',
         })
+        routes.push({
+          path: '/track',
+          component: resolve(__dirname, 'src/pages/index.vue'),
+          name: 'Track',
+        })
       },
     },
   }

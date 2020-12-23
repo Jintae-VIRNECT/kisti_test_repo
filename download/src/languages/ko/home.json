@@ -9,6 +9,7 @@
     "make": "VIRNECT Make",
     "view": "VIRNECT View",
     "remote": "VIRNECT Remote",
+    "track": "VIRNECT Track",
     "installFileDownload": "설치 파일 다운로드",
     "downloadLink": "다운로드 바로가기",
     "guideDownload": "사용자 매뉴얼 다운로드"
