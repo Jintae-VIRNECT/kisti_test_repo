@@ -17,6 +17,9 @@ export default {
     },
   },
   methods: {
+    slice8(str) {
+      return str && str.slice(0, 8)
+    },
     boolCheck(bool) {
       if (bool > 0) return true
       else return bool && bool.toLowerCase() !== 'no'

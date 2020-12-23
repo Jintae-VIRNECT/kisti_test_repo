@@ -6,6 +6,13 @@ export default async function({ req, store, redirect, error, $config }) {
     redirect('/')
 
   if (process.server) {
+    // onrpemise
+    if ($config.VIRNECT_ENV === 'onpremise') {
+      await store.dispatch('layout/getWorkspaceSetting', {
+        headers: req.headers,
+      })
+    }
+
     // not support browser
     const isIE =
       req.headers['user-agent'].indexOf('MSIE ') !== -1 ||
@@ -48,6 +55,15 @@ export default async function({ req, store, redirect, error, $config }) {
           activeWorkspaceId = myWorkspaces[0].uuid
         }
         store.commit('auth/SET_ACTIVE_WORKSPACE', activeWorkspaceId)
+        // onrpemise
+        if ($config.VIRNECT_ENV === 'onpremise') {
+          if (
+            store.getters['auth/activeWorkspace'].role !== 'MASTER' &&
+            req.url === '/workspace/setting'
+          ) {
+            return error({ statusCode: 404 })
+          }
+        }
       }
     } catch (e) {
       // 비정상 토큰
@@ -61,13 +77,6 @@ export default async function({ req, store, redirect, error, $config }) {
         e.statusCode = 504
       }
       error({ statusCode: e.statusCode, message: e.message })
-    }
-
-    // onrpemise
-    if ($config.VIRNECT_ENV === 'onpremise') {
-      await store.dispatch('layout/getWorkspaceSetting', {
-        headers: req.headers,
-      })
     }
   }
 }
