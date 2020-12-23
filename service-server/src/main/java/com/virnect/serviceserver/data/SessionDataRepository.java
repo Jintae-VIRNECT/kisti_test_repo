@@ -1137,6 +1137,13 @@ public class SessionDataRepository extends DataRepository {
 
                 ErrorCode errorCode = getErrorStatus();
                 if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(joinRoomRequest.getUuid()) && member.getMemberStatus().equals(MemberStatus.UNLOAD)) {
+                            member.setMemberStatus(MemberStatus.LOADING);
+                            sessionService.setMember(member);
+                        }
+                    }
+
                     RoomResponse roomResponse = new RoomResponse();
                     //not set session create at property
                     roomResponse.setSessionId(sessionId);
@@ -1153,12 +1160,7 @@ public class SessionDataRepository extends DataRepository {
             }
 
             private void preDataProcess() {
-                for (Member member : room.getMembers()) {
-                    if (member.getUuid().equals(joinRoomRequest.getUuid()) && member.getMemberStatus().equals(MemberStatus.UNLOAD)) {
-                        member.setMemberStatus(MemberStatus.LOADING);
-                        sessionService.setMember(member);
-                    }
-                }
+
 
                 try {
                     sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
@@ -1177,7 +1179,6 @@ public class SessionDataRepository extends DataRepository {
                             case UNLOAD:
                                 return ErrorCode.ERR_SUCCESS;
                             case LOAD:
-                            case LOADING:
                                 return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                             case EVICTED:
                                 break;
