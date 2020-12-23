@@ -41,3 +41,11 @@ const app = new Vue({
 }).$mount('#container')
 
 window.vue = app
+
+setTimeout(
+  console.log.bind(
+    console,
+    `%cVIRNECT Remote DashBoard v${version}`,
+    'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
+  ),
+)
