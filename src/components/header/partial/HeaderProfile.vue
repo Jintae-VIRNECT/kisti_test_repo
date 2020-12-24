@@ -27,7 +27,10 @@
         </button>
       </div>
       <div class="popover-profile__link">
-        <button @click="link(remoteLink)">{{ 'Remote' }}</button>
+        <button v-if="isOnpremise" @click="link(remoteLink)">
+          {{ 'Remote' }}
+        </button>
+        <button v-else @click="link(remoteLink)">{{ 'VIRNECT Remote' }}</button>
       </div>
       <div class="popover-profile__link">
         <button @click="logout">{{ $t('button.logout') }}</button>
