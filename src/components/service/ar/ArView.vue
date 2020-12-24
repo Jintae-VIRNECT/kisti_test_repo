@@ -94,7 +94,6 @@ export default {
 
       if (data.type === AR_DRAWING.LAST_FRAME) {
         this.encodeImage(Date.now())
-        this.loadingFrame = false
       }
     },
     encodeImage(imgId) {

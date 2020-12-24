@@ -250,9 +250,9 @@ export default {
           } else {
             this.alarmLicense()
             setTimeout(() => {
-              if (!this.$route.name === 'workspace') {
+              this.clearWorkspace(this.workspace.uuid)
+              if (!this.$route.name !== 'workspace') {
                 this.$call.leave()
-                this.clearWorkspace(this.workspace.uuid)
                 this.$router.push({ name: 'workspace' })
               }
             }, 60000)

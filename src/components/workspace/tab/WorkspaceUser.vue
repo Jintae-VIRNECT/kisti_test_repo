@@ -78,10 +78,10 @@ export default {
   methods: {
     doSearch(text) {
       this.searchMemberList = this.memberList.filter(member => {
-        if (member.email.includes(text)) {
+        if (member.email.toLowerCase().includes(text.toLowerCase())) {
           return true
         }
-        if (member.nickName.includes(text)) {
+        if (member.nickName.toLowerCase().includes(text.toLowerCase())) {
           return true
         }
         return false
