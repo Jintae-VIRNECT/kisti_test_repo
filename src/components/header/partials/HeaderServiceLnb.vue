@@ -88,6 +88,8 @@ export default {
           // this.drawingNotice = true
           this.menus[this.drawingNotice].notice = true
         }
+      } else if (!file || !file.id) {
+        this.menus[this.drawingNotice].notice = false
       }
     },
     hasLeader(val, bVal) {
