@@ -257,6 +257,7 @@ public class AppService {
 
         AppDetailInfoResponse appDetailInfoResponse = new AppDetailInfoResponse();
         appDetailInfoResponse.setAppUrl(app.getAppUrl());
+        appDetailInfoResponse.setVersionCode(app.getVersionCode());
         appDetailInfoResponse.setDeviceType(app.getDevice().getType());
         appDetailInfoResponse.setOperationSystem(app.getOs().getName());
         appDetailInfoResponse.setProductName(app.getProduct().getName());
