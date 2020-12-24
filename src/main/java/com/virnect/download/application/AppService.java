@@ -189,6 +189,7 @@ public class AppService {
         appDetailInfoResponse.setSigningKey(app.getSignature());
         appDetailInfoResponse.setUuid(app.getUuid());
         appDetailInfoResponse.setVersion(app.getVersionName());
+        appDetailInfoResponse.setVersionCode(app.getVersionCode());
         appDetailInfoResponse.setPackageName(app.getPackageName());
         appDetailInfoResponse.setUpdateRequired(app.getAppUpdateStatus().equals(AppUpdateStatus.REQUIRED));
         return new ApiResponse<>(appDetailInfoResponse);
