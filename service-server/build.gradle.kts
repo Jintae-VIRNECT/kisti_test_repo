@@ -41,7 +41,12 @@ springBoot {
 
         }
     }*/
-    buildInfo()
+    //buildInfo()
+    buildInfo {
+        properties {
+            additional = mapOf("version.remoteservice.server" to "v2.0.0")
+        }
+    }
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
 }
 
@@ -125,6 +130,11 @@ tasks.getByName<BootJar>("bootJar") {
 
     enabled= true
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
+    manifest {
+            attributes(
+                "Implementation-Title" to  "Remote Service Server",
+                "Implementation-Version" to "2.0.0")
+    }
     archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
 
     //destinationDirectory.set(project.file("${rootProject.buildDir}/libs/${archiveBaseName}"))
