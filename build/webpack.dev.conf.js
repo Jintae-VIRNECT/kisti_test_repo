@@ -22,9 +22,12 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 		https: true,
 		proxy: {
 			'/api': {
-				target: 'http://127.0.0.1:3334',
+				target: 'https://192.168.6.3:8073',
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+				},
+				secure: false,
 				changeOrigin: true,
-				pathRewrite: { '^/api': '' },
 			},
 		},
 		open: true,

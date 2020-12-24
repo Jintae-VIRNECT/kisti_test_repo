@@ -1,272 +1,272 @@
 @charset "utf-8";
-@import "./mixin.scss";
-@import "./reset.scss";
+@import './mixin.scss';
+@import './reset.scss';
 
 .resend-btn {
-    width: 100%;
-    margin-top: 12px;
-    color: $baseColor;
-    font-weight: 500;
-    font-size: 13px;
-    text-align: right;
+  width: 100%;
+  margin-top: 12px;
+  color: $baseColor;
+  font-weight: 500;
+  font-size: 13px;
+  text-align: right;
 
-    &.disabled {
-        cursor: not-allowed;
-        opacity: 0.6;
-    }
+  &.disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
 }
 
 .restriction-text {
-    margin-top: 8px;
-    color: #566173;
-    font-weight: 500;
-    font-size: 13px;
-    text-align: left;
+  margin-top: 8px;
+  color: #566173;
+  font-weight: 500;
+  font-size: 13px;
+  text-align: left;
 }
 
 .profile-image {
-    @include clearfix();
+  @include clearfix();
 }
 
 .camera-ico {
-    position: absolute;
-    right: -12px;
-    bottom: -12px;
-    width: 32px;
-    height: 32px;
-    padding-top: 9px;
-    background-color: #fff;
-    border-radius: 50%;
+  position: absolute;
+  right: -12px;
+  bottom: -12px;
+  width: 32px;
+  height: 32px;
+  padding-top: 9px;
+  background-color: #fff;
+  border-radius: 50%;
 
-    img {
-        width: 18px;
-    }
+  img {
+    width: 18px;
+  }
 }
 
 .text-wrap {
-    float: left;
-    width: 260px;
-    padding-top: 32px;
+  float: left;
+  width: 260px;
+  padding-top: 32px;
+  padding-left: 8px;
+  color: #566173;
+  font-weight: 500;
+  font-size: 13px;
+  text-align: left;
+  @media (max-width: $mobile) {
+    width: calc(100% - 120px);
+  }
+
+  p {
+    position: relative;
     padding-left: 8px;
-    color: #566173;
-    font-weight: 500;
-    font-size: 13px;
-    text-align: left;
-    @media (max-width: $mobile) {
-        width: calc(100% - 120px);
-    }
+    word-break: break-word;
 
-    p {
-        position: relative;
-        padding-left: 8px;
-        word-break: break-word;
-
-        &:before {
-            position: absolute;
-            top: 0;
-            left: 0;
-            content: "-";
-        }
+    &:before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      content: '-';
     }
+  }
 }
 
 .container {
-    padding-top: 144px;
-    padding-bottom: 240px;
-    @media (max-width: $mobile) {
-        padding-top: 96px;
-        padding-bottom: 80px;
-    }
+  padding-top: 144px;
+  padding-bottom: 240px;
+  @media (max-width: $mobile) {
+    padding-top: 96px;
+    padding-bottom: 80px;
+  }
 }
 
 .row-bg {
-    height: 100%;
-    text-align: center;
+  height: 100%;
+  text-align: center;
 
-    > div {
-        // width: 380px;
-        @include area-flex(380px);
-    }
+  > div {
+    // width: 380px;
+    @include area-flex(380px);
+  }
 }
 
 .find-wrap {
-    margin-top: 20px;
+  margin-top: 20px;
 
-    @media (max-width: $mobile) {
-        margin-top: 16px;
+  @media (max-width: $mobile) {
+    margin-top: 16px;
+  }
+
+  a {
+    position: relative;
+    display: inline-block;
+    padding: 0 13px 0 11px;
+    font-weight: 500;
+
+    &:after {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 1px;
+      height: 12px;
+      margin-top: -5px;
+      background: $baseColor;
+      content: '';
     }
 
-    a {
-        position: relative;
-        display: inline-block;
-        padding: 0 13px 0 11px;
-        font-weight: 500;
-
-        &:after {
-            position: absolute;
-            top: 50%;
-            right: 0;
-            width: 1px;
-            height: 12px;
-            margin-top: -5px;
-            background: $baseColor;
-            content: "";
-        }
-
-        &:last-child::after {
-            display: none;
-        }
+    &:last-child::after {
+      display: none;
     }
+  }
 }
 
 h2 {
-    font-weight: 500;
-    font-size: 28px;
-    font-family: $noto;
+  font-weight: 500;
+  font-size: 28px;
+  font-family: $noto;
 
-    + p {
-        margin-top: 8px;
-        font-weight: 500;
-        font-size: 15px;
-    }
+  + p {
+    margin-top: 8px;
+    font-weight: 500;
+    font-size: 15px;
+  }
 }
 
 .danger-color {
-    color: $danger;
+  color: $danger;
 }
 
 .warning-msg {
-    margin-top: 8px;
-    font-size: 14px;
-    text-align: left;
+  margin-top: 8px;
+  font-size: 14px;
+  text-align: left;
 }
 
 .recover-info {
-    margin-top: 60px;
-    font-weight: 500;
-    text-align: left;
+  margin-top: 60px;
+  font-weight: 500;
+  text-align: left;
 
-    dt {
-        margin-bottom: 4px;
-        font-size: 16px;
-    }
+  dt {
+    margin-bottom: 4px;
+    font-size: 16px;
+  }
 
-    dd {
-        font-size: 13px;
-    }
+  dd {
+    font-size: 13px;
+  }
 }
 
 .qr-login-body {
-    @include area-flex(804px);
-    margin: 20px auto 0;
-    padding-top: 44px;
-    border-top: 2px solid #e6e9ee;
-    @media (max-width: $mobile) {
-        padding: 24px 0 0;
-    }
+  @include area-flex(804px);
+  margin: 20px auto 0;
+  padding-top: 44px;
+  border-top: 2px solid #e6e9ee;
+  @media (max-width: $mobile) {
+    padding: 24px 0 0;
+  }
 }
 .qr-expire-count {
-    color: #1655bf;
-    font-weight: 500;
-    font-size: 28px;
+  color: #1655bf;
+  font-weight: 500;
+  font-size: 28px;
 }
 .qr-image-box {
-    position: relative;
-    display: inline-block;
-    width: 300px;
-    height: 300px;
-    margin: 24px 0 28px;
-    border: solid 1px #e2e7ed;
-    border-radius: 2px;
-    .el-image-viewer__close {
-        color: #fff;
+  position: relative;
+  display: inline-block;
+  width: 300px;
+  height: 300px;
+  margin: 24px 0 28px;
+  border: solid 1px #e2e7ed;
+  border-radius: 2px;
+  .el-image-viewer__close {
+    color: #fff;
+  }
+  &.code-expire {
+    pointer-events: none;
+    p {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 100%;
+      color: #db1717;
+      font-weight: 500;
+      font-size: 16px;
+      transform: translateY(-50%);
     }
-    &.code-expire {
-        pointer-events: none;
-        p {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 100%;
-            color: #db1717;
-            font-weight: 500;
-            font-size: 16px;
-            transform: translateY(-50%);
-        }
-        img {
-            opacity: 0.1;
-        }
+    img {
+      opacity: 0.1;
     }
-    @media (max-width: $mobile) {
-        width: 100%;
-        height: auto;
-        margin: 12px 0 24px;
-        .qrcode--image__inner {
-            display: block;
-        }
+  }
+  @media (max-width: $mobile) {
+    width: 100%;
+    height: auto;
+    margin: 12px 0 24px;
+    .qrcode--image__inner {
+      display: block;
     }
+  }
 }
 .howto-qr-login {
-    position: relative;
-    @include area-flex(804px);
-    margin: 44px auto;
-    padding: 28px 0 30px;
-    text-align: left;
-    background: #f2f4f7;
+  position: relative;
+  @include area-flex(804px);
+  margin: 44px auto;
+  padding: 28px 0 30px;
+  text-align: left;
+  background: #f2f4f7;
+  .title {
+    position: absolute;
+    top: 28px;
+    left: 40px;
+    font-size: 16px;
+  }
+  > div {
+    padding-left: 278px;
+  }
+  ol {
+    margin-bottom: 12px;
+    line-height: 1.85;
+    p {
+      color: #566173;
+    }
+  }
+  p {
+    color: #24282f;
+    font-size: 13px;
+  }
+  @media (max-width: $mobile) {
+    margin: 24px 0;
     .title {
-        position: absolute;
-        top: 28px;
-        left: 40px;
-        font-size: 16px;
+      position: relative;
+      top: 0;
+      left: 0;
+      margin-bottom: 20px;
     }
     > div {
-        padding-left: 278px;
-    }
-    ol {
-        margin-bottom: 12px;
-        line-height: 1.85;
-        p {
-            color: #566173;
-        }
+      padding-left: 0;
     }
     p {
-        color: #24282f;
-        font-size: 13px;
+      position: relative;
+      padding-left: 14px;
     }
-    @media (max-width: $mobile) {
-        margin: 24px 0;
-        .title {
-            position: relative;
-            top: 0;
-            left: 0;
-            margin-bottom: 20px;
-        }
-        > div {
-            padding-left: 0;
-        }
-        p {
-            position: relative;
-            padding-left: 14px;
-        }
-        span {
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
+    span {
+      position: absolute;
+      top: 0;
+      left: 0;
     }
+  }
 }
 
 .app-fade-enter-active,
 .app-fade-leave-active {
-    transition: opacity 0.3s;
+  transition: opacity 0.3s;
 }
 
 .app-fade-enter,
 .app-fade-leave-to {
-    opacity: 0;
+  opacity: 0;
 }
 
 .app-fade-leave,
 .app-fade-enter-to {
-    opacity: 1;
+  opacity: 1;
 }

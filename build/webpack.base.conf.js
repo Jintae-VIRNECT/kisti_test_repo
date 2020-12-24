@@ -18,13 +18,6 @@ const extractCSS = new ExtractTextPlugin({
 	allChunks: true,
 })
 
-const extractSASS = new ExtractTextPlugin({
-	filename: getPath => {
-		return getPath('[name].css').replace('css/js', 'css')
-	},
-	allChunks: true,
-})
-
 const entries = {}
 const chunks = []
 const htmlWebpackPluginArray = []
@@ -52,7 +45,12 @@ const styleLoaderOptions = {
 	},
 }
 const cssOptions = [
-	{ loader: 'css-loader', options: { sourceMap: !isProduction } },
+	{
+		loader: 'css-loader',
+		options: {
+			sourceMap: !isProduction,
+		},
+	},
 ]
 
 const sassOptions = [
@@ -60,7 +58,7 @@ const sassOptions = [
 	{
 		loader: 'postcss-loader',
 		options: {
-			sourceMap: true,
+			sourceMap: !isProduction,
 			config: {
 				path: 'postcss.config.js',
 			},
@@ -207,7 +205,6 @@ const config = {
 	},
 	plugins: [
 		new webpack.optimize.ModuleConcatenationPlugin(),
-		extractSASS,
 		extractCSS,
 		new CopyWebpackPlugin(
 			[
