@@ -1069,10 +1069,6 @@ public class SessionDataRepository extends DataRepository {
 
     /**
      * Prepare to join the room the user is....
-     * @param workspaceId
-     * @param sessionId
-     * @param userId
-     * @return
      */
     /*@Deprecated
     public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
@@ -1141,6 +1137,13 @@ public class SessionDataRepository extends DataRepository {
 
                 ErrorCode errorCode = getErrorStatus();
                 if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+                    for (Member member : room.getMembers()) {
+                        if (member.getUuid().equals(joinRoomRequest.getUuid()) && member.getMemberStatus().equals(MemberStatus.UNLOAD)) {
+                            member.setMemberStatus(MemberStatus.LOADING);
+                            sessionService.setMember(member);
+                        }
+                    }
+
                     RoomResponse roomResponse = new RoomResponse();
                     //not set session create at property
                     roomResponse.setSessionId(sessionId);
@@ -1157,12 +1160,14 @@ public class SessionDataRepository extends DataRepository {
             }
 
             private void preDataProcess() {
+
+
                 try {
                     sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-                assert sessionTokenResponse != null;
+                //assert sessionTokenResponse != null;
             }
 
 
@@ -1175,7 +1180,6 @@ public class SessionDataRepository extends DataRepository {
                                 return ErrorCode.ERR_SUCCESS;
                             case LOAD:
                                 return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-                                //return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
                             case EVICTED:
                                 break;
                         }

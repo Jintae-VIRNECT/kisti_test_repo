@@ -98,29 +98,36 @@ public class ServiceSessionManager {
                         TAG,
                         "JOIN SESSION EVENT",
                         "joinSession",
-                        "session join and sessionEventHandler is here",
+                        "session join and session event handler",
                         result);
-                DataProcess<ErrorCode> dataProcess = sessionDataRepository.joinSession(participant, sessionId);
-                if(dataProcess.getCode() == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID.getCode()) {
-                    LogMessage.formedError(
+                if(participant.getParticipantPublicId().equals("RECORDER")) {
+                    LogMessage.formedInfo(
                             TAG,
-                            "JOIN SESSION EVENT_ERROR",
+                            "JOIN SESSION EVENT",
                             "joinSession",
-                            dataProcess.getMessage(),
-                            "return false");
-                    return false;
-                    /*LogMessage.formedError(
-                            TAG,
-                            "JOIN SESSION EVENT_ERROR_force",
-                            "joinSession",
-                            dataProcess.getMessage(),
-                            EndReason.forceDisconnectByServer.toString());
+                            "session join and session event handler for recorder",
+                            result);
+                    return true;
+                } else {
+                    DataProcess<ErrorCode> dataProcess = sessionDataRepository.joinSession(participant, sessionId);
+                    if (dataProcess.getCode() == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID.getCode()) {
+                        LogMessage.formedError(
+                                TAG,
+                                "JOIN SESSION EVENT_ERROR",
+                                "joinSession",
+                                dataProcess.getMessage(),
+                                "return false");
+                        return false;
 
-                    Session session = sessionManager.getSessionWithNotActive(sessionId);
-                    Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
-                    sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);*/
+                        //do not force disconnect by server
+                        /*Session session = sessionManager.getSessionWithNotActive(sessionId);
+                        Participant evict = session.getParticipantByPublicId(participant.getParticipantPublicId());
+                        sessionManager.evictParticipant(evict, null, null, EndReason.forceDisconnectByServer);*/
+                    } else {
+                        //todo: after log here
+                        return true;
+                    }
                 }
-                return true;
             }
 
             @Override

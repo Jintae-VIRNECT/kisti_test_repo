@@ -710,6 +710,11 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 				// Store WebSocket connection interrupted exception for this web socket to
 				// automatically evict the participant on "afterConnectionClosed" event
 				this.webSocketEOFTransportError.put(rpcSession.getSessionId(), true);
+			} else {
+				// Unexpected exception Store WebSocket connection interrupted exception for this web socket to
+				// automatically evict the participant on "afterConnectionClosed" event
+				log.warn("Parcipant with private id {} unexpectedly closed the websocket, exception is {}", rpcSession.getSessionId(), exception.getClass().getSimpleName());
+				this.webSocketEOFTransportError.put(rpcSession.getSessionId(), true);
 			}
 		}
 	}
