@@ -1,6 +1,5 @@
 @charset "utf-8";
-@import './mixin.scss';
-@import './reset.scss';
+@import "~WC-Modules/assets/css/reset.scss";
 
 .resend-btn {
   width: 100%;
@@ -65,7 +64,7 @@
       position: absolute;
       top: 0;
       left: 0;
-      content: '-';
+      content: "-";
     }
   }
 }
@@ -110,7 +109,7 @@
       height: 12px;
       margin-top: -5px;
       background: $baseColor;
-      content: '';
+      content: "";
     }
 
     &:last-child::after {

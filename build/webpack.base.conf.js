@@ -70,6 +70,12 @@ const sassOptions = [
 			sourceMap: !isProduction,
 		},
 	},
+    {
+      loader: 'sass-resources-loader',
+      options: {
+        resources: resolve(__dirname, '../node_modules/@virnect/WC-Modules/src/assets/css/mixin.scss'),
+      },
+    },
 ]
 
 const config = {
@@ -84,7 +90,7 @@ const config = {
 		extensions: ['.js', '.vue'],
 		modules: ['node_modules'],
 		alias: {
-			'WC-Modules': resolve(__dirname, '../WC-Modules/src'),
+			'WC-Modules': resolve(__dirname, '../node_modules/@virnect/WC-Modules/src'),
 			'@': resolve(__dirname, '../src'),
 			root: resolve(__dirname, '../'),
 			api: join(__dirname, '../src/api'),

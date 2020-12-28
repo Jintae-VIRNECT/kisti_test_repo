@@ -406,7 +406,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~assets/css/mixin.scss';
 
 .el-dialog {
   border: solid 1px #e6e9ee;

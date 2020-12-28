@@ -138,10 +138,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~assets/css/mixin.scss';
 
 p {
-  font-family: 'NotoSansKR', 'Noto Sans';
+  font-family: $noto;
 }
 
 .el-button.next-btn {

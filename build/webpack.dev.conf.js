@@ -8,9 +8,7 @@ const env = dotenv.parse(fs.readFileSync(filePath))
 const config = require('../configs/runtime')
 
 const devWebpackConfig = merge(baseWebpackConfig, {
-	mode: /local|onpremise/.test(process.env.NODE_ENV)
-		? 'development'
-		: 'production',
+	mode: 'development',
 	devtool: 'cheap-module-eval-source-map',
 	devServer: {
 		host: env.LOCAL_HOST,
@@ -20,18 +18,18 @@ const devWebpackConfig = merge(baseWebpackConfig, {
 		hot: true,
 		noInfo: true,
 		https: true,
-		proxy: {
-			'/api': {
-				target: 'https://192.168.6.3:8073',
-				headers: {
-					'Access-Control-Allow-Origin': '*',
-				},
-				secure: false,
-				changeOrigin: true,
-			},
-		},
+		// proxy: {
+		// 	'/api': {
+		// 		target: 'https://192.168.6.3:8073',
+		// 		headers: {
+		// 			'Access-Control-Allow-Origin': '*',
+		// 		},
+		// 		secure: false,
+		// 		changeOrigin: true,
+		// 	},
+		// },
 		open: true,
-		openPage: '',
+		// openPage: '',
 		before: function(app) {
 			let bodyParser = require('body-parser')
 			app.use(

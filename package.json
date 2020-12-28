@@ -4,10 +4,6 @@
   "description": "Virnect Platofrm Login FrontEnd",
   "author": "SungHyun Kang <k23sh138@gmail.com>",
   "private": true,
-  "workspaces": [
-    "./",
-    "WC-Modules"
-  ],
   "scripts": {
     "dev": "cross-env VIRNECT_ENV=local NODE_ENV=local webpack-dev-server --inline --hot --config build/webpack.dev.conf.js",
     "build": "webpack --progress --config build/webpack.prod.conf.js",
@@ -16,6 +12,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@virnect/WC-Modules": "^1.0.0",
     "axios": "^0.18.0",
     "express": "^4.16.3"
   },
@@ -63,6 +60,7 @@
     "postcss-loader": "^3.0.0",
     "raw-loader": "^4.0.1",
     "sass-loader": "^6.0.6",
+    "sass-resources-loader": "^2.0.3",
     "style-loader": "^0.18.2",
     "url-loader": "^1.0.1",
     "vee-validate": "2.2.15",

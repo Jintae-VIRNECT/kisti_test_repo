@@ -21,7 +21,6 @@ export default {}
 </script>
 
 <style lang="scss" scoped>
-@import '~assets/css/mixin.scss';
 #footer {
   position: fixed;
   bottom: 40px;

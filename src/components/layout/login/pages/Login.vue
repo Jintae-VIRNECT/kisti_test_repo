@@ -260,7 +260,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import '~assets/css/mixin.scss';
 
 h1 {
   margin-right: -2px;
