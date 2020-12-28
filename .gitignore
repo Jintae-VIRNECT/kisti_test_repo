@@ -20,6 +20,8 @@ build/
 *.iml
 *.ipr
 out/
+docker/DockerfileLocal
+.dockerignore
 
 ### NetBeans ###
 /nbproject/private/
