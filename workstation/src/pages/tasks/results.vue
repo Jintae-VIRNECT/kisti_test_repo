@@ -71,7 +71,7 @@ export default {
           label: 'results.issue',
         },
       ],
-      taskFilter,
+      taskFilter: { ...taskFilter },
       resultsSearch: '',
       list: [],
       total: 0,

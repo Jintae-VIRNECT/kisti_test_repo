@@ -29,11 +29,10 @@ export default {
             ...this.searchParams,
             search: keyword && keyword.value,
             filter: filter && filter.value.join(','),
-            sort:
-              (customParams && customParams.sort) ||
+            sort: customParams.sort ||
               (sort && sort.value) ||
               this.searchParams.sort,
-            page: page && page.value,
+            page: customParams.page || (page && page.value),
           }
           // null 삭제
           Object.keys(this.searchParams).forEach(key => {
@@ -58,7 +57,7 @@ export default {
         } else if (last !== 'ALL' && filter.myValue[0] === 'ALL') {
           filter.myValue.shift()
         }
-        this.emitChangedSearchParams()
+        this.emitChangedSearchParams({ page: 1 })
       })
     }
     if (table) {
