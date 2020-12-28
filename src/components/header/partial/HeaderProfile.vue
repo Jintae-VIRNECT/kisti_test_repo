@@ -35,7 +35,7 @@
       <div class="popover-profile__link">
         <button @click="logout">{{ $t('button.logout') }}</button>
       </div>
-      <div class="popover-profile__version">{{ `web v.${$version}` }}</div>
+      <div class="popover-profile__version">{{ `web v${$version}` }}</div>
     </div>
   </popover>
 </template>
