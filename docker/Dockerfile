@@ -17,6 +17,7 @@ WORKDIR $APP_HOME
 
 COPY --from=builder package.json .
 COPY --from=builder nuxt.config.js .
+COPY --from=builder .npmrc .
 COPY --from=builder .nuxt .nuxt
 COPY --from=builder ssl ssl
 
