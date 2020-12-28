@@ -6,7 +6,7 @@ COPY . .
 ARG NODE_ENV=production
 
 RUN yarn install --production=false
-RUN yarn workspace download build:$NODE_ENV \
+RUN yarn build:$NODE_ENV \
 && rm -rf node_modules
 
 # Runtime Stage
@@ -16,9 +16,11 @@ ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
 
 COPY --from=builder package.json .
-COPY --from=builder download download
+COPY --from=builder nuxt.config.js .
+COPY --from=builder .nuxt .nuxt
+COPY --from=builder ssl ssl
 
 RUN yarn install --production=true
 
 EXPOSE 8833
-CMD ["yarn", "workspace", "download", "deploy"]
+CMD ["yarn", "deploy"]
