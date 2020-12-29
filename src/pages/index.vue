@@ -23,7 +23,11 @@
           </span>
           <span class="version">{{ app.version }}</span>
           <el-button type="primary" @click="link('app', app)">
-            {{ $t('home.installFileDownload') }}
+            {{
+              activeTab === 'track'
+                ? $t('home.fileDownload')
+                : $t('home.installFileDownload')
+            }}
           </el-button>
           <el-button
             type="text"

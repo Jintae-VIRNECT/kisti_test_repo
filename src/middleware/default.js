@@ -8,7 +8,7 @@ export default async function({ req, redirect, error, $config }) {
     if (!req.headers.cookie || !req.headers.cookie.match('accessToken=')) {
       return redirect(
         `${LOGIN_SITE_URL}?continue=${encodeURIComponent(
-          req.headers.referer || req.headers.host,
+          req.headers.host + req.originalUrl,
         )}`,
       )
     }
@@ -21,7 +21,7 @@ export default async function({ req, redirect, error, $config }) {
       if (/^Error: (8003|8005)/.test(e)) {
         return redirect(
           `${LOGIN_SITE_URL}?continue=${encodeURIComponent(
-            req.headers.referer || req.headers.host,
+            req.headers.host + req.originalUrl,
           )}`,
         )
       } else if (e.code === 'ECONNABORTED') {
