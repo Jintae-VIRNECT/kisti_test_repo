@@ -1,4 +1,4 @@
-import { OpenVidu } from './openvidu'
+import { OpenVidu } from '@virnect/remote-webrtc'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import {
