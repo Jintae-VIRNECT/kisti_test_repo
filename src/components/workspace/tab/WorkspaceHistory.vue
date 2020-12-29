@@ -214,6 +214,7 @@ export default {
           totalPage: 0,
           last: false,
         }
+        this.$eventBus.$emit('scroll:reset:workspace')
       } catch (err) {
         console.error(err)
       }
