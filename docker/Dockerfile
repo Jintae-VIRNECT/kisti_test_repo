@@ -15,10 +15,9 @@ FROM node:12-alpine
 ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
 
-COPY --from=builder package.json .
-COPY --from=builder account account
+COPY --from=builder . .
 
 RUN yarn install --production=true
 
 EXPOSE 8822
-CMD ["yarn", "workspace", "account", "deploy"]
+CMD ["yarn", "deploy"]
