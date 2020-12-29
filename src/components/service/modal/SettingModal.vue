@@ -265,13 +265,6 @@ export default {
       translateCode: 'ko-KR',
     }
   },
-  props: {
-    visible: {
-      type: Boolean,
-      default: false,
-    },
-    viewType: String,
-  },
 
   computed: {
     ...mapGetters([
@@ -285,6 +278,7 @@ export default {
       'translate',
       'useTranslate',
       'languageCodes',
+      'modalSetting',
     ]),
     localRecTimeOpt() {
       const options = localRecTime.map(time => {
@@ -328,9 +322,6 @@ export default {
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
-    isCurrentView() {
-      return this.viewType === this.view
-    },
     isOnpremise() {
       return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
@@ -343,30 +334,22 @@ export default {
   },
 
   watch: {
-    isCurrentView(val) {
-      if (val === true) {
-        this.init()
-      }
-    },
-    visible(flag) {
+    modalSetting(flag) {
       this.visibleFlag = flag
     },
     localRecording(flag) {
       if (this.initing === false) return
-      if (!this.isCurrentView) return
       this.$call.sendControl(CONTROL.LOCAL_RECORD, !!flag)
       this.$localStorage.setAllow('localRecord', !!flag)
     },
     pointing(flag) {
       if (this.initing === false) return
-      if (!this.isCurrentView) return
       this.$call.sendControl(CONTROL.POINTING, !!flag)
       this.$localStorage.setAllow('pointing', !!flag)
     },
 
     recordTarget(target) {
       if (this.initing === false) return
-      if (!this.isCurrentView) return
       switch (target) {
         case RECORD_TARGET.WORKER:
           this.setLocalRecordTarget(target)
@@ -409,6 +392,7 @@ export default {
       'setServerRecord',
       'setLocalRecordTarget',
       'setTranslate',
+      'showModalSetting',
     ]),
     changeSetting(item, setting) {
       const param = {}
@@ -433,7 +417,7 @@ export default {
     },
 
     beforeClose() {
-      this.$emit('update:visible', false)
+      this.showModalSetting(false)
     },
 
     showToast() {

@@ -12,7 +12,7 @@
         <local-record :disabled="!hasMainView"></local-record>
         <local-record-list></local-record-list>
       </template>
-      <setting v-if="!isSafari || isLeader" :viewType="viewType"></setting>
+      <setting v-if="!isSafari || isLeader"></setting>
     </div>
   </div>
 </template>
@@ -53,9 +53,6 @@ export default {
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
-  },
-  props: {
-    viewType: String,
   },
 
   /* Lifecycles */
