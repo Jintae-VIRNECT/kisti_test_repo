@@ -69,6 +69,14 @@ module.exports = async () => {
     /**
      * build
      */
+    build: {
+      extend(config, { isDev, isClient }) {
+        config.resolve.alias['WC-Modules'] = resolve(
+          __dirname,
+          '../WC-Modules/src',
+        )
+      },
+    },
     server: {
       port: env.NUXT_PORT,
       host: env.NUXT_HOST,
