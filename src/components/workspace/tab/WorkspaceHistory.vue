@@ -60,6 +60,7 @@ import Loader from 'Loader'
 
 import confirmMixin from 'mixins/confirm'
 import { ROOM_STATUS } from 'configs/status.config'
+import { nameExp as EXP_NAME } from 'utils/regexp'
 
 import {
   getHistoryList,
@@ -251,6 +252,17 @@ export default {
           return
         }
         this.searching = true
+        if (!EXP_NAME.test(text)) {
+          this.searchHistoryList = []
+          this.searchPageMeta = {
+            currentPage: 0,
+            currentSize: 0,
+            totalElements: 0,
+            totalPage: 0,
+            last: false,
+          }
+          return
+        }
         this.searchHistoryList = await this.searchHistory(0, text)
         this.searchText = text
       } catch (err) {
