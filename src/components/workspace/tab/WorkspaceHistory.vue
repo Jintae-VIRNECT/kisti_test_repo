@@ -239,19 +239,6 @@ export default {
     async doSearch(text) {
       if (this.historyList.length === 0) return
       try {
-        if (!text || text.trim().length === 0) {
-          this.searchText = ''
-          this.searchHistoryList = []
-          this.searchPageMeta = {
-            currentPage: 0,
-            currentSize: 0,
-            totalElements: 0,
-            totalPage: 0,
-            last: false,
-          }
-          return
-        }
-        this.searching = true
         if (!EXP_NAME.test(text)) {
           this.searchHistoryList = []
           this.searchPageMeta = {
@@ -265,6 +252,17 @@ export default {
         }
         this.searchHistoryList = await this.searchHistory(0, text)
         this.searchText = text
+        if (!text || text.trim().length === 0) {
+          this.searchText = ''
+          this.searchHistoryList = []
+          this.searchPageMeta = {
+            currentPage: 0,
+            currentSize: 0,
+            totalElements: 0,
+            totalPage: 0,
+            last: false,
+          }
+        }
       } catch (err) {
         this.searchText = ''
         this.searchHistoryList = []
