@@ -33,8 +33,9 @@ type StartRecordingRequest struct {
 
 type RecordingInfo struct {
 	RecordingID string `json:"recordingId"`
-	Duration    int    `json:"duration"`  // in seconds
-	TimeLimit   int    `json:"timeLimit"` // in minutes
+	Duration    int    `json:"duration"`  // the duration of the recording in seconds
+	TimeLimit   int    `json:"timeLimit"` // time limitation of this recording (in minutes)
+	Status      string `json:"status"`    // status of recording <br> - preparing: not yet started <br> - recording: in progress
 }
 
 type StartRecordingResponse struct {
@@ -204,7 +205,8 @@ func checkFileFormat(filename string) error {
 // @Param userId path string true "user id"
 // @Param id path string true "recording id"
 // @Success 200 {object} successResponse{data=StopRecordingResponse}
-// @Failure 1000 {} json "{"code":1000,"message":"Not Found ID","service":"remote-record-server","data":{}}"
+// @Failure 1000 {} json "{"code":1000,"message":"Not Found Recording ID","service":"remote-record-server","data":{}}"
+// @Failure 1003 {} json "{"code":1003,"message":"Recording Has Not Started","service":"remote-record-server","data":{}}"
 // @Router /remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings/{id} [delete]
 func StopRecording(c *gin.Context) {
 	log := c.Request.Context().Value(data.ContextKeyLog).(*logrus.Entry)
@@ -221,7 +223,16 @@ func StopRecording(c *gin.Context) {
 		return
 	}
 
-	recorder.StopRecording(c.Request.Context(), recordingID, workspaceID, recorder.Stopped)
+	err := recorder.StopRecording(c.Request.Context(), recordingID, workspaceID, recorder.Stopped)
+	if err == recorder.ErrRecordingHasNotStarted {
+		log.WithError(err).Error(err)
+		sendResponseWithError(c, NewRecordingHasNotStarted())
+		return
+	} else if err != nil {
+		log.WithError(err).Error(err)
+		sendResponseWithError(c, NewErrorInternalServer(err))
+		return
+	}
 
 	sendResponseWithSuccess(c, StopRecordingResponse{[]string{recordingID.String()}})
 }
@@ -270,7 +281,7 @@ func ListRecordings(c *gin.Context) {
 
 	body := ListRecordingResponse{make([]RecordingInfo, 0)}
 	for _, r := range recorder.ListRecordingIDs(c.Request.Context(), workspaceID, sessionID) {
-		body.Recordings = append(body.Recordings, RecordingInfo{r.RecordingID, r.Duration, r.TimeLimit / 60})
+		body.Recordings = append(body.Recordings, RecordingInfo{r.RecordingID, r.Duration, r.TimeLimit / 60, r.Status})
 	}
 
 	sendResponseWithSuccess(c, body)

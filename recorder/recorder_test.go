@@ -26,7 +26,15 @@ func addRecording(r *recorder, count int) []IDs {
 		createTime := time.Now()
 		timeLimit := 60
 
-		r.addRecording(
+		r.prepareRecording(
+			recordingID,
+			sessionID,
+			workspaceID,
+			userID,
+			timeLimit,
+		)
+
+		r.updateRecording(
 			recordingID,
 			sessionID,
 			workspaceID,
@@ -53,7 +61,17 @@ func TestAddRecording(t *testing.T) {
 	createTime := time.Now()
 	timeLimit := 60
 
-	recording, err := r.addRecording(
+	recording, err := r.prepareRecording(
+		recordingID,
+		sessionID,
+		workspaceID,
+		userID,
+		timeLimit,
+	)
+	assert.Nil(t, err)
+	assert.NotNil(t, recording)
+
+	recording, err = r.updateRecording(
 		recordingID,
 		sessionID,
 		workspaceID,
@@ -68,18 +86,6 @@ func TestAddRecording(t *testing.T) {
 
 	count := r.size()
 	assert.Equal(t, count, 1)
-
-	recording, err = r.addRecording(
-		recordingID,
-		sessionID,
-		workspaceID,
-		userID,
-		containerID,
-		createTime,
-		timeLimit,
-		nil,
-	)
-	assert.Equal(t, err, ErrRecordingIDAlreadyExists)
 }
 
 func TestRemoveRecording(t *testing.T) {

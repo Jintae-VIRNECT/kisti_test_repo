@@ -28,8 +28,9 @@ type RecordingParam struct {
 
 type RecordingInfo struct {
 	RecordingID string
-	Duration    int // in seconds
-	TimeLimit   int // in seconds
+	Duration    int    // in seconds
+	TimeLimit   int    // in seconds
+	Status      string // preparing, recording
 }
 
 type Reason int
@@ -37,6 +38,13 @@ type Reason int
 const (
 	Timeout Reason = iota
 	Stopped
+)
+
+type Status string
+
+const (
+	Preparing = "preparing"
+	Recording = "recording"
 )
 
 func (r Reason) String() string {
@@ -80,8 +88,8 @@ func (r *recorder) timeoutHandler() {
 	}
 }
 
-func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID,
-	userID string, containerID string, createTime time.Time, timeLimit int, timer *time.Timer) (*recording, error) {
+func (r *recorder) prepareRecording(recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID,
+	userID string, timeLimit int) (*recording, error) {
 	r.mapMux.Lock()
 	defer r.mapMux.Unlock()
 
@@ -91,16 +99,37 @@ func (r *recorder) addRecording(recordingID data.RecordingID, sessionID data.Ses
 	}
 
 	rec := &recording{
-		recordingID,
-		sessionID,
-		workspaceID,
-		userID,
-		containerID,
-		createTime,
-		timeLimit,
-		timer,
+		id:          recordingID,
+		sessionID:   sessionID,
+		workspaceID: workspaceID,
+		creator:     userID,
+		status:      Preparing,
+		timeLimit:   timeLimit,
 	}
 	r.recordingMap[recordingID] = rec
+
+	return rec, nil
+}
+
+func (r *recorder) updateRecording(recordingID data.RecordingID, sessionID data.SessionID, workspaceID data.WorkspaceID,
+	userID string, containerID string, createTime time.Time, timeLimit int, timer *time.Timer) (*recording, error) {
+	r.mapMux.Lock()
+	defer r.mapMux.Unlock()
+
+	rec, ok := r.recordingMap[recordingID]
+	if ok == false {
+		return nil, ErrNotFoundRecordingID
+	}
+
+	rec.id = recordingID
+	rec.sessionID = sessionID
+	rec.workspaceID = workspaceID
+	rec.creator = userID
+	rec.containerID = containerID
+	rec.createTime = createTime
+	rec.timeLimit = timeLimit
+	rec.timeout = timer
+	rec.status = Recording
 
 	return rec, nil
 }
@@ -172,6 +201,7 @@ type recording struct {
 	createTime  time.Time
 	timeLimit   int
 	timeout     *time.Timer
+	status      Status
 }
 
 func (r *recording) stop(ctx context.Context, reason Reason) {
@@ -222,11 +252,23 @@ func Init() {
 }
 
 func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, error) {
+	log := ctx.Value(data.ContextKeyLog).(*logrus.Entry)
+
 	recordingID := data.RecordingID(uuid.New().String())
 
 	if len(param.Filename) == 0 {
 		param.Filename = param.SessionID.String()
 	}
+
+	rec, err := mainRecorder.prepareRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, param.TimeLimit)
+	if err != nil {
+		return "", err
+	}
+	defer func() {
+		if rec.status == Preparing {
+			mainRecorder.removeRecording(recordingID, param.WorkspaceID)
+		}
+	}()
 
 	containerParam := dockerclient.ContainerParam{
 		RecordingID: recordingID,
@@ -245,6 +287,8 @@ func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, 
 
 	containerID, err := dockerclient.RunContainer(ctx, containerParam)
 	if err != nil {
+		log.WithError(err).Error("delete files due to failed recording request")
+		removeLocalFile(ctx, getInfoFilename(recordingID))
 		return recordingID, ErrInternalError
 	}
 
@@ -254,7 +298,7 @@ func NewRecording(ctx context.Context, param RecordingParam) (data.RecordingID, 
 	})
 
 	now := time.Now()
-	mainRecorder.addRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, now, param.TimeLimit, timer)
+	mainRecorder.updateRecording(recordingID, param.SessionID, param.WorkspaceID, param.UserID, containerID, now, param.TimeLimit, timer)
 
 	writeCreateTime(ctx, recordingID, now)
 	return recordingID, nil
@@ -265,12 +309,17 @@ func StopRecording(ctx context.Context, recordingID data.RecordingID, workspaceI
 
 	log.Infof("recording stop. (id:%s reason:%s)", recordingID, reason.String())
 
-	recording := mainRecorder.removeRecording(recordingID, workspaceID)
-	if recording == nil {
+	recordings := mainRecorder.findRecordings(&recordingID, &workspaceID, nil)
+	if len(recordings) == 0 {
 		return ErrNotFoundRecordingID
 	}
 
-	recording.stop(ctx, reason)
+	rec := recordings[0]
+	if rec.status == Preparing {
+		return ErrRecordingHasNotStarted
+	}
+	mainRecorder.removeRecording(recordingID, workspaceID)
+	rec.stop(ctx, reason)
 
 	return nil
 }
@@ -285,6 +334,10 @@ func StopRecordingBySessionID(ctx context.Context, workspaceID data.WorkspaceID,
 	}
 
 	for _, r := range recordings {
+		if r.status == Preparing {
+			log.Infof("status is preparing. skip: %s", r.id)
+			continue
+		}
 		recordingIDs = append(recordingIDs, r.id.String())
 		r.stop(ctx, Stopped)
 		mainRecorder.removeRecording(r.id, r.workspaceID)
@@ -325,7 +378,8 @@ func RestoreRecording(ctx context.Context, recordingID data.RecordingID, session
 		mainRecorder.timeoutCh <- recordingTimeoutEvent{recordingID, workspaceID}
 	})
 
-	mainRecorder.addRecording(recordingID, sessionID, workspaceID, userID, containerID, createTime, timeLimit, timer)
+	mainRecorder.prepareRecording(recordingID, sessionID, workspaceID, userID, timeLimit)
+	mainRecorder.updateRecording(recordingID, sessionID, workspaceID, userID, containerID, createTime, timeLimit, timer)
 }
 
 func ListRecordingIDs(ctx context.Context, workspaceID data.WorkspaceID, sessionID data.SessionID) []RecordingInfo {
@@ -340,7 +394,11 @@ func ListRecordingIDs(ctx context.Context, workspaceID data.WorkspaceID, session
 			continue
 		}
 		var duration int
-		duration = int(now.Sub(r.createTime).Seconds())
+		if r.createTime.IsZero() {
+			duration = 0
+		} else {
+			duration = int(now.Sub(r.createTime).Seconds())
+		}
 		if duration < 0 {
 			duration = 0
 		}
@@ -348,6 +406,7 @@ func ListRecordingIDs(ctx context.Context, workspaceID data.WorkspaceID, session
 			RecordingID: r.id.String(),
 			Duration:    duration,
 			TimeLimit:   r.timeLimit,
+			Status:      string(r.status),
 		}
 		recordings = append(recordings, info)
 	}

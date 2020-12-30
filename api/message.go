@@ -9,6 +9,7 @@ const (
 	ErrNotFoundRecordingID     = 1000
 	ErrTooManyRecordings       = 1001
 	ErrInsufficientStorage     = 1002
+	ErrRecordingHasNotStarted  = 1003
 	ErrInvalidRequestParameter = 8001
 	ErrInternalServer          = 9999
 )
@@ -44,6 +45,10 @@ func NewErrorTooManyRecordings() *responseError {
 
 func NewErrorInsufficientStorage() *responseError {
 	return &responseError{code: ErrInsufficientStorage, message: "Not Enough Free Space"}
+}
+
+func NewRecordingHasNotStarted() *responseError {
+	return &responseError{code: ErrRecordingHasNotStarted, message: "Recording Has Not Started"}
 }
 
 func NewErrorInvalidRequestParameter(err error) *responseError {

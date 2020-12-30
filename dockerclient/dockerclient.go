@@ -37,6 +37,7 @@ type ContainerParam struct {
 var (
 	ErrContainerAlreadyExists = errors.New("Container Already Exists Error")
 	ErrContainerNoSuchImage   = errors.New("Container No Such Image Error")
+	ErrContainerTimeout       = errors.New("Container Timeout")
 	ErrContainerInternal      = errors.New("Container Internal Error")
 )
 
@@ -270,18 +271,28 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 		return "", ErrContainerInternal
 	}
 
-	err = cli.StartContainer(container.ID, &docker.HostConfig{})
+	timeout := 5 * time.Second
+	timoutCtx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+
+	err = cli.StartContainerWithContext(container.ID, &docker.HostConfig{}, timoutCtx)
 	if err != nil {
-		log.Error("StartContainer:", err)
-		err = cli.RemoveContainer(docker.RemoveContainerOptions{ID: container.ID})
-		if err != nil {
-			log.Error("RemoveContainer:", err)
+		log.WithError(err).Error("StartContainer")
+		if e := cli.RemoveContainer(docker.RemoveContainerOptions{ID: container.ID, Force: true}); e != nil {
+			log.WithError(e).Warn("RemoveContainer is fail")
 		}
-		return "", ErrContainerInternal
+		return "", err
 	}
 	log.Info("start container:", container.ID, " sessionId:", param.VideoID)
 
-	waitStartRecording(ctx, container.ID)
+	err = waitStartRecording(timoutCtx, container.ID)
+	if err != nil {
+		log.WithError(err).Error("waitStartRecording")
+		if e := cli.RemoveContainer(docker.RemoveContainerOptions{ID: container.ID, Force: true}); e != nil {
+			log.WithError(e).Warn("RemoveContainer is fail")
+		}
+		return "", err
+	}
 
 	return container.ID, nil
 }
@@ -296,7 +307,7 @@ func waitStartRecording(ctx context.Context, containerID string) error {
 	}
 
 	r, w := io.Pipe()
-	logWaiter, err := cli.AttachToContainerNonBlocking(
+	closeWaiter, err := cli.AttachToContainerNonBlocking(
 		docker.AttachToContainerOptions{
 			Container:    containerID,
 			OutputStream: w,
@@ -313,36 +324,51 @@ func waitStartRecording(ctx context.Context, containerID string) error {
 	}
 
 	defer func() {
-		err = logWaiter.Close()
+		err = closeWaiter.Close()
 		if err != nil {
 			log.WithError(err).Error("Could not close container log")
 		}
-		err = logWaiter.Wait()
+		err = closeWaiter.Wait()
 		if err != nil {
 			log.WithError(err).Error("Could not wait for container log to close")
 		}
+		log.Debug("dettach container")
 	}()
 
-	reader := bufio.NewReader(r)
-	for {
-		line, err := reader.ReadString('\n')
-		if err != nil {
-			switch err {
-			case io.EOF:
-				log.Info("Container has closed its IO channel")
-			default:
-				log.WithError(err).Error("Error reading container output")
-			}
-			break
-		}
-		log.Debug(line)
+	ch := make(chan error)
+	defer close(ch)
 
-		if strings.Contains(line, "ffmpeg version") {
-			break
+	go func() {
+		reader := bufio.NewReader(r)
+		for {
+			line, err := reader.ReadString('\n')
+			if err != nil {
+				switch err {
+				case io.EOF:
+					log.Info("Container has closed its IO channel")
+				default:
+					log.WithError(err).Error("Error reading container output")
+				}
+				ch <- err
+				break
+			}
+			log.Debug(line)
+
+			if strings.Contains(line, "ffmpeg version") {
+				ch <- nil
+				break
+			}
+		}
+	}()
+
+	for {
+		select {
+		case err := <-ch:
+			return err
+		case <-ctx.Done():
+			return ErrContainerTimeout
 		}
 	}
-
-	return nil
 }
 
 func StopContainer(ctx context.Context, containerID string) {
