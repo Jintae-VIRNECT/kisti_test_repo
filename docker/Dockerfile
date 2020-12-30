@@ -6,7 +6,7 @@ COPY . .
 ARG NODE_ENV=production
 
 RUN yarn install --production=false
-RUN yarn workspace workstation build:$NODE_ENV \
+RUN yarn build:$NODE_ENV \
 && rm -rf node_modules
 
 # Runtime Stage
@@ -15,13 +15,12 @@ FROM node:12-alpine
 ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
 
-COPY --from=builder package.json .
-COPY --from=builder workstation workstation
+COPY --from=builder . .
 
 RUN yarn install --production=true
 
 EXPOSE 8878
-CMD ["yarn", "workspace", "workstation", "deploy"]
+CMD ["yarn", "deploy"]
 
 
 
