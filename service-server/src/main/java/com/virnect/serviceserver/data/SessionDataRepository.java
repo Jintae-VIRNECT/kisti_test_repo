@@ -1121,7 +1121,7 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             Room loadFromDatabase() {
-                return sessionService.getRoomForWrite(workspaceId, sessionId);
+                return sessionService.getRoom(workspaceId, sessionId);
             }
 
             @Override
@@ -1139,8 +1139,10 @@ public class SessionDataRepository extends DataRepository {
                 if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
                     for (Member member : room.getMembers()) {
                         if (member.getUuid().equals(joinRoomRequest.getUuid()) && member.getMemberStatus().equals(MemberStatus.UNLOAD)) {
+                            sessionService.setMember(room.getWorkspaceId(), room.getSessionId(), member.getUuid(), MemberStatus.LOADING);
+                            /*Member lockMember = sessionService.getMember()
                             member.setMemberStatus(MemberStatus.LOADING);
-                            sessionService.setMember(member);
+                            sessionService.setMember(member);*/
                         }
                     }
 

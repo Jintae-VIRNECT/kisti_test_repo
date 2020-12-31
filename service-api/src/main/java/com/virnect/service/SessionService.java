@@ -205,6 +205,15 @@ public class SessionService {
     }
 
     @Transactional
+    public void setMember(String workspaceId, String sessionId, String uuid, MemberStatus memberStatus) {
+        Member member = this.memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, uuid).orElse(null);
+        if(member != null) {
+            member.setMemberStatus(memberStatus);
+            this.memberRepository.save(member);
+        }
+    }
+
+    @Transactional
     public void setMemberHistory(MemberHistory memberHistory) {
         this.memberHistoryRepository.save(memberHistory);
     }

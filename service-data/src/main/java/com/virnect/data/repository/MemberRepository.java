@@ -4,11 +4,13 @@ import com.virnect.data.dao.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.LockModeType;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +21,10 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findBySessionId(final String sessionId);
 
     Optional<Member> findByWorkspaceIdAndSessionIdAndUuid(final String workspaceId, final String sessionId, final String uuid);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select m from Member m where m.workspaceId = ?1 and m.sessionId = ?2 and m.uuid = ?3")
+    Optional<Member> findByWorkspaceIdAndSessionIdAndUuidForWrite(final String workspaceId, final String sessionId, final String uuid);
 
     List<Member> findAllBySessionId(final String sessionId);
 
