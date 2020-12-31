@@ -1191,13 +1191,12 @@ public class SessionDataRepository extends DataRepository {
                 if(member != null) {
                     MemberStatus memberStatus = member.getMemberStatus();
                     switch (memberStatus) {
-                        case UNLOAD: {
-                            member.setMemberStatus(MemberStatus.LOADING);
+                        case LOADING: {
+                            member.setMemberStatus(MemberStatus.LOAD);
                             sessionService.setMember(member);
                             return ErrorCode.ERR_SUCCESS;
                         }
                         case LOAD:
-                        case LOADING:
                             return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                         case EVICTED:
                             break;
