@@ -1183,7 +1183,7 @@ public class SessionDataRepository extends DataRepository {
 
 
             private ErrorCode getErrorStatus() {
-                Member member = sessionService.getMemberForWrite(
+               /* Member member = sessionService.getMemberForWrite(
                         room.getWorkspaceId(),
                         room.getSessionId(),
                         joinRoomRequest.getUuid()
@@ -1192,8 +1192,8 @@ public class SessionDataRepository extends DataRepository {
                     MemberStatus memberStatus = member.getMemberStatus();
                     switch (memberStatus) {
                         case LOADING: {
-                            member.setMemberStatus(MemberStatus.LOAD);
-                            sessionService.setMember(member);
+                            //member.setMemberStatus(MemberStatus.LOAD);
+                            //sessionService.setMember(member);
                             return ErrorCode.ERR_SUCCESS;
                         }
                         case LOAD:
@@ -1201,22 +1201,22 @@ public class SessionDataRepository extends DataRepository {
                         case EVICTED:
                             break;
                     }
-                }
+                }*/
 
-                /*for (Member member : room.getMembers()) {
+                for (Member member : room.getMembers()) {
                     if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                         MemberStatus memberStatus = member.getMemberStatus();
                         switch (memberStatus) {
-                            case UNLOAD:
+                            //case UNLOAD:
+                            case LOADING:
                                 return ErrorCode.ERR_SUCCESS;
                             case LOAD:
-                            case LOADING:
                                 return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                             case EVICTED:
                                 break;
                         }
                     }
-                }*/
+                }
 
                 if(sessionType.equals(SessionType.OPEN)) {
                     return ErrorCode.ERR_SUCCESS;
