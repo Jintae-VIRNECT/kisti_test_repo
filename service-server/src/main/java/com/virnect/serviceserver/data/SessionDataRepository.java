@@ -1137,14 +1137,14 @@ public class SessionDataRepository extends DataRepository {
 
                 ErrorCode errorCode = getErrorStatus();
                 if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
-                    for (Member member : room.getMembers()) {
-                        if (member.getUuid().equals(joinRoomRequest.getUuid()) && member.getMemberStatus().equals(MemberStatus.UNLOAD)) {
-                            sessionService.setMember(room.getWorkspaceId(), room.getSessionId(), member.getUuid(), MemberStatus.LOADING);
-                            /*Member lockMember = sessionService.getMember()
-                            member.setMemberStatus(MemberStatus.LOADING);
-                            sessionService.setMember(member);*/
-                        }
-                    }
+//                    for (Member member : room.getMembers()) {
+//                        if (member.getUuid().equals(joinRoomRequest.getUuid()) && member.getMemberStatus().equals(MemberStatus.UNLOAD)) {
+//                            sessionService.setMember(room.getWorkspaceId(), room.getSessionId(), member.getUuid(), MemberStatus.LOADING);
+//                            /*Member lockMember = sessionService.getMember()
+//                            member.setMemberStatus(MemberStatus.LOADING);
+//                            sessionService.setMember(member);*/
+//                        }
+//                    }
 
                     RoomResponse roomResponse = new RoomResponse();
                     //not set session create at property
@@ -1172,7 +1172,28 @@ public class SessionDataRepository extends DataRepository {
 
 
             private ErrorCode getErrorStatus() {
-                for (Member member : room.getMembers()) {
+                Member member = sessionService.getMemberForWrite(
+                        room.getWorkspaceId(),
+                        room.getSessionId(),
+                        joinRoomRequest.getUuid()
+                );
+                if(member != null) {
+                    MemberStatus memberStatus = member.getMemberStatus();
+                    switch (memberStatus) {
+                        case UNLOAD: {
+                            member.setMemberStatus(MemberStatus.LOADING);
+                            sessionService.setMember(member);
+                            return ErrorCode.ERR_SUCCESS;
+                        }
+                        case LOAD:
+                        case LOADING:
+                            return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
+                        case EVICTED:
+                            break;
+                    }
+                }
+
+                /*for (Member member : room.getMembers()) {
                     if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                         MemberStatus memberStatus = member.getMemberStatus();
                         switch (memberStatus) {
@@ -1185,7 +1206,7 @@ public class SessionDataRepository extends DataRepository {
                                 break;
                         }
                     }
-                }
+                }*/
 
                 if(sessionType.equals(SessionType.OPEN)) {
                     return ErrorCode.ERR_SUCCESS;

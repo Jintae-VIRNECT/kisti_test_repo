@@ -204,18 +204,23 @@ public class SessionService {
         this.memberRepository.save(member);
     }
 
-    @Transactional
+    /*@Transactional
     public void setMember(String workspaceId, String sessionId, String uuid, MemberStatus memberStatus) {
         Member member = this.memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, uuid).orElse(null);
         if(member != null) {
             member.setMemberStatus(memberStatus);
             this.memberRepository.save(member);
         }
-    }
+    }*/
 
     @Transactional
     public void setMemberHistory(MemberHistory memberHistory) {
         this.memberHistoryRepository.save(memberHistory);
+    }
+
+    @Transactional
+    public Member getMemberForWrite(String workspaceId, String sessionId, String userId) {
+        return memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, userId).orElse(null);
     }
 
     public Member getMember(String workspaceId, String sessionId, String userId) {
