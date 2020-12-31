@@ -129,7 +129,7 @@ export default {
 
       if (this.isLeader && result.infos.length > 0) {
         const recordInfo = result.infos[0]
-        let status = recordInfo.status
+        const status = recordInfo.status
 
         if (this.serverRecordRetryCount >= 5) {
           this.processPreparingFailed()
@@ -140,6 +140,7 @@ export default {
           this.serverRecordRetryCount++
           this.setServerRecordStatus('PREPARE')
           const retryInterval = 1000
+
           this.serverRecordRetryTimeout = setTimeout(() => {
             this.logger('SERVER RECORD', 'check preparing')
             this.checkServerRecordings()
@@ -173,6 +174,7 @@ export default {
   mounted() {
     this.setServerRecordStatus('STOP')
     if (!this.account.roleType === ROLE.LEADER) return
+
     this.$eventBus.$on('serverRecord', this.toggleServerRecord)
     this.checkServerRecordings()
   },
