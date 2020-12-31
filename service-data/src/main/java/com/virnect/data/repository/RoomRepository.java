@@ -4,6 +4,7 @@ import com.virnect.data.dao.Room;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.LockModeType;
@@ -18,6 +19,7 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
     Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select r from Room r where r.workspaceId = ?1 and r.sessionId = ?2")
     Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(final String workspaceId, final String sessionId);
 
     //Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
