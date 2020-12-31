@@ -1070,18 +1070,29 @@ public class SessionDataRepository extends DataRepository {
     /**
      * Prepare to join the room the user is....
      */
-    /*@Deprecated
     public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
-        return new RepoDecoder<Room, Boolean>(RepoDecoderType.READ) {
+        return new RepoDecoder<Member, Boolean>(RepoDecoderType.UPDATE) {
             @Override
-            Room loadFromDatabase() {
-                return sessionService.getRoom(workspaceId, sessionId);
+            Member loadFromDatabase() {
+                return sessionService.getMemberForWrite(workspaceId, sessionId, userId);
             }
 
             @Override
             DataProcess<Boolean> invokeDataProcess() {
-                Room room = loadFromDatabase();
-                if (room == null) {
+                Member member = loadFromDatabase();
+                if(member != null) {
+                    MemberStatus memberStatus = member.getMemberStatus();
+                    if(memberStatus.equals(MemberStatus.UNLOAD)) {
+                        member.setMemberStatus(MemberStatus.LOADING);
+                        sessionService.setMember(member);
+                        return new DataProcess<>(true);
+                    } else {
+                        return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
+                    }
+                } else {
+                    return new DataProcess<>(true);
+                }
+                /*if (room == null) {
                     return new DataProcess<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
 
@@ -1108,10 +1119,10 @@ public class SessionDataRepository extends DataRepository {
                         }
                     }
                     return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
-                }
+                }*/
             }
         }.asResponseData();
-    }*/
+    }
 
     public ApiResponse<RoomResponse> joinRoom(String workspaceId, String sessionId, String sessionToken, JoinRoomRequest joinRoomRequest) {
         return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.READ) {
