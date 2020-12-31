@@ -1179,6 +1179,7 @@ public class SessionDataRepository extends DataRepository {
                             case UNLOAD:
                                 return ErrorCode.ERR_SUCCESS;
                             case LOAD:
+                            case LOADING:
                                 return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                             case EVICTED:
                                 break;
