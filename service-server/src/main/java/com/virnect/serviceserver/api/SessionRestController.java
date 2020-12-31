@@ -375,18 +375,17 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
         ApiResponse<RoomDeleteResponse> apiResponse = this.sessionDataRepository.removeRoom(workspaceId, sessionId, userId);
-
 
         if(apiResponse.getData().result) {
             //send rpc message to connection id user of the session id
+            /*DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
             JsonObject jsonObject = serviceSessionManager.generateMessage(
                     sessionId,
                     dataProcess.getData(),
                     PushConstants.PUSH_SIGNAL_SYSTEM,
                     PushConstants.SEND_PUSH_ROOM_CLOSED
-            );
+            );*/
 
             if(this.serviceSessionManager.closeActiveSession(sessionId)) {
                 LogMessage.formedInfo(

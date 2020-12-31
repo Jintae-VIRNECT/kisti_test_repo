@@ -246,7 +246,7 @@ public class S3FileManagementService implements IFileManagementService {
         }
 
         // 2. check file extension
-        String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
+        String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())).toLowerCase();
         if (!fileAllowExtensionList.contains(fileExtension)) {
             LogMessage.formedError(
                     TAG,
@@ -330,7 +330,7 @@ public class S3FileManagementService implements IFileManagementService {
         }
 
         // check file extension
-        String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename()));
+        String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())).toLowerCase();
         if (!FILE_IMAGE_ALLOW_EXTENSION.contains(fileExtension)) {
             LogMessage.formedError(
                     TAG,
