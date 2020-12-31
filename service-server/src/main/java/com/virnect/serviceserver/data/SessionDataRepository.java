@@ -1121,7 +1121,7 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             Room loadFromDatabase() {
-                return sessionService.getRoom(workspaceId, sessionId);
+                return sessionService.getRoomForWrite(workspaceId, sessionId);
             }
 
             @Override
@@ -1160,8 +1160,6 @@ public class SessionDataRepository extends DataRepository {
             }
 
             private void preDataProcess() {
-
-
                 try {
                     sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
                 } catch (JsonProcessingException e) {

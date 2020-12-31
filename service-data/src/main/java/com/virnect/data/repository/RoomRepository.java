@@ -13,11 +13,12 @@ import java.util.Optional;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificationExecutor<Room> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Room> findBySessionId(final String sessionId);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(final String workspaceId, final String sessionId);
 
     //Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
