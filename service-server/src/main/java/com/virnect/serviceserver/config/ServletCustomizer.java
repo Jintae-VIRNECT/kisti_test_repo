@@ -17,12 +17,16 @@
 
 package com.virnect.serviceserver.config;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
-@Component
+@Slf4j
+@Configuration
 public class ServletCustomizer implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory> {
 
 	@Override
@@ -31,6 +35,12 @@ public class ServletCustomizer implements WebServerFactoryCustomizer<Configurabl
 		mappings.add("mp4", "video/mp4");
 		mappings.add("webm", "video/webm");
 		factory.setMimeMappings(mappings);
-	}
 
+		//server.tomcat.relaxed-query-chars=[,],|
+		if(factory instanceof TomcatServletWebServerFactory) {
+			log.info("ServletCustomizer_TomcatServletWebServerFactory");
+			((TomcatServletWebServerFactory) factory).addConnectorCustomizers(
+					connector -> connector.setAttribute("relaxedQueryChars", "|{}[]"));
+		}
+	}
 }
