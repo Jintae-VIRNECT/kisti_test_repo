@@ -1151,7 +1151,7 @@ public class SessionDataRepository extends DataRepository {
                         errorCode = ErrorCode.ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION;
                     }
                 }
-                room = sessionService.getRoom(workspaceId, sessionId);
+                //room = sessionService.getRoom(workspaceId, sessionId);
                 /*for (Member newMember : room.getMembers()) {
                     log.info("prepare joinRoom userId => [{}]", newMember.getUuid());
                 }*/
