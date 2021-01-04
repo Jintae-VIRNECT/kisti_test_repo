@@ -28,7 +28,6 @@ module.exports = {
       chunks: ['chunk-vendors', 'chunk-common', 'account'],
     },
   },
-
   configureWebpack: {
     resolve: {
       modules: ['node_modules', 'modules'],
@@ -67,7 +66,7 @@ module.exports = {
     },
     noInfo: true,
     open: false,
-    before: function(app) {
+    before: function (app) {
       var bodyParser = require('body-parser')
       configService.init()
       app.use(
@@ -76,12 +75,12 @@ module.exports = {
         }),
       )
 
-      app.post('/logs', bodyParser.json(), function(req, res) {
+      app.post('/logs', bodyParser.json(), function (req, res) {
         logger.log(req.body.data, 'CONSOLE')
         res.send(true)
       })
 
-      app.get('/configs', bodyParser.json(), function(req, res) {
+      app.get('/configs', bodyParser.json(), function (req, res) {
         const a = configService.getConfigs()
         a.console = '/account'
         a.runtime = 'local'

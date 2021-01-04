@@ -182,7 +182,7 @@ export default {
       }
 
       Chart.elements.RoundedTopRectangle = Chart.elements.Rectangle.extend({
-        draw: function() {
+        draw: function () {
           let ctx = this._chart.ctx
           let vm = this._view
           let left, right, top, bottom, signX, signY, borderSkipped

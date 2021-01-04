@@ -27,17 +27,17 @@ function IsMobileBrowser(req) {
   return isChromeMobile
 }
 
-router.get('/healthcheck', function(req, res) {
+router.get('/healthcheck', function (req, res) {
   res.send('200')
 })
 
-router.get('/configs', function(req, res) {
+router.get('/configs', function (req, res) {
   // req.query.origin
   res.header('Content-Type', 'application/json')
   res.send(JSON.stringify(config.getConfigs()))
 })
 
-router.get('/home', function(req, res) {
+router.get('/home', function (req, res) {
   const remoteAddr = config.getConfigs().remote
 
   if (IsAllowBrowser(req)) {
@@ -52,7 +52,7 @@ router.get('/home', function(req, res) {
   }
 })
 
-router.get('/*', function(req, res) {
+router.get('/*', function (req, res) {
   res.redirect('/home')
 })
 

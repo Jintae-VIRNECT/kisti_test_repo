@@ -44,7 +44,7 @@ export const getFile = url => {
   return new Promise(resolve => {
     var xhr = new XMLHttpRequest()
 
-    xhr.addEventListener('load', function() {
+    xhr.addEventListener('load', function () {
       if (xhr.status == 200) {
         resolve(xhr.response)
       }
