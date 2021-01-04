@@ -31,7 +31,7 @@ export const inviteRoom = async ({
  * @param {Number} size
  * @param {String} sort
  */
-export const getMember = async function({
+export const getMember = async function ({
   filter = '',
   page = 0,
   size = 10,
@@ -55,7 +55,7 @@ export const getMember = async function({
  * @param {String} leaderId
  * @param {String} participantId
  */
-export const kickMember = async function({
+export const kickMember = async function ({
   sessionId,
   workspaceId,
   leaderId,

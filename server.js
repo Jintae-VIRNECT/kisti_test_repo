@@ -13,7 +13,7 @@ app.use(route)
 
 server
   .start(app)
-  .then(function() {})
-  .catch(function(e) {
+  .then(function () {})
+  .catch(function (e) {
     console.log(e)
   })

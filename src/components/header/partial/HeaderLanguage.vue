@@ -21,17 +21,13 @@
         class="popover-language__button"
         :class="{ selected: isSelected('ko') }"
       >
-        <button @click="changeLang('ko')">
-          KOR
-        </button>
+        <button @click="changeLang('ko')">KOR</button>
       </div>
       <div
         class="popover-language__button"
         :class="{ selected: isSelected('en') }"
       >
-        <button @click="changeLang('en')">
-          ENG
-        </button>
+        <button @click="changeLang('en')">ENG</button>
       </div>
     </div>
   </popover>

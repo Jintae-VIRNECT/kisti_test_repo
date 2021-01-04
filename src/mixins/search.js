@@ -84,9 +84,7 @@ export default {
         return `${formattedFrom},${formattedTo}`
       } else {
         const defaultTo = dayjs().format('YYYY-MM-DD')
-        const defaultFrom = dayjs()
-          .subtract(7, 'day')
-          .format('YYYY-MM-DD')
+        const defaultFrom = dayjs().subtract(7, 'day').format('YYYY-MM-DD')
         return `${defaultFrom},${defaultTo}`
       }
     },

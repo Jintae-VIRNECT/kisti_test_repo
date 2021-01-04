@@ -1,7 +1,7 @@
 import http from 'api/gateway'
 
 /** 로컬 로그인 페이지 */
-export const login = async function(data) {
+export const login = async function (data) {
   const returnVal = await http('LOGIN', data)
   return returnVal
 }
@@ -9,7 +9,7 @@ export const login = async function(data) {
 /**
  * 내 정보 조회
  */
-export const getAccount = async function() {
+export const getAccount = async function () {
   const returnVal = await http('ACCOUNT')
   return returnVal
 }
@@ -19,7 +19,7 @@ export const getAccount = async function() {
  * @param {String} accessToken
  * @param {String} refreshToken
  */
-export const tokenRequest = async function({ accessToken, refreshToken }) {
+export const tokenRequest = async function ({ accessToken, refreshToken }) {
   const returnVal = await http('TOKEN', { accessToken, refreshToken })
   return returnVal
 }
@@ -28,7 +28,7 @@ export const tokenRequest = async function({ accessToken, refreshToken }) {
  * 사용자 정보 조회
  * @param {String} userId
  */
-export const getUserInfo = async function({ userId }) {
+export const getUserInfo = async function ({ userId }) {
   const returnVal = await http('USER_INFO', { userId })
   return returnVal
 }
@@ -37,7 +37,7 @@ export const getUserInfo = async function({ userId }) {
  * 서비스 라이선스 유효성을 확인하는 서비스
  * @param {String} userId 라이센스를 확인하려는 계정 uuid
  */
-export const getLicense = async function({ userId }) {
+export const getLicense = async function ({ userId }) {
   const result = await http('GET_LICENSE', { userId })
   return result
 }
@@ -45,7 +45,7 @@ export const getLicense = async function({ userId }) {
 /**
  * 커스텀 설정 조회 (onpremise only)
  */
-export const getSettingInfo = async function() {
+export const getSettingInfo = async function () {
   const returnVal = await http('SETTING_INFO')
   return returnVal
 }

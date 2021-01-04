@@ -15,13 +15,9 @@ export default {
         return null
       }
       if (time >= 60 * 60 * 1000) {
-        return dayjs(time)
-          .utc()
-          .format('HH:mm:ss')
+        return dayjs(time).utc().format('HH:mm:ss')
       } else {
-        return dayjs(time)
-          .utc()
-          .format('mm:ss')
+        return dayjs(time).utc().format('mm:ss')
       }
     },
     networkStatus(status) {

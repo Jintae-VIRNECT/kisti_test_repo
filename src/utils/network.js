@@ -20,7 +20,7 @@ const detectNetworkSpead = () => {
   return new Promise((resolve, reject) => {
     let startTime, endTime
     var download = new Image()
-    download.onload = function() {
+    download.onload = function () {
       endTime = new Date().getTime()
       const bps = calcBps(startTime, endTime)
       resolve(bps)

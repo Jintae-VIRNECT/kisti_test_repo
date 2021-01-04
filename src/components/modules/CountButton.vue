@@ -1,5 +1,5 @@
-<template
-  ><button
+<template>
+  <button
     type="button"
     class="count-button"
     :class="{
