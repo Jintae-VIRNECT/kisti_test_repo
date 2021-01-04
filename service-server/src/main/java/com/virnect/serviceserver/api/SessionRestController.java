@@ -484,13 +484,12 @@ public class SessionRestController implements ISessionRestAPI {
             JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
             apiResponse = this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
-            return ResponseEntity.ok(apiResponse);
         } else {
             apiResponse = new ApiResponse<>(new RoomResponse());
             apiResponse.setCode(dataProcess.getCode());
             apiResponse.setMessage(dataProcess.getMessage());
-            return ResponseEntity.ok(apiResponse);
         }
+        return ResponseEntity.ok(apiResponse);
     }
 
     @Override

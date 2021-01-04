@@ -95,6 +95,7 @@ public enum  ErrorCode {
     ERR_INVALID_VALUE(8004, "Invalid Value"),
     ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors"),
     ERR_AUTHORIZATION_EXPIRED(8005, "Authorization token is expired"),
+    ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION(8006, "Unsupported DataType Exception occured"),
     ERR_UNEXPECTED_SERVER_ERROR(9999, "Unexpected Server Error, Please contact Administrator");
 
     @ApiModelProperty(value = "에러 코드")

@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import javax.activation.UnsupportedDataTypeException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -1072,6 +1073,19 @@ public class SessionDataRepository extends DataRepository {
      */
     public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Member, Boolean>(RepoDecoderType.UPDATE) {
+            Room room;
+            private Member setData() {
+                Member member = Member.builder()
+                        .room(room)
+                        .memberType(MemberType.UNKNOWN)
+                        .uuid(userId)
+                        .workspaceId(workspaceId)
+                        .sessionId(sessionId)
+                        .build();
+                member.setMemberStatus(MemberStatus.LOADING);
+                return member;
+            }
+
             @Override
             Member loadFromDatabase() {
                 return sessionService.getMemberForWrite(workspaceId, sessionId, userId);
@@ -1079,47 +1093,57 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             DataProcess<Boolean> invokeDataProcess() {
-                Member member = loadFromDatabase();
-                if(member != null) {
-                    MemberStatus memberStatus = member.getMemberStatus();
-                    if(memberStatus.equals(MemberStatus.UNLOAD)) {
-                        member.setMemberStatus(MemberStatus.LOADING);
-                        sessionService.setMember(member);
-                        return new DataProcess<>(true);
-                    } else {
-                        return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
-                    }
-                } else {
-                    return new DataProcess<>(true);
-                }
-                /*if (room == null) {
+                room = sessionService.getRoom(workspaceId, sessionId);
+                if (room == null) {
                     return new DataProcess<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
+                SessionType sessionType = room.getSessionProperty().getSessionType();
 
-                if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-                    for (Member member : room.getMembers()) {
-                        if (member.getUuid().equals(userId)) {
-                            log.info("open room has member Id is {}", member.getUuid());
-                            if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
-                            }
-                        }
-                    }
-                    log.info("open room has no member Id is {}", userId);
-                    return new DataProcess<>(true);
-                } else {
-                    for (Member member : room.getMembers()) {
-                        if (member.getUuid().equals(userId)) {
-                            log.info("private room has member Id is {}", member.getUuid());
-                            if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                                return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+                Member member = loadFromDatabase();
+                boolean result = false;
+                ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
+                switch (sessionType) {
+                    case PRIVATE:
+                    case PUBLIC: {
+                        if (member != null) {
+                            MemberStatus memberStatus = member.getMemberStatus();
+                            if (memberStatus.equals(MemberStatus.UNLOAD) ||
+                                    memberStatus.equals(MemberStatus.EVICTED)) {
+                                member.setMemberStatus(MemberStatus.LOADING);
+                                sessionService.setMember(member);
+                                result = true;
                             } else {
-                                return new DataProcess<>(true);
+                                errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                             }
+                        } else {
+                            errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
                         }
                     }
-                    return new DataProcess<>(false, ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED);
-                }*/
+                    break;
+                    case OPEN: {
+                        if (member != null) {
+                            MemberStatus memberStatus = member.getMemberStatus();
+                            if (memberStatus.equals(MemberStatus.UNLOAD) ||
+                                    memberStatus.equals(MemberStatus.EVICTED)) {
+                                member.setMemberStatus(MemberStatus.LOADING);
+                                sessionService.setMember(member);
+                                result = true;
+                            } else {
+                                errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+                            }
+                        } else {
+                            sessionService.setMember(setData());
+                            result = true;
+                        }
+                    }
+                    break;
+                    default: {
+                        result = false;
+                        errorCode = ErrorCode.ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION;
+                    }
+                }
+                return new DataProcess<>(result, errorCode);
+
             }
         }.asResponseData();
     }
@@ -1128,7 +1152,7 @@ public class SessionDataRepository extends DataRepository {
         return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.READ) {
             SessionTokenResponse sessionTokenResponse = null;
             Room room;
-            SessionType sessionType;
+            //SessionType sessionType;
 
             @Override
             Room loadFromDatabase() {
@@ -1142,21 +1166,12 @@ public class SessionDataRepository extends DataRepository {
                     return new DataProcess<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
 
-                sessionType = room.getSessionProperty().getSessionType();
+                //sessionType = room.getSessionProperty().getSessionType();
 
                 preDataProcess();
 
                 ErrorCode errorCode = getErrorStatus();
                 if(errorCode.equals(ErrorCode.ERR_SUCCESS)) {
-//                    for (Member member : room.getMembers()) {
-//                        if (member.getUuid().equals(joinRoomRequest.getUuid()) && member.getMemberStatus().equals(MemberStatus.UNLOAD)) {
-//                            sessionService.setMember(room.getWorkspaceId(), room.getSessionId(), member.getUuid(), MemberStatus.LOADING);
-//                            /*Member lockMember = sessionService.getMember()
-//                            member.setMemberStatus(MemberStatus.LOADING);
-//                            sessionService.setMember(member);*/
-//                        }
-//                    }
-
                     RoomResponse roomResponse = new RoomResponse();
                     //not set session create at property
                     roomResponse.setSessionId(sessionId);
@@ -1178,51 +1193,29 @@ public class SessionDataRepository extends DataRepository {
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-                //assert sessionTokenResponse != null;
             }
 
 
             private ErrorCode getErrorStatus() {
-               /* Member member = sessionService.getMemberForWrite(
-                        room.getWorkspaceId(),
-                        room.getSessionId(),
-                        joinRoomRequest.getUuid()
-                );
-                if(member != null) {
-                    MemberStatus memberStatus = member.getMemberStatus();
-                    switch (memberStatus) {
-                        case LOADING: {
-                            //member.setMemberStatus(MemberStatus.LOAD);
-                            //sessionService.setMember(member);
-                            return ErrorCode.ERR_SUCCESS;
-                        }
-                        case LOAD:
-                            return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-                        case EVICTED:
-                            break;
-                    }
-                }*/
-
                 for (Member member : room.getMembers()) {
                     if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                         MemberStatus memberStatus = member.getMemberStatus();
                         switch (memberStatus) {
-                            //case UNLOAD:
                             case LOADING:
                                 return ErrorCode.ERR_SUCCESS;
                             case LOAD:
                                 return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                             case EVICTED:
-                                break;
+                                return ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                         }
                     }
                 }
-
-                if(sessionType.equals(SessionType.OPEN)) {
+                return ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
+                /*if(sessionType.equals(SessionType.OPEN)) {
                     return ErrorCode.ERR_SUCCESS;
                 } else {
                     return ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
-                }
+                }*/
             }
         }.asApiResponse();
     }
