@@ -238,7 +238,7 @@ public abstract class DataRepository {
             DataProcess<ErrorCode> invokeDataProcess() {
                 room = loadFromDatabase();
                 if(room == null) {
-                    throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
+                    return new DataProcess<>(ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
 
                 JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
@@ -250,7 +250,7 @@ public abstract class DataRepository {
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-                assert clientMetaData != null;
+                //assert clientMetaData != null;
 
                 log.info("session join and clientMetaData is :[ClientData] {}", clientMetaData.getClientData());
                 log.info("session join and clientMetaData is :[RoleType] {}", clientMetaData.getRoleType());
@@ -258,7 +258,16 @@ public abstract class DataRepository {
 
                 Member member = sessionService.getMember(room.getWorkspaceId(), sessionId, clientMetaData.getClientData());
                 try {
-                    if (member == null) {
+                    if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                        return new DataProcess<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID); //Code.EXISTING_USER_IN_ROOM_ERROR_CODE
+                    } else {
+                        member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
+                        member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
+                        member.setConnectionId(participant.getParticipantPublicId());
+                        member.setMemberStatus(MemberStatus.LOAD);
+                    }
+                    sessionService.setMember(member);
+                    /*if (member == null) {
                         member = setData();
                     } else {
                         if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
@@ -270,7 +279,7 @@ public abstract class DataRepository {
                             member.setMemberStatus(MemberStatus.LOAD);
                         }
                     }
-                    sessionService.setMember(member);
+                    sessionService.setMember(member);*/
                     //sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
                 } catch (NullPointerException exception) {
                     LogMessage.formedError(
