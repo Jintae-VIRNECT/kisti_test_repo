@@ -1074,8 +1074,8 @@ public class SessionDataRepository extends DataRepository {
     public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Member, Boolean>(RepoDecoderType.UPDATE) {
             Room room;
+
             private void setData() {
-                log.info("prepare joinRoom add member]");
                 Member member = Member.builder()
                         .room(room)
                         .memberType(MemberType.UNKNOWN)
@@ -1107,7 +1107,6 @@ public class SessionDataRepository extends DataRepository {
                     if(m.getUuid().equals(userId)) {
                         member = m;
                     }
-                    //log.info("prepare joinRoom userId => [{}]", member.getUuid());
                 }
                 boolean result = false;
                 ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
@@ -1151,12 +1150,7 @@ public class SessionDataRepository extends DataRepository {
                         errorCode = ErrorCode.ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION;
                     }
                 }
-                //room = sessionService.getRoom(workspaceId, sessionId);
-                /*for (Member newMember : room.getMembers()) {
-                    log.info("prepare joinRoom userId => [{}]", newMember.getUuid());
-                }*/
                 return new DataProcess<>(result, errorCode);
-
             }
         }.asResponseData();
     }
@@ -1211,7 +1205,6 @@ public class SessionDataRepository extends DataRepository {
 
             private ErrorCode getErrorStatus() {
                 for (Member member : room.getMembers()) {
-                    log.info("joinRoom userId => [{}]", member.getUuid());
                     if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                         MemberStatus memberStatus = member.getMemberStatus();
                         switch (memberStatus) {
