@@ -485,6 +485,14 @@ public class SessionRestController implements ISessionRestAPI {
 
             apiResponse = this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
         } else {
+            LogMessage.formedInfo(
+                    TAG,
+                    "REST API: POST " + REST_PATH + "/",
+                    "joinRoomById",
+                    "process data get false",
+                    dataProcess.getMessage()
+            );
+
             apiResponse = new ApiResponse<>(new RoomResponse());
             apiResponse.setCode(dataProcess.getCode());
             apiResponse.setMessage(dataProcess.getMessage());
