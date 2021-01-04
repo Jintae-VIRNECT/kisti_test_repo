@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
@@ -100,7 +101,7 @@ public class SessionService {
         roomRepository.save(room);
     }*/
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public Room getRoomForWrite(String workspaceId, String sessionId) {
         return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
     }
