@@ -1095,13 +1095,20 @@ public class SessionDataRepository extends DataRepository {
 
             @Override
             DataProcess<Boolean> invokeDataProcess() {
-                room = sessionService.getRoom(workspaceId, sessionId);
+                //room = sessionService.getRoom(workspaceId, sessionId);
+                room = sessionService.getRoomForWrite(workspaceId, sessionId);
                 if (room == null) {
                     return new DataProcess<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
                 }
                 SessionType sessionType = room.getSessionProperty().getSessionType();
 
-                Member member = loadFromDatabase();
+                Member member = null;
+                for (Member m : room.getMembers()) {
+                    if(m.getUuid().equals(userId)) {
+                        member = m;
+                    }
+                    //log.info("prepare joinRoom userId => [{}]", member.getUuid());
+                }
                 boolean result = false;
                 ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
                 switch (sessionType) {
@@ -1145,9 +1152,9 @@ public class SessionDataRepository extends DataRepository {
                     }
                 }
                 room = sessionService.getRoom(workspaceId, sessionId);
-                for (Member newMember : room.getMembers()) {
+                /*for (Member newMember : room.getMembers()) {
                     log.info("prepare joinRoom userId => [{}]", newMember.getUuid());
-                }
+                }*/
                 return new DataProcess<>(result, errorCode);
 
             }

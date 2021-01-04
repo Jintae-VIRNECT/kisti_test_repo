@@ -100,8 +100,9 @@ public class SessionService {
         roomRepository.save(room);
     }*/
 
+    @Transactional
     public Room getRoomForWrite(String workspaceId, String sessionId) {
-        return  this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+        return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
     }
 
     public Room getRoom(String workspaceId, String sessionId) {
