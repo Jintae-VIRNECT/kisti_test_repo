@@ -1074,7 +1074,8 @@ public class SessionDataRepository extends DataRepository {
     public DataProcess<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
         return new RepoDecoder<Member, Boolean>(RepoDecoderType.UPDATE) {
             Room room;
-            private Member setData() {
+            private void setData() {
+                log.info("prepare joinRoom add member]");
                 Member member = Member.builder()
                         .room(room)
                         .memberType(MemberType.UNKNOWN)
@@ -1083,7 +1084,8 @@ public class SessionDataRepository extends DataRepository {
                         .sessionId(sessionId)
                         .build();
                 member.setMemberStatus(MemberStatus.LOADING);
-                return member;
+                room.getMembers().add(member);
+                sessionService.updateRoom(room);
             }
 
             @Override
@@ -1132,7 +1134,7 @@ public class SessionDataRepository extends DataRepository {
                                 errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                             }
                         } else {
-                            sessionService.setMember(setData());
+                            setData();
                             result = true;
                         }
                     }
@@ -1141,6 +1143,10 @@ public class SessionDataRepository extends DataRepository {
                         result = false;
                         errorCode = ErrorCode.ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION;
                     }
+                }
+                room = sessionService.getRoom(workspaceId, sessionId);
+                for (Member newMember : room.getMembers()) {
+                    log.info("prepare joinRoom userId => [{}]", newMember.getUuid());
                 }
                 return new DataProcess<>(result, errorCode);
 
@@ -1198,6 +1204,7 @@ public class SessionDataRepository extends DataRepository {
 
             private ErrorCode getErrorStatus() {
                 for (Member member : room.getMembers()) {
+                    log.info("joinRoom userId => [{}]", member.getUuid());
                     if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                         MemberStatus memberStatus = member.getMemberStatus();
                         switch (memberStatus) {
