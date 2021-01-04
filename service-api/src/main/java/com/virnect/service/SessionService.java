@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
@@ -100,6 +101,10 @@ public class SessionService {
         roomRepository.save(room);
     }*/
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Room getRoomForWrite(String workspaceId, String sessionId) {
+        return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+    }
 
     public Room getRoom(String workspaceId, String sessionId) {
         return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
@@ -201,9 +206,23 @@ public class SessionService {
         this.memberRepository.save(member);
     }
 
+    /*@Transactional
+    public void setMember(String workspaceId, String sessionId, String uuid, MemberStatus memberStatus) {
+        Member member = this.memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, uuid).orElse(null);
+        if(member != null) {
+            member.setMemberStatus(memberStatus);
+            this.memberRepository.save(member);
+        }
+    }*/
+
     @Transactional
     public void setMemberHistory(MemberHistory memberHistory) {
         this.memberHistoryRepository.save(memberHistory);
+    }
+
+    @Transactional
+    public Member getMemberForWrite(String workspaceId, String sessionId, String userId) {
+        return memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, userId).orElse(null);
     }
 
     public Member getMember(String workspaceId, String sessionId, String userId) {

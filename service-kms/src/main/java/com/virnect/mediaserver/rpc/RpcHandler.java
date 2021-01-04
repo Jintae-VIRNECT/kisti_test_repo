@@ -704,7 +704,7 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 					exception.getMessage());
 			if ("IOException".equals(exception.getClass().getSimpleName()) && exception.getCause() != null
 					&& "Broken pipe".equals(exception.getCause().getMessage())) {
-				log.warn("Parcipant with private id {} unexpectedly closed the websocket", rpcSession.getSessionId());
+				log.warn("Participant with private id {} unexpectedly closed the websocket", rpcSession.getSessionId());
 			}
 			if ("EOFException".equals(exception.getClass().getSimpleName())) {
 				// Store WebSocket connection interrupted exception for this web socket to
@@ -713,7 +713,10 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 			} else {
 				// Unexpected exception Store WebSocket connection interrupted exception for this web socket to
 				// automatically evict the participant on "afterConnectionClosed" event
-				log.warn("Parcipant with private id {} unexpectedly closed the websocket, exception is {}", rpcSession.getSessionId(), exception.getClass().getSimpleName());
+				log.warn("Participant with private id {} unexpectedly closed the websocket, exception is {} message is {}",
+						rpcSession.getSessionId(),
+						exception.getClass().getSimpleName(),
+						exception.getCause().getMessage());
 				this.webSocketEOFTransportError.put(rpcSession.getSessionId(), true);
 			}
 		}

@@ -375,18 +375,17 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
         ApiResponse<RoomDeleteResponse> apiResponse = this.sessionDataRepository.removeRoom(workspaceId, sessionId, userId);
-
 
         if(apiResponse.getData().result) {
             //send rpc message to connection id user of the session id
+            /*DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
             JsonObject jsonObject = serviceSessionManager.generateMessage(
                     sessionId,
                     dataProcess.getData(),
                     PushConstants.PUSH_SIGNAL_SYSTEM,
                     PushConstants.SEND_PUSH_ROOM_CLOSED
-            );
+            );*/
 
             if(this.serviceSessionManager.closeActiveSession(sessionId)) {
                 LogMessage.formedInfo(
@@ -477,13 +476,28 @@ public class SessionRestController implements ISessionRestAPI {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        // generate session id and token
-        JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
-        JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-        //
-        return ResponseEntity.ok(
-                this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest)
-        );
+        DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(workspaceId, sessionId, joinRoomRequest.getUuid());
+        ApiResponse<RoomResponse> apiResponse;
+        if(dataProcess.getData()) {
+            // generate session id and token
+            JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
+            JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+
+            apiResponse = this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
+        } else {
+            LogMessage.formedInfo(
+                    TAG,
+                    "REST API: POST " + REST_PATH + "/",
+                    "joinRoomById",
+                    "process data get false",
+                    dataProcess.getMessage()
+            );
+
+            apiResponse = new ApiResponse<>(new RoomResponse());
+            apiResponse.setCode(dataProcess.getCode());
+            apiResponse.setMessage(dataProcess.getMessage());
+        }
+        return ResponseEntity.ok(apiResponse);
     }
 
     @Override

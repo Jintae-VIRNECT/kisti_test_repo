@@ -7,14 +7,9 @@ plugins {
     kotlin("plugin.spring")
     kotlin("plugin.jpa")
 }
-//java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-//configurations {
-//    compileOnly {
-//        extendsFrom(configurations.annotationProcessor.get())
-//    }
-//}
-
+// This block encapsulates custom properties and makes them available to all
+// modules in the project.
 ext {
     set("springCloudVersion", "Hoxton.SR1")
     /*val profiles = if(System.getProperty("spring.profiles") != null) System.getProperty("spring.profiles").toString() else "default"
@@ -26,10 +21,10 @@ sourceSets {
     main {
         java.srcDir("src/main/java")
         resources.srcDir("src/main/resources")
-//        resources.srcDirs(listOf(
-//            "src/main/resources",
-//            "src/main/resources-${System.getProperty("spring.profiles")}"
-//        ))
+        /*resources.srcDirs(listOf(
+            "src/main/resources",
+            "src/main/resources-${System.getProperty("spring.profiles")}"
+        ))*/
     }
 }
 
@@ -44,7 +39,8 @@ springBoot {
     //buildInfo()
     buildInfo {
         properties {
-            additional = mapOf("version.remoteservice.server" to "v2.2")
+            //additional = mapOf("version.remoteservice.server" to "v2.2")
+            additional = mapOf("version.remoteservice.server" to "v2.0")
         }
     }
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
@@ -89,8 +85,8 @@ dependencies {
     // ModelMapper
     implementation(group = "org.modelmapper", name = "modelmapper", version = "2.3.0")
     // Query DSL
-    implementation("com.querydsl:querydsl-jpa") // querydsl
-    implementation("com.querydsl:querydsl-apt") // querydsl
+    implementation("com.querydsl:querydsl-jpa")
+    implementation("com.querydsl:querydsl-apt")
     // Common
     implementation(group = "commons-io", name = "commons-io", version = "2.4")
     //implementation("com.google.code.gson:gson:2.8.5")
@@ -126,14 +122,20 @@ tasks.withType<Test> {
 tasks.getByName<BootJar>("bootJar") {
     println("boot Jar task invoked....")
     println("Note: sourceSet has changed with current spring profiles")
-    println("spring.profiles: " + System.getProperty("spring.profiles"))
+    //println("spring.profiles: " + System.getProperty("spring.profiles"))
+    //println("extra version: " + System.getProperty("service.extra-version"))
 
     enabled= true
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
-    manifest {
+    /*manifest {
             attributes(
                 "Implementation-Title" to  "Remote Service Server",
                 "Implementation-Version" to "2.2.21 revision 9")
+    }*/
+    manifest {
+        attributes(
+            "Implementation-Title" to  "Remote Service Server",
+            "Implementation-Version" to "2.0 revision 2222v13")
     }
     archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
 
