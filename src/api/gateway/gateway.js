@@ -12,6 +12,7 @@ import axios from '../axios'
 import errorList from './gateway.error.json'
 import networkError from './network.error.json'
 import { cookieClear } from 'utils/auth'
+import qs from 'qs'
 
 const URL = API
 const TOKEN = Cookies.get('accessToken')
@@ -19,6 +20,10 @@ const TOKEN = Cookies.get('accessToken')
 logger('BUILD ENV', process.env.NODE_ENV)
 
 axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
+
+axios.defaults.paramsSerializer = params => {
+  return qs.stringify(params, { indices: false })
+}
 
 /**
  * Common request handler

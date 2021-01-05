@@ -1,38 +1,26 @@
 <template>
-  <div>
-    <menu-button
-      :text="$t('service.record_local_list')"
-      :active="showList"
-      :src="require('assets/image/ic_local_record_list.svg')"
-      @click="list"
-    ></menu-button>
-    <record-list :visible.sync="showList"></record-list>
-  </div>
+  <menu-button
+    :text="$t('service.record_local_list')"
+    :active="modalRecord"
+    :src="require('assets/image/ic_local_record_list.svg')"
+    @click="list"
+  ></menu-button>
 </template>
 
 <script>
 import toolMixin from './toolMixin'
-import RecordList from 'LocalRecordList'
+import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'LocalRecordListMenu',
   mixins: [toolMixin],
-  data() {
-    return {
-      showList: false,
-    }
+  computed: {
+    ...mapGetters(['modalRecord']),
   },
-  components: {
-    RecordList,
-  },
-  watch: {},
   methods: {
+    ...mapActions(['showModalRecord']),
     list() {
-      this.showList = !this.showList
+      this.showModalRecord(!this.modalRecord)
     },
   },
-
-  /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
 }
 </script>

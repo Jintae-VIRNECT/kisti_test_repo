@@ -1,38 +1,23 @@
 <template>
-  <div>
-    <menu-button
-      :text="$t('service.record_local_setting')"
-      :active="status"
-      :disabled="!canRecord"
-      :src="require('assets/image/ic_setting.svg')"
-      @click="setting"
-    ></menu-button>
-    <setting-modal :visible.sync="status" :viewType="viewType"></setting-modal>
-  </div>
+  <menu-button
+    :text="$t('service.setting')"
+    :active="modalSetting"
+    :disabled="!canRecord"
+    :src="require('assets/image/ic_setting.svg')"
+    @click="setting"
+  ></menu-button>
 </template>
 
 <script>
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
-import SettingModal from '../../modal/SettingModal'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 export default {
   name: 'SettingMenu',
-  components: {
-    SettingModal,
-  },
   mixins: [toolMixin, toastMixin],
-  data() {
-    return {
-      status: false,
-    }
-  },
-  props: {
-    viewType: String,
-  },
   computed: {
-    ...mapGetters(['allowLocalRecord']),
+    ...mapGetters(['allowLocalRecord', 'modalSetting']),
     canRecord() {
       if (this.disabled) {
         return false
@@ -47,15 +32,15 @@ export default {
       }
     },
   },
-  watch: {},
   methods: {
+    ...mapActions(['showModalSetting']),
     setting() {
       if (!this.canRecord) {
         // TODO: MESSAGE
         this.toastDefault(this.$t('service.record_blocked'))
         return
       }
-      this.status = !this.status
+      this.showModalSetting(!this.modalSetting)
     },
   },
 }

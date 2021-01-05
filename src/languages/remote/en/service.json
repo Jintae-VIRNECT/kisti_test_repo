@@ -97,6 +97,7 @@
     "tool_pointing_block": "Leader has disabled pointing feature",
     "tool_enlarge_reduce": "Enlarge / reduce",
 
+    "setting": "Settings",
     "setting_pointing": "Pointing settings",
     "setting_pointing_participant": "Participant settings",
     "setting_pointing_allow": "Allow pointing feature for paticipant",
