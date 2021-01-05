@@ -1,4 +1,4 @@
-import uuid from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import IDBHelper from 'utils/idbHelper'
 import { logger, debug } from 'utils/logger'
 import MSR from 'plugins/remote/msr/MediaStreamRecorder.js'
@@ -71,7 +71,7 @@ export default class LocalRecorder {
     }
 
     //for group id
-    this.groupId = uuid()
+    this.groupId = uuidv4()
 
     //reset fileCount
     this.fileCount = 0
@@ -118,7 +118,7 @@ export default class LocalRecorder {
   getOndataavailable() {
     const ondataavailable = async blob => {
       //create private uuid for media chunk
-      const privateId = uuid()
+      const privateId = uuidv4()
 
       //make file name
       const fileNumber = this.getFileNumberString(this.fileCount)
