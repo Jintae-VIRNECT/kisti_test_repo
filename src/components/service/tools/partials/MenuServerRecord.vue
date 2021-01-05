@@ -25,9 +25,9 @@ export default {
     isRecording() {
       const isNotStopped = this.serverRecordStatus !== 'STOP'
       const isNotDisabled = !this.disabled
-      const isNotChecking = !this.isPreparing
+      const isNotPreparing = !this.isPreparing
 
-      return isNotStopped && isNotDisabled && isNotChecking
+      return isNotStopped && isNotDisabled && isNotPreparing
     },
     isPreparing() {
       return this.serverRecordStatus === 'PREPARE'
