@@ -70,6 +70,10 @@ const mutations = {
         )
         if (idx > -1) {
           state.current = state.workspaceList[idx]
+          window.localStorage.setItem(
+            'workspace',
+            state.workspaceList[idx].uuid,
+          )
         }
       } else {
         if (state.workspaceList.length === 1) {
@@ -82,7 +86,16 @@ const mutations = {
     state.current = workspace
     window.localStorage.setItem('workspace', workspace.uuid)
   },
-  [CLEAR_WORKSPACE](state) {
+  [CLEAR_WORKSPACE](state, uuid) {
+    if (uuid) {
+      const idx = state.workspaceList.findIndex(
+        workspace => workspace.uuid === uuid,
+      )
+      if (idx > -1) {
+        state.workspaceList.splice(idx, 1)
+        window.localStorage.setItem('workspace', null)
+      }
+    }
     state.current = {}
   },
   [SET_COMPANY_INFO](state, payload) {
@@ -108,6 +121,8 @@ const getters = {
     return state.companyInfo.sessionType === 'OPEN'
   },
   languageCodes: state => state.companyInfo.languageCodes,
+  useRecording: state => state.companyInfo.recording,
+  useStorage: state => state.companyInfo.storage,
 }
 
 export default {

@@ -133,9 +133,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['showArImage', 'setAction']),
+    ...mapActions(['showArImage']),
     setArArea() {
-      this.$call.arDrawing(AR_DRAWING.FRAME_REQUEST, {}, [
+      this.$call.sendArDrawing(AR_DRAWING.FRAME_REQUEST, {}, [
         this.mainView.connectionId,
       ])
     },

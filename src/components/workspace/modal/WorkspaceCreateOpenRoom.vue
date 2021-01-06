@@ -98,7 +98,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission(false)
+        const options = await checkPermission()
         let createdRes
         if (this.sessionId && this.sessionId.length > 0) {
           createdRes = await restartRoom({
@@ -138,7 +138,6 @@ export default {
           createdRes,
           ROLE.LEADER,
           options,
-          true,
         )
 
         const roomInfo = await getRoomInfo({
@@ -179,10 +178,14 @@ export default {
             this.$eventBus.$emit('devicedenied:show')
             return
           }
+        } else if (err.code === 7003) {
+          this.toastError(this.$t('service.file_type'))
+        } else if (err.code === 7004) {
+          this.toastError(this.$t('service.file_maxsize'))
         } else {
           console.error(`${err.message} (${err.code})`)
+          this.toastError(this.$t('confirm.network_error'))
         }
-        this.toastError(this.$t('confirm.network_error'))
       }
     },
   },

@@ -1,6 +1,6 @@
 {
   "workspace": {
-    "search_room": "Search Collabo/member",
+    "search_room": "Search Collabo",
     "search_member": "Search member",
     "tab_empty_description": "Start remote Collabo.",
     "create_room": "Create remote Collabo",
@@ -10,6 +10,7 @@
     "welcome_license": "<span>{name}, <br>you don't have any plan allotted.</span>",
     "welcome_expire": "<span>{name}, <br>your plan has been expired.</span>",
     "search_empty": "No results",
+    "no_license": "you don't have any plan allotted.",
 
     "select_workspace": "Select a Workspace.",
 
@@ -90,6 +91,7 @@
     "setting_stt_streaming": "Streaming",
     "setting_tts": "Voice conversion settings(TTS)",
     "setting_tts_allow": "Allow voice conversion",
+    "setting_translate_disable_message": "Please turn on the use of translation.​",
     "access_deny": "Camera and mic. access denied.",
     "access_deny_description": "Click <span class='device-denied__content--emphasize'>icon</span> on browser address field <br />to allow access and refresh the page.",
 

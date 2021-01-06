@@ -280,7 +280,7 @@ export default {
         }
         params.chunk = chunk[i]
 
-        this.$call.drawing(type, params, target)
+        this.$call.sendDrawing(type, params, target)
       }
     },
 
@@ -316,7 +316,7 @@ export default {
       }
 
       if (this.$call.session) {
-        this.$call.drawing(type, { ...param, ...custom })
+        this.$call.sendDrawing(type, { ...param, ...custom })
       }
 
       // tId 업데이트

@@ -36,7 +36,7 @@
 
           <template v-else-if="menus[tabIdx].key === 'record'">
             <set-record v-if="!isTablet"></set-record>
-            <set-server-record v-if="onpremise"></set-server-record>
+            <set-server-record v-if="useRecording"></set-server-record>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
@@ -55,7 +55,6 @@ import SetAudio from './setting/WorkspaceSetAudio'
 import SetLanguage from './setting/WorkspaceSetLanguage'
 import MicTest from './setting/WorkspaceMicTest'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
-import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceSetting',
@@ -79,10 +78,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['useTranslate']),
+    ...mapGetters(['useTranslate', 'useRecording']),
     menus() {
       let menu
-      if (this.isSafari && !this.onpremise) {
+      if (this.isTablet && !this.useRecording) {
         menu = [
           {
             key: 'video',
@@ -124,9 +123,6 @@ export default {
         })
       }
       return menu
-    },
-    onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   methods: {

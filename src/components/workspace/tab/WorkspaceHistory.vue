@@ -11,8 +11,13 @@
     :showDeleteButton="true"
     :showRefreshButton="true"
     :deleteButtonText="$t('button.remove_all')"
-    :listCount="pageMeta.totalElements"
+    :listCount="
+      searchText.length > 0
+        ? searchPageMeta.totalElements
+        : pageMeta.totalElements
+    "
     :loading="loading"
+    @search="doSearch"
     @refresh="init"
     @delete="deleteAll"
   >
@@ -53,19 +58,20 @@ import HistoryInfoModal from '../modal/WorkspaceHistoryInfo'
 import History from 'History'
 import Loader from 'Loader'
 
-import searchMixin from 'mixins/filter'
 import confirmMixin from 'mixins/confirm'
 import { ROOM_STATUS } from 'configs/status.config'
+import { nameExp as EXP_NAME } from 'utils/regexp'
 
 import {
   getHistoryList,
   deleteAllHistory,
   deleteHistorySingleItem,
+  searchHistoryList,
 } from 'api/http/history'
 
 export default {
   name: 'WorkspaceHistory',
-  mixins: [searchMixin, confirmMixin],
+  mixins: [confirmMixin],
   components: {
     Loader,
     TabView,
@@ -90,14 +96,24 @@ export default {
         last: false,
       },
       paging: false,
+      searchText: '',
+      searchHistoryList: [],
+      searchPageMeta: {
+        currentPage: 0,
+        currentSize: 0,
+        totalElements: 0,
+        totalPage: 0,
+        last: false,
+      },
     }
   },
   computed: {
     list() {
-      return this.getFilter(this.historyList, [
-        'title',
-        'memberList[].nickName',
-      ])
+      if (this.searchText.length > 0) {
+        return this.searchHistoryList
+      } else {
+        return this.historyList
+      }
     },
     emptyTitle() {
       if (this.historyList.length > 0) {
@@ -120,7 +136,6 @@ export default {
         this.init()
       }
     },
-    searchFilter() {},
   },
   methods: {
     //상세보기
@@ -200,38 +215,94 @@ export default {
           totalPage: 0,
           last: false,
         }
+        this.$eventBus.$emit('scroll:reset:workspace')
       } catch (err) {
         console.error(err)
       }
     },
     async init() {
       this.loading = true
-      const list = await this.getHistory()
-      if (list === false) {
-        this.loading = false
-        return
+      this.searchText = ''
+      this.searchHistoryList = []
+      this.searchPageMeta = {
+        currentPage: 0,
+        currentSize: 0,
+        totalElements: 0,
+        totalPage: 0,
+        last: false,
       }
-      this.historyList = list.sort((roomA, roomB) => {
-        return (
-          new Date(roomB.activeDate).getTime() -
-          new Date(roomA.activeDate).getTime()
-        )
-      })
+      this.$eventBus.$emit('search:clear')
+      this.historyList = await this.getHistory()
       this.loading = false
       this.$eventBus.$emit('scroll:reset:workspace')
     },
+    async doSearch(text) {
+      if (this.historyList.length === 0) return
+      try {
+        if (!EXP_NAME.test(text)) {
+          this.searchHistoryList = []
+          this.searchPageMeta = {
+            currentPage: 0,
+            currentSize: 0,
+            totalElements: 0,
+            totalPage: 0,
+            last: false,
+          }
+          return
+        }
+        this.searchHistoryList = await this.searchHistory(0, text)
+        this.searchText = text
+        if (!text || text.trim().length === 0) {
+          this.searchText = ''
+          this.searchHistoryList = []
+          this.searchPageMeta = {
+            currentPage: 0,
+            currentSize: 0,
+            totalElements: 0,
+            totalPage: 0,
+            last: false,
+          }
+        }
+      } catch (err) {
+        this.searchText = ''
+        this.searchHistoryList = []
+        this.searchPageMeta = {
+          currentPage: 0,
+          currentSize: 0,
+          totalElements: 0,
+          totalPage: 0,
+          last: false,
+        }
+      }
+    },
     async moreHistory(event) {
       if (event.bottom !== true) return
-      if (
-        this.historyList.length === 0 ||
-        this.pageMeta.last === true ||
-        this.paging === true
-      )
-        return
-      this.paging = true
-      const list = await this.getHistory(this.pageMeta.currentPage + 1)
-      this.historyList = this.historyList.concat(list)
-      this.paging = false
+      if (this.searchText.length > 0) {
+        if (
+          this.searchHistoryList.length === 0 ||
+          this.searchPageMeta.last === true ||
+          this.paging === true
+        )
+          return
+        this.paging = true
+        const list = await this.searchHistory(
+          this.searchPageMeta.currentPage + 1,
+          this.searchText,
+        )
+        this.searchHistoryList = this.searchHistoryList.concat(list)
+        this.paging = false
+      } else {
+        if (
+          this.historyList.length === 0 ||
+          this.pageMeta.last === true ||
+          this.paging === true
+        )
+          return
+        this.paging = true
+        const list = await this.getHistory(this.pageMeta.currentPage + 1)
+        this.historyList = this.historyList.concat(list)
+        this.paging = false
+      }
     },
     async getHistory(page = 0) {
       try {
@@ -255,7 +326,42 @@ export default {
         return datas.roomHistoryInfoList
       } catch (err) {
         console.error(err)
-        return false
+        return []
+      }
+    },
+    async searchHistory(page = 0, text) {
+      try {
+        const datas = await searchHistoryList({
+          paging: true,
+          page,
+          search: text,
+          size: 10,
+          sort: 'createdDate,desc',
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+        })
+        if ('pageMeta' in datas) {
+          if (
+            page === 0 &&
+            datas.pageMeta.totalElements === this.searchPageMeta.totalElements
+          ) {
+            return this.searchHistoryList
+          } else {
+            this.searchPageMeta = datas.pageMeta
+          }
+        } else {
+          this.searchPageMeta = {
+            currentPage: 0,
+            currentSize: 0,
+            totalElements: 0,
+            totalPage: 0,
+            last: false,
+          }
+        }
+        return datas.roomHistoryInfoList
+      } catch (err) {
+        console.error(err)
+        return []
       }
     },
   },

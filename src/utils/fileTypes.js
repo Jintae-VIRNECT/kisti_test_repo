@@ -1,5 +1,5 @@
 const FILE_3D = {
-  key: '3d',
+  key: 'threed',
   ext: [
     'stl',
     'ply',

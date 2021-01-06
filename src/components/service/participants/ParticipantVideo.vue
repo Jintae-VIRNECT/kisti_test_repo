@@ -166,7 +166,6 @@ export default {
       'viewForce',
       'view',
       'initing',
-      'openRoom',
     ]),
     profileUrl() {
       if (!this.participant.path) {
@@ -291,21 +290,6 @@ export default {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
-      if (this.openRoom) {
-        if (!this.participant.hasVideo) {
-          if (
-            this.account.roleType === ROLE.LEADER &&
-            this.participant.cameraStatus === CAMERA.CAMERA_OFF
-          ) {
-            this.requestVideo()
-            return
-          }
-          return
-        } else {
-          this.$call.mainview(this.participant.id, true)
-          return
-        }
-      }
       if (this.account.roleType === ROLE.LEADER) {
         if (this.view === VIEW.AR) {
           if (this.participant.hasArFeature === false) {
@@ -359,17 +343,17 @@ export default {
       } else {
         // 퍼미션 요청
         this.$eventBus.$on('startAr', this.getPermission)
-        this.$call.permission([this.participant.connectionId])
+        this.$call.sendCapturePermission([this.participant.connectionId])
         // 리턴받는 퍼미션은 HeaderServiceLnb에서 처리
       }
     },
     getPermission(permission) {
       if (permission === true) {
         // this.forceMain()
-        // this.$call.stopArFeature()
+        // this.$call.sendArFeatureStop()
         this.$nextTick(() => {
           this.$emit('selectMain')
-          // this.$call.startArFeature(this.participant.id)
+          // this.$call.sendArFeatureStart(this.participant.id)
         })
       } else {
         this.toastDefault(this.$t('service.toast_refused_ar'))
@@ -414,7 +398,7 @@ export default {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
-      this.$call.mainview(this.participant.id, true)
+      this.$call.sendVideo(this.participant.id, true)
     },
   },
   beforeDestroy() {

@@ -71,8 +71,19 @@
     margin: auto auto auto 0.571rem;
   }
   .header-tools__chatbox {
-    &.active {
-      background-color: #3a3b3f;
+    position: relative;
+    &.active::after {
+      position: absolute;
+      top: 1px;
+      right: 1px;
+      width: 0.429rem;
+      height: 0.429rem;
+      background-color: $color_red;
+      border-radius: 50%;
+      content: "";
+    }
+    &.toggle-button.visible {
+      background-color: rgba(#fff, 0.1);
       border-radius: 2px;
     }
   }

@@ -1,6 +1,6 @@
 {
   "workspace": {
-    "search_room": "협업, 멤버 이름 검색",
+    "search_room": "협업 이름 검색",
     "search_member": "멤버 검색",
     "tab_empty_description": "원격 협업을 시작해보세요.",
     "create_room": "원격 협업 생성",
@@ -10,12 +10,13 @@
     "welcome_license": "<span>{name}&nbsp;님, <br> 할당된 플랜이 없습니다.</span>",
     "welcome_expire": "<span>{name}&nbsp;님, <br> 플랜이 만료되었습니다.</span>",
     "search_empty": "검색된 내용이 없습니다.",
+    "no_license": "할당된 플랜이 없습니다.",
     
     "select_workspace": "워크스페이스를 선택해 주세요.",
     
     "confirm_remove_room": "협업을 삭제 하시겠습니까?",
     "confirm_removed_room": "협업을 삭제하였습니다.​",
-    "confirm_remove_history": "목록을 삭제 하시겠습니까?.​",
+    "confirm_remove_history": "목록을 삭제 하시겠습니까?​",
     "confirm_removed_history": "목록을 삭제하였습니다.​",
     "confirm_removed_room_leader": "리더가 협업을 삭제하였습니다.",
     "confirm_kickout_leader": "리더가 협업에서 내보냈습니다.",
@@ -90,6 +91,7 @@
     "setting_stt_streaming": "스트리밍",
     "setting_tts": "음성 변환 설정(TTS)",
     "setting_tts_allow": "음성 변환 사용 허용",
+    "setting_translate_disable_message": "번역 사용을 켜주세요.",
     "access_deny": "카메라와 마이크 접근이 차단되었습니다.",
     "access_deny_description": "브라우저 주소창의 <span class='device-denied__content--emphasize'>아이콘</span>을 클릭하여<br /> 접근을 허용 후 새로고침해 주세요.",
     

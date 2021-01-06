@@ -6,12 +6,16 @@ import {
 import { mapGetters, mapActions } from 'vuex'
 import { RECORD_INFO } from 'configs/env.config'
 import { ROLE } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
 
 export default {
   data() {
     return {
       recordingId: null,
       recordTimeout: null,
+
+      serverRecordRetryTimeout: null,
+      serverRecordRetryCount: 0,
     }
   },
   computed: {
@@ -31,9 +35,18 @@ export default {
           wsUri: RECORD_INFO['wss'],
         }
 
-        const token = `${
-          RECORD_INFO['token']
-        }&recorder=true&options=${JSON.stringify(options)}`
+        const metaData = {
+          clientData: this.account.uuid,
+          roleType: ROLE.EXPERT,
+          deviceType: DEVICE.WEB,
+          device: 0,
+        }
+
+        const optionString = JSON.stringify(options)
+        const metaDataString = JSON.stringify(metaData)
+        const tokenInfo = RECORD_INFO['token']
+
+        const token = `${tokenInfo}&recorder=true&options=${optionString}&metaData=${metaDataString}`
 
         const fileName = `${today}_${this.roomInfo.sessionId}`
 
@@ -105,10 +118,39 @@ export default {
         sessionId: this.roomInfo.sessionId,
       })
 
+      const failedInPreparing =
+        this.serverRecordStatus === 'PREPARE' && result.infos.length === 0
+
+      if (failedInPreparing) {
+        this.logger('SERVER RECORD', 'failed in preparing')
+        this.processPreparingFailed()
+        return
+      }
+
       if (this.isLeader && result.infos.length > 0) {
-        const elapsedTime = result.infos[0].duration
-        this.recordingId = result.infos[0].recordingId
-        const timeout = result.infos[0].timeLimit * 60 * 1000
+        const recordInfo = result.infos[0]
+        const status = recordInfo.status
+
+        if (this.serverRecordRetryCount >= 5) {
+          this.processPreparingFailed()
+          return
+        }
+
+        if (status === 'preparing') {
+          this.serverRecordRetryCount++
+          this.setServerRecordStatus('PREPARE')
+          const retryInterval = 1000
+
+          this.serverRecordRetryTimeout = setTimeout(() => {
+            this.logger('SERVER RECORD', 'check preparing')
+            this.checkServerRecordings()
+          }, retryInterval)
+          return
+        }
+
+        this.recordingId = recordInfo.recordingId
+        const elapsedTime = recordInfo.duration
+        const timeout = recordInfo.timeLimit * 60 * 1000
 
         this.recordTimeout = setTimeout(() => {
           this.toggleServerRecord('STOP')
@@ -122,14 +164,24 @@ export default {
       clearTimeout(this.recordTimeout)
       this.recordTimeout = null
     },
+    processPreparingFailed() {
+      this.toastDefault(this.$t('service.record_server_start_failed'))
+      this.serverRecordRetryCount = 0
+      this.setServerRecordStatus('STOP')
+    },
   },
 
   mounted() {
+    this.setServerRecordStatus('STOP')
     if (!this.account.roleType === ROLE.LEADER) return
+
     this.$eventBus.$on('serverRecord', this.toggleServerRecord)
     this.checkServerRecordings()
   },
   beforeDestroy() {
+    clearTimeout(this.serverRecordRetryTimeout)
+    this.serverRecordRetryTimeout = null
+
     this.$eventBus.$off('serverRecord', this.toggleServerRecord)
   },
 }

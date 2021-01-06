@@ -27,19 +27,23 @@ export const addSessionEventListener = session => {
     if (user === 'me') return
     setTimeout(() => {
       // send default signals
-      _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
-      _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
+      _.sendMic(Store.getters['mic'].isOn, [event.connection.connectionId])
+      _.sendSpeaker(Store.getters['speaker'].isOn, [
+        event.connection.connectionId,
+      ])
       _.sendResolution(null, [event.connection.connectionId])
-      _.flashStatus(FLASH_STATUS.FLASH_NONE, [event.connection.connectionId])
+      _.sendFlashStatus(FLASH_STATUS.FLASH_NONE, [
+        event.connection.connectionId,
+      ])
       if (_.account.roleType === ROLE.LEADER) {
-        _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
+        _.sendControl(CONTROL.POINTING, Store.getters['allowPointing'], [
           event.connection.connectionId,
         ])
-        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
+        _.sendControl(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
           event.connection.connectionId,
         ])
         if (Store.getters['viewForce'] === true) {
-          _.mainview(Store.getters['mainView'].id, true, [
+          _.sendVideo(Store.getters['mainView'].id, true, [
             event.connection.connectionId,
           ])
         }
@@ -50,11 +54,15 @@ export const addSessionEventListener = session => {
           )
         }
       }
-      if (Store.getters['myInfo'].hasVideo) {
-        // if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
-        _.video(Store.getters['video'].isOn, [event.connection.connectionId])
+      if (_.publisher.stream.hasVideo) {
+        _.sendCamera(
+          Store.getters['video'].isOn
+            ? CAMERA_STATUS.CAMERA_ON
+            : CAMERA_STATUS.CAMERA_OFF,
+          [event.connection.connectionId],
+        )
       } else {
-        _.video(CAMERA_STATUS.CAMERA_NONE, [event.connection.connectionId])
+        _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [event.connection.connectionId])
       }
     }, 300)
   })
@@ -194,9 +202,13 @@ export const addSessionEventListener = session => {
             height: settings.height,
             orientation: '',
           })
-          _.video(Store.getters['video'].isOn)
-          _.mic(Store.getters['mic'].isOn)
-          _.speaker(Store.getters['speaker'].isOn)
+          _.sendCamera(
+            Store.getters['video'].isOn
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_OFF,
+          )
+          _.sendMic(Store.getters['mic'].isOn)
+          _.sendSpeaker(Store.getters['speaker'].isOn)
           Store.commit('updateParticipant', {
             connectionId: session.connection.connectionId,
             stream: _.publisher.stream.mediaStream,
@@ -255,7 +267,12 @@ export const addSessionEventListener = session => {
           // const zoom = track.getSettings().zoom // bug....
           // console.log(zoom)
           _.currentZoomLevel = parseFloat(data.level)
-          _.video(Store.getters['video'].isOn, [event.from.connectionId])
+          _.sendCamera(
+            Store.getters['video'].isOn
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_OFF,
+            [event.from.connectionId],
+          )
         })
       return
     }

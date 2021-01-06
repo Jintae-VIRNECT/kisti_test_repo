@@ -97,6 +97,7 @@
     "tool_pointing_block": "리더가 포인팅을 막았습니다.",
     "tool_enlarge_reduce": "확대 / 축소",
 
+    "setting": "설정",
     "setting_pointing": "포인팅 설정",
     "setting_pointing_participant": "참가자 포인팅",
     "setting_pointing_allow": "참가자 포인팅 허용",
@@ -177,6 +178,9 @@
     "file_upload_maxsize": "첨부 가능한 용량을 초과하였습니다.",
     "file_image_notsupport": "해당 이미지는 지원하지 않습니다.",
     "file_type_notsupport": "지원하지 않는 파일 형식입니다.",
+    "file_extension_unsupport": "업로드가 불가능한 확장자 입니다.​",
+    "file_dummy_assumed": "빈 파일은 업로드 할 수 없습니다.",
+    "file_size_exceeded": "업로드 제한 용량을 초과하였습니다.​",
     "translate": "번역",
     "stt_sync_placeholder": "음성 녹음을 진행하여 음성 채팅을 시작하세요.",
     "stt_sync_wait": "음성 대기",
@@ -198,6 +202,7 @@
     "record_end_no_stream_message": "영상이 없어서 로컬 녹화를 중지합니다.",
 
     "record_server_start_message":"서버 녹화를 시작합니다.",
+    "record_server_start_failed":"서버 녹화를 시작할 수 없습니다. 다시 시도해 주세요.​",
     "record_server_end_message":"서버 녹화를 종료합니다.",
     "record_server_over_max_count":"현재 실행 가능한 서버 녹화 개수가 초과 되었습니다. \n잠시후에 다시 시도해 주세요.",
     "record_server_no_storage":"서버에 녹화 파일을 저장할 수 있는 공간이 부족합니다. \n관리자에게 문의 해주세요.",

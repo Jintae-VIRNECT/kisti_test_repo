@@ -1,5 +1,5 @@
 <template>
-  <div class="check" :class="{ toggle: value }" @click="changeToggle">
+  <div class="check" :class="{ toggle: value, disabled }" @click="changeToggle">
     <span class="check-toggle" :class="{ toggle: value }">
       {{ type }}
     </span>
@@ -22,6 +22,10 @@ export default {
       type: String,
       default: null,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     type() {
@@ -34,6 +38,10 @@ export default {
   },
   methods: {
     changeToggle() {
+      if (this.disabled) {
+        this.$emit('check:disable')
+        return
+      }
       this.$emit('update:value', !this.value)
     },
   },
@@ -56,6 +64,10 @@ export default {
   transition: all 0.3s;
   &.toggle {
     background-color: $color_primary;
+  }
+  &.disabled {
+    cursor: default;
+    opacity: 0.3;
   }
 }
 .check-text {

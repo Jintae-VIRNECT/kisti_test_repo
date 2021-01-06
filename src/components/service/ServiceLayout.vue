@@ -56,6 +56,8 @@
       <!-- <component :is="viewComponent"></component> -->
     </div>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
+    <setting-modal></setting-modal>
+    <record-list></record-list>
   </section>
 </template>
 
@@ -63,7 +65,6 @@
 import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
-import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { CAMERA } from 'configs/device.config'
 import { VIEW } from 'configs/view.config'
@@ -98,7 +99,9 @@ export default {
     DrawingView: () => import('./ServiceDrawing'),
     ArView: () => import('./ServiceAr'),
     Share: () => import('./share/Share'),
-    CaptureModal,
+    CaptureModal: () => import('./modal/CaptureModal'),
+    RecordList: () => import('LocalRecordList'),
+    SettingModal: () => import('./modal/SettingModal'),
   },
   data() {
     return {
@@ -110,7 +113,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox', 'myInfo']),
+    ...mapGetters(['view', 'captureFile', 'chatBox', 'myInfo', 'video']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -188,7 +191,13 @@ export default {
     async onDeviceChange() {
       const hasVideo = await checkVideoInput()
       if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
-      this.$call.changeProperty(hasVideo)
+      this.$call.sendCamera(
+        hasVideo
+          ? this.video.isOn
+            ? CAMERA.CAMERA_ON
+            : CAMERA.CAMERA_OFF
+          : CAMERA.CAMERA_NONE,
+      )
     },
     setFullScreen(flag) {
       this.isFullScreen = flag
@@ -210,7 +219,6 @@ export default {
       return true
     }
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
-    this.onDeviceChange()
     window.addEventListener('keydown', this.stopLocalRecordByKeyPress)
     window.addEventListener('orientationchange', this.changeOrientation)
     this.$call.addListener('sessionDisconnected', this.reconnect)

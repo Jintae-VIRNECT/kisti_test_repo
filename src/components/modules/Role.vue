@@ -25,7 +25,7 @@ export default {
 .role {
   height: 1.43rem;
   margin: auto 0 auto 0.857rem;
-  padding: 0.287em 0.714em;
+  padding: 0.33em 0.714em 0.287em;
   color: $color_primary_400;
   font-weight: 500;
   font-size: 0.857rem;

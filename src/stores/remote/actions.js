@@ -20,8 +20,8 @@ export default {
   setCompanyInfo({ commit }, info) {
     commit(types.SET_COMPANY_INFO, info)
   },
-  clearWorkspace({ commit }) {
-    commit(types.CLEAR_WORKSPACE)
+  clearWorkspace({ commit }, uuid) {
+    commit(types.CLEAR_WORKSPACE, uuid)
   },
 
   callReset({ commit }) {

@@ -150,13 +150,13 @@ export default {
     ...mapGetters(['alarmList']),
   },
   watch: {
-    // onPush(push) {
-    //   if (push) {
-    //     this.$localStorage.setItem('push', 'true')
-    //   } else {
-    //     this.$localStorage.setItem('push', 'false')
-    //   }
-    // },
+    onPush(push) {
+      if (push) {
+        this.$localStorage.setItem('push', 'true')
+      } else {
+        this.$localStorage.setItem('push', 'false')
+      }
+    },
     workspace(val, oldVal) {
       if (val.uuid && !oldVal.uuid) {
         this.pushInit()
@@ -169,6 +169,7 @@ export default {
       'removeAlarm',
       'updateAlarm',
       'inviteResponseAlarm',
+      'clearWorkspace',
     ]),
     setVisible(value) {
       this.visible = value
@@ -180,7 +181,6 @@ export default {
       this.$refs['noticeAudio'].play()
     },
     async alarmListener(listen) {
-      if (!this.onPush) return
       const body = JSON.parse(listen.body)
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
@@ -190,6 +190,7 @@ export default {
 
       switch (body.event) {
         case EVENT.INVITE:
+          if (!this.onPush) return
           this.addAlarm({
             type: 'invite',
             info: this.$t('alarm.member_name_from', {
@@ -211,6 +212,8 @@ export default {
           )
           break
         case EVENT.INVITE_ACCEPTED:
+          if (!this.onPush) return
+
           this.addAlarm({
             type: 'info_user',
             info: this.$t('alarm.member_name_from', {
@@ -224,6 +227,7 @@ export default {
           this.alarmInviteAccepted(body.contents.nickName)
           break
         case EVENT.INVITE_DENIED:
+          if (!this.onPush) return
           this.addAlarm({
             type: 'info_user',
             info: this.$t('alarm.member_name_from', {
@@ -240,11 +244,19 @@ export default {
           this.alarmLicenseExpiration(body.contents.leftLicenseTime)
           break
         case EVENT.LICENSE_EXPIRED:
-          this.alarmLicense()
-          setTimeout(() => {
-            this.$call.leave()
-            this.$router.push({ name: 'workspace' })
-          }, 60000)
+          if (this.$route.name === 'workspace') {
+            this.clearWorkspace(this.workspace.uuid)
+            this.alarmLicenseHome()
+          } else {
+            this.alarmLicense()
+            setTimeout(() => {
+              this.clearWorkspace(this.workspace.uuid)
+              if (!this.$route.name !== 'workspace') {
+                this.$call.leave()
+                this.$router.push({ name: 'workspace' })
+              }
+            }, 60000)
+          }
           break
         default:
           return
@@ -327,6 +339,11 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.pushInit()
+      let push = true
+      if (this.$localStorage.getItem('push')) {
+        push = this.$localStorage.getItem('push') === 'true'
+      }
+      this.onPush = push
     })
   },
   beforeDestroy() {

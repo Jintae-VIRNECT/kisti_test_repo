@@ -6,7 +6,7 @@
           v-for="(file, idx) in fileList"
           :key="idx"
           :checked="file.checked"
-          :fileInfo="file"
+          :file="file"
           @toggle="selectFile(file, idx)"
         ></chat-file-item>
       </div>
@@ -45,105 +45,6 @@ export default {
         //   fileSize: '10MB',
         //   isValid: true,
         // },
-        // {
-        //   id: 'ee',
-        //   name: '20200412_투입공정 3D.pdf',
-        //   ext: 'pdf',
-        //   checked: true,
-        //   validDate: '2020. 05. 14.',
-        //   fileSize: '10MB',
-        //   isValid: true,
-        // },
-        // {
-        //   id: 'ff',
-        //   name: '20200220_배출공정 스캔데이터.jpg',
-        //   ext: 'jpg',
-        //   checked: false,
-        //   validDate: '2020. 05. 14.',
-        //   fileSize: '10MB',
-        //   isValid: true,
-        // },
-        // {
-        //   id: 'gg',
-        //   name: '20200311_협업공정 소음.mp3',
-        //   ext: 'mp3',
-        //   checked: false,
-        //   validDate: '2020. 05. 14.',
-        //   fileSize: '1MB',
-        //   isValid: true,
-        // },
-        // {
-        //   id: 'hh',
-        //   name: '20200311_협업공정 영상.mp4',
-        //   ext: 'video',
-        //   checked: false,
-        //   validDate: '2020. 03. 14.',
-        //   fileSize: '1MB',
-        //   isValid: false,
-        // },
-        // {
-        //   id: 'ii',
-        //   name: '가나다라마바사아자차카타파하긴텍스트',
-        //   ext: 'video',
-        //   checked: false,
-        //   validDate: '2020. 03. 14.',
-        //   fileSize: '1MB',
-        //   isValid: false,
-        // },
-        // {
-        //   id: 'jj',
-        //   name: '20200311_설계도면.txt',
-        //   ext: 'txt',
-        //   checked: true,
-        //   validDate: '2020. 05. 14.',
-        //   fileSize: '10MB',
-        //   isValid: true,
-        // },
-        // {
-        //   id: 'kk',
-        //   name: '20200412_투입공정 3D.pdf',
-        //   ext: 'pdf',
-        //   checked: true,
-        //   validDate: '2020. 05. 14.',
-        //   fileSize: '10MB',
-        //   isValid: true,
-        // },
-        // {
-        //   id: 'll',
-        //   name: '20200220_배출공정 스캔데이터.jpg',
-        //   ext: 'jpg',
-        //   checked: false,
-        //   validDate: '2020. 05. 14.',
-        //   fileSize: '10MB',
-        //   isValid: true,
-        // },
-        // {
-        //   id: 'mm',
-        //   name: '20200311_협업공정 소음.mp3',
-        //   ext: 'mp3',
-        //   checked: false,
-        //   validDate: '2020. 05. 14.',
-        //   fileSize: '1MB',
-        //   isValid: true,
-        // },
-        // {
-        //   id: 'nn',
-        //   name: '20200311_협업공정 영상.mp4',
-        //   ext: 'video',
-        //   checked: false,
-        //   validDate: '2020. 03. 14.',
-        //   fileSize: '1MB',
-        //   isValid: false,
-        // },
-        // {
-        //   id: 'oo',
-        //   name: '가나다라마바사아자차카타파하긴텍스트',
-        //   ext: 'video',
-        //   checked: false,
-        //   validDate: '2020. 03. 14.',
-        //   fileSize: '1MB',
-        //   isValid: false,
-        // },
       ],
       selectedList: [],
     }
@@ -171,9 +72,13 @@ export default {
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
       })
-      this.fileList = res.fileInfoList.map(fileInfo => {
-        fileInfo['checked'] = false
-        return fileInfo
+      res.fileInfoList.forEach(fileInfo => {
+        const idx = this.fileList.findIndex(
+          file => file.objectName === fileInfo.objectName,
+        )
+        if (idx === -1) {
+          this.fileList.push(fileInfo)
+        }
       })
       this.$nextTick(() => {
         if (this.$refs['chatFileListScrollbar']) {

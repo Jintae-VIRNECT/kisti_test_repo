@@ -82,9 +82,21 @@ import IDBHelper from 'utils/idbHelper'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'LocalRecordList',
+  components: {
+    Modal,
+    RemoteTable,
+    IconButton,
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       visibleFlag: false,
@@ -95,6 +107,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['modalRecord']),
     headers() {
       return [
         this.$t('workspace.record_filename'),
@@ -113,17 +126,6 @@ export default {
       return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
-  components: {
-    Modal,
-    RemoteTable,
-    IconButton,
-  },
-  props: {
-    visible: {
-      type: Boolean,
-      default: false,
-    },
-  },
   watch: {
     async visible(flag) {
       this.visibleFlag = flag
@@ -131,10 +133,18 @@ export default {
         this.datas = await this.getList()
       }
     },
+    async modalRecord(flag) {
+      this.visibleFlag = flag
+      if (flag) {
+        this.datas = await this.getList()
+      }
+    },
   },
   methods: {
+    ...mapActions(['showModalRecord']),
     beforeClose() {
       this.$emit('update:visible', false)
+      this.showModalRecord(false)
     },
 
     async download() {
