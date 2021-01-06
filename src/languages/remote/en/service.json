@@ -202,6 +202,7 @@
     "record_end_no_stream_message": "Stopping the local recording since there is no video.",
 
     "record_server_start_message":"Starting the server recording.",
+    "record_server_start_failed":"Server recording could not be started. please try again.​",
     "record_server_end_message":"Ending the server recording.",
     "record_server_over_max_count":"The server has reached the maximum number of videos to record simultaneously. Please try again later.",
     "record_server_no_storage":"There is not enough space on the server to store the recorded file. Please contact the administrator.",

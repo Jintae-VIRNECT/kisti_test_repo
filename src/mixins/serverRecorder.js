@@ -13,6 +13,9 @@ export default {
     return {
       recordingId: null,
       recordTimeout: null,
+
+      serverRecordRetryTimeout: null,
+      serverRecordRetryCount: 0,
     }
   },
   computed: {
@@ -115,10 +118,39 @@ export default {
         sessionId: this.roomInfo.sessionId,
       })
 
+      const failedInPreparing =
+        this.serverRecordStatus === 'PREPARE' && result.infos.length === 0
+
+      if (failedInPreparing) {
+        this.logger('SERVER RECORD', 'failed in preparing')
+        this.processPreparingFailed()
+        return
+      }
+
       if (this.isLeader && result.infos.length > 0) {
-        const elapsedTime = result.infos[0].duration
-        this.recordingId = result.infos[0].recordingId
-        const timeout = result.infos[0].timeLimit * 60 * 1000
+        const recordInfo = result.infos[0]
+        const status = recordInfo.status
+
+        if (this.serverRecordRetryCount >= 5) {
+          this.processPreparingFailed()
+          return
+        }
+
+        if (status === 'preparing') {
+          this.serverRecordRetryCount++
+          this.setServerRecordStatus('PREPARE')
+          const retryInterval = 1000
+
+          this.serverRecordRetryTimeout = setTimeout(() => {
+            this.logger('SERVER RECORD', 'check preparing')
+            this.checkServerRecordings()
+          }, retryInterval)
+          return
+        }
+
+        this.recordingId = recordInfo.recordingId
+        const elapsedTime = recordInfo.duration
+        const timeout = recordInfo.timeLimit * 60 * 1000
 
         this.recordTimeout = setTimeout(() => {
           this.toggleServerRecord('STOP')
@@ -132,14 +164,24 @@ export default {
       clearTimeout(this.recordTimeout)
       this.recordTimeout = null
     },
+    processPreparingFailed() {
+      this.toastDefault(this.$t('service.record_server_start_failed'))
+      this.serverRecordRetryCount = 0
+      this.setServerRecordStatus('STOP')
+    },
   },
 
   mounted() {
+    this.setServerRecordStatus('STOP')
     if (!this.account.roleType === ROLE.LEADER) return
+
     this.$eventBus.$on('serverRecord', this.toggleServerRecord)
     this.checkServerRecordings()
   },
   beforeDestroy() {
+    clearTimeout(this.serverRecordRetryTimeout)
+    this.serverRecordRetryTimeout = null
+
     this.$eventBus.$off('serverRecord', this.toggleServerRecord)
   },
 }

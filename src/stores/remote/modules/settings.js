@@ -44,7 +44,7 @@ const state = {
 
   localRecordTarget: RECORD_TARGET.WORKER,
   localRecordStatus: 'STOP', // 'START', 'STOP'
-  serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP'
+  serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP', 'PREPARE'
 
   chatBox: false,
 }

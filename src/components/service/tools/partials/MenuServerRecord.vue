@@ -2,7 +2,7 @@
   <menu-button
     :text="$t('service.record_server')"
     :active="isRecording"
-    :disabled="disabled"
+    :disabled="disabled || isPreparing"
     :src="require('assets/image/call/ic_record_off.svg')"
     :isActive="isRecording"
     :activeSrc="require('assets/image/call/ic_record_ing.svg')"
@@ -23,7 +23,14 @@ export default {
       return this.serverRecordStatus === 'WAIT'
     },
     isRecording() {
-      return this.serverRecordStatus !== 'STOP' && !this.disabled
+      const isNotStopped = this.serverRecordStatus !== 'STOP'
+      const isNotDisabled = !this.disabled
+      const isNotPreparing = !this.isPreparing
+
+      return isNotStopped && isNotDisabled && isNotPreparing
+    },
+    isPreparing() {
+      return this.serverRecordStatus === 'PREPARE'
     },
   },
   methods: {
