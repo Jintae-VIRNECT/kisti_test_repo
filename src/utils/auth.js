@@ -109,7 +109,10 @@ export const getConfigs = async () => {
 }
 
 export const getSettings = async () => {
-  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
+  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) {
+    document.title = `VIRNECT | Remote`
+    return
+  }
   try {
     const settings = await getSettingInfo()
     document.title = `${settings.workspaceTitle} | Remote`
