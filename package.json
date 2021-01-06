@@ -28,6 +28,7 @@
   "devDependencies": {
     "@popperjs/core": "^2.5.4",
     "@virnect/eslint-config": "^1.0.3",
+    "@virnect/logger": "^1.0.0",
     "@virnect/stylelint-config": "^1.0.2",
     "@vue/cli-plugin-babel": "^4.5.9",
     "@vue/cli-plugin-eslint": "^4.5.9",
