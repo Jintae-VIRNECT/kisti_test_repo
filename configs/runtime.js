@@ -22,6 +22,7 @@ const localUrls = {
   minio: 'https://192.168.13.64:4545',
   env: 'local',
   timeout: 30000,
+  ssl: 'private',
 }
 class Config {
   constructor() {}
@@ -34,17 +35,23 @@ class Config {
   }
 
   async init() {
+    const { data } = await axios.get(
+      `${configServer}/web-url/${env === 'local' ? 'develop' : env}`,
+    )
+    const res = await axios.get(
+      `${configServer}/login-web/${env === 'local' ? 'develop' : env}`,
+    )
+    urlConfig = data.propertySources[0].source
+    envConfig = res.data.propertySources[0].source
+    urlConfig.timeout = res.data.propertySources[0].source.API_TIMEOUT
+    urlConfig.ssl = res.data.propertySources[0].source.SSL_ENV
+    urlConfig.env = data.profiles[0]
+
     if (env === 'local') {
       urlConfig = localUrls
-      envConfig = localUrls.env
+      urlConfig.env = 'local'
       console.log(urlConfig)
-    } else {
-      const { data } = await axios.get(`${configServer}/web-url/${env}`)
-      const res = await axios.get(`${configServer}/login-web/${env}`)
-      urlConfig = data.propertySources[0].source
-      envConfig = res.data.propertySources[0].source
-      urlConfig.timeout = res.data.propertySources[0].source.API_TIMEOUT
-      urlConfig.env = data.profiles[0]
+      console.log(envConfig)
     }
     return this
   }

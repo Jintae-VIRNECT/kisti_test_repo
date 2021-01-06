@@ -260,7 +260,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 h1 {
   margin-right: -2px;
   margin-bottom: 39px;
