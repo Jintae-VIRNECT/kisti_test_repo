@@ -29,7 +29,6 @@ public class AppUploadRequest {
 	@ApiModelProperty(value = "앱 구동 디바이스 타입(ex: MOBILE, PC, REALWEAR)", position = 2, example = "MOBILE")
 	@NotBlank(message = "앱 구동 디바이스 타입 정보는 반드시 입력되어야 합니다.")
 	private String deviceType;
-	@ApiModelProperty(value = "업로드 앱 파일", dataType = "__file", position = 3, hidden = true)
 	@NotNull(message = "앱 업로드 파일은 반드시 있어야합니다.")
 	private MultipartFile uploadAppFile;
 

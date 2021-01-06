@@ -97,7 +97,9 @@ public class AppService {
                 .appUrl(appUploadUrl)
                 .imageUrl("")
                 .signature(applicationSignature)
-                .build();
+				.appStatus(AppStatus.INACTIVE)
+				.appUpdateStatus(AppUpdateStatus.OPTIONAL)
+			.build();
 
         // Remote 가이드 문서 및 이미지 설정
         if (product.getName().equals("REMOTE") && device.getType().equals("MOBILE")) {
@@ -187,6 +189,7 @@ public class AppService {
         appDetailInfoResponse.setSigningKey(app.getSignature());
         appDetailInfoResponse.setUuid(app.getUuid());
         appDetailInfoResponse.setVersion(app.getVersionName());
+        appDetailInfoResponse.setVersionCode(app.getVersionCode());
         appDetailInfoResponse.setPackageName(app.getPackageName());
         appDetailInfoResponse.setUpdateRequired(app.getAppUpdateStatus().equals(AppUpdateStatus.REQUIRED));
         return new ApiResponse<>(appDetailInfoResponse);
@@ -254,6 +257,7 @@ public class AppService {
 
         AppDetailInfoResponse appDetailInfoResponse = new AppDetailInfoResponse();
         appDetailInfoResponse.setAppUrl(app.getAppUrl());
+        appDetailInfoResponse.setVersionCode(app.getVersionCode());
         appDetailInfoResponse.setDeviceType(app.getDevice().getType());
         appDetailInfoResponse.setOperationSystem(app.getOs().getName());
         appDetailInfoResponse.setProductName(app.getProduct().getName());
