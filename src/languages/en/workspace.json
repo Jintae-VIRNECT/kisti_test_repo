@@ -20,7 +20,7 @@
       "title": "Profile Settings",
       "createdDate": "Created",
       "name": "Workspace Name",
-      "namePlaceholder": "John's Workspace",
+      "namePlaceholder": "{nickname}'s Workspace",
       "nameComment": "Enter less than 30 characters for your Workspace name",
       "desc": "Description",
       "descPlaceholder": "Enter your Workspace description",
