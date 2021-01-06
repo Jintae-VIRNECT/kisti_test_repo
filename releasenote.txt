@@ -1,13 +1,13 @@
 RELEASE
 
 New Features
-- JVM 최소 메모리 사이즈 변경
-
-Bug Fixes
 - 없음
 
+Bug Fixes
+- App.AppStatus, App.AppUpdateStatus default 값 추가
+
 Limitation
-- 코드 리팩토링 및 테이블 스키마 변경
+- 없음
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
