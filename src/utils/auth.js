@@ -108,17 +108,20 @@ const getConfigs = async () => {
 }
 
 const getSettings = async () => {
-  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
-  const settings = await getSettingInfo()
+  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) {
+    document.title = `VIRNECT | Dashboard`
+  } else {
+    const settings = await getSettingInfo()
 
-  document.title = `${settings.workspaceTitle} | Dashboard`
-  const favicon = document.querySelector("link[rel*='icon']")
-  favicon.href = settings.favicon
+    document.title = `${settings.workspaceTitle} | Dashboard`
+    const favicon = document.querySelector("link[rel*='icon']")
+    favicon.href = settings.favicon
 
-  setConfigs({
-    whiteLogo: settings.whiteLogo,
-    defaultLogo: settings.defaultLogo,
-  })
+    setConfigs({
+      whiteLogo: settings.whiteLogo,
+      defaultLogo: settings.defaultLogo,
+    })
+  }
 }
 
 export const cookieClear = () => {

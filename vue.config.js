@@ -17,7 +17,7 @@ module.exports = {
       entry: 'src/pages/dashboard/dashboard.js',
       template: 'public/index.html',
       filename: 'index.html',
-      title: 'Remote - Admin',
+      title: 'Dashboard',
       chunks: ['chunk-vendors', 'chunk-common', 'index'],
     },
     account: {
