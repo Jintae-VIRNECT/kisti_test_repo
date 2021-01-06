@@ -9,18 +9,18 @@ const config = require('./configs/runtime')
  */
 
 router.get('/urls', (req, res) => {
-	res.header('Content-Type', 'application/json')
-	res.send(JSON.stringify(config.urlConfig))
-	// res.send(req.query.origin)
-	// console.log(req.query.origin)
+  res.header('Content-Type', 'application/json')
+  res.send(JSON.stringify(config.urlConfig))
+  // res.send(req.query.origin)
+  // console.log(req.query.origin)
 })
 
 router.get('/healthcheck', (req, res) => {
-	res.send('Hi Virnect')
+  res.send('Hi Virnect')
 })
 
-router.get('/*', function(req, res) {
-	res.sendFile(path.join(__dirname, '/dist/app.html'))
+router.get('/*', function (req, res) {
+  res.sendFile(path.join(__dirname, '/dist/app.html'))
 })
 
 module.exports = router
