@@ -37,12 +37,12 @@ module.exports = async () => {
      */
     styleResources: {
       scss: [
-        resolve(__dirname, '../WC-Modules/src/assets/css/mixin.scss'),
+        '@virnect/WC-Modules/src/assets/css/mixin.scss',
         resolve(__dirname, 'src/assets/css/common.scss'),
       ],
     },
     css: [
-      resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss'),
+      '@virnect/WC-Modules/src/assets/css/reset.scss',
       resolve(__dirname, 'src/assets/css/common.scss'),
     ],
     loading: { color: '#1468e2' },
@@ -50,7 +50,7 @@ module.exports = async () => {
      * dir
      */
     srcDir: resolve(__dirname, 'src'),
-    modulesDir: [resolve(__dirname, '../WC-Modules/src')],
+    modulesDir: ['@virnect/WC-Modules/src'],
     /**
      * env
      */
@@ -71,10 +71,7 @@ module.exports = async () => {
      */
     build: {
       extend(config, { isDev, isClient }) {
-        config.resolve.alias['WC-Modules'] = resolve(
-          __dirname,
-          '../WC-Modules/src',
-        )
+        config.resolve.alias['WC-Modules'] = '@virnect/WC-Modules/src'
       },
     },
     server: {
@@ -92,24 +89,9 @@ module.exports = async () => {
       mode: `history`,
       extendRoutes(routes, resolve) {
         routes.push({
-          path: '/remote',
+          path: '/',
           component: resolve(__dirname, 'src/pages/index.vue'),
-          name: 'Remote',
-        })
-        routes.push({
-          path: '/make',
-          component: resolve(__dirname, 'src/pages/index.vue'),
-          name: 'Make',
-        })
-        routes.push({
-          path: '/view',
-          component: resolve(__dirname, 'src/pages/index.vue'),
-          name: 'View',
-        })
-        routes.push({
-          path: '/track',
-          component: resolve(__dirname, 'src/pages/index.vue'),
-          name: 'Track',
+          alias: ["/remote", "/make", "/view", "/track"],
         })
       },
     },
