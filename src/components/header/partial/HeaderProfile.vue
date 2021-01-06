@@ -22,8 +22,7 @@
       </div>
       <div class="popover-profile__link">
         <button @click="link(urlLink)">
-          <span v-if="isOnpremise">Workstation</span>
-          <span v-else>VIRNECT Workstation</span>
+          <span>{{ $t('common.workstation') }}</span>
         </button>
       </div>
       <div class="popover-profile__link">
