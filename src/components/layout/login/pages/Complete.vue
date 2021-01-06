@@ -36,7 +36,7 @@ export default {
 <style lang="scss" scoped>
 .el-button.block-btn {
 	font-size: 15px;
-	font-family: 'NotoSansKR';
+	font-family: $noto;
 	& + .block-btn {
 		margin-top: 12px;
 	}

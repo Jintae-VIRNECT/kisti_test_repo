@@ -14,7 +14,7 @@ pipeline {
                         branch 'develop'
                     }
                     steps {
-                        sh 'docker build -t pf-login --build-arg NODE_ENV=develop -f docker/Dockerfile .'
+                        sh 'docker build -t pf-login --build-arg NODE_ENV=develop -f docker/Dockerfile --build-arg "NPM_TOKEN=sfKAhE8K0ypM8ePwY2mUiR7k2jcOs/vXGFwD+eHwMZE=" .'
                     }
                 }
 
@@ -96,7 +96,7 @@ pipeline {
                             def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
                             def payload = """
                             {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": true}
-                            """                             
+                            """
 
                             sh "curl -d '$payload' -X POST 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                         }
