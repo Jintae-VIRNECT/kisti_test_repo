@@ -1,7 +1,9 @@
 <template>
   <nav class="pagination-tool">
     <div class="pagination-tool__container">
-      <div class="pagination-tool__link prev" @click="prevPage"></div>
+      <div class="pagination-tool__link load" @click="prevPage">
+        <div class="pagination-tool__link--prev"></div>
+      </div>
       <div
         v-for="(page, index) in pages"
         class="pagination-tool__link page"
@@ -12,7 +14,9 @@
         {{ page }}
       </div>
 
-      <div class="pagination-tool__link next" @click="nextPage"></div>
+      <div class="pagination-tool__link load" @click="nextPage">
+        <div class="pagination-tool__link--next"></div>
+      </div>
     </div>
   </nav>
 </template>
@@ -151,35 +155,10 @@ $color_paging_border: #e9edf4;
     padding-top: 0.4286rem;
   }
 
-  &.prev {
-    width: 2.7857rem;
-    padding: 0.4286rem 1.0714rem;
-    background: url(~assets/image/ic_arrow_left.svg) center/60% no-repeat;
-    transform: rotate(180deg);
-  }
-
-  &.prev::after {
-    position: absolute;
-    top: 0.2143rem;
-    left: 0.1429rem;
-    height: 2.1429rem;
-    border-right: 1px solid $color_paging_border;
-    content: '';
-  }
-
-  &.next {
-    width: 2.7857rem;
-    padding: 0.4286rem 1.0714rem;
-    background: url(~assets/image/ic_arrow_right.svg) center/60% no-repeat;
-  }
-
-  &.next::before {
-    position: absolute;
-    top: 2.9998px;
-    right: 2.5rem;
-    height: 2.1429rem;
-    border-right: 1px solid $color_paging_border;
-    content: '';
+  &.load {
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &.current {
@@ -190,6 +169,40 @@ $color_paging_border: #e9edf4;
     color: $color_white;
     font-weight: 500;
     background: $color_primary;
+  }
+}
+
+.pagination-tool__link--prev {
+  width: 0;
+  height: 0;
+  border-top: 0.2929rem solid transparent;
+  border-right: 0.5rem solid #9ea0a5;
+  border-bottom: 0.2929rem solid transparent;
+
+  &::after {
+    position: absolute;
+    top: 0.2143rem;
+    left: 2.5rem;
+    height: 2.1429rem;
+    border-right: 1px solid $color_paging_border;
+    content: '';
+  }
+}
+
+.pagination-tool__link--next {
+  width: 0;
+  height: 0;
+  border-top: 0.2929rem solid transparent;
+  border-bottom: 0.2929rem solid transparent;
+  border-left: 0.5rem solid #9ea0a5;
+
+  &::before {
+    position: absolute;
+    top: 0.2143rem;
+    right: 2.5rem;
+    height: 2.1429rem;
+    border-right: 1px solid $color_paging_border;
+    content: '';
   }
 }
 </style>
