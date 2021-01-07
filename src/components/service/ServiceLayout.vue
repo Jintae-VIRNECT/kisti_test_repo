@@ -155,7 +155,7 @@ export default {
       }
       this.callTimeout = setTimeout(() => {
         this.logout()
-      }, 10 * 1000)
+      }, 30 * 1000)
       this.confirmCancel(
         this.$t('confirm.call_timeout'),
         {
