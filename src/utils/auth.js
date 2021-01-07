@@ -89,21 +89,29 @@ export const getConfigs = async () => {
     `${location.origin}/configs?origin=${location.hostname}`,
   )
 
-  const runtimeEnv = res.data.runtime || 'production'
+  const RUNTIME_ENV = res.data.RUNTIME || 'production'
   // const runtimeEnv = 'onpremise'
-  logger('RUNTIME ENV', res.data.runtime)
-  delete res.data.runtime
+  logger('RUNTIME ENV', res.data.RUNTIME)
+  delete res.data.RUNTIME
 
-  const timeout = res.data.timeout || 5000
-  delete res.data.timeout
+  const TIMEOUT = res.data.TIMEOUT || 5000
+  delete res.data.TIMEOUT
+
+  const ALLOW_NO_AUDIO = res.data.ALLOW_NO_AUDIO || false
+  delete res.data.ALLOW_NO_AUDIO
+
+  const ALLOW_NO_DEVICE = res.data.ALLOW_NO_DEVICE || 5000
+  delete res.data.ALLOW_NO_DEVICE
 
   debug('URLS::', res.data)
 
-  setHttpOptions(res.data['api'], timeout)
+  setHttpOptions(res.data['api'], TIMEOUT)
   window.urls = res.data
   setConfigs({
-    runtimeEnv,
-    timeout,
+    RUNTIME_ENV,
+    TIMEOUT,
+    ALLOW_NO_AUDIO,
+    ALLOW_NO_DEVICE,
   })
   setUrls(res.data)
 }

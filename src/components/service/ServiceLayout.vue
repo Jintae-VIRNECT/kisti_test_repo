@@ -72,7 +72,7 @@ import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
-import { checkVideoInput } from 'utils/deviceCheck'
+import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
 
 import { mapGetters } from 'vuex'
@@ -189,7 +189,7 @@ export default {
       this.$eventBus.$emit('call:logout')
     },
     async onDeviceChange() {
-      const hasVideo = await checkVideoInput()
+      const hasVideo = await checkInput({ video: true, audio: false })
       if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
       this.$call.sendCamera(
         hasVideo

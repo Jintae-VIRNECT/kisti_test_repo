@@ -190,7 +190,7 @@ export default {
         audio = true
       }
       try {
-        const stream = await getUserMedia(audio, video)
+        const stream = await getUserMedia({ audio, video })
         stream.getTracks().forEach(track => {
           track.stop()
         })

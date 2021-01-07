@@ -157,7 +157,10 @@ export default {
               exact: this.videoId,
             },
           }
-          this.stream = await getUserMedia(false, videoConstraint)
+          this.stream = await getUserMedia({
+            audio: false,
+            video: videoConstraint,
+          })
           const track = this.stream.getVideoTracks()[0]
           const settings = track.getSettings()
           const capability = track.getCapabilities()

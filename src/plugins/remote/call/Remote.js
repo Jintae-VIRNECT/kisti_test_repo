@@ -18,7 +18,7 @@ import {
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
-import { checkVideoInput } from 'utils/deviceCheck'
+import { checkInput } from 'utils/deviceCheck'
 
 let OV
 
@@ -173,7 +173,7 @@ const _ = {
             orientation: '',
           })
         } else if (_.openRoom) {
-          checkVideoInput().then(hasCamera => {
+          checkInput({ video: true, audio: false }).then(hasCamera => {
             const params = {
               connectionId: _.publisher.stream.connection.connectionId,
               hasAudio: true,

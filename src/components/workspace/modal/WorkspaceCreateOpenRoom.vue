@@ -33,11 +33,11 @@ import { ROLE } from 'configs/remote.config'
 import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
-import { checkPermission } from 'utils/deviceCheck'
+import callMixin from 'mixins/call'
 
 export default {
   name: 'WorkspaceCreateOpenRoom',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [toastMixin, confirmMixin, callMixin],
   components: {
     Modal,
     OpenRoomInfo,
@@ -98,7 +98,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission()
+        const options = await this.getDeviceId()
         let createdRes
         if (this.sessionId && this.sessionId.length > 0) {
           createdRes = await restartRoom({

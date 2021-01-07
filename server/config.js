@@ -5,6 +5,7 @@ const configServer = process.env.CONFIG_SERVER.trim()
 const axios = require('axios')
 
 let envConfig = {}
+let settingConfig = {}
 let urlConfig = {}
 
 async function getEnvConf() {
@@ -13,6 +14,9 @@ async function getEnvConf() {
   for (let key in property) {
     if (key.includes('env.')) {
       envConfig[key.replace('env.', '')] = property[key]
+    }
+    if (key.includes('setting.')) {
+      settingConfig[key.replace('setting.', '')] = property[key]
     }
   }
 }
@@ -55,8 +59,9 @@ module.exports = {
   getConfigs() {
     return {
       ...this.getUrls(),
-      runtime: this.getEnv(),
-      timeout: this.getAsNumber('TIMEOUT'),
+      ...settingConfig,
+      RUNTIME: this.getEnv(),
+      TIMEOUT: this.getAsNumber('TIMEOUT'),
     }
   },
 }

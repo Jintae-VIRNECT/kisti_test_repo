@@ -43,12 +43,12 @@ import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
-import { checkPermission } from 'utils/deviceCheck'
 import { ROOM_STATUS } from 'configs/status.config'
+import callMixin from 'mixins/call'
 
 export default {
   name: 'WorkspaceCreateRoom',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [toastMixin, confirmMixin, callMixin],
   components: {
     Modal,
     CreateRoomInfo,
@@ -151,7 +151,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission(true)
+        const options = await this.getDeviceId()
 
         const selectedUser = []
         const selectedUserIds = []
