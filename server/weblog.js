@@ -1,4 +1,4 @@
-const logger = require('./logger')
+const logger = require('@virnect/logger')
 
 module.exports = {
   putLogs: function(logs) {

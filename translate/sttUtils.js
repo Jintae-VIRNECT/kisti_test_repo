@@ -1,7 +1,7 @@
 // Imports the Google Cloud client library
 const speech = require('@google-cloud/speech')
 // const fs = require('fs')
-const logger = require('../server/logger')
+const logger = require('@virnect/logger')
 const config = require('../server/config')
 const cors = require('cors')
 
