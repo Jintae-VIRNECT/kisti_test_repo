@@ -155,7 +155,6 @@ export default {
     },
     async update(params) {
       try {
-        console.log(params)
         if (
           'image' in params &&
           params['image'] !== null &&
