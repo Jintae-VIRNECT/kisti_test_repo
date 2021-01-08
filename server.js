@@ -7,6 +7,11 @@ const path = require('path')
 var bodyParser = require('body-parser')
 app.use(bodyParser.json({ limit: '50mb' }))
 
+app.use((req, res, next) => {
+  res.header('X-Frame-Options', 'deny')
+  next()
+})
+
 app.use(express.static(path.join(__dirname, 'dist')))
 app.use(express.static(path.join(__dirname, 'record')))
 
