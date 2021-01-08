@@ -24,10 +24,12 @@ export default {
           ) < 0
         ) {
           this.toastError(this.$t('service.file_type'))
+          this.imageRemove()
           return
         }
         if (files[0].size > 20 * 1024 * 1024) {
           this.toastError(this.$t('service.file_maxsize'))
+          this.imageRemove()
           return
         }
         const oReader = new FileReader()
@@ -43,6 +45,7 @@ export default {
           oImg.onerror = () => {
             // 이미지 아닐 시 처리.
             this.toastError(this.$t('service.file_type'))
+            this.imageRemove()
           }
           oImg.src = imageData
         }
