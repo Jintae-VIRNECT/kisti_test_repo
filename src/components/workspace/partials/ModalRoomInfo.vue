@@ -193,7 +193,7 @@ export default {
     init() {
       this.title = this.room.title
       this.description = this.room.description
-      // this.imageUrl = room.profile
+      this.imageURL = this.room.profile
       this.createdDate = this.$dayjs(this.room.activeDate + '+00:00').format(
         'YYYY.MM.DD',
       )
@@ -221,7 +221,7 @@ export default {
         sessionId: this.room.sessionId,
         workspaceId: this.workspace.uuid,
       }
-      if (this.room.profile !== this.imageUrl) {
+      if (this.room.profile !== this.imageURL) {
         params.image = this.imageFile
       }
       this.$emit('update', params)
