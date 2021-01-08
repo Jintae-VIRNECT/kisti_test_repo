@@ -1,7 +1,9 @@
 import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 import { api } from '@/plugins/axios'
 
-export default async function({ req, redirect, error, $config }) {
+export default async function({ req, res, redirect, error, $config }) {
+  if (res) res.setHeader('X-Frame-Options', 'deny')
+
   if (process.server) {
     const LOGIN_SITE_URL = urls.console[$config.VIRNECT_ENV]
     // 사용자가 로그인을 하지 않은 경우.
