@@ -172,7 +172,10 @@ export default {
   /* Lifecycles */
   async created() {
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
-    const permission = await getPermission()
+    const permission = await getPermission({
+      video: true,
+      audio: true,
+    })
 
     if (permission === true) {
       const devices = await this.getMediaDevice()

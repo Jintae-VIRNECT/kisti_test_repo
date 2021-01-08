@@ -55,7 +55,7 @@ export const getInputDevice = async (
     video,
     audio,
   })
-  if (!hasVideo && !hasAudio) return false
+  // if (!hasVideo && !hasAudio) return false
   // const settingInfo = Store.getters['settingInfo']
   let videoSource = hasVideo
     ? devices.findIndex(device => device.deviceId === camera) > -1

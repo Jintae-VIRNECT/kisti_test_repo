@@ -22,8 +22,12 @@ export default {
           mic: this.settingInfo.mic,
         },
       )
-      if (!ALLOW_NO_DEVICE && videoSource === false && audioSource === false) {
-        throw 'nodevice'
+      if (videoSource === false && audioSource === false) {
+        if (!ALLOW_NO_DEVICE) {
+          throw 'nodevice'
+        } else {
+          return false
+        }
       }
       if (!ALLOW_NO_AUDIO && audioSource === false) {
         throw 'nodevice'
