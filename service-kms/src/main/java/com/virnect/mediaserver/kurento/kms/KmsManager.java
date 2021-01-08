@@ -278,7 +278,7 @@ public abstract class KmsManager {
 							kmsReconnectionLocks.get(kms.getId()).unlock();
 						}
 					}
-				}, () -> new Long(dynamicReconnectLoopSeconds(ITERATION.getAndIncrement()) * 1000));
+				}, () -> (long) (dynamicReconnectLoopSeconds(ITERATION.getAndIncrement()) * 1000));
 
 				TIMER[0].updateTimer();
 			}
@@ -294,8 +294,10 @@ public abstract class KmsManager {
 			@Override
 			public void connected() {
 				final Kms kms = kmss.get(kmsId);
-				log.info("Kurento Client \"connected\" event for KMS {} [{}]", kms.getUri(),
+				log.info("Kurento Client \"connected\" event for KMS {} [{}]",
+						kms.getUri(),
 						kms.getKurentoClient().toString());
+				mediaNodeStatusManager.isLaunching(kmsId);
 				// TODO: This should be done here, not after KurentoClient#create method returns
 				// kms.setKurentoClientConnected(true);
 				// kms.setTimeOfKurentoClientConnection(System.currentTimeMillis());
@@ -347,6 +349,7 @@ public abstract class KmsManager {
 	public void close() {
 		log.info("Closing all KurentoClients");
 		this.kmss.values().forEach(kms -> {
+			mediaNodeStatusManager.isTerminating(kms.getId());
 			kms.getKurentoClient().destroy();
 		});
 	}
