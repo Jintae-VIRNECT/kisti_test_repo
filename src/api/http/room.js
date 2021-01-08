@@ -139,7 +139,7 @@ export const getRoomList = async ({
   page = 0,
   paging = false,
   size = 10,
-  sort = 'createdDate,asc',
+  sort = 'createdDate,desc',
   userId,
   workspaceId,
 }) => {
