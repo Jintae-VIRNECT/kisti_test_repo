@@ -198,10 +198,10 @@ export default {
       if (recordInfo) {
         this.setRecord(recordInfo)
       }
-      const allow = this.$localStorage.getItem('allow')
-      if (allow) {
-        this.setAllow(allow)
-      }
+      // const allow = this.$localStorage.getItem('allow')
+      // if (allow) {
+      //   this.setAllow(allow)
+      // }
       const translateInfo = this.$localStorage.getItem('translate')
       if (translateInfo) {
         this.setTranslate(translateInfo)

@@ -1,5 +1,5 @@
 //Definition of workspace store
-import { SETTINGS, TOGGLE_CHAT } from '../mutation-types'
+import { SETTINGS, TOGGLE_CHAT, ALLOW_RESET } from '../mutation-types'
 import { RECORD_TARGET } from 'utils/recordOptions'
 import { resolution } from 'utils/settingOptions'
 
@@ -67,6 +67,12 @@ const mutations = {
   },
   [SETTINGS.SET_ALLOW](state, allow) {
     Object.assign(state.allow, allow)
+  },
+  [ALLOW_RESET](state) {
+    state.allow = {
+      pointing: true,
+      localRecord: true,
+    }
   },
 
   [SETTINGS.SET_TRANSLATE_FLAG](state, flag) {

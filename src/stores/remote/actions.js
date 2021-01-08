@@ -27,6 +27,7 @@ export default {
   callReset({ commit }) {
     commit(types.CALL_RESET)
     commit(types.FILE_RESET)
+    commit(types.ALLOW_RESET)
   },
   /**
    * Change Call Mode
