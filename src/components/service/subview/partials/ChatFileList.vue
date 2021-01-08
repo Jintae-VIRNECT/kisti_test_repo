@@ -1,6 +1,10 @@
 <template>
   <div class="chat-list">
-    <vue2-scrollbar ref="chatFileListScrollbar" v-if="fileList.length > 0">
+    <vue2-scrollbar
+      ref="chatFileListScrollbar"
+      v-if="fileList.length > 0"
+      :allowReset="false"
+    >
       <div>
         <chat-file-item
           v-for="(file, idx) in fileList"
