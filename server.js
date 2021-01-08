@@ -5,6 +5,12 @@ const server = require('./server/module')
 const path = require('path')
 
 var bodyParser = require('body-parser')
+
+app.use((req, res, next) => {
+  res.header('X-Frame-Options', 'deny')
+  next()
+})
+
 app.use(bodyParser.json())
 
 app.use(express.static(path.join(__dirname, 'dist')))
