@@ -1,8 +1,8 @@
 package com.virnect.download.infra.file.donwload;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public interface FileDownloadService {
 	byte[] fileDownload(String fileName) throws IOException;

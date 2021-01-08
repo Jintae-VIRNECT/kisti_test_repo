@@ -1,15 +1,16 @@
 package com.virnect.download.dto.request;
 
-import com.virnect.download.domain.AppGuideUrl;
-import com.virnect.download.domain.AppImageUrl;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import com.virnect.download.domain.AppGuideUrl;
+import com.virnect.download.domain.AppImageUrl;
 
 /**
  * Project: PF-Download

@@ -1,5 +1,18 @@
 package com.virnect.download.application;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.download.dao.AppRepository;
 import com.virnect.download.dao.ProductRepository;
 import com.virnect.download.domain.App;
@@ -8,13 +21,6 @@ import com.virnect.download.dto.response.AppInfoListResponse;
 import com.virnect.download.dto.response.AppInfoResponse;
 import com.virnect.download.exception.DownloadException;
 import com.virnect.download.global.error.ErrorCode;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

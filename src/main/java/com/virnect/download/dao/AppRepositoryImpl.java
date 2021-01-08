@@ -1,11 +1,15 @@
 package com.virnect.download.dao;
 
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.virnect.download.domain.*;
-import lombok.RequiredArgsConstructor;
-
 import java.util.List;
 import java.util.Optional;
+
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import lombok.RequiredArgsConstructor;
+
+import com.virnect.download.domain.App;
+import com.virnect.download.domain.AppStatus;
+import com.virnect.download.domain.Product;
 
 /**
  * Project: PF-Download
