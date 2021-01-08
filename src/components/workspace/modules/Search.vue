@@ -33,7 +33,6 @@ export default {
   },
   watch: {
     text(val) {
-      console.log(val)
       if (this.text.trim() === '') {
         this.text = ''
       }

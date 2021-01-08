@@ -56,6 +56,8 @@
       <!-- <component :is="viewComponent"></component> -->
     </div>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
+    <setting-modal></setting-modal>
+    <record-list></record-list>
   </section>
 </template>
 
@@ -63,7 +65,6 @@
 import HeaderSection from 'components/header/Header'
 import SubView from './subview/SubView'
 import UserList from './participants/ParticipantList'
-import CaptureModal from './modal/CaptureModal'
 import { ROLE } from 'configs/remote.config'
 import { CAMERA } from 'configs/device.config'
 import { VIEW } from 'configs/view.config'
@@ -71,7 +72,7 @@ import localRecorderMixin from 'mixins/localRecorder'
 import serverRecordMixin from 'mixins/serverRecorder'
 import Store from 'stores/remote/store'
 import confirmMixin from 'mixins/confirm'
-import { checkVideoInput } from 'utils/deviceCheck'
+import { checkInput } from 'utils/deviceCheck'
 import ReconnectModal from './modal/ReconnectModal'
 
 import { mapGetters } from 'vuex'
@@ -98,7 +99,9 @@ export default {
     DrawingView: () => import('./ServiceDrawing'),
     ArView: () => import('./ServiceAr'),
     Share: () => import('./share/Share'),
-    CaptureModal,
+    CaptureModal: () => import('./modal/CaptureModal'),
+    RecordList: () => import('LocalRecordList'),
+    SettingModal: () => import('./modal/SettingModal'),
   },
   data() {
     return {
@@ -152,7 +155,7 @@ export default {
       }
       this.callTimeout = setTimeout(() => {
         this.logout()
-      }, 10 * 1000)
+      }, 30 * 1000)
       this.confirmCancel(
         this.$t('confirm.call_timeout'),
         {
@@ -186,7 +189,7 @@ export default {
       this.$eventBus.$emit('call:logout')
     },
     async onDeviceChange() {
-      const hasVideo = await checkVideoInput()
+      const hasVideo = await checkInput({ video: true, audio: false })
       if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
       this.$call.sendCamera(
         hasVideo

@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-view">
+  <section class="tab-view">
     <div class="setting-wrapper offsetwidth">
       <div class="setting-nav">
         <div class="setting-nav__header">{{ $t('workspace.setting') }}</div>
@@ -47,30 +47,25 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 <script>
-// import SttTest from '../section/WorkspaceSttTest'
-import SetVideo from '../section/WorkspaceSetVideo'
-import SetAudio from '../section/WorkspaceSetAudio'
-import SetLanguage from '../section/WorkspaceSetLanguage'
-import SetTranslate from '../section/WorkspaceSetTranslate'
-import SetRecord from '../section/WorkspaceSetRecord'
-import MicTest from '../section/WorkspaceMicTest'
-import SetServerRecord from '../section/WorkspaceSetServerRecord'
+import SetVideo from './setting/WorkspaceSetVideo'
+import SetAudio from './setting/WorkspaceSetAudio'
+import SetLanguage from './setting/WorkspaceSetLanguage'
+import MicTest from './setting/WorkspaceMicTest'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
 import { mapGetters } from 'vuex'
 export default {
   name: 'WorkspaceSetting',
   components: {
-    // SttTest,
     SetVideo,
     SetAudio,
-    SetLanguage,
-    SetTranslate,
-    SetRecord,
-    SetServerRecord,
     MicTest,
+    SetLanguage,
+    SetTranslate: () => import('./setting/WorkspaceSetTranslate'),
+    SetRecord: () => import('./setting/WorkspaceSetRecord'),
+    SetServerRecord: () => import('./setting/WorkspaceSetServerRecord'),
   },
   data() {
     return {
@@ -177,7 +172,10 @@ export default {
   /* Lifecycles */
   async created() {
     navigator.mediaDevices.ondevicechange = this.onDeviceChange
-    const permission = await getPermission()
+    const permission = await getPermission({
+      video: true,
+      audio: true,
+    })
 
     if (permission === true) {
       const devices = await this.getMediaDevice()
@@ -195,7 +193,7 @@ export default {
         audio = true
       }
       try {
-        const stream = await getUserMedia(audio, video)
+        const stream = await getUserMedia({ audio, video })
         stream.getTracks().forEach(track => {
           track.stop()
         })

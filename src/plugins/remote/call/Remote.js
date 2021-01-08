@@ -1,4 +1,4 @@
-import { OpenVidu } from './openvidu'
+import { OpenVidu } from '@virnect/remote-webrtc'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import {
@@ -18,7 +18,7 @@ import {
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
-import { checkVideoInput } from 'utils/deviceCheck'
+import { checkInput } from 'utils/deviceCheck'
 
 let OV
 
@@ -26,6 +26,7 @@ const _ = {
   account: null,
   session: null,
   publisher: null,
+  connectionId: '',
   subscribers: [],
   // 필요여부 체크할 것
   resolution: null,
@@ -93,108 +94,122 @@ const _ = {
         roleType: role,
       })
       _.account.roleType = role
-      const settingInfo = Store.getters['settingInfo']
+      if (options !== false) {
+        const settingInfo = Store.getters['settingInfo']
 
-      const publishOptions = {
-        audioSource: options.audioSource,
-        videoSource: options.videoSource,
-        publishAudio: settingInfo.micOn,
-        publishVideo: settingInfo.videoOn,
-        resolution: settingInfo.quality,
-        // resolution: '1920x1080', // FHD
-        // resolution: '3840x2160', // 4K
-        frameRate: 30,
-        insertMode: 'PREPEND',
-        mirror: false,
-      }
-      debug('call::publish::', publishOptions)
-
-      _.publisher = OV.initPublisher('', publishOptions)
-      _.publisher.onIceStateChanged(state => {
-        if (['failed', 'disconnected', 'closed'].includes(state)) {
-          Store.commit('updateParticipant', {
-            connectionId: _.publisher.stream.connection.connectionId,
-            status: 'disconnected',
-          })
-        } else if (['connected', 'completed'].includes(state)) {
-          Store.commit('updateParticipant', {
-            connectionId: _.publisher.stream.connection.connectionId,
-            status: 'good',
-          })
-        } else {
-          Store.commit('updateParticipant', {
-            connectionId: _.publisher.stream.connection.connectionId,
-            status: 'normal',
-          })
+        const publishOptions = {
+          audioSource: options.audioSource,
+          videoSource: options.videoSource,
+          publishAudio: settingInfo.micOn,
+          publishVideo: settingInfo.videoOn,
+          resolution: settingInfo.quality,
+          // resolution: '1920x1080', // FHD
+          // resolution: '3840x2160', // 4K
+          frameRate: 30,
+          insertMode: 'PREPEND',
+          mirror: false,
         }
-        logger('ice state change', state)
-      })
-      _.publisher.on('streamCreated', () => {
-        logger('room', 'publish success')
-        debug('publisher stream :: ', _.publisher.stream)
-        const mediaStream = _.publisher.stream.mediaStream
-        Store.commit('updateParticipant', {
-          connectionId: _.publisher.stream.connection.connectionId,
-          stream: mediaStream,
-          hasVideo: _.publisher.stream.hasVideo,
-          hasCamera: _.publisher.stream.hasVideo,
-          video: settingInfo.videoOn,
-          audio: _.publisher.stream.audioActive,
-          cameraStatus: _.publisher.stream.hasVideo
-            ? settingInfo.videoOn
-              ? CAMERA_STATUS.CAMERA_ON
-              : CAMERA_STATUS.CAMERA_OFF
-            : CAMERA_STATUS.CAMERA_NONE,
-        })
-        if (_.publisher.stream.hasVideo) {
-          const track = mediaStream.getVideoTracks()[0]
-          const settings = track.getSettings()
-          const capability = track.getCapabilities()
-          logger('call', `resolution::${settings.width}X${settings.height}`)
-          debug('call::setting::', settings)
-          debug('call::capability::', capability)
-          if ('zoom' in capability) {
-            track.applyConstraints({
-              advanced: [{ zoom: capability['zoom'].min }],
-            })
-            _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
-            _.minZoomLevel = parseInt(capability.zoom.min)
-          }
-          // _.sendCamera(
-          //   options.videoSource !== false
-          //     ? settingInfo.videoOn
-          //       ? CAMERA_STATUS.CAMERA_ON
-          //       : CAMERA_STATUS.CAMERA_OFF
-          //     : CAMERA_STATUS.CAMERA_NONE,
-          // )
-          _.sendResolution({
-            width: settings.width,
-            height: settings.height,
-            orientation: '',
-          })
-        } else if (_.openRoom) {
-          checkVideoInput().then(hasCamera => {
-            const params = {
+        debug('call::publish::', publishOptions)
+
+        _.publisher = OV.initPublisher('', publishOptions)
+        _.publisher.onIceStateChanged(state => {
+          if (['failed', 'disconnected', 'closed'].includes(state)) {
+            Store.commit('updateParticipant', {
               connectionId: _.publisher.stream.connection.connectionId,
-              hasAudio: true,
-            }
-            if (!hasCamera) {
-              params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
-              params.hasCamera = false
-              // _.changeProperty(true)
-            } else {
-              params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
-              params.hasCamera = true
-            }
-            Store.commit('updateParticipant', params)
-            // _.sendCamera(
-            //   !hasCamera ? CAMERA_STATUS.CAMERA_NONE : CAMERA_STATUS.CAMERA_OFF,
-            // )
+              status: 'disconnected',
+            })
+          } else if (['connected', 'completed'].includes(state)) {
+            Store.commit('updateParticipant', {
+              connectionId: _.publisher.stream.connection.connectionId,
+              status: 'good',
+            })
+          } else {
+            Store.commit('updateParticipant', {
+              connectionId: _.publisher.stream.connection.connectionId,
+              status: 'normal',
+            })
+          }
+          logger('ice state change', state)
+        })
+        _.publisher.on('streamCreated', () => {
+          logger('room', 'publish success')
+          debug('publisher stream :: ', _.publisher.stream)
+          const mediaStream = _.publisher.stream.mediaStream
+          Store.commit('updateParticipant', {
+            connectionId: _.publisher.stream.connection.connectionId,
+            stream: mediaStream,
+            hasVideo: _.publisher.stream.hasVideo,
+            hasCamera: _.publisher.stream.hasVideo,
+            hasAudio: _.publisher.stream.hasAudio,
+            video: settingInfo.videoOn,
+            audio: _.publisher.stream.audioActive,
+            cameraStatus: _.publisher.stream.hasVideo
+              ? settingInfo.videoOn
+                ? CAMERA_STATUS.CAMERA_ON
+                : CAMERA_STATUS.CAMERA_OFF
+              : CAMERA_STATUS.CAMERA_NONE,
           })
-        }
-      })
+          if (_.publisher.stream.hasVideo) {
+            const track = mediaStream.getVideoTracks()[0]
+            const settings = track.getSettings()
+            const capability = track.getCapabilities()
+            logger('call', `resolution::${settings.width}X${settings.height}`)
+            debug('call::setting::', settings)
+            debug('call::capability::', capability)
+            if ('zoom' in capability) {
+              track.applyConstraints({
+                advanced: [{ zoom: capability['zoom'].min }],
+              })
+              _.maxZoomLevel = parseInt(
+                capability.zoom.max / capability.zoom.min,
+              )
+              _.minZoomLevel = parseInt(capability.zoom.min)
+            }
+            // _.sendCamera(
+            //   options.videoSource !== false
+            //     ? settingInfo.videoOn
+            //       ? CAMERA_STATUS.CAMERA_ON
+            //       : CAMERA_STATUS.CAMERA_OFF
+            //     : CAMERA_STATUS.CAMERA_NONE,
+            // )
+            _.sendResolution({
+              width: settings.width,
+              height: settings.height,
+              orientation: '',
+            })
+          } else if (_.openRoom) {
+            checkInput({ video: true, audio: false }).then(hasCamera => {
+              const params = {
+                connectionId: _.publisher.stream.connection.connectionId,
+                hasAudio: true,
+              }
+              if (!hasCamera) {
+                params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
+                params.hasCamera = false
+                // _.changeProperty(true)
+              } else {
+                params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
+                params.hasCamera = true
+              }
+              Store.commit('updateParticipant', params)
+              // _.sendCamera(
+              //   !hasCamera ? CAMERA_STATUS.CAMERA_NONE : CAMERA_STATUS.CAMERA_OFF,
+              // )
+            })
+          }
+        })
 
-      _.session.publish(_.publisher)
+        _.session.publish(_.publisher)
+      } else {
+        Store.commit('updateParticipant', {
+          connectionId: _.connectionId,
+          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
+          hasVideo: false,
+          hasAudio: false,
+          video: false,
+          audio: false,
+        })
+      }
       return true
     } catch (err) {
       throw err

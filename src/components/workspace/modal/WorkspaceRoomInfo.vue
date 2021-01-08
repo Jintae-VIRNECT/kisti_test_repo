@@ -169,6 +169,7 @@ export default {
           delete params['image']
           this.$emit('updatedInfo', profile)
         } else if (
+          'image' in params &&
           this.room.profile !== 'default' &&
           (params['image'] === 'default' || !params['image'])
         ) {

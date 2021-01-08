@@ -1,7 +1,7 @@
 <template>
   <div class="main-body drawing">
     <drawing-tools v-show="account.roleType === LEADER"></drawing-tools>
-    <menus :viewType="viewType"></menus>
+    <menus></menus>
     <drawing></drawing>
   </div>
 </template>
@@ -12,7 +12,6 @@ import Menus from './tools/Menus'
 import Drawing from './drawing/Drawing'
 
 import { ROLE } from 'configs/remote.config'
-import { VIEW } from 'configs/view.config'
 
 export default {
   name: 'ServiceDrawing',
@@ -24,14 +23,7 @@ export default {
   data() {
     return {
       LEADER: ROLE.LEADER,
-      viewType: VIEW.DRAWING,
     }
   },
-  computed: {},
-  watch: {},
-  methods: {},
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>

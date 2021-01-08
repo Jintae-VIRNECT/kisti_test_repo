@@ -24,7 +24,7 @@
           {{ $t('common.workstation') }}
         </button>
       </div>
-      <div class="popover-profile__link" v-if="dashboardLink">
+      <div class="popover-profile__link" v-if="!!dashboardLink">
         <button @click="link(dashboardLink)">
           {{ $t('common.dashboard') }}
         </button>
@@ -53,12 +53,12 @@ export default {
     Profile,
   },
   computed: {
-    ...mapGetters(['account']),
+    ...mapGetters(['account', 'useStorage']),
     urlLink() {
       return URLS['workstation']
     },
     dashboardLink() {
-      if (!('dashboard' in URLS)) {
+      if (!this.useStorage) {
         return false
       } else {
         return URLS['dashboard']

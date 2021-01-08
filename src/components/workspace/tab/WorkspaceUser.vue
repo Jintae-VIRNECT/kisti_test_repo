@@ -73,7 +73,7 @@ export default {
         this.getList()
       }
     },
-    'list.length': 'scrollReset',
+    // 'list.length': 'scrollReset',
   },
   methods: {
     doSearch(text) {

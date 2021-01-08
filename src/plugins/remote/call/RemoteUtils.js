@@ -27,14 +27,16 @@ export const addSessionEventListener = session => {
     if (user === 'me') return
     setTimeout(() => {
       // send default signals
-      _.sendMic(Store.getters['mic'].isOn, [event.connection.connectionId])
-      _.sendSpeaker(Store.getters['speaker'].isOn, [
-        event.connection.connectionId,
-      ])
-      _.sendResolution(null, [event.connection.connectionId])
-      _.sendFlashStatus(FLASH_STATUS.FLASH_NONE, [
-        event.connection.connectionId,
-      ])
+      if (_.publisher) {
+        _.sendMic(Store.getters['mic'].isOn, [event.connection.connectionId])
+        _.sendSpeaker(Store.getters['speaker'].isOn, [
+          event.connection.connectionId,
+        ])
+        _.sendResolution(null, [event.connection.connectionId])
+        _.sendFlashStatus(FLASH_STATUS.FLASH_NONE, [
+          event.connection.connectionId,
+        ])
+      }
       if (_.account.roleType === ROLE.LEADER) {
         _.sendControl(CONTROL.POINTING, Store.getters['allowPointing'], [
           event.connection.connectionId,
@@ -396,9 +398,9 @@ const setUserObject = event => {
     nickname: '',
     path: null,
     video: false,
-    audio: true,
+    audio: false,
     hasVideo: false,
-    hasAudio: true,
+    hasAudio: false,
     hasCamera: false,
     speaker: true,
     mute: false,
@@ -414,6 +416,7 @@ const setUserObject = event => {
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {
+    _.connectionId = connection.connectionId
     userObj.nickname = account.nickname
     userObj.path = account.profile
     userObj.me = true

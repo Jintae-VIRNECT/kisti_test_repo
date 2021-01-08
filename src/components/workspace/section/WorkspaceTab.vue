@@ -31,7 +31,7 @@
       <workspace-select
         v-else-if="!workspace || !workspace.uuid"
       ></workspace-select>
-      <keep-alive v-else>
+      <keep-alive include="WorkspaceHistory" v-else>
         <component :is="component" :class="{ fix: fix }"></component>
       </keep-alive>
     </template>

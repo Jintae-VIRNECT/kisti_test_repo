@@ -26,12 +26,24 @@ const state = {
 
   mic: false,
   speaker: true,
+
+  settingModal: false,
+  recordModal: false,
 }
 
 const mutations = {
+  ['SETTING_MODAL'](state, flag) {
+    state.settingModal = flag
+  },
+  ['RECORD_MODAL'](state, flag) {
+    state.recordModal = flag
+  },
+
   [CALL_RESET](state) {
     state.view = VIEW.STREAM
     state.action = ACTION.STREAM_DEFAULT
+    state.settingModal = false
+    state.recordModal = false
   },
   // ????
   // [CALL_MODE_SET](state, info) {
@@ -62,8 +74,22 @@ const mutations = {
     state.speaker = status
   },
 }
+const actions = {
+  showModalSetting({ commit }, flag) {
+    commit('SETTING_MODAL', flag)
+  },
+  showModalRecord({ commit }, flag) {
+    commit('RECORD_MODAL', flag)
+  },
+}
+const getters = {
+  modalSetting: state => state.settingModal,
+  modalRecord: state => state.recordModal,
+}
 
 export default {
   state,
   mutations,
+  actions,
+  getters,
 }

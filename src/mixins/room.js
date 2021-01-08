@@ -4,9 +4,9 @@ import { DEVICE } from 'configs/device.config'
 import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import { mapActions } from 'vuex'
-import { checkPermission } from 'utils/deviceCheck'
+import callMixin from 'mixins/call'
 export default {
-  mixins: [toastMixin],
+  mixins: [toastMixin, callMixin],
   data() {
     return {
       clicked: false,
@@ -31,7 +31,7 @@ export default {
         } else {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
-        const options = await checkPermission()
+        const options = await this.getDeviceId()
 
         const res = await joinRoom({
           uuid: this.account.uuid,

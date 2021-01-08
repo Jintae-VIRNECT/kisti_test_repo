@@ -60,6 +60,7 @@ import Loader from 'Loader'
 
 import confirmMixin from 'mixins/confirm'
 import { ROOM_STATUS } from 'configs/status.config'
+import { nameExp as EXP_NAME } from 'utils/regexp'
 
 import {
   getHistoryList,
@@ -214,6 +215,7 @@ export default {
           totalPage: 0,
           last: false,
         }
+        this.$eventBus.$emit('scroll:reset:workspace')
       } catch (err) {
         console.error(err)
       }
@@ -237,8 +239,7 @@ export default {
     async doSearch(text) {
       if (this.historyList.length === 0) return
       try {
-        if (!text || text.trim().length === 0) {
-          this.searchText = ''
+        if (!EXP_NAME.test(text)) {
           this.searchHistoryList = []
           this.searchPageMeta = {
             currentPage: 0,
@@ -249,9 +250,19 @@ export default {
           }
           return
         }
-        this.searching = true
         this.searchHistoryList = await this.searchHistory(0, text)
         this.searchText = text
+        if (!text || text.trim().length === 0) {
+          this.searchText = ''
+          this.searchHistoryList = []
+          this.searchPageMeta = {
+            currentPage: 0,
+            currentSize: 0,
+            totalElements: 0,
+            totalPage: 0,
+            last: false,
+          }
+        }
       } catch (err) {
         this.searchText = ''
         this.searchHistoryList = []

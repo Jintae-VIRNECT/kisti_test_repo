@@ -12,7 +12,6 @@ const config = mode => {
       remote: './src/apps/remote/app.js',
       extra: './src/apps/extra/app.js',
       account: './src/apps/account/app.js',
-      sample: './src/apps/sample/app.js',
     },
     output: {
       filename: 'assets/scripts/[name].js',
