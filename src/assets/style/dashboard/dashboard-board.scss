@@ -60,7 +60,7 @@
       width: 100%;
       height: 100%;
       background-color: $color_white;
-      content: "";
+      content: '';
     }
 
     &:after {
@@ -98,6 +98,7 @@
 
 #tooltip-arrow {
   position: absolute;
+  min-width: 9.5rem;
   max-width: 22.8571rem;
   height: 5.7143rem;
   color: white;
@@ -151,6 +152,7 @@
 
 #tooltip-no-arrow {
   position: absolute;
+  min-width: 8.5714rem;
   max-width: 22.8571rem;
   height: 6.4286rem;
   color: white;
