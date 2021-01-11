@@ -607,15 +607,10 @@ public class WorkspaceController {
     }
 
     @ApiOperation(value = "전체 워크스페이스 멤버 조회")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호", paramType = "query", defaultValue = "0"),
-            @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "20"),
-            @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "updatedDate,desc")
-    })
     @GetMapping("/members")
-    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getAllWorkspaceUserList(@ApiIgnore PageRequest pageRequest
+    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getAllWorkspaceUserList(
     ) {
-        WorkspaceInfoListResponse workspaceUserInfoListResponse = workspaceService.getAllWorkspaceUserList(pageRequest.of());
+        WorkspaceInfoListResponse workspaceUserInfoListResponse = workspaceService.getAllWorkspaceUserList();
         return ResponseEntity.ok(new ApiResponse<>(workspaceUserInfoListResponse));
     }
 }

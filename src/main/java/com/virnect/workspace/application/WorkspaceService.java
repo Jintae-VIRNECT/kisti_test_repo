@@ -2677,8 +2677,8 @@ public class WorkspaceService {
 
     }
 
-    public WorkspaceInfoListResponse getAllWorkspaceUserList(Pageable pageable) {
-        Page<Workspace> workspaceList = workspaceRepository.findAll(pageable);
+    public WorkspaceInfoListResponse getAllWorkspaceUserList() {
+        List<Workspace> workspaceList = workspaceRepository.findAll();
         List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceInfoList = workspaceList.stream().map(workspace -> {
             WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
             List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_Workspace(workspace);
@@ -2694,13 +2694,13 @@ public class WorkspaceService {
             }).collect(Collectors.toList());
             workspaceInfo.setMemberList(memberInfoList);
             return workspaceInfo;
-        }).collect(Collectors.toList());
+        }).collect(Collectors.toList());/*
         PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
         pageMetadataResponse.setTotalElements(workspaceList.getTotalElements());
         pageMetadataResponse.setTotalPage(workspaceList.getTotalPages());
         pageMetadataResponse.setCurrentPage(pageable.getPageNumber() + 1);
-        pageMetadataResponse.setCurrentSize(pageable.getPageSize());
-        return new WorkspaceInfoListResponse(workspaceInfoList, pageMetadataResponse);
+        pageMetadataResponse.setCurrentSize(pageable.getPageSize());*/
+        return new WorkspaceInfoListResponse(workspaceInfoList,null);
     }
 }
 
