@@ -90,6 +90,8 @@ import CollaboStatus from 'CollaboStatus'
 import { getHistorySingleItem, getRoomInfo } from 'api/http/history'
 
 import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
+import { ROLE } from 'configs/remote.config'
+
 export default {
   name: 'ModalHistoryInfo',
   components: {
@@ -127,7 +129,7 @@ export default {
     leader() {
       return this.room.memberList
         ? this.room.memberList.find(member => {
-            return member.memberType === 'LEADER'
+            return member.memberType === ROLE.LEADER
           })
         : ''
     },

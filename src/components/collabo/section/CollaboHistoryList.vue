@@ -157,9 +157,19 @@ export default {
         }
 
         historys.forEach(history => {
-          history.leaderNickName = history.memberList.find(member => {
-            return member.memberType === ROLE.LEADER
-          }).nickName
+          if (history.memberList && history.memberList.length > 0) {
+            const leader = history.memberList.find(member => {
+              return member.memberType === ROLE.LEADER
+            })
+
+            if (leader && leader.nickName) {
+              history.leaderNickName = leader.nickName
+            } else {
+              history.leaderNickName = ''
+            }
+          } else {
+            history.leaderNickName = ''
+          }
         })
 
         exportExcel(historys, this)

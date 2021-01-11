@@ -361,11 +361,19 @@ export default {
       this.hoverIndex = index
     },
     leaderName(history) {
-      return history.memberList
-        ? history.memberList.find(member => {
-            return member.memberType === ROLE.LEADER
-          }).nickName
-        : ''
+      if (history.memberList && history.memberList.length > 0) {
+        const leader = history.memberList.find(member => {
+          return member.memberType === ROLE.LEADER
+        })
+
+        if (leader && leader.nickName) {
+          return leader.nickName
+        } else {
+          return ''
+        }
+      } else {
+        return ''
+      }
     },
   },
 }
