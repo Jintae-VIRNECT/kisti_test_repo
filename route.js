@@ -37,7 +37,7 @@ router.get('/configs', function (req, res) {
   res.send(JSON.stringify(config.getConfigs()))
 })
 
-router.get('/home', function (req, res) {
+router.get('/', function (req, res) {
   const remoteAddr = config.getConfigs().remote
 
   if (IsAllowBrowser(req)) {
@@ -53,7 +53,7 @@ router.get('/home', function (req, res) {
 })
 
 router.get('/*', function (req, res) {
-  res.redirect('/home')
+  res.redirect('/')
 })
 
 module.exports = router
