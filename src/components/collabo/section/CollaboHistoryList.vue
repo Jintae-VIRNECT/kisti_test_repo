@@ -39,6 +39,7 @@ import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/search'
 
 import { WORKSPACE_ROLE } from 'configs/status.config'
+import { ROLE } from 'configs/remote.config'
 import { exportExcel } from 'utils/excel'
 
 import { mapGetters } from 'vuex'
@@ -154,6 +155,12 @@ export default {
         if (!historys) {
           return
         }
+
+        historys.forEach(history => {
+          history.leaderNickName = history.memberList.find(member => {
+            return member.memberType === ROLE.LEADER
+          }).nickName
+        })
 
         exportExcel(historys, this)
 

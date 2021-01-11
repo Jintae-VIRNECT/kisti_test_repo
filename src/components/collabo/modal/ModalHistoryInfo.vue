@@ -35,7 +35,7 @@
           {{ $t('room.leader') }}
         </div>
         <div class="history-info-table-column__info">
-          {{ room.leaderNickName }}
+          {{ leader.nickName }}
         </div>
       </div>
       <div class="history-info__row">
