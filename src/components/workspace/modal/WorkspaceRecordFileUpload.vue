@@ -106,7 +106,9 @@ export default {
         })
         console.error(e)
       } finally {
-        this.close()
+        setTimeout(() => {
+          this.close()
+        }, 1000)
       }
     },
     close() {
