@@ -40,8 +40,7 @@
     border-left: 1px solid rgb(186, 194, 204);
     border-radius: 0px 6px 6px 0px;
     transition: 0.3s;
-    &:hover,
-    &:focus {
+    &:hover {
       border-left: 1px solid $color_primary;
     }
     > img {
