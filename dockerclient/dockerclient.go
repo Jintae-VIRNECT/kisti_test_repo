@@ -354,7 +354,7 @@ func waitStartRecording(ctx context.Context, containerID string) error {
 			}
 			log.Debug(line)
 
-			if strings.Contains(line, "ffmpeg version") {
+			if strings.Contains(line, "Press [q] to stop") {
 				ch <- nil
 				break
 			}

@@ -65,7 +65,6 @@ func queryFromDB(ctx context.Context, filter *data.Filter) ([]RecordingFileInfo,
 			CreateAt:    r.CreatedAt,
 			MetaData:    r.MetaData,
 		}
-		log.Debug("CreateAt:", r.CreatedAt)
 		infos = append(infos, info)
 	}
 
