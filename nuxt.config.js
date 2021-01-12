@@ -7,7 +7,7 @@ const logger = require('@virnect/logger')
 module.exports = async () => {
   const env = await require('./config')()
   logger.info('server is running...', 'LISTENING')
-  logger.info('ip and port are check the nuxt log.', 'LISTENING')
+  logger.ipInfo(`${env.NUXT_PORT}`, 'LISTENING')
   logger.info(`VIRNECT_ENV: ${env.VIRNECT_ENV}`, 'LISTENING')
   logger.info(`SSL_ENV: ${env.SSL_ENV}`, 'LISTENING')
   Object.entries(env.URLS).forEach(([key, val]) =>
