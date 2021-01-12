@@ -89,7 +89,7 @@ export default {
 <style lang="scss" scoped>
 p {
 	font-weight: 500;
-	font-family: 'NotoSansKR', 'Noto Sans';
+	font-family: $noto;
 }
 .container {
 	text-align: center;

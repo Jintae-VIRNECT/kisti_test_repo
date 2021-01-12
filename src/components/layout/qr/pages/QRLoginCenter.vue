@@ -140,11 +140,10 @@ export default {
 
 <style lang="scss" scoped>
 @import '~element/image.css';
-@import '~assets/css/mixin.scss';
 
 p {
 	font-weight: 500;
-	font-family: 'NotoSansKR', 'Noto Sans';
+	font-family: $noto;
 }
 .container {
 	text-align: center;

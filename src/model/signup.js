@@ -14,6 +14,7 @@ export default class Signup {
 		mobile,
 		profile,
 		recoveryEmail,
+		inviteSession,
 	) {
 		this.email = email
 		this.password = password
@@ -29,5 +30,6 @@ export default class Signup {
 		this.mobile = mobile
 		this.profile = profile
 		this.recoveryEmail = recoveryEmail
+		this.inviteSession = inviteSession
 	}
 }

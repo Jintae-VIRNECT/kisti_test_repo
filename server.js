@@ -5,7 +5,6 @@ const https = require('https')
 const fs = require('fs')
 const path = require('path')
 const route = require('./route')
-const env = process.env.VIRNECT_ENV ? process.env.VIRNECT_ENV : process.env.NODE_ENV
 const config = require('./configs/runtime')
 
 app.use(express.static(path.join(__dirname, './dist')))
@@ -15,8 +14,8 @@ app.use(route)
 ;(async () => {
 	await config.init()
 	const envSet = config.envConfig
-	console.log(env)
-	if (/local|develop|onpremise/.test(env)) {
+	console.log(envSet)
+	if (envSet.SSL_ENV === 'private') {
 		console.log(config.urlConfig)
 		const options = {
 			key: fs.readFileSync('./cert/virnect.key'),
