@@ -49,7 +49,6 @@ pipeline {
             sh 'docker run -p 18886:8886 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-web-onpremise rm-web'
             catchError {
               sh 'docker rmi  -f $(docker images | grep "rm-web" | awk \'{print $3}\')'
-          
             }
           }  
         }
