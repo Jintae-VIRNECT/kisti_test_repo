@@ -47,8 +47,11 @@ pipeline {
             sh 'docker run -p 8886:8886 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -d --name=rm-web rm-web'
             sh 'count=`docker ps | grep rm-web-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-web-onpremise && docker rm rm-web-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18886:8886 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-web-onpremise rm-web'
-            sh 'docker rmi  -f $(docker images | grep "rm-web" | awk \'{print $3}\')'
-          }
+            catchError {
+              sh 'docker rmi  -f $(docker images | grep "rm-web" | awk \'{print $3}\')'
+          
+            }
+          }  
         }
 
         stage('Staging Branch') {
