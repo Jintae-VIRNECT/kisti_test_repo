@@ -1,5 +1,4 @@
 // logging with trace
-
 console.logger = (...value) => {
   console.groupCollapsed(...value)
   /* 1. 로그 trace 출력 */

@@ -3,10 +3,11 @@ const http = require('http')
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
-const logger = require('./logger')
+// const logger = require('./logger')
+const logger = require('@virnect/logger')
 const config = require('./config')
 
-var ServerModule = (function() {
+var ServerModule = (function () {
   'use strict'
 
   let instance
@@ -22,7 +23,7 @@ var ServerModule = (function() {
     SSL_ENV = config.getAsString('SSL_ENV') || 'public'
     PORT = config.getPort() || 9989
 
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       process.on('uncaughtException', onProcessError)
 
       const options = {

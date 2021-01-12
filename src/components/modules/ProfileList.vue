@@ -46,7 +46,7 @@
             :src="user.profile"
             @error="onImageError"
           /> -->
-          <span class="profilelist-user__name ">{{ user.nickName }}</span>
+          <span class="profilelist-user__name">{{ user.nickName }}</span>
         </figure>
       </div>
       <p slot="reference" class="profilelist-user__expend" :style="customStyle">

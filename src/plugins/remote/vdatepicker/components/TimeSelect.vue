@@ -6,8 +6,9 @@
         :key="option.value"
         :value="option.value"
         :disabled="option.disabled"
-        >{{ option.label }}</option
       >
+        {{ option.label }}
+      </option>
     </select>
     <div class="vc-select-arrow">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">

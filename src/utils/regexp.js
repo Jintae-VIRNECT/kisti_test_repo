@@ -8,7 +8,7 @@ export const password = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*
 export const name = new RegExp(/^[/'\w\sㄱ-ㅎㅏ-ㅣ가-힣]{2,20}$/)
 export const nameEmpty = new RegExp(/^[\w]{0}$/)
 
-export const groupName = new RegExp(/^([^\<\>ㄱ-ㅣ]|[\w]){2,20}$/)
+// export const groupName = new RegExp(/^([^\<\>ㄱ-ㅣ]|[\w]){2,20}$/)
 
 export const id = new RegExp(/^([-_a-z\d]){5,20}$/)
 
@@ -28,9 +28,9 @@ export const validName = target => {
   return name.test(target) | nameEmpty.test(target)
 }
 
-export const validGroupName = target => {
-  return groupName.test(target)
-}
+// export const validGroupName = target => {
+//   return groupName.test(target)
+// }
 
 export const validId = target => {
   return id.test(target)

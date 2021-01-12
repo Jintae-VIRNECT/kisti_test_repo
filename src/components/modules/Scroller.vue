@@ -75,7 +75,7 @@ export default {
     },
   },
   watch: {
-    $route: function() {
+    $route: function () {
       if (this.$refs['contentScrollbar']) {
         this.$refs['contentScrollbar'].reset()
       }

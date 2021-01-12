@@ -9,17 +9,18 @@
 </template>
 
 <script>
+import { proxyUrl } from 'utils/file'
 import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
 export default {
   name: 'HeaderLogo',
   data() {
     return {
-      logo: WHITE_LOGO,
+      logo: proxyUrl(WHITE_LOGO),
     }
   },
   methods: {
     logoError() {
-      this.logo = DEFAULT_LOGO
+      this.logo = proxyUrl(DEFAULT_LOGO)
     },
   },
 }

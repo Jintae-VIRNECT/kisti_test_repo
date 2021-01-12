@@ -8,7 +8,7 @@ import http from 'api/gateway'
  * @param {String} sort 정렬 기준 default 'role, desc'
  * @param {String} workspaceId 조회할 워크스페이스 id
  */
-export const getMemberList = async function({
+export const getMemberList = async function ({
   filter = '',
   page = 0,
   size = 50,

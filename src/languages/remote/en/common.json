@@ -1,32 +1,33 @@
 {
   "button": {
-	"confirm": "Confirm",
-	"cancel": "Cancel",
-	"refresh": "Refresh",
-	"logout": "Log out",
-	"progress": "Progress",
-	"select_download": "Download selected file",
-	"select_delete": "Delete selected file"
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "refresh": "Refresh",
+    "logout": "Log out",
+    "progress": "Progress",
+    "select_download": "Download selected file",
+    "select_delete": "Delete selected file"
   },
   "common": {
-	"dashboard": "Dashboard",
-	"collabo_list": "Collabo history"
+    "dashboard": "Dashboard",
+    "workstation": "Workstation",
+    "collabo_list": "Collabo history"
   },
   "confirm": {
-	"network_error": "The communication with the server is not stable. Please try again later.",
-	"file_not_found": "The file is already deleted or does not exist.",
-	"server_no_response": "Worng server response, \nplease try again later."
+    "network_error": "The communication with the server is not stable. Please try again later.",
+    "file_not_found": "The file is already deleted or does not exist.",
+    "server_no_response": "Wrong server response, \nplease try again later."
   },
-  "excel":{
-	"room_title": "Collabo name",
-	"room_description": "Collabo description",
-	"room_leader": "Leader",
-	"room_member_list": "Member",
-	"room_active_date": "Start time",
-	"room_unactive_date": "End time",
-	"room_duration_sec": "Duration",
-	"file_server_record": "Server recording",
-	"file_local_record": "Local recording",
-	"file_attach_file": "Attach file"
+  "excel": {
+    "room_title": "Collabo name",
+    "room_description": "Collabo description",
+    "room_leader": "Leader",
+    "room_member_list": "Member",
+    "room_active_date": "Start time",
+    "room_unactive_date": "End time",
+    "room_duration_sec": "Duration",
+    "file_server_record": "Server recording",
+    "file_local_record": "Local recording",
+    "file_attach_file": "Attach file"
   }
 }

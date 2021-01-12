@@ -77,7 +77,7 @@
           </div>
           <div class="history__text leader-name">
             <p>
-              {{ history.leaderNickName }}
+              {{ leaderName(history) }}
             </p>
           </div>
           <div class="history__text start-date hide-tablet">
@@ -187,6 +187,8 @@ import {
 
 import { mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
+
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'CollaboHistory',
@@ -357,6 +359,21 @@ export default {
     toggleHover(hover, index) {
       this.hover = hover
       this.hoverIndex = index
+    },
+    leaderName(history) {
+      if (history.memberList && history.memberList.length > 0) {
+        const leader = history.memberList.find(member => {
+          return member.memberType === ROLE.LEADER
+        })
+
+        if (leader && leader.nickName) {
+          return leader.nickName
+        } else {
+          return ''
+        }
+      } else {
+        return ''
+      }
     },
   },
 }

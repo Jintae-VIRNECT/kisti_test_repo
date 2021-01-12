@@ -162,10 +162,7 @@ const parseFlags = {
     twoDigits,
     (d, v) => {
       const da = new Date()
-      const cent = +da
-        .getFullYear()
-        .toString()
-        .substr(0, 2)
+      const cent = +da.getFullYear().toString().substr(0, 2)
       d.year = `${v > 68 ? cent - 1 : cent}${v}`
     },
   ],

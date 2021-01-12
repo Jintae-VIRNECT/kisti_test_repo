@@ -15,7 +15,7 @@ import http from 'api/gateway'
  * @param {String} status 협업 상태
  *
  */
-export const getHistoryList = async function({
+export const getHistoryList = async function ({
   page = 0,
   paging = false,
   size = 7,
@@ -56,7 +56,7 @@ export const getHistoryList = async function({
  * @param {String} fromTo 기간(ex YYYY-MM-DD,YYYY-MM-DD)
  * @param {String} status 협업 상태
  */
-export const getAllHistoryList = async function({
+export const getAllHistoryList = async function ({
   page = 0,
   paging = false,
   size = 7,
@@ -87,7 +87,10 @@ export const getAllHistoryList = async function({
  * @param {String} workspaceId 워크스페이스 id
  * @param {String} sessionId 세션 id
  */
-export const getHistorySingleItem = async function({ workspaceId, sessionId }) {
+export const getHistorySingleItem = async function ({
+  workspaceId,
+  sessionId,
+}) {
   const returnVal = await http('HISTORY_ITEM', { workspaceId, sessionId })
 
   return returnVal

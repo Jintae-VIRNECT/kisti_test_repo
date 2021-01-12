@@ -22,17 +22,19 @@
       </div>
       <div class="popover-profile__link">
         <button @click="link(urlLink)">
-          <span v-if="isOnpremise">Workstation</span>
-          <span v-else>VIRNECT Workstation</span>
+          <span>{{ $t('common.workstation') }}</span>
         </button>
       </div>
       <div class="popover-profile__link">
-        <button @click="link(remoteLink)">{{ 'Remote' }}</button>
+        <button v-if="isOnpremise" @click="link(remoteLink)">
+          {{ 'Remote' }}
+        </button>
+        <button v-else @click="link(remoteLink)">{{ 'VIRNECT Remote' }}</button>
       </div>
       <div class="popover-profile__link">
         <button @click="logout">{{ $t('button.logout') }}</button>
       </div>
-      <div class="popover-profile__version">{{ `web v.${$version}` }}</div>
+      <div class="popover-profile__version">{{ `web v${$version}` }}</div>
     </div>
   </popover>
 </template>

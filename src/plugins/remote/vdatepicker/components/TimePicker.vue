@@ -33,7 +33,7 @@
       </div>
       <div class="vc-time">
         <time-select v-model.number="hours" :options="hourOptions" />
-        <span style="margin: 0 4px;">:</span>
+        <span style="margin: 0 4px">:</span>
         <time-select v-model.number="minutes" :options="minuteOptions" />
         <div v-if="!is24hr" class="vc-am-pm">
           <button

@@ -28,7 +28,7 @@ axios.defaults.headers.common['Authorization'] = `Bearer ${TOKEN}`
  */
 // const timeout = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-const sender = async function(constant, params, headers = {}, custom) {
+const sender = async function (constant, params, headers = {}, custom) {
   constant = constant.toUpperCase()
 
   let option = axios.defaults
@@ -136,7 +136,7 @@ const sender = async function(constant, params, headers = {}, custom) {
  * Common response handler
  * @param {Object} res
  */
-const receiver = function(res) {
+const receiver = function (res) {
   if (res.data) {
     const code = res.data['code']
     if (code === 200) {
@@ -158,7 +158,7 @@ const receiver = function(res) {
  * Common error handler
  * @param {Object} errCode
  */
-const errorHandler = function(err) {
+const errorHandler = function (err) {
   const error = {}
   error.code = isNaN(parseInt(err.code)) ? err : parseInt(err.code)
   error.message = err.message || 'Undefined Error.'
