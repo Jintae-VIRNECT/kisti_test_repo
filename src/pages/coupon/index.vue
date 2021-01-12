@@ -44,7 +44,7 @@
                 <el-button
                   type="primary"
                   @click="addCouponCode"
-                  :disabled="!addCouponForm.newCouponCode"
+                  :disabled="!addCouponForm.newCouponCode.trim()"
                 >
                   {{ $t('coupon.addCouponCode.submit') }}
                 </el-button>
