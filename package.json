@@ -15,6 +15,7 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
+    "@virnect/logger": "^1.0.2",
     "@virnect/WC-Modules": "^1.0.1",
     "axios": "^0.19.2",
     "billboard.js": "^1.12.10",
@@ -28,10 +29,10 @@
     "nuxt-i18n": "^6.6.1"
   },
   "devDependencies": {
-    "@vue/component-compiler-utils": "^3.1.0",
-    "@vue/eslint-config-airbnb": "^4.0.0",
     "@virnect/eslint-config": "^1.0.0",
     "@virnect/stylelint-config": "^1.0.1",
+    "@vue/component-compiler-utils": "^3.1.0",
+    "@vue/eslint-config-airbnb": "^4.0.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.3",
     "babel-loader": "^8.0.6",
