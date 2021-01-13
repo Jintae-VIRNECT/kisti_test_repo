@@ -15,6 +15,7 @@ pipeline {
                     }
                     steps {
                         sh 'docker build -t pf-webdownload --build-arg NODE_ENV=develop -f docker/Dockerfile .'
+                        sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
                     }
                 }
 
@@ -25,6 +26,7 @@ pipeline {
                     steps {
                         sh 'git checkout ${GIT_TAG}'
                         sh 'docker build -t pf-webdownload:${GIT_TAG} --build-arg NODE_ENV=production -f docker/Dockerfile .'
+                        sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
                     }
                 }
             }
