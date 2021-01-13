@@ -15,8 +15,8 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/logger": "^1.0.2",
     "@virnect/WC-Modules": "^1.0.1",
+    "@virnect/logger": "^1.0.2",
     "axios": "^0.19.2",
     "billboard.js": "^1.12.10",
     "cross-env": "^7.0.2",
@@ -26,6 +26,7 @@
     "js-cookie": "^2.2.1",
     "jwt-decode": "^3.0.0",
     "nuxt": "^2.0.0",
+    "nuxt-helmet": "^2.0.0",
     "nuxt-i18n": "^6.6.1"
   },
   "devDependencies": {

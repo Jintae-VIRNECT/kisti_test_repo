@@ -36,7 +36,12 @@ module.exports = async () => {
     /**
      * Plugins
      */
-    modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources', '@nuxtjs/axios'],
+    modules: [
+      'nuxt-helmet',
+      ['nuxt-i18n', lang],
+      '@nuxtjs/style-resources',
+      '@nuxtjs/axios',
+    ],
     plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
     /*
      ** Customize style
