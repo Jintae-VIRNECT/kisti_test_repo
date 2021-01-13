@@ -15,7 +15,9 @@ pipeline {
                     }
                     steps {
                         sh 'docker build -t rm-service -f docker/Dockerfile .'
-                        sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
+                        catchError {
+                          sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
+                        }
                     }
                 }
 
@@ -26,7 +28,9 @@ pipeline {
                     steps {
                         sh 'git checkout ${GIT_TAG}'
                         sh 'docker build -t rm-service:${GIT_TAG} -f docker/Dockerfile .'
-                        sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
+                        catchError {
+                          sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
+                        }
                     }
                 }
             }
