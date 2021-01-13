@@ -87,7 +87,7 @@ pipeline {
                                                 execCommand: "docker run -p 8632:8632 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'if [ `docker images | grep pf-license | grep -v batch | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-license" | grep -v batch | grep -v ${GIT_TAG} | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+                                                execCommand: "if [ `docker images | grep pf-license | grep -v batch | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-license\" | grep -v batch | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
@@ -131,7 +131,7 @@ pipeline {
                                                 execCommand: "docker run -p 8632:8632 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'if [ `docker images | grep pf-license | grep -v batch | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-license" | grep -v batch | grep -v ${GIT_TAG} | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+                                                execCommand: "if [ `docker images | grep pf-license | grep -v batch | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-license\" | grep -v batch | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
