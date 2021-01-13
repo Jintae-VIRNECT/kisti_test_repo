@@ -670,6 +670,17 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 					message = "Evicting participant with private id {} because its websocket unexpectedly closed in the client side";
 				}
 			} catch (RemoteServiceException exception) {
+				//...
+			}
+		} else {
+			//Unable to unwrap data, invalid status [CLOSED]
+			try {
+				Participant p = sessionManager.getParticipant(rpcSession.getSessionId());
+				if (p != null) {
+					message = "Evicting participant with private id {} because its websocket unexpectedly closed in uncaught exception";
+				}
+			} catch (RemoteServiceException exception) {
+				//...
 			}
 		}
 
