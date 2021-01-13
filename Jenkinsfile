@@ -48,7 +48,7 @@ pipeline {
             sh 'count=`docker ps | grep rm-web-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-web-onpremise && docker rm rm-web-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18886:8886 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-web-onpremise rm-web'
             catchError {
-              sh 'if [ `docker images | grep rm-web | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "rm-web" | grep -v server | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+              sh 'if [ `docker images | grep rm-web | grep -v 103505534696 | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "rm-web" | grep -v server | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
             }
           }  
         }
