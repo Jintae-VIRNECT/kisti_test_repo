@@ -1,8 +1,6 @@
 import { context, url } from '@/plugins/context'
 
-export default async function({ req, res, store, redirect, error, $config }) {
-  if (res) res.setHeader('X-Frame-Options', 'deny')
-
+export default async function({ req, store, redirect, error, $config }) {
   // nuxt undefined url bug
   if (req && req.url.split('/').find(_ => _.match(/undefined|null/)))
     redirect('/')

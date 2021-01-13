@@ -26,6 +26,7 @@
     "jwt-decode": "^3.0.0",
     "lodash.clonedeep": "^4.5.0",
     "nuxt": "^2.0.0",
+    "nuxt-helmet": "^2.0.0",
     "nuxt-i18n": "^6.6.1",
     "vue-markdown": "^2.2.4"
   },
