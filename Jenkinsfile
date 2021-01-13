@@ -49,6 +49,7 @@ pipeline {
             sh 'docker run -p 18878:8878 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-webworkstation-onpremise pf-webworkstation'
             catchError {
                sh 'if [ `docker images | grep pf-webworkstation | grep -v 103505534696 | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-webworkstation" | grep -v server | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+               sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
             }
           }
         }
