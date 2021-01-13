@@ -15,9 +15,6 @@ pipeline {
           }
           steps {
             sh 'docker build -t rm-web --build-arg NODE_ENV=develop -f docker/Dockerfile .'
-            catchError {
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
-            }
           }
         }
 
@@ -28,9 +25,6 @@ pipeline {
           steps {
             sh 'git checkout ${GIT_TAG}'
             sh 'docker build -t rm-web:${GIT_TAG} --build-arg NODE_ENV=production -f docker/Dockerfile .'
-            catchError {
-              sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
-            }
           }
         }
       }
