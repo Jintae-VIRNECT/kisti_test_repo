@@ -29,10 +29,9 @@ export default {
             ...this.searchParams,
             search: keyword && keyword.value,
             filter: filter && filter.value.join(','),
-            sort: customParams.sort ||
-              (sort && sort.value) ||
-              this.searchParams.sort,
-            page: customParams.page || (page && page.value),
+            sort: sort && sort.value,
+            page: page && page.value,
+            ...customParams,
           }
           // null 삭제
           Object.keys(this.searchParams).forEach(key => {
