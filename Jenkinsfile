@@ -15,7 +15,9 @@ pipeline {
           }
           steps {
             sh 'docker build -t pf-webaccount --build-arg NODE_ENV=develop -f docker/Dockerfile .'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
+            catchError {
+              sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
+            }
           }
         }
 
@@ -26,7 +28,9 @@ pipeline {
           steps {
             sh 'git checkout ${GIT_TAG}'
             sh 'docker build -t pf-webaccount:${GIT_TAG} --build-arg NODE_ENV=production -f docker/Dockerfile .'
-            sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
+            catchError {
+              sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
+            }
           }
         }
       }
