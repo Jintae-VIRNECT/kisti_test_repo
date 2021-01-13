@@ -87,7 +87,7 @@ pipeline {
                         execCommand: "docker run -p 8878:8878 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
                       ),
                       sshTransfer(
-                        execCommand: 'if [ `docker images | grep pf-webworkstation | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-webworkstation" | grep -v server | grep -v ${GIT_TAG} | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+                        execCommand: "if [ `docker images | grep pf-webworkstation | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-webworkstation\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                       )
                     ]
                   )
@@ -133,7 +133,7 @@ pipeline {
                         execCommand: "docker run -p 8878:8878 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=pf-webworkstation $aws_ecr_address/pf-webworkstation:\\${GIT_TAG}"
                       ),
                       sshTransfer(
-                        execCommand: 'if [ `docker images | grep pf-webworkstation | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-webworkstation" | grep -v server | grep -v ${GIT_TAG} | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+                        execCommand: "if [ `docker images | grep pf-webworkstation | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-webworkstation\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                       )
                     ]
                   )
