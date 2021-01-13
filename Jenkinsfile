@@ -97,7 +97,7 @@ pipeline {
                             def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
                             def payload = """
                             {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": true}
-                            """                             
+                            """
 
                             sh "curl -d '$payload' -X POST 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
                         }
@@ -131,7 +131,7 @@ pipeline {
                                                 execCommand: "docker run -p 8000:8000 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=rm-service $aws_ecr_address/rm-service:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'if [ `docker images | grep rm-service | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "rm-service" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+                                                execCommand: "if [ `docker images | grep rm-service | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-service\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
