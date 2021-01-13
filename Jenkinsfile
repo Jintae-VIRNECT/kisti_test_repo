@@ -50,7 +50,7 @@ pipeline {
             sh 'count=`docker ps | grep rm-dashboard-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-dashboard-onpremise && docker rm rm-dashboard-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 19989:9989 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-dashboard-onpremise rm-dashboard'
             catchError {
-              sh 'if [ `docker images | grep rm-dashboard | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "rm-dashboard" | grep -v server | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+              sh 'if [ `docker images | grep rm-dashboard | grep -v 103505534696 | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "rm-dashboard" | grep -v server | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
             }            
           }
         }
