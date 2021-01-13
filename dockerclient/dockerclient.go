@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"path/filepath"
 	"strconv"
@@ -68,21 +67,7 @@ func Init() {
 	logEntry := logrus.NewEntry(log)
 	ctx := context.WithValue(context.Background(), data.ContextKeyLog, logEntry)
 
-	if err := DownloadDockerImage(ctx); err != nil {
-		e := fmt.Errorf("not found docker image: %s", viper.GetString("record.dockerImage"))
-		panic(e)
-	}
 	go garbageCollector(ctx)
-	go monitoringRecordingImage(ctx)
-}
-
-func monitoringRecordingImage(ctx context.Context) {
-	period := time.Duration(10) * time.Second
-	ticker := time.NewTicker(period)
-	defer ticker.Stop()
-	for range ticker.C {
-		DownloadDockerImage(ctx)
-	}
 }
 
 func garbageCollector(ctx context.Context) {
@@ -271,7 +256,9 @@ func RunContainer(ctx context.Context, param ContainerParam) (string, error) {
 		return "", ErrContainerInternal
 	}
 
-	timeout := 5 * time.Second
+	preparingTimeout := viper.GetInt("record.maxPreparingTime")
+	log.Debug("preparing timeout:", preparingTimeout)
+	timeout := time.Duration(preparingTimeout) * time.Second
 	timoutCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
