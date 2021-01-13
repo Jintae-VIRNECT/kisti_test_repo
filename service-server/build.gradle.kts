@@ -8,14 +8,14 @@ plugins {
     kotlin("plugin.jpa")
 }
 
-// This block encapsulates custom properties and makes them available to all
-// modules in the project.
+// This block encapsulates custom properties and makes them available to
+// all modules in the project.
 ext {
     set("springCloudVersion", "Hoxton.SR1")
     /*val profiles = if(System.getProperty("spring.profiles") != null) System.getProperty("spring.profiles").toString() else "default"
     set("profiles", profiles)*/
-}
 
+}
 
 sourceSets {
     main {
@@ -135,7 +135,7 @@ tasks.getByName<BootJar>("bootJar") {
     manifest {
         attributes(
             "Implementation-Title" to  "Remote Service Server",
-            "Implementation-Version" to "2.0 revision 2222v13")
+            "Implementation-Version" to "2.0 revision 2222v15")
     }
     archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
 

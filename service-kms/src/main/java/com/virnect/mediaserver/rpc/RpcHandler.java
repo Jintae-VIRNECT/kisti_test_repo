@@ -670,6 +670,17 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 					message = "Evicting participant with private id {} because its websocket unexpectedly closed in the client side";
 				}
 			} catch (RemoteServiceException exception) {
+				//...
+			}
+		} else {
+			//Unable to unwrap data, invalid status [CLOSED]
+			try {
+				Participant p = sessionManager.getParticipant(rpcSession.getSessionId());
+				if (p != null) {
+					message = "Evicting participant with private id {} because its websocket unexpectedly closed in uncaught exception";
+				}
+			} catch (RemoteServiceException exception) {
+				//...
 			}
 		}
 
@@ -700,7 +711,8 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 	@Override
 	public void handleTransportError(Session rpcSession, Throwable exception) throws Exception {
 		if (rpcSession != null) {
-			log.error("Transport exception for WebSocket session: {} - Exception: {}", rpcSession.getSessionId(),
+			log.error("Transport exception for WebSocket session: {} - Exception: {}",
+					rpcSession.getSessionId(),
 					exception.getMessage());
 			if ("IOException".equals(exception.getClass().getSimpleName()) && exception.getCause() != null
 					&& "Broken pipe".equals(exception.getCause().getMessage())) {
@@ -710,14 +722,6 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 				// Store WebSocket connection interrupted exception for this web socket to
 				// automatically evict the participant on "afterConnectionClosed" event
 				this.webSocketEOFTransportError.put(rpcSession.getSessionId(), true);
-			} else {
-				// Unexpected exception Store WebSocket connection interrupted exception for this web socket to
-				// automatically evict the participant on "afterConnectionClosed" event
-				log.warn("Participant with private id {} unexpectedly closed the websocket, exception is {} message is {}",
-						rpcSession.getSessionId(),
-						exception.getClass().getSimpleName(),
-						exception.getCause().getMessage());
-				this.webSocketEOFTransportError.put(rpcSession.getSessionId(), true);
 			}
 		}
 	}
@@ -726,6 +730,17 @@ public class RpcHandler extends DefaultJsonRpcHandler<JsonObject> {
 	public void handleUncaughtException(Session rpcSession, Exception exception) {
 		log.error("Uncaught exception for WebSocket session: {} - Exception: {}",
 				rpcSession != null ? rpcSession.getSessionId() : "RpcSession NULL", exception);
+		// Unexpected exception Store WebSocket connection interrupted exception for this web socket to
+		// automatically evict the participant on "afterConnectionClosed" event
+		// do not need to put webSocketEOFTransportError
+		if(rpcSession != null) {
+			try {
+				afterConnectionClosed(rpcSession, null);
+			} catch (Exception e) {
+				log.error("Uncaught exception - {}", e.getMessage());
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override

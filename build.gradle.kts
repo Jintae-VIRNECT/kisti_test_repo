@@ -15,6 +15,10 @@ plugins {
     id("java")
 }
 
+dependencies {
+
+}
+
 allprojects {
     group = "com.virnect"
     //version = "2.2.0"
