@@ -606,11 +606,4 @@ public class WorkspaceController {
         return ResponseEntity.ok(new ApiResponse<>(workspaceCustomSettingResponse));
     }
 
-    @ApiOperation(value = "전체 워크스페이스 멤버 조회")
-    @GetMapping("/members")
-    public ResponseEntity<ApiResponse<WorkspaceInfoListResponse>> getAllWorkspaceUserList(
-    ) {
-        WorkspaceInfoListResponse workspaceUserInfoListResponse = workspaceService.getAllWorkspaceUserList();
-        return ResponseEntity.ok(new ApiResponse<>(workspaceUserInfoListResponse));
-    }
 }

@@ -2042,6 +2042,7 @@ public class WorkspaceService {
                 "", workspaceUserIdList).getData();
         userInfoListRestResponse.getUserInfoList().forEach(userInfoRestResponse -> {
             MemberInfoDTO memberInfoDTO = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
+            memberInfoDTO.setLicenseProducts(getUserLicenseProductList(workspaceId, userInfoRestResponse.getUuid()));
             memberInfoDTOList.add(memberInfoDTO);
         });
 
@@ -2675,32 +2676,6 @@ public class WorkspaceService {
                 responseMessage.getData().getPasswordChangedDate()
         );
 
-    }
-
-    public WorkspaceInfoListResponse getAllWorkspaceUserList() {
-        List<Workspace> workspaceList = workspaceRepository.findAll();
-        List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceInfoList = workspaceList.stream().map(workspace -> {
-            WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
-            List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_Workspace(workspace);
-            List<MemberInfoDTO> memberInfoList = workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
-                WorkspaceUser workspaceUser = workspaceUserPermission.getWorkspaceUser();
-                UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceUser.getUserId());
-                MemberInfoDTO memberInfoDTO = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
-                memberInfoDTO.setJoinDate(workspaceUser.getCreatedDate());
-                memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-                memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-                memberInfoDTO.setLicenseProducts(getUserLicenseProductList(workspaceUser.getWorkspace().getUuid(), workspaceUser.getUserId()));
-                return memberInfoDTO;
-            }).collect(Collectors.toList());
-            workspaceInfo.setMemberList(memberInfoList);
-            return workspaceInfo;
-        }).collect(Collectors.toList());/*
-        PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
-        pageMetadataResponse.setTotalElements(workspaceList.getTotalElements());
-        pageMetadataResponse.setTotalPage(workspaceList.getTotalPages());
-        pageMetadataResponse.setCurrentPage(pageable.getPageNumber() + 1);
-        pageMetadataResponse.setCurrentSize(pageable.getPageSize());*/
-        return new WorkspaceInfoListResponse(workspaceInfoList,null);
     }
 }
 
