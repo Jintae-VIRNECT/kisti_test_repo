@@ -14,8 +14,8 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/logger": "^1.0.2",
     "@virnect/WC-Modules": "^1.0.1",
+    "@virnect/logger": "^1.0.2",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.28",
@@ -24,6 +24,7 @@
     "js-file-download": "^0.4.12",
     "jwt-decode": "^3.0.0",
     "nuxt": "^2.14.5",
+    "nuxt-helmet": "^2.0.0",
     "nuxt-i18n": "^6.6.1"
   },
   "devDependencies": {
@@ -34,7 +35,6 @@
     "babel-loader": "^8.0.6",
     "babel-preset-env": "^1.7.0",
     "node-sass": "^4.5.3",
-    "prettier": "^1.19.1",
     "sass": "^1.23.7",
     "sass-loader": "^8.0.0",
     "vue-loader": "^15.8.3",

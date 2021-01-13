@@ -37,7 +37,12 @@ module.exports = async () => {
     /**
      * Plugins
      */
-    modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources', '@nuxtjs/axios'],
+    modules: [
+      'nuxt-helmet',
+      ['nuxt-i18n', lang],
+      '@nuxtjs/style-resources',
+      '@nuxtjs/axios',
+    ],
     plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
     /*
      ** Customize style
@@ -98,7 +103,7 @@ module.exports = async () => {
         routes.push({
           path: '/',
           component: resolve(__dirname, 'src/pages/index.vue'),
-          alias: ["/remote", "/make", "/view", "/track"],
+          alias: ['/remote', '/make', '/view', '/track'],
         })
       },
     },
