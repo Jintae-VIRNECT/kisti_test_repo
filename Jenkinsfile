@@ -49,7 +49,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep pf-license-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-license-onpremise && docker rm pf-license-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18632:8632 -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --restart=always --name=pf-license-onpremise pf-license'
                         catchError() {
-                            sh 'docker image prune -f'
+                             sh 'if [ `docker images | grep pf-license |  grep -v batch | grep -v 103505534696 | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-license" | grep -v batch | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
                         }
                     }
                 }
@@ -87,7 +87,7 @@ pipeline {
                                                 execCommand: "docker run -p 8632:8632 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'docker image prune -f'
+                                                execCommand: 'if [ `docker images | grep pf-license | grep -v batch | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-license" | grep -v batch | grep -v ${GIT_TAG} | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
                                             )
                                         ]
                                     )
@@ -131,7 +131,7 @@ pipeline {
                                                 execCommand: "docker run -p 8632:8632 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-license $aws_ecr_address/pf-license:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'docker image prune -f'
+                                                execCommand: 'if [ `docker images | grep pf-license | grep -v batch | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-license" | grep -v batch | grep -v ${GIT_TAG} | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
                                             )
                                         ]
                                     )
