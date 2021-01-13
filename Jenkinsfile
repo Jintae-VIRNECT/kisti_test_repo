@@ -16,6 +16,7 @@ pipeline {
 
           steps {
             sh 'docker build -t rm-dashboard -f ./docker/Dockerfile .'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
           }
         }
 
@@ -27,6 +28,7 @@ pipeline {
           steps {
             sh 'git checkout ${GIT_TAG}'
             sh 'docker build -t rm-dashboard:${GIT_TAG} -f ./docker/Dockerfile .'
+            sh 'docker rmi -f $(docker images -f "dangling=true" -q)'
           }
         }
       }
