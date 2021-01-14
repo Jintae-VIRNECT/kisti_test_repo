@@ -131,7 +131,7 @@ export default {
         const recordInfo = result.infos[0]
         const status = recordInfo.status
 
-        if (this.serverRecordRetryCount >= 5) {
+        if (this.serverRecordRetryCount >= 10) {
           this.processPreparingFailed()
           return
         }
