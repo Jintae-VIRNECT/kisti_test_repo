@@ -22,11 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.license.application.LicenseService;
-import com.virnect.license.dto.response.LicenseSecessionResponse;
-import com.virnect.license.dto.response.MyLicenseInfoListResponse;
-import com.virnect.license.dto.response.MyLicenseInfoResponse;
-import com.virnect.license.dto.response.MyLicensePlanInfoListResponse;
-import com.virnect.license.dto.response.WorkspaceLicensePlanInfoResponse;
+import com.virnect.license.dto.license.response.LicenseSecessionResponse;
+import com.virnect.license.dto.license.response.MyLicenseInfoListResponse;
+import com.virnect.license.dto.license.response.MyLicenseInfoResponse;
+import com.virnect.license.dto.license.response.MyLicensePlanInfoListResponse;
+import com.virnect.license.dto.license.response.WorkspaceLicensePlanInfoResponse;
 import com.virnect.license.exception.LicenseServiceException;
 import com.virnect.license.global.common.ApiResponse;
 import com.virnect.license.global.common.PageRequest;
