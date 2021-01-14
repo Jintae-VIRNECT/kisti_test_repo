@@ -94,6 +94,34 @@ pipeline {
                             )
                         }
                         script {
+                            sshPublisher(
+                                continueOnError: false, failOnError: true,
+                                publishers: [
+                                    sshPublisherDesc(
+                                        configName: 'aws-onpremise-qa',
+                                        verbose: true,
+                                        transfers: [
+                                            sshTransfer(
+                                                execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker pull $aws_ecr_address/pf-gateway:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: 'count=`docker ps -a | grep pf-gateway | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway && docker rm pf-gateway; else echo "Not Running STOP&DELETE"; fi;'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker run -p  8073:8073 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-gateway $aws_ecr_address/pf-gateway:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "if [ `docker images | grep pf-gateway | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-gateway\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                                            )
+                                        ]
+                                    )
+                                ]
+                            )
+                        }
+                        script {
                             def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
                             def payload = """
                             {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": true}
