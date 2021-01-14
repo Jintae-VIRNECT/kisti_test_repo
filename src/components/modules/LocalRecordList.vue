@@ -82,7 +82,6 @@
 import Modal from 'Modal'
 import RemoteTable from 'RemoteTable'
 import IconButton from 'IconButton'
-import FileUpload from 'components/workspace/modal/WorkspaceRecordFileUpload'
 import IDBHelper from 'utils/idbHelper'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
@@ -95,7 +94,7 @@ export default {
     Modal,
     RemoteTable,
     IconButton,
-    FileUpload,
+    FileUpload: import('components/workspace/modal/WorkspaceRecordFileUpload'),
   },
   props: {
     visible: {
