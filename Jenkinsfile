@@ -48,7 +48,7 @@ pipeline {
             sh 'count=`docker ps -a | grep pf-processmanagement-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-processmanagement-onpremise && docker rm pf-processmanagement-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18079:8079 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-processmanagement-onpremise pf-processmanagement'
             catchError() {
-               sh 'if [ `docker images | grep pf-processmanagement | grep -v 103505534696 | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-processmanagement" | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+               sh "if [ `docker images | grep pf-processmanagement | grep -v 103505534696 | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-processmanagement\" | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
             }
           }
         }
