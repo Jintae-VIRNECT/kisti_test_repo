@@ -78,6 +78,7 @@ export default {
       license: true,
       showDenied: false,
       showPlanOverflow: false,
+      inited: false,
     }
   },
   watch: {
@@ -115,10 +116,10 @@ export default {
         return
       } else {
         const res = await getLicense({ userId: authInfo.account.uuid })
-        const workspaces = res.myPlanInfoList.filter(
+        const myPlans = res.myPlanInfoList.filter(
           plan => plan.planProduct === 'REMOTE',
         )
-        if (workspaces.length === 0) {
+        if (myPlans.length === 0) {
           this.license = false
         } else {
           this.license = true
@@ -127,13 +128,18 @@ export default {
           ...authInfo.account,
           licenseEmpty: this.license,
         })
-        if (workspaces.length > 0) {
-          for (let workspace of workspaces) {
-            const info = authInfo.workspace.find(
-              work => work.uuid === workspace.workspaceId,
+        if (myPlans.length > 0) {
+          const workspaces = []
+          for (let workspace of authInfo.workspace) {
+            const info = myPlans.find(
+              work => work.workspaceId === workspace.uuid,
             )
-            if (!info || !info.uuid) continue
-            workspace['role'] = info.role
+            if (!info || !info.workspaceId) continue
+            workspaces.push({
+              ...workspace,
+              renewalDate: info.renewalDate,
+              productPlanStatus: info.productPlanStatus,
+            })
           }
           this.initWorkspace(workspaces)
         }
