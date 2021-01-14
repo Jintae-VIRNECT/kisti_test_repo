@@ -53,7 +53,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep rm-recordserver-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver-onpremise && docker rm rm-recordserver-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18083:8083 --restart=always -e CONFIG_SERVER=http://192.168.6.3:6383 -e VIRNECT_ENV=onpremise -d -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/recordings_op:/recordings --name=rm-recordserver-onpremise rm-recordserver'
                         catchError {
-                            sh 'if [ `docker images | grep rm-recordserver | grep -v 103505534696 | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "rm-recordserver" | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+                            sh 'if [ `docker images | grep rm-recordserver | grep -v agent | grep -v 103505534696 | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "rm-recordserver" | grep -v agent | grep -v "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
                         }
                     }
                 }
@@ -92,7 +92,35 @@ pipeline {
                                                 execCommand: "docker run -p 8083:8083 --restart=always -e CONFIG_SERVER=https://stgconfig.virnect.com -e VIRNECT_ENV=staging -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print \$1}\'` -d -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/recordings:/recordings --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: "if [ `docker images | grep rm-recordserver | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-recordserver\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                                                execCommand: "if [ `docker images | grep rm-recordserver | grep -v agent | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-recordserver\" | grep -v agent | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                                            )
+                                        ]
+                                    )
+                                ]
+                            )
+                        }
+                        script {
+                            sshPublisher(
+                                continueOnError: false, failOnError: true,
+                                publishers: [
+                                    sshPublisherDesc(
+                                        configName: 'aws-onpremise-qa',
+                                        verbose: true,
+                                        transfers: [
+                                            sshTransfer(
+                                                execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker pull $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: 'count=`docker ps -a | grep rm-recordserver| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-recordserver && docker rm rm-recordserver; else echo "Not Running STOP&DELETE"; fi;'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker run -p 8083:8083 --restart=always -e CONFIG_SERVER=https://stgconfig.virnect.com -e VIRNECT_ENV=staging -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print \$1}\'` -d -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/recordings:/recordings --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "if [ `docker images | grep rm-recordserver | grep -v agent | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-recordserver\" | grep -v agent | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
@@ -137,7 +165,7 @@ pipeline {
                                                 execCommand: "docker run -p 8083:8083 --restart=always -d -e CONFIG_SERVER=https://config.virnect.com -e VIRNECT_ENV=production -e EUREKA_INSTANCE_IP=`hostname -I | awk  \'{print \$1}\'` -v /var/run/docker.sock:/var/run/docker.sock -v /tmp/recordings:/recordings --name=rm-recordserver $aws_ecr_address/rm-recordserver:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: "if [ `docker images | grep rm-recordserver | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-recordserver\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                                                execCommand: "if [ `docker images | grep rm-recordserver | grep -v agent | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-recordserver\" | grep -v agent | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
