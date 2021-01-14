@@ -48,7 +48,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep pf-gateway-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-gateway-onpremise && docker rm pf-gateway-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18073:8073 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-gateway-onpremise pf-gateway'
                         catchError() {
-                             sh 'if [ `docker images | grep pf-gateway | grep -v 103505534696 | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-gateway" | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+                             sh 'if [ `docker images | grep pf-gateway | grep -v 103505534696 | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-gateway" | grep -v "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
                         }
                     }
                 }
@@ -93,6 +93,14 @@ pipeline {
                                 ]
                             )
                         }
+                        script {
+                            def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                            def payload = """
+                            {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": true}
+                            """                             
+
+                            sh "curl -d '$payload' -X POST 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+                        }
                     }
                 }
 
@@ -131,12 +139,16 @@ pipeline {
                         }
 
                         script {
-                            def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
+                            def GIT_RELEASE_INFO = sh(returnStdout: true, script: 'curl -X GET https:/api.github.com/repos/$REPO_NAME/releases/tags/$GIT_TAG?access_token=$securitykey')
+                            def RELEASE = readJSON text: "$GIT_RELEASE_INFO"
+                            def RELEASE_ID = RELEASE.id
                             def payload = """
-                            {"tag_name": "$GIT_TAG", "name": "$GIT_TAG", "body": "$GIT_TAG_CONTENT", "target_commitish": "master", "draft": false, "prerelease": false}
-                            """                             
+                            {"prerelease": false}
+                            """
 
-                            sh "curl -d '$payload' 'https://api.github.com/repos/$REPO_NAME/releases?access_token=$securitykey'"
+                            sh "echo '$RELEASE'"
+
+                            sh "curl -d '$payload' -X PATCH 'https://api.github.com/repos/$REPO_NAME/releases/$RELEASE_ID?access_token=$securitykey'"
                         }
                     }
                 }
