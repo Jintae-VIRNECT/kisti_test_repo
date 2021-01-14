@@ -113,7 +113,7 @@ pipeline {
                         execCommand: 'count=`docker ps | grep rm-web| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-web && docker rm rm-web; else echo "Not Running STOP&DELETE"; fi;'
                       ),
                       sshTransfer(
-                        execCommand: "docker run -p 8886:8886 --restart=always -e 'CONFIG_SERVER=http://localhost:6383' -e 'VIRNECT_ENV=onpremise' -d --name=rm-web $aws_ecr_address/rm-web:\\${GIT_TAG}"
+                        execCommand: "docker run -p 8886:8886 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -d --name=rm-web $aws_ecr_address/rm-web:\\${GIT_TAG}"
                       ),
                       sshTransfer(
                         execCommand: "if [ `docker images | grep rm-web | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-web\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
