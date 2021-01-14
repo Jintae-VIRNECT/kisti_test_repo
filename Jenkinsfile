@@ -56,7 +56,7 @@ pipeline {
             sh 'count=`docker ps -a | grep pf-download-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download-onpremise && docker rm pf-download-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18086:8086 --restart=always  -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-download-onpremise pf-download'
             catchError() {
-               sh 'if [ `docker images | grep pf-download | grep -v 103505534696 | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-download" | grep "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+               sh 'if [ `docker images | grep pf-download | grep -v 103505534696 | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-download" | grep -v "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
             }
           }
         }
@@ -92,6 +92,34 @@ pipeline {
                       ),
                       sshTransfer(
                         execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: "if [ `docker images | grep pf-download | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-download\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                      )
+                    ]
+                  )
+                ]
+              )
+            }
+            script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-onpremise-qa',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/pf-download:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps | grep pf-download | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-download && docker rm pf-download; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8086:8086 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-download $aws_ecr_address/pf-download:\\${GIT_TAG}"
                       ),
                       sshTransfer(
                         execCommand: "if [ `docker images | grep pf-download | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-download\" | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
