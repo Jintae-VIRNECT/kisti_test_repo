@@ -48,7 +48,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep rm-service-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-service-onpremise && docker rm rm-service-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18000:8000 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-service-onpremise rm-service'
                         catchError {
-                             sh 'if [ `docker images | grep rm-service | grep -v 103505534696 | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "rm-service" | grep -v server | grep -v "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+                             sh "if [ `docker images | grep rm-service | grep -v 103505534696 | grep -v server | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"rm-service\" | grep -v server | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print $3}\'); else echo \"Just One Images...\"; fi;"
                         }
                     }
                 }
