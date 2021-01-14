@@ -50,10 +50,9 @@ public class DownloadService {
 
     //TODO: 다국어별 변환 필요할수도...
     public AppInfoListResponse getAppList(String productName, Locale locale) {
-        Product product = productRepository.findByName(productName.toUpperCase())
-                .orElseThrow(() -> new DownloadException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER));
-        List<App> apps = appRepository.getAppList(product);
-        Map<List<Object>, List<App>> result = apps.stream().collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice(), app.getOs())));
+        List<App> apps = appRepository.getActiveAppList(productName.toUpperCase());
+        Map<List<Object>, List<App>> result = apps.stream()
+                .collect(Collectors.groupingBy(app -> Arrays.asList(app.getDevice().getType(), app.getDevice().getModel(), app.getOs())));
 
         List<AppInfoResponse> appInfoResponseList = result.values().stream().map(appList -> {
             App app = appList.stream().findFirst().orElse(null);

@@ -1,48 +1,33 @@
 package com.virnect.download.application;
 
+import com.virnect.download.dao.AppRepository;
+import com.virnect.download.dao.DeviceRepository;
+import com.virnect.download.dao.OSRepository;
+import com.virnect.download.dao.ProductRepository;
+import com.virnect.download.domain.*;
+import com.virnect.download.dto.request.AppInfoUpdateRequest;
+import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
+import com.virnect.download.dto.request.AppUploadRequest;
+import com.virnect.download.dto.response.*;
+import com.virnect.download.exception.AppServiceException;
+import com.virnect.download.global.common.ApiResponse;
+import com.virnect.download.global.error.ErrorCode;
+import com.virnect.download.infra.file.upload.FileUploadService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import net.dongliu.apk.parser.ByteArrayApkFile;
+import net.dongliu.apk.parser.bean.ApkMeta;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
-import net.dongliu.apk.parser.ByteArrayApkFile;
-import net.dongliu.apk.parser.bean.ApkMeta;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.download.dao.AppRepository;
-import com.virnect.download.dao.DeviceRepository;
-import com.virnect.download.dao.OSRepository;
-import com.virnect.download.dao.ProductRepository;
-import com.virnect.download.domain.App;
-import com.virnect.download.domain.AppGuideUrl;
-import com.virnect.download.domain.AppImageUrl;
-import com.virnect.download.domain.AppStatus;
-import com.virnect.download.domain.AppUpdateStatus;
-import com.virnect.download.domain.Device;
-import com.virnect.download.domain.OS;
-import com.virnect.download.domain.Product;
-import com.virnect.download.dto.request.AppInfoUpdateRequest;
-import com.virnect.download.dto.request.AppSigningKeyRegisterRequest;
-import com.virnect.download.dto.request.AppUploadRequest;
-import com.virnect.download.dto.response.AppDetailInfoResponse;
-import com.virnect.download.dto.response.AppSigningKetRegisterResponse;
-import com.virnect.download.dto.response.AppUploadResponse;
-import com.virnect.download.dto.response.AppVersionInfoListResponse;
-import com.virnect.download.dto.response.AppVersionInfoResponse;
-import com.virnect.download.dto.response.SignedAppInfoResponse;
-import com.virnect.download.exception.AppServiceException;
-import com.virnect.download.global.common.ApiResponse;
-import com.virnect.download.global.error.ErrorCode;
-import com.virnect.download.infra.file.upload.FileUploadService;
 
 @Slf4j
 @Service
@@ -69,8 +54,8 @@ public class AppService {
 		}
 
 		// 1. find app device type, device, os information
-		Device device = getDeviceInfoByDeviceType(
-			appUploadRequest.getDeviceType(), appUploadRequest.getOperationSystem().toUpperCase());
+		//Device device = getDeviceInfoByDeviceType(appUploadRequest.getDeviceType(), appUploadRequest.getOperationSystem().toUpperCase());
+        Device device = getDeviceInfoByDeviceTypeAndProductName(appUploadRequest.getDeviceType(),appUploadRequest.getProductName());
 		OS os = getOSInfo(appUploadRequest.getOperationSystem());
 		Product product = productRepository.findByName(appUploadRequest.getProductName())
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_PRODUCT_INFO_NOT_FOUND));
@@ -150,6 +135,12 @@ public class AppService {
 		return deviceRepository.findByTypeAndModel(deviceType, deviceOS)
 			.orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND));
 	}
+
+    private Device getDeviceInfoByDeviceTypeAndProductName(String deviceType, String productName) {
+        log.info("[FIND_DEVICE] - DEVICE_TYPE: [{}] , PRODUCT_NAME: [{}]", deviceType, productName);
+        return deviceRepository.findByTypeAndProduct_Name(deviceType, productName)
+                .orElseThrow(() -> new AppServiceException(ErrorCode.ERR_APP_UPLOAD_FAIL_DEVICE_INFO_NOT_FOUND));
+    }
 
 	private OS getOSInfo(String operationSystem) {
 		return osRepository.findByName(operationSystem.toUpperCase())
