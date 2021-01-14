@@ -48,7 +48,7 @@ pipeline {
             sh 'count=`docker ps -a | grep pf-message-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-message-onpremise && docker rm pf-message-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18084:8084 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=pf-message-onpremise pf-message'
             catchError {
-               sh 'if [ `docker images | grep pf-message | grep -v 103505534696 | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep "pf-message" | grep -v "latest" | awk \'{print $3}\'); else echo "Just One Images..."; fi;'
+               sh "if [ `docker images | grep pf-message | grep -v 103505534696 | wc -l` -ne 1 ]; then docker rmi  -f $(docker images | grep \"pf-message\" | grep -v \\${GIT_TAG} | grep -v \"latest\"  | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
             }
           }
         }
