@@ -160,6 +160,11 @@
 .setting__r-selecter {
   // width: 28.571rem;
   width: 100%;
+  &.checking {
+    > button {
+      cursor: progress;
+    }
+  }
 }
 
 .setting-video {

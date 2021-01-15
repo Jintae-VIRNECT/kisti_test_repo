@@ -8,6 +8,8 @@
         <p class="setting__label">{{ $t('workspace.setting_camera') }}</p>
         <r-select
           class="setting__r-selecter"
+          :class="{ checking: checking }"
+          :disabled="checking"
           :options="videoDevices"
           value="deviceId"
           text="label"
@@ -21,6 +23,8 @@
         </p>
         <r-select
           class="setting__r-selecter"
+          :class="{ checking: checking }"
+          :disabled="checking"
           :options="resolutions"
           value="value"
           text="text"
@@ -69,6 +73,7 @@ export default {
       videoId: '',
       videoQuality: '',
       invalid: false,
+      checking: false,
     }
   },
   props: {
@@ -136,7 +141,9 @@ export default {
       this.$localStorage.setDevice('video', 'quality', quality)
     },
     async initStream() {
+      if (this.checking) return
       if (this.videoDevices.length === 0) return
+      this.checking = true
       if (this.stream) {
         this.stream.getTracks().forEach(track => {
           track.stop()
@@ -170,9 +177,11 @@ export default {
           )
           this.debug('call::setting::', settings)
           this.debug('call::capability::', capability)
+          this.checking = false
         } catch (err) {
           console.error(err)
           this.stream = null
+          this.checking = false
           if (typeof err === 'object' && err.name) {
             this.invalid = err.name
             if (err.name === 'OverconstrainedError') {
