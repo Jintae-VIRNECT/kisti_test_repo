@@ -2,7 +2,7 @@
   <div class="slider" :class="{ disabled }" @click="toggleSlider">
     <span
       class="slider-bg"
-      :class="{ first: isFirst, second: !isFirst }"
+      :class="{ 'silder-first': isFirst, 'slider-second': !isFirst }"
     ></span>
     <span class="slider-option" :class="{ active: isFirst }">{{ first }}</span>
     <span class="slider-option" :class="{ active: !isFirst }">{{
@@ -83,10 +83,10 @@ export default {
   background: #676773;
   border-radius: 3px;
   transition: left 0.3s;
-  &.first {
+  &.slider-first {
     left: 0;
   }
-  &.second {
+  &.slider-second {
     left: 50%;
   }
 }
