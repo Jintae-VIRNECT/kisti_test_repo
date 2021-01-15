@@ -10,6 +10,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+
 import org.bouncycastle.util.Strings;
 import org.reactivestreams.Publisher;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -75,6 +77,11 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 			.collect(Collectors.toMap(MessageBodyEncoder::encodingType, identity()));
 		this.redisTemplate = redisTemplate;
 		this.objectMapper = new ObjectMapper();
+	}
+
+	@PostConstruct
+	protected void init() {
+		logger.info("[MESSAGE ENCRYPT DECRYPT FILTER] => ACTIVE");
 	}
 
 	private static String toRaw(Flux<DataBuffer> body) {

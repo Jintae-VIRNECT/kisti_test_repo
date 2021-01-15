@@ -44,6 +44,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
 	@PostConstruct
 	protected void init() {
+		logger.info("[JWT AUTHENTICATION FILTER] => ACTIVE");
 		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 	}
 

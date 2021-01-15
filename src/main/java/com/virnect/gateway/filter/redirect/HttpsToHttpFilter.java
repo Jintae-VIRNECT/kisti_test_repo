@@ -1,6 +1,9 @@
 package com.virnect.gateway.filter.redirect;
 
 import java.net.URI;
+import java.util.Base64;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -27,6 +30,11 @@ import reactor.util.Loggers;
 public class HttpsToHttpFilter implements GlobalFilter, Ordered {
 	private static final int HTTPS_TO_HTTP_FILTER_ORDER = 10099;
 	private final static Logger logger = Loggers.getLogger("com.virnect.gateway.filter.redirect.HttpsToHttpFilter");
+
+	@PostConstruct
+	protected void init() {
+		logger.info("[HTTPS TO HTTP FILTER] => ACTIVE");
+	}
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
