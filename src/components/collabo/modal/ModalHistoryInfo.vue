@@ -35,7 +35,7 @@
           {{ $t('room.leader') }}
         </div>
         <div class="history-info-table-column__info">
-          {{ leader.nickName ? leader.nickName : '' }}
+          {{ leader ? leader.nickName : '' }}
         </div>
       </div>
       <div class="history-info__row">
@@ -131,7 +131,7 @@ export default {
         ? this.room.memberList.find(member => {
             return member.memberType === ROLE.LEADER
           })
-        : ''
+        : null
     },
     activeDate() {
       return this.room.activeDate ? dateTimeFormat(this.room.activeDate) : ''
