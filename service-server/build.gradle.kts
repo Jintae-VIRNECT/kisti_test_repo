@@ -1,5 +1,8 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// GRADLE PLUGINS.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 plugins {
     id("org.springframework.boot")
     id("java")
@@ -8,44 +11,34 @@ plugins {
     kotlin("plugin.jpa")
 }
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// CONFIGURATION.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 // This block encapsulates custom properties and makes them available to
 // all modules in the project.
 ext {
     set("springCloudVersion", "Hoxton.SR1")
-    /*val profiles = if(System.getProperty("spring.profiles") != null) System.getProperty("spring.profiles").toString() else "default"
-    set("profiles", profiles)*/
-
 }
 
 sourceSets {
     main {
         java.srcDir("src/main/java")
         resources.srcDir("src/main/resources")
-        /*resources.srcDirs(listOf(
-            "src/main/resources",
-            "src/main/resources-${System.getProperty("spring.profiles")}"
-        ))*/
     }
 }
 
 springBoot {
-    /*buildInfo {
-        properties {
-            group = rootProject.group.toString()
-            version = rootProject.version.toString()
-
-        }
-    }*/
-    //buildInfo()
     buildInfo {
         properties {
-            //additional = mapOf("version.remoteservice.server" to "v2.2")
-            additional = mapOf("version.remoteservice.server" to "v2.0")
+            additional = mapOf("version.remoteservice.server" to version)
         }
     }
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
 }
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// DEPENDENCIES.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 dependencyManagement {
     imports {
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:${ext["springCloudVersion"]}")
@@ -115,32 +108,24 @@ dependencies {
     testImplementation("org.hamcrest:hamcrest-library:2.2")
 }
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// GRADLE TASKS.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
 tasks.getByName<BootJar>("bootJar") {
-    println("boot Jar task invoked....")
+    println(">> boot Jar task invoked")
     println("Note: sourceSet has changed with current spring profiles")
-    //println("spring.profiles: " + System.getProperty("spring.profiles"))
-    //println("extra version: " + System.getProperty("service.extra-version"))
 
     enabled= true
     mainClassName = "com.virnect.serviceserver.ServiceServerApplication"
-    /*manifest {
-            attributes(
-                "Implementation-Title" to  "Remote Service Server",
-                "Implementation-Version" to "2.2.21 revision 9")
-    }*/
     manifest {
         attributes(
             "Implementation-Title" to  "Remote Service Server",
-            "Implementation-Version" to "2.0 revision 2223v2")
+            "Implementation-Version" to "2.0 revision 2223v4")
     }
     archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
-
     //destinationDirectory.set(project.file("${rootProject.buildDir}/libs/${archiveBaseName}"))
-    /*manifest {
-        attributes("Start-Class" to "com.virnect.serviceserver.ServiceServerApplication")
-    }*/
 }
