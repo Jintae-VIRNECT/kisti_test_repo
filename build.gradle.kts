@@ -1,11 +1,17 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// BUILDSCRIPT.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 buildscript {
     repositories {
         mavenCentral()
     }
 }
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// GRADLE PLUGINS.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 plugins {
     id("org.springframework.boot") version "2.2.6.RELEASE" apply false
     id("io.spring.dependency-management") version "1.0.9.RELEASE" apply false
@@ -15,15 +21,13 @@ plugins {
     id("java")
 }
 
-dependencies {
-
-}
-
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// CONFIGURATION.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 allprojects {
     group = "com.virnect"
-    //version = "2.2.0"
     version = "2.0"
-
+    val springCloudVersion by extra("Hoxton.SR1")
 
     tasks.withType<JavaCompile> {
         sourceCompatibility = "1.8"
@@ -36,7 +40,6 @@ allprojects {
             jvmTarget = "1.8"
         }
     }
-
 }
 
 subprojects {
@@ -44,18 +47,15 @@ subprojects {
         plugin("java")
         plugin("io.spring.dependency-management")
     }
-    /*configure<JavaPluginConvention> {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-    }*/
     dependencies {
         //todo:
     }
-
 
     repositories {
         mavenCentral()
     }
 }
+
 project(":service-server") {
     configurations {
         compileOnly {
@@ -68,12 +68,6 @@ project(":service-server") {
         implementation(project(":service-kms"))
         implementation("org.springframework.cloud:spring-cloud-config-client")
     }
-    /*val jar: Jar by tasks
-    val bootJar: BootJar by tasks
-
-    bootJar.enabled = false
-    jar.enabled = true*/
-
 }
 project(":service-data") {
     configurations {

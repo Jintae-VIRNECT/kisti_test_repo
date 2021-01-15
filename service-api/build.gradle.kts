@@ -1,3 +1,8 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// GRADLE PLUGINS.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 plugins {
     id("org.springframework.boot")
     id("java")
@@ -6,18 +11,9 @@ plugins {
     kotlin("plugin.jpa")
 }
 
-ext {
-    set("springCloudVersion", "Hoxton.SR1")
-    /*val profiles = if(System.getProperty("spring.profiles") != null) System.getProperty("spring.profiles").toString() else "default"
-    set("profiles", profiles)*/
-}
-
-dependencyManagement {
-    imports {
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:${ext["springCloudVersion"]}")
-    }
-}
-
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// DEPENDENCIES.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 dependencies {
     testImplementation("junit", "junit", "4.12")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -40,12 +36,14 @@ dependencies {
     api(project(":service-data"))
     api(project(":service-file-data"))
 }
-tasks.getByName<Jar>("jar") {
-    println("service api Jar task invoked....")
+
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// GRADLE TASKS.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+tasks.withType<Jar> {
     enabled= true
 }
 
-tasks.getByName<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
-    println("service api boot Jar task invoked....")
+tasks.withType<BootJar> {
     enabled= false
 }
