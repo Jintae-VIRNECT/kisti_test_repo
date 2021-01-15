@@ -3,7 +3,7 @@
     <div class="setting-section__title">
       {{ $t('workspace.setting_video_choice') }}
     </div>
-    <div class="setting-section__body horizon first">
+    <div class="setting-section__body horizon">
       <figure class="setting__figure">
         <p class="setting__label">{{ $t('workspace.setting_camera') }}</p>
         <r-select

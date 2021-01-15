@@ -99,21 +99,17 @@
 }
 
 .setting-section__body {
+  margin-top: -1.071rem;
   margin-right: -2.286rem;
   &.horizon {
     display: flex;
     flex-wrap: wrap;
-  }
-  &.first {
-    margin-top: -1.071rem;
   }
   > figure {
     flex: 0 1 28.571rem;
     max-width: 28.571rem;
     margin-top: 1.071rem;
     margin-right: 2.286rem;
-    // &:first-child {
-    // }
   }
   & + & {
     margin-top: 0.714rem;
