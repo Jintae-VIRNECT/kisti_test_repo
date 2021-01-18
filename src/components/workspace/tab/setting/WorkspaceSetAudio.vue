@@ -7,7 +7,7 @@
           : $t('workspace.setting_inout_device')
       }}
     </div>
-    <div class="setting-section__body horizon first">
+    <div class="setting-section__body horizon">
       <figure class="setting__figure">
         <p class="setting__label" v-if="!isSafari">
           {{ $t('workspace.setting_input_device') }}

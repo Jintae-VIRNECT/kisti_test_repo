@@ -3,7 +3,7 @@
     <div class="setting-section__title">
       {{ $t('workspace.setting_record_choice') }}
     </div>
-    <div class="setting-section__body horizon first">
+    <div class="setting-section__body horizon">
       <figure class="setting__figure">
         <p class="setting__label">
           {{ $t('workspace.setting_record_maxtime') }}
@@ -47,7 +47,7 @@
         </r-select>
       </figure>
     </div>
-    <div class="setting-section__body first">
+    <div class="setting-section__body">
       <figure class="setting__figure">
         <div class="setting__figure--wrapper">
           <p class="setting__label">

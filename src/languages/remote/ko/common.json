@@ -33,7 +33,8 @@
     "stream_normal": "영상 보기",
     "exit_room": "협업 종료",
     "progress": "진행",
-    "reconnect": "재연결"
+    "reconnect": "재연결",
+    "manual": "매뉴얼 다운로드"
   },
   "date": {
     "lastday": "[어제] A",

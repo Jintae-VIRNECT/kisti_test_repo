@@ -51,6 +51,12 @@ export default {
       if (this.cursor) {
         this.cursor.setColor(hexToRGBA(color, this.tools.opacity))
       }
+      if (this.textObj) {
+        this.textObj.set(
+          'fill',
+          hexToRGBA(this.tools.color, this.tools.opacity),
+        )
+      }
     },
     'tools.opacity'(opacity) {
       if (this.canvas) {
@@ -61,6 +67,12 @@ export default {
       }
       if (this.cursor) {
         this.cursor.setColor(hexToRGBA(this.tools.color, opacity))
+      }
+      if (this.textObj) {
+        this.textObj.set(
+          'fill',
+          hexToRGBA(this.tools.color, this.tools.opacity),
+        )
       }
     },
     scaleWidth(size) {
@@ -82,6 +94,9 @@ export default {
     },
     'tools.fontSize'(size) {
       this.scaleFont = size / this.origin.scale
+      if (this.textObj) {
+        this.textObj.set('fontSize', this.scaleFont)
+      }
     },
     undoList() {
       this.toolAble()

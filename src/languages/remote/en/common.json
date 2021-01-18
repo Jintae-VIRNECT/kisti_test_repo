@@ -33,7 +33,8 @@
     "stream_normal": "View video",
     "exit_room": "End Collabo",
     "progress": "Progress",
-    "reconnect": "Reconnect"
+    "reconnect": "Reconnect",
+    "manual": "Manual Download"
   },
   "date": {
     "lastday": "[Yesterday]",

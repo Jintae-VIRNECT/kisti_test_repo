@@ -90,7 +90,7 @@ export default {
     },
   },
   methods: {
-    async createRoom() {
+    createRoom() {
       this.visible = !this.visible
     },
     createOpenRoom() {
@@ -100,10 +100,12 @@ export default {
 
   /* Lifecycles */
   beforeDestroy() {
-    this.$eventBus.$off('openCreateRoom')
+    this.$eventBus.$off('open:modal:create')
+    this.$eventBus.$off('open:modal:createOpen')
   },
   created() {
-    this.$eventBus.$on('openCreateRoom', this.createRoom)
+    this.$eventBus.$on('open:modal:create', this.createRoom)
+    this.$eventBus.$on('open:modal:createOpen', this.createOpenRoom)
   },
 }
 </script>

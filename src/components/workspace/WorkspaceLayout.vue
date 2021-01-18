@@ -26,10 +26,6 @@
       ></cookie-policy>
       <record-list :visible.sync="showList"></record-list>
       <device-denied :visible.sync="showDenied"></device-denied>
-      <file-upload
-        :fileIds="fileIds"
-        :visible.sync="showFileUpload"
-      ></file-upload>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
   </section>
@@ -47,8 +43,7 @@ import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
-import FileUpload from './modal/WorkspaceRecordFileUpload'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
@@ -71,7 +66,6 @@ export default {
     RecordList,
     DeviceDenied,
     PlanOverflow,
-    FileUpload,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
@@ -84,8 +78,6 @@ export default {
       license: true,
       showDenied: false,
       showPlanOverflow: false,
-      showFileUpload: false,
-      fileIds: [],
       inited: false,
     }
   },
@@ -99,7 +91,6 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['useTranslate']),
     onpremise() {
       return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
@@ -125,10 +116,10 @@ export default {
         return
       } else {
         const res = await getLicense({ userId: authInfo.account.uuid })
-        const workspaces = res.myPlanInfoList.filter(
+        const myPlans = res.myPlanInfoList.filter(
           plan => plan.planProduct === 'REMOTE',
         )
-        if (workspaces.length === 0) {
+        if (myPlans.length === 0) {
           this.license = false
         } else {
           this.license = true
@@ -137,13 +128,18 @@ export default {
           ...authInfo.account,
           licenseEmpty: this.license,
         })
-        if (workspaces.length > 0) {
-          for (let workspace of workspaces) {
-            const info = authInfo.workspace.find(
-              work => work.uuid === workspace.workspaceId,
+        if (myPlans.length > 0) {
+          const workspaces = []
+          for (let workspace of authInfo.workspace) {
+            const info = myPlans.find(
+              work => work.workspaceId === workspace.uuid,
             )
-            if (!info || !info.uuid) continue
-            workspace['role'] = info.role
+            if (!info || !info.workspaceId) continue
+            workspaces.push({
+              ...workspace,
+              renewalDate: info.renewalDate,
+              productPlanStatus: info.productPlanStatus,
+            })
           }
           this.initWorkspace(workspaces)
         }
@@ -244,10 +240,6 @@ export default {
         languageCodes,
       })
     },
-    fileUpload(uuids) {
-      this.fileIds = uuids
-      this.showFileUpload = true
-    },
   },
 
   /* Lifecycles */
@@ -264,13 +256,11 @@ export default {
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
-    this.$eventBus.$on('fileupload:show', this.fileUpload)
   },
   beforeDestroy() {
     this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')
-    this.$eventBus.$off('fileupload:show')
   },
 }
 </script>

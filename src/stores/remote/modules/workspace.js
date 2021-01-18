@@ -9,9 +9,9 @@ import { PLAN_STATUS } from 'configs/status.config'
 
 const setWorkspaceObj = info => {
   return {
-    uuid: info.workspaceId,
-    title: info.workspaceName,
-    profile: info.workspaceProfile,
+    uuid: info.uuid,
+    title: info.name,
+    profile: info.profile,
     renewalDate: info.renewalDate,
     role: info.role,
     planStatus: info.productPlanStatus,

@@ -32,6 +32,9 @@
       <div class="popover-profile__link" v-if="!isSafari">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
+      <div class="popover-profile__link" v-if="!onpremise">
+        <button @click="downloadManual">{{ $t('button.manual') }}</button>
+      </div>
       <div class="popover-profile__link">
         <button @click="logout">{{ $t('button.logout') }}</button>
       </div>
@@ -45,7 +48,7 @@ import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
-import { URLS } from 'configs/env.config'
+import { URLS, RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -63,6 +66,9 @@ export default {
       } else {
         return URLS['dashboard']
       }
+    },
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   methods: {
@@ -84,6 +90,9 @@ export default {
 
       //show media chunk list
       this.$eventBus.$emit('filelist:open')
+    },
+    downloadManual() {
+      window.open('https://file.virnect.com/Guide/remote_user_guide.pdf')
     },
   },
 

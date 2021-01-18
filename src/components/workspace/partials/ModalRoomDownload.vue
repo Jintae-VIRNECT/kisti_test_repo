@@ -16,7 +16,11 @@
           </div>
           <div class="download-table__column"></div>
         </div>
-        <vue2-scrollbar ref="downloadScrollbar" v-if="files.length > 0">
+        <vue2-scrollbar
+          ref="downloadScrollbar"
+          v-if="files.length > 0"
+          :allowReset="false"
+        >
           <div>
             <download-row
               v-for="(data, idx) of files"

@@ -86,6 +86,7 @@ export default {
 }
 .card__button {
   position: relative;
+  display: block;
   width: 2rem;
   height: 2rem;
   background: url(~assets/image/ic_more.svg) 50%/2rem 2rem no-repeat;

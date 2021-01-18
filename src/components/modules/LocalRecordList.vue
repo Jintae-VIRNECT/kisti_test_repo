@@ -72,6 +72,10 @@
         </remote-table>
       </div>
     </div>
+    <file-upload
+      :fileIds="fileIds"
+      :visible.sync="showFileUpload"
+    ></file-upload>
   </modal>
 </template>
 <script>
@@ -90,6 +94,7 @@ export default {
     Modal,
     RemoteTable,
     IconButton,
+    FileUpload: import('components/workspace/modal/WorkspaceRecordFileUpload'),
   },
   props: {
     visible: {
@@ -104,6 +109,8 @@ export default {
       datas: [],
       selectedArray: [],
       zipName: 'vremote_rec.zip',
+      showFileUpload: false,
+      fileIds: [],
     }
   },
   computed: {
@@ -203,7 +210,8 @@ export default {
       })
 
       if (uuids.length > 0) {
-        this.$eventBus.$emit('fileupload:show', uuids)
+        this.fileIds = uuids
+        this.showFileUpload = true
       }
     },
 

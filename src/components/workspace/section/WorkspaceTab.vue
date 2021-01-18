@@ -21,6 +21,13 @@
             >
               {{ $t('workspace.create_room') }}
             </button>
+            <button
+              v-if="useOpenRoom && hasWorkspace && !expireLicense"
+              class="btn workspace-welcome__open"
+              @click="createOpenRoom"
+            >
+              {{ $t('workspace.create_open_room') }}
+            </button>
           </li>
         </transition>
       </ul>
@@ -71,7 +78,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['expireLicense']),
+    ...mapGetters(['expireLicense', 'useOpenRoom']),
     hasWorkspace() {
       return this.workspace && this.workspace.uuid && this.hasLicense
     },
@@ -115,7 +122,10 @@ export default {
       })
     },
     createRoom() {
-      this.$eventBus.$emit('openCreateRoom')
+      this.$eventBus.$emit('open:modal:create')
+    },
+    createOpenRoom() {
+      this.$eventBus.$emit('open:modal:createOpen')
     },
   },
 }

@@ -24,8 +24,10 @@
 <script>
 import { downloadFile } from 'api/http/file'
 import { downloadByURL } from 'utils/file'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'DownloadRow',
+  mixins: [toastMixin],
   props: {
     file: {
       type: Object,
@@ -67,14 +69,18 @@ export default {
   },
   methods: {
     async download() {
-      const res = await downloadFile({
-        objectName: this.file.objectName,
-        sessionId: this.sessionId,
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-      })
+      try {
+        const res = await downloadFile({
+          objectName: this.file.objectName,
+          sessionId: this.sessionId,
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
 
-      downloadByURL(res)
+        downloadByURL(res)
+      } catch (err) {
+        this.toastError(this.$t('confirm.network_error'))
+      }
     },
   },
 

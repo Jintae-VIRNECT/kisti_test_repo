@@ -11,6 +11,7 @@ export default {
       fontWeight: 'normal',
       lineHeight: 1,
       fontSize: 16,
+      textObj: null,
     }
   },
   methods: {
@@ -20,7 +21,7 @@ export default {
      * @param {Number} top  ::추가할 Y좌표(Offset)
      */
     addTextObject(left, top) {
-      const object = new fabric.IText('', {
+      this.textObj = new fabric.IText('', {
         left: left,
         top: top,
         fill: hexToRGBA(this.tools.color, this.tools.opacity),
@@ -31,25 +32,25 @@ export default {
         lineHeight: this.lineHeight,
         hasControls: false,
       })
-      this.canvas.add(object)
-      this.canvas.setActiveObject(object)
+      this.canvas.add(this.textObj)
+      this.canvas.setActiveObject(this.textObj)
 
-      object.enterEditing()
-      object.hiddenTextarea.focus()
-      object.initialized = false
+      this.textObj.enterEditing()
+      this.textObj.hiddenTextarea.focus()
+      this.textObj.initialized = false
 
-      object.on('editing:exited', () => {
-        if (object.text.trim() === '') {
-          object.canvas.remove(object)
+      this.textObj.on('editing:exited', () => {
+        if (this.textObj.text.trim() === '') {
+          this.textObj.canvas.remove(this.textObj)
         } else {
-          if (object.initialized) {
-            this._sendAction(DRAWING.TEXT_UPDATE, object)
-            this.stackAdd('text', object.id)
+          if (this.textObj.initialized) {
+            this._sendAction(DRAWING.TEXT_UPDATE, this.textObj)
+            this.stackAdd('text', this.textObj.id)
           } else {
-            this._sendAction(DRAWING.TEXT_ADD, object)
-            this.stackAdd('add', object.id)
+            this._sendAction(DRAWING.TEXT_ADD, this.textObj)
+            this.stackAdd('add', this.textObj.id)
           }
-          object.initialized = true
+          this.textObj.initialized = true
           const cloneObj = new fabric.IText('', {
             left: left,
             top: top,
@@ -60,15 +61,16 @@ export default {
             fontSize: this.scaleFont,
             lineHeight: this.lineHeight,
             hasControls: false,
-            text: object.text,
-            id: object.id,
-            tId: object.tId,
+            text: this.textObj.text,
+            id: this.textObj.id,
+            tId: this.textObj.tId,
           })
           this.backCanvas.add(cloneObj)
         }
 
         setTimeout(() => {
           this.editingMode = false
+          this.textObj = null
         }, 100)
       })
     },
