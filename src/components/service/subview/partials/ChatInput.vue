@@ -95,6 +95,7 @@ export default {
       fileList: [],
       inputText: '',
       fileName: '',
+      clicked: false,
     }
   },
   props: {
@@ -148,6 +149,8 @@ export default {
       this.viewTrans = !this.viewTrans
     },
     async doSend(e) {
+      if (this.clicked) return
+      this.clicked = true
       if (e) {
         e.preventDefault()
       }
@@ -191,6 +194,7 @@ export default {
       }
 
       this.inputText = ''
+      this.clicked = false
     },
     clickUpload() {
       if (!this.useStorage) {
