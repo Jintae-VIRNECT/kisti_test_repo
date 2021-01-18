@@ -22,9 +22,11 @@ import { downloadFile } from 'api/http/file'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import { getFile } from 'utils/file'
+import toastMixin from 'mixins/toast'
 
 export default {
   name: 'ChatFileDownload',
+  mixins: [toastMixin],
   data() {
     return {
       chunk: [],
@@ -47,13 +49,17 @@ export default {
       if (this.fileList.length === 0) return
       this.zip = new JSZip()
       for (let file of this.fileList) {
-        const res = await downloadFile({
-          objectName: file.objectName,
-          sessionId: this.roomInfo.sessionId,
-          workspaceId: this.workspace.uuid,
-          userId: this.account.uuid,
-        })
-        await this.get(res.name, res.url)
+        try {
+          const res = await downloadFile({
+            objectName: file.objectName,
+            sessionId: this.roomInfo.sessionId,
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+          })
+          await this.get(res.name, res.url)
+        } catch (err) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
       this.zip.generateAsync({ type: 'blob' }).then(content => {
         FileSaver.saveAs(content, 'vremote_files.zip')

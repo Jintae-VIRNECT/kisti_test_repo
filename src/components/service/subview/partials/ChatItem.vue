@@ -77,8 +77,10 @@ import { mapGetters, mapActions } from 'vuex'
 import { translate as doTranslate } from 'plugins/remote/translate'
 import { downloadByURL } from 'utils/file'
 import { checkFileType } from 'utils/fileTypes'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'ChatItem',
+  mixins: [toastMixin],
   components: {
     Profile,
   },
@@ -237,13 +239,17 @@ export default {
   methods: {
     ...mapActions(['updateChat']),
     async download() {
-      const res = await downloadFile({
-        objectName: this.chat.file.objectName,
-        sessionId: this.roomInfo.sessionId,
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-      })
-      downloadByURL(res)
+      try {
+        const res = await downloadFile({
+          objectName: this.chat.file.objectName,
+          sessionId: this.roomInfo.sessionId,
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
+        downloadByURL(res)
+      } catch (err) {
+        this.toastError(this.$t('confirm.network_error'))
+      }
       // FileSaver.saveAs(res)
     },
     async doTranslateText() {
