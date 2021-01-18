@@ -48,9 +48,9 @@ pipeline {
             sh 'count=`docker ps | grep rm-web-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-web-onpremise && docker rm rm-web-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18886:8886 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -d --name=rm-web-onpremise rm-web'
             catchError {
-              sh 'docker image prune -f'
+              sh "if [ `docker images | grep rm-web | grep -v 103505534696 | grep -v server | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"rm-web\" | grep -v server | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
             }
-          }
+          }  
         }
 
         stage('Staging Branch') {
@@ -87,7 +87,36 @@ pipeline {
                         execCommand: "docker run -p 8886:8886 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=rm-web $aws_ecr_address/rm-web:\\${GIT_TAG}"
                       ),
                       sshTransfer(
-                        execCommand: 'docker image prune -f'
+                        execCommand: "if [ `docker images | grep rm-web | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-web\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                      )
+                    ]
+                  )
+                ]
+              )
+            }
+            
+           script {
+              sshPublisher(
+                continueOnError: false, failOnError: true,
+                publishers: [
+                  sshPublisherDesc(
+                    configName: 'aws-onpremise-qa',
+                    verbose: true,
+                    transfers: [
+                      sshTransfer(
+                        execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker pull $aws_ecr_address/rm-web:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: 'count=`docker ps | grep rm-web| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop rm-web && docker rm rm-web; else echo "Not Running STOP&DELETE"; fi;'
+                      ),
+                      sshTransfer(
+                        execCommand: "docker run -p 8886:8886 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -d --name=rm-web $aws_ecr_address/rm-web:\\${GIT_TAG}"
+                      ),
+                      sshTransfer(
+                        execCommand: "if [ `docker images | grep rm-web | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-web\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                       )
                     ]
                   )
@@ -132,7 +161,7 @@ pipeline {
                         execCommand: "docker run -p 8886:8886 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=rm-web $aws_ecr_address/rm-web:\\${GIT_TAG}"
                       ),
                       sshTransfer(
-                        execCommand: 'docker image prune -f'
+                        execCommand: "if [ `docker images | grep rm-web | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-web\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                       )
                     ]
                   )
