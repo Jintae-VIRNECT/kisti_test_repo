@@ -212,6 +212,7 @@ const _ = {
       }
       return true
     } catch (err) {
+      console.err(err)
       throw err
     }
   },

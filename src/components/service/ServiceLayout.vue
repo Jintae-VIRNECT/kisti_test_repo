@@ -214,6 +214,10 @@ export default {
 
   /* Lifecycles */
   async created() {
+    if (!this.$call.session) {
+      this.$router.push({ name: 'workspace' })
+      return
+    }
     this.initTimeout()
     window.onbeforeunload = () => {
       return true
