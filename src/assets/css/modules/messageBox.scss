@@ -19,6 +19,14 @@
   padding-top: 6px;
   font-weight: 500;
 }
+.el-message-box__message {
+  p > p {
+    margin-top: 8px;
+  }
+  span.danger {
+    color: $danger;
+  }
+}
 
 .el-message-box__btns {
   padding: 20px 24px 24px;

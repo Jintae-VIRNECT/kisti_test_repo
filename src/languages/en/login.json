@@ -24,6 +24,15 @@
     "networkError": {
       "title": "Login error",
       "contents": "Please try again later"
+    },
+    "securityError": {
+      "title": "Account security",
+      "contents": "If the password input error occurs more than 5 times, it will be converted to a locked account for account security. When switching to a locked account, you must reset your password to log in. <p>Password Error : <span class='danger'>{n} times</span></p>"
+    },
+    "lockedError": {
+      "changed": "Account lockout",
+      "title": "Locked Account",
+      "contents": "Switching Abnormal activity has been detected and converted to a locked account. Please reset your password."
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.2.26.1",
+  "version": "1.2.26.3",
   "description": "Virnect Platofrm Login FrontEnd",
   "author": "SungHyun Kang <k23sh138@gmail.com>",
   "private": true,
@@ -12,6 +12,7 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "@virnect/logger": "^1.0.2",
     "@virnect/WC-Modules": "^1.0.1",
     "axios": "^0.18.0",
     "express": "^4.16.3"

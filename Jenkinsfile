@@ -48,7 +48,7 @@ pipeline {
                         sh 'count=`docker ps -a | grep pf-login-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login-onpremise && docker rm pf-login-onpremise; else echo "Not Running STOP&DELETE"; fi;'
                         sh 'docker run -p 18883:8883 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -e eureka.instance.ip-address=`hostname -I | awk \'{print $1}\'` -d --name=pf-login-onpremise pf-login'
                         catchError {
-                            sh 'docker image prune -f'
+                             sh "if [ `docker images | grep pf-login | grep -v 103505534696 | grep -v server | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-login\" | grep -v server | grep -v \\${GIT_TAG} | grep -v \"latest\" | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                         }
                     }
                 }
@@ -85,13 +85,42 @@ pipeline {
                                                 execCommand: "docker run -p 8883:8883 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk \'{print \$1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'docker image prune -f'
+                                                execCommand: "if [ `docker images | grep pf-login | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-login\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )
                                 ]
                             )
                         }
+                        script {
+                            sshPublisher(
+                                continueOnError: false, failOnError: true,
+                                publishers: [
+                                    sshPublisherDesc(
+                                        configName: 'aws-onpremise-qa',
+                                        verbose: true,
+                                        transfers: [
+                                            sshTransfer(
+                                                execCommand: 'aws ecr get-login --region ap-northeast-2 --no-include-email | bash'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker pull $aws_ecr_address/pf-login:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: 'count=`docker ps -a | grep pf-login| wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-login && docker rm pf-login; else echo "Not Running STOP&DELETE"; fi;'
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "docker run -p 8883:8883 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -e eureka.instance.ip-address=`hostname -I | awk \'{print \$1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
+                                            ),
+                                            sshTransfer(
+                                                execCommand: "if [ `docker images | grep pf-login | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-login\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
+                                            )
+                                        ]
+                                    )
+                                ]
+                            )
+                        }
+											
                         script {
                             def GIT_TAG_CONTENT = sh(returnStdout: true, script: 'git for-each-ref refs/tags/$GIT_TAG --format=\'%(contents)\' | sed -z \'s/\\\n/\\\\n/g\'')
                             def payload = """
@@ -129,7 +158,7 @@ pipeline {
                                                 execCommand: "docker run -p 8883:8883 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com'  -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk \'{print \$1}\'` -d --name=pf-login $aws_ecr_address/pf-login:\\${GIT_TAG}"
                                             ),
                                             sshTransfer(
-                                                execCommand: 'docker image prune -f'
+                                                execCommand: "if [ `docker images | grep pf-login | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"pf-login\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                                             )
                                         ]
                                     )

@@ -89,6 +89,7 @@ export async function api(name, option = {}) {
       return {
         code: code,
         message: message,
+        failCount: data.failCount,
       }
     }
   } catch (e) {
