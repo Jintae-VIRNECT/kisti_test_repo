@@ -6,7 +6,7 @@ module.exports = {
     node: true,
     jest: true,
   },
-  plugins: ['jest'],
+  plugins: ['jest', 'vue'],
   rules: {
     "prettier/prettier": ['error', {
       ...prettierRules,
