@@ -27,7 +27,7 @@
     },
     "securityError": {
       "title": "Account security",
-      "contents": "If the password input error occurs more than 5 times, it will be converted to a locked account for account security. When switching to a locked account, you must reset your password to log in. <p>Password Error : <span class='danger'>{n} / 5 times</span></p>"
+      "contents": "If the password input error occurs more than 5 times, it will be converted to a locked account for account security. When switching to a locked account, you must reset your password to log in. <p>Password Error : <span class='danger'>{n} times</span></p>"
     },
     "lockedError": {
       "changed": "Account lockout",
