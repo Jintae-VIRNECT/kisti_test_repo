@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/remote")
-public class ServiceRestController {
-    private static final String TAG = ServiceRestController.class.getSimpleName();
+public class ConfigRestController {
+    private static final String TAG = ConfigRestController.class.getSimpleName();
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_SERVICE_PATH = "/remote/service";
     private static final String REST_CONFIG_PATH = "/remote/config";

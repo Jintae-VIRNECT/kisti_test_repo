@@ -15,7 +15,7 @@
  *
  */
 
-package com.virnect.serviceserver.rest;
+package com.virnect.serviceserver.api.kms;
 
 import com.google.gson.JsonArray;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
