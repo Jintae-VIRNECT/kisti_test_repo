@@ -3,13 +3,15 @@ const route = require('./route')
 const app = express()
 const server = require('./server/module')
 const path = require('path')
+const helmet = require('helmet')
 
 var bodyParser = require('body-parser')
 
-app.use((req, res, next) => {
-  res.header('X-Frame-Options', 'deny')
-  next()
-})
+app.use(
+  helmet.frameguard({
+    action: 'deny',
+  }),
+)
 
 app.use(bodyParser.json())
 
