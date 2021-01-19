@@ -218,9 +218,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @DependsOn("remoteServiceConfig")
     public SessionManager sessionManager() {
         KurentoSessionManager kurentoSessionManager = new KurentoSessionManager();
-        //kurentoSessionManager.setKurentoSessionListener(serviceSessionManager.kurentoSessionListener);
         return kurentoSessionManager;
-        //return new KurentoSessionManager();
     }
 
     @Bean

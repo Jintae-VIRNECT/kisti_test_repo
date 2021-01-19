@@ -66,12 +66,12 @@ public class KurentoSessionManager extends SessionManager {
 	@Autowired
 	private KurentoParticipantEndpointConfig kurentoEndpointConfig;
 
-	@Autowired
-	private KurentoSessionListener kurentoSessionListener;
+	KurentoSessionListener kurentoSessionListener;
 
-	/*public void setKurentoSessionListener(KurentoSessionListener kurentoSessionListener) {
+	@Autowired
+	public void setKurentoSessionListener(KurentoSessionListener kurentoSessionListener) {
 		this.kurentoSessionListener = kurentoSessionListener;
-	}*/
+	}
 
 	@Override
 	/* Protected by Session.closingLock.readLock */
@@ -116,7 +116,8 @@ public class KurentoSessionManager extends SessionManager {
 										lessLoadedKms.getLoad());
 								kSession = createSession(sessionNotActive, lessLoadedKms);
 								//flags-create
-								kurentoSessionListener.createSession(sessionNotActive);
+								if(kurentoSessionListener != null)
+									kurentoSessionListener.createSession(sessionNotActive);
 
 							}
 						} finally {
@@ -156,22 +157,28 @@ public class KurentoSessionManager extends SessionManager {
 				if (kSession.joinLeaveLock.tryLock(15, TimeUnit.SECONDS)) {
 					try {
 						//flags-join : session join and sessionEventHandler is here
-						if(kurentoSessionListener.joinSession(participant, sessionId, transactionId)) {
+						if (kurentoSessionListener != null) {
+							if (kurentoSessionListener.joinSession(participant, sessionId, transactionId)) {
+								existingParticipants = getParticipants(sessionId);
+								kSession.join(participant);
+								sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants, transactionId, null);
+								//flags-join
+								String result = "[participant] " + participant + "\n"
+										+ "[sessionId]" + sessionId + "\n"
+										+ "[transactionId]" + transactionId + "\n"
+										+ "[existingParticipants]" + existingParticipants + "\n";
+								log.info("session join with following result {}", result);
+							} else {
+								log.error(
+										"InterruptException existing user for participant {} of session {} in joinRoom",
+										participant.getParticipantPublicId(), sessionId);
+								sessionEventsHandler.onParticipantJoined(participant, sessionId, null, transactionId,
+										new RemoteServiceException(Code.EXISTING_USER_IN_ROOM_ERROR_CODE, "Existing user for session lock"));
+							}
+						} else {
 							existingParticipants = getParticipants(sessionId);
 							kSession.join(participant);
 							sessionEventsHandler.onParticipantJoined(participant, sessionId, existingParticipants, transactionId, null);
-							//flags-join
-							String result = "[participant] " + participant + "\n"
-									+ "[sessionId]" + sessionId + "\n"
-									+ "[transactionId]" + transactionId + "\n"
-									+ "[existingParticipants]" + existingParticipants + "\n";
-							log.info("session join with following result {}", result);
-						} else {
-							log.error(
-									"InterruptException existing user for participant {} of session {} in joinRoom",
-									participant.getParticipantPublicId(), sessionId);
-							sessionEventsHandler.onParticipantJoined(participant, sessionId, null, transactionId,
-									new RemoteServiceException(Code.EXISTING_USER_IN_ROOM_ERROR_CODE, "Existing user for session lock"));
 						}
 					} finally {
 						kSession.joinLeaveLock.unlock();
@@ -262,7 +269,8 @@ public class KurentoSessionManager extends SessionManager {
 					}
 					sessionEventsHandler.onParticipantLeft(participant, sessionId, remainingParticipants, transactionId, null, reason);
 					//flags-leave
-					kurentoSessionListener.leaveSession(participant, sessionId, remainingParticipants, transactionId, reason);
+					if(kurentoSessionListener != null)
+						kurentoSessionListener.leaveSession(participant, sessionId, remainingParticipants, transactionId, reason);
 
 					//flags-close : session close and sessionEventHandler is here
 					if (!EndReason.sessionClosedByServer.equals(reason)) {
@@ -289,7 +297,8 @@ public class KurentoSessionManager extends SessionManager {
 											//flags-close : session close and sessionEventHandler is here
 											this.closeSessionAndEmptyCollections(session, reason, true);
 											sessionClosedByLastParticipant = true;
-											this.kurentoSessionListener.destroySession(session, reason);
+											if(kurentoSessionListener != null)
+												this.kurentoSessionListener.destroySession(session, reason);
 										} finally {
 											session.closingLock.writeLock().unlock();
 										}

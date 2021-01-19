@@ -3,30 +3,36 @@ package com.virnect.serviceserver.test.integration;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.virnect.java.client.RemoteServiceRole;
+import com.virnect.kms.KurentoTestSessionManager;
 import com.virnect.mediaserver.core.Participant;
 import com.virnect.mediaserver.core.SessionManager;
 import com.virnect.mediaserver.core.Token;
+import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
 import com.virnect.mediaserver.kurento.kms.KmsManager;
 import com.virnect.serviceserver.rest.KurentoSessionRestController;
 import com.virnect.serviceserver.test.integration.config.IntegrationTestConfiguration;
 import org.junit.Assert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-//@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(properties = {
         "service.remote_sessions_garbage_interval=1",
         "service.remote_sessions_garbage_threshold=1",
@@ -42,8 +48,10 @@ public class SessionGarbageCollectorIntegrationTest {
     @SpyBean
     private KmsManager kmsManager;
 
+    //@MockBean
+    //private SessionManager sessionManager;
     @Autowired
-    private SessionManager sessionManager;
+    private KurentoSessionManager sessionManager;
 
     @Autowired
     private KurentoSessionRestController sessionRestController;
@@ -51,7 +59,7 @@ public class SessionGarbageCollectorIntegrationTest {
     @Test
     @DisplayName("Sessions not active garbage collector")
     void garbageCollectorOfSessionsNotActiveTest() throws Exception {
-
+        sessionManager.setKurentoSessionListener(null);
         log.info("Sessions not active garbage collector");
 
         JsonObject jsonResponse;
@@ -78,8 +86,7 @@ public class SessionGarbageCollectorIntegrationTest {
         Thread.sleep(2000);
 
         jsonResponse = listSessions();
-        //Assert.assertEquals("Wrong number of sessions", 1, jsonResponse.get("numberOfElements").getAsInt());
-        Assert.assertEquals("Wrong number of sessions", 0, jsonResponse.get("numberOfElements").getAsInt());
+        Assert.assertEquals("Wrong number of sessions", 1, jsonResponse.get("numberOfElements").getAsInt());
     }
 
     private String getSessionId() {

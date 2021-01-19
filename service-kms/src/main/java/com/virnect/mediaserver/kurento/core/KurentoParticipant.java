@@ -507,7 +507,7 @@ public class KurentoParticipant extends Participant {
 		}
 	}
 
-	void releaseElement(final String senderName, final MediaElement element) {
+	public void releaseElement(final String senderName, final MediaElement element) {
 		final String eid = element.getId();
 		try {
 			element.release(new Continuation<Void>() {
