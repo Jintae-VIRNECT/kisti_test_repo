@@ -1,12 +1,16 @@
 const { prettierRules } = require('@virnect/eslint-config/base')
 
 module.exports = {
-  extends: ['@virnect/eslint-config/vue'],
+  "parserOptions": {
+    "parser": "babel-eslint",
+    "ecmaVersion": 2018,
+    "sourceType": "module",
+  },
+  extends: ["@virnect/eslint-config/vue"],
   env: {
     node: true,
-    jest: true,
+    es6: true,
   },
-  plugins: ['jest', 'vue'],
   rules: {
     "prettier/prettier": ['error', {
       ...prettierRules,
