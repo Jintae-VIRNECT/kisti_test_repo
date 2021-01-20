@@ -2,7 +2,7 @@ import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 import { deepGet } from 'utils/util'
 import XLSX from 'xlsx'
 
-export const exportExcel = (raws, i18n) => {
+export const exportExcel = (raws, i18n, showFileHeader) => {
   // 'No,협업명,협업내용,리더,참가자,시작시간,종료시간,진행시간,서버녹화,로컬녹화,첨부파일'
   const header = [
     'No',
@@ -13,9 +13,6 @@ export const exportExcel = (raws, i18n) => {
     i18n.$t('excel.room_active_date'),
     i18n.$t('excel.room_unactive_date'),
     i18n.$t('excel.room_duration_sec'),
-    i18n.$t('excel.file_server_record'),
-    i18n.$t('excel.file_local_record'),
-    i18n.$t('excel.file_attach_file'),
   ]
 
   const keys = [
@@ -27,10 +24,18 @@ export const exportExcel = (raws, i18n) => {
     ['activeDate'],
     ['unactiveDate'],
     ['durationSec'],
-    ['serverRecord'],
-    ['localRecord'],
-    ['attach'],
   ]
+
+  if (showFileHeader) {
+    header.push(
+      ...[
+        i18n.$t('excel.file_server_record'),
+        i18n.$t('excel.file_local_record'),
+        i18n.$t('excel.file_attach_file'),
+      ],
+    )
+    keys.push(...[['serverRecord'], ['localRecord'], ['attach']])
+  }
 
   const rows = raws.map(raw => {
     const row = []
