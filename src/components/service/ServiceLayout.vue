@@ -189,7 +189,7 @@ export default {
       this.$eventBus.$emit('call:logout')
     },
     async onDeviceChange() {
-      const hasVideo = await checkInput({ video: true, audio: false })
+      const { hasVideo } = await checkInput({ video: true, audio: false })
       if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
       this.$call.sendCamera(
         hasVideo
