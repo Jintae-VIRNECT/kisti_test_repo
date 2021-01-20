@@ -8,6 +8,7 @@ import { logger, debug } from 'utils/logger'
 import {
   setConfigs,
   setUrls,
+  setSettings,
   RUNTIME_ENV,
   RUNTIME,
   URLS,
@@ -100,14 +101,24 @@ const getConfigs = async () => {
   debug('URLS::', res.data)
 
   setHttpOptions(res.data['api'], timeout)
+
   window.urls = res.data
+
+  if (res.data.settings) {
+    window.settings = res.data.settings
+    setSettings(res.data.settings)
+  } else {
+    setSettings({})
+  }
+
   setConfigs({
     runtimeEnv,
   })
+
   setUrls(res.data)
 }
 
-const getSettings = async () => {
+const getWsSettings = async () => {
   if (RUNTIME_ENV !== RUNTIME.ONPREMISE) {
     document.title = `VIRNECT | Dashboard`
   } else {
@@ -155,7 +166,7 @@ class Auth {
 
     if (Cookies.get('accessToken')) {
       try {
-        await Promise.all([getMyInfo(), getSettings()])
+        await Promise.all([getMyInfo(), getWsSettings()])
 
         isLogin = true
         tokenRenewal()

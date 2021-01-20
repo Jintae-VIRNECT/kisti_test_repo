@@ -21,41 +21,49 @@
           >{{ $t('list.room_leader') }}</span
         >
       </div>
-      <div class="history__header--text start-date hide-tablet">
+      <div
+        class="history__header--text start-date"
+        :class="{ 'hide-tablet': allowFileInfo }"
+      >
         <span
           @click="setSort('ACTIVE_DATE')"
           :class="{ active: sort.column === 'ACTIVE_DATE' }"
           >{{ $t('list.room_active_date') }}</span
         >
       </div>
-      <div class="history__header--text state hide-tablet">
+      <div
+        class="history__header--text state"
+        :class="{ 'hide-tablet': allowFileInfo }"
+      >
         <span
           @click="setSort('STATUS')"
           :class="{ active: sort.column === 'STATUS' }"
           >{{ $t('list.room_status') }}</span
         >
       </div>
-      <div class="history__header--text count">
-        <span
-          @click="setSort('SERVER_RECORD_FILE_COUNT')"
-          :class="{ active: sort.column === 'SERVER_RECORD_FILE_COUNT' }"
-          >{{ $t('list.room_server_record') }}</span
-        >
-      </div>
-      <div class="history__header--text count">
-        <span
-          @click="setSort('LOCAL_RECORD_FILE_COUNT')"
-          :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
-          >{{ $t('list.room_local_record') }}</span
-        >
-      </div>
-      <div class="history__header--text count">
-        <span
-          @click="setSort('ATTACHED_FILE_COUNT')"
-          :class="{ active: sort.column === 'ATTACHED_FILE_COUNT' }"
-          >{{ $t('list.room_attach_file') }}</span
-        >
-      </div>
+      <template v-if="allowFileInfo">
+        <div class="history__header--text count">
+          <span
+            @click="setSort('SERVER_RECORD_FILE_COUNT')"
+            :class="{ active: sort.column === 'SERVER_RECORD_FILE_COUNT' }"
+            >{{ $t('list.room_server_record') }}</span
+          >
+        </div>
+        <div class="history__header--text count">
+          <span
+            @click="setSort('LOCAL_RECORD_FILE_COUNT')"
+            :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
+            >{{ $t('list.room_local_record') }}</span
+          >
+        </div>
+        <div class="history__header--text count">
+          <span
+            @click="setSort('ATTACHED_FILE_COUNT')"
+            :class="{ active: sort.column === 'ATTACHED_FILE_COUNT' }"
+            >{{ $t('list.room_attach_file') }}</span
+          >
+        </div>
+      </template>
     </div>
 
     <div class="history__body" :class="{ nodata: !listExists }">
@@ -80,48 +88,56 @@
               {{ leaderName(history) }}
             </p>
           </div>
-          <div class="history__text start-date hide-tablet">
+          <div
+            class="history__text start-date"
+            :class="{ 'hide-tablet': allowFileInfo }"
+          >
             {{ date(history.activeDate) }}
           </div>
-          <div class="history__text state hide-tablet">
+          <div
+            class="history__text state"
+            :class="{ 'hide-tablet': allowFileInfo }"
+          >
             <collabo-status :status="history.status"> </collabo-status>
           </div>
-          <div class="history__text count">
-            <count-button
-              :count="history.serverRecord"
-              :images="{
-                select: require('assets/image/ic_rec_select.svg'),
-                active: require('assets/image/ic_rec_active.svg'),
-                default: require('assets/image/ic_rec_default.svg'),
-              }"
-              @click="showFiles('server', history, index)"
-              :hover="hover && hoverIndex === index"
-            ></count-button>
-          </div>
-          <div class="history__text count">
-            <count-button
-              :count="history.localRecord"
-              :images="{
-                select: require('assets/image/ic_video_select.svg'),
-                active: require('assets/image/ic_video_active.svg'),
-                default: require('assets/image/ic_video_default.svg'),
-              }"
-              @click="showFiles('local', history, index)"
-              :hover="hover && hoverIndex === index"
-            ></count-button>
-          </div>
-          <div class="history__text count">
-            <count-button
-              :count="history.attach"
-              :images="{
-                select: require('assets/image/ic_file_select.svg'),
-                active: require('assets/image/ic_file_active.svg'),
-                default: require('assets/image/ic_file_default.svg'),
-              }"
-              @click="showFiles('attach', history, index)"
-              :hover="hover && hoverIndex === index"
-            ></count-button>
-          </div>
+          <template v-if="allowFileInfo">
+            <div class="history__text count">
+              <count-button
+                :count="history.serverRecord"
+                :images="{
+                  select: require('assets/image/ic_rec_select.svg'),
+                  active: require('assets/image/ic_rec_active.svg'),
+                  default: require('assets/image/ic_rec_default.svg'),
+                }"
+                @click="showFiles('server', history, index)"
+                :hover="hover && hoverIndex === index"
+              ></count-button>
+            </div>
+            <div class="history__text count">
+              <count-button
+                :count="history.localRecord"
+                :images="{
+                  select: require('assets/image/ic_video_select.svg'),
+                  active: require('assets/image/ic_video_active.svg'),
+                  default: require('assets/image/ic_video_default.svg'),
+                }"
+                @click="showFiles('local', history, index)"
+                :hover="hover && hoverIndex === index"
+              ></count-button>
+            </div>
+            <div class="history__text count">
+              <count-button
+                :count="history.attach"
+                :images="{
+                  select: require('assets/image/ic_file_select.svg'),
+                  active: require('assets/image/ic_file_active.svg'),
+                  default: require('assets/image/ic_file_default.svg'),
+                }"
+                @click="showFiles('attach', history, index)"
+                :hover="hover && hoverIndex === index"
+              ></count-button>
+            </div>
+          </template>
         </div>
         <history-info
           :sessionId="sessionId"
@@ -430,7 +446,7 @@ export default {
 .history__header {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   height: 3.1429rem;
 }
 .history__header--text {
@@ -490,7 +506,7 @@ export default {
 .history__row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
   height: 5.5714rem;
   margin-bottom: 0.7143rem;

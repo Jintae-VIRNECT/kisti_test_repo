@@ -17,6 +17,13 @@ export const setUrls = urls => {
   }
 }
 
+export let SETTINGS = {}
+export const setSettings = settings => {
+  SETTINGS = {
+    ...settings,
+  }
+}
+
 export const RUNTIME = {
   LOCAL: 'local',
   DEVELOP: 'develop',

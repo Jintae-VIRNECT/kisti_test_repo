@@ -13,10 +13,14 @@ import { proxyUrl } from 'utils/file'
 import { WHITE_LOGO, DEFAULT_LOGO } from 'configs/env.config'
 export default {
   name: 'HeaderLogo',
-  data() {
-    return {
-      logo: proxyUrl(WHITE_LOGO),
-    }
+  computed: {
+    logo() {
+      if (WHITE_LOGO) {
+        return proxyUrl(WHITE_LOGO)
+      } else {
+        return false
+      }
+    },
   },
   methods: {
     logoError() {

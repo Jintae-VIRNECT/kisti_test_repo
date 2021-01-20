@@ -105,7 +105,8 @@ export default {
       }
 
       const paging = true
-      const list = await this.getHistory(paging, page)
+      const updatePageMeta = true
+      const list = await this.getHistory(paging, updatePageMeta, page)
       if (list === false) {
         this.loading = false
         return
@@ -115,12 +116,12 @@ export default {
       this.loading = false
     },
 
-    async getHistory(paging, page = 0) {
+    async getHistory(paging, updatePageMeta, page = 0) {
       try {
         const params = this.getParams(paging, page)
         const datas = await this.getData(params)
 
-        if (paging) {
+        if (paging && updatePageMeta) {
           if ('pageMeta' in datas) {
             this.pageMeta = datas.pageMeta
           } else {
@@ -148,11 +149,28 @@ export default {
 
         this.excelLoading = true
 
-        const paging = false
-        const page = 0
-        const historys = await this.getHistory(paging, page)
+        let page = 0
+        const paging = true
+        const historys = []
 
-        if (!historys) {
+        const params = this.getParams(paging, page)
+        const initHistory = await this.getData(params)
+
+        const totalPage = initHistory.pageMeta.totalPage
+        historys.push(...initHistory.roomHistoryInfoList)
+
+        const updatePageMeta = false
+        for (let i = 1; i < totalPage; i++) {
+          const history = await this.getHistory(paging, updatePageMeta, i)
+
+          if (history) {
+            historys.push(...history)
+          } else {
+            return
+          }
+        }
+
+        if (historys.length <= 0) {
           return
         }
 
@@ -172,7 +190,7 @@ export default {
           }
         })
 
-        exportExcel(historys, this)
+        exportExcel(historys, this, this.allowFileInfo)
 
         this.excelLoading = false
       } catch (err) {
