@@ -190,8 +190,7 @@ export default {
           }
         })
 
-        const showFileHeader = true
-        exportExcel(historys, this, showFileHeader)
+        exportExcel(historys, this, this.allowFileInfo)
 
         this.excelLoading = false
       } catch (err) {

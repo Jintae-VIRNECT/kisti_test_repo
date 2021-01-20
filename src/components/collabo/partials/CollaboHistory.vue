@@ -23,7 +23,7 @@
       </div>
       <div
         class="history__header--text start-date"
-        :class="{ 'hide-tablet': showFileHeader }"
+        :class="{ 'hide-tablet': allowFileInfo }"
       >
         <span
           @click="setSort('ACTIVE_DATE')"
@@ -33,7 +33,7 @@
       </div>
       <div
         class="history__header--text state"
-        :class="{ 'hide-tablet': showFileHeader }"
+        :class="{ 'hide-tablet': allowFileInfo }"
       >
         <span
           @click="setSort('STATUS')"
@@ -41,7 +41,7 @@
           >{{ $t('list.room_status') }}</span
         >
       </div>
-      <template v-if="showFileHeader">
+      <template v-if="allowFileInfo">
         <div class="history__header--text count">
           <span
             @click="setSort('SERVER_RECORD_FILE_COUNT')"
@@ -90,17 +90,17 @@
           </div>
           <div
             class="history__text start-date"
-            :class="{ 'hide-tablet': showFileHeader }"
+            :class="{ 'hide-tablet': allowFileInfo }"
           >
             {{ date(history.activeDate) }}
           </div>
           <div
             class="history__text state"
-            :class="{ 'hide-tablet': showFileHeader }"
+            :class="{ 'hide-tablet': allowFileInfo }"
           >
             <collabo-status :status="history.status"> </collabo-status>
           </div>
-          <template v-if="showFileHeader">
+          <template v-if="allowFileInfo">
             <div class="history__text count">
               <count-button
                 :count="history.serverRecord"
@@ -247,8 +247,6 @@ export default {
       hoverIndex: -1,
 
       sort: { column: '', direction: '' },
-
-      showFileHeader: true,
     }
   },
   watch: {

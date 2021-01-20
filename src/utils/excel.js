@@ -2,7 +2,7 @@ import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
 import { deepGet } from 'utils/util'
 import XLSX from 'xlsx'
 
-export const exportExcel = (raws, i18n, showFileHeader) => {
+export const exportExcel = (raws, i18n, allowFileInfo) => {
   // 'No,협업명,협업내용,리더,참가자,시작시간,종료시간,진행시간,서버녹화,로컬녹화,첨부파일'
   const header = [
     'No',
@@ -26,7 +26,7 @@ export const exportExcel = (raws, i18n, showFileHeader) => {
     ['durationSec'],
   ]
 
-  if (showFileHeader) {
+  if (allowFileInfo) {
     header.push(
       ...[
         i18n.$t('excel.file_server_record'),
