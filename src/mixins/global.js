@@ -99,11 +99,7 @@ export default {
       return RUNTIME_ENV === RUNTIME.ONPREMISE ? true : false
     },
     allowFileInfo() {
-      if ('ALLOW_FILE_INFO' in SETTINGS) {
-        return SETTINGS.ALLOW_FILE_INFO
-      } else {
-        return true
-      }
+      return SETTINGS.ALLOW_FILE_INFO
     },
   },
   methods: {
