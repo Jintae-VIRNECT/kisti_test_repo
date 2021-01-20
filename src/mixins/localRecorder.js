@@ -49,7 +49,7 @@ export default {
   watch: {
     'participants.length': 'participantsChanged',
     initing(flag, bFlag) {
-      if (flag === true && flag !== bFlag) {
+      if (flag === false && flag !== bFlag) {
         this.participantsChanged()
       }
     },
