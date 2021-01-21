@@ -46,6 +46,7 @@ public class RemoteServiceProperties extends PropertyService {
     }
 
     // Config properties
+    private String servicePolicyLocation;
     private boolean isDotenvEnabled;
     private String dotenvPath;
     private String domainOrPublicIp;
@@ -53,6 +54,15 @@ public class RemoteServiceProperties extends PropertyService {
     private String remoteWebsocketUrl;
     private Integer httpsPort;
     private String certificateType;
+
+    public String getServicePolicyLocation() {
+        return this.servicePolicyLocation;
+    }
+
+    public void setServicePolicyLocation() {
+        servicePolicyLocation = getValue("service.policy.location");
+    }
+
 
     public boolean isDotenvEnabled() {
         return isDotenvEnabled = asBoolean("service.dotenv");

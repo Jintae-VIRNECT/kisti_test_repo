@@ -1,8 +1,8 @@
 {
   "company_info": {
     "company_code": 0,
-    "workspace_id": [],
-    "license_name": "official",
+    "workspace_id": "",
+    "license_name": "product",
     "session_type": "private",
     "recording": false,
     "storage": false,
@@ -10,7 +10,7 @@
     "stt_sync": true,
     "stt_streaming": true,
     "tts": true,
-    "language_code": [
+    "language_codes": [
       {
         "code": "ko-KR",
         "text": "한국어"
