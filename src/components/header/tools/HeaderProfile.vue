@@ -32,7 +32,7 @@
       <div class="popover-profile__link" v-if="!isSafari">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
-      <div class="popover-profile__link" v-if="!onpremise">
+      <div class="popover-profile__link" v-if="!onpremise || window.urls.file">
         <button @click="downloadManual">{{ $t('button.manual') }}</button>
       </div>
       <div class="popover-profile__link">
@@ -92,7 +92,11 @@ export default {
       this.$eventBus.$emit('filelist:open')
     },
     downloadManual() {
-      window.open('https://file.virnect.com/Guide/remote_user_guide.pdf')
+      if (!this.onpremise) {
+        window.open('https://file.virnect.com/Guide/remote_web_user_guide.pdf')
+      } else if (window.urls.file) {
+        window.open(`${window.urls.file}/Guide/remote_web_user_guide.pdf`)
+      }
     },
   },
 
