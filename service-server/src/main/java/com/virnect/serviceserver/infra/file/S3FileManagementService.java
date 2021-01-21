@@ -544,6 +544,20 @@ public class S3FileManagementService implements IFileManagementService {
         return url;
     }
 
+    @Override
+    public String filePreSignedUrl(String bucketFolderName, String objectName, int expiry)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        String url = amazonS3Client.getUrl(bucketName, bucketFolderName + "/" + objectName).toString();
+        LogMessage.formedInfo(
+                TAG,
+                "download file url",
+                "filePreSignedUrl",
+                "file url result",
+                url
+        );
+        return url;
+    }
+
     /**
      *
      * @param targetFile

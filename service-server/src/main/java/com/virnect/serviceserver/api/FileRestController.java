@@ -192,4 +192,21 @@ public class FileRestController implements IFileRestAPI {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
     }
+
+    @Override
+    public ResponseEntity<ApiResponse<String>> fileDownloadUrlRequestHandler(String objectName) throws IOException {
+        log.info("REST API::GET::#fileDownloadUrlRequestHandler::{}/guide/{}",
+                REST_FILE_PATH,
+                objectName != null ? objectName : "{}");
+        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+            if (objectName == null) {
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            return ResponseEntity.ok(
+                    this.fileDataRepository.downloadFileUrl(objectName)
+            );
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
+    }
 }

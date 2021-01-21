@@ -124,7 +124,7 @@ tasks.getByName<BootJar>("bootJar") {
     manifest {
         attributes(
             "Implementation-Title" to  "Remote Service Server",
-            "Implementation-Version" to "2.0 revision 2223v5")
+            "Implementation-Version" to "2.0 revision 2223v6")
     }
     archiveFileName.set("RM-Service-${archiveVersion.get()}.${archiveExtension.get()}")
     //destinationDirectory.set(project.file("${rootProject.buildDir}/libs/${archiveBaseName}"))

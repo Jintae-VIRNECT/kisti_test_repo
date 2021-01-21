@@ -833,4 +833,29 @@ public class LocalFileManagementService implements IFileManagementService {
             return null;
         }
     }
+
+    @Override
+    public String filePreSignedUrl(String bucketFolderName, String objectName, int expiry)
+            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        try {
+            String url = minioClient.getObjectUrl(bucketName, bucketFolderName + "/" + objectName);
+            LogMessage.formedInfo(
+                    TAG,
+                    "download guide file url",
+                    "filePreSignedUrl",
+                    "file url result",
+                    url
+            );
+            return url;
+        } catch (MinioException e) {
+            LogMessage.formedError(
+                    TAG,
+                    "download guide file url",
+                    "filePreSignedUrl",
+                    "download error occurred",
+                    e.getMessage()
+            );
+            return null;
+        }
+    }
 }
