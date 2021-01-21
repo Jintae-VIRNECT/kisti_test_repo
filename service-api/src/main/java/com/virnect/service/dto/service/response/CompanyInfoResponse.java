@@ -54,6 +54,22 @@ public class CompanyInfoResponse {
     )
     @NotNull
     private List<LanguageCode> languageCodes = new ArrayList<>();
+
+    @Override
+    public String toString() {
+        return "CompanyInfoResponse{" +
+                "companyCode='" + companyCode + '\'' +
+                ", workspaceId='" + workspaceId + '\'' +
+                ", licenseName='" + licenseName + '\'' +
+                ", sessionType='" + sessionType + '\'' +
+                ", recording='" + recording + '\'' +
+                ", storage='" + storage + '\'' +
+                ", translation=" + translation +
+                ", sttSync=" + sttSync +
+                ", sttStreaming=" + sttStreaming +
+                ", tts=" + tts +
+                '}';
+    }
 }
 
 /*
