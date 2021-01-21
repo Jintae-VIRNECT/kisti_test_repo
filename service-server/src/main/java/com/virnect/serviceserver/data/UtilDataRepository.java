@@ -1,5 +1,7 @@
 package com.virnect.serviceserver.data;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.virnect.data.dao.Company;
 import com.virnect.data.dao.Language;
 import com.virnect.data.dao.SessionType;
@@ -13,10 +15,16 @@ import com.virnect.service.dto.service.request.CompanyResponse;
 import com.virnect.service.dto.service.request.LanguageRequest;
 import com.virnect.service.dto.service.response.CompanyInfoResponse;
 import com.virnect.service.error.ErrorCode;
+import com.virnect.serviceserver.utils.JsonUtil;
+import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -95,6 +103,89 @@ public class UtilDataRepository extends DataRepository {
         companyInfoResponse.setLanguageCodes(languageCodes);
 
         return companyInfoResponse;
+    }
+
+    private CompanyInfoResponse parseServicePolicyJsonObject(JsonObject jsonObject, String workspaceId) {
+        CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
+        JsonObject policyObject = jsonObject.getAsJsonObject("company_info");
+        companyInfoResponse.setCompanyCode(policyObject.get("company_code").getAsInt());
+
+        if(policyObject.get("workspace_id").getAsString().isEmpty()) {
+            companyInfoResponse.setWorkspaceId(workspaceId);
+        } else {
+            companyInfoResponse.setWorkspaceId(policyObject.get("workspace_id").getAsString());
+        }
+
+        companyInfoResponse.setLicenseName(policyObject.get("license_name").getAsString());
+        companyInfoResponse.setSessionType(SessionType.findBy(policyObject.get("session_type").getAsString()));
+        companyInfoResponse.setRecording(policyObject.get("recording").getAsBoolean());
+        companyInfoResponse.setStorage(policyObject.get("storage").getAsBoolean());
+        companyInfoResponse.setTranslation(policyObject.get("translation").getAsBoolean());
+        companyInfoResponse.setSttSync(policyObject.get("stt_sync").getAsBoolean());
+        companyInfoResponse.setSttStreaming(policyObject.get("stt_streaming").getAsBoolean());
+        companyInfoResponse.setTts(policyObject.get("tts").getAsBoolean());
+
+        JsonArray jsonArray = policyObject.getAsJsonArray("language_codes");
+        ArrayList<LanguageCode> languageCodes = new ArrayList<>();
+        for(int i = 0; i<jsonArray.size(); i++) {
+            LanguageCode languageCode = new LanguageCode(
+                    jsonArray.get(i).getAsJsonObject().get("text").getAsString(),
+                    jsonArray.get(i).getAsJsonObject().get("code").getAsString()
+            );
+            languageCodes.add(languageCode);
+        }
+        companyInfoResponse.setLanguageCodes(languageCodes);
+        return companyInfoResponse;
+    }
+
+    private CompanyInfoResponse loadServicePolicy(String workspaceId) throws IOException {
+        String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
+        if (policyLocation == null || policyLocation.isEmpty()) {
+            LogMessage.formedError(
+                    TAG,
+                    "initialise service policy",
+                    "loadServicePolicy",
+                    "service policy file path is null or empty. trying to set default service policy."
+            );
+            return defaultCompanyInfo(workspaceId);
+
+        } else {
+            JsonUtil jsonUtil = new JsonUtil();
+            JsonObject jsonObject;
+            if(policyLocation.startsWith("/")) {
+                Path path = Paths.get(policyLocation);
+                jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
+            } else {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(policyLocation);
+                if(inputStream == null) {
+                    LogMessage.formedError(
+                            TAG,
+                            "initialise service policy",
+                            "loadServicePolicy",
+                            "service policy file path is null or empty. trying to set default service policy."
+                    );
+                    return defaultCompanyInfo(workspaceId);
+                } else {
+                    LogMessage.formedError(
+                            TAG,
+                            "initialise service policy",
+                            "loadServicePolicy",
+                            "service policy file path is null or empty. set service policy using service policy file."
+                    );
+                    jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
+                    inputStream.close();
+
+                    return parseServicePolicyJsonObject(jsonObject, workspaceId);
+                }
+            }
+            LogMessage.formedInfo(
+                    TAG,
+                    "initialise service policy",
+                    "loadServicePolicy",
+                    "load service policy is success."
+            );
+            return parseServicePolicyJsonObject(jsonObject, workspaceId);
+        }
     }
 
     public ApiResponse<CompanyResponse> generateCompany(CompanyRequest companyRequest) {
@@ -186,7 +277,12 @@ public class UtilDataRepository extends DataRepository {
 
             @Override
             DataProcess<CompanyInfoResponse> invokeDataProcess() {
-                CompanyInfoResponse companyInfoResponse = defaultCompanyInfo(workspaceId);
+                CompanyInfoResponse companyInfoResponse = null;
+                try {
+                    companyInfoResponse = loadServicePolicy(workspaceId);
+                } catch (IOException e) {
+                    return new DataProcess<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
+                }
                 return new DataProcess<>(companyInfoResponse);
             }
         }.asApiResponse();
@@ -216,7 +312,11 @@ public class UtilDataRepository extends DataRepository {
                         return new DataProcess<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);
                     }
                 } else {
-                    companyInfoResponse = defaultCompanyInfo(workspaceId);
+                    try {
+                        companyInfoResponse = loadServicePolicy(workspaceId);
+                    } catch (IOException e) {
+                        return new DataProcess<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
+                    }
                     return new DataProcess<>(companyInfoResponse);
                 }
             }

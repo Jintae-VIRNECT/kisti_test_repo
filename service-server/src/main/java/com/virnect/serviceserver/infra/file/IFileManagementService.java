@@ -62,4 +62,9 @@ public interface IFileManagementService {
             int expiry,
             String fileName,
             FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
+
+    String filePreSignedUrl(
+            final String bucketFolderName,
+            final String objectName,
+            int expiry) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 }

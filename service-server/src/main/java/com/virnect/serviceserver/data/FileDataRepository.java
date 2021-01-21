@@ -284,6 +284,33 @@ public class FileDataRepository extends DataRepository {
         }.asApiResponse();
     }
 
+    public ApiResponse<String> downloadFileUrl(String objectName) {
+        return new RepoDecoder<Void, String>(RepoDecoderType.READ) {
+            @Override
+            Void loadFromDatabase() {
+                return null;
+            }
+
+            @Override
+            DataProcess<String> invokeDataProcess() {
+                log.info("file download: {}", objectName);
+                String url = null;
+                try {
+                    int expiry = 60 * 60 * 24; //one day
+                    url = fileManagementService.filePreSignedUrl("guide", objectName, expiry);
+                    if(url == null) {
+                        return new DataProcess<>("", ErrorCode.ERR_FILE_NOT_FOUND);
+                    } else {
+                        return new DataProcess<>(url);
+                    }
+                } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+                    log.info("{}", exception.getMessage());
+                    return new DataProcess<>("", ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+                }
+            }
+        }.asApiResponse();
+    }
+
     public ApiResponse<FilePreSignedResponse> downloadRecordFileUrl(String workspaceId,
                                                               String sessionId,
                                                               String userId,

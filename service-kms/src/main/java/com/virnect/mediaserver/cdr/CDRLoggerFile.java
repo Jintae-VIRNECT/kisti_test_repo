@@ -36,10 +36,12 @@ public class CDRLoggerFile implements CDRLogger {
 
 	@Override
 	public void log(KmsEvent event) {
+		log.info("{}", event);
 	}
 
 	@Override
 	public void log(SessionSummary sessionSummary) {
+		log.info("{}", sessionSummary);
 	}
 
 }
