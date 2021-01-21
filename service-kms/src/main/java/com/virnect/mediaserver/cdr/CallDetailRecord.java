@@ -223,7 +223,6 @@ public class CallDetailRecord {
 
 	protected void log(CDREvent event) {
 		this.loggers.forEach(logger -> {
-
 			// TEMP FIX: AVOID SENDING recordingStarted AND recordingStopped EVENTS TO
 			// WEBHOOK. ONLY recordingStatusChanged
 			if (!(logger instanceof CDRLoggerWebhook && (CDREventName.recordingStarted.equals(event.getEventName())

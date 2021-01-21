@@ -92,6 +92,7 @@ public class RemoteServiceConfig {
 	@Value("#{'${spring.profiles.active:}'.length() > 0 ? '${spring.profiles.active:}'.split(',') : \"default\"}")
 	protected String springProfile;
 
+
 	public String getSpringProfile() {
 		return springProfile;
 	}
@@ -154,6 +155,7 @@ public class RemoteServiceConfig {
 	}
 	public void checkConfiguration(boolean loadDotenv) {
 		try {
+			this.remoteServiceProperties.setServicePolicyLocation();
 			if(loadDotenv) {
 				this.remoteServiceProperties.setDotenvPath();
 				populatePropertySourceFromDotenv();

@@ -218,9 +218,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @DependsOn("remoteServiceConfig")
     public SessionManager sessionManager() {
         KurentoSessionManager kurentoSessionManager = new KurentoSessionManager();
-        //kurentoSessionManager.setKurentoSessionListener(serviceSessionManager.kurentoSessionListener);
         return kurentoSessionManager;
-        //return new KurentoSessionManager();
     }
 
     @Bean
@@ -439,10 +437,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
     @EventListener(ApplicationReadyEvent.class)
     public void whenReady() {
-
-        String dashboardUrl = httpUrl + "/dashboard/";
         String websocket = wsUrl + WS_PATH + "/";
-
 
         // @formatter:off
         String msg = "\n\n----------------------------------------------------\n" + "\n"
@@ -453,7 +448,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
                 + "   * RemoteService Media Server Streaming list: " + mediaStreamingUris.toString() + "\n" + "\n"
                 + "   * RemoteService Coturn Server Conference list: " + coturnConferenceUris.toString() + "\n" + "\n"
                 + "   * RemoteService Coturn Server Streaming list: " + coturnStreamingUris.toString() + "\n" + "\n"
-                + "   * RemoteService Dashboard: " + dashboardUrl + "\n" + "\n"
                 + "   * RemoteService Websocket: " + websocket + "\n" + "\n"
                 + "   * RemoteService Storage Server: " + storageUrl + "\n" + "\n"
                 + "   * RemoteService Temp Directory: " + System.getProperty("java.io.tmpdir") + "\n" + "\n"

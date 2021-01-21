@@ -19,6 +19,11 @@ public class LanguageCode {
         this.code = translationItem.getLanguageCode();
     }
 
+    public LanguageCode(String text, String code) {
+        this.text = text;
+        this.code = code;
+    }
+
 
     @Override
     public String toString() {

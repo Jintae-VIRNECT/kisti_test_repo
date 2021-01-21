@@ -18,9 +18,6 @@ public interface IValidationRestAPI {
 
     /**
      * @Deprecated
-     * @param workspaceId
-     * @param userId
-     * @return
      */
     @ApiOperation(value = "Service Company Information", notes = "회사별 서비스 정보를 제공합니다.")
     @GetMapping(value = "company/{workspaceId}/{userId}")

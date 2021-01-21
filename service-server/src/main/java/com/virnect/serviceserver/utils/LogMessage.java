@@ -25,4 +25,9 @@ public class LogMessage {
         String comment = String.format("%s::%s::#%s::[%s]", tag, process, methodName, reason);
         log.error("{} => {}", comment, result);
     }
+
+    public static void formedError(String tag, String process , String methodName, String reason){
+        String comment = String.format("%s::%s::#%s::[%s]", tag, process, methodName, reason);
+        log.error("{}", comment);
+    }
 }

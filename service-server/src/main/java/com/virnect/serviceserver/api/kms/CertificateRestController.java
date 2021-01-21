@@ -15,7 +15,7 @@
  *
  */
 
-package com.virnect.serviceserver.rest;
+package com.virnect.serviceserver.api.kms;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
