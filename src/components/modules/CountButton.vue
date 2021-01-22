@@ -1,8 +1,13 @@
-<template
-  ><button
+<template>
+  <button
     type="button"
     class="count-button"
-    :class="{ nodata: count <= 0, normal: count > 0, seleted: selected }"
+    :class="{
+      nodata: count <= 0,
+      normal: count > 0,
+      seleted: selected && !hover,
+      hover: hover && count > 0,
+    }"
     @click.stop="clickListener"
   >
     <img :src="imgSrc" />
@@ -15,11 +20,6 @@
 <script>
 export default {
   name: 'CountButton',
-  data() {
-    return {
-      selected: false,
-    }
-  },
   props: {
     count: {
       type: Number,
@@ -33,7 +33,12 @@ export default {
       type: Boolean,
       default: false,
     },
+    selected: {
+      type: Boolean,
+      default: false,
+    },
   },
+
   computed: {
     imgSrc() {
       if (this.count > 0 && this.selected) {
@@ -42,13 +47,6 @@ export default {
         return this.images.active
       } else {
         return this.images.default
-      }
-    },
-  },
-  watch: {
-    hover(after) {
-      if (this.count > 0) {
-        after ? (this.selected = true) : (this.selected = false)
       }
     },
   },
@@ -68,6 +66,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .count-button {
   display: flex;
   align-items: center;
@@ -81,24 +80,34 @@ export default {
   font-size: 1.0714rem;
   background: #f5f7fa;
   border-radius: 2px;
+  transition: 0.3s;
+
+  > img {
+    width: 1.7143rem;
+    height: 1.7143rem;
+  }
 
   &.nodata {
-    background-color: #ffffff;
+    background-color: $color_white;
     border: 1px solid #edf0f4;
   }
   &.seleted {
-    background: #1665d8;
+    background: $color_primary;
+  }
+  &.hover {
+    background: rgb(215, 231, 255);
+    border-radius: 2px;
   }
 
   & > p {
-    color: #0b1f48;
+    color: $color_text_main;
     font-weight: 500;
     font-size: 1.0714rem;
     &.nodata {
       color: #757f91;
     }
     &.seleted {
-      color: #ffffff;
+      color: $color_white;
       font-size: 1.0714rem;
     }
   }

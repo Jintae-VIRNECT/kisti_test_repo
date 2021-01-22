@@ -20,6 +20,7 @@ COPY --from=builder server server
 COPY --from=builder route.js .
 COPY --from=builder server.js .
 COPY --from=builder package.json .
+COPY --from=builder .npmrc .
 COPY --from=builder dist dist
 
 RUN npm --production=true install 

@@ -4,22 +4,20 @@
     @click.stop="clickListener"
     @mouseover="select = true"
     @mouseleave="select = false"
-    :style="{
-      backgroundImage: 'url(' + imgSrc + ')',
-      width: size,
-      height: size,
-    }"
-  ></button>
+  >
+    <img
+      :src="imgSrc"
+      :style="{
+        width: size,
+        height: size,
+      }"
+    />
+  </button>
 </template>
 
 <script>
 export default {
   name: 'PlayButton',
-  data() {
-    return {
-      select: false,
-    }
-  },
   props: {
     mediaUrl: {
       type: String,
@@ -29,6 +27,11 @@ export default {
       type: [Number, String],
       default: 12,
     },
+  },
+  data() {
+    return {
+      select: false,
+    }
   },
   computed: {
     imgSrc() {
@@ -54,9 +57,9 @@ export default {
 <style lang="scss" scoped>
 @import '~assets/style/mixin';
 .play-button {
-  @include ir();
-  width: 1.714em;
-  height: 1.714em;
-  background: center/100% no-repeat;
+  // @include ir();
+  // width: 23.996px;
+  // height: 23.996px;
+  background: center/50% no-repeat;
 }
 </style>

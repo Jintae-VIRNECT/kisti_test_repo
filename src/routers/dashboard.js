@@ -11,16 +11,11 @@ export default new VueRouter({
     {
       path: '/',
       name: 'main',
-      redirect: { name: 'dashboard' },
-    },
-    {
-      path: '/home',
-      name: 'dashboard',
       component: DashboardComponent,
     },
     {
       path: '*',
-      redirect: 'dashboard',
+      redirect: '/',
     },
   ],
 })

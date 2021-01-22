@@ -16,10 +16,6 @@
 <script>
 export default {
   name: 'ToggleButton',
-  components: {},
-  data() {
-    return {}
-  },
   props: {
     customClass: {
       type: String,
@@ -35,9 +31,14 @@ export default {
       type: String,
       default: null,
     },
+    disableSrc: String,
     active: {
       type: Boolean,
       default: true,
+    },
+    disable: {
+      type: Boolean,
+      default: false,
     },
     size: {
       type: [Number, String],
@@ -46,6 +47,10 @@ export default {
   },
   computed: {
     src() {
+      if (this.disable) {
+        return this.disableSrc
+      }
+
       if (this.toggle) {
         if (this.active) return this.activeSrc
         else return this.inactiveSrc
@@ -54,9 +59,6 @@ export default {
       }
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 

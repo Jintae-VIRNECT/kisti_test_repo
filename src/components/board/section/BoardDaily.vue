@@ -8,84 +8,83 @@
         <span class="board__header--description">
           {{ $t('chart.daily_collabo_description') }}
         </span>
-        <datepicker
-          class="board__header--datepicker"
-          :pickerName="'daily'"
-          :minimumView="'day'"
-          :maximumView="'day'"
-          :initValue="today"
-        ></datepicker>
+        <v-date-picker
+          class="board__picker"
+          v-model="date"
+          :masks="masks"
+          :popover="{ visibility: 'click', placement: 'auto-start' }"
+          :locale="currentLanguage"
+          @popoverWillShow="toggleCalendarBtn"
+          @popoverWillHide="toggleCalendarBtn"
+        >
+          <template v-slot="{ inputValue, inputEvents, togglePopover }">
+            <div class="board__picker--wrapper">
+              <input
+                class="board__picker--input"
+                :class="{ active: calendarVisible }"
+                :value="inputValue"
+                v-on="inputEvents"
+                readonly
+              />
+              <button
+                class="board__picker--button"
+                @click="togglePopover({ placement: 'auto-start' })"
+              >
+                <img
+                  v-if="!calendarVisible"
+                  src="~assets/image/calendar/ic_calendar_default.svg"
+                  alt="calendar_hide"
+                />
+                <img
+                  v-else
+                  src="~assets/image/calendar/ic_calendar_active.svg"
+                  alt="calendar_active"
+                />
+              </button>
+            </div>
+          </template>
+        </v-date-picker>
       </div>
 
       <figcaption class="chart-legend">
         <chart-legend
           @click="toggle(dailyChart, 'my')"
           :text="$t('chart.my_collabo_list')"
-          shape="round"
+          shape="double-circle"
         ></chart-legend>
         <chart-legend
           @click="toggle(dailyChart, 'total')"
           :text="$t('chart.total_collabo_list')"
-          shape="round"
-          customClass="grey"
+          shape="double-circle"
+          customClass="total"
         ></chart-legend>
       </figcaption>
       <div class="chart-holder" :class="{ loading: loading }">
-        <canvas id="chart-dayily" width="1250" height="250"></canvas>
+        <canvas :id="chartId" width="1250" height="250"></canvas>
       </div>
     </card>
-
-    <div class="board-figures">
-      <figure-board
-        :header="$t('chart.daily_total_collabo_count')"
-        :count="daily ? daily.total.count : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_calendar.svg')"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.daily_total_collabo_time')"
-        :time="daily ? daily.total.time : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_date_all.svg')"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.daily_my_collabo_count')"
-        :onlyMe="true"
-        :count="daily ? daily.my.count : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_chart.svg')"
-      ></figure-board>
-      <figure-board
-        :header="$t('chart.daily_my_collabo_time')"
-        :onlyMe="true"
-        :time="daily ? daily.my.time : 0"
-        :imgSrc="require('assets/image/figure/ic_figure_date_time.svg')"
-      ></figure-board>
-    </div>
+    <figure-boards :figureBoardInfos="figureBoardInfos"></figure-boards>
   </section>
 </template>
 
 <script>
 import Card from 'Card'
-import Datepicker from 'Datepicker'
 import Chart from 'chart.js'
 import ChartLegend from 'Legend'
-import FigureBoard from 'FigureBoard'
+import FigureBoards from '../partial/FigureBoards'
 
-import { hourLabels } from 'utils/chartDatas'
 import chartMixin from 'mixins/chart'
+import langMixin from 'mixins/language'
+import calendarMixin from 'mixins/calendar'
 
+import { mapActions } from 'vuex'
 export default {
   name: 'BoardDaily',
-  mixins: [chartMixin],
+  mixins: [chartMixin, langMixin, calendarMixin],
   components: {
     Card,
     ChartLegend,
-    FigureBoard,
-    Datepicker,
-  },
-  data() {
-    return {
-      dailyChart: null,
-      today: new Date(),
-    }
+    FigureBoards,
   },
   props: {
     daily: {
@@ -99,66 +98,89 @@ export default {
       type: Boolean,
     },
   },
+  data() {
+    return {
+      dailyChart: null,
+      date: new Date(),
+      chartId: 'chart-dayily',
+      figureBoardInfos: [],
+
+      calendarVisible: false,
+    }
+  },
   watch: {
     daily: {
       handler(data) {
-        if (this.dailyChart) {
-          this.dailyChart.data.datasets[0].data = data.my.set
-          this.dailyChart.data.datasets[1].data = data.total.set
-          this.dailyChart.update()
-        }
+        this.updateChart(data)
+        this.setFigureInfos()
       },
       deep: true,
+      immediate: true,
+    },
+    date() {
+      this.setCalendar({
+        name: 'daily',
+        date: this.date,
+      })
     },
   },
   methods: {
+    ...mapActions(['setCalendar']),
     initChart() {
-      this.$nextTick(() => {
-        const ctx = document.getElementById('chart-dayily').getContext('2d')
-
-        const custom = this.customTooltips(
-          'chart-dayily',
-          'chartjs-tooltip',
-          'inner',
-        )
-        this.dailyChart = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: hourLabels,
-            datasets: [
-              {
-                label: this.$t('chart.my_collabo_list'),
-                data: this.daily ? this.daily.my.set : [],
-                borderColor: '#0f75f5',
-                borderWidth: 4,
-                pointRadius: 0,
-                pointBackgroundColor: '#ffffff',
-                borderJoinStyle: 'bevel',
-                lineTension: 0,
-                fill: false,
-                hoverBorderWidth: 4,
-              },
-              {
-                label: this.$t('chart.total_collabo_list'),
-                data: this.daily ? this.daily.total.set : [],
-                borderColor: '#bbc8d9',
-                borderWidth: 4,
-                pointRadius: 0,
-                pointBackgroundColor: '#ffffff',
-                borderJoinStyle: 'bevel',
-                lineTension: 0,
-                fill: false,
-                hoverBorderWidth: 4,
-              },
-            ],
-          },
-          options: this.getOptionDaily(custom),
-        })
-      })
+      const ctx = document.getElementById(this.chartId).getContext('2d')
+      const chartData = this.initDailyChart(this.chartId)
+      this.dailyChart = new Chart(ctx, chartData)
+    },
+    updateChart(data) {
+      if (this.dailyChart) {
+        this.dailyChart.data.datasets[0].data = data.my.set
+        this.dailyChart.data.datasets[1].data = data.total.set
+        this.dailyChart.update()
+      }
+    },
+    toggleCalendarBtn() {
+      this.calendarVisible = !this.calendarVisible
+    },
+    setFigureInfos() {
+      this.figureBoardInfos = [
+        {
+          header: this.$t('chart.daily_my_collabo_count'),
+          my: true,
+          count: this.daily ? this.daily.my.count : 0,
+          imgSrc: require('assets/image/figure/ic_chart_daily_count.svg'),
+          type: 'daily',
+        },
+        {
+          header: this.$t('chart.daily_my_collabo_time'),
+          my: true,
+          time: this.daily ? this.daily.my.time : 0,
+          imgSrc: require('assets/image/figure/ic_chart_daily_time.svg'),
+          type: 'daily',
+        },
+        {
+          header: this.$t('chart.daily_total_collabo_count'),
+          my: false,
+          count: this.daily ? this.daily.total.count : 0,
+          imgSrc: require('assets/image/figure/ic_chart_daily_total_count.svg'),
+          type: 'daily',
+        },
+        {
+          header: this.$t('chart.daily_total_collabo_time'),
+          my: false,
+          time: this.daily ? this.daily.total.time : 0,
+          imgSrc: require('assets/image/figure/ic_chart_daily_total_time.svg'),
+          type: 'daily',
+        },
+      ]
     },
   },
   mounted() {
     this.initChart()
+
+    this.setCalendar({
+      name: 'daily',
+      date: this.date,
+    })
   },
 }
 </script>

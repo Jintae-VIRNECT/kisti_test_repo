@@ -2,9 +2,26 @@
   <button
     class="icon-button"
     @click="clickListener"
-    :class="{ active: active }"
+    @mousedown="toggleMouse(true, true)"
+    @mouseup="toggleMouse(false, true)"
+    @mouseover="toggleMouse(false, true)"
+    @mouseout="toggleMouse(false, false)"
+    :class="{ select: select, colored: colored }"
   >
-    <img :src="imgSrc" :class="animateClass" alt="" />
+    <img
+      v-if="showSelectImg"
+      :src="selectImgSrc"
+      :class="animateClass"
+      alt=""
+    />
+    <img
+      v-else-if="showActiveImg"
+      :src="activeImgSrc"
+      :class="animateClass"
+      alt=""
+    />
+    <img v-else :src="imgSrc" :class="animateClass" alt="" />
+
     {{ text }}
   </button>
 </template>
@@ -25,19 +42,46 @@ export default {
       type: String,
       default: '',
     },
+    selectImgSrc: {
+      type: String,
+      default: '',
+    },
+    select: {
+      type: Boolean,
+      default: false,
+    },
+
+    colored: {
+      type: Boolean,
+      default: false,
+    },
     animation: {
       type: String,
       default: null,
-    },
-    active: {
-      type: Boolean,
-      default: false,
     },
   },
   data() {
     return {
       animateClass: '',
+      active: false,
+      hover: false,
     }
+  },
+  computed: {
+    showActiveImg() {
+      if (this.active || this.hover) {
+        return true
+      } else {
+        return false
+      }
+    },
+    showSelectImg() {
+      if ((this.select && !this.active) || (this.select && this.hover)) {
+        return true
+      } else {
+        return false
+      }
+    },
   },
   methods: {
     clickListener() {
@@ -49,32 +93,57 @@ export default {
         }, 400)
       }
     },
+    toggleMouse(active, hover) {
+      this.active = active
+      this.hover = hover
+    },
   },
 }
 </script>
 
 <style lang="scss" scoped>
+@import '~assets/style/vars';
 .icon-button {
   display: flex;
   margin-left: 0.643em;
-  // padding: 0.571em 1.071em 0.571em 0.714em;
-  padding: 0.7143rem 1.2857rem 0.7143rem 1.2857rem;
+  padding: 10.0002px 11px 10.0002px 11px;
   color: #757f91;
   font-weight: normal;
   font-size: 0.9286rem;
   line-height: 1.429em;
-  background: #edf0f4 0.929em 50%/1.571em no-repeat;
+  background: $color_white 0.929em 50%/1.571em no-repeat;
+  border: 1px solid #d6d6d8;
   border-radius: 2px;
-  opacity: 0.5;
+  transition: 0.3s;
 
   &:hover {
-    background-color: #d7e0ec;
-    opacity: 1;
+    color: $color_text_main;
   }
   &.active {
-    color: #0b1f48;
-    opacity: 1;
+    color: $color_text_main;
   }
+  &.select {
+    color: #757f91;
+  }
+
+  &.colored {
+    &.select {
+      color: $color_white;
+      background-color: $color_primary;
+      border: 1px solid $color_primary;
+    }
+    &:active {
+      color: $color_white;
+      background-color: #0960cd;
+      border: 1px solid #0960cd;
+    }
+    &:hover {
+      color: $color_white;
+      background-color: #0960cd;
+      border: 1px solid #0960cd;
+    }
+  }
+
   > img {
     height: 1.429em;
     margin-right: 0.2857rem;

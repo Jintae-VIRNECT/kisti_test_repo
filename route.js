@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const path = require('path')
 const config = require('./server/config')
-// const url = require('url')
 
 function IsAllowBrowser(req) {
   const userAgent = req.headers['user-agent'] || ''
@@ -12,10 +11,9 @@ function IsAllowBrowser(req) {
   const isEdge = userAgent.includes('Edg') || userAgent.includes('Edge')
   const isSamsung = userAgent.includes('SamsungBrowser')
 
-  const findSafari = userAgent.includes('Safari')
-  const isSafari = !isChrome && !isChromeMobile && findSafari ? true : false
+  const isSafari = !isChrome && !isChromeMobile && userAgent.includes('Safari')
 
-  return (isChrome || isEdge || isChromeMobile) && !isSafari && !isSamsung
+  return ((isChrome || isEdge || isChromeMobile) && !isSamsung) || isSafari
 }
 
 function IsMobileBrowser(req) {
@@ -23,35 +21,39 @@ function IsMobileBrowser(req) {
   const isChromeMobile =
     userAgent.includes('Mobile') ||
     userAgent.includes('CriOS') ||
-    userAgent.includes('mobileApp')
+    userAgent.includes('mobileApp') ||
+    userAgent.includes('iPhone')
+
   return isChromeMobile
 }
 
-router.get('/healthcheck', function(req, res) {
+router.get('/healthcheck', function (req, res) {
   res.send('200')
 })
 
-router.get('/configs', function(req, res) {
+router.get('/configs', function (req, res) {
   // req.query.origin
   res.header('Content-Type', 'application/json')
   res.send(JSON.stringify(config.getConfigs()))
 })
 
-router.get('/home', function(req, res) {
+router.get('/', function (req, res) {
+  const remoteAddr = config.getConfigs().remote
+
   if (IsAllowBrowser(req)) {
     if (IsMobileBrowser(req)) {
-      res.redirect('/support')
+      res.redirect(remoteAddr + '/support')
     } else {
       res.sendFile(path.join(__dirname, '/dist/index.html'))
     }
   } else {
-    res.redirect('/support')
+    res.redirect(remoteAddr + '/support')
     return
   }
 })
 
-router.get('/*', function(req, res) {
-  res.redirect('/home')
+router.get('/*', function (req, res) {
+  res.redirect('/')
 })
 
 module.exports = router

@@ -22,7 +22,12 @@
     "text":"검색어",
     "placeholder":"협업명 / 멤버를 입력해주세요",
     "use_date_search":"기간 검색 사용",
-    "execute":"검색하기"
+    "execute":"검색하기",
+    "over_period":"3개월이상 조회할 수 없습니다.",
+    "invalid_period":"유효하지 않은 기간입니다.",
+    "invalid_date":"올바른 날짜를 지정해주세요.",
+    "select_period":"기간 선택",
+    "enable_search":"검색 사용"
   },
 
   "list":{
@@ -48,7 +53,8 @@
     "attach_file":"첨부 파일",
     "expired":"기간만료",
     "download_period":"다운로드 기간",
-    "upload_member":"업로드 멤버"
+    "upload_member":"업로드 멤버",
+    "play":"녹화 재생"
   },
   "date": {
     "lastday": "[어제] A",

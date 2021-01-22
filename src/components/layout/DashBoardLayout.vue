@@ -1,16 +1,19 @@
 <template>
   <div class="dashboard-layout">
     <dash-board-header></dash-board-header>
-    <vue2-scrollbar classes="dashboard-wrapper">
-      <div class="dashboard-layout__contents">
-        <dash-board-tab
-          ref="tabSection"
-          @tabChange="tabChange"
-        ></dash-board-tab>
+    <vue2-scrollbar ref="dashboardScroller" classes="dashboard-wrapper">
+      <div>
+        <div class="dashboard-layout__contents offsetwidth">
+          <dash-board-tab
+            ref="tabSection"
+            @tabChange="tabChange"
+          ></dash-board-tab>
+        </div>
+        <dash-board-footer></dash-board-footer>
       </div>
     </vue2-scrollbar>
-    <dash-board-footer></dash-board-footer>
     <player :url="url" :visible.sync="showPlayer"></player>
+    <fab></fab>
   </div>
 </template>
 
@@ -24,6 +27,7 @@ import langMixin from 'mixins/language'
 import auth from 'utils/auth'
 
 import Player from 'components/dashboard/modal/ModalPlayer'
+import Fab from 'Fab'
 
 export default {
   name: 'DashBoardLayout',
@@ -56,6 +60,7 @@ export default {
     DashBoardFooter,
     DashBoardTab,
     Player,
+    Fab,
   },
 
   data() {
@@ -97,55 +102,22 @@ export default {
       this.showPlayer = true
       this.url = url
     },
+    scrollTop() {
+      this.$refs['dashboardScroller'].scrollToY(0)
+    },
   },
   mounted() {
     this.mx_changeLang()
     this.$eventBus.$on('open::player', this.openPlayer)
+    this.$eventBus.$on('scroll:reset:dashboard', this.scrollTop)
   },
   beforeDestroy() {
     this.$eventBus.$off('open::player')
+    this.$eventBus.$off('scroll:reset:dashboard')
   },
 }
 </script>
 
 <style lang="scss">
-@import '~assets/style/layout.scss';
 @import '~assets/style/dashboard.scss';
-.dashboard-layout {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  background: #f8f8fa;
-  > .vue-scrollbar__wrapper {
-    height: 100%;
-    margin-right: 0px;
-    margin-bottom: 0px;
-
-    > .vue-scrollbar__area {
-      height: 100%;
-      transition: none;
-    }
-  }
-}
-.dashboard-wrapper {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100%;
-  margin-right: 0;
-  padding-bottom: 0;
-}
-
-.dashboard-layout__contents {
-  position: relative;
-  min-width: $content_min_width;
-  margin: 4.8571rem 22.8571rem 0px 22.8571rem;
-  padding-bottom: 12.2143rem;
-  overflow: hidden;
-}
 </style>

@@ -25,7 +25,7 @@ export default {
       return this.$i18n.locale
     },
     languages() {
-      return this.$i18n.availableLocales.sort(function(langA, langB) {
+      return this.$i18n.availableLocales.sort(function (langA, langB) {
         return order.indexOf(langA) - order.indexOf(langB)
       })
     },

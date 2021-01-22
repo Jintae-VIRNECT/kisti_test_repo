@@ -9,11 +9,6 @@
 <script>
 export default {
   name: 'Legend',
-  data() {
-    return {
-      toggle: false,
-    }
-  },
   props: {
     text: {
       type: String,
@@ -21,9 +16,9 @@ export default {
     },
     shape: {
       type: String,
-      default: 'round',
+      default: 'double-circle',
       validate(value) {
-        return ['round', 'square'].indexOf(value) >= 0
+        return ['double-circle', 'circle'].indexOf(value) >= 0
       },
     },
     customClass: {
@@ -31,7 +26,11 @@ export default {
       default: '',
     },
   },
-  computed: {},
+  data() {
+    return {
+      toggle: false,
+    }
+  },
   methods: {
     clickListener() {
       if (typeof this.$listeners['click'] === 'function') {
@@ -48,32 +47,34 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .legend {
   position: relative;
   margin-right: 1.5714rem;
 
-  &.round {
+  &.double-circle {
     &::before {
       position: absolute;
       top: 0.3571rem;
       left: 0.4286rem;
       width: 0.3571rem;
       height: 0.3571rem;
-      background-color: #ffffff;
-      border: 4px solid #0f75f5;
+      background-color: $color_white;
+      border: 4px solid $color_primary;
       border-radius: 50%;
       content: '';
     }
   }
 
-  &.square {
+  &.circle {
     &::before {
       position: absolute;
       top: 0.3571rem;
       left: 0.4286rem;
       width: 0.8571rem;
       height: 0.8571rem;
-      background-color: #0f75f5;
+      background-color: #203cdd;
+      border-radius: 50%;
       content: '';
     }
   }

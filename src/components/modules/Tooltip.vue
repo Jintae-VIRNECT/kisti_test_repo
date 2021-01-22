@@ -23,11 +23,6 @@
 <script>
 export default {
   name: 'Tooltip',
-  data() {
-    return {
-      show: false,
-    }
-  },
   props: {
     active: {
       // false 일때 hover 해도 툴팁 미표출
@@ -72,6 +67,11 @@ export default {
         )
       },
     },
+  },
+  data() {
+    return {
+      show: false,
+    }
   },
   methods: {
     enter() {
@@ -156,7 +156,6 @@ export default {
       this.show = false
     },
   },
-  mounted() {},
 }
 </script>
 

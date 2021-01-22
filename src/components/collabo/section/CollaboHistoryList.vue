@@ -8,14 +8,9 @@
         {{ $t('list.title_description') }}
       </span>
       <button
-        @click="getExcelData"
+        @click="createExcel"
         class="collabo-history-list__header--excel"
-        :class="[
-          { 'excel-loading': excelLoading },
-          {
-            disable: historyList.length <= 0,
-          },
-        ]"
+        :class="excelBtnClass"
       >
         <p v-if="!excelLoading">EXCEL</p>
       </button>
@@ -36,16 +31,17 @@
 <script>
 import History from 'components/collabo/partials/CollaboHistory'
 import PaginationTool from 'components/collabo/partials/CollaboPaginationTool'
-import {
-  getHistoryList,
-  getAllHistoryList,
-  getHistorySingleItem,
-} from 'api/http/history'
+
+import { getHistoryList, getAllHistoryList } from 'api/http/history'
 import { getMemberInfo } from 'api/http/member'
+
 import confirmMixin from 'mixins/confirm'
 import searchMixin from 'mixins/search'
+
 import { WORKSPACE_ROLE } from 'configs/status.config'
+import { ROLE } from 'configs/remote.config'
 import { exportExcel } from 'utils/excel'
+
 import { mapGetters } from 'vuex'
 
 export default {
@@ -57,9 +53,11 @@ export default {
   },
   data() {
     return {
-      historyList: [],
       isMaster: false,
+
+      historyList: [],
       curPage: 0,
+      paging: false,
       pageMeta: {
         currentPage: 0,
         currentSize: 0,
@@ -67,13 +65,20 @@ export default {
         totalPage: 0,
         last: false,
       },
-      paging: false,
       loading: false,
       excelLoading: false,
     }
   },
   computed: {
     ...mapGetters(['searchFilter']),
+    excelBtnClass() {
+      return [
+        { 'excel-loading': this.excelLoading },
+        {
+          disable: this.historyList.length <= 0,
+        },
+      ]
+    },
   },
   watch: {
     workspace(val, oldVal) {
@@ -83,8 +88,115 @@ export default {
     },
   },
   methods: {
+    async getHistoryByPage(page) {
+      await this.init(page - 1)
+    },
+
     async init(page = 0) {
       this.loading = true
+
+      const paging = true
+      const updatePageMeta = true
+      const list = await this.getHistory(paging, updatePageMeta, page)
+      if (list === false) {
+        this.loading = false
+        return
+      }
+
+      this.historyList = list
+      this.loading = false
+    },
+
+    async getHistory(paging, updatePageMeta, page = 0) {
+      try {
+        const params = this.getParams(paging, page)
+        const datas = await this.getData(params)
+
+        if (paging && updatePageMeta) {
+          if ('pageMeta' in datas) {
+            this.pageMeta = datas.pageMeta
+          } else {
+            this.pageMeta = {
+              currentPage: 0,
+              currentSize: 0,
+              totalElements: 0,
+              totalPage: 0,
+              last: false,
+            }
+          }
+        }
+
+        return datas.roomHistoryInfoList
+      } catch (err) {
+        this.confirmDefault(this.$t('confirm.server_no_response'))
+        console.error(err)
+        return false
+      }
+    },
+
+    async createExcel() {
+      try {
+        if (this.historyList.length <= 0 || this.excelLoading) return
+
+        this.excelLoading = true
+
+        let page = 0
+        const paging = true
+        const historys = []
+
+        const params = this.getParams(paging, page)
+        const initHistory = await this.getData(params)
+
+        const totalPage = initHistory.pageMeta.totalPage
+        historys.push(...initHistory.roomHistoryInfoList)
+
+        const updatePageMeta = false
+        for (let i = 1; i < totalPage; i++) {
+          const history = await this.getHistory(paging, updatePageMeta, i)
+
+          if (history) {
+            historys.push(...history)
+          } else {
+            return
+          }
+        }
+
+        if (historys.length <= 0) {
+          return
+        }
+
+        historys.forEach(history => {
+          if (history.memberList && history.memberList.length > 0) {
+            const leader = history.memberList.find(member => {
+              return member.memberType === ROLE.LEADER
+            })
+
+            if (leader && leader.nickName) {
+              history.leaderNickName = leader.nickName
+            } else {
+              history.leaderNickName = ''
+            }
+          } else {
+            history.leaderNickName = ''
+          }
+        })
+
+        exportExcel(historys, this, this.allowFileInfo)
+
+        this.excelLoading = false
+      } catch (err) {
+        console.error(err)
+        this.excelLoading = false
+      }
+    },
+
+    async getData(params) {
+      return this.isMaster
+        ? await getAllHistoryList(params)
+        : await getHistoryList(params)
+    },
+
+    async checkMaster() {
       const memberInfo = await getMemberInfo({
         userId: this.account.uuid,
         workspaceId: this.workspace.uuid,
@@ -93,131 +205,15 @@ export default {
       if (memberInfo.role === WORKSPACE_ROLE.MASTER) {
         this.isMaster = true
       }
-
-      const list = await this.getHistory(page)
-      if (list === false) {
-        this.loading = false
-        return
-      }
-
-      const sorted = list.sort((roomA, roomB) => {
-        return (
-          new Date(roomB.activeDate).getTime() -
-          new Date(roomA.activeDate).getTime()
-        )
-      })
-
-      await this.addAdditionalData(sorted)
-
-      this.historyList = sorted
-
-      this.loading = false
-    },
-
-    async getHistory(page = 0) {
-      try {
-        const paging = true
-        const params = this.getParams(paging, page)
-        const datas = await this.getData(params)
-
-        if ('pageMeta' in datas) {
-          this.pageMeta = datas.pageMeta
-        } else {
-          this.pageMeta = {
-            currentPage: 0,
-            currentSize: 0,
-            totalElements: 0,
-            totalPage: 0,
-            last: false,
-          }
-        }
-        return datas.roomHistoryInfoList
-      } catch (err) {
-        this.confirmDefault(this.$t('confirm.server_no_response'))
-        console.error(err)
-        return false
-      }
-    },
-    async setIndex(list) {
-      const startIndex = this.pageMeta.currentPage * 7
-      let index = 0
-      for (const history of list) {
-        history.index = index + startIndex
-        history.index++
-        index++
-      }
-    },
-    async setLeader(list) {
-      for (const history of list) {
-        const leader = history.memberList.find(member => {
-          return member.memberType === 'LEADER'
-        })
-        history.leader = leader
-      }
-    },
-
-    async getExcelData() {
-      try {
-        if (this.historyList.length <= 0 || this.excelLoading) return
-
-        this.excelLoading = true
-        let merged = []
-
-        const paging = false
-        const params = this.getParams(paging, 0)
-        const historys = await this.getData(params)
-
-        this.addAdditionalData(historys.roomHistoryInfoList)
-
-        for (const history of historys.roomHistoryInfoList) {
-          const room = await getHistorySingleItem({
-            workspaceId: this.workspace.uuid,
-            sessionId: history.sessionId,
-          })
-          merged.push({ history, room })
-        }
-
-        // 'No,협업명,협업내용,리더,참가자,시작시간,종료시간,진행시간,서버녹화,로컬녹화,첨부파일'
-        const header = [
-          'No',
-          this.$t('excel.room_title'),
-          this.$t('excel.room_description'),
-          this.$t('excel.room_leader'),
-          this.$t('excel.room_member_list'),
-          this.$t('excel.room_active_date'),
-          this.$t('excel.room_unactive_date'),
-          this.$t('excel.room_duration_sec'),
-          this.$t('excel.file_server_record'),
-          this.$t('excel.file_local_record'),
-          this.$t('excel.file_attach_file'),
-        ]
-
-        exportExcel(merged, header)
-        this.excelLoading = false
-      } catch (err) {
-        console.error(err)
-        this.excelLoading = false
-      }
-    },
-    async addAdditionalData(list) {
-      await this.setIndex(list)
-      await this.setLeader(list)
-    },
-    async getHistoryByPage(page) {
-      await this.init(page - 1)
-    },
-
-    async getData(params) {
-      return this.isMaster
-        ? await getAllHistoryList(params)
-        : await getHistoryList(params)
     },
   },
 
-  mounted() {
+  async mounted() {
     this.$eventBus.$on('reload::list', this.init)
+
     if (this.workspace.uuid) {
-      this.init()
+      await this.checkMaster()
+      await this.init()
     }
   },
   beforeDestroy() {

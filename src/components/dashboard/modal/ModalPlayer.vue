@@ -6,7 +6,14 @@
     :beforeClose="beforeClose"
     :showHeader="false"
     customClass="modal-player"
-    ><video :src="url" controls></video
+  >
+    <div @click="beforeClose" class="player-wrapper">
+      <video
+        @click.stop
+        class="player-wrapper--video"
+        :src="url"
+        controls
+      ></video></div
   ></modal>
 </template>
 
@@ -17,11 +24,6 @@ export default {
   components: {
     Modal,
   },
-  data() {
-    return {
-      visibleFlag: false,
-    }
-  },
   props: {
     visible: {
       type: Boolean,
@@ -31,6 +33,11 @@ export default {
       type: String,
       default: null,
     },
+  },
+  data() {
+    return {
+      visibleFlag: false,
+    }
   },
   watch: {
     async visible(flag) {
@@ -57,10 +64,17 @@ export default {
     height: 100%;
     padding: 0px;
 
-    > video {
+    .player-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       width: 100%;
       height: 100%;
-      object-fit: fill;
+    }
+
+    .player-wrapper--video {
+      max-width: 100%;
+      max-height: 57.1429rem;
       border: none;
     }
   }

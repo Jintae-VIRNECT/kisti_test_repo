@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="34px" viewBox="0 0 34 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E42A2CBF-92DF-46DA-B163-239179695CA3@1x</title>
+    <defs>
+        <path d="M5,18.3333333 L15.6666667,18.3333333 L15.6666667,5 L5,5 L5,18.3333333 Z M5,29 L15.6666667,29 L15.6666667,21 L5,21 L5,29 Z M18.3333333,29 L29,29 L29,15.6666667 L18.3333333,15.6666667 L18.3333333,29 Z M18.3333333,5 L18.3333333,13 L29,13 L29,5 L18.3333333,5 Z" id="path-1"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-685.000000, -1285.000000)">
+            <g id="dashboard_month" transform="translate(320.000000, 1242.000000)">
+                <g id="03" transform="translate(324.000000, 0.000000)">
+                    <g id="icon_time_number" transform="translate(41.000000, 43.000000)">
+                        <rect id="tr" x="0" y="0" width="34" height="34"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/action/dashboard_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

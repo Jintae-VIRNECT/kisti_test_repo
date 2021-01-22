@@ -1,21 +1,73 @@
 <template>
   <section class="collabo-search-bar">
     <div class="collabo-search-bar__wrapper">
-      <div class="collabo-search-bar__condition">
-        <!-- <label class="collabo-search-bar--label">{{
+      <div class="collabo-search-bar__condition status">
+        <label class="collabo-search-bar--label">{{
           $t('search.collabo_status')
-        }}</label> -->
-        <!-- <d-select
+        }}</label>
+        <d-select
           class="collabo-search-bar__status--list"
           :options="searchOpts"
           value="value"
           text="text"
           :selectedValue.sync="collaboSatus"
           :greyarrow="true"
-          :sahdow="false"
-        ></d-select> -->
+          :shadow="false"
+        ></d-select>
       </div>
-      <div class="collabo-search-bar__condition">
+
+      <div class="collabo-search-bar__condition date">
+        <div class="collabo-search-bar__condition--header">
+          <label class="collabo-search-bar--label">{{
+            $t('search.select_period')
+          }}</label>
+          <div class="collabo-search-bar__condition--divider"></div>
+          <check-box
+            :text="$t('search.enable_search')"
+            :value.sync="useDateOpt"
+          ></check-box>
+        </div>
+        <v-date-picker
+          v-model="range"
+          :is-range="true"
+          :masks="masks"
+          :columns="$screens({ default: 2, lg: 2 })"
+          :popover="{ visibility: 'click', placement: 'auto-start' }"
+          :locale="currentLanguage"
+          @popoverWillShow="toggleCalendarBtn"
+          @popoverWillHide="toggleCalendarBtn"
+        >
+          <template v-slot="{ inputValue, inputEvents, togglePopover }">
+            <div class="collabo-search-bar__date">
+              <input
+                class="collabo-search-bar__date--input"
+                :class="{ active: calendarBtn }"
+                :value="inputValue.start + ' ~ ' + inputValue.end"
+                v-on="inputEvents.start"
+                readonly
+              />
+              <button
+                class="collabo-search-bar__date--button"
+                @click="togglePopover({ placement: 'auto-start' })"
+              >
+                <img
+                  class="off"
+                  v-if="!calendarBtn"
+                  src="~assets/image/calendar/ic_calendar_default.svg"
+                  alt="calendar_hide"
+                />
+                <img
+                  v-else
+                  src="~assets/image/calendar/ic_calendar_active.svg"
+                  alt="calendar_active"
+                />
+              </button>
+            </div>
+          </template>
+        </v-date-picker>
+      </div>
+
+      <div class="collabo-search-bar__condition text">
         <label class="collabo-search-bar--label">
           {{ $t('search.text') }}</label
         >
@@ -26,53 +78,50 @@
           v-on:input="searchText = $event.target.value"
         />
       </div>
-      <div class="collabo-search-bar__condition padding">
-        <datepicker
-          :pickerName="'search-from'"
-          :highlighted="date"
-        ></datepicker>
-        <span class="collabo-search-bar__condition--tilde"></span>
-        <datepicker :pickerName="'search-to'" :highlighted="date"></datepicker>
-        <check-box
-          :text="$t('search.use_date_search')"
-          :value.sync="useDate"
-        ></check-box>
+      <div class="collabo-search-bar__condition submit">
+        <button
+          v-on:keyup.enter="doSearch"
+          @click="doSearch"
+          class="collabo-search-bar--submit"
+        >
+          <span>SEARCH</span>
+        </button>
       </div>
     </div>
-    <button
-      v-on:keyup.enter="doSearch"
-      @click="doSearch"
-      class="collabo-search-bar--submit"
-    >
-      <span>{{ $t('search.execute') }}</span>
-    </button>
   </section>
 </template>
 
 <script>
-import Datepicker from 'Datepicker'
 import CheckBox from 'CheckBox'
-// import DSelect from 'DashBoardSelect'
+import DSelect from 'DashBoardSelect'
 import confirmMixin from 'mixins/confirm'
-import { collabo } from 'utils/collabo'
+import langMixin from 'mixins/language'
+import calendarMixin from 'mixins/calendar'
+import searchMixin from 'mixins/search'
 import { mapGetters, mapActions } from 'vuex'
 export default {
   name: 'CollaboSearchBar',
-  mixins: [confirmMixin],
+  mixins: [confirmMixin, langMixin, calendarMixin, searchMixin],
   components: {
-    Datepicker,
     CheckBox,
-    // DSelect,
+    DSelect,
   },
   data() {
+    let startDay = new Date()
+    let endDay = new Date()
+    endDay.setDate(endDay.getDate() - 7)
+
     return {
       collaboSatus: null,
       searchText: '',
-      useDate: false,
-      date: {
-        from: null,
-        to: null,
+      useDateOpt: false,
+
+      range: {
+        start: startDay,
+        end: endDay,
       },
+
+      calendarBtn: false,
     }
   },
   computed: {
@@ -81,96 +130,80 @@ export default {
     searchOpts() {
       return [
         {
-          value: collabo.ALL,
+          value: 'ALL',
           text: this.$t('status.all'),
         },
         {
-          value: collabo.PROGRESS,
+          value: 'ONGOING',
           text: this.$t('status.progress'),
         },
         {
-          value: collabo.FINISHED,
+          value: 'END',
           text: this.$t('status.finished'),
         },
       ]
     },
   },
   watch: {
-    calendars: {
-      handler() {
-        this.fromDate()
-        this.toDate()
-      },
-      deep: true,
+    collaboSatus(status) {
+      this.setSearch({ status: status })
     },
-    collaboSatus: {
-      handler(status) {
-        this.setSearch({ status: status })
-      },
+    searchText(searchText) {
+      this.setSearch({
+        keyword: {
+          text: searchText,
+        },
+      })
     },
-    searchText: {
-      handler(searchText) {
+    useDateOpt(useDate) {
+      this.setSearch({
+        useDate: { useDate: useDate },
+      })
+    },
+
+    range: {
+      handler(range) {
         this.setSearch({
-          input: {
-            text: searchText,
+          date: {
+            from: this.$dayjs(range.start).format('YYYY-MM-DD'),
+            to: this.$dayjs(range.end).format('YYYY-MM-DD'),
           },
         })
       },
-    },
-    useDate: {
-      handler(useDate) {
-        this.setSearch({
-          useDate: { useDate: useDate },
-        })
-      },
+      deep: true,
     },
   },
   methods: {
     ...mapActions(['setSearch']),
-    fromDate() {
-      const index = this.calendars.findIndex(cal => cal.name === 'search-from')
-      if (index < 0) return null
-
-      this.date.from = this.calendars[index].date
-      this.setSearch({
-        date: {
-          from: this.date.from,
-          to: this.date.to,
-        },
-      })
-    },
-    toDate() {
-      const index = this.calendars.findIndex(cal => cal.name === 'search-to')
-      if (index < 0) return null
-      this.date.to = this.calendars[index].date
-      this.setSearch({
-        date: {
-          from: this.date.from,
-          to: this.date.to,
-        },
-      })
-    },
     doSearch(e) {
-      if (e.type === 'keypress' && e.key === 'Enter') {
-        this.$eventBus.$emit('reload::list')
-      } else if (e.type === 'click') {
+      const isEnter = e.type === 'keypress' && e.key === 'Enter'
+      const isClick = e.type === 'click'
+
+      if (isEnter || isClick) {
         this.$eventBus.$emit('reload::list')
       }
     },
-    resetCondition() {
+    toggleCalendarBtn() {
+      this.calendarBtn = !this.calendarBtn
+      if (this.calendarBtn) {
+        this.useDateOpt = true
+      }
+    },
+    initDate() {
+      let to = new Date()
+      let from = new Date()
+      from.setDate(from.getDate() - 7)
       this.setSearch({
         date: {
-          from: null,
-          to: null,
-        },
-        useDate: { useDate: false },
-        input: {
-          text: '',
+          from: from,
+          to: to,
         },
       })
     },
   },
+
   mounted() {
+    this.initDate()
     window.addEventListener('keypress', this.doSearch)
   },
   beforeDestroy() {
@@ -179,126 +212,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.collabo-search-bar {
-  margin-top: 3rem;
-}
-
-.collabo-search-bar__wrapper {
-  display: flex;
-  justify-content: center;
-  height: 7.7143rem;
-  background: #d7e0ec;
-  border: 1px solid #cdd2dc;
-  border-radius: 0px;
-}
-
-.collabo-search-bar__condition {
-  display: flex;
-  align-items: center;
-
-  &.padding {
-    padding-bottom: 0.3571rem;
-  }
-
-  .vdp-datepicker--input {
-    height: 3.4286rem;
-    border: 1px solid #c2c6ce;
-  }
-  .calendar-button {
-    height: 3.4286rem;
-    border: 1px solid #c2c6ce;
-  }
-
-  > .checkbox {
-    margin-left: 0.4286rem;
-  }
-}
-
-.collabo-search-bar--input {
-  width: 17.0714rem;
-  height: 3.1429rem;
-  margin-right: 4.9286rem;
-  padding-left: 1.1429rem;
-  color: #0b1f48;
-  font-weight: 500;
-  font-size: 1.1429rem;
-  // line-height: 28px;
-  letter-spacing: 0px;
-  background: #ffffff;
-  border: 1px solid #c2c6ce;
-  border-radius: 4px;
-  outline: none;
-  &:focus {
-    width: 16.9286rem;
-    height: 3rem;
-    border: 2px solid #0f75f5;
-  }
-
-  &::placeholder {
-    // padding-left: 1.1429rem;
-    color: #bac2cc;
-    font-weight: normal;
-    font-size: 1.1429rem;
-    // line-height: 28px;
-    letter-spacing: 0px;
-  }
-}
-
-.collabo-search-bar__status--list {
-  margin-right: 2.25rem;
-}
-
-.collabo-search-bar__status--list.popover--wrapper {
-  > .select-label {
-    min-width: 10.1429rem;
-    height: 3.4286rem;
-  }
-}
-
-.collabo-search-bar--label {
-  margin-right: 0.7143rem;
-  color: #434b58;
-  font-weight: 500;
-  font-size: 1.1429rem;
-}
-
-.collabo-search-bar--submit {
-  position: relative;
-  width: 100%;
-  height: 3.7143rem;
-  font-weight: 400;
-  font-size: 1.1429rem;
-  background-color: #9aa6bd;
-  border-radius: 0px;
-  transition: 0.3s;
-  &:hover {
-    background: #0f75f5;
-  }
-
-  & > span {
-    position: relative;
-    &::before {
-      position: absolute;
-      top: 0.1429rem;
-      // right: 50px;
-      left: -2.1429rem;
-      width: 1.5714rem;
-      height: 1.5714rem;
-      background: 50% url('~assets/image/ic_search.svg') no-repeat;
-      content: '';
-    }
-  }
-}
-
-.collabo-search-bar__condition--tilde {
-  margin: 0 0.6429rem;
-  &::after {
-    color: #757f91;
-    font-weight: 500;
-    font-size: 1rem;
-    content: '\223C';
-  }
-}
-</style>

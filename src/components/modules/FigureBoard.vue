@@ -1,7 +1,7 @@
 <template>
   <card customClass="custom-figure-board">
     <div class="figure-board">
-      <div class="figure-board--icon" :class="{ 'only-me': onlyMe }">
+      <div class="figure-board--icon" :class="[type, { my: my }]">
         <img :src="imgSrc" alt="" />
       </div>
 
@@ -50,7 +50,11 @@ export default {
       type: String,
       default: null,
     },
-    onlyMe: {
+    type: {
+      type: String, //daily, monthly
+      defalut: 'daily',
+    },
+    my: {
       type: Boolean,
       default: false,
     },
@@ -72,6 +76,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .custom-figure-board {
   width: 100%;
   // width: 21.5rem;
@@ -95,35 +100,44 @@ export default {
   justify-content: center;
   min-width: 4.5714rem;
   height: 4.5714rem;
-  background: #bbc8d9;
   border-radius: 4px;
-
-  &.only-me {
-    background: #0f75f5;
-  }
 
   & > img {
     width: 2.4286rem;
     height: 2.4286rem;
   }
+
+  &.daily {
+    background: #bbc8d9;
+    &.my {
+      background: $color_primary;
+    }
+  }
+
+  &.monthly {
+    background: #6ed6f1;
+    &.my {
+      background: #4f69ff;
+    }
+  }
 }
 
 .figure-board--header {
   color: #757f91;
-  font-weight: 500;
+  font-weight: normal;
   font-size: 1rem;
 }
 
 .figure-board--number {
-  color: #0b1f48;
+  color: $color_text_main_1000;
   font-weight: bold;
-  font-size: 2rem;
+  font-size: 1.7143rem;
 }
 
 .figure-board--text {
   padding-right: 1rem;
   padding-left: 0.2857rem;
-  color: #0b1f48;
+  color: $color_text_main_1000;
   font-weight: normal;
   font-size: 1.0714rem;
 

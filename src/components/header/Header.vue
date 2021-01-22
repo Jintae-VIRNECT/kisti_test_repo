@@ -1,11 +1,10 @@
 <template>
   <div class="header">
-    <div style="display:flex">
+    <div class="header-wrapper offsetwidth">
       <header-logo></header-logo>
-      <div class="header-divider"></div>
       <header-nav></header-nav>
+      <header-tools></header-tools>
     </div>
-    <header-tools></header-tools>
   </div>
 </template>
 
@@ -22,4 +21,3 @@ export default {
   },
 }
 </script>
-<style lang="scss" src="assets/style/header.scss"></style>

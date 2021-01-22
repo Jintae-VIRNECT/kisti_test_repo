@@ -1,26 +1,24 @@
 import { SEARCH } from '../mutation-types'
-import { collabo } from 'utils/collabo'
 
 const state = {
-  input: {
+  keyword: {
     text: '',
-    target: ['title', 'memberList[].nickName'],
   },
-  status: { status: collabo.ALL },
+  status: { status: 'ALL' },
   useDate: { useDate: false },
   date: {
     from: null,
     to: null,
   },
   sort: {
-    column: 'createdDate',
-    direction: 'desc',
+    column: 'ACTIVE_DATE',
+    direction: 'DESC',
   },
 }
 
 const mutations = {
-  [SEARCH.INPUT](state, input) {
-    Object.assign(state.input, input)
+  [SEARCH.KEYWORD](state, input) {
+    Object.assign(state.keyword, input)
   },
   [SEARCH.STATUS](state, status) {
     state.status = status

@@ -10,7 +10,7 @@
       slot="reference"
       :image="account.profile"
       :size="30"
-      :thumbStyle="{ width: '36.002px', height: '36.002px' }"
+      :thumbStyle="{ width: '2.5716rem', height: '2.5716rem' }"
     ></profile>
     <div>
       <div class="popover-profile__myinfo">
@@ -22,16 +22,19 @@
       </div>
       <div class="popover-profile__link">
         <button @click="link(urlLink)">
-          VIRNECT Workstation
+          <span>{{ $t('common.workstation') }}</span>
         </button>
       </div>
       <div class="popover-profile__link">
-        <button @click="link(remoteLink)">{{ 'Remote' }}</button>
+        <button v-if="isOnpremise" @click="link(remoteLink)">
+          {{ 'Remote' }}
+        </button>
+        <button v-else @click="link(remoteLink)">{{ 'VIRNECT Remote' }}</button>
       </div>
       <div class="popover-profile__link">
         <button @click="logout">{{ $t('button.logout') }}</button>
       </div>
-      <div class="popover-profile__version">{{ `web v.${$version}` }}</div>
+      <div class="popover-profile__version">{{ `web v${$version}` }}</div>
     </div>
   </popover>
 </template>
@@ -77,9 +80,6 @@ export default {
       this.$eventBus.$emit('filelist:open')
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 <style lang="scss">
@@ -87,9 +87,10 @@ export default {
 @import '~assets/style/mixin';
 
 .popover-profile {
-  background-color: #ffffff;
-  border: solid 1px #e3e3e3;
+  background-color: $color_bg_sub;
+  border: 1px solid $color_bg_sub_border;
   border-radius: 8px;
+  box-shadow: 0px 2px 4px 0px rgba(11, 31, 72, 0.22);
   transform: translateY(1.571rem);
   > .popover--body {
     padding: 0;
@@ -105,11 +106,11 @@ export default {
   }
   > .profile .profile--text .profile--maintext {
     margin: 0.286rem 0;
-    color: #0b1f48;
+    color: $color_white;
     font-size: 1.214rem;
   }
   > .profile .profile--subtext {
-    color: #0b1f48;
+    color: $color_white;
     font-weight: normal;
     opacity: 0.6;
   }
@@ -118,24 +119,24 @@ export default {
   margin: 0.143rem 0;
   padding: 0.929rem 2.143rem;
   &:hover {
-    background: #e3e7ed;
+    background: #424242;
   }
 
   > button {
-    color: #0b1f48;
+    color: $color_white;
     font-weight: 500;
     font-size: 1.071rem;
     background: transparent;
-
-    &:active {
+    span {
       font-weight: 500;
+      font-size: 1.071rem;
     }
   }
 }
 .popover-profile__version {
   margin: 0.429rem 0 0.214rem;
   padding: 0.714rem;
-  color: #0f75f5;
+  color: $color_primary;
   font-weight: normal;
   font-size: 0.857rem;
   text-align: center;

@@ -17,7 +17,7 @@
         <div class="history-info-table-column__info">
           <span>{{ room.title }}</span>
           <collabo-status
-            :status="room.status"
+            :status="localStatus"
             :customClass="'custom-collabo-status'"
           ></collabo-status>
         </div>
@@ -34,7 +34,9 @@
         <div class="history-info-table-column__header">
           {{ $t('room.leader') }}
         </div>
-        <div class="history-info-table-column__info">{{ leader.nickName }}</div>
+        <div class="history-info-table-column__info">
+          {{ leader ? leader.nickName : '' }}
+        </div>
       </div>
       <div class="history-info__row">
         <div class="history-info-table-column__header">
@@ -58,7 +60,7 @@
           {{ $t('room.active_date') }}
         </div>
         <div class="history-info-table-column__info time">
-          {{ room.activeDate | dateTimeFormat }}
+          {{ activeDate }}
         </div>
       </div>
       <div class="history-info__row">
@@ -66,7 +68,7 @@
           {{ $t('room.unactive_date') }}
         </div>
         <div class="history-info-table-column__info time">
-          {{ room.unactiveDate | dateTimeFormat }}
+          {{ unactiveDate }}
         </div>
       </div>
       <div class="history-info__row">
@@ -74,7 +76,7 @@
           {{ $t('room.duration_sec') }}
         </div>
         <div class="history-info-table-column__info time">
-          {{ room.durationSec | durationFormat }}
+          {{ durationSec }}
         </div>
       </div>
     </div>
@@ -85,9 +87,11 @@
 import Modal from 'Modal'
 import ProfileList from 'ProfileList'
 import CollaboStatus from 'CollaboStatus'
-import { getHistorySingleItem } from 'api/http/history'
+import { getHistorySingleItem, getRoomInfo } from 'api/http/history'
 
 import { dateTimeFormat, durationFormat } from 'utils/dateFormat'
+import { ROLE } from 'configs/remote.config'
+
 export default {
   name: 'ModalHistoryInfo',
   components: {
@@ -95,40 +99,52 @@ export default {
     ProfileList,
     CollaboStatus,
   },
-  data() {
-    return {
-      room: {},
-      visibleFlag: false,
-    }
+  filters: {
+    dateTimeFormat(dateTime) {
+      return dateTimeFormat(dateTime)
+    },
   },
   props: {
     visible: {
       type: Boolean,
       default: false,
     },
+    status: {
+      type: Boolean,
+      default: true,
+    },
     sessionId: {
       type: String,
       required: true,
     },
   },
-  filters: {
-    dateTimeFormat(dateTime) {
-      return dateTimeFormat(dateTime)
-    },
-    durationFormat(time) {
-      return durationFormat(time)
-    },
+  data() {
+    return {
+      room: {},
+      visibleFlag: false,
+      localStatus: true,
+    }
   },
   computed: {
     leader() {
       return this.room.memberList
         ? this.room.memberList.find(member => {
-            return member.memberType === 'LEADER'
+            return member.memberType === ROLE.LEADER
           })
+        : null
+    },
+    activeDate() {
+      return this.room.activeDate ? dateTimeFormat(this.room.activeDate) : ''
+    },
+    unactiveDate() {
+      return this.room.unactiveDate
+        ? dateTimeFormat(this.room.unactiveDate)
         : ''
     },
+    durationSec() {
+      return this.room.durationSec ? durationFormat(this.room.durationSec) : ''
+    },
   },
-
   watch: {
     visible(flag) {
       if (flag === true) {
@@ -139,15 +155,49 @@ export default {
   },
   methods: {
     async initHistory() {
+      this.room = {}
+      let info = null
+      this.localStatus = this.status
+
+      if (this.status) {
+        info = await this.getHistory()
+      } else {
+        info = await this.getRoom()
+        if (info === null) {
+          info = await this.getHistory()
+          this.localStatus = true
+        }
+      }
+      this.room = info
+    },
+    async getRoom() {
+      let result = null
       try {
-        this.room = {}
-        this.room = await getHistorySingleItem({
+        result = await getRoomInfo({
+          workspaceId: this.workspace.uuid,
+          sessionId: this.sessionId,
+        })
+      } catch (e) {
+        console.error(e)
+        if (e.code === 4002) {
+          //@TODO : MSG
+          console.error('room closed')
+        }
+      }
+      return result
+    },
+    async getHistory() {
+      let result = null
+      try {
+        result = await getHistorySingleItem({
           workspaceId: this.workspace.uuid,
           sessionId: this.sessionId,
         })
       } catch (err) {
         console.error(err)
+        throw err
       }
+      return result
     },
     beforeClose() {
       this.$emit('update:visible', false)
@@ -155,87 +205,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss">
-.modal.modal-history-info {
-  .modal--header {
-    height: 4.8571rem;
-    padding: 1.5714rem 0rem 1.1429rem 1.9286rem;
-    color: #0b1f48;
-    font-weight: normal;
-
-    font-size: 1.1429rem;
-    background-color: #f8f8fa;
-  }
-
-  .modal--body {
-    padding: 2.8571rem 3.2143rem 3.2143rem 3.2143rem;
-  }
-
-  .modal--close {
-    width: 1rem;
-    height: 1rem;
-  }
-}
-
-.history-info--header {
-  color: #0b1f48;
-  font-weight: normal;
-  font-size: 1.5714rem;
-}
-
-.history-info-table {
-  width: 51.4286rem;
-  height: 37rem;
-  margin-top: 1.1429rem;
-  border-top: 2px solid #eaedf3;
-}
-
-.history-info__row {
-  display: flex;
-  height: 5.2857rem;
-  border-bottom: 1px solid #eaedf3;
-}
-
-.history-info-table-column__header {
-  display: flex;
-  align-items: center;
-  width: 11.4286rem;
-  padding-left: 1.4286rem;
-  color: #414a59;
-  font-weight: normal;
-  font-size: 1.0714rem;
-  background-color: #f5f7fa;
-}
-
-.history-info-table-column__info {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-  padding-left: 2.1429rem;
-  color: #0b1f48;
-  font-weight: 500;
-  font-size: 1.1429rem;
-
-  & > p {
-    width: 28.5714rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  &.time {
-    color: #0f75f5;
-  }
-
-  &.member-list {
-    padding: 1.6429rem 0rem 1.2857rem 1.2857rem;
-  }
-}
-
-.collabo-status.custom-collabo-status {
-  position: absolute;
-  top: 1.7143rem;
-  right: 0px;
-}
-</style>

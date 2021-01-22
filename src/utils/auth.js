@@ -8,6 +8,7 @@ import { logger, debug } from 'utils/logger'
 import {
   setConfigs,
   setUrls,
+  setSettings,
   RUNTIME_ENV,
   RUNTIME,
   URLS,
@@ -100,25 +101,38 @@ const getConfigs = async () => {
   debug('URLS::', res.data)
 
   setHttpOptions(res.data['api'], timeout)
+
   window.urls = res.data
+
+  if (res.data.settings) {
+    window.settings = res.data.settings
+    setSettings(res.data.settings)
+  } else {
+    setSettings({})
+  }
+
   setConfigs({
     runtimeEnv,
   })
+
   setUrls(res.data)
 }
 
-const getSettings = async () => {
-  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
-  const settings = await getSettingInfo()
+const getWsSettings = async () => {
+  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) {
+    document.title = `VIRNECT | Dashboard`
+  } else {
+    const settings = await getSettingInfo()
 
-  document.title = `${settings.workspaceTitle} | Dashboard`
-  const favicon = document.querySelector("link[rel*='icon']")
-  favicon.href = settings.favicon
+    document.title = `${settings.workspaceTitle} | Dashboard`
+    const favicon = document.querySelector("link[rel*='icon']")
+    favicon.href = settings.favicon
 
-  setConfigs({
-    whiteLogo: settings.whiteLogo,
-    defaultLogo: settings.defaultLogo,
-  })
+    setConfigs({
+      whiteLogo: settings.whiteLogo,
+      defaultLogo: settings.defaultLogo,
+    })
+  }
 }
 
 export const cookieClear = () => {
@@ -152,7 +166,7 @@ class Auth {
 
     if (Cookies.get('accessToken')) {
       try {
-        await Promise.all([getMyInfo(), getSettings()])
+        await Promise.all([getMyInfo(), getWsSettings()])
 
         isLogin = true
         tokenRenewal()

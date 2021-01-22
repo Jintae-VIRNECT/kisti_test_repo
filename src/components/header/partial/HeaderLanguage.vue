@@ -4,25 +4,30 @@
     width="5.1429rem"
     trigger="click"
     popperClass="popover-language"
+    @visible="toggle"
     :scrollHide="true"
+    :topOffset="11"
   >
-    <button class="language-button" slot="reference"></button>
+    <button
+      class="language-button"
+      slot="reference"
+      :class="{ active: menuVisible }"
+    >
+      <img v-if="menuVisible" src="~assets/image/ic_language_on.svg" />
+      <img v-else src="~assets/image/ic_language.svg" />
+    </button>
     <div>
       <div
         class="popover-language__button"
         :class="{ selected: isSelected('ko') }"
       >
-        <button @click="changeLang('ko')">
-          KOR
-        </button>
+        <button @click="changeLang('ko')">KOR</button>
       </div>
       <div
         class="popover-language__button"
         :class="{ selected: isSelected('en') }"
       >
-        <button @click="changeLang('en')">
-          ENG
-        </button>
+        <button @click="changeLang('en')">ENG</button>
       </div>
     </div>
   </popover>
@@ -38,9 +43,18 @@ export default {
   components: {
     Popover,
   },
+  props: {
+    imgSrc: {
+      type: String,
+    },
+    activeSrc: {
+      type: String,
+    },
+  },
   data() {
     return {
       defaultLanguage: null,
+      menuVisible: false,
     }
   },
   methods: {
@@ -56,6 +70,9 @@ export default {
     isSelected(lang) {
       return this.defaultLanguage === lang
     },
+    toggle(visible) {
+      this.menuVisible = visible
+    },
   },
   mounted() {
     this.defaultLanguage = this.mx_getLangCode()
@@ -64,18 +81,28 @@ export default {
 </script>
 
 <style lang="scss">
-.language-button {
-  width: 2.4286rem;
-  height: 2.4286rem;
-  background: url('~assets/image/ic_language.svg') 50% no-repeat;
+@import '~assets/style/vars';
+.popover--wrapper {
+  > .language-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    > img {
+      width: 34px;
+      height: 34px;
+    }
+  }
 }
 
 .popover-language {
   min-width: 5.1429rem;
   height: 6.5714rem;
-  background: #ffffff;
+  background: $color_bg_sub;
+  border: 1px solid $color_bg_sub_border;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
   > .popover--body {
-    padding: 7px 0;
+    padding: 0.5rem 0;
   }
 }
 
@@ -86,11 +113,10 @@ export default {
   text-align: center;
 
   &:hover {
-    background: #e3e7ed;
+    background: #424242;
   }
 
   &.selected {
-    background-color: #e3e7ed;
     > button {
       text-decoration: underline;
     }
@@ -98,13 +124,10 @@ export default {
 
   > button {
     width: 100%;
-    color: #0b1f48;
+    color: $color_white;
     font-weight: 500;
     font-size: 1.0714rem;
     background: transparent;
-    &:active {
-      font-weight: 500;
-    }
   }
 }
 </style>

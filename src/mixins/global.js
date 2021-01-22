@@ -1,6 +1,6 @@
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
-import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
+import { RUNTIME_ENV, RUNTIME, SETTINGS } from 'configs/env.config'
 
 export default {
   data() {
@@ -15,13 +15,9 @@ export default {
         return null
       }
       if (time >= 60 * 60 * 1000) {
-        return dayjs(time)
-          .utc()
-          .format('HH:mm:ss')
+        return dayjs(time).utc().format('HH:mm:ss')
       } else {
-        return dayjs(time)
-          .utc()
-          .format('mm:ss')
+        return dayjs(time).utc().format('mm:ss')
       }
     },
     networkStatus(status) {
@@ -101,6 +97,9 @@ export default {
     },
     isOnpremise() {
       return RUNTIME_ENV === RUNTIME.ONPREMISE ? true : false
+    },
+    allowFileInfo() {
+      return SETTINGS.ALLOW_FILE_INFO
     },
   },
   methods: {

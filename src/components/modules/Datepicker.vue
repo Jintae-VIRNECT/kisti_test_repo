@@ -2,6 +2,7 @@
   <div class="datepicker" @click.stop>
     <vue-datepicker
       class="custom-date-picker"
+      :class="{ active: isActive }"
       :format="format"
       :pickerName="pickerName"
       :highlighted="highlighted"
@@ -36,15 +37,6 @@ import langMixin from 'mixins/language'
 export default {
   name: 'Datepicker',
   mixins: [langMixin],
-  data() {
-    return {
-      isActive: false,
-      langSet: {
-        ko: ko,
-        en: en,
-      },
-    }
-  },
   props: {
     pickerName: {
       type: String,
@@ -67,9 +59,18 @@ export default {
       default: 'yyyy-MM-dd',
     },
     initValue: {
-      type: Date,
+      type: [String, Date],
       default: null,
     },
+  },
+  data() {
+    return {
+      isActive: false,
+      langSet: {
+        ko: ko,
+        en: en,
+      },
+    }
   },
   computed: {
     ...mapGetters(['calendars']),
@@ -99,35 +100,44 @@ export default {
       this.$eventBus.$emit('toggle::calendar', this.pickerName)
     },
   },
-  mounted() {},
 }
 </script>
 <style lang="scss">
+@import '~assets/style/vars';
 .datepicker {
   display: flex;
-
   width: 13.2143rem;
   height: 3rem;
 }
 .custom-date-picker {
+  &.vdp-datepicker.active {
+    input[type='text'] {
+      color: $color_text_main;
+    }
+  }
+
   &.vdp-datepicker {
     width: 10.2143rem;
     height: 3rem;
     .vdp-wrapper {
       // width: 143px;
-      height: 42px;
+      height: 3rem;
     }
 
     .vdp-datepicker--input {
       position: relative;
       width: 10.2143rem;
-      padding: 0.7143rem 0 1rem 1.4286rem;
+      padding: 0px 0px 0px 1.4286rem;
       border-right: none;
       border-radius: 4px 0px 0px 4px;
     }
+
     .vdp-datepicker__calendar {
-      top: 3.0714rem;
-      right: -3rem;
+      top: 0.004rem;
+      right: 11rem;
+      // border: 1px solid rgb(229, 231, 233);
+      border-radius: 8px;
+      box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
     }
   }
 }
@@ -136,8 +146,12 @@ export default {
   width: 3rem;
   height: 3rem;
   padding-top: 0.2143rem;
-  background: #ffffff;
-  border: 1px solid #e3e3e3;
+  background: $color_white;
+  border: 1px solid $color_border;
   border-radius: 0px 4px 4px 0px;
+  > img {
+    width: 1.7143rem;
+    height: 1.7143rem;
+  }
 }
 </style>

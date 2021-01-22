@@ -67,7 +67,7 @@ export default {
       const result = await getDailyData({
         workspaceId: this.workspace.uuid,
         userId: this.account.uuid,
-        date: this.day ? this.day : new Date(),
+        selectedDate: this.day ? this.day : new Date(),
       })
       this.daily = result
 

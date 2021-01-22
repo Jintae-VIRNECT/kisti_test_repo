@@ -18,12 +18,13 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .card {
   min-width: 21.4286rem;
   min-height: 22.1429rem;
-  background: #ffffff;
-  border: 1px solid #e3e3e3;
-  border-radius: 4px;
-  box-shadow: 0px 2px 4px 0px rgba(11, 31, 72, 0.22);
+  background: $color_white;
+  border: 1px solid $color_border;
+  border-radius: 10px;
+  box-shadow: 0px 6px 12px 0px rgba(0, 0, 0, 0.04);
 }
 </style>

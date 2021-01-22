@@ -7,7 +7,7 @@
         role="tooltip"
         :id="`popover-${_uid}`"
         :style="style"
-        :class="[popperClass, { reverse: reverse, sahdow: sahdow }]"
+        :class="[popperClass, { reverse: reverse, shadow: shadow }]"
         class="popover"
         @click.stop
       >
@@ -101,9 +101,13 @@ export default {
       type: Boolean,
       default: false,
     },
-    sahdow: {
+    shadow: {
       type: Boolean,
       default: true,
+    },
+    topOffset: {
+      type: Number, //px
+      default: 0,
     },
   },
   data() {
@@ -213,6 +217,8 @@ export default {
             top -= (popover.offsetHeight - reference.offsetHeight) / 2
           }
         }
+        top = top + this.topOffset
+
         this.$set(this.style, 'top', top + 'px')
         this.$set(this.style, 'left', left + 'px')
         if (this.width === 0) {
@@ -289,7 +295,7 @@ export default {
   // background-color: #fff;
   border-radius: 6px;
   // box-shadow: 0 2px 4px 0 rgba(#101011, 0.5);
-  &.sahdow {
+  &.shadow {
     box-shadow: 0 2px 4px 0 rgba(#0b1f48, 0.22);
   }
 

@@ -3,7 +3,9 @@
     trigger="click"
     placement="bottom-start"
     :width="0"
+    :topOffset="10"
     popperClass="header-lnb-selector"
+    @visible="toggle"
   >
     <vue2-scrollbar>
       <ul class="header-lnb-selector__layer">
@@ -29,7 +31,11 @@
       </ul>
     </vue2-scrollbar>
 
-    <button slot="reference" class="header-workspace-selector">
+    <button
+      slot="reference"
+      class="header-workspace-selector"
+      :class="{ active: isVisible }"
+    >
       {{ workspace.title }}
     </button>
   </popover>
@@ -46,6 +52,7 @@ export default {
   data() {
     return {
       popoverWidth: '14rem',
+      isVisible: false,
     }
   },
   computed: {
@@ -63,6 +70,9 @@ export default {
         ).offsetWidth
       })
     },
+    toggle(visible) {
+      this.isVisible = visible
+    },
   },
 
   /* Lifecycles */
@@ -79,10 +89,10 @@ export default {
 @import '~assets/style/vars';
 
 .header-lnb-selector.popover {
-  // background-color: $color_bg_sub;
-  background-color: #ffffff;
-  border: solid 1px #e3e3e3;
+  background-color: $color_bg_sub;
+  border: solid 1px $color_bg_sub_border;
   border-radius: 0.286rem;
+  box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);
   > .popover--body {
     padding: 0;
     > .vue-scrollbar__wrapper {
@@ -114,17 +124,15 @@ export default {
     &:hover {
       // color: rgba($color_text, 0.7);
       // background-color: rgba($color_bg_item, 0.7);
-      color: #0b1f48;
-      background-color: #eaedf3;
+      color: $color_white;
+      background-color: #424242;
       // > .header-lnb-selector__check {
       //   border-color: rgba($color_text, 0.4);
       // }
     }
     &.active {
-      // color: $color_text;
-      color: #0b1f48;
-      // background-color: rgba($color_bg_item, 0.4);
-      background-color: #eaedf3;
+      color: $color_white;
+      background-color: #424242;
       > .header-lnb-selector__check {
         border-color: $color_primary;
       }

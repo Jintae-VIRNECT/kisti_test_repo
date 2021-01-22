@@ -6,7 +6,6 @@
 </template>
 
 <script>
-import { collabo } from 'utils/collabo'
 export default {
   name: 'CallaboStatus',
   props: {
@@ -19,24 +18,22 @@ export default {
       default: '',
     },
   },
-
   computed: {
     collaboText() {
       switch (this.status) {
-        case collabo.PROGRESS:
+        case false:
           return this.$t('status.progress')
-        case collabo.FINISHED:
+        case true:
           return this.$t('status.finished')
         default:
           return this.$t('status.finished')
-        // return this.$t('status.unknown')
       }
     },
     getClass() {
       switch (this.status) {
-        case collabo.PROGRESS:
+        case false:
           return 'progress'
-        case collabo.FINISHED:
+        case true:
           return 'finished'
         default:
           return 'finished'
@@ -47,6 +44,7 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~assets/style/vars';
 .collabo-status {
   position: relative;
   display: flex;
@@ -61,13 +59,13 @@ export default {
   border-radius: 50%;
 
   &.progress {
-    background-color: #0f75f5;
+    background-color: #1dc98d;
   }
 }
 
 .collabo-status--text {
   padding-left: 0.7143rem;
-  color: #0b1f48;
+  color: $color_text_main_1000;
   font-weight: 500;
   font-size: 1.0714rem;
 }

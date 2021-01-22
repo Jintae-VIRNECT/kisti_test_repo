@@ -10,6 +10,7 @@
   },
   "common": {
     "dashboard":"대시보드",
+    "workstation": "워크스테이션",
     "collabo_list":"협업내역"
   },
   "confirm": {
