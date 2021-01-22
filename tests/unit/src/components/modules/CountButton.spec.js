@@ -29,6 +29,6 @@ describe('CountButton.vue', () => {
         images: { images },
       },
     })
-    expect(wrapper.find('.nodata').exists(true)).toEqual(false)
+    expect(wrapper.find('.nodata').exists(true)).toEqual(true)
   })
 })
