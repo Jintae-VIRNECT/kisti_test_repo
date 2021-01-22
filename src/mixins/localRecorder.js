@@ -28,6 +28,7 @@ export default {
       'allowLocalRecord',
       'localRecordStatus',
       'roomInfo',
+      'initing',
     ]),
     /**
      * get resolution of main view
@@ -47,6 +48,11 @@ export default {
   },
   watch: {
     'participants.length': 'participantsChanged',
+    initing(flag, bFlag) {
+      if (flag === false && flag !== bFlag) {
+        this.participantsChanged()
+      }
+    },
     resolutions: {
       handler() {
         if (this.recorder !== null) {
@@ -173,6 +179,7 @@ export default {
         config.streams = await this.getStreams()
       } catch (err) {
         // 필요한 영상, 음성을 가지고 오지 못했을 때에 대한 처리
+        console.err(err)
         throw err
       }
 

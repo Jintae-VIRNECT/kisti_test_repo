@@ -94,7 +94,8 @@ export default {
     Modal,
     RemoteTable,
     IconButton,
-    FileUpload: import('components/workspace/modal/WorkspaceRecordFileUpload'),
+    FileUpload: () =>
+      import('components/workspace/modal/WorkspaceRecordFileUpload'),
   },
   props: {
     visible: {

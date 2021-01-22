@@ -32,7 +32,7 @@
       <div class="popover-profile__link" v-if="!isSafari">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
-      <div class="popover-profile__link" v-if="!onpremise">
+      <div class="popover-profile__link">
         <button @click="downloadManual">{{ $t('button.manual') }}</button>
       </div>
       <div class="popover-profile__link">
@@ -49,6 +49,7 @@ import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
 import { URLS, RUNTIME, RUNTIME_ENV } from 'configs/env.config'
+import axios from 'api/axios'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -91,8 +92,15 @@ export default {
       //show media chunk list
       this.$eventBus.$emit('filelist:open')
     },
-    downloadManual() {
-      window.open('https://file.virnect.com/Guide/remote_user_guide.pdf')
+    async downloadManual() {
+      if (!this.onpremise) {
+        window.open('https://file.virnect.com/Guide/remote_web_user_guide.pdf')
+      } else {
+        const res = await axios.get(
+          `${window.urls.api}/remote/file/guide/?objectName=virnect_remote_mobile_gs.pdf`,
+        )
+        window.open(res.data.data)
+      }
     },
   },
 

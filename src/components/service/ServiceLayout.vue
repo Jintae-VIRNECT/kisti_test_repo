@@ -189,7 +189,7 @@ export default {
       this.$eventBus.$emit('call:logout')
     },
     async onDeviceChange() {
-      const hasVideo = await checkInput({ video: true, audio: false })
+      const { hasVideo } = await checkInput({ video: true, audio: false })
       if (hasVideo === (this.myInfo.cameraStatus !== CAMERA.CAMERA_NONE)) return
       this.$call.sendCamera(
         hasVideo
@@ -214,6 +214,10 @@ export default {
 
   /* Lifecycles */
   async created() {
+    if (!this.$call.session) {
+      this.$router.push({ name: 'workspace' })
+      return
+    }
     this.initTimeout()
     window.onbeforeunload = () => {
       return true

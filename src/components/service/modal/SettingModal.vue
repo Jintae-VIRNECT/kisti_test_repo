@@ -131,7 +131,7 @@
           :value.sync="localRecording"
         ></r-check>
       </div>
-      <template v-if="isLeader && isOnpremise">
+      <template v-if="isLeader && useRecording">
         <p class="rec-setting--header" :class="{ disable: isServerRecording }">
           {{ $t('service.setting_server_record') }}
           <span v-if="isServerRecording" class="rec-setting--warning">
@@ -224,7 +224,6 @@ import toastMixin from 'mixins/toast'
 
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE, CONTROL } from 'configs/remote.config'
-import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 import {
   localRecTime,
   localRecResOpt,
@@ -279,6 +278,7 @@ export default {
       'useTranslate',
       'languageCodes',
       'modalSetting',
+      'useRecording',
     ]),
     localRecTimeOpt() {
       const options = localRecTime.map(time => {
@@ -321,9 +321,6 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
-    },
-    isOnpremise() {
-      return RUNTIME_ENV === RUNTIME.ONPREMISE
     },
     isLocalRecording() {
       return this.localRecordStatus === 'START'
@@ -434,7 +431,7 @@ export default {
         this.localRecording = this.allowLocalRecord
         this.pointing = this.allowPointing
       }
-      if (this.isOnpremise) {
+      if (this.useRecording) {
         this.serverMaxRecordTime = this.serverRecord.time
         this.serverRecordResolution = this.serverRecord.resolution
       }
