@@ -14,14 +14,6 @@ describe('CollaboStatus', () => {
     expect(wrapper.find('.customClass').exists(true)).toEqual(true)
   })
 
-  it('PROGRESS 전달시 progress class 렌더링', () => {
-    const wrapper = shallowMount(CollaboStatus, {
-      localVue,
-      propsData: { status: collabo.PROGRESS },
-    })
-    expect(wrapper.find('.progress').exists(true)).toEqual(true)
-  })
-
   it('FINISHED progress class 렌더링', () => {
     const wrapper = shallowMount(CollaboStatus, {
       localVue,
