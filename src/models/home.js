@@ -15,38 +15,3 @@ export const install = [
     image: require('assets/images/logo/logo-view.svg'),
   },
 ]
-
-export const guide = [
-  {
-    label: 'guide.makeGuide.label',
-    path: 'guide.makeGuide.url',
-  },
-  {
-    label: 'guide.makeDemoContetns.label',
-    path: 'guide.makeDemoContetns.url',
-  },
-  {
-    label: 'guide.viewGuide.label',
-    path: 'guide.viewGuide.url',
-  },
-  {
-    label: 'guide.viewRealwearGuide.label',
-    path: 'guide.viewRealwearGuide.url',
-  },
-  {
-    label: 'guide.remoteGuide.label',
-    path: 'guide.remoteGuide.url',
-  },
-  {
-    label: 'guide.workstationGuide.label',
-    path: 'guide.workstationGuide.url',
-  },
-  {
-    label: 'guide.taskManageGuide.label',
-    path: 'guide.taskManageGuide.url',
-  },
-  {
-    label: 'guide.purchaseGuide.label',
-    path: 'guide.purchaseGuide.url',
-  },
-]
