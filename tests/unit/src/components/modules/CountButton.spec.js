@@ -31,15 +31,4 @@ describe('CountButton.vue', () => {
     })
     expect(wrapper.find('.nodata').exists(true)).toEqual(true)
   })
-
-  // it('count가 0보다 크고 selected가 false 일때 imgSrc는 default 반환', () => {
-  //   const count = 10
-
-  //   const imgDefaultSrc = CountButton.computed.imgSrc.call({
-  //     count: count,
-  //     images: { images },
-  //   })
-
-  //   expect(imgDefaultSrc).toEqual(images.default)
-  // })
 })
