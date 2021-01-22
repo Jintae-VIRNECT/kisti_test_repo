@@ -2,10 +2,17 @@ const { resolve } = require('path')
 const lang = require('./src/languages')
 const path = require('path')
 const fs = require('fs')
+const logger = require('@virnect/logger')
 
 module.exports = async () => {
   const env = await require('./config')()
-  console.log(env)
+  logger.info('server is running...', 'LISTENING')
+  logger.ipInfo(`${env.NUXT_PORT}`, 'LISTENING')
+  logger.info(`VIRNECT_ENV: ${env.VIRNECT_ENV}`, 'LISTENING')
+  logger.info(`SSL_ENV: ${env.SSL_ENV}`, 'LISTENING')
+  Object.entries(env.URLS).forEach(([key, val]) =>
+    logger.info(`${key}: ${val}`, 'LISTENING'),
+  )
 
   return {
     /*
@@ -29,19 +36,24 @@ module.exports = async () => {
     /**
      * Plugins
      */
-    modules: [['nuxt-i18n', lang], '@nuxtjs/style-resources', '@nuxtjs/axios'],
+    modules: [
+      'nuxt-helmet',
+      ['nuxt-i18n', lang],
+      '@nuxtjs/style-resources',
+      '@nuxtjs/axios',
+    ],
     plugins: ['@/plugins/element-ui', '@/plugins/axios', '@/plugins/context'],
     /*
      ** Customize style
      */
     styleResources: {
       scss: [
-        resolve(__dirname, '../WC-Modules/src/assets/css/mixin.scss'),
+        '@virnect/WC-Modules/src/assets/css/mixin.scss',
         '@/assets/css/_vars.scss',
       ],
     },
     css: [
-      resolve(__dirname, '../WC-Modules/src/assets/css/reset.scss'),
+      '@virnect/WC-Modules/src/assets/css/reset.scss',
       '@/assets/css/global.scss',
     ],
     loading: { color: '#1468e2' },
@@ -49,7 +61,7 @@ module.exports = async () => {
      * dir
      */
     srcDir: resolve(__dirname, 'src'),
-    modulesDir: [resolve(__dirname, '../WC-Modules/src')],
+    modulesDir: ['@virnect/WC-Modules/src'],
     /**
      * env
      */
@@ -71,10 +83,7 @@ module.exports = async () => {
      */
     build: {
       extend(config, { isDev, isClient }) {
-        config.resolve.alias['WC-Modules'] = resolve(
-          __dirname,
-          '../WC-Modules/src',
-        )
+        config.resolve.alias['WC-Modules'] = '@virnect/WC-Modules/src'
       },
     },
     server: {

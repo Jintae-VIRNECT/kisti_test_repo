@@ -38,7 +38,7 @@
             >
             </el-tab-pane>
           </el-tabs>
-          <nuxt-child ref="table" :data="list" />
+          <nuxt-child :data="list" @sort-change="sortChange" />
         </el-card>
       </el-row>
       <searchbar-page ref="page" :value.sync="page" :total="total" />
@@ -71,7 +71,7 @@ export default {
           label: 'results.issue',
         },
       ],
-      taskFilter,
+      taskFilter: { ...taskFilter },
       resultsSearch: '',
       list: [],
       total: 0,
@@ -100,7 +100,6 @@ export default {
   },
   methods: {
     changedSearchParams() {
-      console.log('test')
       if (this.activeTab === 'task') this.searchSubTasks()
       else if (this.activeTab === 'issue') this.searchIssues()
       else if (this.activeTab === 'paper') this.searchPapers()
@@ -126,8 +125,13 @@ export default {
       this.list = list
       this.total = total
     },
-    showAll() {},
-    showMine() {},
+    sortChange({ prop, order }) {
+      if (!order) this.emitChangedSearchParams()
+      else {
+        const sort = `${prop},${order.replace('ending', '')}`
+        this.emitChangedSearchParams({ sort })
+      }
+    },
   },
   beforeMount() {
     this.resultsSearch = this.$route.query.search

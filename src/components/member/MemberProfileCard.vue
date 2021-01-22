@@ -156,7 +156,7 @@ export default {
 
 <style lang="scss">
 .member-profile-card {
-  min-height: 336px;
+  min-height: 347px;
 }
 .member-profile-card .el-card__body > dl {
   dt {

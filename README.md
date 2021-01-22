@@ -1,44 +1,33 @@
-## Author
+# workstation
 
-```
-lsb@virnect.com
-```
+Virnect Platform
 
-## Description
+## Build Setup
 
-```
-Platform Worstation Web Service
-```
+``` bash
+# install dependencies
+$ yarn # Or npm install
 
-## Environment
+# serve with hot reload at localhost:3000
+$ yarn dev
 
-```
-node12 / Yarn workspace
-```
+# build for production and launch server
+$ yarn build
+$ yarn start
 
-## Develop
-
-```
-$ yarn
-$ yarn workspace workstation dev
+# generate static project
+$ yarn generate
 ```
 
-## Production
+## 아래 철학들은 반드시 따라주세요
+[Nuxtjs](https://ko.nuxtjs.org/guide)  
+[async/await](https://medium.com/@constell99/%EC%9E%90%EB%B0%94%EC%8A%A4%ED%81%AC%EB%A6%BD%ED%8A%B8%EC%9D%98-async-await-%EA%B0%80-promises%EB%A5%BC-%EC%82%AC%EB%9D%BC%EC%A7%80%EA%B2%8C-%EB%A7%8C%EB%93%A4-%EC%88%98-%EC%9E%88%EB%8A%94-6%EA%B0%80%EC%A7%80-%EC%9D%B4%EC%9C%A0-c5fe0add656c)
 
+## nuxtjs 기본 디렉터리에 포함되지 않은 추가 디렉터리
 ```
-# 환경설정 확인
-$ vim workstation/.env.production
-
-# 빌드 및 실행
-$ yarn workspace workstation build
-$ yarn workspace workstation deploy
+api - API서버와 데이터 송수신
+lang - 언어
+models - API서버와 프론트간의 칼럼명 매칭
+services - 비즈니스 로직
 ```
 
-## 추가 설명
-
-프로젝트 구조는 https://nuxtjs.org/guides/directory-structure/nuxt  
-\+ api, languages, mixins, services
-
-웹 앱 전반에 활성화된 워크스페이스에 따라 달라지는 내용들이 많음.  
-활성화 워크스페이스 변경은 필히 vuex의 `activeWorkspace`를 사용하고,  
-`services/workspace.watchActiveWorkspace()`를 사용하여 변경 이벤트를 트래킹할 것

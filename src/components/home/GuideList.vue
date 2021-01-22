@@ -10,13 +10,12 @@
     <!-- 링크 타입 -->
     <div>
       <a
-        v-for="link in guide"
-        :href="$t(link.path)"
-        :key="link.path"
+        v-for="{ label, url } in $t('guide.list')"
+        :href="url"
+        :key="label"
         target="_blank"
       >
-        <img v-if="link.image" :src="link.image" />
-        <span>{{ $t(link.label) }}</span>
+        <span>{{ label }}</span>
         <img src="~assets/images/icon/ic-file-download.svg" />
       </a>
     </div>
@@ -24,13 +23,5 @@
 </template>
 
 <script>
-import { guide } from '@/models/home'
-
-export default {
-  data() {
-    return {
-      guide,
-    }
-  },
-}
+export default {}
 </script>

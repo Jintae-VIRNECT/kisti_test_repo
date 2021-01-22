@@ -21,6 +21,8 @@ export default {
     if (params.filter && params.filter[0] === 'ALL') {
       delete params.filter
     }
+    params.sort = params.sort && params.sort.replace('subTaskName', 'name')
+
     const data = await api('SUB_TASK_ALL', {
       params: {
         workspaceUUID: activeWorkspaceGetter().uuid,
