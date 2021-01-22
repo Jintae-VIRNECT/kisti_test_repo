@@ -35,6 +35,7 @@ pipeline {
     stage('Test') {
       steps {
         echo 'Test Stage'
+          sh 'npm run test:unit'
       }
     }
 
