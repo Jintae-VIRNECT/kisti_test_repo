@@ -35,6 +35,9 @@ pipeline {
     stage('Test') {
       steps {
         echo 'Test Stage'
+        sh 'npm cache verify'
+        sh 'npm install'
+        sh 'npm run test:unit'
       }
     }
 
