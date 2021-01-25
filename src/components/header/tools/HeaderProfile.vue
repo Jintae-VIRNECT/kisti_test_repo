@@ -97,7 +97,7 @@ export default {
         window.open('https://file.virnect.com/Guide/remote_web_user_guide.pdf')
       } else {
         const res = await axios.get(
-          `${window.urls.api}/remote/file/guide/?objectName=virnect_remote_mobile_gs.pdf`,
+          `${window.urls.api}/remote/file/guide/?objectName=virnect_remote_web_gs.pdf`,
         )
         window.open(res.data.data)
       }
