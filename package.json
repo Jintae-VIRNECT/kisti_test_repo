@@ -13,7 +13,8 @@
     "start:production": "set CONFIG_SERVER=https://config.virnect.com && set VIRNECT_ENV=production && set NODE_ENV=production && node server.js",
     "build": "vue-cli-service lint && vue-cli-service build",
     "build:develop": "vue-cli-service build --mode development",
-    "test:unit": "vue-cli-service test:unit --coverage",
+    "test:unit": "vue-cli-service test:unit",
+    "test:cover":"vue-cli-service test:unit --coverage",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
