@@ -13,7 +13,7 @@
     "start:production": "set CONFIG_SERVER=https://config.virnect.com && set VIRNECT_ENV=production && set NODE_ENV=production && node server.js",
     "build": "vue-cli-service lint && vue-cli-service build",
     "build:develop": "vue-cli-service build --mode development",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "vue-cli-service test:unit --coverage",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -36,6 +36,7 @@
     "@vue/cli-plugin-unit-jest": "^4.5.9",
     "@vue/cli-service": "^4.4.6",
     "@vue/test-utils": "^1.0.3",
+    "babel-plugin-transform-require-context": "^0.1.1",
     "chart.js": "^2.9.3",
     "dayjs": "^1.8.35",
     "eslint-plugin-jest": "^24.1.3",
