@@ -6,7 +6,7 @@
         ref="arVideo"
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
-        @loadeddata="optimizeVideoSize"
+        @loadeddata="mediaPlay"
         muted
         playsinline
         loop
@@ -140,50 +140,54 @@ export default {
       ])
     },
     mediaPlay() {
-      this.$nextTick(() => {
+      setTimeout(() => {
         this.optimizeVideoSize()
         this.loaded = false
-      })
+      }, 3000)
     },
     optimizeVideoSize() {
       if (this.view !== VIEW.AR) return
       const mainWrapper = this.$el
       const videoBox = this.$el.querySelector('.ar-video__box')
       const video = this.$refs['arVideo']
+      const videoWidth = video.videoWidth
+      const videoHeight = video.videoHeight
       if (this.resolution.width === 0 || this.resolution.height === 0) return
       this.debug(
         'current resolution: ',
         this.resolution.width,
         this.resolution.height,
       )
+      this.debug('current video: ', videoWidth, videoHeight)
 
       let maxWidth = mainWrapper.offsetWidth
       let maxHeight = mainWrapper.offsetHeight
-      let scale = this.resolution.width / this.resolution.height
-      if (
-        this.resolution.width / this.resolution.height <
-        maxWidth / maxHeight
-      ) {
+      let scale = videoWidth / videoHeight
+      let width = 0
+      let height = 0
+      if (videoWidth / videoHeight < maxWidth / maxHeight) {
         // height에 맞춤
-        videoBox.style.height = maxHeight + 'px'
-        videoBox.style.width = maxHeight * scale + 'px'
+        height = maxHeight
+        width = maxHeight * scale
         // video.style.height = maxHeight + 'px'
         // video.style.width = maxHeight * scale + 'px'
       } else {
         // width에 맞춤
-        videoBox.style.height = maxWidth / scale + 'px'
-        videoBox.style.width = maxWidth + 'px'
+        height = maxWidth / scale
+        width = maxWidth
         // video.style.height = maxWidth / scale + 'px'
         // video.style.width = maxWidth + 'px'
       }
-      this.videoSize.width = video.offsetWidth
-      this.videoSize.height = video.offsetHeight
+      videoBox.style.width = width + 'px'
+      videoBox.style.height = height + 'px'
+      this.videoSize.width = width
+      this.videoSize.height = height
       this.debug('calc size: ', this.videoSize.width, this.videoSize.height)
     },
     windowResize() {
       setTimeout(() => {
         this.optimizeVideoSize()
-      }, 100)
+      }, 3000)
     },
   },
 
@@ -193,7 +197,9 @@ export default {
   },
   mounted() {
     if (this.resolution && this.resolution.width > 0) {
-      this.optimizeVideoSize()
+      setTimeout(() => {
+        this.optimizeVideoSize()
+      }, 3000)
     }
   },
   beforeDestroy() {
