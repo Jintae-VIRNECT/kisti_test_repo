@@ -1,5 +1,5 @@
 import { shallowMount } from '@vue/test-utils'
-import DatePicker from 'components/modules/DatePicker'
+import DatePicker from 'components/modules/Datepicker'
 
 import localVue from '__utils__/localVue'
 
