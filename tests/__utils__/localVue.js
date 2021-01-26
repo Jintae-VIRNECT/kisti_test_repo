@@ -9,6 +9,10 @@ import Vue2Scrollbar from 'plugins/remote/scrollbar'
 // import Alarm from 'plugins/remote/alarm'
 // import Store from 'stores/remote/store'
 import globalMixin from 'mixins/global'
+import Datepicker from 'plugins/remote/datepicker'
+import VDatepicker from 'plugins/remote/vdatepicker'
+
+// import i18n from 'plugins/remote/i18n'
 
 const localVue = createLocalVue()
 
@@ -23,6 +27,9 @@ localVue.prototype.$eventBus = createLocalVue()
 localVue.use(GlobalPlugins)
 localVue.use(Vue2Scrollbar)
 localVue.use(Vuex)
+localVue.use(Datepicker)
+localVue.use(VDatepicker)
+// localVue.use(i18n)
 // localVue.use(Alarm)
 localVue.mixin(globalMixin)
 
