@@ -22,6 +22,7 @@ import PUSH from 'plugins/remote/push'
 
 import { localStorage } from 'utils/storage'
 import { version } from '@/package.json'
+// const version = '2.0'
 
 import { logger, debug } from 'utils/logger'
 
