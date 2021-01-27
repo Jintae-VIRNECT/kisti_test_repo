@@ -11,6 +11,7 @@ import Vue2Scrollbar from 'plugins/remote/scrollbar'
 import globalMixin from 'mixins/global'
 import Datepicker from 'plugins/remote/datepicker'
 import VDatepicker from 'plugins/remote/vdatepicker'
+import DayJS from 'plugins/remote/dayjs'
 
 // import i18n from 'plugins/remote/i18n'
 
@@ -29,7 +30,7 @@ localVue.use(Vue2Scrollbar)
 localVue.use(Vuex)
 localVue.use(Datepicker)
 localVue.use(VDatepicker)
-// localVue.use(i18n)
+localVue.use(DayJS)
 // localVue.use(Alarm)
 localVue.mixin(globalMixin)
 
