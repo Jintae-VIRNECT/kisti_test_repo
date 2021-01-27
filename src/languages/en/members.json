@@ -32,6 +32,7 @@
       "givePlansEmpty": "Not allocated",
       "kick": "Remove",
       "message": {
+        "notHaveAnyPlan": "At least one plan must be allocated to Workspace members.",
         "updateFail": "Failed to update member details from the Workspace please try again later",
         "updateSuccess": "Succesfully updated selected member details"
       }
@@ -115,7 +116,7 @@
         "idDuplicated": "This ID is already registered, \nplease enter a different ID.",
         "notHaveAnyPlan": "You need to allocate at least one plan to the account you are creating.",
         "fail": "Failed to add a member, \nplease try again later. If a same problem occurs please contact a network adminitrator."
-      }   
+      }
     },
     "activity": {
       "title": "Recent Activity",

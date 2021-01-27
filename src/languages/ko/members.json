@@ -32,6 +32,7 @@
       "givePlansEmpty": "할당 없음",
       "kick": "내보내기",
       "message": {
+        "notHaveAnyPlan": "계정에 반드시 1개 이상의 제품 플랜을 할당해야 합니다.",
         "updateFail": "워크스페이스 멤버 정보 변경에 실패했습니다. 잠시 후 다시 이용해 주세요.",
         "updateSuccess": "선택하신 멤버의 정보를 변경하였습니다. "
       }
