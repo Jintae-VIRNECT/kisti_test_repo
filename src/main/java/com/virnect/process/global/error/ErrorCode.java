@@ -58,6 +58,7 @@ public enum ErrorCode {
 	ERR_OVER_MAX_TARGET(5923, "One Contents is mapped One Target Data."),
 
 	ERR_CONTENT_DOWNLOAD(6000, "Content Download fail."),
+	ERR_CONTENT_DOWNLOAD_INVALID_CONDITION(6001, "Content Download fail. Because process is not in progress."),
 
 	// 공통 에러
 	ERR_INVALID_REQUEST_PARAMETER(8001, "Invalid request parameter cause api errors");

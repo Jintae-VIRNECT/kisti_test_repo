@@ -80,7 +80,7 @@ public class DownloadService {
 				"[CONTENT DOWNLOAD][PROCESS CONDITION CHECK] process is not in progress. content uuid : [{}], process current condition : [{}],",
 				process.getContentUUID(), process.getConditions()
 			);
-			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_CONDITION);
 		}
 	}
 
