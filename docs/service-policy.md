@@ -27,8 +27,8 @@
 - **Google sync speech to text**: 사용 여부를 클라이언트에게 제공합니다.
 - **Google text to speech**: 사용 여부를 클라이언트에게 제공합니다.
 - **Google support language**: 통번역을 제공하는 국가 코드와 이름을 클라이언트에게 제공합니다.
-- **Conference**: n:n 방식의 화상통화 서비스 제공여부를 클라이언트에게 제공합니다.
-- **Streaming**: 1:n 방식의 화상통화 서비스 제공여부를 클라이언트에게 제공합니다.
+- **Session Private**: 초대된 사용자만 참여가능한 화상통화 서비스를 클라이언트에게 제공합니다.
+- **Session Public**: 접속한 모든 사용자가 참여가능한 화상통화 서비스 클라이언트에게 제공합니다.
 - **Storage service**: 스토리지 서비스 기능 제공여부를 클라이언트에게 제공합니다.
 - **Server recording service**: 서버 녹화 기능 제공여부를 클라이언트에게 제공합니다.
 
@@ -40,8 +40,8 @@
 | Google tts               | O        | O      |
 | storage service          | O        | X      |
 | recording service        | O        | X      |
-| Remote Conference (N:N)  | O        | X      |
-| Remote Streaming (1:N)   | O        | X      |
+| Session Private          | O        | O      |
+| Session Public           | O        | O      |
 
 ---
 
