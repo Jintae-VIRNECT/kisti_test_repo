@@ -38,6 +38,7 @@ public class GatewayAccessLogGlobalFilter implements GlobalFilter, Ordered {
 
 	@PostConstruct
 	protected void init() {
+		log.info("[GATEWAY ACCESS LOG FILTER] => ACTIVE");
 		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 	}
 
