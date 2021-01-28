@@ -59,8 +59,8 @@ public class DownloadController {
     @ApiOperation(value = "타겟 데이터로 컨텐츠 다운로드", notes = "컨텐츠 식별자 또는 타겟 데이터를 통해 컨텐츠를 다운로드. 컨텐츠 식별자, 타겟 데이터 둘 중 하나는 필수.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "targetData", value = "타겟 데이터", dataType = "string", paramType = "query", required = true, defaultValue = "mgbvuA6RhUXL JPrK2Z7YoKi7HEp4K0XmmkLbV7SlBQX NzZxnldwTk/22rpebA4"),
-            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true),
-            @ApiImplicitParam(name = "workspaceUUID", value = "다운받는 워크스페이스 식별자", dataType = "string", paramType = "query", required = true)
+            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
+            @ApiImplicitParam(name = "workspaceUUID", value = "다운받는 워크스페이스 식별자", dataType = "string", paramType = "query", required = true,defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8")
     })
     @GetMapping("/download")
     public ResponseEntity<byte[]> contentDownloadRequestForTargetHandler(
