@@ -795,25 +795,27 @@ public abstract class DataRepository {
                         sessionId);
 
                 if(room != null) {
-                    ApiResponse<StopRecordingResponse> apiResponse = recordRestService.stopRecordingBySessionId(room.getWorkspaceId(), room.getLeaderId(), room.getSessionId());
-                    if(apiResponse.getCode() == 200) {
-                        if(apiResponse.getData() != null) {
-                            for (String recordingId : apiResponse.getData().getRecordingIds()) {
-                                LogMessage.formedInfo(
-                                        TAG,
-                                        "stopRecordSession",
-                                        "invokeDataProcess",
-                                        "recording id response",
-                                        recordingId);
+                    if(config.remoteServiceProperties.mediaServerProperties.recordingProperty.isRecording()) {
+                        ApiResponse<StopRecordingResponse> apiResponse = recordRestService.stopRecordingBySessionId(room.getWorkspaceId(), room.getLeaderId(), room.getSessionId());
+                        if (apiResponse.getCode() == 200) {
+                            if (apiResponse.getData() != null) {
+                                for (String recordingId : apiResponse.getData().getRecordingIds()) {
+                                    LogMessage.formedInfo(
+                                            TAG,
+                                            "stopRecordSession",
+                                            "invokeDataProcess",
+                                            "recording id response",
+                                            recordingId);
+                                }
                             }
+                        } else {
+                            LogMessage.formedInfo(
+                                    TAG,
+                                    "stopRecordSession",
+                                    "invokeDataProcess",
+                                    "recording api response error code",
+                                    String.valueOf(apiResponse.getCode()));
                         }
-                    } else {
-                        LogMessage.formedInfo(
-                                TAG,
-                                "stopRecordSession",
-                                "invokeDataProcess",
-                                "recording api response error code",
-                                String.valueOf(apiResponse.getCode()));
                     }
                     return new DataProcess<>(true);
                 } else {
