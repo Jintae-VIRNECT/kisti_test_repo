@@ -1067,42 +1067,6 @@ public class ContentService {
         return licenseInfoResponse;
     }
 
-    /**
-     * 라이선스 총 다운로드 수와 워크스페이스 기준 총 다운로드 수를 비교
-     *
-     * @param workspaceUUID
-     * @return
-     */
-    protected LicenseInfoResponse checkLicenseDownload(String workspaceUUID) {
-
-        LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
-
-        // 라이센스 총 다운로드 횟수
-        Long maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
-
-        // 현재 워크스페이스의 다운로드 횟수
-        Long sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
-
-        if (maxDownload == 0) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
-        }
-
-        // 워크스페이스 기준으로 처음 다운로드 받을 경우의 처리
-        if (Objects.isNull(sumDownload)) {
-            sumDownload = 0L;
-        }
-
-        if (maxDownload < sumDownload + 1) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
-        } else {
-            licenseInfoResponse.setMaxDownloadHit(maxDownload);
-            licenseInfoResponse.setWorkspaceDownloadHit(sumDownload);
-            licenseInfoResponse.setUsableDownloadHit(maxDownload - sumDownload);
-        }
-
-        return licenseInfoResponse;
-    }
-
     public String decodeData(String encodeURL) {
         String imgPath = "";
 
@@ -1171,6 +1135,8 @@ public class ContentService {
         try {
             // Database에 저장된 targetData는 URLEncoding된 값이므로 인코딩 해줌.
             encodedData = URLEncoder.encode(targetData, StandardCharsets.UTF_8.name());
+            log.info(">>>>>>>>>>>>>>>>>>> encodedData : {}", encodedData);
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

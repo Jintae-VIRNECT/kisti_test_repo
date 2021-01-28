@@ -95,11 +95,11 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		return new PageImpl<>(contentList, pageable, query.fetchCount());
 	}
 
-	public Content getContentOfTarget(String targetData) {
+	public Optional<Content> getContentOfTarget(String targetData) {
 		QContent qContent = QContent.content;
 		QTarget qTarget = QTarget.target;
-		JPQLQuery<Content> query = from(qContent).join(qContent.targetList, qTarget).where(qTarget.data.eq(targetData));
-		return query.fetchOne();
+		Content content = from(qContent).join(qContent.targetList, qTarget).where(qTarget.data.eq(targetData)).fetchOne();
+		return Optional.ofNullable(content);
 	}
 
 	@Override

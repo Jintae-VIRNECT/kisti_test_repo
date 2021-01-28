@@ -88,7 +88,7 @@ public class Content extends BaseTimeEntity {
 	private YesOrNo converted = YesOrNo.NO;
 
 	@Column(name = "download_hits")
-	private Long downloadHits;
+	private Long downloadHits;//disabled.
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "type_id")

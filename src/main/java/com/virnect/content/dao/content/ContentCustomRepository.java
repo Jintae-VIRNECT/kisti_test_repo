@@ -1,6 +1,7 @@
 package com.virnect.content.dao.content;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -8,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import com.querydsl.core.Tuple;
 
 import com.virnect.content.domain.Content;
+import org.springframework.stereotype.Controller;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -22,7 +24,7 @@ public interface ContentCustomRepository {
 		List<String> userUUIDList, Pageable pageable
 	);
 
-	Content getContentOfTarget(String targetData);
+    Optional<Content> getContentOfTarget(String targetData);
 
 	Long getWorkspaceStorageSize(String workspaceUUID);
 
