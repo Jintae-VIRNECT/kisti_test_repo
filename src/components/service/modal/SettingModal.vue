@@ -4,211 +4,286 @@
     :showClose="true"
     width="auto"
     :beforeClose="beforeClose"
-    class="local-recsetting-modal"
+    class="service-setting-modal"
+    :title="$t('환경 설정')"
   >
-    <div class="rec-setting">
-      <template v-if="isLeader">
-        <p class="rec-setting--header">{{ $t('service.setting_pointing') }}</p>
-        <div class="rec-setting__row">
-          <p class="rec-setting__text">
-            {{ $t('service.setting_pointing_participant') }}
-          </p>
-
-          <r-check
-            :text="$t('service.setting_pointing_allow')"
-            :value.sync="pointing"
-          ></r-check>
-        </div>
-      </template>
-
-      <p class="rec-setting--header" :class="{ disable: isLocalRecording }">
-        {{ $t('service.setting_local_record') }}
-        <span v-if="isLocalRecording" class="rec-setting--warning">
-          {{ $t('service.setting_local_record_warning') }}
-        </span>
-      </p>
-
-      <div
-        class="rec-setting__row"
-        v-if="!isTablet"
-        :class="{ disable: isLocalRecording }"
-      >
-        <p class="rec-setting__text">
-          {{ $t('service.setting_record_target') }}
-        </p>
-        <div class="rec-setting__selector">
-          <r-radio
-            :options="localRecordTargetOpt"
-            value="value"
-            text="text"
-            :selectedOption.sync="recordTarget"
-          ></r-radio>
-        </div>
-      </div>
-      <template v-if="!isSafari">
-        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
-          <p class="rec-setting__text">
-            {{ $t('service.setting_record_max_time') }}
-          </p>
-          <r-select
-            class="rec-setting__selector"
-            :options="localRecTimeOpt"
-            value="value"
-            text="text"
-            :selectedValue.sync="maxRecordTime"
-          >
-          </r-select>
-        </div>
-        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
-          <div class="rec-setting__text custom">
-            <p>
-              {{ $t('service.setting_record_interval') }}
-            </p>
-            <tooltip
-              customClass="tooltip-guide"
-              :content="$t('service.setting_record_time_tooltip')"
-              :placement="isTablet ? 'bottom' : 'right'"
-              effect="blue"
-              :guide="true"
-            >
-              <img
-                slot="body"
-                class="setting__tooltip--icon"
-                src="~assets/image/ic_tool_tip.svg"
-              />
-            </tooltip>
-          </div>
-          <r-select
-            class="rec-setting__selector"
-            :options="localRecIntervalOpt"
-            value="value"
-            text="text"
-            :selectedValue.sync="maxRecordInterval"
-          >
-          </r-select>
-        </div>
-
-        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
-          <div class="rec-setting__text custom">
-            <p>
-              {{ $t('service.setting_record_resolution') }}
-            </p>
-            <tooltip
-              customClass="tooltip-guide"
-              :content="$t('service.setting_record_resolution_tooltip')"
-              :placement="isTablet ? 'bottom' : 'right'"
-              effect="blue"
-              :guide="true"
-            >
-              <img
-                slot="body"
-                class="setting__tooltip--icon"
-                src="~assets/image/ic_tool_tip.svg"
-              />
-            </tooltip>
-          </div>
-
-          <r-select
-            class="rec-setting__selector"
-            :options="localRecResOpt"
-            value="value"
-            text="text"
-            :selectedValue.sync="recordResolution"
-          >
-          </r-select>
-        </div>
-      </template>
-      <div
-        class="rec-setting__row"
-        v-if="isLeader"
-        :class="{ disable: isLocalRecording }"
-      >
-        <p class="rec-setting__text">
-          {{ $t('service.setting_local_record_participant') }}
-        </p>
-        <r-check
-          :text="$t('service.setting_local_record_allow')"
-          :value.sync="localRecording"
-        ></r-check>
-      </div>
-      <template v-if="isLeader && useRecording">
-        <p class="rec-setting--header" :class="{ disable: isServerRecording }">
+    <div class="service-setting">
+      <section class="service-setting-nav">
+        <button
+          class="service-setting-nav__menu"
+          :class="{ active: tabview === 'group' }"
+          :data-text="$t('service.setting_pointing')"
+          @click="tabChange('pointing')"
+        >
+          {{ $t('service.setting_pointing') }}
+        </button>
+        <button
+          class="service-setting-nav__menu"
+          :class="{ active: tabview === 'local-record' }"
+          :data-text="$t('service.setting_local_record')"
+          @click="tabChange('local-record')"
+        >
+          {{ $t('service.setting_local_record') }}
+        </button>
+        <button
+          class="service-setting-nav__menu"
+          :class="{ active: tabview === 'server-record' }"
+          :data-text="$t('service.setting_server_record')"
+          @click="tabChange('server-record')"
+        >
           {{ $t('service.setting_server_record') }}
-          <span v-if="isServerRecording" class="rec-setting--warning">
-            {{ $t('service.setting_server_record_warning') }}
+        </button>
+        <button
+          class="service-setting-nav__menu"
+          :class="{ active: tabview === 'translate' }"
+          :data-text="$t('service.setting_translate')"
+          @click="tabChange('translate')"
+        >
+          {{ $t('service.setting_translate') }}
+        </button>
+      </section>
+
+      <!-- 포인팅 리더 only -->
+      <template v-if="tabview === 'pointing'">
+        <template v-if="isLeader">
+          <p class="service-setting--header">
+            {{ $t('service.setting_pointing') }}
+          </p>
+          <div class="service-setting__row">
+            <p class="service-setting__text">
+              {{ $t('service.setting_pointing_participant') }}
+            </p>
+
+            <r-check
+              :text="$t('service.setting_pointing_allow')"
+              :value.sync="pointing"
+            ></r-check>
+          </div>
+        </template>
+      </template>
+
+      <!-- 로컬 녹화 / 로컬녹화중에는 사용 불가능해야함.-->
+      <template v-if="tabview === 'local-record'">
+        <p
+          class="service-setting--header"
+          :class="{ disable: isLocalRecording }"
+        >
+          {{ $t('service.setting_local_record') }}
+          <span v-if="isLocalRecording" class="service-setting--warning">
+            {{ $t('service.setting_local_record_warning') }}
           </span>
         </p>
-        <div class="rec-setting__row" :class="{ disable: isServerRecording }">
-          <p class="rec-setting__text">
-            {{ $t('service.setting_record_max_time') }}
+
+        <div
+          class="service-setting__row"
+          v-if="!isTablet"
+          :class="{ disable: isLocalRecording }"
+        >
+          <p class="service-setting__text">
+            {{ $t('service.setting_record_target') }}
           </p>
-          <r-select
-            class="rec-setting__selector"
-            :options="serverRecTime"
-            value="value"
-            text="text"
-            :selectedValue.sync="serverMaxRecordTime"
-          >
-          </r-select>
+          <div class="service-setting__selector">
+            <r-radio
+              :options="localRecordTargetOpt"
+              value="value"
+              text="text"
+              :selectedOption.sync="recordTarget"
+            ></r-radio>
+          </div>
         </div>
 
-        <div class="rec-setting__row" :class="{ disable: isServerRecording }">
-          <div class="rec-setting__text custom">
-            <p>
-              {{ $t('service.setting_record_resolution') }}
+        <!-- 사파리인 경우 로컬녹화 설정의 녹화대상(영상 녹화, 화면녹화), 참가자 로컬 녹화 여부만 출력됨 -->
+        <template v-if="!isSafari">
+          <div
+            class="service-setting__row"
+            :class="{ disable: isLocalRecording }"
+          >
+            <p class="service-setting__text">
+              {{ $t('service.setting_record_max_time') }}
             </p>
+            <r-select
+              class="service-setting__selector"
+              :options="localRecTimeOpt"
+              value="value"
+              text="text"
+              :selectedValue.sync="maxRecordTime"
+            >
+            </r-select>
+          </div>
+          <div
+            class="service-setting__row"
+            :class="{ disable: isLocalRecording }"
+          >
+            <div class="service-setting__text custom">
+              <p>
+                {{ $t('service.setting_record_interval') }}
+              </p>
+              <tooltip
+                customClass="tooltip-guide"
+                :content="$t('service.setting_record_time_tooltip')"
+                :placement="isTablet ? 'bottom' : 'right'"
+                effect="blue"
+                :guide="true"
+              >
+                <img
+                  slot="body"
+                  class="setting__tooltip--icon"
+                  src="~assets/image/ic_tool_tip.svg"
+                />
+              </tooltip>
+            </div>
+            <r-select
+              class="service-setting__selector"
+              :options="localRecIntervalOpt"
+              value="value"
+              text="text"
+              :selectedValue.sync="maxRecordInterval"
+            >
+            </r-select>
           </div>
 
-          <r-select
-            class="rec-setting__selector"
-            :options="serverRecResOpt"
-            value="value"
-            text="text"
-            :selectedValue.sync="serverRecordResolution"
+          <div
+            class="service-setting__row"
+            :class="{ disable: isLocalRecording }"
           >
-          </r-select>
-        </div>
-      </template>
-      <!-- <template v-if="useTranslate">
-        <p class="rec-setting--header">
-          {{ $t('service.setting_translate') }}
-        </p>
-        <div class="rec-setting__row">
-          <p class="rec-setting__text">
-            {{ $t('service.setting_translate_use') }}
+            <div class="service-setting__text custom">
+              <p>
+                {{ $t('service.setting_record_resolution') }}
+              </p>
+              <tooltip
+                customClass="tooltip-guide"
+                :content="$t('service.setting_record_resolution_tooltip')"
+                :placement="isTablet ? 'bottom' : 'right'"
+                effect="blue"
+                :guide="true"
+              >
+                <img
+                  slot="body"
+                  class="setting__tooltip--icon"
+                  src="~assets/image/ic_tool_tip.svg"
+                />
+              </tooltip>
+            </div>
+
+            <r-select
+              class="service-setting__selector"
+              :options="localRecResOpt"
+              value="value"
+              text="text"
+              :selectedValue.sync="recordResolution"
+            >
+            </r-select>
+          </div>
+        </template>
+        <div
+          class="service-setting__row"
+          v-if="isLeader"
+          :class="{ disable: isLocalRecording }"
+        >
+          <p class="service-setting__text">
+            {{ $t('service.setting_local_record_participant') }}
           </p>
           <r-check
-            :text="$t('service.setting_translate_use_allow')"
-            :value.sync="useTranslateAllow"
+            :text="$t('service.setting_local_record_allow')"
+            :value.sync="localRecording"
           ></r-check>
         </div>
-        <div class="rec-setting__row">
-          <div class="rec-setting__text custom">
-            <p>{{ $t('service.setting_translate_language') }}</p>
-            <tooltip
-              customClass="tooltip-guide"
-              :content="$t('service.setting_translate_language_tooltip')"
-              :placement="isTablet ? 'bottom' : 'right'"
-              effect="blue"
-            >
-              <img
-                slot="body"
-                class="setting__tooltip--icon"
-                src="~assets/image/ic_tool_tip.svg"
-              />
-            </tooltip>
-          </div>
-          <r-select
-            class="rec-setting__selector"
-            :options="languageCodes"
-            value="code"
-            text="text"
-            :disabled="!useTranslateAllow"
-            :selectedValue.sync="translateCode"
+      </template>
+
+      <!-- 서버 녹화 관련 옵션 -->
+      <template v-if="tabview === 'server-record'">
+        <template v-if="isLeader && useRecording">
+          <p
+            class="service-setting--header"
+            :class="{ disable: isServerRecording }"
           >
-          </r-select>
-        </div>
-      </template> -->
+            {{ $t('service.setting_server_record') }}
+            <span v-if="isServerRecording" class="service-setting--warning">
+              {{ $t('service.setting_server_record_warning') }}
+            </span>
+          </p>
+          <div
+            class="service-setting__row"
+            :class="{ disable: isServerRecording }"
+          >
+            <p class="service-setting__text">
+              {{ $t('service.setting_record_max_time') }}
+            </p>
+            <r-select
+              class="service-setting__selector"
+              :options="serverRecTime"
+              value="value"
+              text="text"
+              :selectedValue.sync="serverMaxRecordTime"
+            >
+            </r-select>
+          </div>
+
+          <div
+            class="service-setting__row"
+            :class="{ disable: isServerRecording }"
+          >
+            <div class="service-setting__text custom">
+              <p>
+                {{ $t('service.setting_record_resolution') }}
+              </p>
+            </div>
+
+            <r-select
+              class="service-setting__selector"
+              :options="serverRecResOpt"
+              value="value"
+              text="text"
+              :selectedValue.sync="serverRecordResolution"
+            >
+            </r-select>
+          </div>
+        </template>
+      </template>
+
+      <!-- 번역 관련 기능 (전체 기능 포함 필요함)-->
+      <template v-if="tabview === 'translate'">
+        <template v-if="useTranslate">
+          <p class="service-setting--header">
+            {{ $t('service.setting_translate') }}
+          </p>
+          <div class="service-setting__row">
+            <p class="service-setting__text">
+              {{ $t('service.setting_translate_use') }}
+            </p>
+            <r-check
+              :text="$t('service.setting_translate_use_allow')"
+              :value.sync="useTranslateAllow"
+            ></r-check>
+          </div>
+          <div class="service-setting__row">
+            <div class="service-setting__text custom">
+              <p>{{ $t('service.setting_translate_language') }}</p>
+              <tooltip
+                customClass="tooltip-guide"
+                :content="$t('service.setting_translate_language_tooltip')"
+                :placement="isTablet ? 'bottom' : 'right'"
+                effect="blue"
+              >
+                <img
+                  slot="body"
+                  class="setting__tooltip--icon"
+                  src="~assets/image/ic_tool_tip.svg"
+                />
+              </tooltip>
+            </div>
+            <r-select
+              class="service-setting__selector"
+              :options="languageCodes"
+              value="code"
+              text="text"
+              :disabled="!useTranslateAllow"
+              :selectedValue.sync="translateCode"
+            >
+            </r-select>
+          </div>
+        </template>
+      </template>
     </div>
   </modal>
 </template>
@@ -262,6 +337,8 @@ export default {
       serverRecordResolution: '',
       useTranslateAllow: false,
       translateCode: 'ko-KR',
+
+      tabview: 'pointing',
     }
   },
 
@@ -438,6 +515,9 @@ export default {
       this.$nextTick(() => {
         this.initing = true
       })
+    },
+    tabChange(view) {
+      this.tabview = view
     },
   },
 
