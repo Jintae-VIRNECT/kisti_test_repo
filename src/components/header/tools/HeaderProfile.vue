@@ -58,7 +58,7 @@ export default {
       return URLS['workstation']
     },
     dashboardLink() {
-      if (this.useStorage && !!URLS['dashboard']) {
+      if (URLS['dashboard']) {
         return URLS['dashboard']
       } else {
         return false
