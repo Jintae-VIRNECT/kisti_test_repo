@@ -113,7 +113,8 @@ public class SessionDataRepository extends DataRepository {
                             room.getSessionId(),
                             room.getTitle(),
                             userInfoResponse.getNickname(),
-                            userInfoResponse.getProfile());
+                            userInfoResponse.getProfile(),
+                            room.getLeaderId());
                     if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
                         log.info("push send message executed but not success");
                         log.info("push response: [code] {}", pushResponse.getCode());
@@ -158,7 +159,9 @@ public class SessionDataRepository extends DataRepository {
                         inviteRoomResponse.getSessionId(),
                         inviteRoomResponse.getTitle(),
                         userInfoResponse.getNickname(),
-                        userInfoResponse.getProfile());
+                        userInfoResponse.getProfile(),
+                        inviteRoomResponse.getLeaderId()
+                        );
 
                 if(pushResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
                     log.info("push send message executed but not success");

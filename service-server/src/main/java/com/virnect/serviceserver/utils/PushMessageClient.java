@@ -55,13 +55,15 @@ public class PushMessageClient {
     public ApiResponse<PushResponse> sendPushInvite(String sessionId,
                                                     String title,
                                                     String sender,
-                                                    String profile) {
+                                                    String profile,
+                                                    String leaderId) {
         //set push message invite room contents
         InviteRoomContents inviteRoomContents = new InviteRoomContents();
         inviteRoomContents.setSessionId(sessionId);
         inviteRoomContents.setTitle(title);
         inviteRoomContents.setNickName(sender);
         inviteRoomContents.setProfile(profile);
+        inviteRoomContents.setLeaderId(leaderId);
 
         try {
             String jsonString = mapper.writeValueAsString(inviteRoomContents);
