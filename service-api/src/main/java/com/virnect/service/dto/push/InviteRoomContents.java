@@ -10,4 +10,5 @@ public class InviteRoomContents {
     private String title;
     private String nickName;
     private String profile;
+    private String leaderId;
 }

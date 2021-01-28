@@ -160,7 +160,10 @@ public class SessionService {
         return this.roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
     }
 
-    //
+    public List<Room> getRoomList() {
+        return this.roomRepository.findAll();
+    }
+
     public List<Room> getRoomList(String workspaceId) {
         List<Room> roomList = new ArrayList<>();
         for(Room room : this.roomRepository.findByWorkspaceId(workspaceId)) {
