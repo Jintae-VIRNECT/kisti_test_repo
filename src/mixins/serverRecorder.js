@@ -19,7 +19,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['roomInfo', 'serverRecord', 'serverRecordStatus']),
+    ...mapGetters([
+      'roomInfo',
+      'serverRecord',
+      'serverRecordStatus',
+      'useRecording',
+    ]),
   },
   methods: {
     ...mapActions(['setServerRecordStatus']),
@@ -172,6 +177,7 @@ export default {
   },
 
   mounted() {
+    if (!this.useRecording) return
     this.setServerRecordStatus('STOP')
     if (!this.account.roleType === ROLE.LEADER) return
 
@@ -179,6 +185,7 @@ export default {
     this.checkServerRecordings()
   },
   beforeDestroy() {
+    if (!this.useRecording) return
     clearTimeout(this.serverRecordRetryTimeout)
     this.serverRecordRetryTimeout = null
 
