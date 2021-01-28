@@ -21,8 +21,12 @@ spring:
   cloud:
     loadbalancer:
       ribbon:
-        enabled: false
-
+        enabled: true
+  zipkin:
+    enabled: false
+content-server:
+  ribbon:
+    listOfServers: http://localhost:8078
 logging:
   level:
     com.virnect: DEBUG
@@ -34,6 +38,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+    enabled: false
 
 ## Server Configuration
 server:
@@ -59,7 +64,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
-#
+
 ## Minio
 minio:
   access-key: "virnect"

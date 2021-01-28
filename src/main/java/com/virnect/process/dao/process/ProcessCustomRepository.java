@@ -17,7 +17,7 @@ public interface ProcessCustomRepository {
 	 * @param state         작업 상태
 	 * @return
 	 */
-	Process findByTargetDataAndState(String targetData, State state);
+	Optional<Process> findByTargetDataAndState(String targetData, State state);
 
 	/**
 	 *

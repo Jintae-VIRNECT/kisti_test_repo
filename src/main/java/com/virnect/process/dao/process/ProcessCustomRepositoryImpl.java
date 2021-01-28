@@ -30,12 +30,14 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	}
 
 	@Override
-	public Process findByTargetDataAndState(String targetData, State state) {
+	public Optional<Process> findByTargetDataAndState(String targetData, State state) {
 		QProcess qProcess = QProcess.process;
 		QTarget qTarget = QTarget.target;
-		JPQLQuery<Process> query = from(qProcess).where(qProcess.state.eq(state));
-		query = query.join(qProcess.targetList, qTarget).where(qTarget.data.eq(targetData));
-		return query.fetchOne();
+		Process process = from(qProcess)
+			.where(qProcess.state.eq(state))
+			.join(qProcess.targetList, qTarget)
+			.where(qTarget.data.eq(targetData)).fetchOne();
+		return Optional.ofNullable(process);
 	}
 
 	@Override
