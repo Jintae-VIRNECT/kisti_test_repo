@@ -30,15 +30,10 @@ export default {
       logo: WHITE_LOGO,
     }
   },
-  computed: {},
-  watch: {},
   methods: {
     logoError() {
       this.logo = DEFAULT_LOGO
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>

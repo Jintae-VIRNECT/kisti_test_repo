@@ -12,44 +12,57 @@
         </span>
         <div v-if="isFile" class="chat-item__file">
           <div class="chat-item__file--wrapper">
-            <!-- <div class="chat-item__file--icon" :class="extension"></div> -->
-            <div class="chat-item__file--name" :class="extension">
-              {{ chat.file.fileName }}
+            <div class="chat-item__file--name" :class="fileType">
+              {{ fileInfo.name }}
             </div>
           </div>
-          <p class="chat-item__file--size">{{ fileSize }}</p>
+          <span class="chat-item__file--exp">
+            {{ fileInfo.exp }}
+          </span>
+          <span class="chat-item__file--size">{{ fileSize }}</span>
         </div>
         <div class="chat-item__body--textbox">
+          <p
+            v-if="isTranslate"
+            class="chat-item__body--text"
+            :class="{
+              inactive: !translateActive && !translate.multiple,
+              multiple: isTranslate && translate.multiple,
+            }"
+            v-html="chatTranslateText"
+          ></p>
           <p
             class="chat-item__body--text"
             :class="[
               subClass,
-              { inactive: isTranslate ? translateActive : false },
+              {
+                inactive:
+                  isTranslate && !translate.multiple ? translateActive : false,
+                multiple: isTranslate && translate.multiple,
+              },
             ]"
             v-html="chatText"
           ></p>
-          <p
-            v-if="isTranslate"
-            class="chat-item__body--text"
-            :class="{ inactive: !translateActive }"
-            v-html="chatTranslateText"
-          ></p>
         </div>
         <button
-          v-if="isTranslate"
+          v-if="isTranslate && !translate.multiple"
           class="chat-item__translate--button"
           :class="{ active: translateActive }"
           @click="translateActive = !translateActive"
         >
           {{ $t('service.translate') }}
         </button>
-        <button v-if="isFile" class="chat-item__file--button" @click="download">
+        <button
+          v-if="isFile && chat.type === 'opponent'"
+          class="chat-item__file--button"
+          @click="download"
+        >
           <span class="button-text">{{ $t('button.download') }}</span>
         </button>
       </div>
-      <span v-if="!hideTime" class="chat-item__body--time">{{
-        $dayjs(chat.date).format('A hh:mm')
-      }}</span>
+      <span v-if="!hideTime" class="chat-item__body--time">
+        {{ $dayjs(chat.date).format('A hh:mm') }}
+      </span>
     </div>
   </li>
 </template>
@@ -63,8 +76,11 @@ import { downloadFile } from 'api/http/file'
 import { mapGetters, mapActions } from 'vuex'
 import { translate as doTranslate } from 'plugins/remote/translate'
 import { downloadByURL } from 'utils/file'
+import { checkFileType } from 'utils/fileTypes'
+import toastMixin from 'mixins/toast'
 export default {
   name: 'ChatItem',
+  mixins: [toastMixin],
   components: {
     Profile,
   },
@@ -99,11 +115,7 @@ export default {
       }
     },
     isFile() {
-      if (this.chat.file) {
-        return true
-      } else {
-        return false
-      }
+      return !!this.chat.file
     },
     hideTime() {
       if (this.afterChat === null) {
@@ -151,25 +163,31 @@ export default {
 
       return false
     },
-    extension() {
-      let ext = ''
+    fileType() {
       const file = this.chat.file
       if (file) {
-        ext = file.fileName.split('.').pop()
+        return checkFileType({
+          name: file.name,
+          type: file.contentType,
+        })
       } else {
         return ''
       }
-      ext = ext.toLowerCase()
-
-      if (ext === 'avi' || ext === 'mp4') {
-        ext = 'video'
+    },
+    fileInfo() {
+      const file = this.chat.file
+      if (file) {
+        const idx = file.name.lastIndexOf('.')
+        return {
+          exp: file.name.toLowerCase().substr(idx + 1),
+          name: file.name.substr(0, idx),
+        }
+      } else {
+        return {
+          exp: '',
+          name: '',
+        }
       }
-
-      if (!['pdf', 'txt', 'jpg', 'png', 'mp3', 'video'].includes(ext)) {
-        ext = 'file'
-      }
-
-      return ext
     },
     subClass() {
       if (this.chat.type === 'system') {
@@ -221,13 +239,17 @@ export default {
   methods: {
     ...mapActions(['updateChat']),
     async download() {
-      const res = await downloadFile({
-        objectName: this.chat.file.objectName,
-        sessionId: this.roomInfo.sessionId,
-        workspaceId: this.workspace.uuid,
-        userId: this.account.uuid,
-      })
-      downloadByURL(res)
+      try {
+        const res = await downloadFile({
+          objectName: this.chat.file.objectName,
+          sessionId: this.roomInfo.sessionId,
+          workspaceId: this.workspace.uuid,
+          userId: this.account.uuid,
+        })
+        downloadByURL(res)
+      } catch (err) {
+        this.toastError(this.$t('confirm.network_error'))
+      }
       // FileSaver.saveAs(res)
     },
     async doTranslateText() {
@@ -236,6 +258,9 @@ export default {
         const response = await doTranslate(this.chat.text, this.translateCode)
         this.translateText = response
         this.translateActive = true
+        if (!this.chat.mute) {
+          this.$emit('tts', response)
+        }
       } catch (err) {
         console.error(`${err.message} (${err.code})`)
       }
@@ -244,8 +269,12 @@ export default {
 
   /* Lifecycles */
   mounted() {
-    if (this.chat.type === 'opponent' && this.translate.flag) {
-      this.doTranslateText()
+    if (this.chat.type === 'opponent' && !this.isFile) {
+      if (this.translate.flag) {
+        this.doTranslateText()
+      } else {
+        this.$emit('tts', this.chat.text)
+      }
     }
   },
 }

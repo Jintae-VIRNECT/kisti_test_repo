@@ -32,7 +32,9 @@
     "stream_sharing_cancel": "전체 공유 취소",
     "stream_normal": "영상 보기",
     "exit_room": "협업 종료",
-    "progress": "진행"
+    "progress": "진행",
+    "reconnect": "재연결",
+    "manual": "매뉴얼 다운로드"
   },
   "date": {
     "lastday": "[어제] A",
@@ -41,7 +43,9 @@
     "time": "m분 s초",
     "hour": "시간",
     "minute": "분",
-    "second": "초"
+    "second": "초",
+    "day": "일",
+    "left": "{time} 남음"
   },
   "common": {
     "leader": "리더",
@@ -50,9 +54,12 @@
     "notice": "알림",
     "speaker": "스피커",
     "video": "영상",
+    "chatting": "채팅",
     "expiration": "기간 만료",
     "local_record_file": "로컬 녹화 파일",
-    "no_sharing_file": "공유된 파일이 없습니다."
+    "no_sharing_file": "공유된 파일이 없습니다.",
+    "workstation": "워크스테이션",
+    "dashboard": "대시보드"
   },
   "confirm": {
     "network_error": "서버와 통신이 원활하지 않습니다. 잠시 후 다시 시도해 주세요.",
@@ -68,6 +75,7 @@
     "expire_title": "[만료안내]",
     "expire_time": "플랜 만료 <em>[{time}분]</em> 남았습니다.",
     "expire_logout": "플랜이 만료되었습니다.<br> 1분 뒤에 자동 종료됩니다.",
+    "expire_logout_home": "플랜이 만료되었습니다.",
     "invite_fail_title": "[협업 참가 실패]",
     "invite_fail_maxuser": "최대 참가인원이 초과하였습니다.",
     "member_name": "{name} 님",

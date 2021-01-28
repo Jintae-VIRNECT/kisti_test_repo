@@ -4,7 +4,7 @@
       class="main-video__box"
       @mouseenter="hoverTools = true"
       @mouseleave="hoverTools = false"
-      :class="{ shutter: showShutter }"
+      :class="{ shutter: showShutter, hidden: !loaded || emptyStream }"
     >
       <!-- 메인 비디오 뷰 -->
       <video
@@ -13,7 +13,7 @@
         :srcObject.prop="mainView.stream"
         @play="mediaPlay"
         @loadeddata="optimizeVideoSize"
-        :muted="!speaker || mainView.id === account.uuid"
+        muted
         autoplay
         playsinline
         loop
@@ -23,7 +23,7 @@
         <transition name="opacity">
           <div class="main-video__sharing" v-if="viewForce">
             <button
-              v-if="isLeader && !openRoom"
+              v-if="isLeader"
               class="btn small main-video__sharing-button active"
               @click="cancelSharing"
             >
@@ -59,6 +59,12 @@
             <video-tools v-if="hoverTools"></video-tools>
           </transition>
         </template>
+        <transition name="opacity">
+          <fullscreen
+            :hide.sync="hideFullBtn"
+            v-show="!hideFullBtn"
+          ></fullscreen>
+        </transition>
       </template>
     </div>
     <div class="main-video__empty" v-if="!loaded">
@@ -72,15 +78,15 @@
         <div class="main-video__empty-inner" v-if="resolutions.length === 0">
           <img src="~assets/image/img_novideo.svg" />
           <p>{{ $t('service.stream_no_video') }}</p>
-          <p v-if="!openRoom" class="inner-discription">
+          <p class="inner-discription">
             {{ $t('service.stream_no_worker') }}
           </p>
-          <p v-else-if="isLeader" class="inner-discription">
+          <!-- <p v-else-if="isLeader" class="inner-discription">
             {{ $t('service.stream_choose_stream') }}
           </p>
           <p v-else class="inner-discription">
             {{ $t('service.stream_no_stream') }}
-          </p>
+          </p> -->
         </div>
         <div class="main-video__empty-inner" v-else>
           <img src="~assets/image/call/img_select_video.svg" />
@@ -95,14 +101,7 @@
       </transition>
     </div>
     <transition name="opacity">
-      <div
-        class="main-video__empty"
-        v-if="
-          cameraStatus !== -1 &&
-            ((loaded && cameraStatus.state === 'off') ||
-              cameraStatus.state === 'background')
-        "
-      >
+      <div class="main-video__empty" v-if="emptyStream">
         <transition name="opacity">
           <!-- 영상 백그라운드 및 정지 표출 -->
           <div class="main-video__empty-inner" v-if="mainView.me !== true">
@@ -130,11 +129,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { ACTION } from 'configs/view.config'
+import { VIEW, ACTION } from 'configs/view.config'
 import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
+import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
 export default {
@@ -143,6 +143,7 @@ export default {
   components: {
     Pointing,
     VideoTools,
+    Fullscreen,
   },
   data() {
     return {
@@ -160,24 +161,21 @@ export default {
       serverTimer: null,
       serverTime: 0,
       serverStart: 0,
+      hideFullBtn: false,
     }
   },
   computed: {
     ...mapGetters({
       mainView: 'mainView',
-      speaker: 'speaker',
       viewAction: 'viewAction',
       resolutions: 'resolutions',
       initing: 'initing',
       viewForce: 'viewForce',
-      openRoom: 'openRoom',
+      localRecordStatus: 'localRecordStatus',
+      serverRecordStatus: 'serverRecordStatus',
     }),
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -232,11 +230,15 @@ export default {
         return false
       }
     },
+    emptyStream() {
+      return (
+        this.cameraStatus !== -1 &&
+        ((this.loaded && this.cameraStatus.state === 'off') ||
+          this.cameraStatus.state === 'background')
+      )
+    },
   },
   watch: {
-    speaker(val) {
-      this.$refs['mainVideo'].muted = val ? false : true
-    },
     resolution: {
       deep: true,
       handler() {
@@ -248,10 +250,22 @@ export default {
       handler(view) {
         if (!view.id) {
           this.loaded = false
+          this.$eventBus.$emit('video:loaded', false)
           const videoBox = this.$el.querySelector('.main-video__box')
           videoBox.style.height = '100%'
           videoBox.style.width = '100%'
         }
+      },
+    },
+    cameraStatus: {
+      deep: true,
+      handler(status) {
+        if (status === -1) {
+          this.$eventBus.$emit('video:loaded', false)
+          return
+        }
+
+        this.$eventBus.$emit('video:loaded', status.state === 'on')
       },
     },
     viewForce(flag, oldFlag) {
@@ -274,6 +288,14 @@ export default {
         }
       }
     },
+    localRecordStatus(status) {
+      this.toggleLocalTimer(status)
+    },
+    serverRecordStatus(status) {
+      if (status === 'STOP') {
+        this.closeServerTimer()
+      }
+    },
   },
   methods: {
     ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
@@ -284,12 +306,13 @@ export default {
         type: 'system',
       })
       this.setMainView({ force: false })
-      this.$call.mainview(this.mainView.id, false)
+      this.$call.sendVideo(this.mainView.id, false)
     },
     mediaPlay() {
       this.$nextTick(() => {
         this.optimizeVideoSize()
         this.loaded = true
+        this.$eventBus.$emit('video:loaded', true)
       })
     },
     nextOptimize() {
@@ -363,8 +386,8 @@ export default {
         })
       }, 'image/png')
     },
-    localRecord(status) {
-      if (status.isStart) {
+    toggleLocalTimer(status) {
+      if (status === 'START') {
         this.localStart = this.$dayjs().unix()
         this.localTimer = setInterval(() => {
           const diff = this.$dayjs().unix() - this.localStart
@@ -379,35 +402,39 @@ export default {
         this.localTimer = null
       }
     },
-    serverRecord(isStart) {
-      if (isStart) {
-        this.serverStart = this.$dayjs().unix()
-        this.serverTimer = setInterval(() => {
-          const diff = this.$dayjs().unix() - this.serverStart
-
-          this.serverTime = this.$dayjs
-            .duration(diff, 'seconds')
-            .as('milliseconds')
-        }, 1000)
-      } else {
-        clearInterval(this.serverTimer)
-        this.serverTime = 0
-        this.serverTimer = null
-      }
+    closeServerTimer() {
+      clearInterval(this.serverTimer)
+      this.serverTime = 0
+      this.serverTimer = null
+    },
+    showServerTimer(elapsedTime = 0) {
+      if (this.serverTimer !== null) return
+      this.serverStart = this.$dayjs().unix()
+      this.serverTimer = setInterval(() => {
+        const diff = this.$dayjs().unix() - this.serverStart + elapsedTime
+        this.serverTime = this.$dayjs
+          .duration(diff, 'seconds')
+          .as('milliseconds')
+      }, 1000)
+    },
+    changeFullScreen() {
+      setTimeout(() => {
+        this.optimizeVideoSize()
+      }, 500)
     },
   },
 
   /* Lifecycles */
   beforeDestroy() {
     this.$eventBus.$off('capture', this.doCapture)
-    this.$eventBus.$off('localRecord', this.localRecord)
-    this.$eventBus.$off('serverRecord', this.serverRecord)
+    this.$eventBus.$off('showServerTimer', this.showServerTimer)
+    this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
-    this.$eventBus.$on('localRecord', this.localRecord)
-    this.$eventBus.$on('serverRecord', this.serverRecord)
+    this.$eventBus.$on('showServerTimer', this.showServerTimer)
+    this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
     window.addEventListener('resize', this.nextOptimize)
   },
 }

@@ -61,11 +61,7 @@ export default {
   },
   computed: {
     useOpacity() {
-      if (this.view === VIEW.DRAWING) {
-        return true
-      } else {
-        return false
-      }
+      return this.view === VIEW.DRAWING
     },
     pick() {
       return this.tools.color

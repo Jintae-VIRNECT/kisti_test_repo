@@ -72,7 +72,7 @@
           {{ $t('button.remove_room') }}
         </button>
       </li>
-      <li v-else>
+      <li v-else-if="!isOpenRoom">
         <button class="group-pop__button" @click="$emit('leave')">
           {{ $t('button.leave_room') }}
         </button>
@@ -121,15 +121,11 @@ export default {
   },
   computed: {
     isOpenRoom() {
-      if (
+      return (
         this.room &&
         this.room.sessionType &&
         this.room.sessionType === ROOM_STATUS.OPEN
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
     leader() {
       if (
@@ -145,10 +141,7 @@ export default {
       return this.room.memberList[idx]
     },
     isLeader() {
-      if (this.leader.uuid === this.account.uuid) {
-        return true
-      }
-      return false
+      return this.leader.uuid === this.account.uuid
     },
     activeMemberList() {
       let activeMembers = []
@@ -167,12 +160,8 @@ export default {
         this.showRoomInfo = !this.showRoomInfo
       })
     },
-    updateInfo(info) {
-      if ('title' in info) {
-        this.title = info.title
-      } else {
-        this.$emit('init')
-      }
+    updateInfo() {
+      this.$emit('init')
     },
     join() {
       this.$emit('join', {

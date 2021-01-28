@@ -1,10 +1,10 @@
 const https = require('https')
 const http = require('http')
 const path = require('path')
-const os = require('os')
 const fs = require('fs')
-const logger = require('./logger')
+const logger = require('@virnect/logger')
 const config = require('./config')
+const { getSocket } = require('../translate/sttUtils')
 
 var ServerModule = (function() {
   'use strict'
@@ -36,6 +36,7 @@ var ServerModule = (function() {
         } else {
           instance = https.createServer(options, app)
         }
+        getSocket(instance)
 
         instance
           .on('listening', onListening)
@@ -74,15 +75,15 @@ var ServerModule = (function() {
   }
 
   function onListening() {
-    logger.log(`server is running...`, 'LISTENING')
-    logger.log(`ip: ${getServerIp()}:${PORT}`, 'LISTENING')
-    logger.log(`VIRNECT_ENV: ${VIRNECT_ENV}`, 'LISTENING')
-    logger.log(`SSL_ENV: ${SSL_ENV}`, 'LISTENING')
+    logger.info(`server is running...`, 'LISTENING')
+    logger.ipInfo(`${PORT}`, 'LISTENING')
+    logger.info(`VIRNECT_ENV: ${VIRNECT_ENV}`, 'LISTENING')
+    logger.info(`SSL_ENV: ${SSL_ENV}`, 'LISTENING')
 
     const urls = config.getUrls()
     delete urls.runtime
     Object.keys(urls).forEach(key => {
-      logger.log(`${key.toUpperCase()}: ${urls[key]}`, 'LISTENING')
+      logger.info(`${key.toUpperCase()}: ${urls[key]}`, 'LISTENING')
     })
   }
 
@@ -90,24 +91,6 @@ var ServerModule = (function() {
     logger.error(`${err.message}`, 'PROCESS_ERROR')
     logger.error(`${err.stack}`, 'PROCESS_ERROR')
     process.exit(1)
-  }
-
-  function getServerIp() {
-    const ifaces = os.networkInterfaces()
-    let result = ''
-    for (const dev in ifaces) {
-      let alias = 0
-      // tslint:disable-next-line: ter-arrow-parens
-      ifaces[dev].forEach(details => {
-        if (details.family === 'IPv4' && !details.internal) {
-          result = details.address
-          // tslint:disable-next-line: no-increment-decrement
-          ++alias
-        }
-      })
-    }
-
-    return result
   }
 
   return {

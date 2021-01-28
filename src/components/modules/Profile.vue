@@ -4,7 +4,7 @@
       <div class="profile--image" :class="{ group: group, image: useImage }">
         <img
           v-if="useImage"
-          :src="image"
+          :src="imageUrl"
           :alt="mainText"
           @error="onImageError"
         />
@@ -17,7 +17,7 @@
       <p class="profile--maintext">{{ mainText }}</p>
       <p class="profile--subtext" v-if="subText">{{ subText }}</p>
     </figcaption>
-    <role v-if="showRole" :role="role">{{ 'Master' }}</role>
+    <role v-if="showRole" :role="role">{{ role }}</role>
   </figure>
 </template>
 
@@ -25,6 +25,7 @@
 import Role from 'Role'
 import { WORKSPACE_ROLE } from 'configs/status.config'
 import { ROLE } from 'configs/remote.config'
+import { proxyUrl } from 'utils/file'
 export default {
   name: 'Profile',
   components: {
@@ -62,11 +63,11 @@ export default {
   },
   computed: {
     showRole() {
-      if (this.role === WORKSPACE_ROLE.MEMBER || this.role === ROLE.UNKNOWN) {
-        return false
-      } else {
-        return true
-      }
+      return (
+        this.role === WORKSPACE_ROLE.MASTER ||
+        this.role === WORKSPACE_ROLE.MANAGER ||
+        this.role === ROLE.LEADER
+      )
     },
     useImage() {
       if (this.image && this.image.length > 0 && this.image !== 'default') {
@@ -74,6 +75,9 @@ export default {
       } else {
         return false
       }
+    },
+    imageUrl() {
+      return proxyUrl(this.image)
     },
   },
   watch: {

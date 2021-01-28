@@ -16,32 +16,18 @@
           </div>
           <div class="download-table__column"></div>
         </div>
-        <vue2-scrollbar ref="downloadScrollbar" v-if="files.length > 0">
+        <vue2-scrollbar
+          ref="downloadScrollbar"
+          v-if="files.length > 0"
+          :allowReset="false"
+        >
           <div>
-            <div
-              class="download-table__row"
+            <download-row
               v-for="(data, idx) of files"
               :key="'download_' + idx"
-            >
-              <div class="download-table__column name">
-                <span>{{ data.name }}</span>
-              </div>
-              <div
-                class="download-table__column duration"
-                :class="{ expire: data.expire }"
-              >
-                <span>{{ data.time }}</span>
-              </div>
-              <div class="download-table__column">
-                <button
-                  class="btn download-table__button"
-                  :class="{ expire: data.expire }"
-                  @click="download(data)"
-                >
-                  {{ $t('button.download') }}
-                </button>
-              </div>
-            </div>
+              :file="data"
+              :sessionId="sessionId"
+            ></download-row>
           </div>
         </vue2-scrollbar>
         <div v-else class="download-table__body">
@@ -58,8 +44,12 @@
 <script>
 import { getFileList, downloadFile } from 'api/http/file'
 import { downloadByURL } from 'utils/file'
+import DownloadRow from 'DownloadRow'
 export default {
   name: 'ModalParticipantsInfo',
+  components: {
+    DownloadRow,
+  },
   data() {
     return {
       files: [

@@ -21,14 +21,18 @@
         </div>
       </template>
 
-      <p class="rec-setting--header" :class="{ disable: recording }">
+      <p class="rec-setting--header" :class="{ disable: isLocalRecording }">
         {{ $t('service.setting_local_record') }}
-      </p>
-      <p v-if="recording" class="rec-setting--warning">
-        {{ $t('service.setting_local_record_warning') }}
+        <span v-if="isLocalRecording" class="rec-setting--warning">
+          {{ $t('service.setting_local_record_warning') }}
+        </span>
       </p>
 
-      <div class="rec-setting__row" :class="{ disable: recording }">
+      <div
+        class="rec-setting__row"
+        v-if="!isTablet"
+        :class="{ disable: isLocalRecording }"
+      >
         <p class="rec-setting__text">
           {{ $t('service.setting_record_target') }}
         </p>
@@ -41,79 +45,83 @@
           ></r-radio>
         </div>
       </div>
-      <div class="rec-setting__row" :class="{ disable: recording }">
-        <p class="rec-setting__text">
-          {{ $t('service.setting_record_max_time') }}
-        </p>
-        <r-select
-          class="rec-setting__selector"
-          :options="localRecTimeOpt"
-          value="value"
-          text="text"
-          :selectedValue.sync="maxRecordTime"
-        >
-        </r-select>
-      </div>
-      <div class="rec-setting__row" :class="{ disable: recording }">
-        <div class="rec-setting__text custom">
-          <p>
-            {{ $t('service.setting_record_interval') }}
+      <template v-if="!isSafari">
+        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
+          <p class="rec-setting__text">
+            {{ $t('service.setting_record_max_time') }}
           </p>
-          <tooltip
-            customClass="tooltip-guide"
-            :content="$t('service.setting_record_time_tooltip')"
-            placement="right"
-            effect="blue"
+          <r-select
+            class="rec-setting__selector"
+            :options="localRecTimeOpt"
+            value="value"
+            text="text"
+            :selectedValue.sync="maxRecordTime"
           >
-            <img
-              slot="body"
-              class="setting__tooltip--icon"
-              src="~assets/image/ic_tool_tip.svg"
-            />
-          </tooltip>
+          </r-select>
         </div>
-        <r-select
-          class="rec-setting__selector"
-          :options="localRecIntervalOpt"
-          value="value"
-          text="text"
-          :selectedValue.sync="maxRecordInterval"
-        >
-        </r-select>
-      </div>
-
-      <div class="rec-setting__row" :class="{ disable: recording }">
-        <div class="rec-setting__text custom">
-          <p>
-            {{ $t('service.setting_record_resolution') }}
-          </p>
-          <tooltip
-            customClass="tooltip-guide"
-            :content="$t('service.setting_record_resolution_tooltip')"
-            placement="right"
-            effect="blue"
+        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
+          <div class="rec-setting__text custom">
+            <p>
+              {{ $t('service.setting_record_interval') }}
+            </p>
+            <tooltip
+              customClass="tooltip-guide"
+              :content="$t('service.setting_record_time_tooltip')"
+              :placement="isTablet ? 'bottom' : 'right'"
+              effect="blue"
+              :guide="true"
+            >
+              <img
+                slot="body"
+                class="setting__tooltip--icon"
+                src="~assets/image/ic_tool_tip.svg"
+              />
+            </tooltip>
+          </div>
+          <r-select
+            class="rec-setting__selector"
+            :options="localRecIntervalOpt"
+            value="value"
+            text="text"
+            :selectedValue.sync="maxRecordInterval"
           >
-            <img
-              slot="body"
-              class="setting__tooltip--icon"
-              src="~assets/image/ic_tool_tip.svg"
-            />
-          </tooltip>
+          </r-select>
         </div>
 
-        <r-select
-          class="rec-setting__selector"
-          :options="localRecResOpt"
-          value="value"
-          text="text"
-          :selectedValue.sync="recordResolution"
-        >
-        </r-select>
-      </div>
+        <div class="rec-setting__row" :class="{ disable: isLocalRecording }">
+          <div class="rec-setting__text custom">
+            <p>
+              {{ $t('service.setting_record_resolution') }}
+            </p>
+            <tooltip
+              customClass="tooltip-guide"
+              :content="$t('service.setting_record_resolution_tooltip')"
+              :placement="isTablet ? 'bottom' : 'right'"
+              effect="blue"
+              :guide="true"
+            >
+              <img
+                slot="body"
+                class="setting__tooltip--icon"
+                src="~assets/image/ic_tool_tip.svg"
+              />
+            </tooltip>
+          </div>
+
+          <r-select
+            class="rec-setting__selector"
+            :options="localRecResOpt"
+            value="value"
+            text="text"
+            :selectedValue.sync="recordResolution"
+          >
+          </r-select>
+        </div>
+      </template>
       <div
         class="rec-setting__row"
         v-if="isLeader"
-        :class="{ disable: recording }"
+        :class="{ disable: isLocalRecording }"
       >
         <p class="rec-setting__text">
           {{ $t('service.setting_local_record_participant') }}
@@ -123,7 +131,45 @@
           :value.sync="localRecording"
         ></r-check>
       </div>
-      <template v-if="useTranslate">
+      <template v-if="isLeader && useRecording">
+        <p class="rec-setting--header" :class="{ disable: isServerRecording }">
+          {{ $t('service.setting_server_record') }}
+          <span v-if="isServerRecording" class="rec-setting--warning">
+            {{ $t('service.setting_server_record_warning') }}
+          </span>
+        </p>
+        <div class="rec-setting__row" :class="{ disable: isServerRecording }">
+          <p class="rec-setting__text">
+            {{ $t('service.setting_record_max_time') }}
+          </p>
+          <r-select
+            class="rec-setting__selector"
+            :options="serverRecTime"
+            value="value"
+            text="text"
+            :selectedValue.sync="serverMaxRecordTime"
+          >
+          </r-select>
+        </div>
+
+        <div class="rec-setting__row" :class="{ disable: isServerRecording }">
+          <div class="rec-setting__text custom">
+            <p>
+              {{ $t('service.setting_record_resolution') }}
+            </p>
+          </div>
+
+          <r-select
+            class="rec-setting__selector"
+            :options="serverRecResOpt"
+            value="value"
+            text="text"
+            :selectedValue.sync="serverRecordResolution"
+          >
+          </r-select>
+        </div>
+      </template>
+      <!-- <template v-if="useTranslate">
         <p class="rec-setting--header">
           {{ $t('service.setting_translate') }}
         </p>
@@ -142,7 +188,7 @@
             <tooltip
               customClass="tooltip-guide"
               :content="$t('service.setting_translate_language_tooltip')"
-              placement="right"
+              :placement="isTablet ? 'bottom' : 'right'"
               effect="blue"
             >
               <img
@@ -162,7 +208,7 @@
           >
           </r-select>
         </div>
-      </template>
+      </template> -->
     </div>
   </modal>
 </template>
@@ -182,6 +228,8 @@ import {
   localRecTime,
   localRecResOpt,
   localRecInterval,
+  serverRecTime,
+  serverRecResOpt,
   RECORD_TARGET,
 } from 'utils/recordOptions'
 
@@ -206,34 +254,31 @@ export default {
       recordTarget: this.$store.state.settings.localRecordTarget,
 
       localRecResOpt: localRecResOpt,
+      serverRecResOpt: serverRecResOpt,
       maxRecordTime: '',
       maxRecordInterval: '',
       recordResolution: '',
+      serverMaxRecordTime: '',
+      serverRecordResolution: '',
       useTranslateAllow: false,
       translateCode: 'ko-KR',
     }
-  },
-  props: {
-    visible: {
-      type: Boolean,
-      default: false,
-    },
-    recording: {
-      type: Boolean,
-      default: false,
-    },
-    viewType: String,
   },
 
   computed: {
     ...mapGetters([
       'view',
+      'serverRecord',
+      'serverRecordStatus',
       'localRecord',
+      'localRecordStatus',
       'allowLocalRecord',
       'allowPointing',
       'translate',
       'useTranslate',
       'languageCodes',
+      'modalSetting',
+      'useRecording',
     ]),
     localRecTimeOpt() {
       const options = localRecTime.map(time => {
@@ -265,97 +310,46 @@ export default {
         },
       ]
     },
-    isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+    serverRecTime() {
+      const options = serverRecTime.map(time => {
+        return {
+          value: time,
+          text: `${time} ${this.$t('date.minute')}`,
+        }
+      })
+      return options
     },
-    isCurrentView() {
-      if (this.viewType === this.view) {
-        return true
-      } else {
-        return false
-      }
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
+    isLocalRecording() {
+      return this.localRecordStatus === 'START'
+    },
+    isServerRecording() {
+      return this.serverRecordStatus !== 'STOP'
     },
   },
 
   watch: {
-    isCurrentView(val) {
-      if (val === true) {
-        this.initing = false
-        this.translateCode = this.translate.code
-        this.useTranslateAllow = this.translate.flag
-        this.maxRecordTime = this.localRecord.time
-        this.maxRecordInterval = this.localRecord.interval
-        this.recordResolution = this.localRecord.resolution
-        if (this.account.roleType === ROLE.LEADER) {
-          this.localRecording = this.allowLocalRecord
-          this.pointing = this.allowPointing
-        }
-        this.$nextTick(() => {
-          this.initing = true
-        })
-      }
-    },
-    visible(flag) {
+    modalSetting(flag) {
       this.visibleFlag = flag
     },
     localRecording(flag) {
       if (this.initing === false) return
-      if (!this.isCurrentView) return
-      this.$call.control(CONTROL.LOCAL_RECORD, !!flag)
-      this.$localStorage.setAllow('localRecord', !!flag)
+      this.$call.sendControl(CONTROL.LOCAL_RECORD, !!flag)
+      // this.$localStorage.setAllow('localRecord', !!flag)
     },
     pointing(flag) {
       if (this.initing === false) return
-      if (!this.isCurrentView) return
-      this.$call.control(CONTROL.POINTING, !!flag)
-      this.$localStorage.setAllow('pointing', !!flag)
-    },
-    allowLocalRecord(val, bVal) {
-      if (this.initing === false) return
-      if (!this.isCurrentView) return
-      if (val !== bVal) {
-        if (val === true) {
-          this.addChat({
-            status: 'record-allow',
-            type: 'system',
-          })
-        } else {
-          this.addChat({
-            status: 'record-not-allow',
-            type: 'system',
-          })
-        }
-      }
-    },
-    allowPointing(val, bVal) {
-      if (this.initing === false) return
-      if (!this.isCurrentView) return
-      if (val !== bVal) {
-        if (val === true) {
-          this.addChat({
-            status: 'pointing-allow',
-            type: 'system',
-          })
-        } else {
-          this.addChat({
-            status: 'pointing-not-allow',
-            type: 'system',
-          })
-        }
-      }
+      this.$call.sendControl(CONTROL.POINTING, !!flag)
+      // this.$localStorage.setAllow('pointing', !!flag)
     },
 
     recordTarget(target) {
       if (this.initing === false) return
-      if (!this.isCurrentView) return
       switch (target) {
         case RECORD_TARGET.WORKER:
           this.setLocalRecordTarget(target)
-          this.setScreenStream(null)
           this.showToast()
           break
         case RECORD_TARGET.SCREEN:
@@ -376,26 +370,39 @@ export default {
     recordResolution(resolution) {
       this.changeSetting('resolution', resolution)
     },
-    translateCode(code) {
-      this.changeTranslate('code', code)
+    serverMaxRecordTime(time) {
+      this.changeServerSetting('time', time)
     },
-    useTranslateAllow(flag) {
-      this.changeTranslate('flag', flag)
+    serverRecordResolution(resolution) {
+      this.changeServerSetting('resolution', resolution)
     },
+    // translateCode(code) {
+    //   this.changeTranslate('code', code)
+    // },
+    // useTranslateAllow(flag) {
+    //   this.changeTranslate('flag', flag)
+    // },
   },
   methods: {
     ...mapActions([
       'setRecord',
-      'setScreenStream',
+      'setServerRecord',
       'setLocalRecordTarget',
-      'addChat',
       'setTranslate',
+      'showModalSetting',
     ]),
     changeSetting(item, setting) {
       const param = {}
       param[item] = setting
       this.setRecord(param)
       this.$localStorage.setRecord(item, setting)
+      // this.showToast()
+    },
+    changeServerSetting(item, setting) {
+      const param = {}
+      param[item] = setting
+      this.setServerRecord(param)
+      this.$localStorage.setServerRecord(item, setting)
       // this.showToast()
     },
     changeTranslate(item, setting) {
@@ -407,27 +414,35 @@ export default {
     },
 
     beforeClose() {
-      this.$emit('update:visible', false)
+      this.showModalSetting(false)
     },
 
     showToast() {
       this.toastNotify(this.$t('service.setting_save'))
     },
+    init() {
+      this.initing = false
+      this.translateCode = this.translate.code
+      this.useTranslateAllow = this.translate.flag
+      this.maxRecordTime = this.localRecord.time
+      this.maxRecordInterval = this.localRecord.interval
+      this.recordResolution = this.localRecord.resolution
+      if (this.account.roleType === ROLE.LEADER) {
+        this.localRecording = this.allowLocalRecord
+        this.pointing = this.allowPointing
+      }
+      if (this.useRecording) {
+        this.serverMaxRecordTime = this.serverRecord.time
+        this.serverRecordResolution = this.serverRecord.resolution
+      }
+      this.$nextTick(() => {
+        this.initing = true
+      })
+    },
   },
 
   created() {
-    this.translateCode = this.translate.code
-    this.useTranslateAllow = this.translate.flag
-    this.maxRecordTime = this.localRecord.time
-    this.maxRecordInterval = this.localRecord.interval
-    this.recordResolution = this.localRecord.resolution
-    if (this.account.roleType === ROLE.LEADER) {
-      this.localRecording = this.allowLocalRecord
-      this.pointing = this.allowPointing
-    }
-    this.$nextTick(() => {
-      this.initing = true
-    })
+    this.init()
   },
 }
 </script>

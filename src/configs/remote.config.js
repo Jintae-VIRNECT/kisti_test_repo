@@ -18,6 +18,10 @@ export const SIGNAL = {
   SYSTEM: 'signal:system',
 }
 
+export const FILE = {
+  UPLOADED: 'fileUploaded',
+}
+
 export const VIDEO = {
   NORMAL: 'normal',
   SHARE: 'share',
@@ -109,5 +113,7 @@ export const SYSTEM = {
 export const ROLE = {
   LEADER: 'LEADER',
   EXPERT: 'EXPERT',
+  WORKER: 'WORKER',
   UNKNOWN: 'UNKNOWN',
+  SECESSION: 'SECESSION',
 }

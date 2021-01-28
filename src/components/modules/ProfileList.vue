@@ -140,6 +140,9 @@ export default {
     width: 100%;
     height: 100%;
   }
+  > .profile {
+    width: auto;
+  }
 }
 .profilelist-user__image {
   width: 100%;

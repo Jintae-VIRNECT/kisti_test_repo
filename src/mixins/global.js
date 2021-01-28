@@ -35,13 +35,27 @@ export default {
   },
   computed: {
     ...mapGetters(['account', 'workspace', 'deviceType', 'hasLicense']),
-    isMobileChrome() {
-      const userAgent = navigator.userAgent
-      const isChromeMobile =
+    isSafari() {
+      const userAgent = navigator.userAgent || ''
+      return (
+        !userAgent.includes('Chrome') &&
+        !userAgent.includes('CriOS') &&
+        userAgent.includes('Safari')
+      )
+    },
+    isTablet() {
+      const userAgent = navigator.userAgent || ''
+      const isIpadSafari =
+        !userAgent.includes('Chrome') &&
+        !userAgent.includes('CriOS') &&
+        userAgent.includes('Safari') &&
+        navigator.maxTouchPoints !== 0
+      return (
         userAgent.includes('Mobile') ||
-        userAgent.includes('CriOS') ||
-        userAgent.includes('mobileApp')
-      return isChromeMobile
+        userAgent.includes('Android') ||
+        userAgent.includes('mobileApp') ||
+        isIpadSafari
+      )
     },
     isScreenDesktop() {
       return 'desktop' === this.deviceType
@@ -54,18 +68,6 @@ export default {
     },
   },
   methods: {
-    unsupport() {
-      this.$toasted.show(this.$t('confirm.unsupport_feature'), {
-        position: 'bottom-center',
-        duration: 5000,
-        action: {
-          icon: 'close',
-          onClick: (e, toastObject) => {
-            toastObject.goAway(0)
-          },
-        },
-      })
-    },
     onImageError(event) {
       // console.log(event.target)
       // event.target.src = require('assets/image/img_user_profile.svg')

@@ -4,15 +4,19 @@
     placement="bottom-end"
     popperClass="popover-notice"
     width="29.571rem"
+    @visible="setVisible"
   >
     <toggle-button
-      customClass="header-tools__notice toggle-header"
+      :customClass="
+        `header-tools__notice toggle-header ${visible ? 'visible' : ''}`
+      "
       slot="reference"
       :description="$t('common.notice')"
       size="2.429rem"
-      :toggle="false"
+      :toggle="!onPush"
       :active="active"
-      :activeSrc="require('assets/image/call/gnb_ic_notifi_nor.svg')"
+      :activeSrc="require('assets/image/ic_notice.svg')"
+      :inactiveSrc="require('assets/image/ic_notice_off.svg')"
       @action="notice"
     ></toggle-button>
 
@@ -100,7 +104,7 @@
         <span>{{ $t('alarm.saved_duration') }}</span>
       </div> -->
     </div>
-    <audio preload="auto" ref="noticeAudio">
+    <audio preload="auto" ref="noticeAudio" playsinline>
       <source src="~assets/media/end.mp3" />
     </audio>
   </popover>
@@ -138,6 +142,7 @@ export default {
       onPush: true,
       key: '',
       active: false,
+      visible: false,
       // alarmList: [],
     }
   },
@@ -145,13 +150,13 @@ export default {
     ...mapGetters(['alarmList']),
   },
   watch: {
-    // onPush(push) {
-    //   if (push) {
-    //     this.$localStorage.setItem('push', 'true')
-    //   } else {
-    //     this.$localStorage.setItem('push', 'false')
-    //   }
-    // },
+    onPush(push) {
+      if (push) {
+        this.$localStorage.setItem('push', 'true')
+      } else {
+        this.$localStorage.setItem('push', 'false')
+      }
+    },
     workspace(val, oldVal) {
       if (val.uuid && !oldVal.uuid) {
         this.pushInit()
@@ -164,17 +169,18 @@ export default {
       'removeAlarm',
       'updateAlarm',
       'inviteResponseAlarm',
+      'clearWorkspace',
     ]),
+    setVisible(value) {
+      this.visible = value
+    },
     notice() {
       this.active = false
-      if (this.onPush) return
-      // console.log('notice list refresh logic')
     },
     playSound() {
       this.$refs['noticeAudio'].play()
     },
     async alarmListener(listen) {
-      // if (!this.onPush) return
       const body = JSON.parse(listen.body)
 
       if (body.targetUserIds.indexOf(this.account.uuid) < 0) return
@@ -184,6 +190,7 @@ export default {
 
       switch (body.event) {
         case EVENT.INVITE:
+          if (!this.onPush) return
           this.addAlarm({
             type: 'invite',
             info: this.$t('alarm.member_name_from', {
@@ -196,7 +203,7 @@ export default {
             accept: 'none',
             date: new Date(),
           })
-          if (!this.onPush) return
+          // if (!this.onPush) return
           this.playSound()
           this.alarmInvite(
             body.contents,
@@ -205,6 +212,8 @@ export default {
           )
           break
         case EVENT.INVITE_ACCEPTED:
+          if (!this.onPush) return
+
           this.addAlarm({
             type: 'info_user',
             info: this.$t('alarm.member_name_from', {
@@ -214,10 +223,11 @@ export default {
             description: this.$t('alarm.invite_accept'),
             date: new Date(),
           })
-          if (!this.onPush) return
+          // if (!this.onPush) return
           this.alarmInviteAccepted(body.contents.nickName)
           break
         case EVENT.INVITE_DENIED:
+          if (!this.onPush) return
           this.addAlarm({
             type: 'info_user',
             info: this.$t('alarm.member_name_from', {
@@ -227,18 +237,26 @@ export default {
             description: this.$t('alarm.invite_refuse'),
             date: new Date(),
           })
-          if (!this.onPush) return
+          // if (!this.onPush) return
           this.alarmInviteDenied(body.contents.nickName)
           break
         case EVENT.LICENSE_EXPIRATION:
           this.alarmLicenseExpiration(body.contents.leftLicenseTime)
           break
         case EVENT.LICENSE_EXPIRED:
-          this.alarmLicense()
-          setTimeout(() => {
-            this.$call.leave()
-            this.$router.push({ name: 'workspace' })
-          }, 60000)
+          if (this.$route.name === 'workspace') {
+            this.clearWorkspace(this.workspace.uuid)
+            this.alarmLicenseHome()
+          } else {
+            this.alarmLicense()
+            setTimeout(() => {
+              this.clearWorkspace(this.workspace.uuid)
+              if (!this.$route.name !== 'workspace') {
+                this.$call.leave()
+                this.$router.push({ name: 'workspace' })
+              }
+            }, 60000)
+          }
           break
         default:
           return
@@ -321,6 +339,11 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.pushInit()
+      let push = true
+      if (this.$localStorage.getItem('push')) {
+        push = this.$localStorage.getItem('push') === 'true'
+      }
+      this.onPush = push
     })
   },
   beforeDestroy() {

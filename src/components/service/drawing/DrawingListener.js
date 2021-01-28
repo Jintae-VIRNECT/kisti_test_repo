@@ -142,5 +142,4 @@ export default {
       this.$call.addListener(SIGNAL.DRAWING, this.drawingListener)
     }
   },
-  beforeDestroy() {},
 }

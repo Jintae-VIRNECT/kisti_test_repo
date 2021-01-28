@@ -4,6 +4,8 @@
       class="participant-video"
       :class="{ current: isCurrent }"
       @dblclick="changeMain"
+      @touchstart="touch"
+      @touchend="touchEnd"
     >
       <div class="participant-video__stream" v-if="participant.hasVideo">
         <video
@@ -11,14 +13,14 @@
           autoplay
           playsinline
           loop
-          :muted="isMe"
+          :muted="isMuted"
         ></video>
       </div>
       <div class="participant-video__profile" v-else>
         <img
           v-if="participant.path && participant.path !== 'default'"
           class="participant-video__profile-background"
-          :src="participant.path"
+          :src="profileUrl"
           @error="onImageError"
         />
         <div class="participant-video__profile-dim"></div>
@@ -36,7 +38,7 @@
           autoplay
           playsinline
           loop
-          :muted="isMe || mainView.id === participant.id"
+          :muted="isMuted"
         ></audio>
       </div>
       <div class="participant-video__mute" v-if="participant.mute"></div>
@@ -129,15 +131,17 @@ import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import { CAMERA } from 'configs/device.config'
+import { proxyUrl } from 'utils/file'
 import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
+import touchMixin from 'mixins/touch'
 
 import Profile from 'Profile'
 import Popover from 'Popover'
 
 export default {
   name: 'ParticipantVideo',
-  mixins: [confirmMixin, toastMixin],
+  mixins: [confirmMixin, toastMixin, touchMixin],
   components: {
     Profile,
     Popover,
@@ -148,6 +152,7 @@ export default {
       hover: false,
       btnActive: false,
       statusHover: {},
+      touched: null,
     }
   },
   props: {
@@ -161,8 +166,14 @@ export default {
       'viewForce',
       'view',
       'initing',
-      'openRoom',
     ]),
+    profileUrl() {
+      if (!this.participant.path) {
+        return ''
+      } else {
+        return proxyUrl(this.participant.path)
+      }
+    },
     showProfile() {
       if (!this.participant.hasVideo) {
         return true
@@ -173,28 +184,16 @@ export default {
       return false
     },
     isMe() {
-      if (this.participant.id === this.account.uuid) {
-        return true
-      }
-      return false
+      return this.participant.id === this.account.uuid
     },
     isCurrent() {
-      if (this.mainView.id === this.participant.id) return true
-      return false
+      return this.mainView.id === this.participant.id
     },
     isLeader() {
-      if (this.participant.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.participant.roleType === ROLE.LEADER
     },
     iamLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     cameraStatus() {
       if (this.participant.hasVideo) {
@@ -208,17 +207,14 @@ export default {
         return -1
       }
     },
+    isMuted() {
+      if (this.isMe || this.speaker.isOn === false) {
+        return 'muted'
+      }
+      return false
+    },
   },
   watch: {
-    speaker(val) {
-      if (this.isMe) return
-      if (this.$el.querySelector('video')) {
-        this.$el.querySelector('video').muted = val
-      }
-      if (this.$el.querySelector('audio')) {
-        this.$el.querySelector('audio').muted = val
-      }
-    },
     'participant.nickname': 'participantInited',
     participant() {},
     cameraStatus(status, oldStatus) {
@@ -252,11 +248,9 @@ export default {
       if (this.participant.me || this.initing === true) return
       if (name !== oldName && name.length > 0 && this.inited === false) {
         this.inited = true
-        if (!this.openRoom || this.iamLeader) {
-          this.toastDefault(
-            this.$t('service.chat_invite', { name: this.participant.nickname }),
-          )
-        }
+        this.toastDefault(
+          this.$t('service.chat_invite', { name: this.participant.nickname }),
+        )
         const chatObj = {
           name: name,
           status: 'invite',
@@ -288,25 +282,12 @@ export default {
     visible(val) {
       this.btnActive = val
     },
+    doEvent() {
+      this.changeMain()
+    },
     changeMain() {
-      if (this.openRoom) {
-        if (!this.participant.hasCamera) {
-          this.toastDefault(this.$t('service.participant_no_stream'))
-          return
-        }
-        if (!this.participant.hasVideo) {
-          if (
-            this.account.roleType === ROLE.LEADER &&
-            this.openRoom &&
-            this.participant.cameraStatus === CAMERA.CAMERA_OFF
-          ) {
-            this.requestVideo()
-            return
-          }
-          return
-        } else {
-          this.$call.mainview(this.participant.id, true)
-        }
+      if (!this.participant.hasCamera) {
+        this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
       if (this.account.roleType === ROLE.LEADER) {
@@ -362,17 +343,17 @@ export default {
       } else {
         // 퍼미션 요청
         this.$eventBus.$on('startAr', this.getPermission)
-        this.$call.permission([this.participant.connectionId])
+        this.$call.sendCapturePermission([this.participant.connectionId])
         // 리턴받는 퍼미션은 HeaderServiceLnb에서 처리
       }
     },
     getPermission(permission) {
       if (permission === true) {
         // this.forceMain()
-        // this.$call.stopArFeature()
+        // this.$call.sendArFeatureStop()
         this.$nextTick(() => {
           this.$emit('selectMain')
-          // this.$call.startArFeature(this.participant.id)
+          // this.$call.sendArFeatureStart(this.participant.id)
         })
       } else {
         this.toastDefault(this.$t('service.toast_refused_ar'))
@@ -417,11 +398,11 @@ export default {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
-      this.$call.mainview(this.participant.id, true)
+      this.$call.sendVideo(this.participant.id, true)
     },
   },
   beforeDestroy() {
-    if ((!this.openRoom || this.iamLeader) && this.$call.session) {
+    if (this.$call.session) {
       this.toastDefault(
         this.$t('service.chat_leave', { name: this.participant.nickname }),
       )

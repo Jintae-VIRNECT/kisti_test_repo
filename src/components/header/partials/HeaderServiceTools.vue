@@ -42,26 +42,18 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['mainView', 'mute', 'view', 'participants']),
+    ...mapGetters(['myInfo']),
     hasVideo() {
       if (this.$route.name === 'workspace') {
         return true
       }
-      if (this.participants.length > 0 && this.participants[0].hasVideo) {
-        return true
-      } else {
-        return false
-      }
+      return !!this.myInfo.hasVideo
     },
     hasAudio() {
       if (this.$route.name === 'workspace') {
         return true
       }
-      if (this.participants.length > 0 && this.participants[0].hasAudio) {
-        return true
-      } else {
-        return false
-      }
+      return !!this.myInfo.hasAudio
     },
   },
   methods: {

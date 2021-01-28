@@ -5,7 +5,12 @@ const server = require('./server/module')
 const path = require('path')
 
 var bodyParser = require('body-parser')
-app.use(bodyParser.json())
+app.use(bodyParser.json({ limit: '50mb' }))
+
+app.use((req, res, next) => {
+  res.header('X-Frame-Options', 'deny')
+  next()
+})
 
 app.use(express.static(path.join(__dirname, 'dist')))
 app.use(express.static(path.join(__dirname, 'record')))
@@ -13,6 +18,7 @@ app.use(express.static(path.join(__dirname, 'record')))
 const translate = require('./translate/translate')
 const stt = require('./translate/stt')
 const tts = require('./translate/tts')
+
 /* FEATURE: STT */
 app.post('/translate', bodyParser.json(), function(req, res) {
   const text = req.body.text

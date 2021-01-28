@@ -7,11 +7,12 @@
     :emptyTitle="emptyTitle"
     :emptyDescription="emptyDescription"
     :empty="list.length === 0"
-    :listCount="memberList.length"
+    :listCount="list.length"
     :showDeleteButton="false"
     :showRefreshButton="true"
     :loading="loading"
     @refresh="getList"
+    @search="doSearch"
   >
     <div class="grid-container">
       <member-card
@@ -31,21 +32,25 @@
 import TabView from '../partials/WorkspaceTabView'
 import MemberCard from 'MemberCard'
 import { getMemberList } from 'api/http/member'
-import searchMixin from 'mixins/filter'
 
 export default {
   name: 'WorkspaceUser',
-  mixins: [searchMixin],
   components: { TabView, MemberCard },
   data() {
     return {
       memberList: [],
+      searchText: '',
+      searchMemberList: [],
       loading: false,
     }
   },
   computed: {
     list() {
-      return this.getFilter(this.memberList, ['email', 'nickName'])
+      if (this.searchText.length > 0) {
+        return this.searchMemberList
+      } else {
+        return this.memberList
+      }
     },
     emptyTitle() {
       if (this.memberList.length > 0) {
@@ -68,9 +73,21 @@ export default {
         this.getList()
       }
     },
-    'list.length': 'scrollReset',
+    // 'list.length': 'scrollReset',
   },
   methods: {
+    doSearch(text) {
+      this.searchMemberList = this.memberList.filter(member => {
+        if (member.email.toLowerCase().includes(text.toLowerCase())) {
+          return true
+        }
+        if (member.nickName.toLowerCase().includes(text.toLowerCase())) {
+          return true
+        }
+        return false
+      })
+      this.searchText = text
+    },
     async getList() {
       try {
         const params = {
@@ -93,6 +110,7 @@ export default {
         })
         this.loading = false
       } catch (err) {
+        this.loading = false
         console.error(err)
       }
     },

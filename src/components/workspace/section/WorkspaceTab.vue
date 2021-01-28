@@ -21,21 +21,36 @@
             >
               {{ $t('workspace.create_room') }}
             </button>
+            <button
+              v-if="useOpenRoom && hasWorkspace && !expireLicense"
+              class="btn workspace-welcome__open"
+              @click="createOpenRoom"
+            >
+              {{ $t('workspace.create_open_room') }}
+            </button>
           </li>
         </transition>
       </ul>
     </nav>
-    <workspace-license v-if="!hasLicense"></workspace-license>
-    <workspace-expire v-else-if="expireLicense"></workspace-expire>
-    <workspace-select
-      v-else-if="!workspace || !workspace.uuid"
-    ></workspace-select>
-    <component v-else :is="component" :class="{ fix: fix }"></component>
+    <template v-if="inited">
+      <workspace-license v-if="!hasLicense"></workspace-license>
+      <workspace-expire v-else-if="expireLicense"></workspace-expire>
+      <workspace-select
+        v-else-if="!workspace || !workspace.uuid"
+      ></workspace-select>
+      <keep-alive include="WorkspaceHistory" v-else>
+        <component :is="component" :class="{ fix: fix }"></component>
+      </keep-alive>
+    </template>
+    <transition name="opacity">
+      <workspace-skeleton v-if="!inited"></workspace-skeleton>
+    </transition>
   </div>
 </template>
 
 <script>
 import TabButton from '../partials/WorkspaceTabButton'
+import WorkspaceSkeleton from '../tab/WorkspaceSkeleton'
 import WorkspaceHistory from '../tab/WorkspaceHistory'
 import WorkspaceRemote from '../tab/WorkspaceRemote'
 import WorkspaceUser from '../tab/WorkspaceUser'
@@ -48,6 +63,7 @@ export default {
   name: 'WorkspaceTab',
   components: {
     TabButton,
+    WorkspaceSkeleton,
     history: WorkspaceHistory,
     remote: WorkspaceRemote,
     user: WorkspaceUser,
@@ -62,13 +78,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['expireLicense']),
+    ...mapGetters(['expireLicense', 'useOpenRoom']),
     hasWorkspace() {
-      if (this.workspace && this.workspace.uuid && this.hasLicense) {
-        return true
-      } else {
-        return false
-      }
+      return this.workspace && this.workspace.uuid && this.hasLicense
     },
     tabComponents() {
       return [
@@ -96,6 +108,10 @@ export default {
       type: [Number, Boolean],
       default: false,
     },
+    inited: {
+      type: Boolean,
+      default: false,
+    },
   },
   methods: {
     tabChange(tabName) {
@@ -106,7 +122,10 @@ export default {
       })
     },
     createRoom() {
-      this.$eventBus.$emit('openCreateRoom')
+      this.$eventBus.$emit('open:modal:create')
+    },
+    createOpenRoom() {
+      this.$eventBus.$emit('open:modal:createOpen')
     },
   },
 }

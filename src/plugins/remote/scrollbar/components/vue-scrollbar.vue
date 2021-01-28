@@ -97,13 +97,13 @@ export default {
       hMovement: 0,
       dragging: false,
       start: { y: 0, x: 0 },
-      allowBodyScroll: false,
       hover: false,
     }
   },
 
   methods: {
     scroll(e) {
+      e.stopPropagation()
       if (!this.canScroll) {
         return
       }
@@ -129,10 +129,18 @@ export default {
         let canScrollX = this.scrollAreaWidth > this.scrollWrapperWidth
 
         // Vertical Scrolling
-        if (canScrollY && !shifted) this.normalizeVertical(nextY)
+        let scrolled = false
+        if (canScrollY && !shifted) {
+          scrolled |= this.normalizeVertical(nextY)
+        }
 
         // Horizontal Scrolling
-        if (shifted && canScrollX) this.normalizeHorizontal(nextX)
+        if (shifted && canScrollX) {
+          scrolled |= this.normalizeHorizontal(nextX)
+        }
+        if (scrolled) {
+          e.preventDefault()
+        }
 
         if (this.$listeners['onScroll']) {
           this.$listeners['onScroll'](
@@ -141,12 +149,6 @@ export default {
           )
         }
       })
-
-      // prevent Default only if scrolled content is not at the top/bottom
-      if (!this.allowBodyScroll) {
-        e.preventDefault()
-        e.stopPropagation()
-      }
     },
 
     // DRAG EVENT JUST FOR TOUCH DEVICE~
@@ -229,9 +231,7 @@ export default {
       if (maxTop) next = 0
 
       // Update the Vertical Value if it's needed
-      const shouldScroll = this.top !== next
-      this.allowBodyScroll = !shouldScroll
-      if (shouldScroll) {
+      if (this.top !== next) {
         ;(this.top = next),
           (this.vMovement = (next / elementSize.scrollAreaHeight) * 100)
 
@@ -243,6 +243,9 @@ export default {
             left: false,
           })
         }
+        return true
+      } else {
+        return false
       }
     },
 
@@ -261,9 +264,7 @@ export default {
       if (next < 0) next = 0
 
       // Update the Horizontal Value
-      const shouldScroll = this.left !== next
-      this.allowBodyScroll = !shouldScroll
-      if (shouldScroll) {
+      if (this.left !== next) {
         ;(this.left = next),
           (this.hMovement = (next / elementSize.scrollAreaWidth) * 100)
 
@@ -275,6 +276,9 @@ export default {
             bottom: false,
           })
         }
+        return true
+      } else {
+        return false
       }
     },
 

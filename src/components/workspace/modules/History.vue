@@ -33,7 +33,7 @@
       <div class="label label__icon">
         <img class="icon" :src="require('assets/image/ic_leader.svg')" />
         <span class="text">{{
-          `${$t('common.leader')} : ${leader.nickName}`
+          `${$t('common.leader')} : ${leader.nickName ? leader.nickName : ''}`
         }}</span>
       </div>
     </div>
@@ -106,27 +106,13 @@ export default {
   },
   computed: {
     isOpenRoom() {
-      if (
+      return (
         this.history &&
         this.history.sessionType &&
         this.history.sessionType === ROOM_STATUS.OPEN
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
     date() {
-      // console.log(
-      //   this.$dayjs(this.history.activeDate)
-      //     .calendar(Date.now(), {
-      //       sameDay: 'A h:mm',
-      //       lastDay: '[어제]',
-      //       nextDay: '[내일]',
-      //       lastWeek: '[지난주] dddd',
-      //       sameElse: 'YYYY.MM.DD',
-      //     }),
-      // )
       return this.$dayjs(this.history.activeDate + '+00:00')
         .local()
         .calendar(null, {
@@ -150,9 +136,13 @@ export default {
       }
     },
     leader() {
-      return this.history.memberList.find(member => {
+      const idx = this.history.memberList.findIndex(member => {
         return member.memberType === 'LEADER'
       })
+      if (idx < 0) {
+        return {}
+      }
+      return this.history.memberList[idx]
     },
   },
   methods: {},

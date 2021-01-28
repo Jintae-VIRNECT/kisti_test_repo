@@ -32,7 +32,9 @@
     "stream_sharing_cancel": "Cancel sharing to everyone",
     "stream_normal": "View video",
     "exit_room": "End Collabo",
-    "progress": "Progress"
+    "progress": "Progress",
+    "reconnect": "Reconnect",
+    "manual": "Manual Download"
   },
   "date": {
     "lastday": "[Yesterday]",
@@ -41,7 +43,9 @@
     "time": "m[min] s[sec]",
     "hour": "Hour",
     "minute": "Minute",
-    "second": "Second"
+    "second": "Second",
+    "day": "Day",
+    "left": "{time} left"
   },
   "common": {
     "leader": "Leader",
@@ -50,9 +54,12 @@
     "notice": "Notification",
     "speaker": "Speaker",
     "video": "Video",
+    "chatting": "Chatting",
     "expiration": "Expired",
     "local_record_file": "Local recording file",
-    "no_sharing_file": "No shared files"
+    "no_sharing_file": "No shared files",
+    "workstation": "Workstation",
+    "dashboard": "Dashboard"
   },
   "confirm": {
     "network_error": "Unstable connection with the server. Please try again later.",
@@ -67,7 +74,8 @@
     "notice_already_call": "Please end the existing collaboration to participate.",
     "expire_title": "Notice on expiration",
     "expire_time": "Your plan will expire in <em>[{time}minutes]</em>.",
-    "expire_logout": "Your plan has expired and you will be logged out in one minute.",
+    "expire_logout": "Your plan has expired and<br> you will be logged out in one minute.",
+    "expire_logout_home": "Your plan has expired.",
     "invite_fail_title": "[Failed to join the Collabo.]",
     "invite_fail_maxuser": "Exceeded the max. number of participants.",
     "member_name": "{name}",

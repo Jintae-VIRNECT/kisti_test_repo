@@ -7,7 +7,10 @@ export const password = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*
 
 // export const name = new RegExp(/^[/'\w\sㄱ-ㅎㅏ-ㅣ가-힣]{2,20}$/)
 export const name = new RegExp(
-  /^[-\d\S.+_/'\w\sㄱ-ㅎㅏ-ㅣ가-힣一-龥ぁ-ゔ々〆〤ァ-ヴー]{2,20}$/,
+  /^[\d.,+_/'^-\w\sㄱ-ㅎㅏ-ㅣ가-힣一-龥ぁ-ゔ々〆〤ァ-ヴ]{2,21}$/,
+)
+export const nameExp = new RegExp(
+  /^[\d.,+_/'^-\w\sㄱ-ㅎㅏ-ㅣ가-힣一-龥ぁ-ゔ々〆〤ァ-ヴ]{0,21}$/,
 )
 
 export const nameEmpty = new RegExp(/^[\w]{0}$/)

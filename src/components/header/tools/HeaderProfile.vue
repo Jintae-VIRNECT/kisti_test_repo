@@ -21,16 +21,24 @@
       </div>
       <div class="popover-profile__link">
         <button @click="link(urlLink)">
-          VIRNECT Workstation
+          {{ $t('common.workstation') }}
         </button>
       </div>
-      <div class="popover-profile__link">
+      <div class="popover-profile__link" v-if="!!dashboardLink">
+        <button @click="link(dashboardLink)">
+          {{ $t('common.dashboard') }}
+        </button>
+      </div>
+      <div class="popover-profile__link" v-if="!isSafari">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
+      </div>
+      <div class="popover-profile__link">
+        <button @click="downloadManual">{{ $t('button.manual') }}</button>
       </div>
       <div class="popover-profile__link">
         <button @click="logout">{{ $t('button.logout') }}</button>
       </div>
-      <div class="popover-profile__version">{{ `web v.${$version}` }}</div>
+      <div class="popover-profile__version">{{ `web v${$version}` }}</div>
     </div>
   </popover>
 </template>
@@ -40,6 +48,8 @@ import { mapGetters } from 'vuex'
 import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
+import { URLS, RUNTIME, RUNTIME_ENV } from 'configs/env.config'
+import axios from 'api/axios'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -47,9 +57,19 @@ export default {
     Profile,
   },
   computed: {
-    ...mapGetters(['account']),
+    ...mapGetters(['account', 'useStorage']),
     urlLink() {
-      return window.urls.workstation
+      return URLS['workstation']
+    },
+    dashboardLink() {
+      if (!this.useStorage) {
+        return false
+      } else {
+        return URLS['dashboard']
+      }
+    },
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   methods: {
@@ -71,6 +91,16 @@ export default {
 
       //show media chunk list
       this.$eventBus.$emit('filelist:open')
+    },
+    async downloadManual() {
+      if (!this.onpremise) {
+        window.open('https://file.virnect.com/Guide/remote_web_user_guide.pdf')
+      } else {
+        const res = await axios.get(
+          `${window.urls.api}/remote/file/guide/?objectName=virnect_remote_mobile_gs.pdf`,
+        )
+        window.open(res.data.data)
+      }
     },
   },
 

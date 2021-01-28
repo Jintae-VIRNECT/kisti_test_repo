@@ -1,13 +1,12 @@
 <template>
   <div class="stream-tools tools">
     <pointing></pointing>
-    <color v-if="isLeader"></color>
+    <color></color>
   </div>
 </template>
 
 <script>
 import { Pointing, Color } from './partials'
-import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'StreamTools',
@@ -15,26 +14,5 @@ export default {
     Pointing,
     Color,
   },
-  data() {
-    return {
-      active: 'pointing',
-      isRecording: false,
-    }
-  },
-  computed: {
-    isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
-    },
-  },
-  watch: {},
-  methods: {},
-
-  /* Lifecycles */
-  beforeDestroy() {},
-  mounted() {},
 }
 </script>

@@ -7,7 +7,8 @@
   height: $welcome-height;
   // margin: 2.143rem auto 10px;
   padding: 3.429rem 5.929rem;
-  background: url(~assets/image/img_banner.svg) center right no-repeat #12233a;
+  background: url(~assets/image/img_banner.svg) center right/auto 17.143rem
+    no-repeat #12233a;
   border-radius: 8px;
   &.offsetwidth {
     margin: 2.143rem auto 0.714rem;
@@ -35,10 +36,22 @@
 
 .workspace-welcome__name {
   display: flex;
+  flex-direction: row;
+  max-width: 100%;
   margin: 0.429rem 0 1.643rem;
   color: $color_text;
   font-weight: 500;
   font-size: 1.857rem;
+  > em {
+    flex: 0 1 auto;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  > span {
+    flex: 0;
+    white-space: nowrap;
+  }
 }
 .workspace-welcome__nickname {
   overflow: hidden;

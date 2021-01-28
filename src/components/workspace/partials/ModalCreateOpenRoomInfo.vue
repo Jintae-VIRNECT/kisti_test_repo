@@ -40,19 +40,17 @@
     ></input-row>
     <button
       class="btn large openroom-info__button"
-      :class="{ disabled: btnDisabled }"
+      :class="{ disabled: btnDisabled, 'btn-loading': btnLoading }"
       @click="startRemote"
     >
       {{ $t('button.start') }}
     </button>
-    <device-denied :visible.sync="showDenied"></device-denied>
   </section>
 </template>
 
 <script>
 import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
-import DeviceDenied from '../modal/WorkspaceDeviceDenied'
 
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
@@ -63,7 +61,6 @@ export default {
   components: {
     ProfileImage,
     InputRow,
-    DeviceDenied,
   },
   data() {
     return {
@@ -71,7 +68,6 @@ export default {
       description: '',
       image: null,
       titleValid: false,
-      showDenied: false,
     }
   },
   props: {
@@ -80,6 +76,10 @@ export default {
       default: () => {
         return {}
       },
+    },
+    btnLoading: {
+      type: Boolean,
+      defalut: false,
     },
   },
   watch: {
@@ -101,11 +101,7 @@ export default {
       }
     },
     btnDisabled() {
-      if (this.titleValid) {
-        return true
-      } else {
-        return false
-      }
+      return !!this.titleValid
     },
     titleValidMessage() {
       if (this.title.length < 2) {

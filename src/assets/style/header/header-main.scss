@@ -15,9 +15,10 @@
   @include background-border(bottom);
 
   .header-logo {
-    min-width: 2.143rem;
-    max-width: 10.714rem;
-    height: 2.143rem;
+    // min-width: 2.143rem;
+    // max-width: 10.714rem;
+    max-width: 100%;
+    max-height: 2.143rem;
     margin: 0.929rem 1.214rem;
   }
 }

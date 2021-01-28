@@ -9,9 +9,9 @@ import { PLAN_STATUS } from 'configs/status.config'
 
 const setWorkspaceObj = info => {
   return {
-    uuid: info.workspaceId,
-    title: info.workspaceName,
-    profile: info.workspaceProfile,
+    uuid: info.uuid,
+    title: info.name,
+    profile: info.profile,
     renewalDate: info.renewalDate,
     role: info.role,
     planStatus: info.productPlanStatus,
@@ -19,9 +19,15 @@ const setWorkspaceObj = info => {
   }
 }
 const companyInfo = {
-  targetCompany: 0,
-  translate: false,
-  sessionType: 'private',
+  companyCode: 0, // 회사 코드
+  translation: false, // 번역기능
+  tts: false, // TTS
+  sttSync: false, // STT 동기
+  sttStreaming: false, // STT 스트리밍
+  recording: false, // 서버녹화
+  storage: false, // 파일 업/다운로드
+  sessionType: 'PRIVATE', // 오픈방 유무 (PRIVATE, OPEN, PUBLIC)
+  licenseName: '',
   languageCodes: [],
 }
 
@@ -64,6 +70,10 @@ const mutations = {
         )
         if (idx > -1) {
           state.current = state.workspaceList[idx]
+          window.localStorage.setItem(
+            'workspace',
+            state.workspaceList[idx].uuid,
+          )
         }
       } else {
         if (state.workspaceList.length === 1) {
@@ -76,7 +86,16 @@ const mutations = {
     state.current = workspace
     window.localStorage.setItem('workspace', workspace.uuid)
   },
-  [CLEAR_WORKSPACE](state) {
+  [CLEAR_WORKSPACE](state, uuid) {
+    if (uuid) {
+      const idx = state.workspaceList.findIndex(
+        workspace => workspace.uuid === uuid,
+      )
+      if (idx > -1) {
+        state.workspaceList.splice(idx, 1)
+        window.localStorage.setItem('workspace', null)
+      }
+    }
     state.current = {}
   },
   [SET_COMPANY_INFO](state, payload) {
@@ -96,12 +115,14 @@ const getters = {
   },
   workspace: state => state.current,
   workspaceList: state => state.workspaceList,
-  targetCompany: state => state.companyInfo.targetCompany,
-  useTranslate: state => state.companyInfo.translate,
+  targetCompany: state => state.companyInfo.companyCode,
+  useTranslate: state => state.companyInfo.translation,
   useOpenRoom: state => {
     return state.companyInfo.sessionType === 'OPEN'
   },
   languageCodes: state => state.companyInfo.languageCodes,
+  useRecording: state => state.companyInfo.recording,
+  useStorage: state => state.companyInfo.storage,
 }
 
 export default {

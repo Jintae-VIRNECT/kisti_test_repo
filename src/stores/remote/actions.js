@@ -20,13 +20,14 @@ export default {
   setCompanyInfo({ commit }, info) {
     commit(types.SET_COMPANY_INFO, info)
   },
-  clearWorkspace({ commit }) {
-    commit(types.CLEAR_WORKSPACE)
+  clearWorkspace({ commit }, uuid) {
+    commit(types.CLEAR_WORKSPACE, uuid)
   },
 
   callReset({ commit }) {
     commit(types.CALL_RESET)
     commit(types.FILE_RESET)
+    commit(types.ALLOW_RESET)
   },
   /**
    * Change Call Mode
@@ -116,6 +117,15 @@ export default {
     commit(types.SETTINGS.SET_RECORD, payload)
   },
   /**
+   * set server Record
+   * @param {*} param0
+   * @param {Object} payload
+   */
+  setServerRecord({ commit }, payload) {
+    commit(types.SETTINGS.SET_SERVER_RECORD, payload)
+  },
+
+  /**
    * set Allow
    * @param {*} param0
    * @param {Object} payload
@@ -135,15 +145,15 @@ export default {
     if ('code' in payload) {
       commit(types.SETTINGS.SET_TRANSLATE_CODE, payload['code'])
     }
-  },
-
-  /**
-   * set screen stream for local recording
-   * @param {*} param0
-   * @param {*} payload
-   */
-  setScreenStream({ commit }, payload) {
-    commit(types.SETTINGS.SET_SCREEN_STREAM, payload)
+    if ('multiple' in payload) {
+      commit(types.SETTINGS.SET_TRANSLATE_MULTIPLE, payload['multiple'])
+    }
+    if ('sttSync' in payload) {
+      commit(types.SETTINGS.SET_STT_SYNC, payload['sttSync'])
+    }
+    if ('ttsAllow' in payload) {
+      commit(types.SETTINGS.SET_TTS_ALLOW, payload['ttsAllow'])
+    }
   },
 
   /**
@@ -159,6 +169,13 @@ export default {
    * update local record status
    */
   setLocalRecordStatus({ commit }, status) {
-    commit(types.SETTINGS.SET_LCOAL_RECORD_STAUTS, status)
+    commit(types.SETTINGS.SET_LOCAL_RECORD_STATUS, status)
+  },
+
+  /**
+   * update server record status
+   */
+  setServerRecordStatus({ commit }, status) {
+    commit(types.SETTINGS.SET_SERVER_RECORD_STATUS, status)
   },
 }

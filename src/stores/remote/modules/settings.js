@@ -1,6 +1,6 @@
 //Definition of workspace store
-import { SETTINGS, TOGGLE_CHAT } from '../mutation-types'
-import { RECORD_TARGET, LCOAL_RECORD_STAUTS } from 'utils/recordOptions'
+import { SETTINGS, TOGGLE_CHAT, ALLOW_RESET } from '../mutation-types'
+import { RECORD_TARGET } from 'utils/recordOptions'
 import { resolution } from 'utils/settingOptions'
 
 const state = {
@@ -22,6 +22,10 @@ const state = {
     interval: '1',
     resolution: '480p',
   },
+  serverRecordInfo: {
+    time: '30',
+    resolution: '720p',
+  },
   allow: {
     pointing: true,
     localRecord: true,
@@ -33,13 +37,14 @@ const state = {
   translate: {
     flag: false,
     code: 'ko-KR',
+    multiple: true,
+    sttSync: true,
+    ttsAllow: false,
   },
 
-  //stream for local steram(screen stream)
-  screenStream: null,
-
   localRecordTarget: RECORD_TARGET.WORKER,
-  localRecordStatus: LCOAL_RECORD_STAUTS.STOP,
+  localRecordStatus: 'STOP', // 'START', 'STOP'
+  serverRecordStatus: 'STOP', // 'WAIT', 'START', 'STOP', 'PREPARE'
 
   chatBox: false,
 }
@@ -57,8 +62,17 @@ const mutations = {
   [SETTINGS.SET_RECORD](state, recordInfo) {
     Object.assign(state.localRecordInfo, recordInfo)
   },
+  [SETTINGS.SET_SERVER_RECORD](state, recordInfo) {
+    Object.assign(state.serverRecordInfo, recordInfo)
+  },
   [SETTINGS.SET_ALLOW](state, allow) {
     Object.assign(state.allow, allow)
+  },
+  [ALLOW_RESET](state) {
+    state.allow = {
+      pointing: true,
+      localRecord: true,
+    }
   },
 
   [SETTINGS.SET_TRANSLATE_FLAG](state, flag) {
@@ -68,6 +82,16 @@ const mutations = {
     state.translate.code = code
   },
 
+  [SETTINGS.SET_TRANSLATE_MULTIPLE](state, flag) {
+    state.translate.multiple = flag
+  },
+  [SETTINGS.SET_STT_SYNC](state, code) {
+    state.translate.sttSync = code
+  },
+  [SETTINGS.SET_TTS_ALLOW](state, flag) {
+    state.translate.ttsAllow = flag
+  },
+
   // [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
   //   state.videoDevice = videoDevice
   // },
@@ -75,16 +99,16 @@ const mutations = {
     state.language = language
   },
 
-  [SETTINGS.SET_SCREEN_STREAM](state, screenStream) {
-    state.screenStream = screenStream
-  },
-
   [SETTINGS.SET_LOCAL_RECORD_TARGET](state, localRecordTarget) {
     state.localRecordTarget = localRecordTarget
   },
 
-  [SETTINGS.SET_LCOAL_RECORD_STAUTS](state, localRecordStatus) {
+  [SETTINGS.SET_LOCAL_RECORD_STATUS](state, localRecordStatus) {
     state.localRecordStatus = localRecordStatus
+  },
+
+  [SETTINGS.SET_SERVER_RECORD_STATUS](state, serverRecordStatus) {
+    state.serverRecordStatus = serverRecordStatus
   },
 
   [TOGGLE_CHAT](state, flag) {
@@ -96,14 +120,12 @@ const getters = {
   speaker: state => state.speaker,
   video: state => state.video,
   localRecord: state => state.localRecordInfo,
+  serverRecord: state => state.serverRecordInfo,
   allowLocalRecord: state => state.allow.localRecord,
   allowPointing: state => state.allow.pointing,
   language: state => state.language,
 
   translate: state => state.translate,
-
-  //screen stream for local recording
-  screenStream: state => state.screenStream,
 
   // used Remote.js
   settingInfo: state => {

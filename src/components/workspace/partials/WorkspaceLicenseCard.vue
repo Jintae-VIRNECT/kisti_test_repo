@@ -51,6 +51,7 @@
 </template>
 
 <script>
+import { URLS } from 'configs/env.config'
 export default {
   data() {
     return {
@@ -94,7 +95,7 @@ export default {
   },
   methods: {
     buy() {
-      window.location = window.urls.pay
+      window.location = URLS['pay']
     },
   },
 }

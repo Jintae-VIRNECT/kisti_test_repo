@@ -6,15 +6,17 @@
     :showClose="true"
     :visible.sync="visible"
     :beforeClose="beforeClose"
-    customClass="custom-modal-record-file-upload"
+    customClass="modal-upload"
     :class="{ modalless: true }"
     :dimClose="false"
   >
     <div class="record-file-upload">
-      <p class="record-file-upload--header">파일을 업로드중입니다.</p>
+      <p class="record-file-upload--header">
+        {{ $t('workspace.record_uploading') }}
+      </p>
       <p class="record-file-upload--current-file">{{ currentFile }}</p>
       <progress-bar
-        customClass="custom-progress-record-file-upload"
+        customClass="progress-upload"
         :value="uploaded"
         :max="fileIds.length"
       ></progress-bar>
@@ -27,7 +29,7 @@
 import Modal from 'Modal'
 import ProgressBar from 'ProgressBar'
 
-import { uploadFile } from 'api/http/file'
+import { uploadRecordFile } from 'api/http/file'
 import IDBHelper from 'utils/idbHelper'
 import confirmMixin from 'mixins/confirm'
 
@@ -89,21 +91,24 @@ export default {
           }
           const file = new File([chunk.blob], chunk.fileName)
           this.currentFile = chunk.fileName
-          await uploadFile({
+          await uploadRecordFile({
             file: file,
             sessionId: chunk.sessionId,
             workspaceId: this.workspace.uuid,
             userId: this.account.uuid,
+            durationSec: Math.trunc(chunk.playTime),
           })
           this.uploaded++
         }
       } catch (e) {
-        this.confirmDefault('업로드 중 오류가 발생했습니다.​', {
+        this.confirmDefault(this.$t('workspace.record_upload_error'), {
           action: this.close,
         })
         console.error(e)
       } finally {
-        this.close()
+        setTimeout(() => {
+          this.close()
+        }, 1000)
       }
     },
     close() {
@@ -120,7 +125,7 @@ export default {
 <style lang="scss">
 @import '~assets/style/vars';
 
-.modal.custom-modal-record-file-upload {
+.modal.modal-upload {
   position: fixed;
   top: 0;
   left: 0;
@@ -190,7 +195,7 @@ export default {
   text-align: center;
 }
 
-.progress.custom-progress-record-file-upload {
+.progress.progress-upload {
   position: relative;
   width: 25.7143em;
   height: 1em;

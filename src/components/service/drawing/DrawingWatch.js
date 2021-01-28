@@ -8,6 +8,7 @@ export default {
     file: {
       deep: true,
       handler(value) {
+        this.isInit = false
         if (value && value.id) {
           this.$emit('loadingStart')
           setTimeout(() => {
@@ -50,6 +51,12 @@ export default {
       if (this.cursor) {
         this.cursor.setColor(hexToRGBA(color, this.tools.opacity))
       }
+      if (this.textObj) {
+        this.textObj.set(
+          'fill',
+          hexToRGBA(this.tools.color, this.tools.opacity),
+        )
+      }
     },
     'tools.opacity'(opacity) {
       if (this.canvas) {
@@ -60,6 +67,12 @@ export default {
       }
       if (this.cursor) {
         this.cursor.setColor(hexToRGBA(this.tools.color, opacity))
+      }
+      if (this.textObj) {
+        this.textObj.set(
+          'fill',
+          hexToRGBA(this.tools.color, this.tools.opacity),
+        )
       }
     },
     scaleWidth(size) {
@@ -81,6 +94,9 @@ export default {
     },
     'tools.fontSize'(size) {
       this.scaleFont = size / this.origin.scale
+      if (this.textObj) {
+        this.textObj.set('fontSize', this.scaleFont)
+      }
     },
     undoList() {
       this.toolAble()
@@ -91,11 +107,7 @@ export default {
   },
   computed: {
     drawingView() {
-      if (this.view === VIEW.DRAWING) {
-        return true
-      } else {
-        return false
-      }
+      return this.view === VIEW.DRAWING
     },
   },
   methods: {

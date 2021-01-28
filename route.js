@@ -12,10 +12,9 @@ function IsAllowBrowser(req) {
   const isEdge = userAgent.includes('Edg') || userAgent.includes('Edge')
   const isSamsung = userAgent.includes('SamsungBrowser')
 
-  const findSafari = userAgent.includes('Safari')
-  const isSafari = !isChrome && !isChromeMobile && findSafari ? true : false
+  const isSafari = !isChrome && !isChromeMobile && userAgent.includes('Safari')
 
-  return (isChrome || isEdge || isChromeMobile) && !isSafari && !isSamsung
+  return ((isChrome || isEdge || isChromeMobile) && !isSamsung) || isSafari
 }
 
 function IsMobileBrowser(req) {
@@ -23,7 +22,8 @@ function IsMobileBrowser(req) {
   const isChromeMobile =
     userAgent.includes('Mobile') ||
     userAgent.includes('CriOS') ||
-    userAgent.includes('mobileApp')
+    userAgent.includes('mobileApp') ||
+    userAgent.includes('iPhone')
 
   return isChromeMobile
 }
@@ -62,21 +62,23 @@ router.get('/support', function(req, res) {
   res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
 })
 
-router.get('/policy/*', function(req, res) {
-  res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
-})
+if (config.getEnv() !== 'onpremise') {
+  router.get('/policy/*', function(req, res) {
+    res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+  })
 
-router.get('/policy', function(req, res) {
-  res.redirect('/policy/terms')
-})
+  router.get('/policy', function(req, res) {
+    res.redirect('/policy/terms')
+  })
 
-router.get('/OSS/*', function(req, res) {
-  res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
-})
+  router.get('/OSS/*', function(req, res) {
+    res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+  })
 
-router.get('/OSS', function(req, res) {
-  res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
-})
+  router.get('/OSS', function(req, res) {
+    res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+  })
+}
 
 router.get('/configs', function(req, res) {
   // req.query.origin
@@ -85,7 +87,7 @@ router.get('/configs', function(req, res) {
 })
 
 router.get('/pdf.worker', function(req, res) {
-  res.sendFile(path.join(__dirname, '/static/js/pdf.worker.min.js'))
+  res.sendFile(path.join(__dirname, '/static/js/pdf.worker.js'))
 })
 
 router.get('/record', function(req, res) {

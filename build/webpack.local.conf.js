@@ -6,7 +6,7 @@ const path = require('path')
 const fs = require('fs')
 const host = '0.0.0.0'
 const port = '8886'
-const logger = require('../server/logger')
+const logger = require('@virnect/logger')
 const configService = require('../server/config')
 const translate = require('../translate/translate')
 const stt = require('../translate/stt')
@@ -36,10 +36,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           to: '/remote/index.html',
         },
         {
-          from: /sample(\/.*)?/,
-          to: '/sample/index.html',
-        },
-        {
           from: /account(\/.*)?/,
           to: '/account/index.html',
         },
@@ -49,10 +45,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
         },
         {
           from: /policy(\/.*)?/,
-          to: '/extra/index.html',
-        },
-        {
-          from: /(\/)m(\/.*)?/,
           to: '/extra/index.html',
         },
         {
@@ -85,6 +77,9 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
           limit: '50mb',
         }),
       )
+      app.get('/healthcheck', function(req, res) {
+        res.send(200)
+      })
 
       app.post('/logs', bodyParser.json(), function(req, res) {
         logger.log(req.body.data, 'CONSOLE')
@@ -99,7 +94,7 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       })
 
       app.get('/pdf.worker', function(req, res) {
-        res.sendFile(path.join(__dirname, '../static/js/pdf.worker.min.js'))
+        res.sendFile(path.join(__dirname, '../static/js/pdf.worker.js'))
       })
 
       app.post('/translate', bodyParser.json(), function(req, res) {
@@ -158,16 +153,6 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
       template: './src/apps/account/app.html',
       filename: 'account/index.html',
       chunks: ['account'],
-    }),
-
-    // sample
-    new HtmlWebpackPlugin({
-      inject: 'body',
-      hash: true,
-      favicon: './src/assets/favicon.ico',
-      template: './src/apps/sample/app.html',
-      filename: 'sample/index.html',
-      chunks: ['sample'],
     }),
 
     // new BundleAnalyzerPlugin({

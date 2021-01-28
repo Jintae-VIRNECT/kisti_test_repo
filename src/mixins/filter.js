@@ -1,6 +1,6 @@
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
-const Hangul = require('hangul-js')
+const ChosungSearch = require('plugins/remote/hangul-chosung')
 
 export default {
   computed: {
@@ -34,23 +34,10 @@ export default {
 
       try {
         const filterList = []
-
-        //target [["ㅎ", "ㅗ", "ㅇ"], ["ㄱ", "ㅣ", "ㄹ"], ["ㄷ", "ㅗ", "ㅇ"]]
-        //-> merge to 'ㅎㄱㄷ'
-        const mergeChos = (prev, chos) => {
-          chos = chos[0] ? chos[0] : chos
-          return prev + chos
-        }
-
-        const inputDis = Hangul.disassemble(
-          this.searchFilter.toLowerCase(),
-          true,
-        )
-        const inputChos = inputDis.reduce(mergeChos, '')
-
-        for (const record of list) {
-          let newRecord = null
+        for (const content of list) {
+          let pushFlag = false
           for (const param of [...params]) {
+            if (pushFlag === true) break
             let target = null
             let spts = null
 
@@ -58,42 +45,50 @@ export default {
             if (param.includes('.') && param.includes('[]')) {
               spts = param.split('.')
 
-              //access array property
-              if (spts[0].includes('[]')) {
-                target = record[spts[0].replace('[]', '')]
-              }
+              target = content[spts[0].replace('[]', '')]
 
               //case of a.b.c.d...
             } else if (param.includes('.')) {
-              target = _.get(record, param)
+              target = _.get(content, param)
             } else {
-              target = record[param].toLowerCase()
+              target = content[param]
             }
+            if (!target) continue
 
             //if target is array
             if (Array.isArray(target) && spts.length === 2) {
               target.forEach(obj => {
-                if (obj.hasOwnProperty(spts[1])) {
-                  const targetDis = Hangul.disassemble(obj[spts[1]], true)
-                  const targetChos = targetDis.reduce(mergeChos, '')
-
-                  if (targetChos.includes(inputChos)) {
-                    newRecord = record
+                if (!pushFlag) {
+                  if (obj.hasOwnProperty(spts[1])) {
+                    if (obj[spts[1]] && obj[spts[1]].length > 0) {
+                      if (
+                        obj[spts[1]]
+                          .toLowerCase()
+                          .includes(this.searchFilter.toLowerCase())
+                      ) {
+                        filterList.push(content)
+                        pushFlag = true
+                      } else if (
+                        ChosungSearch.is(this.searchFilter, obj[spts[1]], false)
+                      ) {
+                        filterList.push(content)
+                        pushFlag = true
+                      }
+                    }
                   }
                 }
               })
             } else {
-              const targetDis = Hangul.disassemble(target, true)
-              const targetChos = targetDis.reduce(mergeChos, '')
-
-              if (targetChos.includes(inputChos)) {
-                newRecord = record
+              if (
+                target.toLowerCase().includes(this.searchFilter.toLowerCase())
+              ) {
+                filterList.push(content)
+                pushFlag = true
+              } else if (ChosungSearch.is(this.searchFilter, target, false)) {
+                filterList.push(content)
+                pushFlag = true
               }
             }
-          }
-
-          if (newRecord !== null) {
-            filterList.push(newRecord)
           }
         }
         return filterList

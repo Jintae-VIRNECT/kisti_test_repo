@@ -1,3 +1,4 @@
+import { proxyUrl } from 'utils/file'
 const ALARM_DURATION = 3 * 1000
 const ALARM_DURATION_BUTTON = 60 * 1000
 
@@ -72,7 +73,7 @@ export default {
             type: 'invite',
             info: this.$t('alarm.member_name', { name: nickName }),
             description: this.$t('alarm.invite_request'),
-            icon: profile,
+            icon: proxyUrl(profile),
             options: {
               changed: {
                 text: this.$t('alarm.invite_refuse'),
@@ -87,7 +88,7 @@ export default {
         type: 'invite',
         info: this.$t('alarm.member_name', { name: nickName }),
         description: this.$t('alarm.invite_request'),
-        icon: profile,
+        icon: proxyUrl(profile),
         duration: ALARM_DURATION_BUTTON,
         options: {
           action: [
@@ -132,13 +133,25 @@ export default {
       )
     },
     /**
-     * 라이선스 만료 메시지
+     * 라이선스 만료 메시지 (협업 진행 중)
      */
     alarmLicense() {
       this.callNotify({
         type: 'license',
         info: this.$t('alarm.expire_title'),
         description: this.$t('alarm.expire_logout'),
+        duration: ALARM_DURATION_BUTTON,
+      })
+    },
+    /**
+     * 라이선스 만료 메시지 (홈화면)
+     */
+    alarmLicenseHome() {
+      this.callNotify({
+        type: 'license',
+        info: this.$t('alarm.expire_title'),
+        description: this.$t('alarm.expire_logout_home'),
+        duration: ALARM_DURATION_BUTTON,
       })
     },
     /**

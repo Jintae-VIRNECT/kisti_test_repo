@@ -8,11 +8,6 @@ export const RECORD_TARGET = {
   SCREEN: 'SCREEN',
 }
 
-export const LCOAL_RECORD_STAUTS = {
-  START: 'START',
-  STOP: 'STOP',
-}
-
 // Service Options
 export const localRecTime = [
   '1',
@@ -42,6 +37,23 @@ export const localRecResOpt = [
 ]
 
 export const localRecInterval = ['1', '5', '10', '20']
+
+export const serverRecTime = ['5', '15', '30', '60']
+
+export const serverRecResOpt = [
+  {
+    value: '480p',
+    text: '480p',
+  },
+  {
+    value: '720p',
+    text: '720p',
+  },
+  {
+    value: '1080p',
+    text: '1080p',
+  },
+]
 
 /**
  *

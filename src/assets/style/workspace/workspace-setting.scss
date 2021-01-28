@@ -6,6 +6,7 @@
 }
 
 .setting-nav {
+  flex: 0 0;
   min-width: 17.143rem;
   margin-right: 2.857rem;
   padding-top: 2.5rem;
@@ -36,6 +37,7 @@
 
 .setting-view {
   display: flex;
+  flex: 1 1;
   flex-direction: column;
   width: 100%;
   // flex-grow: 2;
@@ -61,29 +63,53 @@
   &:last-child {
     border-bottom: none;
   }
+  &.list {
+    margin-top: 2.286rem;
+    padding-bottom: 0;
+    border-bottom: none;
+    &:first-child {
+      margin-top: 2.857rem;
+    }
+    &:last-child {
+      padding-bottom: 2.857rem;
+    }
+    &.horizon {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    &.translate {
+      margin-top: 1.215rem;
+      margin-right: 1.143rem;
+    }
+  }
   // &:first-child {
   //   border-bottom: 1px solid rgba(#969696, 0.2);
   // }
   .radio-option {
     padding: 0.857rem 0;
   }
+  > figure {
+    // flex: 1;
+    max-width: 35.714rem;
+    margin-right: 2.286rem;
+    // &:last-child {
+    //   margin-right: 0;
+    // }
+  }
 }
 
 .setting-section__body {
+  margin-top: -1.071rem;
+  margin-right: -2.286rem;
   &.horizon {
     display: flex;
     flex-wrap: wrap;
   }
-  &.first {
-    margin-top: -1.071rem;
-  }
   > figure {
-    max-width: 35.714rem;
+    flex: 0 1 28.571rem;
+    max-width: 28.571rem;
     margin-top: 1.071rem;
     margin-right: 2.286rem;
-    &:last-child {
-      margin-right: 0;
-    }
   }
   & + & {
     margin-top: 0.714rem;
@@ -94,9 +120,17 @@
   margin-bottom: 1.071rem;
   color: $color_text;
   font-size: 1.286rem;
+  transition: opacity 0.3s;
   &::first-letter {
     text-transform: capitalize;
   }
+  &.disabled {
+    opacity: 0.3;
+  }
+}
+.setting-section__translate {
+  flex: 0 1 28.571rem;
+  margin-top: 1.071rem;
 }
 .setting__figure--wrapper {
   display: flex;
@@ -112,21 +146,37 @@
   margin: 0.357rem 0 0.857rem;
   color: rgba($color_text_main, 0.62);
   font-size: 1rem;
+
+  &.dot {
+    &:before {
+      content: "\002A\00a0";
+    }
+  }
+  &.warning {
+    color: #ff757b;
+  }
 }
 
 .setting__r-selecter {
-  width: 28.571rem;
+  // width: 28.571rem;
+  width: 100%;
+  &.checking {
+    > button {
+      cursor: progress;
+    }
+  }
 }
 
 .setting-video {
   display: flex;
-  width: 29rem;
+  max-width: 29rem;
+  // min-height: 17rem;
   height: 20.571rem;
   background-color: #111012;
   border: solid 1px #363638;
   > video {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
     margin: auto;
   }
 }
@@ -135,6 +185,7 @@
   display: flex;
   width: 100%;
   height: 100%;
+  margin: auto;
   > img {
     width: 3.214rem;
     height: 3.214rem;
@@ -143,6 +194,6 @@
 }
 
 .setting__tooltip--icon {
-  width: 100%;
-  height: 100%;
+  width: 1.714rem;
+  height: 1.714rem;
 }

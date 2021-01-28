@@ -14,7 +14,8 @@
           </p>
 
           <p class="chat-file-item__valid" :class="{ invalid: isInvalid }">
-            {{ $t('service.file_validdatae') + validDate }}
+            <!-- {{ $t('service.file_validdatae') + validDate }} -->
+            <span>{{ fileInfo.exp }}</span>
             <em>{{ fileSize }}</em>
           </p>
         </div>
@@ -24,18 +25,15 @@
 </template>
 
 <script>
+import { checkFileType } from 'utils/fileTypes'
 export default {
   name: 'ChatFileItem',
   props: {
-    fileInfo: {
+    file: {
       type: Object,
       default: () => {
         return {}
       },
-    },
-    ext: {
-      type: String,
-      default: '',
     },
     checked: {
       type: Boolean,
@@ -44,29 +42,46 @@ export default {
   },
   computed: {
     fileSize() {
-      if (this.fileInfo.size > 1024 * 1024) {
-        return parseFloat(this.fileInfo.size / 1024 / 1024).toFixed(1) + 'MB'
+      if (this.file.size > 1024 * 1024) {
+        return parseFloat(this.file.size / 1024 / 1024).toFixed(1) + 'MB'
       }
-      return parseFloat(this.fileInfo.size / 1024).toFixed(1) + 'KB'
+      return parseFloat(this.file.size / 1024).toFixed(1) + 'KB'
     },
     isInvalid() {
-      return false
+      return this.file.expired
     },
-    validDate() {
-      return this.$dayjs(this.fileInfo.createdDate).format('YYYY.MM.DD')
-    },
+    // validDate() {
+    //   return this.$dayjs(this.file.expirationDate).format('YYYY.MM.DD')
+    // },
     icon() {
-      switch (this.ext) {
+      const extension = checkFileType({
+        name: this.file.name,
+        type: this.file.contentType,
+      })
+      switch (extension) {
+        case 'threed':
+          return require('assets/image/call/chat/ic_3d_w.svg')
+        case 'zip':
+          return require('assets/image/call/chat/ic_zip_w.svg')
         case 'pdf':
-          return require('assets/image/call/chat/ic_chat_pdf_w.svg')
+          return require('assets/image/call/chat/ic_pdf_w.svg')
+        case 'audio':
+          return require('assets/image/call/chat/ic_audio_w.svg')
         case 'video':
-          return require('assets/image/call/chat/ic_chat_video_w.svg')
-        case 'mp3':
-          return require('assets/image/call/chat/ic_chat_mp3_w.svg')
-        case 'txt':
-          return require('assets/image/call/chat/ic_chat_file_w.svg')
+          return require('assets/image/call/chat/ic_video_w.svg')
+        case 'image':
+          return require('assets/image/call/chat/ic_image_w.svg')
+        case 'doc':
+          return require('assets/image/call/chat/ic_ms_w.svg')
         default:
-          return require('assets/image/call/chat/ic_chat_jpgpng_w.svg')
+          return require('assets/image/call/chat/ic_file_w.svg')
+      }
+    },
+    fileInfo() {
+      const idx = this.file.name.lastIndexOf('.')
+      return {
+        exp: this.file.name.toLowerCase().substr(idx + 1),
+        name: this.file.name.substr(0, idx),
       }
     },
   },

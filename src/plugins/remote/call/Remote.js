@@ -1,4 +1,4 @@
-import { OpenVidu } from './openvidu'
+import { OpenVidu } from '@virnect/remote-webrtc'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import {
@@ -8,14 +8,17 @@ import {
   FLASH,
   VIDEO,
   AR_FEATURE,
+  FILE,
 } from 'configs/remote.config'
+import { URLS, setRecordInfo } from 'configs/env.config'
 import {
   DEVICE,
-  FLASH as FLASH_STATUE,
-  CAMERA as CAMERA_STATUE,
+  FLASH as FLASH_STATUS,
+  CAMERA as CAMERA_STATUS,
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
+import { checkInput } from 'utils/deviceCheck'
 
 let OV
 
@@ -23,6 +26,7 @@ const _ = {
   account: null,
   session: null,
   publisher: null,
+  connectionId: '',
   subscribers: [],
   // 필요여부 체크할 것
   resolution: null,
@@ -34,29 +38,40 @@ const _ = {
    * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
    */
-  connect: async (configs, role, options) => {
+  connect: async (configs, role, options, open = false) => {
     try {
       _.account = Store.getters['account']
-      _.openRoom = options === false
+      _.openRoom = open
 
       Store.commit('callClear')
       OV = new OpenVidu()
       if (process.env.NODE_ENV === 'production') {
         OV.enableProdMode()
       }
-      _.session = OV.initSession()
+      if (!_.session) {
+        _.session = OV.initSession()
+        addSessionEventListener(_.session, Store)
+      }
 
-      addSessionEventListener(_.session, Store)
       const metaData = {
         clientData: _.account.uuid,
         roleType: role,
         deviceType: DEVICE.WEB,
       }
 
-      const iceServers = configs.coturn || window.urls.coturn
-      // const iceServers = window.urls.coturn
-      const ws = configs.wss || `${window.urls.wsapi}${wsUri['REMOTE']}`
+      const iceServers = configs.coturn || URLS['coturn']
+      for (let ice of iceServers) {
+        ice['urls'] = ice['url']
+      }
+      // const iceServers = URLS.coturn
+      const ws = configs.wss || `${URLS['wsapi']}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+
+      setRecordInfo({
+        token: configs['token'],
+        coturn: iceServers,
+        wss: ws,
+      })
 
       if (!iceServers) {
         throw 'ice server를 찾을 수 없습니다.'
@@ -98,16 +113,12 @@ const _ = {
 
         _.publisher = OV.initPublisher('', publishOptions)
         _.publisher.onIceStateChanged(state => {
-          if (
-            state === 'failed' ||
-            state === 'disconnected' ||
-            state === 'closed'
-          ) {
+          if (['failed', 'disconnected', 'closed'].includes(state)) {
             Store.commit('updateParticipant', {
               connectionId: _.publisher.stream.connection.connectionId,
-              status: 'bad',
+              status: 'disconnected',
             })
-          } else if (state === 'connected') {
+          } else if (['connected', 'completed'].includes(state)) {
             Store.commit('updateParticipant', {
               connectionId: _.publisher.stream.connection.connectionId,
               status: 'good',
@@ -122,13 +133,21 @@ const _ = {
         })
         _.publisher.on('streamCreated', () => {
           logger('room', 'publish success')
+          debug('publisher stream :: ', _.publisher.stream)
           const mediaStream = _.publisher.stream.mediaStream
           Store.commit('updateParticipant', {
             connectionId: _.publisher.stream.connection.connectionId,
             stream: mediaStream,
             hasVideo: _.publisher.stream.hasVideo,
-            video: _.publisher.stream.videoActive,
+            hasCamera: _.publisher.stream.hasVideo,
+            hasAudio: _.publisher.stream.hasAudio,
+            video: settingInfo.videoOn,
             audio: _.publisher.stream.audioActive,
+            cameraStatus: _.publisher.stream.hasVideo
+              ? settingInfo.videoOn
+                ? CAMERA_STATUS.CAMERA_ON
+                : CAMERA_STATUS.CAMERA_OFF
+              : CAMERA_STATUS.CAMERA_NONE,
           })
           if (_.publisher.stream.hasVideo) {
             const track = mediaStream.getVideoTracks()[0]
@@ -146,24 +165,54 @@ const _ = {
               )
               _.minZoomLevel = parseInt(capability.zoom.min)
             }
-            _.video(_.publisher.stream.videoActive)
+            // _.sendCamera(
+            //   options.videoSource !== false
+            //     ? settingInfo.videoOn
+            //       ? CAMERA_STATUS.CAMERA_ON
+            //       : CAMERA_STATUS.CAMERA_OFF
+            //     : CAMERA_STATUS.CAMERA_NONE,
+            // )
             _.sendResolution({
               width: settings.width,
               height: settings.height,
               orientation: '',
             })
+          } else if (_.openRoom) {
+            checkInput({ video: true, audio: false }).then(hasCamera => {
+              const params = {
+                connectionId: _.publisher.stream.connection.connectionId,
+                hasAudio: true,
+              }
+              if (!hasCamera) {
+                params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
+                params.hasCamera = false
+                // _.changeProperty(true)
+              } else {
+                params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
+                params.hasCamera = true
+              }
+              Store.commit('updateParticipant', params)
+              // _.sendCamera(
+              //   !hasCamera ? CAMERA_STATUS.CAMERA_NONE : CAMERA_STATUS.CAMERA_OFF,
+              // )
+            })
           }
         })
 
         _.session.publish(_.publisher)
+      } else {
+        Store.commit('updateParticipant', {
+          connectionId: _.connectionId,
+          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
+          hasVideo: false,
+          hasAudio: false,
+          video: false,
+          audio: false,
+        })
       }
       return true
     } catch (err) {
-      if (err && err.message && err.message.length > 0) {
-        console.error(`${err.message} (${err.code})`)
-      } else {
-        console.error(err)
-      }
+      console.err(err)
       throw err
     }
   },
@@ -192,6 +241,7 @@ const _ = {
    */
   sendFile: params => {
     if (!_.session) return
+    params.type = FILE.UPLOADED
 
     //파일 관련 정보 전송하기
     _.session.signal({
@@ -232,7 +282,7 @@ const _ = {
    * @param {String} uuid
    * @param {Boolean} force true / false
    */
-  mainview: (uuid, force = false, target = null) => {
+  sendVideo: (uuid, force = false, target = null) => {
     if (_.account.roleType !== ROLE.LEADER) return
     if (!uuid) uuid = _.account.uuid
     const params = {
@@ -251,7 +301,7 @@ const _ = {
    * @param {Object} params
    *  = {color, opacity, width, posX, posY}
    */
-  pointing: params => {
+  sendPointing: params => {
     if (!_.session) return
     _.session.signal({
       data: JSON.stringify(params),
@@ -265,7 +315,7 @@ const _ = {
    * @param {String} type = remote.config.DRAWING
    * @param {Object} params
    */
-  drawing: (type, params = {}, target = null) => {
+  sendDrawing: (type, params = {}, target = null) => {
     params.type = type
     _.session.signal({
       type: SIGNAL.DRAWING,
@@ -279,7 +329,7 @@ const _ = {
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
-  control: (type, enable, target = null) => {
+  sendControl: (type, enable, target = null) => {
     const params = {
       type,
       enable,
@@ -295,7 +345,7 @@ const _ = {
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  startArFeature: targetId => {
+  sendArFeatureStart: targetId => {
     const params = {
       type: AR_FEATURE.START_AR_FEATURE,
       targetUserId: targetId,
@@ -311,7 +361,7 @@ const _ = {
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  stopArFeature: () => {
+  sendArFeatureStop: () => {
     const params = {
       type: AR_FEATURE.STOP_AR_FEATURE,
     }
@@ -327,7 +377,7 @@ const _ = {
    * @param {String} type = remote.config.AR_POINTING
    * @param {Object} params (문서참조)
    */
-  arPointing: (type, params = {}, target = null) => {
+  sendArPointing: (type, params = {}, target = null) => {
     params.type = type
     _.session.signal({
       data: JSON.stringify(params),
@@ -340,7 +390,7 @@ const _ = {
    * request screen capture permission
    * @param {Object} params
    */
-  permission: (target = null) => {
+  sendCapturePermission: (target = null) => {
     const params = {
       type: 'request',
     }
@@ -356,7 +406,7 @@ const _ = {
    * @param {String} type = remote.config.AR_DRAWING
    * @param {Object} params (문서참조)
    */
-  arDrawing: (type, params = {}, target = null) => {
+  sendArDrawing: (type, params = {}, target = null) => {
     if (!_.session) return
     params.type = type
     _.session.signal({
@@ -369,40 +419,21 @@ const _ = {
    * @BROADCATE
    * @TARGET
    * my video stream control
-   * @param {Boolean, String} active true / false / 'NONE'
+   * @param {Boolean, String} status CAMERA_STATUS
    */
-  video: (active, target = null) => {
-    if (_.openRoom) return
+  sendCamera: (status = CAMERA_STATUS.CAMERA_NONE, target = null) => {
     if (!_.publisher) return
     // if (!_.publisher.stream.hasVideo) return
-    if (active === 'NONE') {
-      active = CAMERA_STATUE.CAMERA_NONE
-    } else {
-      _.publisher.publishVideo(active)
-      active = active ? CAMERA_STATUE.CAMERA_ON : CAMERA_STATUE.CAMERA_OFF
+    if (
+      status === CAMERA_STATUS.CAMERA_ON ||
+      status === CAMERA_STATUS.CAMERA_OFF
+    ) {
+      _.publisher.publishVideo(status === CAMERA_STATUS.CAMERA_ON)
     }
 
     const params = {
       type: CAMERA.STATUS,
-      status: active,
-      currentZoomLevel: _.currentZoomLevel,
-      maxZoomLevel: _.maxZoomLevel,
-    }
-    try {
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: target,
-        type: SIGNAL.CAMERA,
-      })
-    } catch (err) {
-      return false
-    }
-  },
-  changeProperty: (newValue, target = []) => {
-    if (_.openRoom) return
-    const params = {
-      type: CAMERA.STATUS,
-      status: newValue ? CAMERA_STATUE.CAMERA_OFF : CAMERA_STATUE.CAMERA_NONE,
+      status: status,
       currentZoomLevel: _.currentZoomLevel,
       maxZoomLevel: _.maxZoomLevel,
     }
@@ -422,8 +453,8 @@ const _ = {
    * my mic control
    * @param {Boolean} active
    */
-  mic: (active, target = null) => {
-    if (_.openRoom) return
+  sendMic: (active, target = null) => {
+    // if (_.openRoom) return
     if (_.publisher) {
       _.publisher.publishAudio(active)
     }
@@ -447,7 +478,7 @@ const _ = {
    * my speaker control
    * @param {Boolean} active
    */
-  speaker: (active, target = null) => {
+  sendSpeaker: (active, target = null) => {
     for (let subscriber of _.subscribers) {
       subscriber.subscribeToAudio(active)
     }
@@ -470,7 +501,7 @@ const _ = {
    * other user's flash control
    * @param {Boolean} active
    */
-  flashStatus: (status = FLASH_STATUE.FLASH_NONE, target = null) => {
+  sendFlashStatus: (status = FLASH_STATUS.FLASH_NONE, target = null) => {
     const params = {
       status: status,
       type: FLASH.STATUS,
@@ -488,7 +519,7 @@ const _ = {
    * @param {Boolean} active
    * @param {String} id : target id
    */
-  flash: (active, target) => {
+  sendFlash: (active, target) => {
     const params = {
       enable: active,
       type: FLASH.FLASH,
@@ -505,7 +536,7 @@ const _ = {
    * other user's camera control
    * @param {Boolean} active
    */
-  zoom: (level, target) => {
+  sendCameraZoom: (level, target) => {
     const params = {
       type: CAMERA.ZOOM,
       level: level,
@@ -532,7 +563,6 @@ const _ = {
       return
     }
     _.subscribers[idx].subscribeToAudio(!mute)
-    // TODO: 이건머냐!!!!
     Store.commit('updateParticipant', {
       connectionId: connectionId,
       mute: mute,
@@ -591,7 +621,9 @@ const _ = {
     _.session.on(type, func)
   },
   removeListener: (type, func) => {
-    // _.session.off(type, func)
+    if (_.session) {
+      _.session.off(type, func)
+    }
   },
 }
 

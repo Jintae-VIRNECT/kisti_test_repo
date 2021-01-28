@@ -5,7 +5,11 @@
       <label v-if="fileList.length > 0" class="chat-down__bar--count">{{
         $t('service.file_choice_num', { number: fileList.length })
       }}</label>
-      <button class="chat-down__bar--button" @click="download">
+      <button
+        class="btn chat-down__bar--button"
+        :disabled="fileList.length === 0"
+        @click="download"
+      >
         {{ $t('button.download') }}
       </button>
     </div>
@@ -17,24 +21,12 @@ import { mapGetters } from 'vuex'
 import { downloadFile } from 'api/http/file'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
+import { getFile } from 'utils/file'
+import toastMixin from 'mixins/toast'
 
-const getFile = url => {
-  return new Promise(resolve => {
-    var xhr = new XMLHttpRequest()
-
-    xhr.addEventListener('load', function() {
-      if (xhr.status == 200) {
-        resolve(xhr.response)
-      }
-    })
-
-    xhr.open('GET', url)
-    xhr.responseType = 'blob'
-    xhr.send(null)
-  })
-}
 export default {
   name: 'ChatFileDownload',
+  mixins: [toastMixin],
   data() {
     return {
       chunk: [],
@@ -54,15 +46,20 @@ export default {
   },
   methods: {
     async download() {
+      if (this.fileList.length === 0) return
       this.zip = new JSZip()
       for (let file of this.fileList) {
-        const res = await downloadFile({
-          objectName: file.objectName,
-          sessionId: this.roomInfo.sessionId,
-          workspaceId: this.workspace.uuid,
-          userId: this.account.uuid,
-        })
-        await this.get(res.name, res.url)
+        try {
+          const res = await downloadFile({
+            objectName: file.objectName,
+            sessionId: this.roomInfo.sessionId,
+            workspaceId: this.workspace.uuid,
+            userId: this.account.uuid,
+          })
+          await this.get(res.name, res.url)
+        } catch (err) {
+          this.toastError(this.$t('confirm.network_error'))
+        }
       }
       this.zip.generateAsync({ type: 'blob' }).then(content => {
         FileSaver.saveAs(content, 'vremote_files.zip')

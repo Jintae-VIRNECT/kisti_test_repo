@@ -1,0 +1,162 @@
+.chat-speech {
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  padding: 2.857rem 1.714rem 1.143rem;
+  // height: 106px;
+  background: #393a41;
+  border-radius: 1.143rem 1.143rem 0 0;
+}
+
+.chat-speech__main {
+  position: relative;
+  display: flex;
+  height: 3.857rem;
+}
+
+@keyframes speechStreaming {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.chat-speech__icon {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  width: 3.143rem;
+  height: 3.143rem;
+  margin: auto 0.929rem auto 0.357rem;
+  &:before {
+    position: absolute;
+    top: -0.357rem;
+    left: -0.357rem;
+    width: 3.857rem;
+    height: 3.857rem;
+    background-color: #ffffff;
+    border-radius: 50%;
+    opacity: 0.1;
+    content: "";
+  }
+  &:after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3.143rem;
+    height: 3.143rem;
+    background: url(~assets/image/call/ic_speech.svg) no-repeat center/2.143rem
+      2.143rem;
+    background-color: #797e85;
+    border-radius: 50%;
+    content: "";
+  }
+
+  &.active {
+    cursor: default;
+    &:before {
+      background-color: #0f75f5;
+      opacity: 0.3;
+      animation-name: speechStreaming;
+      animation-duration: 1s;
+      animation-iteration-count: infinite;
+    }
+    &:after {
+      background-color: #0f75f5;
+    }
+  }
+  &.recording {
+    &:before {
+      opacity: 0;
+    }
+    &:after {
+      background-color: #0f75f5;
+    }
+  }
+}
+
+.chat-speech__progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3.857rem;
+  height: 3.857rem;
+  > circle {
+    transform: rotate(-90deg);
+    transform-origin: 50% 50%;
+    transition: stroke-dashoffset 1s linear;
+  }
+}
+
+.chat-speech__text {
+  flex: 1;
+  align-self: center;
+  color: #fff;
+  font-weight: 400;
+  font-size: 1.071rem;
+}
+
+.chat-speech__send {
+  flex: 0;
+  height: fit-content;
+  margin: auto 0 auto 0.357rem;
+  padding: 0.214rem 0.857rem;
+  color: $color_text_sub;
+  background-color: $color_primary;
+  border-radius: 2px;
+  transition: background-color 0.2s;
+
+  &:focus {
+    background-color: $color_primary;
+  }
+  &:hover {
+    background-color: $color_primary_700;
+  }
+  &:active {
+    background-color: $color_primary_dark;
+  }
+  &.inactive {
+    color: rgba(#fafafa, 0.5);
+    background-color: #797e85;
+    cursor: default;
+  }
+}
+
+.chat-speach__textarea {
+  width: 100%;
+  height: 8.571rem;
+  margin-top: 0.714rem;
+  > textarea {
+    width: -webkit-fill-available;
+    height: -webkit-fill-available;
+    padding: 0.786rem 0.929rem;
+    color: rgba(#fff, 0.78);
+    background-color: #2d2e33;
+    border: none;
+    border-radius: 3px;
+    resize: none;
+
+    &::placeholder {
+      color: rgba(#fff, 0.78);
+      opacity: 0.5;
+    }
+    &::selection {
+      background-color: #a8cfff;
+    }
+  }
+}
+
+.chat-speech__close {
+  @include ir;
+  position: absolute;
+  top: 0.714rem;
+  right: 0.714rem;
+  width: 1.714rem;
+  height: 1.714rem;
+  background: url(~assets/image/call/ic-close-w.svg) no-repeat center/100%;
+}

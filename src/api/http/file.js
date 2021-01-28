@@ -65,3 +65,36 @@ export const getFileList = async ({ sessionId, workspaceId, userId }) => {
   })
   return returnVal
 }
+
+/**
+ * 로컬 녹화 파일 업로드
+ *
+ * @param {File}   file 대상 파일
+ * @param {String} sessionId 세션 id
+ * @param {String} workspaceId 워크스페이스 id
+ * @param {String} userId 유저 id(업로드 유저 id)
+ * @param {String} durationSec 영상 길이(초단위)
+ */
+export const uploadRecordFile = async ({
+  file,
+  sessionId,
+  workspaceId,
+  userId,
+  durationSec,
+}) => {
+  console.log({
+    file,
+    sessionId,
+    workspaceId,
+    userId,
+    durationSec,
+  })
+  const returnVal = await http('FILE_UPLOAD_RECORD', {
+    file,
+    sessionId,
+    workspaceId,
+    userId,
+    durationSec,
+  })
+  return returnVal
+}

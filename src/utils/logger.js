@@ -1,11 +1,12 @@
 // logging with trace
 
 console.logger = (...value) => {
-  console.groupCollapsed(...value)
+  // console.groupCollapsed(...value)
   /* 1. 로그 trace 출력 */
   // console.trace(...value)
-  getTrace(value)
-  console.groupEnd()
+  // getTrace(value)
+  console.log(...value)
+  // console.groupEnd()
 }
 const isDev = window.localStorage.getItem('env') === 'develop'
 

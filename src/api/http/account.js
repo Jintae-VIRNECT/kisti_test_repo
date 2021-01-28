@@ -43,12 +43,30 @@ export const getLicense = async function({ userId }) {
 }
 
 /**
+ * 라이선스 체크
+ * @param {String} workspaceId
+ * @param {String} userId
+ */
+export const workspaceLicense = async function({ workspaceId, userId }) {
+  const result = await http('CHECK_LICENSE', { workspaceId, userId })
+  return result
+}
+
+/**
  * 회사 정보
  * @param {String} userId
  * @param {String} workspaceId
  */
-export const getCompanyInfo = async function({ userId, workspaceId }) {
-  const returnVal = await http('COMPANY_INFO', { userId, workspaceId })
+export const getCompanyInfo = async function({
+  userId,
+  workspaceId,
+  companyCode = 0,
+}) {
+  const returnVal = await http('COMPANY_INFO', {
+    userId,
+    workspaceId,
+    companyCode,
+  })
   return returnVal
 }
 

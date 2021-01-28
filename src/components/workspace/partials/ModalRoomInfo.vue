@@ -143,15 +143,11 @@ export default {
   computed: {
     ...mapGetters(['useOpenRoom']),
     isOpenRoom() {
-      if (
+      return (
         this.room &&
         this.room.sessionType &&
         this.room.sessionType === ROOM_STATUS.OPEN
-      ) {
-        return true
-      } else {
-        return false
-      }
+      )
     },
     titleValidMessage() {
       if (this.title.length < 2) {
@@ -197,7 +193,7 @@ export default {
     init() {
       this.title = this.room.title
       this.description = this.room.description
-      // this.imageUrl = room.profile
+      this.imageURL = this.room.profile
       this.createdDate = this.$dayjs(this.room.activeDate + '+00:00').format(
         'YYYY.MM.DD',
       )
@@ -215,6 +211,7 @@ export default {
     },
     remove() {
       this.imageRemove()
+      this.$emit('update:image', 'default')
     },
     saveInfo() {
       const params = {
@@ -224,7 +221,7 @@ export default {
         sessionId: this.room.sessionId,
         workspaceId: this.workspace.uuid,
       }
-      if (this.room.profile !== this.imageUrl) {
+      if (this.room.profile !== this.imageURL) {
         params.image = this.imageFile
       }
       this.$emit('update', params)

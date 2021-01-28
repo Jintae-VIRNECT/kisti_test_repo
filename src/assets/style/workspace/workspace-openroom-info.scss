@@ -17,14 +17,10 @@
   font-size: 0.929em;
   line-height: 1.571em;
 }
-.openroom-info__add-member {
-  font-size: 0.929em;
-  opacity: 0.7;
-}
 .btn.openroom-info__button {
-  position: absolute;
-  bottom: 0;
+  position: relative;
   width: 100%;
+  margin-top: 2.143em;
   background-color: #009174;
   &:hover,
   &:active {
@@ -32,5 +28,19 @@
   }
   &:focus {
     background-color: #005545;
+  }
+  &.btn-loading {
+    color: transparent;
+    &:after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 2.857rem;
+      height: 2.857rem;
+      background: center center/2.857rem 2.857rem no-repeat
+        url(~assets/image/workspace/loading.gif);
+      transform: translate(-50%, -50%);
+      content: "";
+    }
   }
 }

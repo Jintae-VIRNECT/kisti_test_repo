@@ -9,7 +9,7 @@ const mode =
   process.env.NODE_ENV === 'develop' ? 'development' : process.env.NODE_ENV
 
 const productionWebpackConfig = merge(baseWebpackConfig(mode), {
-  devtool: false,
+  devtool: 'eval-cheap-source-map',
   mode,
   plugins: [
     new CleanWebpackPlugin('../dist/*', {

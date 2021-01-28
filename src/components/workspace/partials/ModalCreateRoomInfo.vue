@@ -41,11 +41,7 @@
       :count="50"
       showCount
     ></input-row>
-    <input-row
-      v-if="!nouser"
-      :title="$t('workspace.create_remote_selected')"
-      required
-    >
+    <input-row :title="$t('workspace.create_remote_selected')" required>
       <profile-list
         v-if="selection.length > 0"
         :users="selection"
@@ -56,12 +52,11 @@
     </input-row>
     <button
       class="btn large createroom-info__button"
-      :class="{ disabled: btnDisabled }"
+      :class="{ disabled: btnDisabled, 'btn-loading': btnLoading }"
       @click="startRemote"
     >
       {{ $t('button.start') }}
     </button>
-    <device-denied :visible.sync="showDenied"></device-denied>
   </section>
 </template>
 
@@ -69,7 +64,6 @@
 import ProfileImage from 'ProfileImage'
 import InputRow from 'InputRow'
 import ProfileList from 'ProfileList'
-import DeviceDenied from '../modal/WorkspaceDeviceDenied'
 
 import imageMixin from 'mixins/uploadImage'
 import confirmMixin from 'mixins/confirm'
@@ -81,7 +75,6 @@ export default {
     ProfileImage,
     InputRow,
     ProfileList,
-    DeviceDenied,
   },
   data() {
     return {
@@ -89,7 +82,6 @@ export default {
       description: '',
       image: null,
       titleValid: false,
-      showDenied: false,
     }
   },
   props: {
@@ -99,15 +91,15 @@ export default {
         return []
       },
     },
-    nouser: {
-      type: Boolean,
-      default: true,
-    },
     roomInfo: {
       type: Object,
       default: () => {
         return {}
       },
+    },
+    btnLoading: {
+      type: Boolean,
+      defalut: false,
     },
   },
   watch: {
@@ -129,13 +121,7 @@ export default {
       }
     },
     btnDisabled() {
-      if (this.selection.length < 1) {
-        return true
-      } else if (this.titleValid) {
-        return true
-      } else {
-        return false
-      }
+      return this.selection.length < 1 || this.titleValid
     },
     titleValidMessage() {
       if (this.title.length < 2) {
@@ -152,7 +138,13 @@ export default {
     },
     async startRemote() {
       if (this.btnDisabled) {
-        this.confirmDefault(this.titleValidMessage)
+        if (this.selection.length < 1) {
+          this.confirmDefault(this.$t('workspace.create_remote_selected_empty'))
+        } else if (this.title.length < 2) {
+          this.confirmDefault(this.$t('workspace.remote_name_valid1'))
+        } else {
+          this.confirmDefault(this.$t('workspace.remote_name_valid2'))
+        }
         return
       }
 
@@ -160,6 +152,7 @@ export default {
         title: this.title,
         description: this.description,
         imageFile: this.imageFile,
+        imageUrl: this.imageURL,
         open: false,
       })
     },

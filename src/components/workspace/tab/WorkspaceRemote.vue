@@ -11,6 +11,7 @@
     :showRefreshButton="true"
     :loading="loading"
     @refresh="refresh"
+    @search="doSearch"
   >
     <div class="groupcard-list">
       <remote-card
@@ -29,28 +30,34 @@
 <script>
 import TabView from '../partials/WorkspaceTabView'
 import RemoteCard from 'RemoteCard'
-import { getRoomList, deleteRoom, leaveRoom } from 'api/http/room'
+import {
+  getRoomList,
+  searchRoomList,
+  deleteRoom,
+  leaveRoom,
+} from 'api/http/room'
 import confirmMixin from 'mixins/confirm'
-import searchMixin from 'mixins/filter'
 import roomMixin from 'mixins/room'
 
 export default {
   name: 'WorkspaceRemote',
-  mixins: [searchMixin, confirmMixin, roomMixin],
+  mixins: [confirmMixin, roomMixin],
   components: { TabView, RemoteCard },
   data() {
     return {
       rooms: [],
       loading: false,
+      searchRooms: [],
+      searchText: '',
     }
   },
   computed: {
     roomList() {
-      return this.getFilter(this.rooms, [
-        'title',
-        'description',
-        'memberList[].nickname',
-      ])
+      if (this.searchText.length > 0) {
+        return this.searchRooms
+      } else {
+        return this.rooms
+      }
     },
     emptyTitle() {
       if (this.rooms.length > 0) {
@@ -105,7 +112,30 @@ export default {
         { text: this.$t('button.cancel') },
       )
     },
+    async doSearch(text) {
+      if (this.rooms.length === 0) return
+      try {
+        if (!text || text.trim().length === 0) {
+          this.searchText = ''
+          this.searchRooms = []
+          return
+        }
+        const roomList = await searchRoomList({
+          userId: this.account.uuid,
+          workspaceId: this.workspace.uuid,
+          search: text,
+        })
+        this.searchText = text
+        this.searchRooms = roomList.roomInfoList
+      } catch (err) {
+        this.searchText = ''
+        this.searchRooms = []
+      }
+    },
     async init() {
+      this.searchText = ''
+      this.searchRooms = []
+      this.$eventBus.$emit('search:clear')
       const roomList = await getRoomList({
         userId: this.account.uuid,
         workspaceId: this.workspace.uuid,

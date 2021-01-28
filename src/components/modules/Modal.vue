@@ -1,6 +1,14 @@
 <template>
   <transition name="modal">
-    <div v-if="visible" class="modal" :class="customClass" @wheel="scroll">
+    <div
+      v-if="visible"
+      class="modal"
+      :class="customClass"
+      @wheel="scroll"
+      @touchstart="touch"
+      @touchmove="touch"
+      @touchend="touch"
+    >
       <div
         class="modal--dimmed"
         @click.stop="dimClose ? doClose($event) : () => {}"
@@ -138,7 +146,6 @@ export default {
   },
   methods: {
     scroll(e) {
-      e.preventDefault()
       e.stopPropagation()
     },
     clickHander(event) {
@@ -162,6 +169,10 @@ export default {
         this.$emit('update:visible', false)
       })
     },
+
+    touch(e) {
+      e.stopPropagation()
+    },
   },
 
   /* Lifecycles */
@@ -177,11 +188,19 @@ export default {
   left: 0;
   z-index: 100;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  // align-items: center;
+  // justify-content: center;
   width: 100%;
   height: 100%;
+  padding: 2.857em;
+  overflow: scroll;
   background-color: rgba(#121517, 0.5);
+  scroll-behavior: smooth;
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   .modal--dimmed {
     position: absolute;
@@ -194,6 +213,7 @@ export default {
   .modal--inner {
     position: relative;
     min-width: 25.714em;
+    margin: auto;
     // overflow: hidden;
     background-color: #242427;
     border: 1px solid rgba(#a9a9a9, 0.08);

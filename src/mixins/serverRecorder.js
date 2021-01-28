@@ -1,55 +1,97 @@
-import { startServerRecord, stopServerRecord } from 'api/http/record'
-import { mapGetters } from 'vuex'
+import {
+  startServerRecord,
+  stopServerRecord,
+  getServerRecordList,
+} from 'api/http/record'
+import { mapGetters, mapActions } from 'vuex'
+import { RECORD_INFO } from 'configs/env.config'
+import { ROLE } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
 
 export default {
   data() {
     return {
       recordingId: null,
+      recordTimeout: null,
+
+      serverRecordRetryTimeout: null,
+      serverRecordRetryCount: 0,
     }
   },
   computed: {
-    ...mapGetters(['roomInfo']),
+    ...mapGetters(['roomInfo', 'serverRecord', 'serverRecordStatus']),
   },
   methods: {
+    ...mapActions(['setServerRecordStatus']),
     async startServerRecord() {
       try {
         this.logger('SERVER RECORD', 'start')
 
-        let today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
+        const today = this.$dayjs().format('YYYY-MM-DD_HH-mm-ss')
 
         const options = {
-          iceServers: window.urls['coturn'],
+          iceServers: RECORD_INFO['coturn'],
           role: 'PUBLISHER',
-          wsUri: window.urls['wss'],
+          wsUri: RECORD_INFO['wss'],
         }
 
-        const token = `${
-          window.urls['token']
-        }&recorder=true&options=${JSON.stringify(options)}`
+        const metaData = {
+          clientData: this.account.uuid,
+          roleType: ROLE.EXPERT,
+          deviceType: DEVICE.WEB,
+          device: 0,
+        }
+
+        const optionString = JSON.stringify(options)
+        const metaDataString = JSON.stringify(metaData)
+        const tokenInfo = RECORD_INFO['token']
+
+        const token = `${tokenInfo}&recorder=true&options=${optionString}&metaData=${metaDataString}`
+
+        const fileName = `${today}_${this.roomInfo.sessionId}`
 
         const result = await startServerRecord({
           workspaceId: this.workspace.uuid,
           userId: this.account.uuid,
           framerate: 20,
-          recordingFilename: today,
-          recordingTimeLimit: 5,
-          resolution: '720p',
+          recordingFilename: fileName,
+          recordingTimeLimit: Number.parseInt(this.serverRecord.time, 10),
+          resolution: this.serverRecord.resolution,
           sessionId: this.roomInfo.sessionId,
           token: token,
           metaData: {},
         })
         this.recordingId = result.recordingId
 
-        setTimeout(() => {
-          this.$eventBus.$emit('serverRecord', false)
-        }, 5 * 60 * 1000)
+        this.setServerRecordStatus('START')
+        this.$eventBus.$emit('showServerTimer')
+
+        const timeout = Number.parseInt(this.serverRecord.time, 10) * 60 * 1000
+
+        this.recordTimeout = setTimeout(() => {
+          this.stopServerRecord()
+        }, timeout)
+
+        this.toastDefault(this.$t('service.record_server_start_message'))
       } catch (e) {
         console.error('SERVER RECORD::', 'start failed')
-        this.$eventBus.$emit('serverRecord', false)
+        if (e.code === 1001) {
+          this.toastError(this.$t('service.record_server_over_max_count'))
+        } else if (e.code === 1002) {
+          this.toastError(this.$t('service.record_server_no_storage'))
+        }
+
+        this.stopServerRecord()
       }
     },
+
     async stopServerRecord() {
+      this.setServerRecordStatus('STOP')
       if (this.recordingId) {
+        if (this.recordTimeout) {
+          this.clearServerRecordTimer()
+        }
+
         this.logger('SERVER RECORD', 'stop')
         await stopServerRecord({
           workspaceId: this.workspace.uuid,
@@ -57,21 +99,89 @@ export default {
           id: this.recordingId,
         })
         this.recordingId = null
+
+        this.toastDefault(this.$t('service.record_server_end_message'))
       }
     },
-    async toggleServerRecord(isStart) {
-      if (isStart) {
-        await this.startServerRecord()
-      } else {
-        await this.stopServerRecord()
+    toggleServerRecord(status) {
+      if (status === 'STOP') {
+        this.stopServerRecord()
+      } else if (status === 'WAIT') {
+        this.setServerRecordStatus('WAIT')
+        this.startServerRecord()
       }
+    },
+    async checkServerRecordings() {
+      const result = await getServerRecordList({
+        workspaceId: this.workspace.uuid,
+        userId: this.account.uuid,
+        sessionId: this.roomInfo.sessionId,
+      })
+
+      const failedInPreparing =
+        this.serverRecordStatus === 'PREPARE' && result.infos.length === 0
+
+      if (failedInPreparing) {
+        this.logger('SERVER RECORD', 'failed in preparing')
+        this.processPreparingFailed()
+        return
+      }
+
+      if (this.isLeader && result.infos.length > 0) {
+        const recordInfo = result.infos[0]
+        const status = recordInfo.status
+
+        if (this.serverRecordRetryCount >= 11) {
+          this.processPreparingFailed()
+          return
+        }
+
+        if (status === 'preparing') {
+          this.serverRecordRetryCount++
+          this.setServerRecordStatus('PREPARE')
+          const retryInterval = 1000
+
+          this.serverRecordRetryTimeout = setTimeout(() => {
+            this.logger('SERVER RECORD', 'check preparing')
+            this.checkServerRecordings()
+          }, retryInterval)
+          return
+        }
+
+        this.recordingId = recordInfo.recordingId
+        const elapsedTime = recordInfo.duration
+        const timeout = recordInfo.timeLimit * 60 * 1000
+
+        this.recordTimeout = setTimeout(() => {
+          this.toggleServerRecord('STOP')
+        }, timeout - elapsedTime * 1000)
+
+        this.$eventBus.$emit('showServerTimer', elapsedTime)
+        this.setServerRecordStatus('START')
+      }
+    },
+    clearServerRecordTimer() {
+      clearTimeout(this.recordTimeout)
+      this.recordTimeout = null
+    },
+    processPreparingFailed() {
+      this.toastDefault(this.$t('service.record_server_start_failed'))
+      this.serverRecordRetryCount = 0
+      this.setServerRecordStatus('STOP')
     },
   },
 
   mounted() {
+    this.setServerRecordStatus('STOP')
+    if (!this.account.roleType === ROLE.LEADER) return
+
     this.$eventBus.$on('serverRecord', this.toggleServerRecord)
+    this.checkServerRecordings()
   },
   beforeDestroy() {
-    this.$eventBus.$off('serverRecord')
+    clearTimeout(this.serverRecordRetryTimeout)
+    this.serverRecordRetryTimeout = null
+
+    this.$eventBus.$off('serverRecord', this.toggleServerRecord)
   },
 }

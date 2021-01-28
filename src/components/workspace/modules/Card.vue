@@ -86,19 +86,24 @@ export default {
 }
 .card__button {
   position: relative;
+  display: block;
   width: 2rem;
   height: 2rem;
-  background: url(~assets/image/ic_more.svg) 50% no-repeat;
+  background: url(~assets/image/ic_more.svg) 50%/2rem 2rem no-repeat;
+  &:before {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    border-radius: 50%;
+    transition: background-color 0.3s;
+    content: '';
+  }
   &:hover {
     &:before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
       background-color: rgba(#fff, 0.05);
-      border-radius: 50%;
-      content: '';
     }
   }
 }

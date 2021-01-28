@@ -5,7 +5,8 @@
         <ol class="upload-list">
           <history-image
             v-for="img of historyList"
-            :key="img.id"
+            :id="'history_' + img.id"
+            :key="'history_' + img.id"
             :imgInfo="img"
             :selected="selected.findIndex(id => id === img.id) > -1"
             @selected="addSelect"
@@ -50,11 +51,7 @@ export default {
   computed: {
     ...mapGetters(['historyList', 'shareFile']),
     disabled() {
-      if (this.selected.length > 0) {
-        return false
-      } else {
-        return true
-      }
+      return this.selected.length === 0
     },
   },
   watch: {},

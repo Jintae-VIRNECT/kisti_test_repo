@@ -1,14 +1,15 @@
 const url = new URL(window.location.href)
 const token = url.searchParams.get('token')
+let metaData = url.searchParams.get('metaData')
 let options = url.searchParams.get('options')
 
 var OV = new OpenVidu()
 OV.enableProdMode()
 
 var session = OV.initSession()
-const metaData = {}
 
 options = JSON.parse(options)
+metaData = JSON.parse(metaData)
 
 let streamCount = 0
 
@@ -32,10 +33,13 @@ session.on('streamCreated', event => {
 
 session.on('streamDestroyed', event => {
   console.log('event streamDestroyed::', event)
-  console.log('streamCount::', streamCount)
-
   streamCount--
+  console.log('streamCount::', streamCount)
   layoutSelector(streamCount)
+  if (streamCount <= 0) {
+    console.log('session::disconnect')
+    session.disconnect()
+  }
 })
 
 session

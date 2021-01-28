@@ -34,12 +34,24 @@
         @change="fileUpload($event)"
       />
       <template v-if="fileList.length === 0">
-        <button class="chat-input__form-upload" @click="clickUpload">
+        <button
+          v-if="translate.flag"
+          class="chat-input__form-speech"
+          @click="doStt"
+        >
+          {{ $t('service.translate') }}
+        </button>
+        <button
+          v-if="useStorage"
+          class="chat-input__form-upload"
+          @click="clickUpload"
+        >
           {{ $t('service.file_upload') }}
         </button>
         <textarea
           class="chat-input__form-write"
           v-model="inputText"
+          @keyup="checkLength"
           :placeholder="$t('service.chat_input')"
           @keydown.enter.exact="doSend($event)"
         />
@@ -74,7 +86,6 @@
 import { mapGetters } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
-import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
 export default {
   name: 'ChatInput',
   mixins: [toastMixin],
@@ -84,20 +95,21 @@ export default {
       fileList: [],
       inputText: '',
       fileName: '',
+      clicked: false,
     }
   },
   props: {
     chat: Object,
   },
   computed: {
-    ...mapGetters(['chatList', 'roomInfo', 'mic', 'translate']),
-    isOnpremise() {
-      if (RUNTIME_ENV === RUNTIME.ONPREMISE) {
-        return true
-      } else {
-        return false
-      }
-    },
+    ...mapGetters([
+      'chatList',
+      'roomInfo',
+      'mic',
+      'translate',
+      'useTranslate',
+      'useStorage',
+    ]),
   },
   watch: {
     fileList: {
@@ -110,50 +122,82 @@ export default {
       },
       deep: true,
     },
+    'inputText.length': 'checkLength',
   },
   methods: {
-    doTranslate() {
+    checkLength() {
+      if (!this.useTranslate) return
+      if (this.inputText.length > 200) {
+        this.inputText = this.inputText.substr(0, 200)
+        this.toastDefault(this.$t('service.chat_text_exceed'), {
+          position: this.isTablet ? 'bottom-center' : 'top-center',
+        })
+      }
+    },
+    doStt() {
       if (!this.mic.isOn) {
-        this.toastDefault('마이크가 활성화 되어있지 않습니다.')
+        this.toastDefault(this.$t('service.stt_mic_off'))
         return
       }
+      this.$emit('update:speech', true)
+    },
+    doTranslate() {
+      // if (!this.mic.isOn) {
+      //   this.toastDefault('마이크가 활성화 되어있지 않습니다.')
+      //   return
+      // }
       this.viewTrans = !this.viewTrans
     },
     async doSend(e) {
+      if (this.clicked) return
+      this.clicked = true
       if (e) {
         e.preventDefault()
       }
 
       if (this.fileList.length > 0) {
-        for (const file of this.fileList) {
-          const params = {
-            file: file.filedata,
-            sessionId: this.roomInfo.sessionId,
-            workspaceId: this.workspace.uuid,
-            userId: this.account.uuid,
+        try {
+          for (const file of this.fileList) {
+            const params = {
+              file: file.filedata,
+              sessionId: this.roomInfo.sessionId,
+              workspaceId: this.workspace.uuid,
+              userId: this.account.uuid,
+            }
+            const res = await uploadFile(params)
+
+            this.$call.sendFile({
+              fileInfo: { ...res },
+            })
           }
-          const res = await uploadFile(params)
 
-          this.$call.sendFile({
-            fileName: res.name,
-            objectName: res.objectName,
-            mimeType: file.filedata.type,
-            size: res.size,
-            fileDownloadUrl: res.path,
-          })
+          this.clearUploadFile()
+          this.fileList = []
+        } catch (err) {
+          if (err && err.code) {
+            if (err.code === 7002) {
+              this.toastError(this.$t('service.file_dummy_assumed'))
+            } else if (err.code === 7003) {
+              this.toastError(this.$t('service.file_extension_unsupport'))
+            } else if (err.code === 7004) {
+              this.toastError(this.$t('service.file_size_exceeded'))
+            }
+
+            this.clearUploadFile()
+            this.fileList = []
+          } else {
+            console.error(err)
+          }
         }
-
-        this.clearUploadFile()
-        this.fileList = []
       } else if (this.inputText.length > 0) {
         this.$call.sendChat(this.inputText, this.translate.code)
       }
 
       this.inputText = ''
+      this.clicked = false
     },
     clickUpload() {
-      if (!this.isOnpremise) {
-        this.unsupport()
+      if (!this.useStorage) {
         return
       }
       if (this.fileList.length > 0) {
@@ -177,6 +221,15 @@ export default {
           this.clearUploadFile()
           return false
         }
+        // const nameExp = file.name.split('.')
+        // if (
+        //   !ALLOW_MINE_TYPE.includes(file.type) &&
+        //   !ALLOW_EXTENSION.includes(nameExp[nameExp.length - 1])
+        // ) {
+        //   this.toastDefault(this.$t('service.file_type_notsupport'))
+        //   this.clearUploadFile()
+        //   return
+        // }
 
         const isValid = [
           'image/jpeg',
@@ -184,6 +237,7 @@ export default {
           // 'image/bmp',
           // 'application/pdf',
         ].includes(file.type)
+        // const fileType = checkFileType(file)
 
         if (isValid) {
           const docItem = {
@@ -254,10 +308,7 @@ export default {
       // console.log(event);
     },
     dropHandler(event) {
-      if (!this.isOnpremise) {
-        this.unsupport()
-        return
-      }
+      if (!this.useStorage) return
       const file = event.dataTransfer.files[0]
       if (this.fileList.length > 0) {
         // @TODO: MESSAGE

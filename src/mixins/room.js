@@ -4,9 +4,9 @@ import { DEVICE } from 'configs/device.config'
 import { ROOM_STATUS } from 'configs/status.config'
 import toastMixin from 'mixins/toast'
 import { mapActions } from 'vuex'
-import { checkPermission } from 'utils/deviceCheck'
+import callMixin from 'mixins/call'
 export default {
-  mixins: [toastMixin],
+  mixins: [toastMixin, callMixin],
   data() {
     return {
       clicked: false,
@@ -31,10 +31,7 @@ export default {
         } else {
           role = room.leaderId === this.account.uuid ? ROLE.LEADER : ROLE.EXPERT
         }
-        let options = false
-        if (room.open !== true) {
-          options = await checkPermission(true)
-        }
+        const options = await this.getDeviceId()
 
         const res = await joinRoom({
           uuid: this.account.uuid,
@@ -43,10 +40,6 @@ export default {
           sessionId: room.sessionId,
           workspaceId: this.workspace.uuid,
         })
-
-        window.urls['token'] = res.token
-        window.urls['coturn'] = res.coturn
-        window.urls['wss'] = res.wss
 
         const joinRtn = await this.$call.connect(res, role, options)
         if (joinRtn) {
@@ -61,28 +54,33 @@ export default {
         }
       } catch (err) {
         this.clicked = false
-        if (typeof err === 'string') {
-          if (err === 'nodevice') {
-            this.toastError(this.$t('workspace.error_no_connected_device'))
-          } else if (err.toLowerCase() === 'requested device not found') {
-            this.toastError(this.$t('workspace.error_no_device'))
-          } else if (err.toLowerCase() === 'device access deined') {
-            this.$eventBus.$emit('devicedenied:show')
-          }
-        } else if (err.code === 4002) {
-          this.toastError(this.$t('workspace.remote_already_removed'))
-        } else if (err.code === 4016) {
-          // TODO: MESSAGE
-          this.toastError(this.$t('workspace.remote_already_invite'))
-        } else {
-          this.toastError(this.$t('workspace.remote_invite_impossible'))
-        }
         this.roomClear()
-        console.error(err)
         if (this['init'] && typeof this['init'] === 'function') {
           this.init()
         }
-        return false
+        if (typeof err === 'string') {
+          console.error(err)
+          if (err === 'nodevice') {
+            this.toastError(this.$t('workspace.error_no_connected_device'))
+            return false
+          } else if (err.toLowerCase() === 'requested device not found') {
+            this.toastError(this.$t('workspace.error_no_device'))
+            return false
+          } else if (err.toLowerCase() === 'device access deined') {
+            this.$eventBus.$emit('devicedenied:show')
+            return false
+          }
+        } else {
+          console.error(`${err.message} (${err.code})`)
+          if (err.code === 4002) {
+            this.toastError(this.$t('workspace.remote_already_removed'))
+            return false
+          } else if (err.code === 4016) {
+            this.toastError(this.$t('workspace.remote_already_invite'))
+            return false
+          }
+        }
+        this.toastError(this.$t('workspace.remote_invite_impossible'))
       }
     },
   },

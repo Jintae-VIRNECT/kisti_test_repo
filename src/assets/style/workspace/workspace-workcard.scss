@@ -2,7 +2,7 @@
 @import "~assets/style/mixin";
 
 .card.workcard {
-  max-width: 25rem;
+  // max-width: 25rem;
   height: 27.143rem;
   padding: 2.286rem;
   background-color: $color_darkgray_600;
@@ -20,7 +20,7 @@
 
 .workcard-profile {
   flex: 1;
-  padding-top: 1.429rem;
+  padding-top: 2.429rem;
   text-align: center;
 }
 .profile__image {
@@ -39,6 +39,7 @@
   left: 0;
   flex: 0;
   width: 100%;
+  min-height: 3rem;
   // margin-top: 1.429rem;
   padding: 0.714rem 2.857rem;
   font-weight: normal;

@@ -19,6 +19,7 @@
             :content="$t('service.invite_unconnected_remove')"
             placement="right"
             effect="blue"
+            :guide="true"
           >
             <img
               slot="body"
@@ -104,7 +105,6 @@ export default {
   data() {
     return {
       selection: [],
-      nouser: false,
       visibleFlag: false,
       users: [],
       loading: false,
@@ -119,7 +119,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['roomInfo', 'participants']),
+    ...mapGetters(['roomInfo']),
     maxSelect() {
       return this.roomInfo.maxUserCount - this.currentLength
     },
@@ -130,7 +130,6 @@ export default {
         this.init()
       } else {
         this.selection = []
-        this.nouser = false
         this.visibleFlag = false
         this.users = []
         this.loading = false
@@ -204,7 +203,17 @@ export default {
         sessionId: this.roomInfo.sessionId,
         userId: this.account.uuid,
       })
-      this.users = res.memberList
+      this.users = res.memberList.sort((A, B) => {
+        if (A.role === 'MASTER') {
+          return -1
+        } else if (B.role === 'MASTER') {
+          return 1
+        } else if (A.role === 'MANAGER' && B.role !== 'MANAGER') {
+          return -1
+        } else {
+          return 0
+        }
+      })
       this.loading = false
       this.selection = []
     },

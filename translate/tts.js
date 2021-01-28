@@ -1,5 +1,5 @@
 // Imports the Google Cloud client library
-const logger = require('../server/logger')
+const logger = require('@virnect/logger')
 const textToSpeech = require('@google-cloud/text-to-speech')
 // Import other required libraries
 const fs = require('fs')
@@ -27,7 +27,6 @@ async function getTts(text, lang, voice) {
     // Select the type of audio encoding
     audioConfig: { audioEncoding: 'LINEAR16' },
   }
-  console.log(request)
 
   try {
     // Performs the Text-to-Speech request

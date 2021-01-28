@@ -8,24 +8,24 @@
       :onMaxScroll="handleMaxScroll"
     >
       <div class="workspace-wrapper">
-        <workspace-welcome ref="welcomeSection"></workspace-welcome>
+        <workspace-welcome
+          ref="welcomeSection"
+          :inited="inited"
+        ></workspace-welcome>
 
         <workspace-tab
           ref="tabSection"
           :fix="tabFix"
+          :inited="inited"
           @tabChange="tabChange"
         ></workspace-tab>
       </div>
       <cookie-policy
-        v-if="showCookie"
+        v-if="!onpremise && showCookie"
         :visible.sync="showCookie"
       ></cookie-policy>
       <record-list :visible.sync="showList"></record-list>
       <device-denied :visible.sync="showDenied"></device-denied>
-      <file-upload
-        :fileIds="fileIds"
-        :visible.sync="showFileUpload"
-      ></file-upload>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
   </section>
@@ -35,42 +35,30 @@
 import HeaderSection from 'components/header/Header'
 import WorkspaceWelcome from './section/WorkspaceWelcome'
 import WorkspaceTab from './section/WorkspaceTab'
-import auth from 'utils/auth'
-import { getLicense, getCompanyInfo } from 'api/http/account'
+import auth, { getSettings } from 'utils/auth'
+import { getLicense, workspaceLicense, getCompanyInfo } from 'api/http/account'
 import RecordList from 'LocalRecordList'
 import confirmMixin from 'mixins/confirm'
 import langMixin from 'mixins/language'
+import toastMixin from 'mixins/toast'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
-import FileUpload from './modal/WorkspaceRecordFileUpload'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
+import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
 export default {
   name: 'WorkspaceLayout',
   async beforeRouteEnter(to, from, next) {
-    const authInfo = await auth.init()
-    if (!auth.isLogin) {
+    const hasToken = await auth.check()
+    if (!hasToken) {
       auth.login()
     } else {
-      const res = await getLicense({ userId: authInfo.account.uuid })
-      const workspaces = res.myPlanInfoList.filter(
-        plan => plan.planProduct === 'REMOTE',
-      )
-      if (workspaces.length === 0) {
-        next(vm => {
-          vm.license = false
-          vm.init(authInfo)
-        })
-      } else {
-        next(vm => {
-          vm.license = true
-          vm.init(authInfo, workspaces)
-        })
-      }
+      await getSettings()
+      next()
     }
   },
-  mixins: [confirmMixin, langMixin],
+  mixins: [confirmMixin, langMixin, toastMixin],
   components: {
     HeaderSection,
     WorkspaceWelcome,
@@ -78,7 +66,6 @@ export default {
     RecordList,
     DeviceDenied,
     PlanOverflow,
-    FileUpload,
     CookiePolicy: () => import('CookiePolicy'),
   },
   data() {
@@ -91,8 +78,7 @@ export default {
       license: true,
       showDenied: false,
       showPlanOverflow: false,
-      showFileUpload: false,
-      fileIds: [],
+      inited: false,
     }
   },
   watch: {
@@ -100,11 +86,14 @@ export default {
       if (val.uuid && val.uuid !== oldVal.uuid) {
         this.checkPlan(val)
         this.checkCompany(val.uuid)
+        this.checkLicense(val.uuid)
       }
     },
   },
   computed: {
-    ...mapGetters(['useTranslate']),
+    onpremise() {
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
+    },
   },
   methods: {
     ...mapActions([
@@ -116,21 +105,64 @@ export default {
       'setAllow',
       'setTranslate',
       'setCompanyInfo',
+      'setServerRecord',
+      'clearWorkspace',
     ]),
-    init(authInfo, workspaces) {
-      this.updateAccount({
-        ...authInfo.account,
-        licenseEmpty: this.license,
-      })
-      if (workspaces) {
-        for (let workspace of workspaces) {
-          const info = authInfo.workspace.find(
-            work => work.uuid === workspace.workspaceId,
-          )
-          if (!info || !info.workspaceId) continue
-          workspace['role'] = info.role
+    async init() {
+      this.inited = false
+      const authInfo = await auth.init()
+      if (!auth.isLogin) {
+        auth.login()
+        return
+      } else {
+        const res = await getLicense({ userId: authInfo.account.uuid })
+        const myPlans = res.myPlanInfoList.filter(
+          plan => plan.planProduct === 'REMOTE',
+        )
+        if (myPlans.length === 0) {
+          this.license = false
+        } else {
+          this.license = true
         }
-        this.initWorkspace(workspaces)
+        this.updateAccount({
+          ...authInfo.account,
+          licenseEmpty: this.license,
+        })
+        if (myPlans.length > 0) {
+          const workspaces = []
+          for (let workspace of authInfo.workspace) {
+            const info = myPlans.find(
+              work => work.workspaceId === workspace.uuid,
+            )
+            if (!info || !info.workspaceId) continue
+            workspaces.push({
+              ...workspace,
+              renewalDate: info.renewalDate,
+              productPlanStatus: info.productPlanStatus,
+            })
+          }
+          this.initWorkspace(workspaces)
+        }
+        this.$nextTick(() => {
+          this.inited = true
+        })
+      }
+    },
+    async checkLicense(uuid) {
+      uuid = uuid || this.workspace.uuid
+      if (!uuid) {
+        return
+      }
+      try {
+        await workspaceLicense({
+          workspaceId: uuid,
+          userId: this.account.uuid,
+        })
+      } catch (err) {
+        if (err.code === 5003) {
+          this.clearWorkspace(this.workspace.uuid)
+          this.toastError(this.$t('workspace.no_license'))
+        }
       }
     },
     handleMaxScroll(event) {
@@ -162,13 +194,17 @@ export default {
       if (recordInfo) {
         this.setRecord(recordInfo)
       }
-      const allow = this.$localStorage.getItem('allow')
-      if (allow) {
-        this.setAllow(allow)
-      }
+      // const allow = this.$localStorage.getItem('allow')
+      // if (allow) {
+      //   this.setAllow(allow)
+      // }
       const translateInfo = this.$localStorage.getItem('translate')
       if (translateInfo) {
         this.setTranslate(translateInfo)
+      }
+      const serverRecordInfo = this.$localStorage.getItem('serverRecordInfo')
+      if (serverRecordInfo) {
+        this.setServerRecord(serverRecordInfo)
       }
     },
     showDeviceDenied() {
@@ -193,21 +229,26 @@ export default {
         ...languageCodes.map(language => language.text),
       )
       this.setCompanyInfo({
-        targetCompany: res.companyCode,
-        translate: res.translation,
+        companyCode: res.companyCode,
+        translation: res.translation,
+        tts: res.tts,
+        sttSync: res.sttSync,
+        sttStreaming: res.sttStreaming,
+        recording: res.recording,
+        storage: res.storage,
         sessionType: res.sessionType,
         languageCodes,
       })
-    },
-    fileUpload(uuids) {
-      this.fileIds = uuids
-      this.showFileUpload = true
     },
   },
 
   /* Lifecycles */
   created() {
     this.savedStorageDatas()
+    this.init()
+    if (this.workspace && this.workspace.uuid) {
+      this.checkLicense(this.workspace.uuid)
+    }
   },
   mounted() {
     this.mx_changeLang()
@@ -215,13 +256,11 @@ export default {
     this.$eventBus.$on('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$on('filelist:open', this.toggleList)
     this.$eventBus.$on('devicedenied:show', this.showDeviceDenied)
-    this.$eventBus.$on('fileupload:show', this.fileUpload)
   },
   beforeDestroy() {
     this.$eventBus.$off('scroll:reset:workspace', this.scrollTop)
     this.$eventBus.$off('filelist:open')
     this.$eventBus.$off('devicedenied:show')
-    this.$eventBus.$off('fileupload:show')
   },
 }
 </script>

@@ -2,7 +2,6 @@
   <modal
     :title="$t('workspace.create_remote')"
     width="78.429em"
-    height="54.286em"
     :showClose="true"
     :visible.sync="visibleFlag"
     :beforeClose="beforeClose"
@@ -12,7 +11,7 @@
       <create-room-info
         :roomInfo="roomInfo"
         :selection="selection"
-        :nouser="users.length === 0"
+        :btnLoading="clicked"
         @startRemote="startRemote"
       ></create-room-info>
       <create-room-invite
@@ -35,7 +34,7 @@ import CreateRoomInvite from '../partials/ModalCreateRoomInvite'
 import { getHistorySingleItem } from 'api/http/history'
 import {
   createRoom,
-  // restartRoom,
+  restartRoom,
   updateRoomProfile,
   getRoomInfo,
 } from 'api/http/room'
@@ -44,12 +43,12 @@ import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { getMemberList } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
-import { checkPermission } from 'utils/deviceCheck'
 import { ROOM_STATUS } from 'configs/status.config'
+import callMixin from 'mixins/call'
 
 export default {
   name: 'WorkspaceCreateRoom',
-  mixins: [toastMixin, confirmMixin],
+  mixins: [toastMixin, confirmMixin, callMixin],
   components: {
     Modal,
     CreateRoomInfo,
@@ -152,7 +151,7 @@ export default {
         if (this.clicked === true) return
         this.clicked = true
 
-        const options = await checkPermission(true)
+        const options = await this.getDeviceId()
 
         const selectedUser = []
         const selectedUserIds = []
@@ -168,36 +167,46 @@ export default {
 
         let createdRes
 
-        // if (this.sessionId && this.sessionId.length > 0) {
-        //   createdRes = await restartRoom({
-        //     title: info.title,
-        //     description: info.description,
-        //     leaderId: this.account.uuid,
-        //     participantIds: selectedUserIds,
-        //     workspaceId: this.workspace.uuid,
-        //     sessionId: this.sessionId,
-        //     sessionType: ROOM_STATUS.PRIVATE,
-        //     companyCode: COMPANY_CODE[TARGET_COMPANY],
-        //   })
-        // } else {
-        createdRes = await createRoom({
-          title: info.title,
-          description: info.description,
-          leaderId: this.account.uuid,
-          participantIds: selectedUserIds,
-          workspaceId: this.workspace.uuid,
-          sessionType: ROOM_STATUS.PRIVATE,
-          companyCode: this.targetCompany,
-        })
-        // }
+        if (
+          this.sessionId &&
+          this.sessionId.length > 0 &&
+          info.imageUrl &&
+          info.imageUrl !== 'default'
+        ) {
+          createdRes = await restartRoom({
+            client: 'DESKTOP',
+            userId: this.account.uuid,
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            participantIds: selectedUserIds,
+            workspaceId: this.workspace.uuid,
+            sessionId: this.sessionId,
+            sessionType: ROOM_STATUS.PRIVATE,
+            companyCode: this.targetCompany,
+          })
+        } else {
+          createdRes = await createRoom({
+            client: 'DESKTOP',
+            userId: this.account.uuid,
+            title: info.title,
+            description: info.description,
+            leaderId: this.account.uuid,
+            participantIds: selectedUserIds,
+            workspaceId: this.workspace.uuid,
+            sessionType: ROOM_STATUS.PRIVATE,
+            companyCode: this.targetCompany,
+          })
+        }
         if (info.imageFile) {
-          updateRoomProfile({
+          await updateRoomProfile({
             profile: info.imageFile,
             sessionId: createdRes.sessionId,
             uuid: this.account.uuid,
             workspaceId: this.workspace.uuid,
           })
         }
+
         const connRes = await this.$call.connect(
           createdRes,
           ROLE.LEADER,
@@ -208,9 +217,6 @@ export default {
           sessionId: createdRes.sessionId,
           workspaceId: this.workspace.uuid,
         })
-        window.urls['token'] = createdRes.token
-        window.urls['coturn'] = createdRes.coturn
-        window.urls['wss'] = createdRes.wss
 
         this.setRoomInfo({
           ...roomInfo,
@@ -230,17 +236,27 @@ export default {
         }
       } catch (err) {
         this.clicked = false
+        this.roomClear()
         if (typeof err === 'string') {
+          console.error(err)
           if (err === 'nodevice') {
             this.toastError(this.$t('workspace.error_no_connected_device'))
+            return
           } else if (err.toLowerCase() === 'requested device not found') {
             this.toastError(this.$t('workspace.error_no_device'))
+            return
           } else if (err.toLowerCase() === 'device access deined') {
             this.$eventBus.$emit('devicedenied:show')
+            return
           }
+        } else if (err.code === 7003) {
+          this.toastError(this.$t('service.file_type'))
+        } else if (err.code === 7004) {
+          this.toastError(this.$t('service.file_maxsize'))
+        } else {
+          console.error(`${err.message} (${err.code})`)
+          this.toastError(this.$t('confirm.network_error'))
         }
-        this.roomClear()
-        console.error(err)
       }
     },
   },

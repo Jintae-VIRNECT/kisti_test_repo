@@ -2,7 +2,7 @@
 @import "~assets/style/mixin";
 
 .card.groupcard {
-  max-width: 25rem;
+  // max-width: 25rem;
   height: 35rem;
   background-color: $color_darkgray_600;
   &:hover {
@@ -115,6 +115,7 @@
   left: 0;
   flex: 0;
   width: 100%;
+  min-height: 3rem;
   // margin-top: 1.429rem;
   padding: 0.714rem 2.857rem;
   font-weight: normal;
@@ -124,6 +125,9 @@
     width: 2rem;
     height: 2rem;
     margin-left: 0.857rem;
+    > .profile {
+      width: auto;
+    }
   }
   > .profilelist-user__expend {
     width: 2rem;

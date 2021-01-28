@@ -57,18 +57,10 @@ export default {
       'openRoom',
     ]),
     isLeader() {
-      if (this.account.roleType === ROLE.LEADER) {
-        return true
-      } else {
-        return false
-      }
+      return this.account.roleType === ROLE.LEADER
     },
     isMaxLength() {
-      if (this.participants.length < maxParticipants) {
-        return false
-      } else {
-        return true
-      }
+      return this.participants.length === maxParticipants
     },
   },
   watch: {
@@ -135,7 +127,7 @@ export default {
           }
         }
       }
-      this.$call.mainview(select.id, force)
+      this.$call.sendVideo(select.id, force)
       this.setMainView({ id: select.id, force })
     },
     more() {

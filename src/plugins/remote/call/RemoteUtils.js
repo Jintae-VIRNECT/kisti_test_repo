@@ -8,16 +8,15 @@ import {
   FLASH,
   ROLE,
   VIDEO,
+  FILE,
 } from 'configs/remote.config'
 import {
-  FLASH as FLASH_STATUE,
+  FLASH as FLASH_STATUS,
   CAMERA as CAMERA_STATUS,
-  DEVICE,
 } from 'configs/device.config'
 
 import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
-import { checkVideoInput } from 'utils/deviceCheck'
 
 export const addSessionEventListener = session => {
   let loading = false
@@ -28,19 +27,25 @@ export const addSessionEventListener = session => {
     if (user === 'me') return
     setTimeout(() => {
       // send default signals
-      _.mic(Store.getters['mic'].isOn, [event.connection.connectionId])
-      _.speaker(Store.getters['speaker'].isOn, [event.connection.connectionId])
-      _.sendResolution(null, [event.connection.connectionId])
-      _.flashStatus(FLASH_STATUE.FLASH_NONE, [event.connection.connectionId])
-      if (_.account.roleType === ROLE.LEADER) {
-        _.control(CONTROL.POINTING, Store.getters['allowPointing'], [
+      if (_.publisher) {
+        _.sendMic(Store.getters['mic'].isOn, [event.connection.connectionId])
+        _.sendSpeaker(Store.getters['speaker'].isOn, [
           event.connection.connectionId,
         ])
-        _.control(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
+        _.sendResolution(null, [event.connection.connectionId])
+        _.sendFlashStatus(FLASH_STATUS.FLASH_NONE, [
+          event.connection.connectionId,
+        ])
+      }
+      if (_.account.roleType === ROLE.LEADER) {
+        _.sendControl(CONTROL.POINTING, Store.getters['allowPointing'], [
+          event.connection.connectionId,
+        ])
+        _.sendControl(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
           event.connection.connectionId,
         ])
         if (Store.getters['viewForce'] === true) {
-          _.mainview(Store.getters['mainView'].id, true, [
+          _.sendVideo(Store.getters['mainView'].id, true, [
             event.connection.connectionId,
           ])
         }
@@ -51,28 +56,26 @@ export const addSessionEventListener = session => {
           )
         }
       }
-      if (Store.getters['myInfo'].cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
-        _.video(
-          Store.getters['myInfo'].cameraStatus === CAMERA_STATUS.CAMERA_ON,
+      if (_.publisher.stream.hasVideo) {
+        _.sendCamera(
+          Store.getters['video'].isOn
+            ? CAMERA_STATUS.CAMERA_ON
+            : CAMERA_STATUS.CAMERA_OFF,
           [event.connection.connectionId],
         )
       } else {
-        _.video(Store.getters['video'].isOn, [event.connection.connectionId])
+        _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [event.connection.connectionId])
       }
     }, 300)
   })
   session.on('streamCreated', event => {
     event.stream.onIceStateChanged = state => {
-      if (
-        state === 'failed' ||
-        state === 'disconnected' ||
-        state === 'closed'
-      ) {
+      if (['failed', 'disconnected', 'closed'].includes(state)) {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
           status: 'disconnected',
         })
-      } else if (state === 'connected') {
+      } else if (['connected', 'completed'].includes(state)) {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
           status: 'good',
@@ -115,10 +118,9 @@ export const addSessionEventListener = session => {
   })
   /** session closed */
   session.on('sessionDisconnected', event => {
-    logger('room', 'participant disconnect')
-    _.clear()
     if (event.reason === 'sessionClosedByServer') {
-      // TODO: MESSAGE
+      logger('room', 'participant disconnect')
+      _.clear()
       window.vue.$toasted.error(
         window.vue.$t('workspace.confirm_removed_room_leader'),
         {
@@ -134,7 +136,8 @@ export const addSessionEventListener = session => {
       )
       window.vue.$router.push({ name: 'workspace' })
     } else if (event.reason === 'forceDisconnectByUser') {
-      // TODO: MESSAGE
+      logger('room', 'participant disconnect')
+      _.clear()
       window.vue.$toasted.error(
         window.vue.$t('workspace.confirm_kickout_leader'),
         {
@@ -149,6 +152,8 @@ export const addSessionEventListener = session => {
         },
       )
       window.vue.$router.push({ name: 'workspace' })
+    } else if (event.reason === 'networkDisconnect') {
+      logger('network', 'disconnect')
     }
   })
   // user leave
@@ -177,7 +182,8 @@ export const addSessionEventListener = session => {
       ) {
         if (loading === true) return
         loading = true
-        _.publisher.stream.initWebRtcPeerSend(true, () => {
+        _.publisher.stream.videoActive = true
+        _.publisher.stream.initWebRtcPeerSend('initVideo', () => {
           loading = false
           const mediaStream = _.publisher.stream.mediaStream
           const track = mediaStream.getVideoTracks()[0]
@@ -198,13 +204,18 @@ export const addSessionEventListener = session => {
             height: settings.height,
             orientation: '',
           })
-          _.video(true)
-          _.mic(Store.getters['mic'].isOn)
-          _.speaker(Store.getters['speaker'].isOn)
+          _.sendCamera(
+            Store.getters['video'].isOn
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_OFF,
+          )
+          _.sendMic(Store.getters['mic'].isOn)
+          _.sendSpeaker(Store.getters['speaker'].isOn)
           Store.commit('updateParticipant', {
             connectionId: session.connection.connectionId,
             stream: _.publisher.stream.mediaStream,
             hasVideo: true,
+            video: Store.getters['video'].isOn,
           })
           Store.dispatch('setMainView', { id: data.id, force: true })
         })
@@ -258,7 +269,12 @@ export const addSessionEventListener = session => {
           // const zoom = track.getSettings().zoom // bug....
           // console.log(zoom)
           _.currentZoomLevel = parseFloat(data.level)
-          _.video(true, [event.from.connectionId])
+          _.sendCamera(
+            Store.getters['video'].isOn
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_OFF,
+            [event.from.connectionId],
+          )
         })
       return
     }
@@ -331,6 +347,7 @@ export const addSessionEventListener = session => {
           : 'opponent',
       name: participants[idx].nickname,
       profile: participants[idx].path,
+      mute: participants[idx].mute,
       connectionId: event.from.connectionId,
       text: data.text.replace(/\</g, '&lt;'),
       languageCode: data.languageCode,
@@ -346,16 +363,18 @@ export const addSessionEventListener = session => {
     )
     if (idx < 0) return
     let data = JSON.parse(event.data)
-    Store.commit('addChat', {
-      type:
-        session.connection.connectionId === event.from.connectionId
-          ? 'me'
-          : 'opponent',
-      name: participants[idx].nickname,
-      profile: participants[idx].path,
-      uuid: event.from.connectionId,
-      file: data,
-    })
+    if (data.type === FILE.UPLOADED) {
+      Store.commit('addChat', {
+        type:
+          session.connection.connectionId === event.from.connectionId
+            ? 'me'
+            : 'opponent',
+        name: participants[idx].nickname,
+        profile: participants[idx].path,
+        uuid: event.from.connectionId,
+        file: data.fileInfo,
+      })
+    }
   })
 }
 
@@ -379,7 +398,7 @@ const setUserObject = event => {
     nickname: '',
     path: null,
     video: false,
-    audio: true,
+    audio: false,
     hasVideo: false,
     hasAudio: false,
     hasCamera: false,
@@ -397,31 +416,11 @@ const setUserObject = event => {
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {
+    _.connectionId = connection.connectionId
     userObj.nickname = account.nickname
     userObj.path = account.profile
     userObj.me = true
     Store.commit('addStream', userObj)
-
-    checkVideoInput().then(hasCamera => {
-      if (_.openRoom) {
-        Store.commit('updateParticipant', {
-          connectionId: event.connection.connectionId,
-          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
-          status: 'good',
-        })
-      } else {
-        Store.commit('updateParticipant', {
-          connectionId: event.connection.connectionId,
-          hasAudio: true,
-          cameraStatus: hasCamera
-            ? CAMERA_STATUS.CAMERA_OFF
-            : CAMERA_STATUS.CAMERA_NONE,
-        })
-        if (hasCamera) {
-          _.changeProperty(true)
-        }
-      }
-    })
     return 'me'
   } else {
     logger('room', "participant's connected")
@@ -433,9 +432,6 @@ const setUserObject = event => {
         connectionId: event.connection.connectionId,
         nickname: participant.nickname,
         path: participant.profile,
-      }
-      if (_.openRoom && deviceType === DEVICE.WEB) {
-        params.status = 'good'
       }
       Store.commit('updateParticipant', params)
     })

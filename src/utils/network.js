@@ -10,6 +10,15 @@ function network() {
   })
 }
 */
+import Axios from 'axios'
+
+const axios = Axios.create({
+  timeout: process.env.NODE_ENV === 'production' ? 5000 : 10000,
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Content-Type': 'application/json',
+  },
+})
 const imageAddr =
   'https://media.geeksforgeeks.org/wp-content/cdn-uploads/20200714180638/CIP_Launch-banner.png'
 
@@ -44,6 +53,18 @@ const calcBps = (startTime, endTime) => {
   // var speedBps = (bitsLoaded / duration).toFixed(2) // bps
   // var speedKbps = (speedBps / 1024).toFixed(2) // kbps
   // var speedMbps = (speedKbps / 1024).toFixed(2) // Mbps
+}
+
+export const checkOnline = async () => {
+  try {
+    const res = await axios.get('/healthcheck')
+    if (res.status === 200) {
+      return true
+    }
+    return false
+  } catch (err) {
+    return false
+  }
 }
 
 export default detectNetworkSpead

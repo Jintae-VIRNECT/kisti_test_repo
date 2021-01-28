@@ -24,7 +24,7 @@
           </p>
         </button>
       </div>
-      <button v-if="!openRoom" class="capture-share" @click="share">
+      <button class="capture-share" @click="share">
         <p>
           <img src="~assets/image/call/ic_share.svg" />
           {{ $t('service.capture_image_share') }}
@@ -37,10 +37,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import shutterMixin from 'mixins/shutter'
+import confirmMixin from 'mixins/confirm'
 import FileSaver from 'file-saver'
+import { VIEW } from 'configs/view.config'
 export default {
   name: 'CaptureModal',
-  mixins: [shutterMixin],
+  mixins: [shutterMixin, confirmMixin],
   data() {
     return {
       status: false,
@@ -56,7 +58,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['openRoom']),
+    ...mapGetters(['view']),
   },
   watch: {
     file: {
@@ -85,24 +87,38 @@ export default {
     },
     share() {
       if (this.imageData && this.imageData.length > 0) {
-        const history = this.getHistoryObject()
-
-        this.addHistory(history)
-        this.setView('drawing')
-        this.$nextTick(() => {
-          this.close()
-        })
+        if (this.view === VIEW.AR) {
+          this.serviceConfirmTitle(
+            this.$t('service.ar_exit'),
+            this.$t('service.ar_exit_description'),
+            {
+              text: this.$t('button.exit'),
+              action: () => {
+                this.$call.sendArFeatureStop()
+                this.shareCapture()
+              },
+            },
+          )
+        } else {
+          this.shareCapture()
+        }
       }
+    },
+    shareCapture() {
+      const history = {
+        id: this.file.id,
+        fileName: this.file.fileName,
+        // fileData: this.file.fileData,
+        img: this.imageData,
+      }
+      this.addHistory(history)
+      this.setView('drawing')
+      this.$nextTick(() => {
+        this.close()
+      })
     },
     close() {
       this.clearCapture()
-    },
-    getHistoryObject() {
-      return {
-        id: this.file.id,
-        fileName: this.file.fileName,
-        img: this.imageData,
-      }
     },
   },
 
@@ -118,6 +134,7 @@ export default {
   position: absolute;
   right: 2.143rem;
   bottom: 2.143rem;
+  z-index: 9;
   background-color: $color_darkgray_500;
   border: solid 1px $color_darkgray_400;
   border-radius: 4px;

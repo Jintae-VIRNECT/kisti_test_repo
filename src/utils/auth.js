@@ -2,10 +2,16 @@ import { getAccount, tokenRequest, getSettingInfo } from 'api/http/account'
 import Cookies from 'js-cookie'
 import clonedeep from 'lodash.clonedeep'
 import jwtDecode from 'jwt-decode'
-import { setBaseURL } from 'api/gateway/gateway'
+import { setHttpOptions } from 'api/gateway/gateway'
 import axios from 'api/axios'
 import { logger, debug } from 'utils/logger'
-import { setConfigs, RUNTIME_ENV, RUNTIME } from 'configs/env.config'
+import {
+  setConfigs,
+  setUrls,
+  RUNTIME_ENV,
+  RUNTIME,
+  URLS,
+} from 'configs/env.config'
 
 /**
  * 상태
@@ -77,37 +83,55 @@ const getMyInfo = async () => {
   }
 }
 
-const getConfigs = async () => {
+export const getConfigs = async () => {
   if (window.urls && window.urls['api']) return
   const res = await axios.get(
     `${location.origin}/configs?origin=${location.hostname}`,
   )
 
-  const runtimeEnv = res.data.runtime || 'production'
+  const RUNTIME_ENV = res.data.RUNTIME || 'production'
   // const runtimeEnv = 'onpremise'
-  logger('RUNTIME ENV', res.data.runtime)
-  delete res.data.runtime
+  logger('RUNTIME ENV', res.data.RUNTIME)
+  delete res.data.RUNTIME
+
+  const TIMEOUT = res.data.TIMEOUT || 5000
+  delete res.data.TIMEOUT
+
+  const ALLOW_NO_AUDIO = res.data.ALLOW_NO_AUDIO || false
+  delete res.data.ALLOW_NO_AUDIO
+
+  const ALLOW_NO_DEVICE = res.data.ALLOW_NO_DEVICE || 5000
+  delete res.data.ALLOW_NO_DEVICE
 
   debug('URLS::', res.data)
 
-  setBaseURL(res.data['api'])
+  setHttpOptions(res.data['api'], TIMEOUT)
   window.urls = res.data
   setConfigs({
-    runtimeEnv,
+    RUNTIME_ENV,
+    TIMEOUT,
+    ALLOW_NO_AUDIO,
+    ALLOW_NO_DEVICE,
   })
+  setUrls(res.data)
 }
 
-const getSettings = async () => {
-  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) return
-  const settings = await getSettingInfo()
-  document.title = `${settings.workspaceTitle} | Remote`
-  const favicon = document.querySelector("link[rel*='icon']")
-  favicon.href = settings.favicon
+export const getSettings = async () => {
+  if (RUNTIME_ENV !== RUNTIME.ONPREMISE) {
+    document.title = `VIRNECT | Remote`
+    return
+  }
+  try {
+    const settings = await getSettingInfo()
+    document.title = `${settings.workspaceTitle} | Remote`
+    const favicon = document.querySelector("link[rel*='icon']")
+    favicon.href = settings.favicon
 
-  setConfigs({
-    whiteLogo: settings.whiteLogo,
-    defaultLogo: settings.defaultLogo,
-  })
+    setConfigs({
+      whiteLogo: settings.whiteLogo,
+      defaultLogo: settings.defaultLogo,
+    })
+  } catch (err) {}
 }
 
 export const cookieClear = () => {
@@ -136,12 +160,19 @@ class Auth {
     return clonedeep(myWorkspaces)
   }
 
-  async init() {
+  async check() {
     await getConfigs()
 
     if (Cookies.get('accessToken')) {
+      return true
+    }
+    return false
+  }
+
+  async init() {
+    if (Cookies.get('accessToken')) {
       try {
-        await Promise.all([getMyInfo(), getSettings()])
+        await getMyInfo()
         isLogin = true
         tokenRenewal()
       } catch (e) {
@@ -156,8 +187,7 @@ class Auth {
   }
   login() {
     cookieClear()
-    const url = window.urls.console
-    location.href = `${url}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${location.href}&token=123`
     return this
   }
   logout() {
@@ -165,8 +195,7 @@ class Auth {
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    const url = window.urls.console
-    location.href = `${url}/?continue=${location.href}`
+    location.href = `${URLS['console']}/?continue=${location.href}&token=123`
     return this
   }
 }

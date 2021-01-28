@@ -2,7 +2,7 @@
   <tool-button
     :text="$t('service.tool_flash')"
     :disable="disable"
-    :icActive="status"
+    :isActive="status"
     :src="require('assets/image/ic_flash_off.svg')"
     :activeSrc="require('assets/image/ic_flash_on.svg')"
     placement="top"
@@ -32,23 +32,14 @@ export default {
       return -1
     },
     status() {
-      if (this.flashStatus === FLASH.FLASH_ON) {
-        return true
-      } else {
-        return false
-      }
+      return this.flashStatus === FLASH.FLASH_ON
     },
     disable() {
-      const state = this.flashStatus
-      if (
-        state === FLASH.FLASH_NONE ||
-        state === FLASH.NO_PERMISSION ||
-        state === 'default'
-      ) {
-        return true
-      } else {
-        return false
-      }
+      return (
+        this.flashStatus === FLASH.FLASH_NONE ||
+        this.flashStatus === FLASH.NO_PERMISSION ||
+        this.flashStatus === 'default'
+      )
     },
   },
   watch: {
@@ -69,7 +60,7 @@ export default {
         return
       }
       const toStatus = !this.status
-      this.$call.flash(toStatus, [this.mainView.connectionId])
+      this.$call.sendFlash(toStatus, [this.mainView.connectionId])
     },
     flashListener(status) {
       // 응답

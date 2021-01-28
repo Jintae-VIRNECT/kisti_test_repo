@@ -15,10 +15,7 @@
           :opt="'expired'"
         ></role>
       </div>
-      <div class="workspace-welcome__name">
-        <!-- <span class="workspace-welcome__nickname">{{ account.nickname }}</span> -->
-        <span class="workspace-welcome__text" v-html="welcomeText"></span>
-      </div>
+      <div class="workspace-welcome__name" v-html="welcomeText"></div>
       <button
         v-if="!emptyWorkspace && !expireLicense"
         class="btn"
@@ -61,13 +58,12 @@ export default {
   computed: {
     ...mapGetters(['expireLicense', 'useOpenRoom']),
     emptyWorkspace() {
-      if (!this.hasLicense || !(this.workspace && this.workspace.uuid)) {
-        return true
-      } else {
-        return false
-      }
+      return !this.hasLicense || !(this.workspace && this.workspace.uuid)
     },
     welcomeText() {
+      if (!this.inited) {
+        return ''
+      }
       if (this.hasLicense && !this.expireLicense) {
         return this.$t('workspace.welcome', { name: this.account.nickname })
       } else if (!this.hasLicense) {
@@ -81,16 +77,20 @@ export default {
       }
     },
     showRole() {
-      if (this.workspace.role === WORKSPACE_ROLE.MEMBER) {
-        return false
-      } else {
-        return true
-      }
+      return (
+        this.workspace.role === WORKSPACE_ROLE.MASTER ||
+        this.workspace.role === WORKSPACE_ROLE.MANAGER
+      )
     },
   },
-  watch: {},
+  props: {
+    inited: {
+      type: Boolean,
+      default: false,
+    },
+  },
   methods: {
-    async createRoom() {
+    createRoom() {
       this.visible = !this.visible
     },
     createOpenRoom() {
@@ -100,10 +100,12 @@ export default {
 
   /* Lifecycles */
   beforeDestroy() {
-    this.$eventBus.$off('openCreateRoom')
+    this.$eventBus.$off('open:modal:create')
+    this.$eventBus.$off('open:modal:createOpen')
   },
   created() {
-    this.$eventBus.$on('openCreateRoom', this.createRoom)
+    this.$eventBus.$on('open:modal:create', this.createRoom)
+    this.$eventBus.$on('open:modal:createOpen', this.createOpenRoom)
   },
 }
 </script>

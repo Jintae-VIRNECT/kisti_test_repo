@@ -1,16 +1,16 @@
 # Build Stage
-FROM node:alpine AS builder
+FROM node:12-alpine AS builder
 
 COPY . .
 
 ARG NODE_ENV=production
 
 RUN npm --production=false install
-RUN npm run build:$NODE_ENV \
+RUN npm run build \
 && rm -rf node_modules
 
 # Runtime Stage
-FROM node:alpine
+FROM node:12-alpine
 
 ENV APP_HOME=/usr/app
 WORKDIR $APP_HOME
@@ -23,6 +23,7 @@ COPY --from=builder route.js .
 COPY --from=builder server.js .
 COPY --from=builder package.json .
 COPY --from=builder package-lock.json .
+COPY --from=builder .npmrc .
 COPY --from=builder dist dist
 COPY --from=builder translate translate
 

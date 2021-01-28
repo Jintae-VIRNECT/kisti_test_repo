@@ -39,17 +39,16 @@
               {{ $t('workspace.record_file_title') }}
             </div>
             <div class="table__tools">
-              <!-- Remote Dashboard 적용전까지 주석처리 -->
-              <!-- <icon-button
+              <icon-button
                 v-if="isHome && onpremise"
-                :text="'선택 업로드'"
+                :text="$t('workspace.record_upload')"
                 :imgSrc="require('assets/image/ic_upload.svg')"
                 :customClass="{
                   highlight: hasSelect,
                   'custom-local-record': true,
                 }"
                 @click="upload"
-              ></icon-button> -->
+              ></icon-button>
               <icon-button
                 :text="$t('workspace.record_download')"
                 :imgSrc="require('assets/image/ic_download.svg')"
@@ -73,6 +72,10 @@
         </remote-table>
       </div>
     </div>
+    <file-upload
+      :fileIds="fileIds"
+      :visible.sync="showFileUpload"
+    ></file-upload>
   </modal>
 </template>
 <script>
@@ -83,9 +86,23 @@ import IDBHelper from 'utils/idbHelper'
 import JSZip from 'jszip'
 import FileSaver from 'file-saver'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'LocalRecordList',
+  components: {
+    Modal,
+    RemoteTable,
+    IconButton,
+    FileUpload: () =>
+      import('components/workspace/modal/WorkspaceRecordFileUpload'),
+  },
+  props: {
+    visible: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       visibleFlag: false,
@@ -93,9 +110,12 @@ export default {
       datas: [],
       selectedArray: [],
       zipName: 'vremote_rec.zip',
+      showFileUpload: false,
+      fileIds: [],
     }
   },
   computed: {
+    ...mapGetters(['modalRecord']),
     headers() {
       return [
         this.$t('workspace.record_filename'),
@@ -111,18 +131,7 @@ export default {
       return this.$route.path === '/home'
     },
     onpremise() {
-      return RUNTIME.ONPREMISE === RUNTIME_ENV ? true : false
-    },
-  },
-  components: {
-    Modal,
-    RemoteTable,
-    IconButton,
-  },
-  props: {
-    visible: {
-      type: Boolean,
-      default: false,
+      return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
   },
   watch: {
@@ -132,10 +141,18 @@ export default {
         this.datas = await this.getList()
       }
     },
+    async modalRecord(flag) {
+      this.visibleFlag = flag
+      if (flag) {
+        this.datas = await this.getList()
+      }
+    },
   },
   methods: {
+    ...mapActions(['showModalRecord']),
     beforeClose() {
       this.$emit('update:visible', false)
+      this.showModalRecord(false)
     },
 
     async download() {
@@ -194,7 +211,8 @@ export default {
       })
 
       if (uuids.length > 0) {
-        this.$eventBus.$emit('fileupload:show', uuids)
+        this.fileIds = uuids
+        this.showFileUpload = true
       }
     },
 

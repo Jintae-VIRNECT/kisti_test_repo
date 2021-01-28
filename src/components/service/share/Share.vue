@@ -100,7 +100,7 @@ export default {
         this.file = {}
       }
       this.list = val
-      this.$eventBus.$emit('scroll:reset')
+      // this.$eventBus.$emit('scroll:reset')
     },
   },
 

@@ -1,7 +1,8 @@
 <template>
   <wide-card
     :key="user.uuid"
-    :customClass="['remoteinfo-usercard', { offline: isOffline }]"
+    :customClass="['remoteinfo-usercard', { offline: !isOnline }]"
+    height="6.143em"
   >
     <div class="roominfo-userinfo">
       <profile
@@ -13,7 +14,11 @@
         :thumbStyle="{ width: '3em', height: '3em' }"
       ></profile>
 
-      <img class="userinfo__image" :src="deviceImg" />
+      <img
+        v-if="deviceImg && deviceImg.length > 0"
+        class="userinfo__image"
+        :src="deviceImg"
+      />
       <button
         class="btn line userinfo__button"
         :class="{ me: account.uuid === user.uuid }"
@@ -60,25 +65,16 @@ export default {
         case DEVICE.MOBILE:
           return require('assets/image/workspace/ic_mobile.svg')
         case DEVICE.GLASSES:
-        case DEVICE.HOLOLENS1:
-        case DEVICE.HOLOLENS2:
+        case DEVICE.HOLOLENS:
           return require('assets/image/workspace/ic_hololens.svg')
       }
       return ''
     },
-    isOffline() {
-      if (this.user.memberStatus === STATUS.LOAD) {
-        return false
-      } else {
-        return true
-      }
+    isOnline() {
+      return this.user.memberStatus === STATUS.LOAD
     },
     canKick() {
-      if (this.isLeader && this.account.uuid === this.user.uuid) {
-        return true
-      } else {
-        return false
-      }
+      return this.isLeader && this.account.uuid === this.user.uuid
     },
   },
   methods: {},

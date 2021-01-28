@@ -1,5 +1,5 @@
 <template>
-  <div class="tab-view">
+  <section class="tab-view">
     <div class="setting-wrapper offsetwidth">
       <div class="setting-nav">
         <div class="setting-nav__header">{{ $t('workspace.setting') }}</div>
@@ -18,11 +18,6 @@
         <div class="setting-view__header">{{ menus[tabIdx].text }}</div>
 
         <div class="setting-view__body">
-          <device-denied
-            :visible.sync="showDenied"
-            :modalless="true"
-          ></device-denied>
-
           <template v-if="menus[tabIdx].key === 'video'">
             <set-video
               :videoDevices="videoDevices"
@@ -40,8 +35,8 @@
           </template>
 
           <template v-else-if="menus[tabIdx].key === 'record'">
-            <set-record></set-record>
-            <set-resolution></set-resolution>
+            <set-record v-if="!isTablet"></set-record>
+            <set-server-record v-if="useRecording"></set-server-record>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
             <set-language></set-language>
@@ -52,17 +47,13 @@
         </div>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 <script>
-import SetVideo from '../section/WorkspaceSetVideo'
-import SetAudio from '../section/WorkspaceSetAudio'
-import SetLanguage from '../section/WorkspaceSetLanguage'
-import SetTranslate from '../section/WorkspaceSetTranslate'
-import SetRecord from '../section/WorkspaceSetRecord'
-import MicTest from '../section/WorkspaceMicTest'
-import SetResolution from '../section/WorkspaceSetResolution'
-import DeviceDenied from 'components/workspace/modal/WorkspaceDeviceDenied'
+import SetVideo from './setting/WorkspaceSetVideo'
+import SetAudio from './setting/WorkspaceSetAudio'
+import SetLanguage from './setting/WorkspaceSetLanguage'
+import MicTest from './setting/WorkspaceMicTest'
 import { getPermission, getUserMedia } from 'utils/deviceCheck'
 import { mapGetters } from 'vuex'
 export default {
@@ -70,18 +61,15 @@ export default {
   components: {
     SetVideo,
     SetAudio,
-    SetLanguage,
-    SetTranslate,
-    SetRecord,
-    SetResolution,
     MicTest,
-    DeviceDenied,
+    SetLanguage,
+    SetTranslate: () => import('./setting/WorkspaceSetTranslate'),
+    SetRecord: () => import('./setting/WorkspaceSetRecord'),
+    SetServerRecord: () => import('./setting/WorkspaceSetServerRecord'),
   },
   data() {
     return {
       tabIdx: 0,
-
-      showDenied: false,
 
       //device list
       videoDevices: [],
@@ -90,26 +78,44 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['useTranslate']),
+    ...mapGetters(['useTranslate', 'useRecording']),
     menus() {
-      const menu = [
-        {
-          key: 'video',
-          text: this.$t('workspace.setting_video'),
-        },
-        {
-          key: 'audio',
-          text: this.$t('workspace.setting_audio'),
-        },
-        {
-          key: 'record',
-          text: this.$t('workspace.setting_record'),
-        },
-        {
-          key: 'language',
-          text: this.$t('workspace.setting_language'),
-        },
-      ]
+      let menu
+      if (this.isTablet && !this.useRecording) {
+        menu = [
+          {
+            key: 'video',
+            text: this.$t('workspace.setting_video'),
+          },
+          {
+            key: 'audio',
+            text: this.$t('workspace.setting_audio'),
+          },
+          {
+            key: 'language',
+            text: this.$t('workspace.setting_language'),
+          },
+        ]
+      } else {
+        menu = [
+          {
+            key: 'video',
+            text: this.$t('workspace.setting_video'),
+          },
+          {
+            key: 'audio',
+            text: this.$t('workspace.setting_audio'),
+          },
+          {
+            key: 'record',
+            text: this.$t('workspace.setting_record'),
+          },
+          {
+            key: 'language',
+            text: this.$t('workspace.setting_language'),
+          },
+        ]
+      }
       if (this.useTranslate) {
         menu.push({
           key: 'translate',
@@ -154,39 +160,59 @@ export default {
         console.error(err)
       }
     },
+    async onDeviceChange() {
+      this.logger('device', 'changed')
+      let devices = await this.getMediaDevice()
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
+    },
   },
 
   /* Lifecycles */
   async created() {
-    try {
-      const permission = await getPermission()
+    navigator.mediaDevices.ondevicechange = this.onDeviceChange
+    const permission = await getPermission({
+      video: true,
+      audio: true,
+    })
 
-      if (permission === true) {
-        const devices = await this.getMediaDevice()
-        this.videoDevices = devices.videos
-        this.micDevices = devices.mics
-        this.speakerDevices = devices.speakers
-      } else if (permission === 'prompt') {
-        const devices = await this.getMediaDevice()
-        let video = false,
-          audio = false
-        if (devices.videos.length > 0) {
-          video = true
-        }
-        if (devices.mics.length > 0) {
-          audio = true
-        }
-        await getUserMedia(audio, video)
-        this.videoDevices = devices.videos
-        this.micDevices = devices.mics
-        this.speakerDevices = devices.speakers
-      } else {
-        this.showDenied = true
+    if (permission === true) {
+      const devices = await this.getMediaDevice()
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
+    } else if (permission === 'prompt') {
+      let devices = await this.getMediaDevice()
+      let video = false,
+        audio = false
+      if (devices.videos.length > 0) {
+        video = true
       }
-    } catch (err) {
-      console.error(err)
+      if (devices.mics.length > 0) {
+        audio = true
+      }
+      try {
+        const stream = await getUserMedia({ audio, video })
+        stream.getTracks().forEach(track => {
+          track.stop()
+        })
+        devices = await this.getMediaDevice()
+      } catch (err) {
+        if (err.name && err.name === 'NotAllowedError') {
+          this.$eventBus.$emit('devicedenied:show')
+          return
+        }
+      }
+      this.videoDevices = devices.videos
+      this.micDevices = devices.mics
+      this.speakerDevices = devices.speakers
+    } else {
+      this.$eventBus.$emit('devicedenied:show')
     }
   },
-  mounted() {},
+  beforeDestroy() {
+    navigator.mediaDevices.ondevicechange = () => {}
+  },
 }
 </script>

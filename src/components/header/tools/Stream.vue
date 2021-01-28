@@ -6,8 +6,8 @@
       :description="`${$t('common.video')} on/off`"
       size="2.429rem"
       :active="video.isOn"
-      :activeSrc="require('assets/image/call/ic_video_on.svg')"
-      :inactiveSrc="require('assets/image/call/ic_video_off.png')"
+      :activeSrc="require('assets/image/ic_video_on.svg')"
+      :inactiveSrc="require('assets/image/ic_video_off.svg')"
       @action="streamOnOff"
     ></toggle-button>
   </tooltip>
@@ -18,6 +18,7 @@ import { mapGetters, mapActions } from 'vuex'
 
 import Tooltip from 'Tooltip'
 import ToggleButton from 'ToggleButton'
+import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 export default {
   name: 'Stream',
   components: {
@@ -40,7 +41,9 @@ export default {
           isOn: video,
         },
       })
-      this.$call.video(video)
+      this.$call.sendCamera(
+        video ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
+      )
       this.$localStorage.setDevice('video', 'isOn', video)
     },
   },

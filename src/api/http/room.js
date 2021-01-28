@@ -3,6 +3,9 @@ import { ROOM_STATUS } from 'configs/status.config'
 
 /**
  * 원격협업 통화방 생성
+ * @header {String} client
+ * @path {String} userId
+ * @query {Number} companyCode
  * @param {String} title
  * @param {String} description
  * @param {String} autoRecording
@@ -12,9 +15,11 @@ import { ROOM_STATUS } from 'configs/status.config'
  * @param {String} leaderId // 리더 아이디(uuid)
  * @param {Array[String]} participantIds // 참여자 리스트
  * @param {String} workspaceId
- * @param {String} companyCode
  */
 export const createRoom = async ({
+  client,
+  userId,
+  companyCode = 0,
   title,
   description,
   autoRecording = false,
@@ -24,25 +29,35 @@ export const createRoom = async ({
   leaderId,
   participantIds = [],
   workspaceId,
-  companyCode = 0,
 }) => {
-  const returnVal = await http('CREATE_ROOM', {
-    title,
-    description,
-    autoRecording,
-    translation,
-    keepAlive,
-    sessionType,
-    leaderId,
-    participantIds,
-    workspaceId,
-    companyCode,
-  })
+  const returnVal = await http(
+    'CREATE_ROOM',
+    {
+      userId,
+      companyCode,
+      title,
+      description,
+      autoRecording,
+      translation,
+      keepAlive,
+      sessionType,
+      leaderId,
+      participantIds,
+      workspaceId,
+    },
+    {
+      client,
+    },
+  )
 
   return returnVal
 }
 /**
  * 원격협업 통화방 재시작
+ * @header {String} client
+ * @path {String} userId
+ * @query {Number} companyCode
+ * @query {String} sessionId
  * @param {String} title
  * @param {String} description
  * @param {String} autoRecording
@@ -52,10 +67,12 @@ export const createRoom = async ({
  * @param {String} leaderId // 리더 아이디(uuid)
  * @param {Array[String]} participantIds // 참여자 리스트
  * @param {String} workspaceId
- * @query {String} companyCode
- * @query {String} sessionId
  */
 export const restartRoom = async ({
+  client,
+  userId,
+  companyCode = 0,
+  sessionId,
   title,
   description,
   autoRecording = false,
@@ -65,22 +82,27 @@ export const restartRoom = async ({
   leaderId,
   participantIds = [],
   workspaceId,
-  companyCode = 0,
-  sessionId,
 }) => {
-  const returnVal = await http('RESTART_ROOM', {
-    title,
-    description,
-    autoRecording,
-    translation,
-    keepAlive,
-    sessionType,
-    leaderId,
-    participantIds,
-    workspaceId,
-    companyCode,
-    sessionId,
-  })
+  const returnVal = await http(
+    'RESTART_ROOM',
+    {
+      userId,
+      companyCode,
+      sessionId,
+      title,
+      description,
+      autoRecording,
+      translation,
+      keepAlive,
+      sessionType,
+      leaderId,
+      participantIds,
+      workspaceId,
+    },
+    {
+      client,
+    },
+  )
 
   return returnVal
 }
@@ -122,6 +144,33 @@ export const getRoomList = async ({
   workspaceId,
 }) => {
   const returnVal = await http('ROOM_LIST', {
+    page,
+    paging,
+    size,
+    sort,
+    userId,
+    workspaceId,
+  })
+
+  return returnVal
+}
+
+/**
+ * 원격협업 목록 검색
+ * @param {String} userId
+ * @query {String} workspaceId
+ */
+export const searchRoomList = async ({
+  search = '',
+  page = 0,
+  paging = false,
+  size = 10,
+  sort = 'createdDate,asc',
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('ROOM_SEARCH', {
+    search,
     page,
     paging,
     size,
@@ -224,6 +273,20 @@ export const updateRoomInfo = async ({
     uuid,
     title,
     description,
+    sessionId,
+    workspaceId,
+  })
+
+  return returnVal
+}
+
+/**
+ * 원격협업 프로필 삭제
+ * @query {String} sessionId
+ * @query {String} workspaceId
+ */
+export const removeRoomProfile = async ({ sessionId, workspaceId }) => {
+  const returnVal = await http('REMOVE_ROOM_PROFILE', {
     sessionId,
     workspaceId,
   })

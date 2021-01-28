@@ -1,6 +1,11 @@
 <template>
   <li class="sharing-image">
-    <button class="sharing-image__item" @dblclick="shareImage">
+    <button
+      class="sharing-image__item"
+      @dblclick="shareImage"
+      @touchstart="touch"
+      @touchend="touchEnd"
+    >
       <img :src="imageData" />
     </button>
     <p class="sharing-image__name">{{ fileData.name }}</p>
@@ -18,9 +23,10 @@
 import { mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
+import touchMixin from 'mixins/touch'
 export default {
   name: 'SharingImage',
-  mixins: [confirmMixin, toastMixin],
+  mixins: [confirmMixin, toastMixin, touchMixin],
   components: {},
   data() {
     return {
@@ -53,18 +59,13 @@ export default {
       }
     },
   },
-  watch: {
-    fileData() {
-      this.init()
-    },
-  },
   methods: {
     ...mapActions(['addHistory', 'removeFile']),
     init() {
       const fileReader = new FileReader()
       fileReader.onload = async e => {
         let imgUrl = e.target.result
-        if (this.fileInfo.filedata.size > 1024 * 1024 * 5) {
+        if (this.fileData.size > 1024 * 1024 * 5) {
           imgUrl = await this.resizing(imgUrl)
         }
         this.imageData = imgUrl
@@ -76,7 +77,7 @@ export default {
         const image = new Image()
         image.onload = () => {
           const canvas = document.createElement('canvas')
-          const max_size = 1028 * 1028 * 5
+          const max_size = 1024 * 4
           // 최대 기준을 1280으로 잡음.
           let width = image.width
           let height = image.height
@@ -123,7 +124,11 @@ export default {
             ? this.pdfName
             : this.fileData.name,
         img: this.imageData,
+        // fileData: this.fileData,
       }
+    },
+    doEvent() {
+      this.shareImage()
     },
     shareImage() {
       if (this.pdfPage > -1) {
