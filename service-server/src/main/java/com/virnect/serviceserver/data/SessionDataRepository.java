@@ -1413,4 +1413,99 @@ public class SessionDataRepository extends DataRepository {
             }
         }.asApiResponse();
     }
+
+    /**
+     * todo: need to change this process to batch process
+     * @return
+     */
+    public DataProcess<Void> removeAllRoom() {
+        return new RepoDecoder<List<Room>, Void>(RepoDecoderType.DELETE) {
+            @Override
+            List<Room> loadFromDatabase() {
+                return sessionService.getRoomList();
+            }
+
+            @Override
+            DataProcess<Void> invokeDataProcess() {
+                LogMessage.formedInfo(
+                        TAG,
+                        "invokeDataProcess",
+                        "removeAllRoom",
+                        "the server restarts and deletes the room list information"
+                );
+                List<Room> roomList = loadFromDatabase();
+                for (Room room : roomList) {
+                    setLogging(room);
+                    sessionService.deleteRoom(room);
+                }
+                return new DataProcess<>();
+            }
+
+            private void setLogging(Room room) {
+                // Remote Room History Entity Create
+                RoomHistory roomHistory = RoomHistory.builder()
+                        .sessionId(room.getSessionId())
+                        .title(room.getTitle())
+                        .description(room.getDescription())
+                        .profile(room.getProfile())
+                        .leaderId(room.getLeaderId())
+                        .workspaceId(room.getWorkspaceId())
+                        .maxUserCount(room.getMaxUserCount())
+                        .licenseName(room.getLicenseName())
+                        .build();
+
+                // Remote Session Property Entity Create
+                SessionProperty sessionProperty = room.getSessionProperty();
+                SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
+                        .mediaMode(sessionProperty.getMediaMode())
+                        .recordingMode(sessionProperty.getRecordingMode())
+                        .defaultOutputMode(sessionProperty.getDefaultOutputMode())
+                        .defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
+                        .recording(sessionProperty.isRecording())
+                        .keepalive(sessionProperty.isKeepalive())
+                        .sessionType(sessionProperty.getSessionType())
+                        .roomHistory(roomHistory)
+                        .build();
+
+                roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+                // Set room member history
+                // Mapping Member List Data to Member History List
+                for (Member roomMember : room.getMembers()) {
+                    MemberHistory memberHistory = MemberHistory.builder()
+                            .roomHistory(roomHistory)
+                            .workspaceId(roomMember.getWorkspaceId())
+                            .uuid(roomMember.getUuid())
+                            .memberType(roomMember.getMemberType())
+                            .deviceType(roomMember.getDeviceType())
+                            .sessionId(roomMember.getSessionId())
+                            .startDate(roomMember.getStartDate())
+                            .endDate(roomMember.getEndDate())
+                            .durationSec(roomMember.getDurationSec())
+                            .build();
+
+                    //sessionService.setMemberHistory(memberHistory);
+                    roomHistory.getMemberHistories().add(memberHistory);
+
+                    //delete member
+                    sessionService.deleteMember(roomMember);
+                }
+
+                //set active time
+                roomHistory.setActiveDate(room.getActiveDate());
+
+                //set un active  time
+                LocalDateTime endTime = LocalDateTime.now();
+                roomHistory.setUnactiveDate(endTime);
+
+                //time diff seconds
+                Duration duration = Duration.between(room.getActiveDate(), endTime);
+                roomHistory.setDurationSec(duration.getSeconds());
+
+                //save room history
+                sessionService.setRoomHistory(roomHistory);
+            }
+
+        }.asResponseData();
+    }
 }
