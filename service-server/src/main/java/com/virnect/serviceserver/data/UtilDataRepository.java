@@ -155,6 +155,13 @@ public class UtilDataRepository extends DataRepository {
             if(policyLocation.startsWith("/")) {
                 Path path = Paths.get(policyLocation);
                 jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
+                LogMessage.formedInfo(
+                        TAG,
+                        "initialise service policy",
+                        "loadServicePolicy",
+                        "load service policy with path is success."
+                );
+                return parseServicePolicyJsonObject(jsonObject, workspaceId);
             } else {
                 InputStream inputStream = getClass().getClassLoader().getResourceAsStream(policyLocation);
                 if(inputStream == null) {
@@ -166,25 +173,17 @@ public class UtilDataRepository extends DataRepository {
                     );
                     return defaultCompanyInfo(workspaceId);
                 } else {
-                    LogMessage.formedError(
+                    LogMessage.formedInfo(
                             TAG,
                             "initialise service policy",
                             "loadServicePolicy",
-                            "service policy file path is null or empty. set service policy using service policy file."
+                            "load service policy is success."
                     );
                     jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
                     inputStream.close();
-
                     return parseServicePolicyJsonObject(jsonObject, workspaceId);
                 }
             }
-            LogMessage.formedInfo(
-                    TAG,
-                    "initialise service policy",
-                    "loadServicePolicy",
-                    "load service policy is success."
-            );
-            return parseServicePolicyJsonObject(jsonObject, workspaceId);
         }
     }
 
