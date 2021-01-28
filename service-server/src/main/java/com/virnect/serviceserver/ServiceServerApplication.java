@@ -28,6 +28,7 @@ import com.virnect.service.FileService;
 import com.virnect.service.SessionService;
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.data.SessionDataRepository;
 import com.virnect.serviceserver.session.ServiceSessionManager;
 import com.virnect.serviceserver.token.TokenGeneratorDefault;
 import org.bouncycastle.util.Arrays;
@@ -54,6 +55,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.net.ssl.*;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -108,6 +111,9 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
     @Autowired
     ServiceSessionManager serviceSessionManager;
+
+    @Autowired
+    SessionDataRepository sessionDataRepository;
 
     /*@Bean
     @DependsOn("remoteServiceConfig")
@@ -453,9 +459,9 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
                 + "   * RemoteService Temp Directory: " + System.getProperty("java.io.tmpdir") + "\n" + "\n"
                 + "----------------------------------------------------\n";
         // @formatter:on
-
         log.info(msg);
+
+        //
+        sessionDataRepository.removeAllRoom();
     }
-
-
 }
