@@ -1,0 +1,15 @@
+{
+  "company_info": {
+    "company_code": 0,
+    "workspace_id": "",
+    "license_name": "product",
+    "session_type": "private",
+    "recording": true,
+    "storage": true,
+    "translation": false,
+    "stt_sync": false,
+    "stt_streaming": false,
+    "tts": false,
+    "language_codes": []
+  }
+}

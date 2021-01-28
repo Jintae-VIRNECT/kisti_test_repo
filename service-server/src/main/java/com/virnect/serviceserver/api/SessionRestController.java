@@ -27,10 +27,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
@@ -52,6 +50,13 @@ public class SessionRestController implements ISessionRestAPI {
     private PushMessageClient pushMessageClient;
 
     private final ServiceSessionManager serviceSessionManager;
+
+    private RestTemplate restTemplate;
+
+    @Autowired(required = false)
+    public void setRestTemplate(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Qualifier(value = "pushMessageClient")
     @Autowired
@@ -699,5 +704,11 @@ public class SessionRestController implements ISessionRestAPI {
         }
         apiResponse.setData(response);
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @Deprecated
+    @GetMapping("")
+    public void shortMessageSend() {
+        String obj = restTemplate.getForObject("", String.class);
     }
 }
