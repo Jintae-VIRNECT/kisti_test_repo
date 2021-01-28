@@ -1,0 +1,123 @@
+.dashboard-tab {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  margin-top: 0.8572rem;
+  // height: calc(100% - #{$welcome_height});
+  // height: calc(100% - 20rem);
+}
+
+.dashboard-tab__nav {
+  flex: 0;
+  width: 100%;
+  border-bottom: solid 1px $color_border;
+  transition: background-color 0.3s;
+  &.fix {
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    width: calc(100% - 0.714rem);
+    background-color: #45474f;
+  }
+  &.nolicense {
+    pointer-events: none;
+  }
+}
+.dashboard-tab__side {
+  position: absolute;
+  top: 0;
+  top: 50%;
+  right: 2.429rem;
+  transform: translateY(-50%);
+}
+
+.vue-scrollbar__wrapper.workspace-scroller {
+  flex: 1;
+  width: 100%;
+  background-color: $color_bg_display !important;
+}
+
+.dashboard-tab__button {
+  > button {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    padding: 1.571rem 1.571rem 0.9286rem 1.571rem;
+    color: $color_text_main_1000;
+
+    font-weight: 300;
+
+    font-size: 1.4286rem;
+    line-height: 1.714rem;
+    background-color: transparent;
+
+    // opacity: 0.5;
+    transition: opacity 0.3s;
+
+    > img {
+      width: 2rem;
+      height: 2rem;
+      margin-right: 0.3214rem;
+    }
+
+    &:after {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 0.2857rem;
+      background-color: #1f7ffa;
+      transition: width 0.3s;
+      content: "";
+    }
+    &:hover,
+    &:active {
+      opacity: 1;
+    }
+    &.active {
+      font-weight: 500;
+      opacity: 1;
+      &:after {
+        width: 100%;
+      }
+      &.nolicense {
+        opacity: 0.25;
+        &:after {
+          width: 0;
+        }
+      }
+    }
+  }
+}
+.dashboard-tab--refresh {
+  position: absolute;
+  top: 1.0714rem;
+  right: 0rem;
+  display: flex;
+  width: 7.7143rem;
+  height: 3rem;
+  padding: 0.5rem 0.7857rem 0.6429rem 0.7857rem;
+  background: $color_white;
+  border: 1px solid $color_border;
+  border-radius: 4px;
+  &:hover {
+    & > p {
+      color: $color_text_main;
+    }
+  }
+
+  & > p {
+    color: #757f91;
+    font-weight: normal;
+    font-size: 1.0714rem;
+    line-height: 1.7143rem;
+  }
+
+  & > img {
+    width: 1.7143rem;
+    height: 1.7143rem;
+    margin-right: 0.4286rem;
+  }
+}

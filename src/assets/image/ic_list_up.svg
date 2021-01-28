@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>E3B9B7DC-139D-41F6-9A4B-BFA020D56EF5@1x</title>
+    <defs>
+        <path d="M10.2976,9.4552 L9.2752,8.44 L6.9928,10.7224 L4.7104,8.44 L3.6952,9.4552 L6.9928,12.76 L10.2976,9.4552 Z M3.6952,4.5448 L4.7176,5.56 L7,3.2776 L9.2824,5.56 L10.3048,4.5448 L7,1.24 L3.6952,4.5448 Z" id="path-1"></path>
+    </defs>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="icn_Listup">
+            <rect id="tr" x="0" y="0" width="14" height="14"></rect>
+            <mask id="mask-2" fill="white">
+                <use xlink:href="#path-1"></use>
+            </mask>
+            <use id="icon/navigation/unfold_less_24px" fill="#ABB2C2" fill-rule="nonzero" xlink:href="#path-1"></use>
+        </g>
+    </g>
+</svg>

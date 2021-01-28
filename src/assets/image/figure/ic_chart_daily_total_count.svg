@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="34px" height="34px" viewBox="0 0 34 34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>6DB0CD5A-8750-4E26-82FE-248ED7D35E6C@1x</title>
+    <defs>
+        <path d="M23.6666667,18.3333333 L17,18.3333333 L17,25 L23.6666667,25 L23.6666667,18.3333333 Z M22.3333333,3.66666667 L22.3333333,6.33333333 L11.6666667,6.33333333 L11.6666667,3.66666667 L9,3.66666667 L9,6.33333333 L7.66666667,6.33333333 C6.18666667,6.33333333 5.01333333,7.53333333 5.01333333,9 L5,27.6666667 C5,29.1333333 6.18666667,30.3333333 7.66666667,30.3333333 L26.3333333,30.3333333 C27.8,30.3333333 29,29.1333333 29,27.6666667 L29,9 C29,7.53333333 27.8,6.33333333 26.3333333,6.33333333 L25,6.33333333 L25,3.66666667 L22.3333333,3.66666667 Z M26.3333333,27.6666667 L7.66666667,27.6666667 L7.66666667,13 L26.3333333,13 L26.3333333,27.6666667 Z" id="path-1"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-1009.000000, -657.000000)">
+            <g id="dashboard_date" transform="translate(320.000000, 614.000000)">
+                <g id="01" transform="translate(648.000000, 0.000000)">
+                    <g id="icon_date" transform="translate(41.000000, 43.000000)">
+                        <rect id="tr" x="0" y="0" width="34" height="34"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/editor/insert_invitation_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

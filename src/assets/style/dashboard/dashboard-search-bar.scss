@@ -1,0 +1,211 @@
+@import "~assets/style/mixin";
+.collabo-search-bar {
+  margin-top: 3rem;
+  .collabo-search-bar__date {
+    display: flex;
+    width: 100%;
+    height: 3.4286rem;
+    border: 1px solid #bac2cc;
+    border-radius: 6px;
+    transition: 0.3s;
+    &:hover,
+    &:focus {
+      border: 1px solid $color_primary;
+      > .collabo-search-bar__date--button {
+        border-left: 1px solid $color_primary;
+      }
+    }
+  }
+
+  .collabo-search-bar__date--input {
+    width: 100%;
+    height: 100%;
+    padding: 0px 0px 0px 1.0357rem;
+    color: #bac2cc;
+    font-weight: 500;
+    font-size: 1.0714rem;
+    border: none;
+    border-radius: 6px 0px 0px 6px;
+    &.active {
+      color: $color_text_main;
+    }
+  }
+
+  .collabo-search-bar__date--button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.4286rem;
+    background: $color_white;
+    border-left: 1px solid rgb(186, 194, 204);
+    border-radius: 0px 6px 6px 0px;
+    transition: 0.3s;
+    &:hover {
+      border-left: 1px solid $color_primary;
+    }
+    > img {
+      width: 1.7143rem;
+      height: 1.7143rem;
+    }
+  }
+
+  .vc-pane-container {
+    width: 42.8571rem;
+    height: 22.3571rem;
+  }
+}
+
+.collabo-search-bar__wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 11.1429rem;
+  padding: 0rem 3.5rem 0rem 3.5714rem;
+  background: #e2ebfa;
+  border: 1px solid #318bff;
+  border-radius: 10px;
+  box-shadow: 0px 16px 12px 0px rgba(0, 113, 255, 0.05);
+}
+
+.collabo-search-bar__condition {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  min-width: 0;
+  margin-right: 1rem;
+
+  &.status {
+    flex-shrink: 1;
+    min-width: 9.5715rem;
+    max-width: 11rem;
+  }
+
+  &.date {
+    flex-shrink: 0.5;
+    min-width: 12.5714rem;
+    max-width: 25.2143rem;
+  }
+
+  &.text {
+    flex-shrink: 1;
+    max-width: 35.1429rem;
+  }
+
+  &.submit {
+    flex-shrink: 2;
+    max-width: 10rem;
+  }
+
+  .checkbox {
+    align-items: center;
+    padding: 0;
+    > .checkbox-toggle {
+      width: 1.2857rem;
+      height: 1.2857rem;
+
+      &.toggle {
+        &:after {
+          position: absolute;
+          top: 0.2859rem;
+          left: 0.2144rem;
+          width: 0.5714rem;
+          height: 0.2143rem;
+          border-bottom: solid 2px $color_white;
+          border-left: solid 2px $color_white;
+          transform: rotate(-45deg);
+          content: "";
+        }
+      }
+    }
+    > .checkbox-text {
+      margin-left: 0.5714rem;
+      color: #434b58;
+      font-weight: 500;
+      font-size: 0.8571rem;
+      opacity: 0.7;
+    }
+  }
+}
+
+.collabo-search-bar--input {
+  height: 3.2857rem;
+  padding: 0 0 0 1.1429rem;
+  color: $color_text_main;
+  font-weight: 500;
+  font-size: 1.0714rem;
+  letter-spacing: 0px;
+  background: $color_white;
+  border: 1px solid #c2c6ce;
+  border-radius: 6px;
+  outline: none;
+  transition: 0.3s;
+  &:hover,
+  &:focus {
+    border: 1px solid $color_primary;
+  }
+
+  &::placeholder {
+    color: #bac2cc;
+    font-weight: 500;
+    font-size: 1.0714rem;
+  }
+}
+
+.collabo-search-bar__status--list.popover--wrapper {
+  > .select-label {
+    width: 100%;
+    height: 3.4286rem;
+    color: $color_text_main;
+    background: $color_white;
+    border: 1px solid #bac2cc;
+    border-radius: 6px;
+
+    &:hover {
+      border: 1px solid $color_primary;
+      border-radius: 6px;
+    }
+  }
+}
+
+.collabo-search-bar__condition--header {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.7857rem;
+  > .collabo-search-bar--label {
+    width: auto;
+    margin: 0;
+  }
+}
+
+.collabo-search-bar--label {
+  width: 100%;
+  margin-bottom: 0.7857rem;
+  color: $color_text_main;
+  font-weight: 500;
+  font-size: 1.0715rem;
+  text-align: left;
+  opacity: 0.9;
+}
+
+.collabo-search-bar__condition--divider {
+  width: 1px;
+  height: 1.1429rem;
+  margin: 0px 0.8929rem;
+  background: #203359;
+  opacity: 0.2;
+}
+
+.collabo-search-bar--submit {
+  width: 100%;
+  height: 3.4286rem;
+  margin-top: 2.5rem;
+  font-weight: 500;
+  font-size: 1.0714rem;
+  background: $color_primary;
+  border-radius: 6px;
+  transition: 0.3s;
+  &:hover {
+    background: #0a5abf;
+  }
+}

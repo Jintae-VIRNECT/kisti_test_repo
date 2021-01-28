@@ -1,0 +1,198 @@
+import http from 'api/gateway'
+
+/**
+ * 세션내의 서버 녹화 파일을 불러오는 API
+ * @query {String} workspaceId 워크스페이스 id
+ * @query {String} userId 유저 id
+ * @param {String} sessionId 세션 id
+ * @param {String} order 정렬 순서
+ */
+export const getServerRecordFiles = async ({
+  workspaceId,
+  userId,
+  sessionId,
+  order = 'createdAt.asc',
+}) => {
+  const returnVal = await http('SERVER_RECORD_FILES', {
+    workspaceId,
+    userId,
+    sessionId,
+    order,
+  })
+  return returnVal
+}
+
+/**
+ * 특정 서버 녹화 파일을 삭제하는 API
+ *
+ * @query {String} workspaceId 워크스페이스 id
+ * @query {String} userId 유저 id
+ * @query {String} id 레코딩 id
+ */
+export const deleteServerRecordFileItem = async ({
+  workspaceId,
+  userId,
+  id,
+}) => {
+  const returnVal = await http('DELETE_SERVER_RECORD_FILES_ITEM', {
+    workspaceId,
+    userId,
+    id,
+  })
+  return returnVal
+}
+
+/**
+ * 특정 서버 녹화파일을 다운로드 하기위한 URL을 반환하는 API
+ *
+ * @query {String} workspaceId 워크스페이스 id
+ * @query {String} userId 유저 id
+ * @query {String} id 레코딩 id
+ */
+export const getServerRecordFileUrl = async ({ workspaceId, userId, id }) => {
+  const returnVal = await http('SERVER_RECORD_FILE_URL', {
+    workspaceId,
+    userId,
+    id,
+  })
+  return returnVal
+}
+
+/**
+ * 세션내의 첨부 파일 목록을 반환하는 API
+ *
+ * @query {String}  workspaceId 워크스페이스 id
+ * @query {String}  sessionId 세션 id
+ * @param {String}  userId 유저 id
+ * @param {Boolean} deleted 삭제된 파일 필터
+ */
+export const getAttachFiles = async ({
+  workspaceId,
+  userId,
+  sessionId,
+  deleted = false,
+}) => {
+  const returnVal = await http('FILES', {
+    workspaceId,
+    userId,
+    sessionId,
+    deleted,
+  })
+  return returnVal
+}
+
+/**
+ * 세션에 업로드된 로컬녹화 파일 목록을 반환
+ *
+ * @query {String} workspaceId 워크스페이스 id
+ * @query {String} sessionId 세션 id
+ * @param {Boolean} deleted 삭제 파일 필터
+ * @param {String} userId 유저id
+ *
+ */
+export const getLocalRecordFiles = async ({
+  deleted = false,
+  sessionId,
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('LOCAL_RECORD_FILES', {
+    deleted,
+    sessionId,
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}
+
+/**
+ * 특정 로컬 녹화 파일을 삭제하는 API
+ *
+ * @param {String} objectName 파일의 고유 이름
+ * @query {String} sessionId 세션 id
+ * @param {String} userId 사용자 고유 식별자
+ * @query {String} workspaceId  워크스페이스 id
+ */
+export const deleteLocalRecordFileItem = async ({
+  objectName,
+  sessionId,
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('DELETE_RECORD_FILE_ITEM', {
+    objectName,
+    sessionId,
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}
+
+/**
+ * 로컬 녹화파일을 다운로드 하기위한 URL을 반환하는 API
+ *
+ * @param {String} objectName 파일의 고유 이름
+ * @query {String} sessionId 세션 id
+ * @param {String} userId 사용자 고유 식별자
+ * @query {String} workspaceId  워크스페이스 id
+ */
+export const getLocalRecordFileUrl = async ({
+  objectName,
+  sessionId,
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('LOCAL_RECORD_FILE_DOWNLOAD_URL', {
+    objectName,
+    sessionId,
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}
+
+/**
+ * 첨부 파일을 삭제하는 API
+ *
+ * @param {String} objectName 파일의 고유 이름
+ * @query {String} sessionId 세션 id
+ * @param {String} userId 사용자 고유 식별자
+ * @query {String} workspaceId  워크스페이스 id
+ */
+export const deleteFileItem = async ({
+  objectName,
+  sessionId,
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('DELETE_FILE_ITEM', {
+    objectName,
+    sessionId,
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}
+
+/**
+ * 첨부 파일의 다운로드 URL을 반환하는 API
+ *
+ * @param {String} objectName 파일의 고유 이름
+ * @query {String} sessionId 세션 id
+ * @param {String} userId 사용자 고유 식별자
+ * @query {String} workspaceId  워크스페이스 id
+ */
+export const getFileDownloadUrl = async ({
+  objectName,
+  sessionId,
+  userId,
+  workspaceId,
+}) => {
+  const returnVal = await http('FILE_ITEM_DOWNLOAD_URL', {
+    objectName,
+    sessionId,
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}

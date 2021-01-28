@@ -1,0 +1,65 @@
+.collabo-history-list {
+  margin-top: 2.9286rem;
+}
+.collabo-history-list__header {
+  position: relative;
+  height: 3.8571rem;
+}
+
+.collabo-history-list__header--title {
+  margin-right: 0.7143rem;
+  color: $color_text_main_1000;
+  font-weight: 500;
+  font-size: 1.5714rem;
+}
+
+.collabo-history-list__header--description {
+  color: #7a7a7a;
+  font-weight: normal;
+  font-size: 1.0714rem;
+}
+.collabo-history-list__header--excel {
+  position: absolute;
+  right: 0px;
+  width: 6.6429rem;
+  height: 2.7143rem;
+  color: rgb(64, 158, 116);
+  font-weight: 500;
+  font-size: 1.0714rem;
+  background: rgba(#81ffa0, 0.1);
+  border: 1px solid rgb(64, 158, 116);
+  border-radius: 6px;
+  transition: 0.3s;
+
+  &.excel-loading {
+    &:after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5.7143rem;
+      height: 5.7143rem;
+      background: center center/40px 40px no-repeat
+        url(~assets/image/loading.gif);
+      transform: translate(-50%, -50%);
+      content: "";
+    }
+  }
+
+  &.disable {
+    color: #bdc5cc;
+    background-color: $color_white;
+    border: 1px solid #bdc5cc;
+
+    &:hover {
+      color: #bdc5cc;
+      background-color: $color_white;
+      border: 1px solid #bdc5cc;
+    }
+  }
+
+  &:hover {
+    color: rgb(17, 189, 113);
+    background: rgba(129, 255, 160, 0.3);
+    border: 1px solid rgb(17, 189, 113);
+  }
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="20px" height="20px" viewBox="0 0 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>333823F2-F85B-453B-9BFA-13532625A561@1x</title>
+    <defs>
+        <polygon id="path-1" points="18 9 5.83 9 11.42 3.41 10 2 2 10 10 18 11.41 16.59 5.83 11 18 11"></polygon>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0020-_대시보드_마스터-권한-" transform="translate(-1845.000000, -1327.000000)">
+            <g id="btn_top" transform="translate(1830.000000, 1312.000000)">
+                <g id="icon_top" transform="translate(15.000000, 15.000000)">
+                    <rect id="tr" x="0" y="0" width="20" height="20"></rect>
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="icon/navigation/arrow_back_24px" fill="#565656" fill-rule="nonzero" transform="translate(10.000000, 10.000000) rotate(-270.000000) translate(-10.000000, -10.000000) " xlink:href="#path-1"></use>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

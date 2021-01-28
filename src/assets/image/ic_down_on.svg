@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="22px" height="22px" viewBox="0 0 22 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>46C6544A-AF4E-41A1-9817-D3CB8E99CABD@1x</title>
+    <defs>
+        <path d="M17.2222222,11 L17.2222222,17.2222222 L4.77777778,17.2222222 L4.77777778,11 L3,11 L3,17.2222222 C3,18.2 3.8,19 4.77777778,19 L17.2222222,19 C18.2,19 19,18.2 19,17.2222222 L19,11 L17.2222222,11 Z M11.8888889,11.5955556 L14.1911111,9.30222222 L15.4444444,10.5555556 L11,15 L6.55555556,10.5555556 L7.80888889,9.30222222 L10.1111111,11.5955556 L10.1111111,3 L11.8888889,3 L11.8888889,11.5955556 Z" id="path-1"></path>
+    </defs>
+    <g id="Design_v-2.2" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="RAS_0120-_협업-내역_서버-녹화-리스트-" transform="translate(-1765.000000, -298.000000)">
+            <g id="info2" transform="translate(1497.000000, 203.000000)">
+                <g id="btn_all_down" transform="translate(259.000000, 86.000000)">
+                    <g id="ic_download" transform="translate(9.000000, 9.000000)">
+                        <rect id="tr" x="0" y="0" width="22" height="22"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/content/save_alt_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
