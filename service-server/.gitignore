@@ -6,7 +6,7 @@ build/
 !**/src/test/**
 
 ### STS ###
-.apt_generated
+.apt_generated;
 .classpath
 .factorypath
 .project
@@ -20,6 +20,7 @@ build/
 *.iml
 *.ipr
 out/
+
 
 ### NetBeans ###
 /nbproject/private/

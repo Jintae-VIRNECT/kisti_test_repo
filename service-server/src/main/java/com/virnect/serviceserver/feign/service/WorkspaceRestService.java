@@ -1,9 +1,9 @@
 package com.virnect.serviceserver.feign.service;
 
 
-import com.virnect.data.ApiResponse;
-import com.virnect.data.dto.feign.WorkspaceMemberInfoListResponse;
-import com.virnect.data.dto.feign.WorkspaceMemberInfoResponse;
+import com.virnect.service.ApiResponse;
+import com.virnect.service.dto.feign.WorkspaceMemberInfoListResponse;
+import com.virnect.service.dto.feign.WorkspaceMemberInfoResponse;
 import com.virnect.serviceserver.feign.WorkspaceRestFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +17,7 @@ public interface WorkspaceRestService {
     ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
             @PathVariable("workspaceId") String workspaceId,
             @RequestParam(value = "filter", required = false) String filter,
+            @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "page") int page,
             @RequestParam(value = "size") int size
             );

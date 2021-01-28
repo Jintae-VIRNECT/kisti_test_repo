@@ -1,13 +1,18 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// BUILDSCRIPT.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 buildscript {
     repositories {
         mavenCentral()
     }
 }
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// GRADLE PLUGINS.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 plugins {
-    // org.springframework.boot version 2.2.5 version has file upload problem.
     id("org.springframework.boot") version "2.2.6.RELEASE" apply false
     id("io.spring.dependency-management") version "1.0.9.RELEASE" apply false
     kotlin("jvm") version "1.3.72" apply false
@@ -16,9 +21,13 @@ plugins {
     id("java")
 }
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// CONFIGURATION.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 allprojects {
     group = "com.virnect"
-    version = "2.1.0"
+    version = "2.0"
+    val springCloudVersion by extra("Hoxton.SR1")
 
     tasks.withType<JavaCompile> {
         sourceCompatibility = "1.8"
@@ -31,7 +40,6 @@ allprojects {
             jvmTarget = "1.8"
         }
     }
-
 }
 
 subprojects {
@@ -39,18 +47,15 @@ subprojects {
         plugin("java")
         plugin("io.spring.dependency-management")
     }
-    /*configure<JavaPluginConvention> {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-    }*/
     dependencies {
         //todo:
     }
-
 
     repositories {
         mavenCentral()
     }
 }
+
 project(":service-server") {
     configurations {
         compileOnly {
@@ -59,18 +64,10 @@ project(":service-server") {
     }
 
     dependencies {
-        //implementation(project(":service-kms"))
-        implementation(project(":service-client"))
-        implementation(project(":service-java-client"))
-        implementation(project(":service-data"))
+        implementation(project(":service-api"))
+        implementation(project(":service-kms"))
         implementation("org.springframework.cloud:spring-cloud-config-client")
     }
-    /*val jar: Jar by tasks
-    val bootJar: BootJar by tasks
-
-    bootJar.enabled = false
-    jar.enabled = true*/
-
 }
 project(":service-data") {
     configurations {
@@ -80,21 +77,34 @@ project(":service-data") {
     }
 }
 
-project(":service-common") {
-
+project(":service-file-data") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
+    }
 }
 
-/*project(":service-kms") {
-    dependencies {
-        //implementation(project(":service-kms"))
-        implementation(project(":service-client"))
-        implementation(project(":service-java-client"))
+project(":service-api") {
+    configurations {
+        compileOnly {
+            extendsFrom(configurations.annotationProcessor.get())
+        }
     }
-}*/
+}
+
+project(":service-kms") {
+    dependencies {
+        implementation(group = "com.github.docker-java", name = "docker-java", version = "3.1.5")
+        implementation(group = "org.codehaus.janino", name = "janino", version = "3.1.0")
+        implementation(group = "org.apache.commons", name = "commons-lang3", version = "3.10")
+    }
+}
 
 project(":service-client") {
 
 }
+
 project(":service-java-client") {
 
 }

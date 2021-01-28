@@ -8,7 +8,6 @@ import javax.persistence.*;
 @Entity
 @Getter
 @Setter
-@Audited
 @Table(name = "session_property")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SessionProperty extends BaseTimeEntity {
@@ -39,9 +38,11 @@ public class SessionProperty extends BaseTimeEntity {
     private boolean keepalive;
 
     @Column(name = "session_type", nullable = false)
-    //@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private SessionType sessionType;
 
+    @Column(name = "publisher_id", nullable = false)
+    private String publisherId;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
@@ -55,6 +56,7 @@ public class SessionProperty extends BaseTimeEntity {
                            boolean recording,
                            boolean keepalive,
                            SessionType sessionType,
+                           String publisherId,
                            Room room
 
 
@@ -66,6 +68,7 @@ public class SessionProperty extends BaseTimeEntity {
         this.recording = recording;
         this.keepalive = keepalive;
         this.sessionType = sessionType;
+        this.publisherId = publisherId;
         this.room = room;
     }
 
@@ -80,6 +83,7 @@ public class SessionProperty extends BaseTimeEntity {
                 ", recording='" + recording + '\'' +
                 ", keepalive='" + keepalive + '\'' +
                 ", sessionType='" + sessionType + '\'' +
+                ", publisherId='" + publisherId + '\'' +
                 '}';
     }
 }

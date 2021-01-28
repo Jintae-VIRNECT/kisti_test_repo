@@ -91,11 +91,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		conf.antMatchers("/layouts/**").permitAll();
 
 		// Security for recorded video files
-		if (remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPublicAccess()) {
+		/*if (remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPublicAccess()) {
 			conf = conf.antMatchers("/recordings/**").permitAll();
 		} else {
 			conf = conf.antMatchers("/recordings/**").authenticated();
-		}
+		}*/
 
 		conf.and().httpBasic();
 	}
@@ -120,8 +120,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	/*@Autowired
 	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
 		*//*auth.inMemoryAuthentication().withUser("remote").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
-				.roles("ADMIN");*//*
-		*//*auth.inMemoryAuthentication().withUser("OPENVIDUAPP").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
 				.roles("ADMIN");*//*
 	}*/
 

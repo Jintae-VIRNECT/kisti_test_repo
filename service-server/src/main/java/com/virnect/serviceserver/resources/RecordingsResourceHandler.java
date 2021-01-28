@@ -37,8 +37,8 @@ public class RecordingsResourceHandler implements WebMvcConfigurer {
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		String recordingsPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath();
-		registry.addResourceHandler("/recordings/**").addResourceLocations("file:" + recordingsPath);
+		/*String recordingsPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath();
+		registry.addResourceHandler("/recordings/**").addResourceLocations("file:" + recordingsPath);*/
 	}
 
 }

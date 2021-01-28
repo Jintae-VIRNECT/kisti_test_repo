@@ -6,23 +6,5 @@
 </head>
 <body>
 	<h1>Welcome to RemoteService</h1>
-	<ul>
-		<li><strong>RemoteService Server URL: </strong><span id="rest-api-url"></span>
-			<small>(consume <a
-				href="https://192.168.6.3:8000/swagger-ui.html"
-				target="_blank">SWAGGER REST API</a> in this URL)
-		</small></li>
-		<li><strong>RemoteService Dashboard(Not yet): </strong><span id="dashboard-url"></span></li>
-	</ul>
 </body>
-<script>
-	window.onload = function() {
-		var restApiUrl = window.location.origin.replace(/\/$/, "");
-		var dashboardUrl = window.location.origin.replace(/\/$/, "")
-				+ "/dashboard";
-		document.getElementById("rest-api-url").innerHTML = restApiUrl;
-		document.getElementById("dashboard-url").innerHTML = "<a href='"+ dashboardUrl + "' target='_blank'>"
-				+ dashboardUrl + "</a>";
-	}
-</script>
 </html>

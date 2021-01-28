@@ -12,18 +12,29 @@ import org.springframework.stereotype.Component;
 public class RemoteStorageProperties extends PropertyService {
 
     //Local File Config properties
-    private String fileBucketName;
+    private String bucketName;
     private String profileBucketName;
+    private String fileBucketName;
+    private String recordBucketName;
     private String accessKey;
     private String secretKey;
     private String serverUrl;
-    private String rootDirPath;
     private boolean serviceEnabled;
+    private boolean policyEnabled;
+    private String policyLocation;
+    private int policyLifeCycle;
+
+    public String getBucketName() {
+        return this.bucketName;
+    }
 
     public String getFileBucketName() {
         return this.fileBucketName;
     }
 
+    public String getRecordBucketName() {
+        return this.recordBucketName;
+    }
 
     public String getProfileBucketName() {
         return profileBucketName;
@@ -41,10 +52,6 @@ public class RemoteStorageProperties extends PropertyService {
         return serverUrl;
     }
 
-    public String getRootDirPath() {
-        return rootDirPath;
-    }
-
     public boolean isServiceEnabled() {
         return serviceEnabled;
     }
@@ -53,24 +60,46 @@ public class RemoteStorageProperties extends PropertyService {
         this.serviceEnabled = enabled;
     }
 
+    public boolean isPolicyEnabled() {
+        return policyEnabled;
+    }
+
+    public int getPolicyLifeCycle() {
+        return policyLifeCycle;
+    }
+
+    public String getPolicyLocation() {
+        return policyLocation;
+    }
+
 
 
     public void checkStorageProperties() {
-        this.fileBucketName = getValue("minio.bucket-file-name");
-        this.profileBucketName = getValue("minio.bucket-profile-name");
-        this.accessKey = getValue("minio.access-key");
-        this.secretKey = getValue("minio.secret-key");
-        this.rootDirPath = getValue("minio.dir");
-        this.serverUrl = getValue("minio.serverUrl");
-        this.serviceEnabled = asBoolean("minio.enabled");
+        this.policyEnabled = asBoolean("storage.policy.enabled");
+        this.policyLifeCycle = asNonNegativeInteger("storage.policy.lifecycle");
+        this.policyLocation = getValue("storage.policy.location");
 
+
+        this.serviceEnabled = asBoolean("storage.enabled");
+        this.bucketName = getValue("storage.bucket.name");
+        this.fileBucketName = getValue("storage.bucket.file");
+        this.profileBucketName = getValue("storage.bucket.profile");
+        this.recordBucketName = getValue("storage.bucket.record");
+        this.accessKey = getValue("storage.access-key");
+        this.secretKey = getValue("storage.secret-key");
+        this.serverUrl = getValue("storage.serverUrl");
+
+        /*log.info("checkFileServiceProperties {}", bucketName);
         log.info("checkFileServiceProperties {}", fileBucketName);
         log.info("checkFileServiceProperties {}", profileBucketName);
+        log.info("checkFileServiceProperties {}", recordBucketName);
         log.info("checkFileServiceProperties {}", accessKey);
         log.info("checkFileServiceProperties {}", secretKey);
-        log.info("checkFileServiceProperties {}", rootDirPath);
         log.info("checkFileServiceProperties {}", serverUrl);
         log.info("checkFileServiceProperties {}", serviceEnabled);
+
+        log.info("checkFileServiceProperties {}", policyEnabled);
+        log.info("checkFileServiceProperties {}", policyLocation);*/
 
         ServiceServerApplication.storageUrl = serverUrl;
     }

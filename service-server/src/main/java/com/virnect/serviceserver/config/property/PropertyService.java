@@ -83,7 +83,7 @@ public abstract class PropertyService {
 
     protected Integer asNonNegativeInteger(String property) {
         try {
-            Integer integerValue = Integer.parseInt(getValue(property));
+            int integerValue = Integer.parseInt(getValue(property));
 
             if (integerValue < 0) {
                 addError(property, "Is not a non negative integer");

@@ -1,27 +1,35 @@
 package com.virnect.serviceserver;
 
-import com.virnect.serviceserver.cdr.CDRLogger;
-import com.virnect.serviceserver.cdr.CDRLoggerFile;
-import com.virnect.serviceserver.cdr.CallDetailRecord;
+import com.virnect.mediaserver.cdr.CDRLogger;
+import com.virnect.mediaserver.cdr.CDRLoggerFile;
+import com.virnect.mediaserver.cdr.CallDetailRecord;
+import com.virnect.mediaserver.config.MediaServerProperties;
+import com.virnect.mediaserver.core.SessionEventsHandler;
+import com.virnect.mediaserver.core.SessionManager;
+import com.virnect.mediaserver.core.TokenGenerator;
+import com.virnect.mediaserver.coturn.CoturnCredentialsService;
+import com.virnect.mediaserver.coturn.CoturnCredentialsServiceFactory;
+import com.virnect.mediaserver.kurento.core.KurentoParticipantEndpointConfig;
+import com.virnect.mediaserver.kurento.core.KurentoSessionEventsHandler;
+import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
+import com.virnect.mediaserver.kurento.kms.DummyLoadManager;
+import com.virnect.mediaserver.kurento.kms.FixedKmsManager;
+import com.virnect.mediaserver.kurento.kms.KmsManager;
+import com.virnect.mediaserver.kurento.kms.LoadManager;
+import com.virnect.mediaserver.recording.DummyRecordingDownloader;
+import com.virnect.mediaserver.recording.RecordingDownloader;
+import com.virnect.mediaserver.recording.service.RecordingManager;
+import com.virnect.mediaserver.rpc.RpcHandler;
+import com.virnect.mediaserver.rpc.RpcNotificationService;
+import com.virnect.mediaserver.utils.*;
+import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
+
+import com.virnect.service.FileService;
+import com.virnect.service.SessionService;
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.core.SessionEventsHandler;
-import com.virnect.serviceserver.core.SessionManager;
-import com.virnect.serviceserver.core.TokenGenerator;
-import com.virnect.serviceserver.core.TokenGeneratorDefault;
-import com.virnect.serviceserver.coturn.CoturnCredentialsService;
-import com.virnect.serviceserver.coturn.CoturnCredentialsServiceFactory;
-import com.virnect.serviceserver.kurento.core.KurentoParticipantEndpointConfig;
-import com.virnect.serviceserver.kurento.core.KurentoSessionEventsHandler;
-import com.virnect.serviceserver.kurento.core.KurentoSessionManager;
-import com.virnect.serviceserver.kurento.kms.*;
-import com.virnect.serviceserver.recording.DummyRecordingDownloader;
-import com.virnect.serviceserver.recording.RecordingDownloader;
-import com.virnect.serviceserver.recording.service.RecordingManager;
-import com.virnect.serviceserver.rpc.RpcHandler;
-import com.virnect.serviceserver.rpc.RpcNotificationService;
-import com.virnect.serviceserver.utils.*;
-import com.virnect.serviceserver.webhook.CDRLoggerWebhook;
+import com.virnect.serviceserver.session.ServiceSessionManager;
+import com.virnect.serviceserver.token.TokenGeneratorDefault;
 import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
 import org.kurento.jsonrpc.server.JsonRpcConfigurer;
@@ -62,15 +70,24 @@ import java.util.concurrent.Semaphore;
 //@EnableWebSecurity
 @Import({ JsonRpcConfiguration.class })
 //@EnableConfigurationProperties(RemoteServiceProperties.class)
-@ComponentScan(value = {"com.virnect.data", "com.virnect.serviceserver"})
-@EntityScan(value = {"com.virnect.data.dao"})
-@EnableJpaRepositories(value = {"com.virnect.data.repository"})
+@ComponentScan(value = {
+        "com.virnect.data",
+        "com.virnect.file",
+        "com.virnect.service",
+        "com.virnect.serviceserver"
+})
+@EntityScan(value = {
+        "com.virnect.data.dao",
+        "com.virnect.file.dao"
+})
+@EnableJpaRepositories(value = {
+        "com.virnect.data.repository",
+        "com.virnect.file.repository"
+})
 //@PropertySource(value = {"classpath:feign-application.properties", "classpath:application.properties"})
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 
-    //mvn -DDOMAIN_OR_PUBLIC_IP=localhost -DHTTPS_PORT=4443 -DOPENVIDU_SECRET=MY_SECRET exec:java
-    //ng serve --host 0.0.0.0 --ssl true
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
     public static final String WS_PATH = "/remote/websocket";
@@ -85,6 +102,19 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
     @Autowired
     RemoteServiceConfig config;
+
+    @Autowired
+    MediaServerProperties mediaServerProperties;
+
+    @Autowired
+    ServiceSessionManager serviceSessionManager;
+
+    /*@Bean
+    @DependsOn("remoteServiceConfig")
+    public MediaServerConfig mediaServerConfig(RemoteServiceConfig remoteServiceConfig) {
+        log.info("RemoteService Server using mediaServerConfig");
+        return new MediaServerConfig();
+    }*/
 
     @Bean
     public ModelMapper modelMapper() {
@@ -106,6 +136,18 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public RemoteServiceProperties remoteServiceProperties() {
         return new RemoteServiceProperties();
     }*/
+
+    @Bean
+    @ConditionalOnMissingBean
+    public FileService fileService() {
+        return new FileService();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public SessionService sessionService() {
+        return new SessionService();
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -131,7 +173,23 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
-    public CallDetailRecord cdr(RemoteServiceConfig remoteServiceConfig) {
+    public CallDetailRecord cdr(MediaServerProperties mediaServerProperties) {
+        List<CDRLogger> loggers = new ArrayList<>();
+        if (mediaServerProperties.serverProperty.isServiceCdr()) {
+            log.info("RemoteService CDR service is enabled");
+            loggers.add(new CDRLoggerFile());
+        } else {
+            log.info("RemoteService CDR service is disabled (may be enable with 'remote_cdr=true')");
+        }
+        if (mediaServerProperties.serverProperty.isWebhookEnabled()) {
+            log.info("RemoteService Webhook service is enabled");
+            loggers.add(new CDRLoggerWebhook(mediaServerProperties));
+        } else {
+            log.info("RemoteService Webhook service is disabled (may be enabled with 'remote_webhook=true')");
+        }
+        return new CallDetailRecord(loggers);
+    }
+    /*public CallDetailRecord cdr(RemoteServiceConfig remoteServiceConfig) {
         List<CDRLogger> loggers = new ArrayList<>();
         if (remoteServiceConfig.isCdrEnabled()) {
             log.info("RemoteService CDR service is enabled");
@@ -146,7 +204,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             log.info("RemoteService Webhook service is disabled (may be enabled with 'remote_webhook=true')");
         }
         return new CallDetailRecord(loggers);
-    }
+    }*/
 
     @Bean
     @ConditionalOnMissingBean
@@ -159,7 +217,8 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
     public SessionManager sessionManager() {
-        return new KurentoSessionManager();
+        KurentoSessionManager kurentoSessionManager = new KurentoSessionManager();
+        return kurentoSessionManager;
     }
 
     @Bean
@@ -283,8 +342,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");
         SpringApplication.run(ServiceServerApplication.class, Arrays.append(args, "--spring.main.banner-mode=off"));
-        //SpringApplication.run(ServiceServerApplication.class, args);
-
         //disableSslVerification();
     }
 
@@ -319,19 +376,19 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         } else {
             String msg = "\n\n\n" + "   Configuration properties\n" + "   ------------------------\n" + "\n";
 
-            final Map<String, String> CONFIG_PROPS = config.getConfigProps();
+            final Map<String, String> configProps = config.getConfigProps();
             List<String> configPropNames = new ArrayList<>(config.getUserProperties());
             Collections.sort(configPropNames);
 
             for (String property : configPropNames) {
-                String value = CONFIG_PROPS.get(property);
+                String value = configProps.get(property);
                 msg += "   * " + config.getPropertyName(property) + "=" + (value == null ? "" : value) + "\n";
             }
             msg += "\n\n";
             log.info(msg);
             // Close the auxiliary ApplicationContext
             app.close();
-            return CONFIG_PROPS;
+            return configProps;
         }
         return null;
     }
@@ -380,10 +437,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
     @EventListener(ApplicationReadyEvent.class)
     public void whenReady() {
-
-        String dashboardUrl = httpUrl + "/dashboard/";
         String websocket = wsUrl + WS_PATH + "/";
-
 
         // @formatter:off
         String msg = "\n\n----------------------------------------------------\n" + "\n"
@@ -394,7 +448,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
                 + "   * RemoteService Media Server Streaming list: " + mediaStreamingUris.toString() + "\n" + "\n"
                 + "   * RemoteService Coturn Server Conference list: " + coturnConferenceUris.toString() + "\n" + "\n"
                 + "   * RemoteService Coturn Server Streaming list: " + coturnStreamingUris.toString() + "\n" + "\n"
-                + "   * RemoteService Dashboard: " + dashboardUrl + "\n" + "\n"
                 + "   * RemoteService Websocket: " + websocket + "\n" + "\n"
                 + "   * RemoteService Storage Server: " + storageUrl + "\n" + "\n"
                 + "   * RemoteService Temp Directory: " + System.getProperty("java.io.tmpdir") + "\n" + "\n"

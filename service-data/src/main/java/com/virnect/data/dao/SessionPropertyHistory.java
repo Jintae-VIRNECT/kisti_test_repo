@@ -39,7 +39,7 @@ public class SessionPropertyHistory extends BaseTimeEntity {
     private boolean keepalive;
 
     @Column(name = "session_type", nullable = false)
-    //@Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)
     private SessionType sessionType;
 
     @OneToOne(fetch = FetchType.LAZY)

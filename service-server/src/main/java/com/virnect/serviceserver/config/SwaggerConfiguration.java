@@ -3,10 +3,11 @@ package com.virnect.serviceserver.config;
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.ErrorResponseMessage;
+import com.virnect.service.error.ErrorCode;
+import com.virnect.service.error.ErrorResponseMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,6 +27,7 @@ import java.util.List;
 
 @Profile({"!staging", "!production"})
 @Configuration
+//@ComponentScan(basePackages = "com.virnect.data")
 @EnableSwagger2
 @RequiredArgsConstructor
 public class SwaggerConfiguration {

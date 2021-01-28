@@ -20,6 +20,8 @@ build/
 *.iml
 *.ipr
 out/
+docker/DockerfileLocal
+.dockerignore
 
 ### NetBeans ###
 /nbproject/private/
@@ -32,6 +34,3 @@ out/
 .vscode/
 
 releasenote.txt
-
-### PROJECT ###
-service-kms/

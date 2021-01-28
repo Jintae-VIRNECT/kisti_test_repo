@@ -1,9 +1,11 @@
 package com.virnect.serviceserver.test.integration.config;
 
-import com.virnect.serviceserver.kurento.kms.FixedOneKmsManager;
-import com.virnect.serviceserver.kurento.kms.Kms;
-import com.virnect.serviceserver.kurento.kms.KmsManager;
-import com.virnect.serviceserver.kurento.kms.KmsProperties;
+import com.virnect.mediaserver.core.SessionManager;
+import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
+import com.virnect.mediaserver.kurento.kms.FixedOneKmsManager;
+import com.virnect.mediaserver.kurento.kms.Kms;
+import com.virnect.mediaserver.kurento.kms.KmsManager;
+import com.virnect.mediaserver.kurento.kms.KmsProperties;
 import org.kurento.client.Continuation;
 import org.kurento.client.KurentoClient;
 import org.kurento.client.MediaPipeline;
@@ -21,6 +23,12 @@ import static org.mockito.Mockito.*;
 
 @TestConfiguration
 public class IntegrationTestConfiguration {
+
+    @Bean
+    public KurentoSessionManager kurentoSessionManager() {
+        return new KurentoSessionManager();
+    }
+
     @Bean
     public KmsManager kmsManager() throws Exception {
         final KmsManager spy = Mockito.spy(new FixedOneKmsManager());

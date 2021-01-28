@@ -2,6 +2,7 @@ package com.virnect.data.service;
 
 import com.virnect.data.dao.MemberHistory;
 import com.virnect.data.dao.RoomHistory;
+import com.virnect.data.repository.HistorySpecifications;
 import com.virnect.data.repository.MemberHistoryRepository;
 import com.virnect.data.repository.RoomHistoryRepository;
 import lombok.AccessLevel;
@@ -9,10 +10,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
+import static com.virnect.data.repository.HistorySpecifications.*;
+import static org.springframework.data.jpa.domain.Specification.where;
 
 /**
  * Do some processing for the request.
@@ -43,7 +48,26 @@ public class HistoryService {
     }
 
     public Page<MemberHistory> getMemberHistoryList(String workspaceId, String userId, Pageable pageable) {
-        return this.memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNull(workspaceId, userId, pageable);
+        return this.memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(workspaceId, userId, pageable);
+        //return this.memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNull(workspaceId, userId, pageable);
+    }
+
+    public Page<RoomHistory> getRoomHistory(String workspaceId,Pageable pageable) {
+        return this.roomHistoryRepository.findRoomHistoryByWorkspaceId(workspaceId, pageable);
+        //return this.roomHistoryRepository.findRoomHistoriesByWorkspaceIdAndMemberHistoriesIsNotNull(workspaceId, pageable);
+    }
+
+    public Page<RoomHistory> getRoomHistory(String workspaceId, String search, Pageable pageable) {
+        return this.roomHistoryRepository.findAll(where(equalWorkspaceId(workspaceId)).and(searchRoomHistory(search)), pageable);
+        //return this.roomHistoryRepository.findByWorkspaceIdAndTitleIsContaining(workspaceId, search, pageable);
+    }
+
+    public Page<RoomHistory> getRoomHistory(String workspaceId, String userId, String search, Pageable pageable) {
+        return this.roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, search), pageable);
+    }
+
+    public Page<RoomHistory> getRoomHistory(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable) {
+        return this.roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, userIds, search), pageable);
     }
 
     public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
@@ -54,7 +78,8 @@ public class HistoryService {
     public void removeRoomHistory(List<MemberHistory> memberHistoryList) {
         memberHistoryList.forEach(memberHistory -> {
             if(memberHistory.getRoomHistory() != null) {
-                memberHistory.setRoomHistory(null);
+                //memberHistory.setRoomHistory(null);
+                memberHistory.setHistoryDeleted(true);
                 this.memberHistoryRepository.save(memberHistory);
             }
         });
@@ -62,7 +87,10 @@ public class HistoryService {
 
     @Transactional
     public void removeRoomHistory(MemberHistory memberHistory) {
-        memberHistory.setRoomHistory(null);
-        this.memberHistoryRepository.save(memberHistory);
+        if(memberHistory.getRoomHistory() != null) {
+            //memberHistory.setRoomHistory(null);
+            memberHistory.setHistoryDeleted(true);
+            this.memberHistoryRepository.save(memberHistory);
+        }
     }
 }
