@@ -65,7 +65,7 @@ public class DownloadService {
 		workspaceValidCheck(workspaceUUID, process);
 		//3.대기 중이거나 마감 된 작업일 때
 		conditionValidCheck(process);
-		
+
 		ResponseEntity<byte[]> responseEntity = contentRestService.contentDownloadRequestForTargetHandler(
 			targetData, memberUUID, workspaceUUID);
 		return responseEntity;
@@ -77,30 +77,30 @@ public class DownloadService {
 			process.getConditions().equals(Conditions.SUCCESS) ||
 			process.getConditions().equals(Conditions.FAULT)) {
 			log.error(
-				"[PROCESS CONDITION CHECK] process is not in progress. content uuid : [{}], process current condition : [{}],",
+				"[CONTENT DOWNLOAD][PROCESS CONDITION CHECK] process is not in progress. content uuid : [{}], process current condition : [{}],",
 				process.getContentUUID(), process.getConditions()
 			);
-			throw new ProcessServiceException(ErrorCode.ERR_DOWNLOAD_CONTENT_CONDITION);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
 	}
 
 	private void workspaceValidCheck(String workspaceUUID, Process process) {
 		if (!process.getWorkspaceUUID().equals(workspaceUUID)) {
 			log.error(
-				"[PROCESS WORKSPACE CHECK] process current workspace uuid : [{}], request workspace uuid : [{}]",
+				"[CONTENT DOWNLOAD][PROCESS WORKSPACE CHECK] process current workspace uuid : [{}], request workspace uuid : [{}]",
 				process.getWorkspaceUUID(), workspaceUUID
 			);
-			throw new ProcessServiceException(ErrorCode.ERR_WORKSPACE_OWNERSHIP);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
 	}
 
 	private void ownerValidCheck(String memberUUID, Process process) {
 		if (!process.getContentManagerUUID().equals(memberUUID)) {
 			log.error(
-				"[PROCESS WORKSPACE CHECK]  process manager uuid : [{}], request user uuid : [{}]",
+				"[CONTENT DOWNLOAD][PROCESS WORKSPACE CHECK]  process manager uuid : [{}], request user uuid : [{}]",
 				process.getContentManagerUUID(), memberUUID
 			);
-			throw new ProcessServiceException(ErrorCode.ERR_OWNERSHIP);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
 	}
 
