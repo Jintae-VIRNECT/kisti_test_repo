@@ -10,7 +10,8 @@
     <!-- 링크 타입 -->
     <div>
       <a
-        v-for="{ label, url } in $t('guide.list')"
+        v-for="{ label, url } in this.$t('guide.list')"
+        v-if="url"
         :href="url"
         :key="label"
         target="_blank"
