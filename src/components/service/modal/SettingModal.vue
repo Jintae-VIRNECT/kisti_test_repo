@@ -20,7 +20,7 @@
           {{ $t('service.setting_pointing') }}
         </button>
         <button
-          v-if="!isTablet"
+          v-if="allowLocalRecord"
           class="service-setting-nav__menu"
           :class="{ active: tabview === 'local-record' }"
           :data-text="$t('service.setting_local_record')"
@@ -92,7 +92,12 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['modalSetting', 'useRecording', 'useTranslate']),
+    ...mapGetters([
+      'modalSetting',
+      'useRecording',
+      'useTranslate',
+      'allowLocalRecord',
+    ]),
 
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -102,6 +107,12 @@ export default {
   watch: {
     modalSetting(flag) {
       this.visibleFlag = flag
+    },
+    allowLocalRecord(allow) {
+      if (allow === false) {
+        this.toastDefault(this.$t('service.record_blocked'))
+        this.tabview = 'translate'
+      }
     },
   },
   methods: {
@@ -113,6 +124,9 @@ export default {
 
     init() {
       this.tabview = this.isLeader ? 'pointing' : 'local-record'
+      if (!this.allowLocalRecord && !this.isLeader) {
+        this.tabview = 'translate'
+      }
 
       this.$nextTick(() => {
         this.initing = true
