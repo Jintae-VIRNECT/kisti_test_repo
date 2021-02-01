@@ -35,7 +35,7 @@
 .service-setting-nav__menu {
   display: inline-flex;
   flex-direction: column;
-  align-items: center;
+  // align-items: center;
   justify-content: space-between;
   width: fit-content;
   margin-bottom: 1.143em;
@@ -127,7 +127,7 @@
 }
 
 .service-setting__text {
-  z-index: 201;
+  z-index: 101;
   width: 12.857rem;
   color: $color_text_main;
   font-size: 0.9286rem;
