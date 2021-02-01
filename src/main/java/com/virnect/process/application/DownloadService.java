@@ -3,6 +3,8 @@ package com.virnect.process.application;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -56,8 +58,11 @@ public class DownloadService {
 	) {
 		//0. 타겟데이터 체크
 		String encodedData = checkParameterEncoded(targetData);
-		Process process = processRepository.findByTargetDataAndState(encodedData, State.CREATED)
-			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+		Process process = processRepository.findByTargetDataAndState(encodedData, State.CREATED).orElse(null);
+		if (process == null) {
+			process = processRepository.findByTargetDataAndState(recode(encodedData), State.CREATED)
+				.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+		}
 
 		//1.현재 사용자에게 할당 된 작업이 아닐 때
 		ownerValidCheck(memberUUID, process);
@@ -69,6 +74,19 @@ public class DownloadService {
 		ResponseEntity<byte[]> responseEntity = contentRestService.contentDownloadRequestForTargetHandler(
 			targetData, memberUUID, workspaceUUID);
 		return responseEntity;
+	}
+
+	private String recode(String urlString) {
+		Pattern pattern = Pattern.compile("%[0-9A-Fa-f]{2}");
+		StringBuffer sb = new StringBuffer();
+		Matcher m = pattern.matcher(urlString);
+
+		while (m.find()) {
+			m.appendReplacement(sb, m.group().toUpperCase());
+		}
+		m.appendTail(sb);
+
+		return sb.toString();
 	}
 
 	private void conditionValidCheck(Process process) {
