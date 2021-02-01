@@ -20,7 +20,7 @@
           {{ $t('service.setting_pointing') }}
         </button>
         <button
-          v-if="allowLocalRecord"
+          v-if="isLeader || allowLocalRecord"
           class="service-setting-nav__menu"
           :class="{ active: tabview === 'local-record' }"
           :data-text="$t('service.setting_local_record')"
@@ -109,6 +109,7 @@ export default {
       this.visibleFlag = flag
     },
     allowLocalRecord(allow) {
+      if (this.isLeader) return
       if (allow === false) {
         this.toastDefault(this.$t('service.record_blocked'))
         this.tabview = 'translate'
