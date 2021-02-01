@@ -37,13 +37,18 @@ public class DownloadService {
     private final LicenseRestService licenseRestService;
     private final WorkspaceRestService workspaceRestService;
 
-    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
-        // 1. 컨텐츠 데이터 조회
+    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(String contentUUID, String memberUUID, String workspaceUUID) {
+        // 0. 컨텐츠 데이터 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
 
-        // 워크스페이스 총 다운로드 수와 라이선스의 다운로드 가능 수 체크
-        licenseMaxDownloadValidCheck(content.getWorkspaceUUID());
+        //1. 워크스페이스 체크
+        workspaceValidCheck(memberUUID, workspaceUUID, content.getWorkspaceUUID());
+        //2. view 라이선스 체크 및 라이선스 다운로드 가능 수 체크
+        licenseMaxDownloadValidCheck(workspaceUUID);
+        licenseValidCheck(memberUUID, workspaceUUID);
+        //3. 공유상태체크
+        contentShardCheck(memberUUID, content);
 
         ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
