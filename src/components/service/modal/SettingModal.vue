@@ -111,23 +111,9 @@ export default {
       this.showModalSetting(false)
     },
 
-    showToast() {
-      this.toastNotify(this.$t('service.setting_save'))
-    },
     init() {
       this.tabview = this.isLeader ? 'pointing' : 'local-record'
 
-      if (this.isLeader) {
-        this.tabview = 'pointing'
-      } else if (!this.isLeader && !this.isTablet) {
-        this.tabview = 'local-record'
-      } else if (!this.isLeader && this.isTablet) {
-        //문제!
-        //서버녹화 및 통번역 옵션 둘다 사용 불가일때
-        //표시해줄 메뉴가 음슴
-      }
-
-      //타블릿이면 사용가능한 옵션이 없음
       this.$nextTick(() => {
         this.initing = true
       })
