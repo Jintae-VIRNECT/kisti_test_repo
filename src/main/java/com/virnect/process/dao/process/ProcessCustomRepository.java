@@ -20,6 +20,14 @@ public interface ProcessCustomRepository {
 	Optional<Process> findByTargetDataAndState(String targetData, State state);
 
 	/**
+	 * 상태와 컨텐츠 식별자로 작업 찾기
+	 * @param targetData
+	 * @param state
+	 * @return
+	 */
+	Optional<Process> findByContentUUIDAndStatus(String contentUUID, State state, String memberUUID);
+
+	/**
 	 *
 	 * @param workspaceUUID 워크스페이스UUID
 	 * @param title         작업명

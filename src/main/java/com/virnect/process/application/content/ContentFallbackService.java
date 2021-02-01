@@ -14,16 +14,13 @@ import com.virnect.process.dto.rest.response.content.ContentDeleteListResponse;
 import com.virnect.process.dto.rest.response.content.ContentInfoResponse;
 import com.virnect.process.dto.rest.response.content.ContentRestDto;
 import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
-import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.common.ApiResponse;
-import com.virnect.process.global.error.ErrorCode;
 
 @Service
 public class ContentFallbackService implements FallbackFactory<ContentRestService> {
 
 	@Override
 	public ContentRestService create(Throwable cause) {
-		System.out.println("이거 왜 안돌지");
 		return new ContentRestService() {
 			@Override
 			public ApiResponse<ContentRestDto> getContentMetadata(String contentUUID) {
@@ -64,7 +61,9 @@ public class ContentFallbackService implements FallbackFactory<ContentRestServic
 			}
 
 			@Override
-			public ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(String contentUUID, String memberUUID) {
+			public ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
+				String contentUUID, String memberUUID, String workspaceUUID
+			) {
 				return null;
 			}
 
@@ -72,8 +71,7 @@ public class ContentFallbackService implements FallbackFactory<ContentRestServic
 			public ResponseEntity<byte[]> contentDownloadRequestForTargetHandler(
 				String targetData, String memberUUID, String workspaceUUID
 			) {
-				System.out.println("ContentFallbackService.contentDownloadRequestForTargetHandler");
-				throw new ProcessServiceException(ErrorCode.ERR_ALREADY_TRANSFORMED);
+				return null;
 			}
 		};
 	}

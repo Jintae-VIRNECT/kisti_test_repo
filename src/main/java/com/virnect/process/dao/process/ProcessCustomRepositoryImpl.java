@@ -41,6 +41,18 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	}
 
 	@Override
+	public Optional<Process> findByContentUUIDAndStatus(String contentUUID, State state, String memberUUID) {
+		QProcess qProcess = QProcess.process;
+		QTarget qTarget = QTarget.target;
+		Process process = from(qProcess)
+			.where(qProcess.state.eq(state)
+				.and(qProcess.contentUUID.eq(contentUUID))
+				.and(qProcess.contentManagerUUID.eq(memberUUID)))
+			.fetchOne();
+		return Optional.ofNullable(process);
+	}
+
+	@Override
 	public Page<Process> getProcessPageSearchUser(
 		List<Conditions> filterList,
 		String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable

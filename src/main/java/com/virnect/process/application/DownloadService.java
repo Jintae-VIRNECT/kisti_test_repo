@@ -41,9 +41,20 @@ public class DownloadService {
 	 * @param memberUUID
 	 * @return
 	 */
-	public ResponseEntity<byte[]> contentDownloadForUUIDHandler(final String contentUUID, final String memberUUID) {
+	public ResponseEntity<byte[]> contentDownloadForUUIDHandler(
+		String contentUUID, String memberUUID, String workspaceUUID
+	) {
+		//1.현재 사용자에게 할당 된 작업이 아니거나 contentUUID 정보가 없을때
+		Process process = processRepository.findByContentUUIDAndStatus(contentUUID, State.CREATED, memberUUID)
+			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
 
-		return contentRestService.contentDownloadForUUIDRequestHandler(contentUUID, memberUUID);
+		//2. 현재 접속한 워크스페이스에 해당하는 작업이 아닐 때
+		workspaceValidCheck(workspaceUUID, process);
+		
+		//3.대기 중이거나 마감 된 작업일 때
+		conditionValidCheck(process);
+
+		return contentRestService.contentDownloadForUUIDRequestHandler(contentUUID, memberUUID, workspaceUUID);
 	}
 
 	/**
@@ -54,14 +65,15 @@ public class DownloadService {
 	 * @return
 	 */
 	public ResponseEntity<byte[]> contentDownloadForTargetHandler(
-		final String targetData, final String memberUUID, String workspaceUUID
+		String targetData, String memberUUID, String workspaceUUID
 	) {
 		//0. 타겟데이터 체크
 		String encodedData = checkParameterEncoded(targetData);
 		Process process = processRepository.findByTargetDataAndState(encodedData, State.CREATED).orElse(null);
 		if (process == null) {
-			process = processRepository.findByTargetDataAndState(recode(encodedData), State.CREATED)
-				.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+			process = processRepository.findByTargetDataAndState(
+				toUpperCaseUrlEncodedString(encodedData), State.CREATED)
+				.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
 		}
 
 		//1.현재 사용자에게 할당 된 작업이 아닐 때
@@ -71,12 +83,12 @@ public class DownloadService {
 		//3.대기 중이거나 마감 된 작업일 때
 		conditionValidCheck(process);
 
-		ResponseEntity<byte[]> responseEntity = contentRestService.contentDownloadRequestForTargetHandler(
-			targetData, memberUUID, workspaceUUID);
-		return responseEntity;
+		//작업 전환의 경우에는 타겟정보를 작업서버에 만들어놓기 때문에 contents 서버에 타겟정보가 없다. 그래서 타겟정보로 다운로드하는 것으로 요청하면 안된다.
+		return contentRestService.contentDownloadForUUIDRequestHandler(
+			process.getContentUUID(), memberUUID, workspaceUUID);
 	}
 
-	private String recode(String urlString) {
+	private String toUpperCaseUrlEncodedString(String urlString) {
 		Pattern pattern = Pattern.compile("%[0-9A-Fa-f]{2}");
 		StringBuffer sb = new StringBuffer();
 		Matcher m = pattern.matcher(urlString);
@@ -85,7 +97,6 @@ public class DownloadService {
 			m.appendReplacement(sb, m.group().toUpperCase());
 		}
 		m.appendTail(sb);
-
 		return sb.toString();
 	}
 

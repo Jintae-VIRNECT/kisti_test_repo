@@ -51,7 +51,8 @@ public interface ContentRestService {
 
 	@GetMapping("/contents/download/contentUUID/{contentUUID}")
 	ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
-		@PathVariable("contentUUID") String contentUUID, @RequestParam("memberUUID") String memberUUID
+		@PathVariable("contentUUID") String contentUUID, @RequestParam("memberUUID") String memberUUID,
+		@RequestParam("workspaceUUID") String workspaceUUID
 	);
 
 	@GetMapping("/contents/download")

@@ -37,19 +37,22 @@ public class DownloadController {
 	@ApiOperation(value = "콘텐츠UUID로 다운로드")
 	@ApiImplicitParams({
 		@ApiImplicitParam(name = "contentUUID", value = "콘텐츠 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "e1bd3914-2b69-475f-9f9d-117477dfae05"),
-		@ApiImplicitParam(name = "memberUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608")
+		@ApiImplicitParam(name = "memberUUID", value = "사용자 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "498b1839dc29ed7bb2ee90ad6985c608"),
+		@ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8")
 	})
 	@GetMapping("/download/contentUUID/{contentUUID}")
 	public ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
 		@PathVariable("contentUUID") String contentUUID
 		, @RequestParam("memberUUID") String memberUUID
+		, @RequestParam("workspaceUUID") String workspaceUUID
 	) throws IOException {
-		if (contentUUID.isEmpty() || memberUUID.isEmpty()) {
+		if (!StringUtils.hasText(contentUUID) || !StringUtils.hasText(memberUUID) || !StringUtils.hasText(
+			workspaceUUID)) {
 			throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		log.info("[DOWNLOAD] USER: [{}] => contentUUID: [{}]", memberUUID, contentUUID);
+		log.info("[DOWNLOAD] USER: [{}], WORKSPACE [{}] => contentUUID: [{}]", memberUUID, workspaceUUID, contentUUID);
 
-		return this.downloadService.contentDownloadForUUIDHandler(contentUUID, memberUUID);
+		return this.downloadService.contentDownloadForUUIDHandler(contentUUID, memberUUID, workspaceUUID);
 	}
 
 	@ApiOperation(value = "타겟 데이터로 다운로드")
