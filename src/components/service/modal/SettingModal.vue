@@ -2,8 +2,8 @@
   <modal
     :visible.sync="visibleFlag"
     :showClose="true"
-    width="840px"
-    height="607px"
+    width="60rem"
+    height="43.3571rem"
     :beforeClose="beforeClose"
     class="service-setting-modal"
     :title="$t('환경 설정')"
@@ -20,6 +20,7 @@
           {{ $t('service.setting_pointing') }}
         </button>
         <button
+          v-if="!isTablet"
           class="service-setting-nav__menu"
           :class="{ active: tabview === 'local-record' }"
           :data-text="$t('service.setting_local_record')"
@@ -28,6 +29,7 @@
           {{ $t('service.setting_local_record') }}
         </button>
         <button
+          v-if="isLeader && useRecording"
           class="service-setting-nav__menu"
           :class="{ active: tabview === 'server-record' }"
           :data-text="$t('service.setting_server_record')"
@@ -36,6 +38,7 @@
           {{ $t('service.setting_server_record') }}
         </button>
         <button
+          v-if="useTranslate"
           class="service-setting-nav__menu"
           :class="{ active: tabview === 'translate' }"
           :data-text="$t('service.setting_translate')"
@@ -45,19 +48,12 @@
         </button>
       </section>
 
-      <!-- 포인팅 리더 only -->
       <set-pointing v-if="tabview === 'pointing'"></set-pointing>
 
-      <!-- 로컬 녹화 / 로컬녹화중에는 사용 불가능해야함.-->
       <set-local-record v-if="tabview === 'local-record'"></set-local-record>
 
-      <!-- 서버 녹화 관련 옵션 -->
-      <set-server-record
-        v-if="isLeader && useRecording && tabview === 'server-record'"
-      ></set-server-record>
+      <set-server-record v-if="tabview === 'server-record'"></set-server-record>
 
-      <!-- 번역 관련 기능 (전체 기능 포함 필요함)-->
-      <!-- 서비스 서버 컴패니 코드에서 번역 쓸건지 체크  -->
       <set-translate v-if="tabview === 'translate'"></set-translate>
     </div>
   </modal>
@@ -91,12 +87,12 @@ export default {
     return {
       visibleFlag: false,
 
-      tabview: 'pointing',
+      tabview: '',
     }
   },
 
   computed: {
-    ...mapGetters(['modalSetting', 'useRecording']),
+    ...mapGetters(['modalSetting', 'useRecording', 'useTranslate']),
 
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -119,6 +115,19 @@ export default {
       this.toastNotify(this.$t('service.setting_save'))
     },
     init() {
+      this.tabview = this.isLeader ? 'pointing' : 'local-record'
+
+      if (this.isLeader) {
+        this.tabview = 'pointing'
+      } else if (!this.isLeader && !this.isTablet) {
+        this.tabview = 'local-record'
+      } else if (!this.isLeader && this.isTablet) {
+        //문제!
+        //서버녹화 및 통번역 옵션 둘다 사용 불가일때
+        //표시해줄 메뉴가 음슴
+      }
+
+      //타블릿이면 사용가능한 옵션이 없음
       this.$nextTick(() => {
         this.initing = true
       })

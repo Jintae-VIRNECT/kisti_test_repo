@@ -37,6 +37,7 @@
           value="value"
           text="text"
           :selectedValue.sync="maxRecordTime"
+          :targetElement="'.modal'"
         >
         </r-select>
       </div>
@@ -65,6 +66,7 @@
           value="value"
           text="text"
           :selectedValue.sync="maxRecordInterval"
+          :targetElement="'.modal'"
         >
         </r-select>
       </div>
@@ -95,6 +97,7 @@
           value="value"
           text="text"
           :selectedValue.sync="recordResolution"
+          :targetElement="'.modal'"
         >
         </r-select>
       </div>

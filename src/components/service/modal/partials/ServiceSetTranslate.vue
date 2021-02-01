@@ -1,81 +1,79 @@
 <template>
   <section class="service-setting__view">
-    <!-- 서비스 서버 컴패니 코드에서 번역 쓸건지 체크  -->
-    <template>
-      <p class="service-setting--header">
-        {{ $t('service.setting_translate') }}
+    <p class="service-setting--header">
+      {{ $t('service.setting_translate') }}
+    </p>
+    <div class="service-setting__row">
+      <p class="service-setting__text">
+        {{ $t('service.setting_translate_use') }}
       </p>
-      <div class="service-setting__row">
-        <p class="service-setting__text">
-          {{ $t('service.setting_translate_use') }}
-        </p>
-        <r-check
-          :text="$t('service.setting_translate_use_allow')"
-          :value.sync="useTranslate"
-        ></r-check>
-      </div>
-      <div class="service-setting__row">
-        <div class="service-setting__text custom">
-          <p>{{ $t('service.setting_translate_language') }}</p>
-          <tooltip
-            customClass="tooltip-guide"
-            :content="$t('service.setting_translate_language_tooltip')"
-            :placement="isTablet ? 'bottom' : 'right'"
-            effect="blue"
-          >
-            <img
-              slot="body"
-              class="setting__tooltip--icon"
-              src="~assets/image/ic_tool_tip.svg"
-            />
-          </tooltip>
-        </div>
-        <r-select
-          class="service-setting__selector"
-          :options="languageCodes"
-          value="code"
-          text="text"
-          :disabled="!useTranslate"
-          :selectedValue.sync="transCode"
+      <r-check
+        :text="$t('service.setting_translate_use_allow')"
+        :value.sync="useTranslate"
+      ></r-check>
+    </div>
+    <div class="service-setting__row">
+      <div class="service-setting__text custom">
+        <p>{{ $t('service.setting_translate_language') }}</p>
+        <tooltip
+          customClass="tooltip-guide"
+          :content="$t('service.setting_translate_language_tooltip')"
+          :placement="isTablet ? 'bottom' : 'right'"
+          effect="blue"
         >
-        </r-select>
+          <img
+            slot="body"
+            class="setting__tooltip--icon"
+            src="~assets/image/ic_tool_tip.svg"
+          />
+        </tooltip>
       </div>
-      <div class="service-setting__row">
-        <div class="service-setting__text" :class="{ disabled: !useTranslate }">
-          {{ $t('workspace.setting_translate_output') }}
-        </div>
-        <slider
-          :first="$t('workspace.setting_translate_output_both')"
-          :second="$t('workspace.setting_translate_output_each')"
-          :isFirst.sync="transMultiple"
-          :disabled="!useTranslate"
-          @slider:disable="disableTranslate"
-        ></slider>
+      <r-select
+        class="service-setting__selector"
+        :options="languageCodes"
+        value="code"
+        text="text"
+        :disabled="!useTranslate"
+        :selectedValue.sync="transCode"
+        :targetElement="'.modal'"
+      >
+      </r-select>
+    </div>
+    <div class="service-setting__row">
+      <div class="service-setting__text" :class="{ disabled: !useTranslate }">
+        {{ $t('workspace.setting_translate_output') }}
       </div>
-      <div class="service-setting__row">
-        <div class="service-setting__text" :class="{ disabled: !useTranslate }">
-          {{ $t('workspace.setting_stt') }}
-        </div>
-        <slider
-          :first="$t('workspace.setting_stt_sync')"
-          :second="$t('workspace.setting_stt_streaming')"
-          :isFirst.sync="sttSync"
-          :disabled="!useTranslate"
-          @slider:disable="disableTranslate"
-        ></slider>
+      <slider
+        :first="$t('workspace.setting_translate_output_both')"
+        :second="$t('workspace.setting_translate_output_each')"
+        :isFirst.sync="transMultiple"
+        :disabled="!useTranslate"
+        @slider:disable="disableTranslate"
+      ></slider>
+    </div>
+    <div class="service-setting__row">
+      <div class="service-setting__text" :class="{ disabled: !useTranslate }">
+        {{ $t('workspace.setting_stt') }}
       </div>
-      <div class="service-setting__row">
-        <div class="service-setting__text" :class="{ disabled: !useTranslate }">
-          {{ $t('workspace.setting_tts') }}
-        </div>
-        <check
-          :text="$t('workspace.setting_tts_allow')"
-          :value.sync="ttsAllow"
-          :disabled="!useTranslate"
-          @check:disable="disableTranslate"
-        ></check>
+      <slider
+        :first="$t('workspace.setting_stt_sync')"
+        :second="$t('workspace.setting_stt_streaming')"
+        :isFirst.sync="sttSync"
+        :disabled="!useTranslate"
+        @slider:disable="disableTranslate"
+      ></slider>
+    </div>
+    <div class="service-setting__row">
+      <div class="service-setting__text" :class="{ disabled: !useTranslate }">
+        {{ $t('workspace.setting_tts') }}
       </div>
-    </template>
+      <check
+        :text="$t('workspace.setting_tts_allow')"
+        :value.sync="ttsAllow"
+        :disabled="!useTranslate"
+        @check:disable="disableTranslate"
+      ></check>
+    </div>
   </section>
 </template>
 
