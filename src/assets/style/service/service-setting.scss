@@ -28,7 +28,7 @@
   width: 15.714em;
   min-width: 15.714em;
   // height: 100%;
-  padding: 46px 0 0 55px;
+  padding: 3.2857rem 0 0 3.9286rem;
   background-color: $color_darkgray_600;
   border-right: solid 1px rgba(#7f7f7f, 0.2);
   border-bottom-left-radius: 0.714em;
@@ -76,7 +76,8 @@
 }
 
 .service-setting__view {
-  padding: 54px 0px 0 39px;
+  width: 44.2857rem;
+  padding: 3.8571rem 0px 0 2.7857rem;
 }
 
 .service-setting--header {
@@ -128,10 +129,11 @@
 }
 
 .service-setting__text {
+  z-index: 201;
   width: 12.857rem;
   color: $color_text_main;
-  font-size: 1rem;
-
+  font-size: 0.9286rem;
+  opacity: 0.86;
   &.custom {
     display: flex;
     align-items: center;
@@ -140,7 +142,7 @@
   > p {
     margin-right: 0.286rem;
     color: $color_text_main;
-    font-size: 1rem;
+    font-size: 0.9286rem;
   }
   > .popover--wrapper {
     display: flex;
@@ -152,6 +154,17 @@
   align-items: flex-start;
   > .radio-group {
     height: 2.429rem;
+  }
+
+  .select-label {
+    width: 23.2857rem;
+    height: 2.5714rem;
+    min-height: unset;
+    padding: 0.4287rem 1.1433rem;
+
+    &::after {
+      right: 0.5714rem;
+    }
   }
 }
 .setting--tooltip-icon {
@@ -180,7 +193,7 @@
 .service-setting {
   .service-setting__row {
     .slider {
-      width: 326px;
+      width: 23.2857rem;
       background-color: #111012;
     }
   }
@@ -190,8 +203,33 @@
 .service-setting {
   .service-setting__row {
     .check {
-      width: 326px;
+      width: 23.2857rem;
+      height: 2.5714rem;
       // background-color: #111012;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+
+      &:not(.toggle) {
+        background-color: #111012;
+        border: solid 1px #363638;
+      }
+    }
+    .checkbox {
+      width: 23.2857rem;
+      height: 2.5714rem;
+      padding-top: 0.5rem;
+      padding-bottom: 0.5rem;
+
+      &:not(.toggle) {
+        background-color: #111012;
+        border: solid 1px #363638;
+      }
+
+      .checkbox-text {
+        color: rgba(255, 255, 255, 0.86);
+        font-weight: normal;
+        font-size: 1rem;
+      }
     }
   }
 }
@@ -200,4 +238,5 @@
   // padding: 3.571em 2.857em 2.571em;
   padding: 0;
   background-color: #1e1e20;
+  border-bottom-left-radius: 0.714em;
 }
