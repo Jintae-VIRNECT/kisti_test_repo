@@ -1,8 +1,8 @@
-package com.virnect.service.constraint;
+package com.virnect.serviceserver.dto.constraint;
 
-import static com.virnect.service.constraint.CompanyConstants.COMPANY_KINTEX;
-import static com.virnect.service.constraint.CompanyConstants.COMPANY_VIRNECT;
-import static com.virnect.service.constraint.LicenseConstants.*;
+import static com.virnect.serviceserver.dto.constraint.CompanyConstants.COMPANY_KINTEX;
+import static com.virnect.serviceserver.dto.constraint.CompanyConstants.COMPANY_VIRNECT;
+import static com.virnect.serviceserver.dto.constraint.LicenseConstants.*;
 
 public enum LicenseItem {
     ITEM_PRODUCT(6, COMPANY_VIRNECT, LICENSE_PRODUCT),

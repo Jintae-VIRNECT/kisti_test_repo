@@ -1,4 +1,4 @@
-package com.virnect.service.constraint;
+package com.virnect.serviceserver.dto.constraint;
 
 public class PushConstants {
     //public static final String PUSH_EVENT_REMOTE = "remote";

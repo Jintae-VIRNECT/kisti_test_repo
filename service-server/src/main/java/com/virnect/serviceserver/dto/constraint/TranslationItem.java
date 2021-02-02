@@ -1,4 +1,4 @@
-package com.virnect.service.constraint;
+package com.virnect.serviceserver.dto.constraint;
 
 public enum TranslationItem {
     LANGUAGE_KR("한국어", "ko-KR"),

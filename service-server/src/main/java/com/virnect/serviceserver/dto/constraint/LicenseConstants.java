@@ -1,4 +1,4 @@
-package com.virnect.service.constraint;
+package com.virnect.serviceserver.dto.constraint;
 
 /**
  *

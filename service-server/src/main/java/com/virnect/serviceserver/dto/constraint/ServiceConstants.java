@@ -1,4 +1,4 @@
-package com.virnect.service.constraint;
+package com.virnect.serviceserver.dto.constraint;
 
 public class ServiceConstants {
     public static final int PRODUCT_BASIC_MAX_USER = 3;

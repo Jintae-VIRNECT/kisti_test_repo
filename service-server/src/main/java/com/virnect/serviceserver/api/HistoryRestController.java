@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.virnect.data.dao.SessionType;
 import com.virnect.service.ApiResponse;
 import com.virnect.service.api.IHistoryRestAPI;
-import com.virnect.service.constraint.LicenseItem;
+import com.virnect.serviceserver.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.dto.response.PageRequest;
 import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.request.room.RoomHistoryDeleteRequest;

@@ -2,7 +2,7 @@ package com.virnect.serviceserver.dao;
 
 import com.virnect.data.dao.*;
 import com.virnect.service.ApiResponse;
-import com.virnect.service.constraint.LicenseConstants;
+import com.virnect.serviceserver.dto.constraint.LicenseConstants;
 import com.virnect.serviceserver.dto.response.PageMetadataResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;

@@ -1,9 +1,8 @@
 package com.virnect.serviceserver.dto.response;
 
-import com.virnect.service.constraint.TranslationItem;
+import com.virnect.serviceserver.dto.constraint.TranslationItem;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
