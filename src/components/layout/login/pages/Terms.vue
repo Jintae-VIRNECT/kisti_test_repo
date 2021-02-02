@@ -138,7 +138,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 p {
   font-family: $noto;
 }

@@ -9,7 +9,8 @@
     "build": "webpack --progress --config build/webpack.prod.conf.js",
     "build:local": "cross-env VIRNECT_ENV=develop NODE_ENV=develop webpack --mode production --progress --config build/webpack.prod.conf.js",
     "start:local": "cross-env VIRNECT_ENV=onpremise NODE_ENV=onpremise node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "lint": "eslint --fix src/**"
   },
   "dependencies": {
     "@virnect/logger": "^1.0.2",
