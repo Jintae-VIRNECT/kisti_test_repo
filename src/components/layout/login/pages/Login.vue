@@ -199,18 +199,20 @@ export default {
           this.redirection(res.data)
         } else throw res
       } catch (e) {
+        const failCount = e.failCount || 0
         this.loading = false
+
         // 일반 에러
-        if (e.code === 2000 && e.failCount < 2) {
+        if (e.code === 2000 && failCount < 2) {
           this.message =
             this.$env !== 'onpremise'
               ? this.$t('login.accountError.contents')
               : this.$t('onpremise.login.error')
         }
         // 2회 이상 실패
-        else if (1 < e.failCount && e.failCount < 5) {
+        else if (1 < failCount && failCount < 5) {
           this.$confirm(
-            this.$tc('login.securityError.contents', e.failCount),
+            this.$tc('login.securityError.contents', failCount),
             this.$t('login.securityError.title'),
             {
               confirmButtonText: this.$t('login.resetPassword'),
@@ -220,7 +222,7 @@ export default {
           ).then(() => this.$router.push({ name: 'reset_password' }))
         }
         // 계졍 잠김
-        else if (e.code === 2002 || e.failCount === 5) {
+        else if (e.code === 2002 || failCount === 5) {
           this.$confirm(
             this.$t('login.lockedError.contents'),
             e.code === 2002
