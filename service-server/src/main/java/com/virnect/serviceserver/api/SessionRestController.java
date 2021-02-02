@@ -7,7 +7,6 @@ import java.util.HashMap;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,8 +61,8 @@ public class SessionRestController implements ISessionRestAPI {
     private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/room";
 
-    private SessionDataRepository sessionDataRepository;
-    private FileDataRepository fileDataRepository;
+    private final SessionDataRepository sessionDataRepository;
+    private final FileDataRepository fileDataRepository;
     private final PushMessageClient pushMessageClient;
 
     private final ServiceSessionManager serviceSessionManager;
@@ -81,7 +80,7 @@ public class SessionRestController implements ISessionRestAPI {
         this.pushMessageClient = pushMessageClient;
     }*/
 
-    @Qualifier(value = "sessionDataRepository")
+    /*@Qualifier(value = "sessionDataRepository")
     @Autowired
     public void setSessionDataRepository(SessionDataRepository sessionDataRepository) {
         this.sessionDataRepository = sessionDataRepository;
@@ -91,7 +90,7 @@ public class SessionRestController implements ISessionRestAPI {
     @Autowired
     public void setFileDataRepository(FileDataRepository fileDataRepository) {
         this.fileDataRepository = fileDataRepository;
-    }
+    }*/
 
     @Deprecated
     private HttpHeaders getResponseHeaders() {

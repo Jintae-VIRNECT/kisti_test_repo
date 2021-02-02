@@ -1,10 +1,33 @@
 package com.virnect.serviceserver.dao;
 
+import static com.virnect.serviceserver.infra.file.IFileManagementService.*;
+
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.data.dao.Room;
 import com.virnect.file.FileType;
 import com.virnect.file.dao.File;
 import com.virnect.file.dao.RecordFile;
-import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.serviceserver.application.FileService;
+import com.virnect.serviceserver.application.SessionService;
+import com.virnect.serviceserver.application.user.UserRestService;
+import com.virnect.serviceserver.dto.request.file.FileUploadRequest;
+import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
+import com.virnect.serviceserver.dto.request.file.RoomProfileUpdateRequest;
 import com.virnect.serviceserver.dto.response.PageMetadataResponse;
 import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.response.file.FileDeleteResponse;
@@ -17,35 +40,24 @@ import com.virnect.serviceserver.dto.response.file.FileUploadResponse;
 import com.virnect.serviceserver.dto.response.file.FileUserInfoResponse;
 import com.virnect.serviceserver.dto.response.file.RoomProfileUpdateResponse;
 import com.virnect.serviceserver.dto.rest.UserInfoResponse;
-import com.virnect.serviceserver.dto.request.file.FileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RoomProfileUpdateRequest;
 import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.infra.file.IFileManagementService;
 import com.virnect.serviceserver.model.UploadResult;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.virnect.serviceserver.infra.file.IFileManagementService.DEFAULT_ROOM_PROFILE;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileDataRepository extends DataRepository {
+public class FileDataRepository {
+    //public class FileDataRepository extends DataRepository {
     private static final String TAG = FileDataRepository.class.getSimpleName();
 
     private final IFileManagementService fileManagementService;
+
+    private final SessionService sessionService;
+    private final FileService fileService;
+    private final UserRestService userRestService;
+    private final ModelMapper modelMapper;
 
     /**
      * Generate directory path to upload file
@@ -57,7 +69,7 @@ public class FileDataRepository extends DataRepository {
     private String generateDirPath(String... args) {
         StringBuilder stringBuilder;
         stringBuilder = new StringBuilder();
-        for (String argument: args) {
+        for (String argument : args) {
             stringBuilder.append(argument).append("/");
         }
         //log.info("ROOM generateDirPath, {}", stringBuilder.toString());
@@ -74,26 +86,29 @@ public class FileDataRepository extends DataRepository {
             @Override
             DataProcess<FileUploadResponse> invokeDataProcess() {
                 // upload to file storage
-                String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
+                String bucketPath = generateDirPath(
+                    fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
                 String objectName = null;
                 try {
-                    UploadResult uploadResult = fileManagementService.upload(fileUploadRequest.getFile(), bucketPath, FileType.FILE);
+                    UploadResult uploadResult = fileManagementService.upload(
+                        fileUploadRequest.getFile(), bucketPath, FileType.FILE);
                     ErrorCode errorCode = uploadResult.getErrorCode();
                     switch (errorCode) {
-                        case ERR_FILE_ASSUME_DUMMY:
-                        case ERR_FILE_UNSUPPORTED_EXTENSION:
-                        case ERR_FILE_SIZE_LIMIT:
-                            return new DataProcess<>(new FileUploadResponse(), errorCode);
-                        case ERR_SUCCESS:
-                            objectName = uploadResult.getResult();
-                            break;
+						/*case ErrorCode.ERR_FILE_ASSUME_DUMMY:
+						case ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION:
+						case ErrorCode.ERR_FILE_SIZE_LIMIT:
+							return new DataProcess<>(new FileUploadResponse(), errorCode);
+						case ErrorCode.ERR_SUCCESS:
+							objectName = uploadResult.getResult();
+							break;*/
                     }
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     log.info("{}", exception.getMessage());
                     return new DataProcess<>(
-                            new FileUploadResponse(),
-                            ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
-                            exception.getMessage());
+                        new FileUploadResponse(),
+                        ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
+                        exception.getMessage()
+                    );
                 }
 
                 File file = fileService.registerFile(fileUploadRequest, objectName);
@@ -117,10 +132,12 @@ public class FileDataRepository extends DataRepository {
             @Override
             DataProcess<FileUploadResponse> invokeDataProcess() {
                 // upload to file storage
-                String bucketPath = generateDirPath(recordFileUploadRequest.getWorkspaceId(), recordFileUploadRequest.getSessionId());
+                String bucketPath = generateDirPath(
+                    recordFileUploadRequest.getWorkspaceId(), recordFileUploadRequest.getSessionId());
                 String objectName = null;
                 try {
-                    UploadResult uploadResult = fileManagementService.upload(recordFileUploadRequest.getFile(), bucketPath, FileType.RECORD);
+                    UploadResult uploadResult = fileManagementService.upload(
+                        recordFileUploadRequest.getFile(), bucketPath, FileType.RECORD);
                     ErrorCode errorCode = uploadResult.getErrorCode();
                     switch (errorCode) {
                         case ERR_FILE_ASSUME_DUMMY:
@@ -134,9 +151,10 @@ public class FileDataRepository extends DataRepository {
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     log.info("{}", exception.getMessage());
                     return new DataProcess<>(
-                            new FileUploadResponse(),
-                            ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
-                            exception.getMessage());
+                        new FileUploadResponse(),
+                        ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
+                        exception.getMessage()
+                    );
                 }
 
                 // save record file information
@@ -155,9 +173,10 @@ public class FileDataRepository extends DataRepository {
     }
 
     public ApiResponse<RoomProfileUpdateResponse> uploadProfile(
-            String workspaceId,
-            String sessionId,
-            RoomProfileUpdateRequest roomProfileUpdateRequest) {
+        String workspaceId,
+        String sessionId,
+        RoomProfileUpdateRequest roomProfileUpdateRequest
+    ) {
         return new RepoDecoder<Room, RoomProfileUpdateResponse>(RepoDecoderType.UPDATE) {
             @Override
             Room loadFromDatabase() {
@@ -170,13 +189,14 @@ public class FileDataRepository extends DataRepository {
                 RoomProfileUpdateResponse profileUpdateResponse = new RoomProfileUpdateResponse();
                 String profileUrl = DEFAULT_ROOM_PROFILE;
                 Room room = loadFromDatabase();
-                if(room != null) {
-                    if(room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
+                if (room != null) {
+                    if (room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
                         if (roomProfileUpdateRequest.getProfile() != null) {
                             try {
                                 UploadResult uploadResult = fileManagementService.uploadProfile(
-                                        roomProfileUpdateRequest.getProfile(),
-                                        null);
+                                    roomProfileUpdateRequest.getProfile(),
+                                    null
+                                );
                                 ErrorCode errorCode = uploadResult.getErrorCode();
                                 switch (errorCode) {
                                     case ERR_FILE_ASSUME_DUMMY:
@@ -192,9 +212,10 @@ public class FileDataRepository extends DataRepository {
                             } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                                 log.info("{}", exception.getMessage());
                                 return new DataProcess<>(
-                                        new RoomProfileUpdateResponse(),
-                                        ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
-                                        exception.getMessage());
+                                    new RoomProfileUpdateResponse(),
+                                    ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
+                                    exception.getMessage()
+                                );
                             }
                         }
                         profileUpdateResponse.setSessionId(sessionId);
@@ -202,7 +223,8 @@ public class FileDataRepository extends DataRepository {
                         sessionService.updateRoom(room, profileUrl);
                         return new DataProcess<>(profileUpdateResponse);
                     } else {
-                        return new DataProcess<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+                        return new DataProcess<>(
+                            new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
                     }
                 } else {
                     return new DataProcess<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
@@ -212,8 +234,8 @@ public class FileDataRepository extends DataRepository {
     }
 
     public ApiResponse<ResultResponse> deleteProfile(
-            String workspaceId,
-            String sessionId
+        String workspaceId,
+        String sessionId
     ) {
         return new RepoDecoder<Room, ResultResponse>(RepoDecoderType.DELETE) {
             @Override
@@ -225,7 +247,7 @@ public class FileDataRepository extends DataRepository {
             DataProcess<ResultResponse> invokeDataProcess() {
                 Room room = loadFromDatabase();
                 ResultResponse resultResponse = new ResultResponse();
-                if(room != null) {
+                if (room != null) {
                     try {
                         fileManagementService.deleteProfile(room.getProfile());
                         sessionService.updateRoom(room, DEFAULT_ROOM_PROFILE);
@@ -242,36 +264,40 @@ public class FileDataRepository extends DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<FilePreSignedResponse> downloadFileUrl(String workspaceId,
-                                                              String sessionId,
-                                                              String userId,
-                                                              String objectName) {
+    public ApiResponse<FilePreSignedResponse> downloadFileUrl(
+        String workspaceId,
+        String sessionId,
+        String userId,
+        String objectName
+    ) {
         return new RepoDecoder<File, FilePreSignedResponse>(RepoDecoderType.READ) {
             @Override
             File loadFromDatabase() {
                 return fileService.getFileByObjectName(
-                        workspaceId,
-                        sessionId,
-                        objectName);
+                    workspaceId,
+                    sessionId,
+                    objectName
+                );
             }
 
             @Override
             DataProcess<FilePreSignedResponse> invokeDataProcess() {
                 File file = loadFromDatabase();
-                if(file != null) {
+                if (file != null) {
                     log.info("file download: {}", file.getObjectName());
                     try {
                         StringBuilder stringBuilder;
                         stringBuilder = new StringBuilder();
                         stringBuilder.append(workspaceId).append("/")
-                                .append(sessionId).append("/")
-                                .append(file.getObjectName());
+                            .append(sessionId).append("/")
+                            .append(file.getObjectName());
 
                         // upload to file storage
                         String bucketPath = generateDirPath(workspaceId, sessionId);
 
                         int expiry = 60 * 60 * 24; //one day
-                        String url = fileManagementService.filePreSignedUrl(bucketPath, objectName, expiry, file.getName(), FileType.FILE);
+                        String url = fileManagementService.filePreSignedUrl(
+                            bucketPath, objectName, expiry, file.getName(), FileType.FILE);
                         FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
                         filePreSignedResponse.setWorkspaceId(file.getWorkspaceId());
                         filePreSignedResponse.setSessionId(file.getSessionId());
@@ -306,7 +332,7 @@ public class FileDataRepository extends DataRepository {
                 try {
                     int expiry = 60 * 60 * 24; //one day
                     url = fileManagementService.filePreSignedUrl("guide", objectName, expiry);
-                    if(url == null) {
+                    if (url == null) {
                         return new DataProcess<>("", ErrorCode.ERR_FILE_NOT_FOUND);
                     } else {
                         return new DataProcess<>(url);
@@ -319,36 +345,40 @@ public class FileDataRepository extends DataRepository {
         }.asApiResponse();
     }
 
-    public ApiResponse<FilePreSignedResponse> downloadRecordFileUrl(String workspaceId,
-                                                              String sessionId,
-                                                              String userId,
-                                                              String objectName) {
+    public ApiResponse<FilePreSignedResponse> downloadRecordFileUrl(
+        String workspaceId,
+        String sessionId,
+        String userId,
+        String objectName
+    ) {
         return new RepoDecoder<RecordFile, FilePreSignedResponse>(RepoDecoderType.READ) {
             @Override
             RecordFile loadFromDatabase() {
                 return fileService.getRecordFileByObjectName(
-                        workspaceId,
-                        sessionId,
-                        objectName);
+                    workspaceId,
+                    sessionId,
+                    objectName
+                );
             }
 
             @Override
             DataProcess<FilePreSignedResponse> invokeDataProcess() {
                 RecordFile recordFile = loadFromDatabase();
-                if(recordFile != null) {
+                if (recordFile != null) {
                     log.info("recordFile download: {}", recordFile.getObjectName());
                     try {
                         StringBuilder stringBuilder;
                         stringBuilder = new StringBuilder();
                         stringBuilder.append(workspaceId).append("/")
-                                .append(sessionId).append("/")
-                                .append(recordFile.getObjectName());
+                            .append(sessionId).append("/")
+                            .append(recordFile.getObjectName());
 
                         // upload to file storage
                         String bucketPath = generateDirPath(workspaceId, sessionId);
 
                         int expiry = 60 * 60 * 24; //one day
-                        String url = fileManagementService.filePreSignedUrl(bucketPath, objectName, expiry, recordFile.getName(), FileType.RECORD);
+                        String url = fileManagementService.filePreSignedUrl(
+                            bucketPath, objectName, expiry, recordFile.getName(), FileType.RECORD);
                         FilePreSignedResponse filePreSignedResponse = new FilePreSignedResponse();
                         filePreSignedResponse.setWorkspaceId(recordFile.getWorkspaceId());
                         filePreSignedResponse.setSessionId(recordFile.getSessionId());
@@ -370,11 +400,11 @@ public class FileDataRepository extends DataRepository {
     }
 
     public ApiResponse<FileInfoListResponse> getFileInfoList(
-            String workspaceId,
-            String sessionId,
-            String userId,
-            boolean deleted,
-            Pageable pageable
+        String workspaceId,
+        String sessionId,
+        String userId,
+        boolean deleted,
+        Pageable pageable
     ) {
         return new RepoDecoder<Page<File>, FileInfoListResponse>(RepoDecoderType.READ) {
             @Override
@@ -387,24 +417,24 @@ public class FileDataRepository extends DataRepository {
                 log.info("getFileInfoList");
                 Page<File> filePage = loadFromDatabase();
 
-                for (File file: filePage.toList()) {
+                for (File file : filePage.toList()) {
                     log.info("getFileInfoList : {}", file.getObjectName());
                 }
 
                 // Page Metadata
                 PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-                        .currentPage(pageable.getPageNumber())
-                        .currentSize(pageable.getPageSize())
-                        .numberOfElements(filePage.getNumberOfElements())
-                        .totalPage(filePage.getTotalPages())
-                        .totalElements(filePage.getNumberOfElements())
-                        .last(filePage.isLast())
-                        .build();
+                    .currentPage(pageable.getPageNumber())
+                    .currentSize(pageable.getPageSize())
+                    .numberOfElements(filePage.getNumberOfElements())
+                    .totalPage(filePage.getTotalPages())
+                    .totalElements(filePage.getNumberOfElements())
+                    .last(filePage.isLast())
+                    .build();
 
                 List<FileInfoResponse> fileInfoList = filePage.toList()
-                        .stream()
-                        .map(file -> modelMapper.map(file, FileInfoResponse.class))
-                        .collect(Collectors.toList());
+                    .stream()
+                    .map(file -> modelMapper.map(file, FileInfoResponse.class))
+                    .collect(Collectors.toList());
 
                 return new DataProcess<>(new FileInfoListResponse(fileInfoList, pageMeta));
             }
@@ -412,11 +442,11 @@ public class FileDataRepository extends DataRepository {
     }
 
     public ApiResponse<FileDetailInfoListResponse> getRecordFileInfoList(
-            String workspaceId,
-            String sessionId,
-            String userId,
-            boolean deleted,
-            Pageable pageable
+        String workspaceId,
+        String sessionId,
+        String userId,
+        boolean deleted,
+        Pageable pageable
     ) {
         return new RepoDecoder<Page<RecordFile>, FileDetailInfoListResponse>(RepoDecoderType.READ) {
             @Override
@@ -430,12 +460,15 @@ public class FileDataRepository extends DataRepository {
                 Page<RecordFile> recordFilePage = loadFromDatabase();
 
                 List<FileDetailInfoResponse> fileDetailInfoList = new ArrayList<>();
-                for (RecordFile recordFile: recordFilePage.toList()) {
+                for (RecordFile recordFile : recordFilePage.toList()) {
                     log.info("getRecordFileInfoList : {}", recordFile.getObjectName());
-                    ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(recordFile.getUuid());
-                    FileUserInfoResponse fileUserInfoResponse = modelMapper.map(feignResponse.getData(), FileUserInfoResponse.class);
+                    ApiResponse<UserInfoResponse> feignResponse = userRestService.getUserInfoByUserId(
+                        recordFile.getUuid());
+                    FileUserInfoResponse fileUserInfoResponse = modelMapper.map(
+                        feignResponse.getData(), FileUserInfoResponse.class);
 
-                    FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(recordFile, FileDetailInfoResponse.class);
+                    FileDetailInfoResponse fileDetailInfoResponse = modelMapper.map(
+                        recordFile, FileDetailInfoResponse.class);
                     log.info("getRecordFileInfoList : {}", fileUserInfoResponse.toString());
                     fileDetailInfoResponse.setFileUserInfo(fileUserInfoResponse);
                     fileDetailInfoList.add(fileDetailInfoResponse);
@@ -443,25 +476,25 @@ public class FileDataRepository extends DataRepository {
 
                 // Page Metadata
                 PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-                        .currentPage(pageable.getPageNumber())
-                        .currentSize(pageable.getPageSize())
-                        .numberOfElements(recordFilePage.getNumberOfElements())
-                        .totalPage(recordFilePage.getTotalPages())
-                        .totalElements(recordFilePage.getTotalElements())
-                        .last(recordFilePage.isLast())
-                        .build();
+                    .currentPage(pageable.getPageNumber())
+                    .currentSize(pageable.getPageSize())
+                    .numberOfElements(recordFilePage.getNumberOfElements())
+                    .totalPage(recordFilePage.getTotalPages())
+                    .totalElements(recordFilePage.getTotalElements())
+                    .last(recordFilePage.isLast())
+                    .build();
 
                 return new DataProcess<>(new FileDetailInfoListResponse(fileDetailInfoList, pageMeta));
             }
         }.asApiResponse();
     }
 
-
-
-    public ApiResponse<FileDeleteResponse> removeFile(String workspaceId,
-                                                      String sessionId,
-                                                      String userId,
-                                                      String objectName) {
+    public ApiResponse<FileDeleteResponse> removeFile(
+        String workspaceId,
+        String sessionId,
+        String userId,
+        String objectName
+    ) {
         return new RepoDecoder<File, FileDeleteResponse>(RepoDecoderType.DELETE) {
             @Override
             File loadFromDatabase() {
@@ -479,15 +512,15 @@ public class FileDataRepository extends DataRepository {
                     StringBuilder stringBuilder;
                     stringBuilder = new StringBuilder();
                     stringBuilder.append(workspaceId).append("/")
-                            .append(sessionId).append("/")
-                            .append(file.getObjectName());
+                        .append(sessionId).append("/")
+                        .append(file.getObjectName());
                     result = fileManagementService.removeObject(stringBuilder.toString());
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     exception.printStackTrace();
                     log.info("{}", exception.getMessage());
                     return new DataProcess<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_EXCEPTION);
                 }
-                if(result) {
+                if (result) {
                     FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
                     fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
                     fileDeleteResponse.setSessionId(file.getSessionId());
@@ -507,7 +540,7 @@ public class FileDataRepository extends DataRepository {
             List<String> loadFromDatabase() {
                 List<String> objects = new ArrayList<>();
                 List<File> files = fileService.getFileList(workspaceId, sessionId);
-                for (File file: files) {
+                for (File file : files) {
                     objects.add(file.getObjectName());
                 }
                 return objects;
@@ -518,7 +551,7 @@ public class FileDataRepository extends DataRepository {
                 log.info("ROOM removeFiles {}, {}", workspaceId, sessionId);
                 try {
                     List<String> listName = loadFromDatabase();
-                    if(!listName.isEmpty()) {
+                    if (!listName.isEmpty()) {
                         String dirPath = generateDirPath(workspaceId, sessionId);
                         fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
                     }
@@ -534,6 +567,7 @@ public class FileDataRepository extends DataRepository {
     public DataProcess<Boolean> removeFiles(String sessionId) {
         return new RepoDecoder<String, Boolean>(RepoDecoderType.DELETE) {
             String workspaceId = null;
+
             @Override
             String loadFromDatabase() {
                 Room room = sessionService.getRoom(sessionId);
@@ -543,7 +577,7 @@ public class FileDataRepository extends DataRepository {
             List<String> loadFromFiles() {
                 List<String> objects = new LinkedList<>();
                 List<File> files = fileService.getFileList(workspaceId, sessionId);
-                for (File file: files) {
+                for (File file : files) {
                     objects.add(file.getObjectName());
                 }
                 return objects;
@@ -553,10 +587,10 @@ public class FileDataRepository extends DataRepository {
             DataProcess<Boolean> invokeDataProcess() {
                 workspaceId = loadFromDatabase();
 
-                if(workspaceId != null) {
+                if (workspaceId != null) {
                     try {
                         List<String> listName = loadFromFiles();
-                        if(!listName.isEmpty()) {
+                        if (!listName.isEmpty()) {
                             String dirPath = generateDirPath(workspaceId, sessionId);
                             fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
                         }

@@ -1,26 +1,5 @@
 package com.virnect.serviceserver.dao;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.virnect.data.dao.Company;
-import com.virnect.data.dao.Language;
-import com.virnect.data.dao.SessionType;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.constraint.CompanyConstants;
-import com.virnect.serviceserver.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.dto.constraint.TranslationItem;
-import com.virnect.serviceserver.dto.response.LanguageCode;
-import com.virnect.serviceserver.dto.request.company.CompanyRequest;
-import com.virnect.serviceserver.dto.request.company.CompanyResponse;
-import com.virnect.serviceserver.dto.request.room.LanguageRequest;
-import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.infra.utils.JsonUtil;
-import com.virnect.serviceserver.infra.utils.LogMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -29,11 +8,42 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.data.dao.Company;
+import com.virnect.data.dao.Language;
+import com.virnect.data.dao.SessionType;
+import com.virnect.serviceserver.application.SessionService;
+import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.dto.constraint.CompanyConstants;
+import com.virnect.serviceserver.dto.constraint.LicenseItem;
+import com.virnect.serviceserver.dto.constraint.TranslationItem;
+import com.virnect.serviceserver.dto.request.company.CompanyRequest;
+import com.virnect.serviceserver.dto.request.company.CompanyResponse;
+import com.virnect.serviceserver.dto.request.room.LanguageRequest;
+import com.virnect.serviceserver.dto.response.LanguageCode;
+import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
+import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.serviceserver.infra.utils.JsonUtil;
+import com.virnect.serviceserver.infra.utils.LogMessage;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UtilDataRepository extends DataRepository {
+public class UtilDataRepository {
     private static final String TAG = UtilDataRepository.class.getSimpleName();
+
+    private final RemoteServiceConfig config;
+    private final SessionService sessionService;
+    private final ModelMapper modelMapper;
 
     private List<LanguageCode> combineLanguageCode(Language language) {
         List<LanguageCode> languageCodes = new ArrayList<>();
@@ -78,15 +88,15 @@ public class UtilDataRepository extends DataRepository {
 
     private CompanyInfoResponse defaultCompanyInfo(String workspaceId) {
         List<LanguageCode> languageCodes = new ArrayList<>(Arrays.asList(
-                new LanguageCode(TranslationItem.LANGUAGE_KR),
-                new LanguageCode(TranslationItem.LANGUAGE_EN),
-                new LanguageCode(TranslationItem.LANGUAGE_JP),
-                new LanguageCode(TranslationItem.LANGUAGE_ZH),
-                new LanguageCode(TranslationItem.LANGUAGE_FR),
-                new LanguageCode(TranslationItem.LANGUAGE_ES),
-                new LanguageCode(TranslationItem.LANGUAGE_RU),
-                new LanguageCode(TranslationItem.LANGUAGE_UK),
-                new LanguageCode(TranslationItem.LANGUAGE_PL)
+            new LanguageCode(TranslationItem.LANGUAGE_KR),
+            new LanguageCode(TranslationItem.LANGUAGE_EN),
+            new LanguageCode(TranslationItem.LANGUAGE_JP),
+            new LanguageCode(TranslationItem.LANGUAGE_ZH),
+            new LanguageCode(TranslationItem.LANGUAGE_FR),
+            new LanguageCode(TranslationItem.LANGUAGE_ES),
+            new LanguageCode(TranslationItem.LANGUAGE_RU),
+            new LanguageCode(TranslationItem.LANGUAGE_UK),
+            new LanguageCode(TranslationItem.LANGUAGE_PL)
         ));
 
         CompanyInfoResponse companyInfoResponse = new CompanyInfoResponse();
@@ -110,7 +120,7 @@ public class UtilDataRepository extends DataRepository {
         JsonObject policyObject = jsonObject.getAsJsonObject("company_info");
         companyInfoResponse.setCompanyCode(policyObject.get("company_code").getAsInt());
 
-        if(policyObject.get("workspace_id").getAsString().isEmpty()) {
+        if (policyObject.get("workspace_id").getAsString().isEmpty()) {
             companyInfoResponse.setWorkspaceId(workspaceId);
         } else {
             companyInfoResponse.setWorkspaceId(policyObject.get("workspace_id").getAsString());
@@ -127,10 +137,10 @@ public class UtilDataRepository extends DataRepository {
 
         JsonArray jsonArray = policyObject.getAsJsonArray("language_codes");
         ArrayList<LanguageCode> languageCodes = new ArrayList<>();
-        for(int i = 0; i<jsonArray.size(); i++) {
+        for (int i = 0; i < jsonArray.size(); i++) {
             LanguageCode languageCode = new LanguageCode(
-                    jsonArray.get(i).getAsJsonObject().get("text").getAsString(),
-                    jsonArray.get(i).getAsJsonObject().get("code").getAsString()
+                jsonArray.get(i).getAsJsonObject().get("text").getAsString(),
+                jsonArray.get(i).getAsJsonObject().get("code").getAsString()
             );
             languageCodes.add(languageCode);
         }
@@ -142,48 +152,49 @@ public class UtilDataRepository extends DataRepository {
         String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
         if (policyLocation == null || policyLocation.isEmpty()) {
             LogMessage.formedError(
-                    TAG,
-                    "initialise service policy",
-                    "loadServicePolicy",
-                    "service policy file path is null or empty. trying to set default service policy."
+                TAG,
+                "initialise service policy",
+                "loadServicePolicy",
+                "service policy file path is null or empty. trying to set default service policy."
             );
             return defaultCompanyInfo(workspaceId);
 
         } else {
             JsonUtil jsonUtil = new JsonUtil();
             JsonObject jsonObject;
-            if(policyLocation.startsWith("/")) {
+            if (policyLocation.startsWith("/")) {
                 Path path = Paths.get(policyLocation);
                 jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
-                LogMessage.formedInfo(
+            } else {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(policyLocation);
+                if (inputStream == null) {
+                    LogMessage.formedError(
                         TAG,
                         "initialise service policy",
                         "loadServicePolicy",
-                        "load service policy with path is success."
-                );
-                return parseServicePolicyJsonObject(jsonObject, workspaceId);
-            } else {
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(policyLocation);
-                if(inputStream == null) {
-                    LogMessage.formedError(
-                            TAG,
-                            "initialise service policy",
-                            "loadServicePolicy",
-                            "service policy file path is null or empty. trying to set default service policy."
+                        "service policy file path is null or empty. trying to set default service policy."
                     );
                     return defaultCompanyInfo(workspaceId);
                 } else {
-                    LogMessage.formedInfo(
-                            TAG,
-                            "initialise service policy",
-                            "loadServicePolicy",
-                            "load service policy is success."
+                    LogMessage.formedError(
+                        TAG,
+                        "initialise service policy",
+                        "loadServicePolicy",
+                        "service policy file path is null or empty. set service policy using service policy file."
                     );
                     jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
                     inputStream.close();
+
                     return parseServicePolicyJsonObject(jsonObject, workspaceId);
                 }
             }
+            LogMessage.formedInfo(
+                TAG,
+                "initialise service policy",
+                "loadServicePolicy",
+                "load service policy is success."
+            );
+            return parseServicePolicyJsonObject(jsonObject, workspaceId);
         }
     }
 
@@ -197,7 +208,7 @@ public class UtilDataRepository extends DataRepository {
             @Override
             DataProcess<CompanyResponse> invokeDataProcess() {
                 Company company = saveData();
-                if(sessionService.createCompany(company) != null) {
+                if (sessionService.createCompany(company) != null) {
                     CompanyResponse companyResponse = new CompanyResponse();
                     companyResponse.setWorkspaceId(company.getWorkspaceId());
                     companyResponse.setLicenseName(company.getLicenseName());
@@ -210,31 +221,31 @@ public class UtilDataRepository extends DataRepository {
 
             private Company saveData() {
                 Company company = Company.builder()
-                        .companyCode(companyRequest.getCompanyCode())
-                        .workspaceId(companyRequest.getWorkspaceId())
-                        .licenseName(companyRequest.getLicenseName())
-                        .sessionType(companyRequest.getSessionType())
-                        .recording(companyRequest.isRecording())
-                        .storage(companyRequest.isStorage())
-                        .translation(companyRequest.isTranslation())
-                        .sttStreaming(companyRequest.isSttStreaming())
-                        .sttSync(companyRequest.isSttSync())
-                        .tts(companyRequest.isTts())
-                        .build();
+                    .companyCode(companyRequest.getCompanyCode())
+                    .workspaceId(companyRequest.getWorkspaceId())
+                    .licenseName(companyRequest.getLicenseName())
+                    .sessionType(companyRequest.getSessionType())
+                    .recording(companyRequest.isRecording())
+                    .storage(companyRequest.isStorage())
+                    .translation(companyRequest.isTranslation())
+                    .sttStreaming(companyRequest.isSttStreaming())
+                    .sttSync(companyRequest.isSttSync())
+                    .tts(companyRequest.isTts())
+                    .build();
 
                 LanguageRequest languageRequest = companyRequest.getLanguage();
                 Language language = Language.builder()
-                        .transKoKr(languageRequest.isTransKoKr())
-                        .transEnUs(languageRequest.isTransEnUs())
-                        .transJaJp(languageRequest.isTransJaJp())
-                        .transZh(languageRequest.isTransZh())
-                        .transEsEs(languageRequest.isTransEsEs())
-                        .transFrFr(languageRequest.isTransFrFr())
-                        .transPlPl(languageRequest.isTransPlPl())
-                        .transRuRu(languageRequest.isTransRuRu())
-                        .transUkUa(languageRequest.isTransUkUa())
-                        .company(company)
-                        .build();
+                    .transKoKr(languageRequest.isTransKoKr())
+                    .transEnUs(languageRequest.isTransEnUs())
+                    .transJaJp(languageRequest.isTransJaJp())
+                    .transZh(languageRequest.isTransZh())
+                    .transEsEs(languageRequest.isTransEsEs())
+                    .transFrFr(languageRequest.isTransFrFr())
+                    .transPlPl(languageRequest.isTransPlPl())
+                    .transRuRu(languageRequest.isTransRuRu())
+                    .transUkUa(languageRequest.isTransUkUa())
+                    .company(company)
+                    .build();
 
                 company.setLanguage(language);
 
@@ -298,9 +309,9 @@ public class UtilDataRepository extends DataRepository {
             @Override
             DataProcess<CompanyInfoResponse> invokeDataProcess() {
                 CompanyInfoResponse companyInfoResponse;
-                if(companyCode != CompanyConstants.COMPANY_VIRNECT) {
+                if (companyCode != CompanyConstants.COMPANY_VIRNECT) {
                     Company company = loadFromDatabase();
-                    if(company != null) {
+                    if (company != null) {
                         companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
                         Language language = company.getLanguage();
                         List<LanguageCode> languageCodes = combineLanguageCode(language);
@@ -319,7 +330,6 @@ public class UtilDataRepository extends DataRepository {
                     return new DataProcess<>(companyInfoResponse);
                 }
             }
-
 
         }.asApiResponse();
     }
