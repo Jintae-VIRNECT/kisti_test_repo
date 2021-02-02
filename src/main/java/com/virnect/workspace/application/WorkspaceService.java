@@ -210,41 +210,40 @@ public class WorkspaceService {
             newPageable = pageRequest.of();
         }
 
-        Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.getWorkspaceUserList(newPageable, workspaceId);
-        String[] userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
+        //search를 제일 먼저 한다.
+        UserInfoListRestResponse userInfoListRestResponse = getSearchedUserList(search, workspaceId);
+        List<String> searchedUserIds = userInfoListRestResponse.getUserInfoList().stream().map(UserInfoRestResponse::getUuid).collect(Collectors.toList());
+
+        //search만 한 결과.
+        Page<WorkspaceUserPermission> workspaceUserPermissionPage;
+        if (!searchedUserIds.isEmpty()) {
+            workspaceUserPermissionPage = workspaceUserPermissionRepository.getContainedUserIdList(searchedUserIds, newPageable, workspaceId);
+        } else {
+            workspaceUserPermissionPage = workspaceUserPermissionRepository.getWorkspaceUserList(newPageable, workspaceId);
+        }
 
         //권한으로 필터를 건 경우
         if (StringUtils.hasText(filter) && (filter.toUpperCase().contains("MASTER") || filter.toUpperCase().contains("MANAGER") || filter.toUpperCase().contains("MEMBER"))) {
-            workspaceUserPermissionPage = workspaceUserPermissionRepository.getRoleFilteredUserList(filter, newPageable, workspaceId);
-            userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
+            workspaceUserPermissionPage = workspaceUserPermissionRepository.getRoleFilteredUserList(workspaceUserPermissionPage.toList(),filter, newPageable, workspaceId);
+            String[] userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
+            userInfoListRestResponse = userRestService.getUserInfoList(search, userIds).getData();//필터링 된 유저목록을 다시 검색한다.
         }
 
         //라이선스로 필터를 건 경우
         if (StringUtils.hasText(filter) && (filter.toUpperCase().contains("REMOTE") || filter.toUpperCase().contains("MAKE") || filter.toUpperCase().contains("VIEW"))) {
-            List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
-            List<String> userIdList = new ArrayList<>();
-            for (WorkspaceUser workspaceUser : workspaceUserList) {
-                MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
-                        workspaceId, workspaceUser.getUserId()).getData();
-                if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
-                    myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
-                        if (filter.toUpperCase().contains(myLicenseInfoResponse.getProductName())) {
-                            userIdList.add(workspaceUser.getUserId());
-                        }
-                    });
-                }
-            }
-
+            List<String> userIdList = getLicenseFilterdUserList(searchedUserIds, filter, workspaceId);
             workspaceUserPermissionPage = workspaceUserPermissionRepository.getContainedUserIdList(userIdList, newPageable, workspaceId);
-            userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
+            String[] userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
+            userInfoListRestResponse = userRestService.getUserInfoList(search, userIds).getData();//필터링 된 유저목록을 다시 검색한다.
         }
-        if (userIds.length == 0) {
+
+        //결과가 없는경우
+        if (workspaceUserPermissionPage.isEmpty()) {
             PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
             pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
             pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
             return new ApiResponse<>(new MemberListResponse(new ArrayList<>(), pageMetadataResponse));
         }
-        UserInfoListRestResponse userInfoListRestResponse = userRestService.getUserInfoList(search, userIds).getData();
 
         List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
         for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
@@ -269,6 +268,42 @@ public class WorkspaceService {
 
         List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
         return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
+    }
+
+    private List<String> getLicenseFilterdUserList(List<String> searchedUserIds, String filter, String workspaceId) {
+        List<String> userIdList = new ArrayList<>();
+        if (!searchedUserIds.isEmpty()) {
+            for (String searchedUserId : searchedUserIds) {
+                MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(workspaceId, searchedUserId).getData();
+                if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+                    myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+                        if (filter.toUpperCase().contains(myLicenseInfoResponse.getProductName())) {
+                            userIdList.add(searchedUserId);
+                        }
+                    });
+                }
+            }
+            return userIdList;
+        }
+        List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
+        for (WorkspaceUser workspaceUser : workspaceUserList) {
+            MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
+                    workspaceId, workspaceUser.getUserId()).getData();
+            if (myLicenseInfoListResponse.getLicenseInfoList() != null && !myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+                myLicenseInfoListResponse.getLicenseInfoList().forEach(myLicenseInfoResponse -> {
+                    if (filter.toUpperCase().contains(myLicenseInfoResponse.getProductName())) {
+                        userIdList.add(workspaceUser.getUserId());
+                    }
+                });
+            }
+        }
+        return userIdList;
+    }
+
+    private UserInfoListRestResponse getSearchedUserList(String search, String workspaceId) {
+        List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
+        String[] allUserIds = workspaceUserList.stream().map(WorkspaceUser::getUserId).toArray(String[]::new);
+        return userRestService.getUserInfoList(search, allUserIds).getData();
     }
 
     /**
@@ -791,7 +826,7 @@ public class WorkspaceService {
                         .planRemote(userInfo.isPlanRemote())
                         .planMake(userInfo.isPlanMake())
                         .planView(userInfo.isPlanView())
-         //               .planRemoteType(licensePlanType)
+                        //               .planRemoteType(licensePlanType)
 //                        .planMakeType(licensePlanType)
 //                        .planViewType(licensePlanType)
                         .invitedDate(LocalDateTime.now())
@@ -925,7 +960,7 @@ public class WorkspaceService {
         if (inviteUserResponse != null && !inviteUserResponse.isMemberUser()) {
             log.info("[WORKSPACE INVITE ACCEPT] Invited User isMemberUser Info >> [{}]", inviteUserResponse.isMemberUser());
             RedirectView redirectView = new RedirectView();
-            redirectView.setUrl(redirectProperty.getTermsWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang +"&email="+userInvite.getInvitedUserEmail());
+            redirectView.setUrl(redirectProperty.getTermsWeb() + "?inviteSession=" + sessionCode + "&lang=" + lang + "&email=" + userInvite.getInvitedUserEmail());
             redirectView.setContentType("application/json");
             return redirectView;
 
@@ -937,7 +972,7 @@ public class WorkspaceService {
         userInviteRepository.save(userInvite);
 
         Cache cache = cacheManager.getCache("userWorkspaces");
-        if(cache!=null){
+        if (cache != null) {
             cache.evict(userInvite.getInvitedUserId());//레디스에 캐싱된 내 워크스페이스 목록 정보 삭제
         }
 
@@ -1125,7 +1160,8 @@ public class WorkspaceService {
         return redirectView;
     }
 
-    public RedirectView workspaceOverPlanFailHandler(Workspace workspace, UserInvite userInvite, List<String> successPlan, List<String> failPlan, Locale locale) {
+    public RedirectView workspaceOverPlanFailHandler(Workspace workspace, UserInvite
+            userInvite, List<String> successPlan, List<String> failPlan, Locale locale) {
         UserInfoRestResponse inviteUserInfo = getUserInfo(userInvite.getInvitedUserId());
         UserInfoRestResponse masterUserInfo = getUserInfo(workspace.getUserId());
 
@@ -2006,6 +2042,7 @@ public class WorkspaceService {
                 "", workspaceUserIdList).getData();
         userInfoListRestResponse.getUserInfoList().forEach(userInfoRestResponse -> {
             MemberInfoDTO memberInfoDTO = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
+            memberInfoDTO.setLicenseProducts(getUserLicenseProductList(workspaceId, userInfoRestResponse.getUuid()));
             memberInfoDTOList.add(memberInfoDTO);
         });
 
@@ -2414,7 +2451,7 @@ public class WorkspaceService {
                 Arrays.toString(role),
                 workspaceUserPermission.getWorkspaceRole().getRole()
         );
-        if (Arrays.stream(role).noneMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)){
+        if (Arrays.stream(role).noneMatch(workspaceUserPermission.getWorkspaceRole().getRole()::equals)) {
             throw new WorkspaceException(ErrorCode.ERR_WORKSPACE_INVALID_PERMISSION);
         }
         return workspace;
@@ -2639,32 +2676,6 @@ public class WorkspaceService {
                 responseMessage.getData().getPasswordChangedDate()
         );
 
-    }
-
-    public WorkspaceInfoListResponse getAllWorkspaceUserList(Pageable pageable) {
-        Page<Workspace> workspaceList = workspaceRepository.findAll(pageable);
-        List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceInfoList = workspaceList.stream().map(workspace -> {
-            WorkspaceInfoListResponse.WorkspaceInfo workspaceInfo = modelMapper.map(workspace, WorkspaceInfoListResponse.WorkspaceInfo.class);
-            List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_Workspace(workspace);
-            List<MemberInfoDTO> memberInfoList = workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
-                WorkspaceUser workspaceUser = workspaceUserPermission.getWorkspaceUser();
-                UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceUser.getUserId());
-                MemberInfoDTO memberInfoDTO = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
-                memberInfoDTO.setJoinDate(workspaceUser.getCreatedDate());
-                memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
-                memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-                memberInfoDTO.setLicenseProducts(getUserLicenseProductList(workspaceUser.getWorkspace().getUuid(), workspaceUser.getUserId()));
-                return memberInfoDTO;
-            }).collect(Collectors.toList());
-            workspaceInfo.setMemberList(memberInfoList);
-            return workspaceInfo;
-        }).collect(Collectors.toList());
-        PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
-        pageMetadataResponse.setTotalElements(workspaceList.getTotalElements());
-        pageMetadataResponse.setTotalPage(workspaceList.getTotalPages());
-        pageMetadataResponse.setCurrentPage(pageable.getPageNumber() + 1);
-        pageMetadataResponse.setCurrentSize(pageable.getPageSize());
-        return new WorkspaceInfoListResponse(workspaceInfoList, pageMetadataResponse);
     }
 }
 

@@ -37,7 +37,7 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
     }
 
     @Override
-    public Page<WorkspaceUserPermission> getRoleFilteredUserList(String roleFilter, Pageable pageable, String workspaceId) {
+    public Page<WorkspaceUserPermission> getRoleFilteredUserList(List<WorkspaceUserPermission> workspaceUserPermissionList, String roleFilter, Pageable pageable, String workspaceId) {
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
         List<String> roleList = new ArrayList<>();
         if (roleFilter.contains("MASTER")) {
@@ -53,12 +53,13 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
         JPQLQuery<WorkspaceUserPermission> query = jpaQueryFactory
                 .select(qWorkspaceUserPermission)
                 .from(qWorkspaceUserPermission)
-                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId).and(qWorkspaceUserPermission.workspaceRole.role.in(roleList)))
+                .where(qWorkspaceUserPermission.workspaceUser.workspace.uuid.eq(workspaceId).and(qWorkspaceUserPermission.workspaceRole.role.in(roleList))
+                .and(qWorkspaceUserPermission.in(workspaceUserPermissionList)))
                 .fetchAll();
 
-        List<WorkspaceUserPermission> workspaceUserPermissionList = getQuerydsl().applyPagination(pageable, query).fetch();
+        List<WorkspaceUserPermission> result = getQuerydsl().applyPagination(pageable, query).fetch();
 
-        return new PageImpl<>(workspaceUserPermissionList, pageable, query.fetchCount());
+        return new PageImpl<>(result, pageable, query.fetchCount());
     }
 
     @Override
