@@ -38,7 +38,7 @@
           {{ $t('service.setting_server_record') }}
         </button>
         <button
-          v-if="useTranslate"
+          v-if="useTranslate && !isSafari"
           class="service-setting-nav__menu"
           :class="{ active: tabview === 'translate' }"
           :data-text="$t('service.setting_translate')"
@@ -112,7 +112,12 @@ export default {
       if (this.isLeader) return
       if (allow === false) {
         this.toastDefault(this.$t('service.record_blocked'))
-        this.tabview = 'translate'
+
+        if (!this.useTranslate) {
+          this.showModalSetting(false)
+        } else {
+          this.tabview = 'translate'
+        }
       }
     },
   },
