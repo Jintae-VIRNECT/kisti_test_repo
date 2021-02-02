@@ -1,7 +1,7 @@
 RELEASE
 
 New Features
-- max heap 사이즈 변경 400mb -> 600mb
+- max heap 사이즈 변경 400mb -> 800mb
 
 Bug Fixes
 - 없음
