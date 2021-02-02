@@ -1,10 +1,10 @@
-package com.virnect.serviceserver.feign.service;
+package com.virnect.serviceserver.application.workspace;
 
 
 import com.virnect.service.ApiResponse;
 import com.virnect.service.dto.feign.WorkspaceMemberInfoListResponse;
 import com.virnect.service.dto.feign.WorkspaceMemberInfoResponse;
-import com.virnect.serviceserver.feign.WorkspaceRestFallbackFactory;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

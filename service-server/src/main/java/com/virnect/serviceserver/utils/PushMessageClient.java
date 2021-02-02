@@ -4,17 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.service.ApiResponse;
-import com.virnect.service.constraint.PushConstants;
 import com.virnect.service.dto.feign.PushResponse;
 import com.virnect.service.dto.push.InviteRoomContents;
 import com.virnect.service.dto.service.request.PushSendRequest;
-import com.virnect.serviceserver.feign.service.MessageRestService;
-import lombok.Builder;
+import com.virnect.serviceserver.application.message.MessageRestService;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Component;
+
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;

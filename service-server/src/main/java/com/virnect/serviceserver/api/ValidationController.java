@@ -7,20 +7,16 @@ import com.virnect.service.constraint.LicenseConstants;
 import com.virnect.service.constraint.LicenseItem;
 import com.virnect.service.dto.feign.LicenseInfoListResponse;
 import com.virnect.service.dto.feign.LicenseInfoResponse;
-import com.virnect.service.dto.feign.UserInfoResponse;
 import com.virnect.service.dto.service.response.CompanyInfoResponse;
 import com.virnect.service.dto.service.response.LicenseItemResponse;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
-import com.virnect.serviceserver.data.DataProcess;
-import com.virnect.serviceserver.data.DataRepository;
 import com.virnect.serviceserver.data.UtilDataRepository;
-import com.virnect.serviceserver.feign.service.LicenseRestService;
+import com.virnect.serviceserver.application.license.LicenseRestService;
 import com.virnect.serviceserver.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j

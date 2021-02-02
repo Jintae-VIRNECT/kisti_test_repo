@@ -1,10 +1,10 @@
-package com.virnect.serviceserver.feign.service;
+package com.virnect.serviceserver.application.license;
 
 
 import com.virnect.service.ApiResponse;
 import com.virnect.service.dto.feign.LicenseInfoListResponse;
 import com.virnect.service.dto.feign.WorkspaceLicensePlanInfoResponse;
-import com.virnect.serviceserver.feign.LicenseRestFallbackFactory;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
