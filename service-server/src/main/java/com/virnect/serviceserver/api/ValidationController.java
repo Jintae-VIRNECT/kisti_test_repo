@@ -1,27 +1,33 @@
 package com.virnect.serviceserver.api;
 
 
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.constraint.LicenseConstants;
-import com.virnect.serviceserver.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.dto.rest.LicenseInfoListResponse;
-import com.virnect.serviceserver.dto.rest.LicenseInfoResponse;
-import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
-import com.virnect.serviceserver.dto.response.lisence.LicenseItemResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.dao.UtilDataRepository;
-import com.virnect.serviceserver.application.license.LicenseRestService;
-import com.virnect.serviceserver.infra.utils.LogMessage;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
+
+import com.virnect.serviceserver.application.license.LicenseRestService;
+import com.virnect.serviceserver.dao.UtilDataRepository;
+import com.virnect.serviceserver.dto.constraint.LicenseConstants;
+import com.virnect.serviceserver.dto.constraint.LicenseItem;
+import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
+import com.virnect.serviceserver.dto.response.lisence.LicenseItemResponse;
+import com.virnect.serviceserver.dto.rest.LicenseInfoListResponse;
+import com.virnect.serviceserver.dto.rest.LicenseInfoResponse;
+import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.serviceserver.error.exception.RestServiceException;
+import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.serviceserver.infra.utils.LogMessage;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class ValidationController implements IValidationRestAPI {
+public class ValidationController {
     private static final String TAG = ValidationController.class.getSimpleName();
     private static final String REST_LICENSE_PATH = "/remote/licenses";
     private static final String REST_COMPANY_PATH = "/remote/company";
@@ -30,10 +36,12 @@ public class ValidationController implements IValidationRestAPI {
     private final UtilDataRepository utilDataRepository;
     private final LicenseRestService licenseRestService;
 
-    @Override
+    @ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
+    @GetMapping(value = "licenses/{workspaceId}/{userId}")
     public ResponseEntity<ApiResponse<LicenseItemResponse>> getLicenseInfo(
-            String workspaceId,
-            String userId) {
+        @PathVariable String workspaceId,
+        @PathVariable String userId
+    ) {
         log.info("REST API: GET {}/{}/{}",
                 REST_LICENSE_PATH,
                 workspaceId != null ? workspaceId : "{}",
@@ -69,10 +77,12 @@ public class ValidationController implements IValidationRestAPI {
         }
     }
 
-    @Override
+    @ApiOperation(value = "Service Company Information", notes = "회사별 서비스 정보를 제공합니다.")
+    @GetMapping(value = "company/{workspaceId}/{userId}")
     public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(
-            String workspaceId,
-            String userId) {
+        @PathVariable String workspaceId,
+        @PathVariable String userId
+    ) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: GET " + REST_COMPANY_PATH + "/" + workspaceId + "/" + userId,
@@ -96,8 +106,13 @@ public class ValidationController implements IValidationRestAPI {
         );
     }
 
-    @Override
-    public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfoRequestHandler(int companyCode, String workspaceId, String userId) {
+    @ApiOperation(value = "Service Company Information", notes = "회사별 서비스 정보를 제공합니다.")
+    @GetMapping(value = "company")
+    public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfoRequestHandler(
+        @RequestParam(name = "companyCode") int companyCode,
+        @RequestParam(name = "workspaceId") String workspaceId,
+        @RequestParam(name = "userId") String userId
+    ) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: GET " + REST_COMPANY_PATH,

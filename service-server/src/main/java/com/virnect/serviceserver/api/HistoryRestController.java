@@ -1,46 +1,58 @@
 package com.virnect.serviceserver.api;
 
+import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.google.gson.JsonObject;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.annotations.ApiOperation;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import springfox.documentation.annotations.ApiIgnore;
+
 import com.virnect.data.dao.SessionType;
-import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.serviceserver.dao.HistoryDataRepository;
+import com.virnect.serviceserver.dao.SessionDataRepository;
 import com.virnect.serviceserver.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.dto.response.PageRequest;
-import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.serviceserver.dto.request.room.RoomRequest;
+import com.virnect.serviceserver.dto.response.PageRequest;
+import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.response.room.RoomHistoryDetailInfoResponse;
 import com.virnect.serviceserver.dto.response.room.RoomHistoryInfoListResponse;
 import com.virnect.serviceserver.dto.response.room.RoomResponse;
 import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.dao.HistoryDataRepository;
-import com.virnect.serviceserver.dao.SessionDataRepository;
-import com.virnect.serviceserver.session.ServiceSessionManager;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.infra.utils.LogMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.validation.Valid;
+import com.virnect.serviceserver.session.ServiceSessionManager;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class HistoryRestController implements IHistoryRestAPI {
+public class HistoryRestController {
     private static final String TAG = HistoryRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/history";
     private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
     private final ServiceSessionManager serviceSessionManager;
 
-    private SessionDataRepository sessionDataRepository;
-    private HistoryDataRepository historyDataRepository;
+    private final SessionDataRepository sessionDataRepository;
+    private final HistoryDataRepository historyDataRepository;
 
-    @Qualifier(value = "sessionDataRepository")
+    /*@Qualifier(value = "sessionDataRepository")
     @Autowired
     public void setSessionDataRepository(SessionDataRepository sessionDataRepository) {
         this.sessionDataRepository = sessionDataRepository;
@@ -50,11 +62,25 @@ public class HistoryRestController implements IHistoryRestAPI {
     @Autowired
     public void setHistoryDataRepository(HistoryDataRepository historyDataRepository) {
         this.historyDataRepository = historyDataRepository;
-    }
+    }*/
 
 
-    @Override
-    public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(String workspaceId, String userId, boolean paging, PageRequest pageable) {
+    @ApiOperation(value = "Load Room History Information List", notes = "최근 기록 리스트를 조회하는 API 입니다.")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "40f9bbee9d85dca7a34a0dd205aae718", required = true),
+        @ApiImplicitParam(name = "userId", value = "유저 uuid", defaultValue = "410df50ca6e32db0b6acba09bcb457ff", required = true),
+        @ApiImplicitParam(name = "paging", value = "검색 결과 페이지네이션 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
+        @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
+        @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
+        @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "endDate, desc"),
+    })
+    @GetMapping(value = "history")
+    public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryListCurrent(
+        @RequestParam(name = "workspaceId") String workspaceId,
+        @RequestParam(name = "userId") String userId,
+        @RequestParam(name = "paging") boolean paging,
+        @ApiIgnore PageRequest pageable
+    ) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: GET "
@@ -73,8 +99,21 @@ public class HistoryRestController implements IHistoryRestAPI {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @Override
-    public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryList(String workspaceId, String userId, String search, PageRequest pageable) {
+    @ApiOperation(value = "Search Room History Information List", notes = "검색 기준으로 최근 기록 리스트를 조회하는 API 입니다.")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 ID", defaultValue = "40f9bbee9d85dca7a34a0dd205aae718", required = true),
+        @ApiImplicitParam(name = "userId", value = "유저 uuid", defaultValue = "410df50ca6e32db0b6acba09bcb457ff", required = true),
+        @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "2"),
+        @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
+        @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate, desc"),
+    })
+    @GetMapping(value = "history/search")
+    public ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getHistoryListStandardSearch(
+        @RequestParam(name = "workspaceId") String workspaceId,
+        @RequestParam(name = "userId") String userId,
+        @RequestParam(name = "search", required = false) String search,
+        @ApiIgnore PageRequest pageable
+    ) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: GET "
@@ -94,12 +133,14 @@ public class HistoryRestController implements IHistoryRestAPI {
         return ResponseEntity.ok(apiResponse);
     }
 
-    @Override
+    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "This api will be deprecated")
+    @PostMapping(value = "history")
     public ResponseEntity<ApiResponse<RoomResponse>> redialRoomRequest(
-            @Valid RoomRequest roomRequest,
-            String sessionId,
-            int companyCode,
-            BindingResult result) {
+        @RequestBody @Valid RoomRequest roomRequest,
+        @RequestParam(name = "sessionId") String sessionId,
+        @RequestParam(name = "companyCode") int companyCode,
+        BindingResult result
+    ) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: POST " + REST_PATH +
@@ -200,13 +241,16 @@ public class HistoryRestController implements IHistoryRestAPI {
         }
     }
 
-    @Override
-    public ResponseEntity<ApiResponse<RoomResponse>> redialRoomRequestHandler(String client,
-                                                                              String userId,
-                                                                              @Valid RoomRequest roomRequest,
-                                                                              String sessionId,
-                                                                              int companyCode,
-                                                                              BindingResult result) {
+    @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "Redial Remote Session")
+    @PostMapping(value = "history/{userId}")
+    public ResponseEntity<ApiResponse<RoomResponse>> redialRoomRequestByUserId(
+        @RequestHeader(name = "client", required = false) String client,
+        @PathVariable(name = "userId") String userId,
+        @RequestBody @Valid RoomRequest roomRequest,
+        @RequestParam(name = "sessionId") String sessionId,
+        @RequestParam(name = "companyCode") int companyCode,
+        BindingResult result
+    ) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: POST " + REST_PATH +
@@ -290,8 +334,12 @@ public class HistoryRestController implements IHistoryRestAPI {
         }
     }
 
-    @Override
-    public ResponseEntity<ApiResponse<RoomHistoryDetailInfoResponse>> getHistoryById(String workspaceId, String sessionId) {
+    @ApiOperation(value = "Load Room History Detail Information", notes = "특정 원격협업 방 최근 기록 상세 정보를 조회하는 API 입니다.")
+    @GetMapping(value = "history/{workspaceId}/{sessionId}")
+    public ResponseEntity<ApiResponse<RoomHistoryDetailInfoResponse>> getHistoryById(
+        @PathVariable("workspaceId") String workspaceId,
+        @PathVariable("sessionId") String sessionId
+    ) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE " + REST_PATH +
@@ -309,8 +357,12 @@ public class HistoryRestController implements IHistoryRestAPI {
         );
     }
 
-    @Override
-    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistory(String workspaceId, String userId) {
+    @ApiOperation(value = "Delete all Room Histories", notes = "모든 최근 기록 리스트를 삭제하는 API 입니다.")
+    @DeleteMapping(value = "history/{workspaceId}/{userId}")
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistory(
+        @PathVariable("workspaceId") String workspaceId,
+        @PathVariable("userId") String userId
+    ) {
         LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE " + REST_PATH +
@@ -328,9 +380,13 @@ public class HistoryRestController implements IHistoryRestAPI {
         );
     }
 
-    @Override
-    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryById(String workspaceId, @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest, BindingResult result) {
-        LogMessage.formedInfo(
+    @ApiOperation(value = "Delete a specific room", notes = "특정 최근기록을 삭제하는 API 입니다.")
+    @DeleteMapping(value = "history/{workspaceId}")
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryById(
+        @PathVariable("workspaceId") String workspaceId,
+        @RequestBody @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest,
+        BindingResult result
+    ) {      LogMessage.formedInfo(
                 TAG,
                 "REST API: DELETE " + REST_PATH +
                         (workspaceId != null ? workspaceId : "{}") +
