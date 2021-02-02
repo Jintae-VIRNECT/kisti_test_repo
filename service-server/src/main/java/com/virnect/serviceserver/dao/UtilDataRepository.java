@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.data;
+package com.virnect.serviceserver.dao;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -15,8 +15,8 @@ import com.virnect.service.dto.service.request.CompanyResponse;
 import com.virnect.service.dto.service.request.LanguageRequest;
 import com.virnect.service.dto.service.response.CompanyInfoResponse;
 import com.virnect.service.error.ErrorCode;
-import com.virnect.serviceserver.utils.JsonUtil;
-import com.virnect.serviceserver.utils.LogMessage;
+import com.virnect.serviceserver.infra.utils.JsonUtil;
+import com.virnect.serviceserver.infra.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

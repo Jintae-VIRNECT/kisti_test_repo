@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.data;
+package com.virnect.serviceserver.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -28,8 +28,8 @@ import com.virnect.serviceserver.application.license.LicenseRestService;
 import com.virnect.serviceserver.application.record.RecordRestService;
 import com.virnect.serviceserver.application.user.UserRestService;
 import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
-import com.virnect.serviceserver.utils.LogMessage;
-import com.virnect.serviceserver.utils.PushMessageClient;
+import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.serviceserver.infra.utils.PushMessageClient;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;

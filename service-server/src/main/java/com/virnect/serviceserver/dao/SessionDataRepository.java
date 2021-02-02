@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.data;
+package com.virnect.serviceserver.dao;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,22 +15,19 @@ import com.virnect.service.dto.service.request.*;
 import com.virnect.service.dto.service.response.*;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.serviceserver.ServiceServerApplication;
-import com.virnect.serviceserver.utils.LogMessage;
+import com.virnect.serviceserver.infra.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import javax.activation.UnsupportedDataTypeException;
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j

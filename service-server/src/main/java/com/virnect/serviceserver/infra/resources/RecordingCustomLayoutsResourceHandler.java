@@ -15,7 +15,7 @@
  *
  */
 
-package com.virnect.serviceserver.resources;
+package com.virnect.serviceserver.infra.resources;
 
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import org.springframework.beans.factory.annotation.Autowired;

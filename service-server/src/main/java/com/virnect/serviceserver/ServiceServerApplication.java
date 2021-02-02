@@ -28,9 +28,9 @@ import com.virnect.service.FileService;
 import com.virnect.service.SessionService;
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.data.SessionDataRepository;
+import com.virnect.serviceserver.dao.SessionDataRepository;
 import com.virnect.serviceserver.session.ServiceSessionManager;
-import com.virnect.serviceserver.token.TokenGeneratorDefault;
+import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
 import org.kurento.jsonrpc.server.JsonRpcConfigurer;
@@ -55,8 +55,7 @@ import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import javax.net.ssl.*;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
+
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;

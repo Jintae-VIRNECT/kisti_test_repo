@@ -15,7 +15,7 @@
  *
  */
 
-package com.virnect.serviceserver.token;
+package com.virnect.serviceserver.infra.token;
 
 import com.virnect.java.client.RemoteServiceRole;
 import com.virnect.serviceserver.ServiceServerApplication;

@@ -11,7 +11,7 @@ import com.virnect.service.dto.file.response.*;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.data.FileDataRepository;
+import com.virnect.serviceserver.dao.FileDataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -13,12 +13,12 @@ import com.virnect.service.dto.service.request.*;
 import com.virnect.service.dto.service.response.*;
 import com.virnect.service.error.ErrorCode;
 import com.virnect.service.error.exception.RestServiceException;
-import com.virnect.serviceserver.data.DataProcess;
-import com.virnect.serviceserver.data.FileDataRepository;
-import com.virnect.serviceserver.data.SessionDataRepository;
+import com.virnect.serviceserver.dao.DataProcess;
+import com.virnect.serviceserver.dao.FileDataRepository;
+import com.virnect.serviceserver.dao.SessionDataRepository;
 import com.virnect.serviceserver.session.ServiceSessionManager;
-import com.virnect.serviceserver.utils.LogMessage;
-import com.virnect.serviceserver.utils.PushMessageClient;
+import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.serviceserver.infra.utils.PushMessageClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,6 @@ import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 @Slf4j
 @RestController

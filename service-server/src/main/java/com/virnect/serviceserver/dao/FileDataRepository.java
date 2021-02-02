@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.data;
+package com.virnect.serviceserver.dao;
 
 import com.virnect.data.dao.Room;
 import com.virnect.file.FileType;

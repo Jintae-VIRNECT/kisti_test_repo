@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.data;
+package com.virnect.serviceserver.dao;
 
 import com.virnect.data.dao.*;
 import com.virnect.service.ApiResponse;
@@ -12,7 +12,7 @@ import com.virnect.service.dto.service.response.RoomHistoryDetailInfoResponse;
 import com.virnect.service.dto.service.response.RoomHistoryInfoListResponse;
 import com.virnect.service.dto.service.response.RoomHistoryInfoResponse;
 import com.virnect.service.error.ErrorCode;
-import com.virnect.serviceserver.utils.LogMessage;
+import com.virnect.serviceserver.infra.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j

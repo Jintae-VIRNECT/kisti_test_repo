@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.data;
+package com.virnect.serviceserver.dao;
 
 import com.virnect.data.dao.*;
 import com.virnect.service.ApiResponse;
@@ -10,7 +10,7 @@ import com.virnect.service.dto.service.response.MemberInfoListResponse;
 import com.virnect.service.dto.service.response.MemberInfoResponse;
 import com.virnect.service.dto.service.response.MemberSecessionResponse;
 import com.virnect.service.error.ErrorCode;
-import com.virnect.serviceserver.api.HistoryRestController;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RestController;

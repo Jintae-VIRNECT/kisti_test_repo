@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.utils;
+package com.virnect.serviceserver.infra.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.utils;
+package com.virnect.serviceserver.infra.utils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;

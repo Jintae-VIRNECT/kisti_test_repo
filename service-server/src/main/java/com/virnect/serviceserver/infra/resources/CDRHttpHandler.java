@@ -15,7 +15,7 @@
  *
  */
 
-package com.virnect.serviceserver.resources;
+package com.virnect.serviceserver.infra.resources;
 
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +23,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * This class serves recording files from host folder indicated in configuration
- * property OPENVIDU_RECORDING_PATH
- * 
- * @author Pablo Fuente (pablofuenteperez@gmail.com)
- */
+
 @Configuration
-public class RecordingsResourceHandler implements WebMvcConfigurer {
+public class CDRHttpHandler implements WebMvcConfigurer {
 
 	@Autowired
 	RemoteServiceConfig remoteServiceConfig;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		/*String recordingsPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath();
-		registry.addResourceHandler("/recordings/**").addResourceLocations("file:" + recordingsPath);*/
+		String cdrPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceCdrPath();
+		registry.addResourceHandler("/cdr/**.log").addResourceLocations("file:" + cdrPath);
 	}
 
 }

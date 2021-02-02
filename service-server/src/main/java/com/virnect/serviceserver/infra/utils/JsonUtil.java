@@ -1,11 +1,9 @@
-package com.virnect.serviceserver.utils;
+package com.virnect.serviceserver.infra.utils;
 
 import com.google.gson.*;
-import org.kurento.jsonrpc.Props;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 public class JsonUtil {
     /*public Props fromJsonObjectToProps(JsonObject params) {
