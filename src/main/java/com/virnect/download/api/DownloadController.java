@@ -1,7 +1,6 @@
 package com.virnect.download.api;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Locale;
 
 import org.springframework.http.ResponseEntity;
