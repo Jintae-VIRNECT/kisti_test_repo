@@ -60,6 +60,7 @@ export default {
   },
   watch: {
     async activeTab(tab) {
+      window.history.replaceState({}, null, tab)
       if (this.products[tab].length) return false
       const data = await this.$api('APP_LIST', {
         route: { productName: tab },
