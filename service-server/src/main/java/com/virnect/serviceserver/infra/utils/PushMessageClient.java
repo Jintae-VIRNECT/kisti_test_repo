@@ -1,22 +1,23 @@
 package com.virnect.serviceserver.infra.utils;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.rest.PushResponse;
-import com.virnect.serviceserver.dto.push.InviteRoomContents;
-import com.virnect.serviceserver.dto.push.PushSendRequest;
-import com.virnect.serviceserver.application.message.MessageRestService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.virnect.serviceserver.application.message.MessageRestService;
+import com.virnect.serviceserver.dto.push.InviteRoomContents;
+import com.virnect.serviceserver.dto.push.PushSendRequest;
+import com.virnect.serviceserver.dto.rest.PushResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 
 @Slf4j
 @Service
@@ -35,12 +36,13 @@ public class PushMessageClient {
         this.messageRestService = messageRestService;
     }*/
 
-    public void setPush(String pushService,
-                             String pushEvent,
-                             String workspaceId,
-                             String userId,
-                             List<String> targetUserIds) {
-
+    public void setPush(
+        String pushService,
+        String pushEvent,
+        String workspaceId,
+        String userId,
+        List<String> targetUserIds
+    ) {
         pushSendRequest = new PushSendRequest();
         pushSendRequest.setService(pushService);
         pushSendRequest.setEvent(pushEvent);
@@ -49,11 +51,13 @@ public class PushMessageClient {
         pushSendRequest.setTargetUserIds(targetUserIds);
     }
 
-    public ApiResponse<PushResponse> sendPushInvite(String sessionId,
-                                                    String title,
-                                                    String sender,
-                                                    String profile,
-                                                    String leaderId) {
+    public ApiResponse<PushResponse> sendPushInvite(
+        String sessionId,
+        String title,
+        String sender,
+        String profile,
+        String leaderId
+    ) {
         //set push message invite room contents
         InviteRoomContents inviteRoomContents = new InviteRoomContents();
         inviteRoomContents.setSessionId(sessionId);

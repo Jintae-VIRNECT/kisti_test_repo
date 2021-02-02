@@ -12,7 +12,6 @@ COPY service-kms service-kms
 
 COPY service-data service-data
 COPY service-file-data service-file-data
-COPY service-api service-api
 
 COPY service-server service-server
 COPY virnect.pfx .

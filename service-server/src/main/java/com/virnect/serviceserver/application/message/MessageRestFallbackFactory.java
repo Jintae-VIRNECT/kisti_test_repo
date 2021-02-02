@@ -1,13 +1,14 @@
-package com.virnect.serviceserver.application.license;
+package com.virnect.serviceserver.application.message;
 
 
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.rest.PushResponse;
-import com.virnect.serviceserver.dto.push.PushSendRequest;
-import com.virnect.serviceserver.application.message.MessageRestService;
+import org.springframework.stereotype.Component;
+
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+
+import com.virnect.serviceserver.dto.push.PushSendRequest;
+import com.virnect.serviceserver.dto.rest.PushResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 
 @Slf4j
 @Component

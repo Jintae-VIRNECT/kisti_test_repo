@@ -1,15 +1,16 @@
 package com.virnect.serviceserver.dto.request.company;
 
-import com.virnect.data.dao.SessionType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotNull;
+import com.virnect.data.dao.SessionType;
 
 @Getter
 @Setter

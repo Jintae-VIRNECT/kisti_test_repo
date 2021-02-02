@@ -1,48 +1,10 @@
 package com.virnect.serviceserver.dao;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.virnect.client.RemoteServiceException;
-import com.virnect.client.RemoteServiceException.Code;
-import com.virnect.data.dao.*;
-import com.virnect.data.service.HistoryService;
-import com.virnect.mediaserver.core.EndReason;
-import com.virnect.mediaserver.core.Participant;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.application.FileService;
-import com.virnect.serviceserver.application.SessionService;
-import com.virnect.serviceserver.dto.constraint.LicenseConstants;
-import com.virnect.serviceserver.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.dto.rest.LicenseInfoListResponse;
-import com.virnect.serviceserver.dto.rest.LicenseInfoResponse;
-import com.virnect.serviceserver.dto.rest.StopRecordingResponse;
-import com.virnect.serviceserver.dto.rest.UserInfoResponse;
-import com.virnect.serviceserver.dto.rpc.ClientMetaData;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.application.license.LicenseRestService;
-import com.virnect.serviceserver.application.record.RecordRestService;
-import com.virnect.serviceserver.application.user.UserRestService;
-import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
-import com.virnect.serviceserver.infra.utils.LogMessage;
-import com.virnect.serviceserver.infra.utils.PushMessageClient;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Slf4j
 public abstract class DataRepository {
-    private static final String TAG = DataRepository.class.getSimpleName();
+    /*private static final String TAG = DataRepository.class.getSimpleName();
 
     protected RemoteServiceConfig config;
     protected SessionService sessionService;
@@ -62,7 +24,7 @@ public abstract class DataRepository {
         this.config = remoteServiceConfig;
     }
 
-    @Qualifier(value = "sessionService")
+    *//*@Qualifier(value = "sessionService")
     @Autowired
     public void setSessionService(SessionService sessionService) {
         this.sessionService = sessionService;
@@ -104,7 +66,7 @@ public abstract class DataRepository {
     @Autowired
     public void setRecordRestService(RecordRestService recordRestService) {
         this.recordRestService = recordRestService;
-    }
+    }*//*
 
     @Qualifier(value = "modelMapper")
     @Autowired
@@ -180,7 +142,7 @@ public abstract class DataRepository {
         }.asResponseData();
     }
 
-    /*public ApiResponse<RoomProfileUpdateResponse> updateRoom(
+    *//*public ApiResponse<RoomProfileUpdateResponse> updateRoom(
             String workspaceId,
             String sessionId,
             RoomProfileUpdateRequest roomProfileUpdateRequest) {
@@ -222,7 +184,7 @@ public abstract class DataRepository {
                 }
             }
         }.asApiResponse();
-    }*/
+    }*//*
 
     public DataProcess<ErrorCode> joinSession(Participant participant, String sessionId) {
         return new RepoDecoder<Room, ErrorCode>(RepoDecoderType.UPDATE) {
@@ -266,7 +228,7 @@ public abstract class DataRepository {
                         member.setMemberStatus(MemberStatus.LOAD);
                     }
                     sessionService.setMember(member);
-                    /*if (member == null) {
+                    *//*if (member == null) {
                         member = setData();
                     } else {
                         if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
@@ -278,7 +240,7 @@ public abstract class DataRepository {
                             member.setMemberStatus(MemberStatus.LOAD);
                         }
                     }
-                    sessionService.setMember(member);*/
+                    sessionService.setMember(member);*//*
                     //sessionService.joinSession(sessionId, participant.getParticipantPublicId(), clientMetaData);
                 } catch (NullPointerException exception) {
                     LogMessage.formedError(
@@ -291,14 +253,14 @@ public abstract class DataRepository {
                 }
                 return new DataProcess<>(ErrorCode.ERR_SUCCESS);
 
-                /*if(!Objects.equals(clientMetaData.getRoleType(), MemberType.LEADER.name())
+                *//*if(!Objects.equals(clientMetaData.getRoleType(), MemberType.LEADER.name())
                 || !Objects.equals(clientMetaData.getRoleType(), MemberType.EXPERT.name())
                 || !Objects.equals(clientMetaData.getRoleType(), MemberType.WORKER.name())
                 ) {
                     return new DataProcess<>(false);
                 } else {
 
-                }*/
+                }*//*
             }
 
             private Member setData() {
@@ -379,7 +341,7 @@ public abstract class DataRepository {
                     }
                 }
 
-                /*SessionType sessionType = room.getSessionProperty().getSessionType();
+                *//*SessionType sessionType = room.getSessionProperty().getSessionType();
                 if(sessionType.equals(SessionType.OPEN)) {
                     //room.getMembers().removeIf(member -> member.getUuid().equals(clientMetaData.getClientData()));
                     sessionService.setRoom(room);
@@ -403,7 +365,7 @@ public abstract class DataRepository {
                             sessionService.setMember(member);
                         }
                     }
-                }*/
+                }*//*
                 return new DataProcess<>(true);
             }
         }.asResponseData();
@@ -634,13 +596,13 @@ public abstract class DataRepository {
             private void setLogging() {
                 setHistory();
                 // check the same session id history room is already exist
-                /*RoomHistory roomHistory = sessionService.getRoomHistory(room.getSessionId());
+                *//*RoomHistory roomHistory = sessionService.getRoomHistory(room.getSessionId());
                 if(roomHistory != null) {
                     log.info("FOUND THE SAME SESSION ID => [{}]", roomHistory.getSessionId());
                     derivedHistory(roomHistory);
                 } else {
                     setHistory();
-                }*/
+                }*//*
             }
 
             private void derivedHistory(RoomHistory roomHistory) {
@@ -870,10 +832,5 @@ public abstract class DataRepository {
             }
         }.asResponseData();
 
-    }
-
-
-
-
-
+    }*/
 }

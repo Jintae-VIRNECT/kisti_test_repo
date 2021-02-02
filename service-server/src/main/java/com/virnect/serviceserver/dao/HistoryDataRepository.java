@@ -1,27 +1,34 @@
 package com.virnect.serviceserver.dao;
 
-import com.virnect.data.dao.*;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.response.PageMetadataResponse;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
-import com.virnect.serviceserver.dto.request.room.RoomHistoryDeleteRequest;
-import com.virnect.serviceserver.dto.response.member.MemberInfoResponse;
-import com.virnect.serviceserver.dto.response.room.RoomHistoryDetailInfoResponse;
-import com.virnect.serviceserver.dto.response.room.RoomHistoryInfoListResponse;
-import com.virnect.serviceserver.dto.response.room.RoomHistoryInfoResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.infra.utils.LogMessage;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.data.dao.MemberHistory;
+import com.virnect.data.dao.MemberStatus;
+import com.virnect.data.dao.MemberType;
+import com.virnect.data.dao.RoomHistory;
+import com.virnect.serviceserver.dto.request.room.RoomHistoryDeleteRequest;
+import com.virnect.serviceserver.dto.response.PageMetadataResponse;
+import com.virnect.serviceserver.dto.response.ResultResponse;
+import com.virnect.serviceserver.dto.response.member.MemberInfoResponse;
+import com.virnect.serviceserver.dto.response.room.RoomHistoryDetailInfoResponse;
+import com.virnect.serviceserver.dto.response.room.RoomHistoryInfoListResponse;
+import com.virnect.serviceserver.dto.response.room.RoomHistoryInfoResponse;
+import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
+import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.serviceserver.infra.utils.LogMessage;
 
 @Slf4j
 @Service
@@ -347,7 +354,8 @@ public class HistoryDataRepository extends DataRepository {
                             .collect(Collectors.toList());
 
                     // remove members who is evicted
-                    memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+                    memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(
+                        MemberStatus.EVICTED));
 
                     // find and get extra information from use-server using uuid
                     fetchFromRepository();

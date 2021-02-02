@@ -1,5 +1,42 @@
 package com.virnect.serviceserver;
 
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Semaphore;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.bouncycastle.util.Arrays;
+import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
+import org.kurento.jsonrpc.server.JsonRpcConfigurer;
+import org.kurento.jsonrpc.server.JsonRpcHandlerRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+
 import com.virnect.mediaserver.cdr.CDRLogger;
 import com.virnect.mediaserver.cdr.CDRLoggerFile;
 import com.virnect.mediaserver.cdr.CallDetailRecord;
@@ -21,51 +58,18 @@ import com.virnect.mediaserver.recording.RecordingDownloader;
 import com.virnect.mediaserver.recording.service.RecordingManager;
 import com.virnect.mediaserver.rpc.RpcHandler;
 import com.virnect.mediaserver.rpc.RpcNotificationService;
-import com.virnect.mediaserver.utils.*;
+import com.virnect.mediaserver.utils.CommandExecutor;
+import com.virnect.mediaserver.utils.GeoLocationByIp;
+import com.virnect.mediaserver.utils.GeoLocationByIpDummy;
+import com.virnect.mediaserver.utils.MediaNodeStatusManager;
+import com.virnect.mediaserver.utils.MediaNodeStatusManagerDummy;
+import com.virnect.mediaserver.utils.QuarantineKiller;
+import com.virnect.mediaserver.utils.QuarantineKillerDummy;
 import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
-
-import com.virnect.serviceserver.application.FileService;
-import com.virnect.serviceserver.application.SessionService;
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.dao.SessionDataRepository;
-import com.virnect.serviceserver.session.ServiceSessionManager;
 import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
-import org.bouncycastle.util.Arrays;
-import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
-import org.kurento.jsonrpc.server.JsonRpcConfigurer;
-import org.kurento.jsonrpc.server.JsonRpcHandlerRegistry;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.DependsOn;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.event.EventListener;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-
-import javax.net.ssl.*;
-
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Semaphore;
+import com.virnect.serviceserver.session.ServiceSessionManager;
 
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
@@ -75,7 +79,6 @@ import java.util.concurrent.Semaphore;
 @ComponentScan(value = {
         "com.virnect.data",
         "com.virnect.file",
-        "com.virnect.service",
         "com.virnect.serviceserver"
 })
 @EntityScan(value = {
@@ -111,8 +114,8 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @Autowired
     ServiceSessionManager serviceSessionManager;
 
-    @Autowired
-    SessionDataRepository sessionDataRepository;
+    /*@Autowired
+    SessionDataRepository sessionDataRepository;*/
 
     /*@Bean
     @DependsOn("remoteServiceConfig")
@@ -121,14 +124,14 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         return new MediaServerConfig();
     }*/
 
-    @Bean
+    /*@Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
     }
 
-    /*@Bean
+    @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceProperties")
     public RemoteServiceConfig remoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
@@ -140,7 +143,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @DependsOn("remoteServiceConfig")
     public RemoteServiceProperties remoteServiceProperties() {
         return new RemoteServiceProperties();
-    }*/
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -152,7 +155,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @ConditionalOnMissingBean
     public SessionService sessionService() {
         return new SessionService();
-    }
+    }*/
 
     @Bean
     @ConditionalOnMissingBean
@@ -440,7 +443,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         }
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+    /*@EventListener(ApplicationReadyEvent.class)
     public void whenReady() {
         String websocket = wsUrl + WS_PATH + "/";
 
@@ -462,5 +465,5 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
         //
         sessionDataRepository.removeAllRoom();
-    }
+    }*/
 }

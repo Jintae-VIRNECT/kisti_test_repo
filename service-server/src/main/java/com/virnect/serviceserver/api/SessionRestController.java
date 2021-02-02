@@ -1,12 +1,36 @@
 package com.virnect.serviceserver.api;
 
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashMap;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+
 import com.google.gson.JsonObject;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import springfox.documentation.annotations.ApiIgnore;
+
 import com.virnect.data.dao.SessionType;
-import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.serviceserver.dao.DataProcess;
+import com.virnect.serviceserver.dao.FileDataRepository;
+import com.virnect.serviceserver.dao.SessionDataRepository;
 import com.virnect.serviceserver.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.dto.constraint.PushConstants;
-import com.virnect.serviceserver.dto.response.PageRequest;
-import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.push.PushSendRequest;
 import com.virnect.serviceserver.dto.push.SendSignalRequest;
 import com.virnect.serviceserver.dto.request.room.InviteRoomRequest;
@@ -14,6 +38,8 @@ import com.virnect.serviceserver.dto.request.room.JoinRoomRequest;
 import com.virnect.serviceserver.dto.request.room.KickRoomRequest;
 import com.virnect.serviceserver.dto.request.room.ModifyRoomInfoRequest;
 import com.virnect.serviceserver.dto.request.room.RoomRequest;
+import com.virnect.serviceserver.dto.response.PageRequest;
+import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.response.room.InviteRoomResponse;
 import com.virnect.serviceserver.dto.response.room.KickRoomResponse;
 import com.virnect.serviceserver.dto.response.room.RoomDeleteResponse;
@@ -23,28 +49,10 @@ import com.virnect.serviceserver.dto.response.room.RoomResponse;
 import com.virnect.serviceserver.dto.rest.PushResponse;
 import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.dao.DataProcess;
-import com.virnect.serviceserver.dao.FileDataRepository;
-import com.virnect.serviceserver.dao.SessionDataRepository;
-import com.virnect.serviceserver.session.ServiceSessionManager;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.infra.utils.LogMessage;
 import com.virnect.serviceserver.infra.utils.PushMessageClient;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-import springfox.documentation.annotations.ApiIgnore;
-
-import javax.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.HashMap;
+import com.virnect.serviceserver.session.ServiceSessionManager;
 
 @Slf4j
 @RestController
@@ -56,7 +64,7 @@ public class SessionRestController implements ISessionRestAPI {
 
     private SessionDataRepository sessionDataRepository;
     private FileDataRepository fileDataRepository;
-    private PushMessageClient pushMessageClient;
+    private final PushMessageClient pushMessageClient;
 
     private final ServiceSessionManager serviceSessionManager;
 
@@ -67,11 +75,11 @@ public class SessionRestController implements ISessionRestAPI {
         this.restTemplate = restTemplate;
     }
 
-    @Qualifier(value = "pushMessageClient")
+    /*@Qualifier(value = "pushMessageClient")
     @Autowired
     public void setPushMessageClient(PushMessageClient pushMessageClient) {
         this.pushMessageClient = pushMessageClient;
-    }
+    }*/
 
     @Qualifier(value = "sessionDataRepository")
     @Autowired
