@@ -6,7 +6,7 @@
     height="43.3571rem"
     :beforeClose="beforeClose"
     class="service-setting-modal"
-    :title="$t('환경 설정')"
+    :title="$t('service.setting_service')"
   >
     <div class="service-setting">
       <section class="service-setting-nav">
