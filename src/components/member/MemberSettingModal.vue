@@ -182,7 +182,9 @@ export default {
           })
         } else {
           this.$message.error({
-            message: this.$t('members.setting.message.updateFail') + `\n(${e})`,
+            message: /^Error: 1007/.test(e)
+              ? this.$t('members.setting.message.notHaveAnyPlan')
+              : this.$t('members.setting.message.updateFail') + `\n(${e})`,
             duration: 2000,
             showClose: true,
           })

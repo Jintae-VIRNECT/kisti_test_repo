@@ -15,7 +15,6 @@
         class="virnect-workstation-form"
         :model="form"
         :rules="rules"
-        :show-message="false"
       >
         <h6>
           <img src="~assets/images/icon/ic-person.svg" />
@@ -143,7 +142,7 @@ export default {
       availablePlans: { remote: 0, make: 0, view: 0 },
       userInfoList: [new InviteMember()],
       rules: {
-        email: [{ required: true, trigger: 'blur' }],
+        email: [{ required: true, trigger: 'blur', type: 'email' }],
       },
     }
   },
