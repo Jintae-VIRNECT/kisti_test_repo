@@ -1,9 +1,9 @@
 package com.virnect.serviceserver.application.license;
 
 import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.feign.LicenseInfoListResponse;
-import com.virnect.service.dto.feign.WorkspaceLicensePlanInfoResponse;
-import com.virnect.serviceserver.application.license.LicenseRestService;
+import com.virnect.serviceserver.dto.rest.LicenseInfoListResponse;
+import com.virnect.serviceserver.dto.rest.WorkspaceLicensePlanInfoResponse;
+
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

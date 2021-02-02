@@ -2,8 +2,8 @@ package com.virnect.serviceserver.application.user;
 
 
 import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.feign.UserInfoListResponse;
-import com.virnect.service.dto.feign.UserInfoResponse;
+import com.virnect.serviceserver.dto.rest.UserInfoListResponse;
+import com.virnect.serviceserver.dto.rest.UserInfoResponse;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

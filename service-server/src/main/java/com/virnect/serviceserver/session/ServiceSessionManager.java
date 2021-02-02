@@ -8,7 +8,7 @@ import com.virnect.mediaserver.core.*;
 import com.virnect.mediaserver.kurento.core.KurentoSession;
 import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
-import com.virnect.service.error.ErrorCode;
+import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.dao.DataProcess;
 import com.virnect.serviceserver.dao.FileDataRepository;
 import com.virnect.serviceserver.dao.SessionDataRepository;

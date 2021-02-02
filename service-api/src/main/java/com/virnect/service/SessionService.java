@@ -3,30 +3,21 @@ package com.virnect.service;
 
 import com.virnect.data.dao.*;
 import com.virnect.data.repository.*;
-import com.virnect.service.constraint.LicenseItem;
-import com.virnect.service.error.ErrorCode;
-import com.virnect.service.error.exception.RestServiceException;
+import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.serviceserver.error.exception.RestServiceException;
 
-import com.virnect.service.dto.SessionResponse;
-import com.virnect.service.dto.service.request.*;
 import com.virnect.service.dto.rpc.ClientMetaData;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jetbrains.annotations.Nullable;
+
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.SQLException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;

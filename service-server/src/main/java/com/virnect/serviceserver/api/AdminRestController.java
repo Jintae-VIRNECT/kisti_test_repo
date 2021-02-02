@@ -2,10 +2,10 @@ package com.virnect.serviceserver.api;
 
 import com.virnect.service.ApiResponse;
 import com.virnect.service.api.IAdminRestAPI;
-import com.virnect.service.dto.service.request.CompanyRequest;
-import com.virnect.service.dto.service.request.CompanyResponse;
-import com.virnect.service.error.ErrorCode;
-import com.virnect.service.error.exception.RestServiceException;
+import com.virnect.serviceserver.dto.request.company.CompanyRequest;
+import com.virnect.serviceserver.dto.request.company.CompanyResponse;
+import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.serviceserver.error.exception.RestServiceException;
 import com.virnect.serviceserver.dao.UtilDataRepository;
 import com.virnect.serviceserver.infra.utils.LogMessage;
 import lombok.RequiredArgsConstructor;

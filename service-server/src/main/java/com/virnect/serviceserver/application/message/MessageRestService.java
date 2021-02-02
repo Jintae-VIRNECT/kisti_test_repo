@@ -2,8 +2,8 @@ package com.virnect.serviceserver.application.message;
 
 
 import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.feign.PushResponse;
-import com.virnect.service.dto.service.request.PushSendRequest;
+import com.virnect.serviceserver.dto.rest.PushResponse;
+import com.virnect.serviceserver.dto.push.PushSendRequest;
 import com.virnect.serviceserver.application.license.MessageRestFallbackFactory;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

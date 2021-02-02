@@ -6,7 +6,7 @@ import com.virnect.service.dto.ResultResponse;
 import com.virnect.service.dto.file.request.FileUploadRequest;
 import com.virnect.service.dto.file.request.RecordFileUploadRequest;
 import com.virnect.service.dto.file.request.RoomProfileUpdateRequest;
-import com.virnect.service.dto.file.response.*;
+
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;

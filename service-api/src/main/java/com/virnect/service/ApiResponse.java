@@ -1,6 +1,6 @@
 package com.virnect.service;
 
-import com.virnect.service.error.ErrorCode;
+import com.virnect.serviceserver.error.ErrorCode;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.dao;
 
 
-import com.virnect.service.error.ErrorCode;
+import com.virnect.serviceserver.error.ErrorCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

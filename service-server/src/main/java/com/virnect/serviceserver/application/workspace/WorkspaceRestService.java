@@ -2,8 +2,8 @@ package com.virnect.serviceserver.application.workspace;
 
 
 import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.feign.WorkspaceMemberInfoListResponse;
-import com.virnect.service.dto.feign.WorkspaceMemberInfoResponse;
+import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;

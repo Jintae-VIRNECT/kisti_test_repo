@@ -1,8 +1,8 @@
 package com.virnect.serviceserver.application.record;
 
 import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.feign.StopRecordingResponse;
-import com.virnect.serviceserver.application.record.RecordRestService;
+import com.virnect.serviceserver.dto.rest.StopRecordingResponse;
+
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -5,7 +5,6 @@ import com.virnect.service.dto.service.response.CompanyInfoResponse;
 import com.virnect.service.dto.service.response.LicenseItemResponse;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/remote")

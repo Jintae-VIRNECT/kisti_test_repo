@@ -6,8 +6,7 @@ import com.virnect.file.repository.FileRepository;
 import com.virnect.file.repository.RecordFileRepository;
 import com.virnect.service.dto.file.request.FileUploadRequest;
 import com.virnect.service.dto.file.request.RecordFileUploadRequest;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

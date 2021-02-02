@@ -2,9 +2,9 @@ package com.virnect.serviceserver.application.workspace;
 
 
 import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.feign.WorkspaceMemberInfoListResponse;
-import com.virnect.service.dto.feign.WorkspaceMemberInfoResponse;
-import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
+import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
+
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.model;
 
-import com.virnect.service.error.ErrorCode;
+import com.virnect.serviceserver.error.ErrorCode;
 
 public class UploadResult {
     private String result;
