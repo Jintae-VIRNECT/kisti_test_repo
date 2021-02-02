@@ -14,14 +14,14 @@ import com.virnect.download.domain.Product;
  * DESCRIPTION:
  */
 public interface AppRepositoryCustom {
-	List<App> getAppList(Product product);
+    List<App> getActiveAppList(String productName);
 
-	Long getLatestVersionCodeByPackageName(String packageName);
+    Long getLatestVersionCodeByPackageName(String packageName);
 
-	Optional<App> getLatestVersionAppInfoByPackageName(String packageName);
+    Optional<App> getLatestVersionAppInfoByPackageName(String packageName);
 
-	long registerSigningKeyByPackageName(String packageName, String signingKey);
+    long registerSigningKeyByPackageName(String packageName, String signingKey);
 
-	List<App> findByPackageNameAndSignature(String packageName, String signature);
+    List<App> findByPackageNameAndSignature(String packageName, String signature);
 
 }

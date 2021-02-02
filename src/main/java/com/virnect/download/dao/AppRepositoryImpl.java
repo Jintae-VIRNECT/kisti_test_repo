@@ -19,12 +19,13 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public List<App> getAppList(Product product) {
+    public List<App> getActiveAppList(String productName) {
         QApp qApp = QApp.app;
         return jpaQueryFactory
                 .select(qApp)
                 .from(qApp)
-                .where(qApp.product.eq(product))
+                .innerJoin(qApp.device.product)
+                .where(qApp.device.product.name.eq(productName).and(qApp.appStatus.eq(AppStatus.ACTIVE)))
                 .orderBy(qApp.versionCode.desc())
                 .fetch();
     }
@@ -61,7 +62,7 @@ public class AppRepositoryImpl implements AppRepositoryCustom {
     @Override
     public List<App> findByPackageNameAndSignature(String packageName, String signature) {
         QApp qApp = QApp.app;
-       QOS qos = QOS.oS;
+        QOS qos = QOS.oS;
         QProduct qProduct = QProduct.product;
         QDevice qDevice = QDevice.device;
 
