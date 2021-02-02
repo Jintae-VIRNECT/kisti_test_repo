@@ -1,22 +1,31 @@
-package com.virnect.service.api;
+package com.virnect.serviceserver.api;
 
-import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.PageRequest;
-import com.virnect.service.dto.ResultResponse;
-import com.virnect.service.dto.service.request.RoomHistoryDeleteRequest;
-import com.virnect.service.dto.service.request.RoomRequest;
-import com.virnect.service.dto.service.response.RoomHistoryDetailInfoResponse;
-import com.virnect.service.dto.service.response.RoomHistoryInfoListResponse;
-import com.virnect.service.dto.service.response.RoomResponse;
+import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
+import com.virnect.serviceserver.dto.request.room.RoomHistoryDeleteRequest;
+import com.virnect.serviceserver.dto.request.room.RoomRequest;
+import com.virnect.serviceserver.dto.response.PageRequest;
+import com.virnect.serviceserver.dto.response.ResultResponse;
+import com.virnect.serviceserver.dto.response.room.RoomHistoryDetailInfoResponse;
+import com.virnect.serviceserver.dto.response.room.RoomHistoryInfoListResponse;
+import com.virnect.serviceserver.dto.response.room.RoomResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 
 @RequestMapping("/remote")
 public interface IHistoryRestAPI {

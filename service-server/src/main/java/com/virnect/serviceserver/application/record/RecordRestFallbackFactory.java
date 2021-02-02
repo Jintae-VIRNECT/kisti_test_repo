@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.application.record;
 
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.rest.StopRecordingResponse;
 
 import feign.hystrix.FallbackFactory;

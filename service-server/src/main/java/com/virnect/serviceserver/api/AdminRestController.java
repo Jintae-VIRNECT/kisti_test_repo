@@ -1,7 +1,6 @@
 package com.virnect.serviceserver.api;
 
-import com.virnect.service.ApiResponse;
-import com.virnect.service.api.IAdminRestAPI;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.request.company.CompanyRequest;
 import com.virnect.serviceserver.dto.request.company.CompanyResponse;
 import com.virnect.serviceserver.error.ErrorCode;

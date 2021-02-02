@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.dao;
 
 
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

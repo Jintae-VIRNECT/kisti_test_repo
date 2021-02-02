@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.application.license;
 
 
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.rest.PushResponse;
 import com.virnect.serviceserver.dto.push.PushSendRequest;
 import com.virnect.serviceserver.application.message.MessageRestService;

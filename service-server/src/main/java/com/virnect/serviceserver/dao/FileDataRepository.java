@@ -4,7 +4,7 @@ import com.virnect.data.dao.Room;
 import com.virnect.file.FileType;
 import com.virnect.file.dao.File;
 import com.virnect.file.dao.RecordFile;
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.response.PageMetadataResponse;
 import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.response.file.FileDeleteResponse;

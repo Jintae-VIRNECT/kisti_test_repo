@@ -1,8 +1,7 @@
 package com.virnect.serviceserver.api;
 
 
-import com.virnect.service.ApiResponse;
-import com.virnect.service.api.IValidationRestAPI;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.constraint.LicenseConstants;
 import com.virnect.serviceserver.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.dto.rest.LicenseInfoListResponse;

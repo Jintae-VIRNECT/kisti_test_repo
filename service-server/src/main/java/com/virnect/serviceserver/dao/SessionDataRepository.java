@@ -3,7 +3,7 @@ package com.virnect.serviceserver.dao;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.virnect.data.dao.*;
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.dto.constraint.PushConstants;
 import com.virnect.serviceserver.dto.request.room.InviteRoomRequest;

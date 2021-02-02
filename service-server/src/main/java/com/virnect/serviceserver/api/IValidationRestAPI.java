@@ -1,11 +1,16 @@
-package com.virnect.service.api;
+package com.virnect.serviceserver.api;
 
-import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.service.response.CompanyInfoResponse;
-import com.virnect.service.dto.service.response.LicenseItemResponse;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import io.swagger.annotations.ApiOperation;
+
+import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
+import com.virnect.serviceserver.dto.response.lisence.LicenseItemResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 
 @RequestMapping("/remote")
 public interface IValidationRestAPI {

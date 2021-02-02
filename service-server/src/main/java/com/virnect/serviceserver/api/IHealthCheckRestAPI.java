@@ -1,4 +1,4 @@
-package com.virnect.service.api;
+package com.virnect.serviceserver.api;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

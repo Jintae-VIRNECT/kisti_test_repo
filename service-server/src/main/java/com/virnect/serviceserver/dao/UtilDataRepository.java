@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.virnect.data.dao.Company;
 import com.virnect.data.dao.Language;
 import com.virnect.data.dao.SessionType;
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.constraint.CompanyConstants;
 import com.virnect.serviceserver.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.dto.constraint.TranslationItem;

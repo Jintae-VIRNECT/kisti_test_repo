@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.application.license;
 
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.rest.LicenseInfoListResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceLicensePlanInfoResponse;
 

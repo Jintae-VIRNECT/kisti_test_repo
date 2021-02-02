@@ -3,7 +3,7 @@ package com.virnect.serviceserver.infra.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.rest.PushResponse;
 import com.virnect.serviceserver.dto.push.InviteRoomContents;
 import com.virnect.serviceserver.dto.push.PushSendRequest;

@@ -2,8 +2,7 @@ package com.virnect.serviceserver.api;
 
 import com.google.gson.JsonObject;
 import com.virnect.data.dao.SessionType;
-import com.virnect.service.ApiResponse;
-import com.virnect.service.api.ISessionRestAPI;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.dto.constraint.PushConstants;
 import com.virnect.serviceserver.dto.response.PageRequest;

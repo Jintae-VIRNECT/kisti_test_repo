@@ -1,7 +1,6 @@
 package com.virnect.serviceserver.api;
 
-import com.virnect.service.ApiResponse;
-import com.virnect.service.api.IFileRestAPI;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.response.PageRequest;
 import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.request.file.FileUploadRequest;

@@ -1,23 +1,37 @@
-package com.virnect.service.api;
+package com.virnect.serviceserver.api;
 
-import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.PageRequest;
-import com.virnect.service.dto.ResultResponse;
-import com.virnect.service.dto.file.request.FileUploadRequest;
-import com.virnect.service.dto.file.request.RecordFileUploadRequest;
-import com.virnect.service.dto.file.request.RoomProfileUpdateRequest;
+import java.io.IOException;
+
+import javax.validation.Valid;
+
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
-import java.io.IOException;
+import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.serviceserver.dto.request.file.FileUploadRequest;
+import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
+import com.virnect.serviceserver.dto.request.file.RoomProfileUpdateRequest;
+import com.virnect.serviceserver.dto.response.PageRequest;
+import com.virnect.serviceserver.dto.response.ResultResponse;
+import com.virnect.serviceserver.dto.response.file.FileDeleteResponse;
+import com.virnect.serviceserver.dto.response.file.FileDetailInfoListResponse;
+import com.virnect.serviceserver.dto.response.file.FileInfoListResponse;
+import com.virnect.serviceserver.dto.response.file.FilePreSignedResponse;
+import com.virnect.serviceserver.dto.response.file.FileUploadResponse;
+import com.virnect.serviceserver.dto.response.file.RoomProfileUpdateResponse;
 
 /**
  * Note that the values MUST be lower case.

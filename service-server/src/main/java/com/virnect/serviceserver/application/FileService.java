@@ -1,20 +1,21 @@
-package com.virnect.service;
+package com.virnect.serviceserver.application;
 
-import com.virnect.file.dao.File;
-import com.virnect.file.dao.RecordFile;
-import com.virnect.file.repository.FileRepository;
-import com.virnect.file.repository.RecordFileRepository;
-import com.virnect.service.dto.file.request.FileUploadRequest;
-import com.virnect.service.dto.file.request.RecordFileUploadRequest;
+import java.util.List;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.file.dao.File;
+import com.virnect.file.dao.RecordFile;
+import com.virnect.file.repository.FileRepository;
+import com.virnect.file.repository.RecordFileRepository;
+import com.virnect.serviceserver.dto.request.file.FileUploadRequest;
+import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
 
 @Slf4j
 @Service

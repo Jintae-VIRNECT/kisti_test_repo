@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.application.user;
 
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.rest.UserInfoListResponse;
 import com.virnect.serviceserver.dto.rest.UserInfoResponse;
 

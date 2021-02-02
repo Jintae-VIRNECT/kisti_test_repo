@@ -1,14 +1,12 @@
-package com.virnect.service;
+package com.virnect.serviceserver.application;
 
+import static com.virnect.data.repository.RoomSpecifications.*;
 
-import com.virnect.data.dao.*;
-import com.virnect.data.repository.*;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
-
-import com.virnect.service.dto.rpc.ClientMetaData;
-
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +16,32 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 
-import static com.virnect.data.repository.RoomSpecifications.joinMember;
+import com.virnect.data.dao.Company;
+import com.virnect.data.dao.DeviceType;
+import com.virnect.data.dao.Member;
+import com.virnect.data.dao.MemberHistory;
+import com.virnect.data.dao.MemberStatus;
+import com.virnect.data.dao.MemberType;
+import com.virnect.data.dao.Room;
+import com.virnect.data.dao.RoomHistory;
+import com.virnect.data.dao.RoomStatus;
+import com.virnect.data.dao.SessionProperty;
+import com.virnect.data.dao.SessionPropertyHistory;
+import com.virnect.data.dao.SessionType;
+import com.virnect.data.repository.CompanyRepository;
+import com.virnect.data.repository.MemberHistoryRepository;
+import com.virnect.data.repository.MemberRepository;
+import com.virnect.data.repository.RoomHistoryRepository;
+import com.virnect.data.repository.RoomRepository;
+import com.virnect.serviceserver.dto.request.room.InviteRoomRequest;
+import com.virnect.serviceserver.dto.request.room.JoinRoomRequest;
+import com.virnect.serviceserver.dto.request.room.ModifyRoomInfoRequest;
+import com.virnect.serviceserver.dto.rpc.ClientMetaData;
+import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.serviceserver.error.exception.RestServiceException;
+import com.virnect.serviceserver.global.common.ApiResponse;
 
 @Slf4j
 @Service

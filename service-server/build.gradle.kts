@@ -106,6 +106,11 @@ dependencies {
     testImplementation("org.powermock:powermock-module-junit4:2.0.7")
     testImplementation("org.hamcrest:hamcrest-core:2.2")
     testImplementation("org.hamcrest:hamcrest-library:2.2")
+
+    // Swagger
+    api("io.springfox:springfox-swagger2:2.9.2")
+    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————

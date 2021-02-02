@@ -1,22 +1,38 @@
-package com.virnect.service.api;
+package com.virnect.serviceserver.api;
 
-import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.PageRequest;
-import com.virnect.service.dto.ResultResponse;
-import com.virnect.service.dto.feign.PushResponse;
-import com.virnect.service.dto.service.response.RoomDeleteResponse;
-import com.virnect.service.dto.service.response.RoomDetailInfoResponse;
-import com.virnect.service.dto.service.response.RoomInfoListResponse;
-import com.virnect.service.dto.service.response.RoomResponse;
+import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
-import javax.validation.Valid;
+import com.virnect.serviceserver.dto.push.PushSendRequest;
+import com.virnect.serviceserver.dto.push.SendSignalRequest;
+import com.virnect.serviceserver.dto.request.room.InviteRoomRequest;
+import com.virnect.serviceserver.dto.request.room.JoinRoomRequest;
+import com.virnect.serviceserver.dto.request.room.KickRoomRequest;
+import com.virnect.serviceserver.dto.request.room.ModifyRoomInfoRequest;
+import com.virnect.serviceserver.dto.request.room.RoomRequest;
+import com.virnect.serviceserver.dto.response.PageRequest;
+import com.virnect.serviceserver.dto.response.ResultResponse;
+import com.virnect.serviceserver.dto.response.room.RoomDeleteResponse;
+import com.virnect.serviceserver.dto.response.room.RoomDetailInfoResponse;
+import com.virnect.serviceserver.dto.response.room.RoomInfoListResponse;
+import com.virnect.serviceserver.dto.response.room.RoomResponse;
+import com.virnect.serviceserver.dto.rest.PushResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 
 @RequestMapping("/remote")
 public interface ISessionRestAPI {

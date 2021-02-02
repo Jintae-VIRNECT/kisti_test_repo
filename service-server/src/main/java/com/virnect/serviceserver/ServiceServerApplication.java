@@ -24,8 +24,8 @@ import com.virnect.mediaserver.rpc.RpcNotificationService;
 import com.virnect.mediaserver.utils.*;
 import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
 
-import com.virnect.service.FileService;
-import com.virnect.service.SessionService;
+import com.virnect.serviceserver.application.FileService;
+import com.virnect.serviceserver.application.SessionService;
 import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.config.RemoteServiceConfig;
 import com.virnect.serviceserver.dao.SessionDataRepository;

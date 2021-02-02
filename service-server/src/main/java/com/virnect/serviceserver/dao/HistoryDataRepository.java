@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.dao;
 
 import com.virnect.data.dao.*;
-import com.virnect.service.ApiResponse;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.response.PageMetadataResponse;
 import com.virnect.serviceserver.dto.response.ResultResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;

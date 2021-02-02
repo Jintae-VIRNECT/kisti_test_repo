@@ -2,8 +2,7 @@ package com.virnect.serviceserver.api;
 
 
 
-import com.virnect.service.ApiResponse;
-import com.virnect.service.api.IMemberRestAPI;
+import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.serviceserver.dto.response.member.MemberInfoListResponse;
 import com.virnect.serviceserver.dto.response.member.MemberSecessionResponse;

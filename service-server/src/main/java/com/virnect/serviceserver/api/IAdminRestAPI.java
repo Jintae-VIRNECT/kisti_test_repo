@@ -1,14 +1,18 @@
-package com.virnect.service.api;
-
-import com.virnect.service.ApiResponse;
-import com.virnect.service.dto.service.request.CompanyRequest;
-import com.virnect.service.dto.service.request.CompanyResponse;
-import io.swagger.annotations.ApiOperation;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+package com.virnect.serviceserver.api;
 
 import javax.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import io.swagger.annotations.ApiOperation;
+
+import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.serviceserver.dto.request.company.CompanyRequest;
+import com.virnect.serviceserver.dto.request.company.CompanyResponse;
 
 @RequestMapping("/remote")
 public interface IAdminRestAPI {
