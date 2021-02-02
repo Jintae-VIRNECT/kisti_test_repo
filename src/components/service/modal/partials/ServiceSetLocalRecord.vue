@@ -25,7 +25,6 @@
       </div>
     </div>
 
-    <!-- 사파리인 경우 로컬녹화 설정의 녹화대상(영상 녹화, 화면녹화), 참가자 로컬 녹화 여부만 출력됨 -->
     <template v-if="!isSafari">
       <div class="service-setting__row" :class="{ disable: isLocalRecording }">
         <p class="service-setting__text">
