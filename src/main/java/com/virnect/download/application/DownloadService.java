@@ -61,7 +61,7 @@ public class DownloadService {
                 appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
                 appInfoResponse.setDeviceName(app.getDevice().getModelDescription());
                 appInfoResponse.setReleaseTime(app.getCreatedDate());
-                appInfoResponse.setVersion("v." + app.getVersionName());
+                appInfoResponse.setVersion("v" + app.getVersionName());
             }
             return appInfoResponse;
         }).collect(Collectors.toList());

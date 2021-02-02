@@ -1,14 +1,13 @@
 RELEASE
 
 New Features
-- max heap 사이즈 변경 400mb -> 800mb
+없음
 
 Bug Fixes
-- 없음
+없음
 
 Limitation
-- 앱 리스트 조회 시 상태값 조건(AppStatus.ACTIVE) 추가
-- 제품별로 디바이스 분리하여 제품별로 설치파일 설명을 분리함.(device.product_id 컬럼 추가)
+- 버전 표기 변경(v.1.2 -> v1.2)
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
