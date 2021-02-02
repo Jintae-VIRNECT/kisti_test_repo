@@ -26,11 +26,11 @@
     >
       <input
         type="file"
-        name="file"
+        name="chatfile"
         ref="inputFile"
         style="display: none"
         class="el-input__form-input"
-        accept="*/*"
+        accept=".*"
         @change="fileUpload($event)"
       />
       <template v-if="fileList.length === 0">
