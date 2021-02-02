@@ -72,7 +72,10 @@
           show-password
           name="passwordConfirm"
           v-validate="'required|password'"
-          :class="{ 'input-danger': signup.password !== passwordConfirm }"
+          :class="{
+            'input-danger':
+              signup.password !== passwordConfirm || errors.has('password'),
+          }"
         >
         </el-input>
         <p class="restriction-text">
