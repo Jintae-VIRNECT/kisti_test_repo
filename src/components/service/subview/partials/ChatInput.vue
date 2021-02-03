@@ -122,7 +122,7 @@ export default {
       },
       deep: true,
     },
-    'inputText.length': 'checkLength',
+    // 'inputText.length': 'checkLength', // safari issue
   },
   methods: {
     checkLength() {
@@ -190,6 +190,7 @@ export default {
           }
         }
       } else if (this.inputText.length > 0) {
+        this.checkLength()
         this.$call.sendChat(this.inputText, this.translate.code)
       }
 
