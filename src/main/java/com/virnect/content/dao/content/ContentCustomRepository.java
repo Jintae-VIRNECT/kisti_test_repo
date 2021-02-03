@@ -21,7 +21,7 @@ import org.springframework.stereotype.Controller;
 public interface ContentCustomRepository {
 	Page<Content> getContent(
 		String workspaceUUID, String userUUID, String search, String shareds, String converteds,
-		List<String> userUUIDList, Pageable pageable
+		List<String> userUUIDList, Pageable pageable, String targetType
 	);
 
     Optional<Content> getContentOfTarget(String targetData);

@@ -540,7 +540,7 @@ public class ContentService {
      */
     @Transactional(readOnly = true)
     public ApiResponse<ContentInfoListResponse> getContentList(
-            String workspaceUUID, String userUUID, String search, String shared, String converteds, Pageable pageable
+            String workspaceUUID, String userUUID, String search, String shared, String converteds, Pageable pageable, String targetType
     ) {
         List<ContentInfoResponse> contentInfoList;
         Map<String, UserInfoResponse> userInfoMap = new HashMap<>();
@@ -565,7 +565,7 @@ public class ContentService {
 
         // 2. 콘텐츠 조회
         Page<Content> contentPage = this.contentRepository.getContent(
-                workspaceUUID, userUUID, search, shared, converteds, userUUIDList, pageable);
+                workspaceUUID, userUUID, search, shared, converteds, userUUIDList, pageable, targetType);
 
         contentInfoList = contentPage.stream().map(content -> {
             List<ContentTargetResponse> targets = content.getTargetList().stream().map(target -> {
