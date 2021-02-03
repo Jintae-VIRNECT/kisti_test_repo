@@ -16,7 +16,6 @@ public final class PageRequest {
     private String sort;
     private static final int MAX_SIZE = 50;
 
-
     public void setPage(int page) {
         this.page = page <= 0 ? 1 : page;
     }
@@ -31,27 +30,38 @@ public final class PageRequest {
 
     public org.springframework.data.domain.PageRequest of() {
         // sort nullable
+        String sortName = getSortName();
+        String sortDirection = getSortDirection();
+
+        if (!(sortDirection.equals("ASC") || sortDirection.equals("DESC"))) {
+            sortDirection = "DESC";
+        }
+
+        if (sortName == null || sortName.isEmpty()) {
+            sortName = "createdDate";
+        }
+        if (sortName.equalsIgnoreCase("role")) {
+            sortName = "workspaceRole";
+        }
+        if (sortName.equalsIgnoreCase("joinDate")) {
+            sortName = "workspaceUser.createdDate";
+        }
+
+        return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sortDirection), sortName);
+
+    }
+
+    public String getSortName(){
         String sortStr = Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate,DESC" : this.sort;
         String[] sortQuery = sortStr.split(",");
-        String properties = sortQuery[0];
-        String sort = sortQuery[1].toUpperCase();
+         return sortQuery[0];
 
-        if (!(sort.equals("ASC") || sort.equals("DESC"))) {
-            sort = "DESC";
-        }
 
-        if (properties == null || properties.isEmpty()) {
-            properties = "createdDate";
-        }
-        if(properties!=null && properties.equalsIgnoreCase("role")){
-            properties = "workspaceRole";
-        }
-        if(properties!=null && properties.equalsIgnoreCase("joinDate")){
-            properties = "workspaceUser.createdDate";
-        }
-
-        return org.springframework.data.domain.PageRequest.of(page - 1, size, Sort.Direction.valueOf(sort), properties);
-
+    }
+    public String getSortDirection(){
+        String sortStr = Objects.isNull(this.sort) || this.sort.isEmpty() ? "updatedDate,DESC" : this.sort;
+        String[] sortQuery = sortStr.split(",");
+        return sortQuery[1].toUpperCase();
     }
 
 
