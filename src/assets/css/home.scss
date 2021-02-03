@@ -68,19 +68,21 @@
   }
 
   .el-tabs__content {
-    max-width: 900px;
+    max-width: 1280px;
     min-height: 840px;
     margin: 0 auto;
     padding: 184px 0 128px;
   }
   .el-tabs__content .el-card {
     display: inline-block;
-    max-width: 372px;
+    width: 372px;
+    min-height: 364px;
     margin: 0 18px 32px;
+    vertical-align: top;
     box-shadow: none;
   }
   .el-card .el-card__body {
-    padding: 36px 44px 30px;
+    padding: 36px 44px 20px;
     h6 {
       font-size: 18px;
     }
@@ -92,6 +94,7 @@
       }
     }
     img {
+      width: 248px;
       margin: 10px auto 16px;
     }
     & > span {
@@ -109,7 +112,7 @@
     .el-button {
       display: block;
       height: 36px;
-      margin: 5px auto;
+      margin: 8px auto;
     }
   }
 
@@ -144,10 +147,15 @@
       padding: 60px 0 100px;
     }
     .el-tabs__content .el-card {
+      max-width: 372px;
       margin: 18px 18px 0 18px;
     }
   }
   @media screen and (max-width: $short) {
+    .el-tabs__content .el-card {
+      width: calc(100% - 36px);
+      max-width: none;
+    }
     .visual {
       height: auto;
       padding: 90px 20px;
