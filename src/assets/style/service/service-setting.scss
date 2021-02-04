@@ -99,7 +99,7 @@
 
 .service-setting--warning {
   position: absolute;
-  left: 12.857rem;
+  left: 14.857rem;
   margin-bottom: 1rem;
   color: #ff6363;
   font-size: 1rem;
@@ -111,7 +111,7 @@
   justify-content: flex-start;
   margin-bottom: 1rem;
   &.disable {
-    opacity: 0.3;
+    opacity: 0.4;
     pointer-events: none;
   }
   &.vertical {
@@ -137,6 +137,11 @@
     align-items: center;
   }
 
+  &.disable {
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
   > p {
     margin-right: 0.286rem;
     color: $color_text_main;
@@ -145,6 +150,7 @@
   > .popover--wrapper {
     display: flex;
   }
+  transition: all 0.3s;
 }
 
 .service-setting__selector {
