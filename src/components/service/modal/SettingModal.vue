@@ -20,7 +20,7 @@
           {{ $t('service.setting_pointing') }}
         </button>
         <button
-          v-if="isLeader || allowLocalRecord"
+          v-if="isLocalRecordEnable"
           class="service-setting-nav__menu"
           :class="{ active: tabview === 'local-record' }"
           :data-text="$t('service.setting_local_record')"
@@ -38,7 +38,7 @@
           {{ $t('service.setting_server_record') }}
         </button>
         <button
-          v-if="useTranslate && !isSafari"
+          v-if="useTranslate"
           class="service-setting-nav__menu"
           :class="{ active: tabview === 'translate' }"
           :data-text="$t('service.setting_translate')"
@@ -102,6 +102,15 @@ export default {
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
+    isLocalRecordEnable() {
+      if (!this.isLeader && this.isSafari) {
+        return false
+      } else if (!this.isLeader && !this.allowLocalRecord) {
+        return false
+      } else {
+        return true
+      }
+    },
   },
 
   watch: {
@@ -130,7 +139,11 @@ export default {
 
     init() {
       this.tabview = this.isLeader ? 'pointing' : 'local-record'
-      if (!this.allowLocalRecord && !this.isLeader) {
+
+      if (!this.allowLocalRecord && !this.isLeader && this.useTranslate) {
+        this.tabview = 'translate'
+      }
+      if (this.isSafari && !this.isLeader && this.useTranslate) {
         this.tabview = 'translate'
       }
 
