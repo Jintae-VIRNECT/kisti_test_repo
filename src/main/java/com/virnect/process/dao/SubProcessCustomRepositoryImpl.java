@@ -16,8 +16,10 @@ import com.querydsl.jpa.JPQLQuery;
 import com.virnect.process.domain.Conditions;
 import com.virnect.process.domain.QProcess;
 import com.virnect.process.domain.QSubProcess;
+import com.virnect.process.domain.QTarget;
 import com.virnect.process.domain.State;
 import com.virnect.process.domain.SubProcess;
+import com.virnect.process.domain.TargetType;
 import com.virnect.process.domain.YesOrNo;
 
 public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport implements SubProcessCustomRepository {
@@ -174,10 +176,11 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 
 	@Override
 	public Page<SubProcess> getMyWorksInProcess(
-		String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable
+		String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable, String targetType
 	) {
 		QSubProcess qSubProcess = QSubProcess.subProcess;
 		QProcess qProcess = QProcess.process;
+		QTarget qTarget = QTarget.target;
 
 		JPQLQuery<SubProcess> query = from(qSubProcess).join(qSubProcess.process, qProcess);
 
@@ -196,6 +199,10 @@ public class SubProcessCustomRepositoryImpl extends QuerydslRepositorySupport im
 
 		if (Objects.nonNull(search)) {
 			query.where(qSubProcess.name.contains(search));
+		}
+
+		if (Objects.nonNull(targetType) && !targetType.equalsIgnoreCase("ALL")) {
+			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
 		}
 
 		List<SubProcess> subProcessList = getQuerydsl().applyPagination(pageable, query).fetch();

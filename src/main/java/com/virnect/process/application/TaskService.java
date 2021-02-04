@@ -1085,7 +1085,8 @@ public class TaskService {
 	 * @return
 	 */
 	public ApiResponse<ProcessListResponse> getProcessList(
-		String myUUID, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable
+		String myUUID, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable,
+		String targetType
 	) {
 		List<String> userUUIDList = new ArrayList<>();
 
@@ -1101,7 +1102,9 @@ public class TaskService {
 
 		// 정렬에 Conditions가 들어왔을 경우 - Table의 Column이 아니기 때문에 List를 조작하여 처리.
 		if ("conditions".equals(pageable.getSort().toList().get(0).getProperty())) {
-			List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
+			//List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
+			List<Process> processList = this.processRepository.findByWorkspaceUUIDAndTargetType(
+				workspaceUUID, targetType);
 
 			List<Process> edit = new ArrayList<Process>(processList);
 
@@ -1121,10 +1124,11 @@ public class TaskService {
 		else {
 			if (Objects.nonNull(myUUID)) {
 				// 내 작업 목록
-				processPage = this.processRepository.getMyTask(filter, myUUID, workspaceUUID, search, pageable);
+				processPage = this.processRepository.getMyTask(
+					filter, myUUID, workspaceUUID, search, pageable, targetType);
 			} else {
 				processPage = this.processRepository.getProcessPageSearchUser(
-					filter, workspaceUUID, search, userUUIDList, pageable
+					filter, workspaceUUID, search, userUUIDList, pageable, targetType
 				);
 			}
 

@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.util.StringUtils;
 
 import com.querydsl.jpa.JPQLQuery;
 
@@ -22,6 +23,7 @@ import com.virnect.process.domain.QProcess;
 import com.virnect.process.domain.QSubProcess;
 import com.virnect.process.domain.QTarget;
 import com.virnect.process.domain.State;
+import com.virnect.process.domain.TargetType;
 
 @Slf4j
 public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport implements ProcessCustomRepository {
@@ -55,7 +57,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	@Override
 	public Page<Process> getProcessPageSearchUser(
 		List<Conditions> filterList,
-		String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable
+		String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable, String targetType
 	) {
 		log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ProcessCustomRepository in");
 
@@ -92,6 +94,10 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 				}
 			});
 			query = query.where(qProcess.in(filterdProcessList));
+		}
+
+		if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
+			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
 		}
 
 		log.debug(">>>>>>>>>>>>>>>>>>>>>>> : {}", query);
@@ -148,7 +154,8 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
 	@Override
 	public Page<Process> getMyTask(
-		List<Conditions> filterList, String myUUID, String workspaceUUID, String title, Pageable pageable
+		List<Conditions> filterList, String myUUID, String workspaceUUID, String title, Pageable pageable,
+		String targetType
 	) {
 		QProcess qProcess = QProcess.process;
 		QSubProcess qSubProcess = QSubProcess.subProcess;
@@ -178,8 +185,28 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 			query = query.where(qProcess.in(filteredList));
 
 		}
+
+		if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
+			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
+		}
+
 		final List<Process> myList = getQuerydsl().applyPagination(pageable, query).fetch();
 
 		return new PageImpl<>(myList, pageable, query.fetchCount());
+	}
+
+	@Override
+	public List<Process> findByWorkspaceUUIDAndTargetType(String workspaceUUID, String targetType) {
+		QProcess qProcess = QProcess.process;
+		QTarget qTarget = QTarget.target;
+
+		JPQLQuery<Process> query = from(qProcess);
+		query.where(qProcess.workspaceUUID.eq(workspaceUUID));
+
+		if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
+			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
+		}
+
+		return query.fetch();
 	}
 }

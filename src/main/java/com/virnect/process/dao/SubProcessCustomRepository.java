@@ -29,6 +29,6 @@ public interface SubProcessCustomRepository {
 	List<SubProcess> getSubProcessList(String workspaceUUID, String userUUID);
 
 	Page<SubProcess> getMyWorksInProcess(
-		String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable
+		String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable, String tartgetType
 	);
 }

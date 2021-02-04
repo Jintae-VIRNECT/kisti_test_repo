@@ -35,7 +35,8 @@ public interface ProcessCustomRepository {
 	 * @return
 	 */
 	Page<Process> getProcessPageSearchUser(
-		List<Conditions> filterList, String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable
+		List<Conditions> filterList, String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable,
+		String targetType
 	);
 
 	/**
@@ -54,6 +55,9 @@ public interface ProcessCustomRepository {
 	Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData);
 
 	Page<Process> getMyTask(
-		List<Conditions> filterList, String myUUID, String workspaceUUID, String title, Pageable pageable
+		List<Conditions> filterList, String myUUID, String workspaceUUID, String title, Pageable pageable,
+		String targetType
 	);
+
+	List<Process> findByWorkspaceUUIDAndTargetType(String workspaceUUID, String targetType);
 }

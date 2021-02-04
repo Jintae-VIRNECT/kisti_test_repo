@@ -144,7 +144,8 @@ public class SubTaskController {
 		@ApiImplicitParam(name = "search", value = "검색어(콘텐츠명/사용자명) - 미개발", dataType = "string", defaultValue = ""),
 		@ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
 		@ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-		@ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc")
+		@ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건)", dataType = "String", paramType = "query", defaultValue = "updatedDate,desc"),
+		@ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL")
 	})
 	@GetMapping("/myWorks/{workerUUID}")
 	public ResponseEntity<ApiResponse<MyWorkListResponse>> getMyWorks(
@@ -152,6 +153,7 @@ public class SubTaskController {
 		, @PathVariable("workerUUID") String workerUUID
 		, @RequestParam(required = false, value = "taskId") Long taskId
 		, @RequestParam(required = false, value = "search") String search
+		, @RequestParam(value = "target", required = false, defaultValue = "ALL") String targetType
 		, @ApiIgnore PageRequest pageable
 	) {
 		if (workerUUID.isEmpty()) {
@@ -159,7 +161,7 @@ public class SubTaskController {
 			throw new ProcessServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		ApiResponse<MyWorkListResponse> myWorkListResponseApiResponse = this.subTaskService.getMyWorks(
-			workspaceUUID, workerUUID, taskId, search, pageable.of());
+			workspaceUUID, workerUUID, taskId, search, pageable.of(), targetType);
 		return ResponseEntity.ok(myWorkListResponseApiResponse);
 	}
 

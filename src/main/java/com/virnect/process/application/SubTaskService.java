@@ -315,10 +315,10 @@ public class SubTaskService {
 	 */
 	@Transactional
 	public ApiResponse<MyWorkListResponse> getMyWorks(
-		String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable
+		String workspaceUUID, String workerUUID, Long processId, String search, Pageable pageable, String targetType
 	) {
 		Page<SubProcess> subProcessPage = this.subProcessRepository.getMyWorksInProcess(
-			workspaceUUID, workerUUID, processId, search, pageable);
+			workspaceUUID, workerUUID, processId, search, pageable, targetType);
 		//        Page<SubProcess> subProcessPage = this.subProcessRepository.findByWorkerUUID(workerUUID, pageable);
 
 		List<MyWorksResponse> myWorksResponseList = subProcessPage.stream().map(subProcess -> {
