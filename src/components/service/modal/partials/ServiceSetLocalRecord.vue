@@ -9,7 +9,7 @@
 
     <div
       class="service-setting__row"
-      v-if="!isTablet"
+      v-if="!isTablet && !isSafari"
       :class="{ disable: isLocalRecording }"
     >
       <p class="service-setting__text">
