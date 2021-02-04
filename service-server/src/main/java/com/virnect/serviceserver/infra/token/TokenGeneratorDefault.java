@@ -19,14 +19,14 @@ package com.virnect.serviceserver.infra.token;
 
 import com.virnect.java.client.RemoteServiceRole;
 import com.virnect.serviceserver.ServiceServerApplication;
-import com.virnect.serviceserver.config.RemoteServiceBuildInfo;
+import com.virnect.serviceserver.global.config.RemoteServiceBuildInfo;
 import com.virnect.mediaserver.core.IdentifierPrefixes;
 import com.virnect.mediaserver.core.Token;
 import com.virnect.mediaserver.core.TokenGenerator;
 import com.virnect.mediaserver.coturn.CoturnCredentialsService;
 import com.virnect.mediaserver.coturn.TurnCredentials;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
-import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 

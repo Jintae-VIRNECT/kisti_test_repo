@@ -15,7 +15,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.dao.MemberDataRepository;
+import com.virnect.serviceserver.application.MemberService;
 import com.virnect.serviceserver.dto.response.member.MemberInfoListResponse;
 import com.virnect.serviceserver.dto.response.member.MemberSecessionResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
@@ -25,17 +25,19 @@ import com.virnect.serviceserver.global.common.ApiResponse;
 @RestController
 @RequiredArgsConstructor
 public class MemberRestController {
-    private static final String TAG = MemberRestController.class.getSimpleName();
-    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
+    //private static final String TAG = MemberRestController.class.getSimpleName();
+    //private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
     private static final String REST_PATH = "/remote/member";
 
-    private final MemberDataRepository memberDataRepository;
+    //private MemberDataRepository memberDataRepository;
 
-    /*@Qualifier(value = "memberDataRepository")
-    @Autowired
-    public void setMemberDataRepository(MemberDataRepository memberDataRepository) {
-        this.memberDataRepository = memberDataRepository;
-    }*/
+    private final MemberService memberService;
+
+	/*@Qualifier(value = "memberDataRepository")
+	@Autowired
+	public void setMemberDataRepository(MemberDataRepository memberDataRepository) {
+		this.memberDataRepository = memberDataRepository;
+	}*/
 
     @ApiOperation(value = "Lookup Workspace Member Information List", notes = "워크스페이스 멤버 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({
@@ -53,12 +55,21 @@ public class MemberRestController {
         @RequestParam(value = "size") int size
     ) {
         //log.info("WORKSPACE MEMBER SEARCH BY WORKSPACE ID => [{}]", workspaceId);
-        log.info("REST API: GET {}/{}",
-                REST_PATH,
-                workspaceId != null ? workspaceId: "{}");
+        log.info(
+            "REST API: GET {}/{}",
+            REST_PATH,
+            workspaceId != null ? workspaceId : "{}"
+        );
+
         //increase page number + 1, cause page index starts 0
-        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(workspaceId, filter, search, page + 1, size);
-        return ResponseEntity.ok(apiResponse);
+		/*ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(
+			workspaceId, filter, search, page + 1, size);*/
+
+        WorkspaceMemberInfoListResponse responseData = memberService.getMembers(
+            workspaceId, filter, search, page + 1, size
+        );
+
+        return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
     @ApiOperation(value = "Lookup Remote Member Information List", notes = "본인을 제외한 워크스페이스 리모트 멤버 리스트를 조회하는 API 입니다.(동일한 사용자 정보 제외)")
@@ -77,19 +88,32 @@ public class MemberRestController {
         @RequestParam(value = "page") int page,
         @RequestParam(value = "size") int size
     ) {
-        log.info("REST API: GET {}/{}/{}",
-                REST_PATH,
-                workspaceId != null ? workspaceId: "{}",
-                userId != null ? userId: "{}");
+        log.info(
+            "REST API: GET {}/{}/{}",
+            REST_PATH,
+            workspaceId != null ? workspaceId : "{}",
+            userId != null ? userId : "{}"
+        );
         //increase page number + 1, cause page index starts 0
-        ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(
-                workspaceId,
-                userId,
-                filter,
-                search,
-                page + 1,
-                size);
-        return ResponseEntity.ok(apiResponse);
+		/*ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(
+			workspaceId,
+			userId,
+			filter,
+			search,
+			page + 1,
+			size
+		);*/
+
+        MemberInfoListResponse responseData = memberService.getMembersExceptForMe(
+            workspaceId,
+            userId,
+            filter,
+            search,
+            page + 1,
+            size
+        );
+
+        return ResponseEntity.ok(new ApiResponse(responseData));
     }
 
     @ApiOperation(value = "Lookup Invitable Remote Member Information List", notes = "초대 가능한 워크스페이스 리모트 멤버 리스트를 조회하는 API 입니다.(원격협업 참가자 제외)")
@@ -109,21 +133,33 @@ public class MemberRestController {
         @RequestParam(value = "page") int page,
         @RequestParam(value = "size") int size
     ) {
-        log.info("REST API: GET {}/{}/{}/{}",
-                REST_PATH,
-                workspaceId != null ? workspaceId: "{}",
-                sessionId != null ? sessionId: "{}",
-                userId != null ? userId: "{}");
+        log.info(
+            "REST API: GET {}/{}/{}/{}",
+            REST_PATH,
+            workspaceId != null ? workspaceId : "{}",
+            sessionId != null ? sessionId : "{}",
+            userId != null ? userId : "{}"
+        );
         //increase page number + 1, cause page index starts 0
-        ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(
-                workspaceId,
-                sessionId,
-                userId,
-                filter,
-                search,
-                page + 1,
-                size);
-        return ResponseEntity.ok(apiResponse);
+		/*ApiResponse<MemberInfoListResponse> apiResponse = this.memberDataRepository.loadMemberList(
+			workspaceId,
+			sessionId,
+			userId,
+			filter,
+			search,
+			page + 1,
+			size
+		);
+		return ResponseEntity.ok(apiResponse);*/
+        MemberInfoListResponse responseData = memberService.getMembersInvitePossible(workspaceId,
+            sessionId,
+            userId,
+            filter,
+            search,
+            page + 1,
+            size
+        );
+        return ResponseEntity.ok(new ApiResponse(responseData));
     }
 
     @ApiOperation(value = "Member Account Withdrawal", notes = "")
@@ -131,11 +167,19 @@ public class MemberRestController {
     public ResponseEntity<ApiResponse<MemberSecessionResponse>> deleteMembersBySession(
         @PathVariable(name = "userId") String userId
     ) {
-        log.info("REST API: GET {}/{}",
-                REST_PATH,
-                userId != null ? userId: "{}");
+        log.info(
+            "REST API: GET {}/{}",
+            REST_PATH,
+            userId != null ? userId : "{}"
+        );
 
-        ApiResponse<MemberSecessionResponse> apiResponse = this.memberDataRepository.deleteMember(userId);
-        return ResponseEntity.ok(apiResponse);
+		/*ApiResponse<MemberSecessionResponse> apiResponse = this.memberDataRepository.deleteMember(userId);
+		return ResponseEntity.ok(apiResponse);*/
+
+        MemberSecessionResponse responseData = memberService.deleteMembersBySession(
+            userId
+        );
+        return ResponseEntity.ok(new ApiResponse(responseData));
+
     }
 }

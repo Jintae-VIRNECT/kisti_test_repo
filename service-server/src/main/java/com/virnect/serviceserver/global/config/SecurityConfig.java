@@ -15,26 +15,22 @@
  *
  */
 
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.global.config;
 
-import java.util.Arrays;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
@@ -74,18 +70,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		// Security for API REST
 		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry conf = http.cors().and()
-				.csrf().disable().authorizeRequests()
-				// /api
-				.antMatchers("/api/**").permitAll()
-				// /config
-				.antMatchers(HttpMethod.GET, "/config/remoteservice-publicurl").permitAll()
-				.antMatchers(HttpMethod.GET, "/config/**").permitAll()
-				// /cdr
-				.antMatchers(HttpMethod.GET, "/cdr/**").permitAll()
-				// /accept-certificate
-				.antMatchers(HttpMethod.GET, "/accept-certificate").permitAll()
-				// Dashboard
-				.antMatchers(HttpMethod.GET, "/dashboard/**").permitAll();
+			.csrf().disable().authorizeRequests()
+			// /api
+			.antMatchers("/api/**").permitAll()
+			// /config
+			.antMatchers(HttpMethod.GET, "/config/remoteservice-publicurl").permitAll()
+			.antMatchers(HttpMethod.GET, "/config/**").permitAll()
+			// /cdr
+			.antMatchers(HttpMethod.GET, "/cdr/**").permitAll()
+			// /accept-certificate
+			.antMatchers(HttpMethod.GET, "/accept-certificate").permitAll()
+			// Dashboard
+			.antMatchers(HttpMethod.GET, "/dashboard/**").permitAll();
 
 		// Security for recording layouts
 		conf.antMatchers("/layouts/**").permitAll();
@@ -99,8 +95,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		conf.and().httpBasic();
 	}
-
-
 
 	@Bean
 	public CorsFilter corsFilter() {

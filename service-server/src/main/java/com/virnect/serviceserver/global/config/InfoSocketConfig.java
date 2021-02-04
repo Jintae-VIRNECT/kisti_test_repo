@@ -15,15 +15,16 @@
  *
  */
 
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.global.config;
 
-import com.virnect.mediaserver.config.InfoHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.standard.ServletServerContainerFactoryBean;
+
+import com.virnect.mediaserver.config.InfoHandler;
 
 @Configuration
 @EnableWebSocket

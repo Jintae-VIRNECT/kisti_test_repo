@@ -12,7 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.dao.UtilDataRepository;
+import com.virnect.serviceserver.application.AdminService;
 import com.virnect.serviceserver.dto.request.company.CompanyRequest;
 import com.virnect.serviceserver.dto.request.company.CompanyResponse;
 import com.virnect.serviceserver.error.ErrorCode;
@@ -28,7 +28,9 @@ public class AdminRestController {
     private static final String REST_PATH = "/remote/admin";
     //private static final String REST_COMPANY_PATH = "/remote/company";
 
-    private final UtilDataRepository utilDataRepository;
+    //private final UtilDataRepository utilDataRepository;
+
+    private final AdminService adminService;
 
     @ApiOperation(value = "Create Company Information ", notes = "회사별 서비스 정보를 생성 합니다.")
     @PostMapping(value = "admin/company")
@@ -37,26 +39,28 @@ public class AdminRestController {
         BindingResult result
     ) {
         LogMessage.formedInfo(
-                TAG,
-                "REST API: POST " + REST_PATH,
-                "createCompanyRequestHandler"
+            TAG,
+            "REST API: POST " + REST_PATH,
+            "createCompanyRequestHandler"
         );
 
         // check company request handler
-        if(result.hasErrors()) {
+        if (result.hasErrors()) {
             result.getAllErrors().forEach(message ->
-                            LogMessage.formedError(
-                                    TAG,
-                                    "REST API: POST " + REST_PATH,
-                                    "createCompanyRequestHandler",
-                                    LogMessage.PARAMETER_ERROR,
-                                    message.toString()
-                            )
+                LogMessage.formedError(
+                    TAG,
+                    "REST API: POST " + REST_PATH,
+                    "createCompanyRequestHandler",
+                    LogMessage.PARAMETER_ERROR,
+                    message.toString()
+                )
             );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<CompanyResponse> apiResponse = this.utilDataRepository.generateCompany(companyRequest);
-        return ResponseEntity.ok(apiResponse);
+        ApiResponse<CompanyResponse> responseData = adminService.createCompany(companyRequest);
+        return ResponseEntity.ok(responseData);
+		/*ApiResponse<CompanyResponse> apiResponse = utilDataRepository.generateCompany(companyRequest);
+		return ResponseEntity.ok(apiResponse);*/
     }
 }

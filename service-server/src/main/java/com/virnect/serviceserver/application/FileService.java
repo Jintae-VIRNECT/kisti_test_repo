@@ -2,12 +2,12 @@ package com.virnect.serviceserver.application;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.file.dao.File;
@@ -19,7 +19,7 @@ import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
 
 @Slf4j
 @Service
-//@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor
 @Transactional(readOnly=true)
 public class FileService {
     private static final String TAG = FileService.class.getSimpleName();
@@ -27,11 +27,8 @@ public class FileService {
     /*private final FileRepository fileRepository;
     private final RecordFileRepository recordFileRepository;*/
 
-    @Autowired
-    private FileRepository fileRepository;
-
-    @Autowired
-    private RecordFileRepository recordFileRepository;
+    private final FileRepository fileRepository;
+    private final RecordFileRepository recordFileRepository;
 
     @Transactional
     public File registerFile(FileUploadRequest fileUploadRequest, String objectName) {

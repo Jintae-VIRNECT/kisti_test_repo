@@ -9,13 +9,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.dao.Company;
@@ -45,29 +46,18 @@ import com.virnect.serviceserver.global.common.ApiResponse;
 
 @Slf4j
 @Service
-//@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 //@NoArgsConstructor
 @Transactional(readOnly=true)
 public class SessionService {
     private static final String TAG = SessionService.class.getSimpleName();
 
-    @Autowired
-    private ModelMapper modelMapper;
-
-    @Autowired
-    private RoomRepository roomRepository;
-
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @Autowired
-    private RoomHistoryRepository roomHistoryRepository;
-
-    @Autowired
-    private MemberHistoryRepository memberHistoryRepository;
-
-    @Autowired
-    private CompanyRepository companyRepository;
+    private final ModelMapper modelMapper;
+    private final RoomRepository roomRepository;
+    private final MemberRepository memberRepository;
+    private final RoomHistoryRepository roomHistoryRepository;
+    private final MemberHistoryRepository memberHistoryRepository;
+    private final CompanyRepository companyRepository;
 
     //===========================================  Admin Services     =================================================//
     @Transactional

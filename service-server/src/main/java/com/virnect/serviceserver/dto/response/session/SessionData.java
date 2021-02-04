@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.model;
+package com.virnect.serviceserver.dto.response.session;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -19,6 +19,7 @@ public class ApplicationReadyEventHandler {
 			+ "   * VIRNECT_ENV: [" + System.getenv("VIRNECT_ENV") + "]\n" + " \n"
 			+ "   * Config Server Url: [" + System.getenv("CONFIG_SERVER") + "]\n" + "\n"
 			+ "----------------------------------------------------\n";
+
 		log.info(msg);
 	}
 

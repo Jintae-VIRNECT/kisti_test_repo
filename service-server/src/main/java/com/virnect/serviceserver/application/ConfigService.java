@@ -1,60 +1,44 @@
-package com.virnect.serviceserver.api;
+package com.virnect.serviceserver.application;
 
+import org.apache.http.Header;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.application.ConfigService;
+import com.virnect.mediaserver.cdr.CDREventName;
+import com.virnect.mediaserver.config.MediaServerProperties;
 import com.virnect.serviceserver.global.config.RemoteServiceBuildInfo;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 
 @Slf4j
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/remote")
-public class ConfigRestController {
-    //private static final String TAG = ConfigRestController.class.getSimpleName();
-    //private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
-    //private static final String REST_SERVICE_PATH = "/remote/service";
-    //private static final String REST_CONFIG_PATH = "/remote/config";
+@Service
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@Transactional(readOnly = true)
+public class ConfigService {
 
-   /* @ApiOperation(value = "Send Signal to a Session", notes = "특정 세션의 접속 사용자 에게 커스텀 데이터를 보내는 API 입니다.")
-    @PostMapping(value = "signal/{workspaceId}/{sessionId}")
-    public ResponseEntity<ApiResponse<WorkspaceMemberInfoListResponse>> getMembers(
-            @PathVariable(name = "workspaceId") String workspaceId,
-            @PathVariable(name = "sessionId") String sessionId) {
+	private static final String REST_CONFIG_PATH = "/remote/config";
 
-        log.info("REST API: GET {}/{}", REST_PATH, workspaceId != null ? workspaceId.toString() : "{}");
+	private final RemoteServiceConfig remoteServiceConfig;
+	private final RemoteServiceBuildInfo remoteServiceBuildInfo;
 
-        ApiResponse<WorkspaceMemberInfoListResponse> apiResponse = this.remoteGatewayService.getMembers(workspaceId, filter, page, size);
-        log.debug(TAG, apiResponse.toString());
-        return ResponseEntity.ok(apiResponse);
-    }*/
+	protected HttpHeaders getResponseHeaders() {
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.setContentType(MediaType.APPLICATION_JSON);
+		return responseHeaders;
+	}
 
-    private final RemoteServiceConfig remoteServiceConfig;
-    private final RemoteServiceBuildInfo remoteServiceBuildInfo;
-
-    private final ConfigService configService;
-
-    protected HttpHeaders getResponseHeaders() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.setContentType(MediaType.APPLICATION_JSON);
-        return responseHeaders;
-    }
-
-    @GetMapping(value = "config")
-    public ResponseEntity<String> getRemoteServiceConfiguration() {
-
-        ResponseEntity<String> responseData = configService.getRemoteServiceConfiguration();
-        return responseData;
-
-		/*log.info("REST API: GET {}", REST_CONFIG_PATH);
+	public ResponseEntity<String> getRemoteServiceConfiguration() {
+		log.info("REST API: GET {}", REST_CONFIG_PATH);
 
 		JsonObject json = new JsonObject();
 		json.addProperty("version", remoteServiceBuildInfo.getRemoteServiceServerVersion());
@@ -93,7 +77,7 @@ public class ConfigRestController {
 		);
 
 		//json.addProperty("remote_service_recording", remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled());
-        *//*if (remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
+        /*if (remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
             json.addProperty("remote_service_recording_version", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingVersion());
             json.addProperty("remote_service_recording_path", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath());
             json.addProperty("remote_service_recording_public_access", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPublicAccess());
@@ -103,7 +87,7 @@ public class ConfigRestController {
             if (remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl() != null	&& !remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl().isEmpty()) {
                 json.addProperty("remote_service_recording_composed_url", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl());
             }
-        }*//*
+        }*/
 		json.addProperty("remote_service_webhook", remoteServiceConfig.isWebhookEnabled());
 		if (remoteServiceConfig.isWebhookEnabled()) {
 			json.addProperty(
@@ -122,48 +106,33 @@ public class ConfigRestController {
 			json.add("remote_service_webhook_events", webhookEvents);
 		}
 
-		return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);*/
-    }
+		return new ResponseEntity<>(json.toString(), getResponseHeaders(), HttpStatus.OK);
+	}
 
-    @GetMapping(value = "config/version")
-    public String getRemoteServiceServerVersion() {
-        String responseData = configService.getRemoteServiceServerVersion();
-        return responseData;
-        /*return remoteServiceBuildInfo.getRemoteServiceServerVersion();*/
-    }
+	public String getRemoteServiceServerVersion() {
+		log.info("REST API: GET {}/version", REST_CONFIG_PATH);
+		return remoteServiceBuildInfo.getRemoteServiceServerVersion();
+	}
 
-    @GetMapping(value = "config/publicurl")
-    public String getRemoteServicePublicUrl() {
-        String responseData = configService.getRemoteServicePublicUrl();
-        return responseData;
-		/*log.info("REST API: GET {}/publicurl", REST_CONFIG_PATH);
-		return remoteServiceConfig.getFinalUrl();*/
-    }
+	public String getRemoteServicePublicUrl() {
+		log.info("REST API: GET {}/publicurl", REST_CONFIG_PATH);
+		return remoteServiceConfig.getFinalUrl();
+	}
 
-    @GetMapping(value = "config/recording")
-    public Boolean getRemoteServiceRecordingEnabled() {
-        Boolean responseData = configService.getRemoteServiceRecordingEnabled();
-        return responseData;
-		/*log.info("REST API: GET {}/recording", REST_CONFIG_PATH);
+	public Boolean getRemoteServiceRecordingEnabled() {
+		log.info("REST API: GET {}/recording", REST_CONFIG_PATH);
 		//return remoteServiceConfig.isRecordingModuleEnabled();
-		return true;*/
-    }
+		return true;
+	}
 
-    @GetMapping(value = "config/recording-path")
-    public String getRemoteServiceRecordingPath() {
-        String responseData = configService.getRemoteServiceRecordingPath();
-        return responseData;
-		/*log.info("REST API: GET {}/recording-path", REST_CONFIG_PATH);
+	public String getRemoteServiceRecordingPath() {
+		log.info("REST API: GET {}/recording-path", REST_CONFIG_PATH);
 		//return remoteServiceConfig.getRemoteServiceRecordingPath();
-		return "";*/
-    }
+		return "";
+	}
 
-    @GetMapping(value = "config/cdr")
-    public Boolean getRemoteServiceCdrEnabled() {
-        Boolean responseData = configService.getRemoteServiceCdrEnabled();
-        return responseData;
-		/*log.info("REST API: GET {}/cdr", REST_CONFIG_PATH);
-		return remoteServiceConfig.isCdrEnabled();*/
-    }
-
+	public Boolean getRemoteServiceCdrEnabled() {
+		log.info("REST API: GET {}/cdr", REST_CONFIG_PATH);
+		return remoteServiceConfig.isCdrEnabled();
+	}
 }

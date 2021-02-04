@@ -15,15 +15,15 @@
  *
  */
 
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.global.config;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Configuration
@@ -37,10 +37,10 @@ public class ServletCustomizer implements WebServerFactoryCustomizer<Configurabl
 		factory.setMimeMappings(mappings);
 
 		//server.tomcat.relaxed-query-chars=[,],|
-		if(factory instanceof TomcatServletWebServerFactory) {
+		if (factory instanceof TomcatServletWebServerFactory) {
 			log.info("ServletCustomizer_TomcatServletWebServerFactory");
-			((TomcatServletWebServerFactory) factory).addConnectorCustomizers(
-					connector -> connector.setAttribute("relaxedQueryChars", "|{}[]"));
+			((TomcatServletWebServerFactory)factory).addConnectorCustomizers(
+				connector -> connector.setAttribute("relaxedQueryChars", "|{}[]"));
 		}
 	}
 }

@@ -31,12 +31,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.virnect.mediaserver.cdr.CDRLogger;
@@ -68,10 +70,10 @@ import com.virnect.mediaserver.utils.MediaNodeStatusManagerDummy;
 import com.virnect.mediaserver.utils.QuarantineKiller;
 import com.virnect.mediaserver.utils.QuarantineKillerDummy;
 import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
-import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
-import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.application.ServiceSessionManager;
+import com.virnect.serviceserver.global.config.HttpHandshakeInterceptor;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
-import com.virnect.serviceserver.session.ServiceSessionManager;
 
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
@@ -122,7 +124,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
     }
-
 
     /*@Autowired
     SessionDataRepository sessionDataRepository;*/
@@ -366,12 +367,12 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public static <T> Map<String, String> checkConfigProperties(Class<T> configClass) throws InterruptedException {
         ConfigurableApplicationContext app = SpringApplication.run(configClass, new String[] { "--spring.main.web-application-type=none" });
         RemoteServiceConfig config = app.getBean(RemoteServiceConfig.class);
-        List<com.virnect.serviceserver.config.RemoteServiceConfig.Error> errors = config.getConfigErrors();
+        List<com.virnect.serviceserver.global.config.RemoteServiceConfig.Error> errors = config.getConfigErrors();
 
         if (!errors.isEmpty()) {
             // @formatter:off
             String msg = "\n\n\n" + "   Configuration errors\n" + "   --------------------\n" + "\n";
-            for (com.virnect.serviceserver.config.RemoteServiceConfig.Error error : config.getConfigErrors()) {
+            for (com.virnect.serviceserver.global.config.RemoteServiceConfig.Error error : config.getConfigErrors()) {
                 msg += "   * ";
                 if (error.getProperty() != null) {
                     msg += "Property " + config.getPropertyName(error.getProperty());
@@ -453,7 +454,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         }
     }
 
-    /*@EventListener(ApplicationReadyEvent.class)
+    @EventListener(ApplicationReadyEvent.class)
     public void whenReady() {
         String websocket = wsUrl + WS_PATH + "/";
 
@@ -474,6 +475,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         log.info(msg);
 
         //
-        sessionDataRepository.removeAllRoom();
-    }*/
+        //sessionDataRepository.removeAllRoom();
+    }
 }

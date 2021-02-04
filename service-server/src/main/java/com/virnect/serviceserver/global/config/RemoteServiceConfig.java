@@ -15,12 +15,20 @@
  *
  */
 
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.global.config;
 
-import com.virnect.serviceserver.infra.utils.Dotenv;
-import com.virnect.serviceserver.infra.utils.Dotenv.DotenvFormatException;
-import com.virnect.serviceserver.config.property.RemoteServiceProperties;
-import com.virnect.serviceserver.config.property.RemoteStorageProperties;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,20 +38,18 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.*;
+import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
+import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
+import com.virnect.serviceserver.infra.utils.Dotenv;
+import com.virnect.serviceserver.infra.utils.Dotenv.DotenvFormatException;
 
 @Configuration
 @EnableConfigurationProperties({
-		RemoteServiceProperties.class,
-		RemoteStorageProperties.class
+	RemoteServiceProperties.class,
+	RemoteStorageProperties.class
 })
 @ComponentScan(basePackages = {
-		"com.virnect.mediaserver.config"
+	"com.virnect.mediaserver.config"
 })
 public class RemoteServiceConfig {
 
@@ -92,7 +98,6 @@ public class RemoteServiceConfig {
 	@Value("#{'${spring.profiles.active:}'.length() > 0 ? '${spring.profiles.active:}'.split(',') : \"default\"}")
 	protected String springProfile;
 
-
 	public String getSpringProfile() {
 		return springProfile;
 	}
@@ -125,7 +130,6 @@ public class RemoteServiceConfig {
 		this.remoteServiceProperties.setTurnadminAvailable(available);
 	}
 
-
 	public String getRemoteServiceFrontendDefaultPath() {
 		return "dashboard";
 	}
@@ -153,10 +157,11 @@ public class RemoteServiceConfig {
 			return propertyName;
 		}
 	}
+
 	public void checkConfiguration(boolean loadDotenv) {
 		try {
 			this.remoteServiceProperties.setServicePolicyLocation();
-			if(loadDotenv) {
+			if (loadDotenv) {
 				this.remoteServiceProperties.setDotenvPath();
 				populatePropertySourceFromDotenv();
 			} else {
@@ -166,7 +171,8 @@ public class RemoteServiceConfig {
 			this.remoteStorageProperties.checkStorageProperties();
 		} catch (Exception e) {
 			log.error("Exception checking configuration", e);
-			this.remoteServiceProperties.addError(null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());
+			this.remoteServiceProperties.addError(
+				null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());
 		}
 		//userConfigProps = new ArrayList<>(this.remoteServiceProperties.configProps.keySet());
 		userConfigProps = new ArrayList<>();
@@ -184,7 +190,8 @@ public class RemoteServiceConfig {
 
 	protected List<String> getNonUserProperties() {
 		return Arrays.asList("server.port", "SERVER_PORT", "DOTENV_PATH", "COTURN_IP", "COTURN_REDIS_IP",
-				"COTURN_REDIS_DBNAME", "COTURN_REDIS_PASSWORD", "COTURN_REDIS_CONNECT_TIMEOUT");
+			"COTURN_REDIS_DBNAME", "COTURN_REDIS_PASSWORD", "COTURN_REDIS_CONNECT_TIMEOUT"
+		);
 	}
 
 	protected void populatePropertySourceFromDotenv() {
@@ -202,8 +209,9 @@ public class RemoteServiceConfig {
 				}
 			} else {
 				log.error(
-						"RemoteService does not have read permissions over .env file at {}",
-						this.remoteServiceProperties.getDotenvPath());
+					"RemoteService does not have read permissions over .env file at {}",
+					this.remoteServiceProperties.getDotenvPath()
+				);
 			}
 		}
 	}

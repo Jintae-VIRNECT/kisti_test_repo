@@ -10,6 +10,10 @@ import com.virnect.serviceserver.global.common.ApiResponse;
 
 @FeignClient(name = "${feign.message-prefix}", url = "${feign.message-url}", fallbackFactory = MessageRestFallbackFactory.class)
 public interface MessageRestService {
-    @PostMapping("/messages/push")
-    ApiResponse<PushResponse> sendPush(@RequestBody PushSendRequest pushSendRequest);
+
+	@PostMapping("/messages/push")
+	ApiResponse<PushResponse> sendPush(
+		@RequestBody PushSendRequest pushSendRequest
+	);
+
 }

@@ -13,6 +13,7 @@ import com.virnect.serviceserver.global.common.ApiResponse;
 @Slf4j
 @Component
 public class MessageRestFallbackFactory implements FallbackFactory<MessageRestService> {
+
     @Override
     public MessageRestService create(Throwable cause) {
         log.info(cause.getMessage(), cause);

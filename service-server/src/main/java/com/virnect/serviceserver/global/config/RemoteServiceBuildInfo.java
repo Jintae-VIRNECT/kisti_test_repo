@@ -15,7 +15,7 @@
  *
  */
 
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.global.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
@@ -37,5 +37,5 @@ public class RemoteServiceBuildInfo {
 
 	public String getVersion() {
 		return this.buildProperties.getVersion();
-	}	
+	}
 }

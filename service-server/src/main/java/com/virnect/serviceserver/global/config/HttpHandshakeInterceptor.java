@@ -15,7 +15,7 @@
  *
  */
 
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.global.config;
 
 import java.util.Map;
 
@@ -34,10 +34,12 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 	private static final Logger log = LoggerFactory.getLogger(HttpHandshakeInterceptor.class);
 
 	@Override
-	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-			Map<String, Object> attributes) throws Exception {
+	public boolean beforeHandshake(
+		ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+		Map<String, Object> attributes
+	) throws Exception {
 		if (request instanceof ServletServerHttpRequest) {
-			HttpSession session = ((ServletServerHttpRequest) request).getServletRequest().getSession();
+			HttpSession session = ((ServletServerHttpRequest)request).getServletRequest().getSession();
 			session.setMaxInactiveInterval(1800); // HttpSession will expire in 30 minutes
 			attributes.put("httpSession", session);
 			log.info("{} HttpSession {}", session.isNew() ? "New" : "Old", session.getId());
@@ -46,7 +48,9 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 	}
 
 	@Override
-	public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-			Exception ex) {
+	public void afterHandshake(
+		ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+		Exception ex
+	) {
 	}
 }

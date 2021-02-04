@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,7 @@ import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.global.common.ApiResponse;
 
 @Slf4j
-@RestController
+@Service
 @RequiredArgsConstructor
 //public class MemberDataRepository extends DataRepository {
 public class MemberDataRepository {

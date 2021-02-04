@@ -21,7 +21,7 @@ import com.virnect.data.dao.Company;
 import com.virnect.data.dao.Language;
 import com.virnect.data.dao.SessionType;
 import com.virnect.serviceserver.application.SessionService;
-import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.dto.constraint.CompanyConstants;
 import com.virnect.serviceserver.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.dto.constraint.TranslationItem;
@@ -39,6 +39,7 @@ import com.virnect.serviceserver.infra.utils.LogMessage;
 @Service
 @RequiredArgsConstructor
 public class UtilDataRepository {
+
     private static final String TAG = UtilDataRepository.class.getSimpleName();
 
     private final RemoteServiceConfig config;

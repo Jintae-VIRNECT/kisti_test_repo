@@ -11,14 +11,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.application.license.LicenseRestService;
-import com.virnect.serviceserver.dao.UtilDataRepository;
-import com.virnect.serviceserver.dto.constraint.LicenseConstants;
-import com.virnect.serviceserver.dto.constraint.LicenseItem;
+import com.virnect.serviceserver.application.ValidationService;
 import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
 import com.virnect.serviceserver.dto.response.lisence.LicenseItemResponse;
-import com.virnect.serviceserver.dto.rest.LicenseInfoListResponse;
-import com.virnect.serviceserver.dto.rest.LicenseInfoResponse;
 import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.error.exception.RestServiceException;
 import com.virnect.serviceserver.global.common.ApiResponse;
@@ -33,8 +28,10 @@ public class ValidationController {
     private static final String REST_COMPANY_PATH = "/remote/company";
 
     //private final DataRepository dataRepository;
-    private final UtilDataRepository utilDataRepository;
-    private final LicenseRestService licenseRestService;
+    //private final UtilDataRepository utilDataRepository;
+    //private final LicenseRestService licenseRestService;
+
+    private final ValidationService validationService;
 
     @ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
     @GetMapping(value = "licenses/{workspaceId}/{userId}")
@@ -42,39 +39,46 @@ public class ValidationController {
         @PathVariable String workspaceId,
         @PathVariable String userId
     ) {
-        log.info("REST API: GET {}/{}/{}",
-                REST_LICENSE_PATH,
-                workspaceId != null ? workspaceId : "{}",
-                userId != null ? userId : "{}");
+        log.info(
+            "REST API: GET {}/{}/{}",
+            REST_LICENSE_PATH,
+            workspaceId != null ? workspaceId : "{}",
+            userId != null ? userId : "{}"
+        );
 
         if (workspaceId.isEmpty() || userId.isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<LicenseInfoListResponse> licenseValidation = this.licenseRestService.getUserLicenseValidation(workspaceId, userId);
-        if (licenseValidation.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-            return ResponseEntity.ok(new ApiResponse<>(licenseValidation.getCode(), licenseValidation.getMessage()));
-        }
 
-        LicenseInfoResponse currentLicense = null;
-        for (LicenseInfoResponse licenseInfoResponse : licenseValidation.getData().getLicenseInfoList()) {
-            if (licenseInfoResponse.getProductName().contains(LicenseConstants.PRODUCT_NAME)) {
-                currentLicense = licenseInfoResponse;
-            }
-        }
+        ApiResponse<LicenseItemResponse> responseData = validationService.getLicenseInfo(workspaceId, userId);
+        return ResponseEntity.ok(responseData);
 
-        LicenseItem licenseItem = LicenseItem.ITEM_PRODUCT;
-        if (currentLicense == null) {
-            return ResponseEntity.ok(new ApiResponse<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY));
-        } else {
-            if (!currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
-                return ResponseEntity.ok(new ApiResponse<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY));
-            } else {
-                LicenseItemResponse licenseItemResponse = new LicenseItemResponse();
-                licenseItemResponse.setItemName(licenseItem.getItemName());
-                licenseItemResponse.setUserCapacity(licenseItem.getUserCapacity());
-                return ResponseEntity.ok(new ApiResponse<>(licenseItemResponse));
-            }
-        }
+		/*ApiResponse<LicenseInfoListResponse> licenseValidation = this.licenseRestService.getUserLicenseValidation(
+			workspaceId, userId);
+		if (licenseValidation.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
+			return ResponseEntity.ok(new ApiResponse<>(licenseValidation.getCode(), licenseValidation.getMessage()));
+		}
+
+		LicenseInfoResponse currentLicense = null;
+		for (LicenseInfoResponse licenseInfoResponse : licenseValidation.getData().getLicenseInfoList()) {
+			if (licenseInfoResponse.getProductName().contains(LicenseConstants.PRODUCT_NAME)) {
+				currentLicense = licenseInfoResponse;
+			}
+		}
+
+		LicenseItem licenseItem = LicenseItem.ITEM_PRODUCT;
+		if (currentLicense == null) {
+			return ResponseEntity.ok(new ApiResponse<>(ErrorCode.ERR_LICENSE_PRODUCT_VALIDITY));
+		} else {
+			if (!currentLicense.getStatus().equals(LicenseConstants.STATUS_USE)) {
+				return ResponseEntity.ok(new ApiResponse<>(ErrorCode.ERR_LICENSE_NOT_VALIDITY));
+			} else {
+				LicenseItemResponse licenseItemResponse = new LicenseItemResponse();
+				licenseItemResponse.setItemName(licenseItem.getItemName());
+				licenseItemResponse.setUserCapacity(licenseItem.getUserCapacity());
+				return ResponseEntity.ok(new ApiResponse<>(licenseItemResponse));
+			}
+		}*/
     }
 
     @ApiOperation(value = "Service Company Information", notes = "회사별 서비스 정보를 제공합니다.")
@@ -84,9 +88,9 @@ public class ValidationController {
         @PathVariable String userId
     ) {
         LogMessage.formedInfo(
-                TAG,
-                "REST API: GET " + REST_COMPANY_PATH + "/" + workspaceId + "/" + userId,
-                "createCompanyRequestHandler"
+            TAG,
+            "REST API: GET " + REST_COMPANY_PATH + "/" + workspaceId + "/" + userId,
+            "createCompanyRequestHandler"
         );
 
         if (userId == null || userId.isEmpty()) {
@@ -97,13 +101,16 @@ public class ValidationController {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
+        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId);
+        return ResponseEntity.ok(responseData);
+
         //todo: delete check user is valid
         //DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(userId);
         //log.info("COMPANY INFO :: USER INFO :: {}", userInfo.getData().getDescription());
 
-        return ResponseEntity.ok(
-                this.utilDataRepository.loadCompanyInformation(workspaceId)
-        );
+		/*return ResponseEntity.ok(
+			this.utilDataRepository.loadCompanyInformation(workspaceId)
+		);*/
     }
 
     @ApiOperation(value = "Service Company Information", notes = "회사별 서비스 정보를 제공합니다.")
@@ -114,13 +121,17 @@ public class ValidationController {
         @RequestParam(name = "userId") String userId
     ) {
         LogMessage.formedInfo(
-                TAG,
-                "REST API: GET " + REST_COMPANY_PATH,
-                "getCompanyInfoRequestHandler"
+            TAG,
+            "REST API: GET " + REST_COMPANY_PATH,
+            "getCompanyInfoRequestHandler"
         );
 
-        ApiResponse<CompanyInfoResponse> apiResponse = this.utilDataRepository.loadCompanyInformation(companyCode, workspaceId, userId);
-        return ResponseEntity.ok(apiResponse);
+        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfoByCompanyCode(workspaceId, userId, companyCode);
+        return ResponseEntity.ok(responseData);
+
+		/*ApiResponse<CompanyInfoResponse> apiResponse = this.utilDataRepository.loadCompanyInformation(
+			companyCode, workspaceId, userId);
+		return ResponseEntity.ok(apiResponse);*/
     }
 
     /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")

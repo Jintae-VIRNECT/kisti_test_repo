@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.config;
+package com.virnect.serviceserver.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -21,15 +21,14 @@ public class WebSocketConfiguration implements WebSocketMessageBrokerConfigurer 
         return client;
     }*/
 
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").withSockJS();
-    }
+	@Override
+	public void registerStompEndpoints(StompEndpointRegistry registry) {
+		registry.addEndpoint("/ws").withSockJS();
+	}
 
-
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.setApplicationDestinationPrefixes("/app");
-        registry.enableSimpleBroker("/topic");
-    }
+	@Override
+	public void configureMessageBroker(MessageBrokerRegistry registry) {
+		registry.setApplicationDestinationPrefixes("/app");
+		registry.enableSimpleBroker("/topic");
+	}
 }

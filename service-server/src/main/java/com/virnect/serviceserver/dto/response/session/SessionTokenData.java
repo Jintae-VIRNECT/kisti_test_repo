@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.model;
+package com.virnect.serviceserver.dto.response.session;
 
 import com.google.gson.JsonObject;
 import io.swagger.annotations.ApiModel;

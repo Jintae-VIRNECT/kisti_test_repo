@@ -43,7 +43,7 @@ import com.virnect.serviceserver.dto.rest.UserInfoResponse;
 import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.infra.file.IFileManagementService;
-import com.virnect.serviceserver.model.UploadResult;
+import com.virnect.serviceserver.dto.response.session.UploadResult;
 
 @Slf4j
 @Service
