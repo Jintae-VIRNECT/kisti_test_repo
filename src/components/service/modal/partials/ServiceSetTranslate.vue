@@ -92,7 +92,7 @@ import toastMixin from 'mixins/toast'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: 'ServiceSetStranslate',
+  name: 'ServiceSetTranslate',
   mixins: [toastMixin],
   components: {
     RSelect,
