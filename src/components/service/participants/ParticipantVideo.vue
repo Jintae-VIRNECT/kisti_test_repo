@@ -402,7 +402,7 @@ export default {
     },
   },
   beforeDestroy() {
-    if (this.$call.session) {
+    if (!this.participant.me && this.$call.session) {
       this.toastDefault(
         this.$t('service.chat_leave', { name: this.participant.nickname }),
       )
