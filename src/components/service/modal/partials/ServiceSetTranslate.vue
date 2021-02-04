@@ -13,7 +13,10 @@
       ></r-check>
     </div>
     <div class="service-setting__row">
-      <div class="service-setting__text custom">
+      <div
+        class="service-setting__text custom"
+        :class="{ disable: !useTranslate }"
+      >
         <p>{{ $t('service.setting_translate_language') }}</p>
         <tooltip
           customClass="tooltip-guide"
@@ -40,7 +43,7 @@
       </r-select>
     </div>
     <div class="service-setting__row">
-      <div class="service-setting__text" :class="{ disabled: !useTranslate }">
+      <div class="service-setting__text" :class="{ disable: !useTranslate }">
         {{ $t('workspace.setting_translate_output') }}
       </div>
       <slider
@@ -52,7 +55,7 @@
       ></slider>
     </div>
     <div class="service-setting__row">
-      <div class="service-setting__text" :class="{ disabled: !useTranslate }">
+      <div class="service-setting__text" :class="{ disable: !useTranslate }">
         {{ $t('workspace.setting_stt') }}
       </div>
       <slider
@@ -64,7 +67,7 @@
       ></slider>
     </div>
     <div class="service-setting__row">
-      <div class="service-setting__text" :class="{ disabled: !useTranslate }">
+      <div class="service-setting__text" :class="{ disable: !useTranslate }">
         {{ $t('workspace.setting_tts') }}
       </div>
       <check
