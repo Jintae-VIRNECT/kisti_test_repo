@@ -25,6 +25,9 @@ export default {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
+      if (this.isSafari) {
+        return false
+      }
       if (this.allowLocalRecord) {
         return true
       } else {
