@@ -138,18 +138,27 @@ export default {
     },
 
     init() {
-      this.tabview = this.isLeader ? 'pointing' : 'local-record'
-
-      if (!this.allowLocalRecord && !this.isLeader && this.useTranslate) {
-        this.tabview = 'translate'
-      }
-      if (this.isSafari && !this.isLeader && this.useTranslate) {
-        this.tabview = 'translate'
-      }
-
       this.$nextTick(() => {
         this.initing = true
       })
+
+      if (this.isLeader) {
+        this.tabview = 'pointing'
+        return
+      }
+
+      if (this.allowLocalRecord && !this.isSafari) {
+        this.tabview = 'local-record'
+        return
+      }
+
+      if (this.useTranslate) {
+        this.tabview = 'translate'
+        return
+      }
+
+      //설정할 수 있는 기능이 없는 경우
+      this.showModalSetting(false)
     },
     tabChange(view) {
       this.tabview = view
