@@ -82,7 +82,8 @@ public class ContentController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = ""),
-            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL")
+            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL"),
+            @ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL")
     })
     @GetMapping("/my/{userUUID}")
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
@@ -91,13 +92,14 @@ public class ContentController {
             @RequestParam(value = "shareds", defaultValue = "ALL") String shareds,
             @RequestParam(value = "converteds", defaultValue = "ALL") String converteds,
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
+            @RequestParam(value = "target", required = false, defaultValue = "ALL") String targetType,
             @ApiIgnore PageRequest pageable
     ) {
         if (userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(
-                workspaceUUID, userUUID, search, shareds, converteds, pageable.of(), null);
+                workspaceUUID, userUUID, search, shareds, converteds, pageable.of(), targetType);
         return ResponseEntity.ok(responseMessage);
     }
 
