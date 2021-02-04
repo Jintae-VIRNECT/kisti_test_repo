@@ -154,19 +154,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'view',
-      'serverRecord',
-      'serverRecordStatus',
-      'localRecord',
-      'localRecordStatus',
-      'allowLocalRecord',
-      'allowPointing',
-      'translate',
-      'languageCodes',
-      'modalSetting',
-      'useRecording',
-    ]),
+    ...mapGetters(['localRecord', 'localRecordStatus', 'allowLocalRecord']),
     localRecTimeOpt() {
       const options = localRecTime.map(time => {
         return {
