@@ -2,7 +2,7 @@
   <menu-button
     :text="$t('service.setting')"
     :active="modalSetting"
-    :disabled="!canRecord"
+    :disabled="!canSetting"
     :src="require('assets/image/ic_setting.svg')"
     @click="setting"
   ></menu-button>
@@ -17,7 +17,7 @@ export default {
   name: 'SettingMenu',
   mixins: [toolMixin, toastMixin],
   computed: {
-    ...mapGetters(['allowLocalRecord', 'modalSetting']),
+    ...mapGetters(['allowLocalRecord', 'modalSetting', 'useTranslate']),
     canRecord() {
       if (this.disabled) {
         return false
@@ -25,17 +25,27 @@ export default {
       if (this.account.roleType === ROLE.LEADER) {
         return true
       }
+      if (this.isSafari) {
+        return false
+      }
       if (this.allowLocalRecord) {
         return true
       } else {
         return false
       }
     },
+    canSetting() {
+      if (!this.canRecord && !this.useTranslate) {
+        return false
+      } else {
+        return true
+      }
+    },
   },
   methods: {
     ...mapActions(['showModalSetting']),
     setting() {
-      if (!this.canRecord) {
+      if (!this.canSetting) {
         // TODO: MESSAGE
         this.toastDefault(this.$t('service.record_blocked'))
         return

@@ -12,7 +12,7 @@
         <local-record :disabled="!hasMainView"></local-record>
         <local-record-list></local-record-list>
       </template>
-      <setting v-if="!isSafari || isLeader"></setting>
+      <setting v-if="isSettingVisible"></setting>
     </div>
   </div>
 </template>
@@ -43,7 +43,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'useRecording']),
+    ...mapGetters(['mainView', 'useRecording', 'useTranslate']),
     hasMainView() {
       return this.mainView && this.mainView.id
     },
@@ -52,6 +52,13 @@ export default {
     },
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isSettingVisible() {
+      if (this.isSafari && !this.isLeader && !this.useTranslate) {
+        return false
+      } else {
+        return true
+      }
     },
   },
 
