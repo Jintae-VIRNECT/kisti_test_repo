@@ -80,7 +80,6 @@ public class SwaggerConfiguration {
 			.globalResponseMessage(RequestMethod.DELETE, globalResponseMessage())
 			.select()
 			.apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.api"))
-			.apis(RequestHandlerSelectors.basePackage("com.virnect.dashboard.api"))
 			.paths(PathSelectors.any())
 			//.paths(PathSelectors.ant("/remote/**"))
 			.build()

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
@@ -23,6 +24,7 @@ import com.virnect.serviceserver.infra.utils.LogMessage;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/remote")
 public class AdminRestController {
     private static final String TAG = AdminRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/admin";
