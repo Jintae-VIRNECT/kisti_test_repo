@@ -17,8 +17,7 @@ import com.virnect.serviceserver.global.common.ApiResponse;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class AdminService {
 
 	private final SessionService sessionService;

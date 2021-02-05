@@ -51,8 +51,7 @@ import com.virnect.serviceserver.infra.utils.LogMessage;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class SessionServiceTemp {
 
 	private static final String TAG = SessionRestController.class.getSimpleName();

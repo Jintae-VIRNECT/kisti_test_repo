@@ -49,8 +49,7 @@ import com.virnect.serviceserver.dto.response.session.UploadResult;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class FileServiceTemp {
 
 	private final IFileManagementService fileManagementService;

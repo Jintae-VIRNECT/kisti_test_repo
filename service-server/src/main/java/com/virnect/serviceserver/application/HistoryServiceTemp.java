@@ -36,11 +36,9 @@ import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.infra.utils.LogMessage;
 
-
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class HistoryServiceTemp {
 
 	private static final String TAG = HistoryDataRepository.class.getSimpleName();

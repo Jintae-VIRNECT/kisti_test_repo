@@ -20,7 +20,6 @@ import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly=true)
 public class FileService {
     private static final String TAG = FileService.class.getSimpleName();
 

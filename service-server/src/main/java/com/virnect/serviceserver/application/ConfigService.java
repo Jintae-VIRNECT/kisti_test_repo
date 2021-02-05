@@ -22,8 +22,7 @@ import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ConfigService {
 
 	private static final String REST_CONFIG_PATH = "/remote/config";

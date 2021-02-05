@@ -41,8 +41,7 @@ import com.virnect.serviceserver.infra.utils.LogMessage;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ValidationService {
 
 	private static final String TAG = ValidationService.class.getSimpleName();

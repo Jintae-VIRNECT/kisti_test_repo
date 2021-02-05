@@ -25,8 +25,7 @@ import com.virnect.data.repository.RoomHistoryRepository;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class HistoryService {
 
 	private static final String TAG = HistoryService.class.getSimpleName();

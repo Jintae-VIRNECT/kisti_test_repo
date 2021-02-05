@@ -46,9 +46,7 @@ import com.virnect.serviceserver.global.common.ApiResponse;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-//@NoArgsConstructor
-@Transactional(readOnly=true)
+@RequiredArgsConstructor
 public class SessionService {
     private static final String TAG = SessionService.class.getSimpleName();
 

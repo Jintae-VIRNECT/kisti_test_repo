@@ -29,8 +29,7 @@ import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class MemberService {
 
 	private final ModelMapper modelMapper;
