@@ -1,36 +1,23 @@
 package com.virnect.serviceserver;
 
-import com.virnect.mediaserver.cdr.CDRLogger;
-import com.virnect.mediaserver.cdr.CDRLoggerFile;
-import com.virnect.mediaserver.cdr.CallDetailRecord;
-import com.virnect.mediaserver.config.MediaServerProperties;
-import com.virnect.mediaserver.core.SessionEventsHandler;
-import com.virnect.mediaserver.core.SessionManager;
-import com.virnect.mediaserver.core.TokenGenerator;
-import com.virnect.mediaserver.coturn.CoturnCredentialsService;
-import com.virnect.mediaserver.coturn.CoturnCredentialsServiceFactory;
-import com.virnect.mediaserver.kurento.core.KurentoParticipantEndpointConfig;
-import com.virnect.mediaserver.kurento.core.KurentoSessionEventsHandler;
-import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
-import com.virnect.mediaserver.kurento.kms.DummyLoadManager;
-import com.virnect.mediaserver.kurento.kms.FixedKmsManager;
-import com.virnect.mediaserver.kurento.kms.KmsManager;
-import com.virnect.mediaserver.kurento.kms.LoadManager;
-import com.virnect.mediaserver.recording.DummyRecordingDownloader;
-import com.virnect.mediaserver.recording.RecordingDownloader;
-import com.virnect.mediaserver.recording.service.RecordingManager;
-import com.virnect.mediaserver.rpc.RpcHandler;
-import com.virnect.mediaserver.rpc.RpcNotificationService;
-import com.virnect.mediaserver.utils.*;
-import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
+import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Semaphore;
 
-import com.virnect.service.FileService;
-import com.virnect.service.SessionService;
-import com.virnect.serviceserver.config.HttpHandshakeInterceptor;
-import com.virnect.serviceserver.config.RemoteServiceConfig;
-import com.virnect.serviceserver.data.SessionDataRepository;
-import com.virnect.serviceserver.session.ServiceSessionManager;
-import com.virnect.serviceserver.token.TokenGeneratorDefault;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
 import org.kurento.jsonrpc.server.JsonRpcConfigurer;
@@ -54,19 +41,39 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import javax.net.ssl.*;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Semaphore;
+import com.virnect.mediaserver.cdr.CDRLogger;
+import com.virnect.mediaserver.cdr.CDRLoggerFile;
+import com.virnect.mediaserver.cdr.CallDetailRecord;
+import com.virnect.mediaserver.config.MediaServerProperties;
+import com.virnect.mediaserver.core.SessionEventsHandler;
+import com.virnect.mediaserver.core.SessionManager;
+import com.virnect.mediaserver.core.TokenGenerator;
+import com.virnect.mediaserver.coturn.CoturnCredentialsService;
+import com.virnect.mediaserver.coturn.CoturnCredentialsServiceFactory;
+import com.virnect.mediaserver.kurento.core.KurentoParticipantEndpointConfig;
+import com.virnect.mediaserver.kurento.core.KurentoSessionEventsHandler;
+import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
+import com.virnect.mediaserver.kurento.kms.DummyLoadManager;
+import com.virnect.mediaserver.kurento.kms.FixedKmsManager;
+import com.virnect.mediaserver.kurento.kms.KmsManager;
+import com.virnect.mediaserver.kurento.kms.LoadManager;
+import com.virnect.mediaserver.recording.DummyRecordingDownloader;
+import com.virnect.mediaserver.recording.RecordingDownloader;
+import com.virnect.mediaserver.recording.service.RecordingManager;
+import com.virnect.mediaserver.rpc.RpcHandler;
+import com.virnect.mediaserver.rpc.RpcNotificationService;
+import com.virnect.mediaserver.utils.CommandExecutor;
+import com.virnect.mediaserver.utils.GeoLocationByIp;
+import com.virnect.mediaserver.utils.GeoLocationByIpDummy;
+import com.virnect.mediaserver.utils.MediaNodeStatusManager;
+import com.virnect.mediaserver.utils.MediaNodeStatusManagerDummy;
+import com.virnect.mediaserver.utils.QuarantineKiller;
+import com.virnect.mediaserver.utils.QuarantineKillerDummy;
+import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
+import com.virnect.serviceserver.application.ServiceSessionManager;
+import com.virnect.serviceserver.global.config.HttpHandshakeInterceptor;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
@@ -76,7 +83,6 @@ import java.util.concurrent.Semaphore;
 @ComponentScan(value = {
         "com.virnect.data",
         "com.virnect.file",
-        "com.virnect.service",
         "com.virnect.serviceserver"
 })
 @EntityScan(value = {
@@ -112,8 +118,15 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @Autowired
     ServiceSessionManager serviceSessionManager;
 
-    @Autowired
-    SessionDataRepository sessionDataRepository;
+    @Bean
+    public ModelMapper modelMapper() {
+        ModelMapper modelMapper = new ModelMapper();
+        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+        return modelMapper;
+    }
+
+    /*@Autowired
+    SessionDataRepository sessionDataRepository;*/
 
     /*@Bean
     @DependsOn("remoteServiceConfig")
@@ -122,14 +135,14 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         return new MediaServerConfig();
     }*/
 
-    @Bean
+    /*@Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
     }
 
-    /*@Bean
+    @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceProperties")
     public RemoteServiceConfig remoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
@@ -141,7 +154,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @DependsOn("remoteServiceConfig")
     public RemoteServiceProperties remoteServiceProperties() {
         return new RemoteServiceProperties();
-    }*/
+    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -153,7 +166,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @ConditionalOnMissingBean
     public SessionService sessionService() {
         return new SessionService();
-    }
+    }*/
 
     @Bean
     @ConditionalOnMissingBean
@@ -354,12 +367,12 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public static <T> Map<String, String> checkConfigProperties(Class<T> configClass) throws InterruptedException {
         ConfigurableApplicationContext app = SpringApplication.run(configClass, new String[] { "--spring.main.web-application-type=none" });
         RemoteServiceConfig config = app.getBean(RemoteServiceConfig.class);
-        List<com.virnect.serviceserver.config.RemoteServiceConfig.Error> errors = config.getConfigErrors();
+        List<com.virnect.serviceserver.global.config.RemoteServiceConfig.Error> errors = config.getConfigErrors();
 
         if (!errors.isEmpty()) {
             // @formatter:off
             String msg = "\n\n\n" + "   Configuration errors\n" + "   --------------------\n" + "\n";
-            for (com.virnect.serviceserver.config.RemoteServiceConfig.Error error : config.getConfigErrors()) {
+            for (com.virnect.serviceserver.global.config.RemoteServiceConfig.Error error : config.getConfigErrors()) {
                 msg += "   * ";
                 if (error.getProperty() != null) {
                     msg += "Property " + config.getPropertyName(error.getProperty());
@@ -462,6 +475,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         log.info(msg);
 
         //
-        sessionDataRepository.removeAllRoom();
+        //sessionDataRepository.removeAllRoom();
     }
 }

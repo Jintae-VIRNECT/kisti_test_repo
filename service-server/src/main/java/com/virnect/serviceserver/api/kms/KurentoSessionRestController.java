@@ -27,7 +27,7 @@ import com.virnect.mediaserver.core.Session;
 import com.virnect.mediaserver.core.SessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoMediaOptions;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
-import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

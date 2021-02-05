@@ -18,7 +18,7 @@
 package com.virnect.serviceserver.api.kms;
 
 import com.google.gson.JsonArray;
-import com.virnect.serviceserver.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

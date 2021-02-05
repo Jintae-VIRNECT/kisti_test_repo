@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.test.unit;
 
-import com.virnect.serviceserver.utils.Dotenv;
+import com.virnect.serviceserver.infra.utils.Dotenv;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
