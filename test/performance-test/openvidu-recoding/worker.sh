@@ -2,23 +2,20 @@
 
 NAME=$1
 RESOLUTION=$2 # one of "640x480", "1280x720", "1920x1080"
+LAYOUT_URL=$3
 
-IMAGE=openvidu/openvidu-recording
-TAG=2.15.0
-SHORT_RESOLUTION=$(echo $RESOLUTION | awk -F 'x' '{print $2}')p
-
-URL=http://www.ix264.com/assets/videos/big_buck_bunny_${SHORT_RESOLUTION}.mp4
-# URL=https://www.youtube.com/embed/JMuzlEQz3uo?start=1&fs=1&autoplay=1
+IMAGE=rm-recordserver-agent
+TAG=latest
 
 # RECDIR=/Users/hissinger/dev/virnect/RM-RecordServer/test/recordings
-RECDIR=//d/recordings
+RECDIR=/home/esahn/dev/virnect/RM-RecordServer/test/performance-test/openvidu-recoding/recordings
 
 if [ "$(docker ps -q -f name=openvidu-recording-${NAME})" ]; then
   docker rm -f openvidu-recording-${NAME}
 fi
 
 docker run -d --rm \
-  -e URL=${URL} \
+  -e URL=${LAYOUT_URL} \
   -e ONLY_VIDEO=false \
   -e RESOLUTION=${RESOLUTION} \
   -e FRAMERATE=20 \
