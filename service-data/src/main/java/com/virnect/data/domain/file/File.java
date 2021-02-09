@@ -7,6 +7,8 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import com.virnect.data.domain.BaseTimeEntity;
+
 //@DynamicUpdate
 @Entity
 @Getter
