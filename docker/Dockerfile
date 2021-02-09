@@ -3,8 +3,8 @@ FROM openjdk:8 AS builder
 
 COPY gradlew .
 COPY gradle gradle
-COPY build.gradle.kts .
-COPY settings.gradle.kts .
+COPY build.gradle .
+COPY settings.gradle .
 
 COPY service-client service-client
 COPY service-java-client service-java-client
