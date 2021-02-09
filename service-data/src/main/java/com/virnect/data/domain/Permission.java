@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;

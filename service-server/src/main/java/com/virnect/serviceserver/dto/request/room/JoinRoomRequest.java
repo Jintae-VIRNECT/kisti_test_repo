@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.dto.request.room;
 
-import com.virnect.data.dao.DeviceType;
-import com.virnect.data.dao.MemberType;
+import com.virnect.data.domain.DeviceType;
+import com.virnect.data.domain.member.MemberType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

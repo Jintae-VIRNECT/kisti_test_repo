@@ -1,11 +1,10 @@
-package com.virnect.data.repository;
+package com.virnect.data.dao;
 
-import com.virnect.data.dao.RoomHistory;
+import com.virnect.data.domain.room.RoomHistory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 

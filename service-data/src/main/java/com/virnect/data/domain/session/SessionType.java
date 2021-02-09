@@ -1,7 +1,6 @@
-package com.virnect.data.dao;
+package com.virnect.data.domain.session;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public enum SessionType {

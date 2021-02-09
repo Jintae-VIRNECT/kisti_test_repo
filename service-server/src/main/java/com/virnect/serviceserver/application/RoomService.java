@@ -5,20 +5,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonObject;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.Member;
-import com.virnect.data.dao.MemberStatus;
-import com.virnect.data.dao.MemberType;
-import com.virnect.data.dao.Room;
-import com.virnect.data.dao.SessionType;
-import com.virnect.data.repository.RoomRepository;
+import com.virnect.data.domain.member.Member;
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.domain.member.MemberType;
+import com.virnect.data.domain.room.Room;
+import com.virnect.data.domain.session.SessionType;
+import com.virnect.data.dao.RoomRepository;
 import com.virnect.serviceserver.api.SessionRestController;
 import com.virnect.serviceserver.dao.DataProcess;
 import com.virnect.serviceserver.dao.SessionDataRepository;

@@ -1,8 +1,8 @@
-package com.virnect.data.repository;
+package com.virnect.data.dao;
 
-import com.virnect.data.dao.MemberHistory;
-import com.virnect.data.dao.RoomHistory;
-import com.virnect.data.dao.SessionType;
+import com.virnect.data.domain.member.MemberHistory;
+import com.virnect.data.domain.room.RoomHistory;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
 

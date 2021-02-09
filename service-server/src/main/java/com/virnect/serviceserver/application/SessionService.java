@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.application;
 
-import static com.virnect.data.repository.RoomSpecifications.*;
+import static com.virnect.data.dao.RoomSpecifications.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -15,27 +15,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.Company;
-import com.virnect.data.dao.DeviceType;
-import com.virnect.data.dao.Member;
-import com.virnect.data.dao.MemberHistory;
-import com.virnect.data.dao.MemberStatus;
-import com.virnect.data.dao.MemberType;
-import com.virnect.data.dao.Room;
-import com.virnect.data.dao.RoomHistory;
-import com.virnect.data.dao.RoomStatus;
-import com.virnect.data.dao.SessionProperty;
-import com.virnect.data.dao.SessionPropertyHistory;
-import com.virnect.data.dao.SessionType;
-import com.virnect.data.repository.CompanyRepository;
-import com.virnect.data.repository.MemberHistoryRepository;
-import com.virnect.data.repository.MemberRepository;
-import com.virnect.data.repository.RoomHistoryRepository;
-import com.virnect.data.repository.RoomRepository;
+import com.virnect.data.domain.Company;
+import com.virnect.data.domain.DeviceType;
+import com.virnect.data.domain.member.Member;
+import com.virnect.data.domain.member.MemberHistory;
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.domain.member.MemberType;
+import com.virnect.data.domain.room.Room;
+import com.virnect.data.domain.room.RoomHistory;
+import com.virnect.data.domain.room.RoomStatus;
+import com.virnect.data.domain.session.SessionProperty;
+import com.virnect.data.domain.session.SessionPropertyHistory;
+import com.virnect.data.domain.session.SessionType;
+import com.virnect.data.dao.CompanyRepository;
+import com.virnect.data.dao.MemberHistoryRepository;
+import com.virnect.data.dao.MemberRepository;
+import com.virnect.data.dao.RoomHistoryRepository;
+import com.virnect.data.dao.RoomRepository;
 import com.virnect.serviceserver.dto.request.room.InviteRoomRequest;
 import com.virnect.serviceserver.dto.request.room.JoinRoomRequest;
 import com.virnect.serviceserver.dto.request.room.ModifyRoomInfoRequest;

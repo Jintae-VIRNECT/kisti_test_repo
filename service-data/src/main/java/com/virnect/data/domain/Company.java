@@ -1,9 +1,11 @@
-package com.virnect.data.dao;
+package com.virnect.data.domain;
 
 import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+
+import com.virnect.data.domain.session.SessionType;
 
 @Entity
 @Getter

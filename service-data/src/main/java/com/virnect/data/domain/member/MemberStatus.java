@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.domain.member;
 
 public enum MemberStatus {
     //ONLINE,

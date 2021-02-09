@@ -10,7 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import com.virnect.data.dao.SessionType;
+import com.virnect.data.domain.session.SessionType;
 
 @Getter
 @Setter

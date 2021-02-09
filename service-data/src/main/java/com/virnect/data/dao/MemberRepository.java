@@ -1,6 +1,6 @@
-package com.virnect.data.repository;
+package com.virnect.data.dao;
 
-import com.virnect.data.dao.Member;
+import com.virnect.data.domain.member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

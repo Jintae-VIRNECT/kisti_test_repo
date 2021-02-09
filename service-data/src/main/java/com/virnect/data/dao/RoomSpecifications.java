@@ -1,6 +1,12 @@
-package com.virnect.data.repository;
+package com.virnect.data.dao;
 
-import com.virnect.data.dao.*;
+import com.virnect.data.domain.member.Member;
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.domain.room.Room;
+import com.virnect.data.domain.room.RoomStatus;
+import com.virnect.data.domain.session.SessionProperty;
+import com.virnect.data.domain.session.SessionType;
+
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Join;

@@ -13,14 +13,12 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.Room;
-import com.virnect.data.repository.RoomRepository;
+import com.virnect.data.domain.room.Room;
+import com.virnect.data.dao.RoomRepository;
 import com.virnect.file.dao.File;
 import com.virnect.file.FileType;
 import com.virnect.file.dao.RecordFile;

@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.domain;
 
 public enum DeviceType {
     UNKNOWN,

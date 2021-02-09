@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.domain.member;
 
 import lombok.*;
 import org.hibernate.envers.Audited;
@@ -6,25 +6,20 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-/**
- * Member Domain Model Class
- * DATE:
- * AUTHOR:
- * EMAIL:
- * DESCRIPTION:
- *
- */
+import com.virnect.data.domain.BaseTimeEntity;
+import com.virnect.data.domain.DeviceType;
+import com.virnect.data.domain.room.RoomHistory;
+
 @Entity
 @Getter
 @Setter
-@Table(name = "members")
-//@EqualsAndHashCode(of = {"id", "uuid"}, callSuper = false)
+@Audited
+@Table(name = "members_history")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity {
-
+public class MemberHistory extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "member_id", nullable = false)
+    @Column(name = "member_history_id", nullable = false)
     private Long id;
 
     @Column(name = "workspace_id", nullable = false)
@@ -33,8 +28,8 @@ public class Member extends BaseTimeEntity {
     @Column(name = "uuid", nullable = false)
     private String uuid;
 
-    @Column(name = "connection_id", nullable = false)
-    private String connectionId;
+   /* @Column(name = "email", nullable = false)
+    private String email;*/
 
     @Column(name = "member_type", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -43,10 +38,6 @@ public class Member extends BaseTimeEntity {
     @Column(name = "device_type", nullable = false)
     @Enumerated(EnumType.STRING)
     private DeviceType deviceType;
-
-    @Column(name = "member_status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private MemberStatus memberStatus;
 
     @Column(name = "session_id", nullable = false)
     private String sessionId;
@@ -60,44 +51,48 @@ public class Member extends BaseTimeEntity {
     @Column(name = "duration_sec", nullable = false)
     private Long durationSec;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "room_id")
-    private Room room;
+    @Column(name = "history_deleted", nullable = false)
+    private boolean historyDeleted;
+
+    @ManyToOne(targetEntity = RoomHistory.class, fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_history_id")
+    private RoomHistory roomHistory;
 
     @Builder
-    public Member(
-            Room room,
+    public MemberHistory(
+            RoomHistory roomHistory,
             MemberType memberType,
+            DeviceType deviceType,
             String workspaceId,
             String uuid,
-            String sessionId
+            String sessionId,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            Long durationSec
     ) {
-        this.room = room;
+        this.roomHistory = roomHistory;
         this.memberType = memberType;
+        this.deviceType = deviceType;
         this.workspaceId = workspaceId;
         this.uuid = uuid;
+        //this.email = email;
         this.sessionId = sessionId;
-
-        // default set
-        this.deviceType = DeviceType.UNKNOWN;
-        this.memberStatus = MemberStatus.UNLOAD;
-        this.connectionId = "";
-
-        LocalDateTime now = LocalDateTime.now();
-        this.startDate = now;
-        this.endDate = now;
-        this.durationSec = 0L;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.durationSec = durationSec;
+        this.historyDeleted = false;
     }
 
     @Override
     public String toString() {
-        return "Member{" +
+        return "MemberHistory{" +
                 "id=" + id +
                 ", memberType='" + memberType + '\'' +
                 ", deviceType='" + deviceType + '\'' +
-                ", memberStatus='" + memberStatus + '\'' +
                 ", uuid='" + uuid + '\'' +
+                //", email='" + email + '\'' +
                 ", sessionId='" + sessionId + '\'' +
                 '}';
     }
+
 }

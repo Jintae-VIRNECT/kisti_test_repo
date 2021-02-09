@@ -1,6 +1,6 @@
-package com.virnect.data.repository;
+package com.virnect.data.dao;
 
-import com.virnect.data.dao.Company;
+import com.virnect.data.domain.Company;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

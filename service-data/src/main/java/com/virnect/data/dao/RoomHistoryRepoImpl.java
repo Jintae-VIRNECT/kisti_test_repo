@@ -1,4 +1,4 @@
-package com.virnect.data.repository;
+package com.virnect.data.dao;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

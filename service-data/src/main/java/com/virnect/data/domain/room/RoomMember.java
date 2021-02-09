@@ -1,5 +1,6 @@
-package com.virnect.data.dao;
+package com.virnect.data.domain.room;
 
+import com.virnect.data.domain.BaseTimeEntity;
 
 /*@Entity
 @Getter

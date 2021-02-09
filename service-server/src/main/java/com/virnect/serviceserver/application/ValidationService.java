@@ -10,19 +10,17 @@ import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.Company;
-import com.virnect.data.dao.Language;
-import com.virnect.data.dao.SessionType;
-import com.virnect.data.repository.CompanyRepository;
+import com.virnect.data.domain.Company;
+import com.virnect.data.domain.Language;
+import com.virnect.data.domain.session.SessionType;
+import com.virnect.data.dao.CompanyRepository;
 import com.virnect.serviceserver.application.license.LicenseRestService;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.dto.constraint.CompanyConstants;
