@@ -46,6 +46,7 @@ import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.error.exception.RestServiceException;
 import com.virnect.serviceserver.global.common.ApiResponse;
 import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.serviceserver.infra.utils.PushMessageClient;
 
 @Slf4j
 @RestController
@@ -63,6 +64,8 @@ public class SessionRestController {
     //private final ServiceSessionManager serviceSessionManager;
 
     private RestTemplate restTemplate;
+
+    private final PushMessageClient pushMessageClient;
 
     private final SessionServiceTemp sessionService;
     private final RoomService roomService;
@@ -154,11 +157,11 @@ public class SessionRestController {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-		/*ApiResponse<PushResponse> response = this.pushMessageClient.sendPush(pushSendRequest);
-		return ResponseEntity.ok(response);*/
+		ApiResponse<PushResponse> response = this.pushMessageClient.sendPush(pushSendRequest);
+		return ResponseEntity.ok(response);
 
-        PushResponse responseData = sessionService.sendPush(pushSendRequest);
-        return ResponseEntity.ok(new ApiResponse(responseData));
+        /*PushResponse responseData = sessionService.sendPush(pushSendRequest);
+        return ResponseEntity.ok(new ApiResponse(responseData));*/
     }
 
     /**

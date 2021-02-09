@@ -27,7 +27,7 @@ public class PushMessageClient {
     //private final ObjectMapper mapper = new ObjectMapper();\
     private final ObjectMapper mapper;
 
-    //private PushSendRequest pushSendRequest;
+    private PushSendRequest pushSendRequest;
 
     private final MessageRestService messageRestService;
 
@@ -44,7 +44,7 @@ public class PushMessageClient {
         String userId,
         List<String> targetUserIds
     ) {
-        PushSendRequest pushSendRequest = new PushSendRequest();
+        pushSendRequest = new PushSendRequest();
         pushSendRequest.setService(pushService);
         pushSendRequest.setEvent(pushEvent);
         pushSendRequest.setWorkspaceId(workspaceId);
@@ -67,8 +67,6 @@ public class PushMessageClient {
         inviteRoomContents.setProfile(profile);
         inviteRoomContents.setLeaderId(leaderId);
 
-        PushSendRequest pushSendRequest = new PushSendRequest();
-
         try {
             String jsonString = mapper.writeValueAsString(inviteRoomContents);
             pushSendRequest.setContents(mapper.readValue(jsonString, new TypeReference<Map<Object, Object>>() {}));
@@ -80,16 +78,13 @@ public class PushMessageClient {
     }
 
     public ApiResponse<PushResponse> sendPushEvict() {
-
-        PushSendRequest pushSendRequest = new PushSendRequest();
-
         pushSendRequest.setContents(new HashMap<>());
         return this.messageRestService.sendPush(pushSendRequest);
     }
 
-    /*public ApiResponse<PushResponse> sendPush(PushSendRequest pushSendRequest) {
+    public ApiResponse<PushResponse> sendPush(PushSendRequest pushSendRequest) {
         return this.messageRestService.sendPush(pushSendRequest);
-    }*/
+    }
 
     /*public PushSendRequest sendInviteContents(String sessionId,
                                              String title,

@@ -185,7 +185,6 @@ public class RoomService {
 	) {
 
 		ApiResponse<RoomResponse> responseData;
-
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
 			responseData = new ApiResponse<>(
