@@ -11,7 +11,6 @@ COPY service-java-client service-java-client
 COPY service-kms service-kms
 
 COPY service-data service-data
-COPY service-file-data service-file-data
 
 COPY service-server service-server
 COPY virnect.pfx .
