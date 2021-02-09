@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.application;
 
-import static com.virnect.data.repository.HistorySpecifications.*;
+import static com.virnect.data.dao.HistorySpecifications.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,18 +10,16 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.MemberHistory;
-import com.virnect.data.dao.MemberStatus;
-import com.virnect.data.dao.MemberType;
-import com.virnect.data.dao.RoomHistory;
-import com.virnect.data.repository.MemberHistoryRepository;
-import com.virnect.data.repository.RoomHistoryRepository;
+import com.virnect.data.domain.member.MemberHistory;
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.domain.member.MemberType;
+import com.virnect.data.domain.room.RoomHistory;
+import com.virnect.data.dao.MemberHistoryRepository;
+import com.virnect.data.dao.RoomHistoryRepository;
 import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
 import com.virnect.serviceserver.dao.HistoryDataRepository;
 import com.virnect.serviceserver.dto.request.room.RoomHistoryDeleteRequest;

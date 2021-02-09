@@ -14,10 +14,10 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.MemberHistory;
-import com.virnect.data.dao.MemberStatus;
-import com.virnect.data.dao.MemberType;
-import com.virnect.data.dao.RoomHistory;
+import com.virnect.data.domain.member.MemberHistory;
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.domain.member.MemberType;
+import com.virnect.data.domain.room.RoomHistory;
 import com.virnect.serviceserver.application.HistoryService;
 import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
 import com.virnect.serviceserver.dto.request.room.RoomHistoryDeleteRequest;

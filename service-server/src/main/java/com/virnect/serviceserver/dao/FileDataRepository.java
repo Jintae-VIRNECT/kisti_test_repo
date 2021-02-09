@@ -18,10 +18,10 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.Room;
-import com.virnect.file.FileType;
-import com.virnect.file.dao.File;
-import com.virnect.file.dao.RecordFile;
+import com.virnect.data.domain.room.Room;
+import com.virnect.data.domain.file.FileType;
+import com.virnect.data.domain.file.File;
+import com.virnect.data.domain.file.RecordFile;
 import com.virnect.serviceserver.application.FileService;
 import com.virnect.serviceserver.application.SessionService;
 import com.virnect.serviceserver.application.user.UserRestService;

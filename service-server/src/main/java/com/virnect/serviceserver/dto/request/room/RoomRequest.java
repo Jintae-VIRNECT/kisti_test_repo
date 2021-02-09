@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.dto.request.room;
 
-import com.virnect.data.dao.SessionType;
+import com.virnect.data.domain.session.SessionType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

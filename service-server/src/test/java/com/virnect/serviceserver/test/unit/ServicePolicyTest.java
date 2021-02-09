@@ -2,7 +2,7 @@ package com.virnect.serviceserver.test.unit;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.virnect.data.dao.SessionType;
+import com.virnect.data.domain.session.SessionType;
 import com.virnect.serviceserver.dto.response.LanguageCode;
 import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
 import com.virnect.serviceserver.infra.utils.JsonUtil;

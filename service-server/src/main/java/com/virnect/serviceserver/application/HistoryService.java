@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.application;
 
-import static com.virnect.data.repository.HistorySpecifications.*;
+import static com.virnect.data.dao.HistorySpecifications.*;
 import static org.springframework.data.jpa.domain.Specification.*;
 
 import java.util.List;
@@ -10,14 +10,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.MemberHistory;
-import com.virnect.data.dao.RoomHistory;
-import com.virnect.data.repository.MemberHistoryRepository;
-import com.virnect.data.repository.RoomHistoryRepository;
+import com.virnect.data.domain.member.MemberHistory;
+import com.virnect.data.domain.room.RoomHistory;
+import com.virnect.data.dao.MemberHistoryRepository;
+import com.virnect.data.dao.RoomHistoryRepository;
 
 /**
  * Do some processing for the request.

@@ -1,14 +1,12 @@
 package com.virnect.serviceserver.application;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.Company;
-import com.virnect.data.dao.Language;
+import com.virnect.data.domain.Company;
+import com.virnect.data.domain.Language;
 import com.virnect.serviceserver.dto.request.company.CompanyRequest;
 import com.virnect.serviceserver.dto.request.company.CompanyResponse;
 import com.virnect.serviceserver.dto.request.room.LanguageRequest;
