@@ -1,10 +1,12 @@
-package com.virnect.file.dao;
+package com.virnect.data.domain.file;
 
 import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import com.virnect.data.domain.BaseTimeEntity;
 
 @Entity
 @Getter

@@ -1,4 +1,4 @@
-package com.virnect.file.dao;
+package com.virnect.data.domain.file;
 
 
 import lombok.*;
