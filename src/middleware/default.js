@@ -1,13 +1,12 @@
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
+import { url } from '@/plugins/context'
 import { api } from '@/plugins/axios'
 
-export default async function ({ req, redirect, error, $config }) {
+export default async function ({ req, redirect, error }) {
   if (process.server) {
-    const LOGIN_SITE_URL = urls.console[$config.VIRNECT_ENV]
     // 사용자가 로그인을 하지 않은 경우.
     if (!req.headers.cookie || !req.headers.cookie.match('accessToken=')) {
       return redirect(
-        `${LOGIN_SITE_URL}?continue=${encodeURIComponent(
+        `${url.console}?continue=${encodeURIComponent(
           req.headers.host + req.originalUrl,
         )}`,
       )
@@ -20,7 +19,7 @@ export default async function ({ req, redirect, error, $config }) {
       // 비정상 토큰
       if (/^Error: (8003|8005)/.test(e)) {
         return redirect(
-          `${LOGIN_SITE_URL}?continue=${encodeURIComponent(
+          `${url.console}?continue=${encodeURIComponent(
             req.headers.host + req.originalUrl,
           )}`,
         )
