@@ -4,6 +4,11 @@ import LocalRecorder from 'utils/localRecorder'
 import { mapGetters, mapActions } from 'vuex'
 import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 
+import IDBHelper from 'utils/idbHelper'
+import { v4 as uuidv4 } from 'uuid'
+
+const logType = 'LocalRecorder(util)'
+
 export default {
   name: 'LocalRecordMenu',
   mixins: [toastMixin],
@@ -16,6 +21,13 @@ export default {
       audioContextDes: null,
       audioSourceMap: new Map(),
       screenStream: null,
+
+      fileCount: 0,
+      today: null,
+      groupId: null,
+      fileName: '',
+      totalPlayTime: 0,
+      timeMark: 0,
     }
   },
   computed: {
@@ -115,8 +127,64 @@ export default {
     async startLocalRecord() {
       this.recorder = new LocalRecorder()
       try {
+        await IDBHelper.initIDB()
+        await this.checkQuota()
+
         await this.initRecorder()
+
+        this.fileCount = 0
+
+        this.groupId = uuidv4()
+        this.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
+
+        this.recorder.setOndataAvailableCallBack(async blob => {
+          //create private uuid for media chunk
+          const privateId = uuidv4()
+
+          //make file name
+          const fileNumber = this.getFileNumberString(this.fileCount)
+          this.fileName =
+            this.today + '_' + fileNumber + '_' + this.account.nickname + '.mp4'
+
+          //get media chunk play time
+          const currentTime = performance.now()
+          const playTime = (currentTime - this.timeMark) / 1000
+          this.timeMark = currentTime
+
+          this.totalPlayTime = this.totalPlayTime + playTime / 60
+
+          try {
+            await this.checkQuota()
+            //insert IDB
+            IDBHelper.addMediaChunk(
+              this.groupId,
+              privateId,
+              this.fileName,
+              playTime,
+              blob.size,
+              blob,
+              this.account.uuid,
+              this.account.nickname,
+              this.roomInfo.title,
+              this.roomInfo.sessionId,
+            )
+          } catch (err) {
+            console.error(err)
+            // this.stopSignal()
+            this.stopLocalRecord()
+            await IDBHelper.deleteGroupMediaChunk(this.groupId)
+          }
+
+          if (this.totalPlayTime >= this.localRecord.time) {
+            // this.stopSignal()
+            this.stopLocalRecord()
+          }
+
+          this.fileCount++
+        })
         this.recorder.startRecord()
+        this.timeMark = performance.now()
+
         this.setLocalRecordStatus('START')
         this.toastDefault(this.$t('service.record_start_message'))
       } catch (err) {
@@ -159,7 +227,7 @@ export default {
      */
     async initRecorder() {
       const config = {}
-      config.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
+      // config.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
 
       if (this.localRecordTarget === RECORD_TARGET.WORKER) {
         config.options = {
@@ -200,14 +268,6 @@ export default {
         config.nickname = this.account.nickname
         config.userId = this.account.uuid
       }
-
-      this.recorder.setStopSignal(() => {
-        this.stopLocalRecord()
-      })
-
-      this.recorder.setNoQuotaCallback(() => {
-        this.toastDefault(this.$t('service.record_fail_memory'))
-      })
 
       this.recorder.setConfig(config)
 
@@ -340,6 +400,30 @@ export default {
           this.audioSourceMap.get(conId).disconnect()
           this.audioSourceMap.delete(conId)
         }
+      }
+    },
+
+    /**
+     * get file number 0 ~ 59
+     * 60 over is not exits
+     */
+    getFileNumberString(number) {
+      let count = ''
+      if (number < 10) {
+        count = '0' + number
+      } else {
+        count = number.toString(10)
+      }
+      return count
+    },
+
+    async checkQuota() {
+      if ((await IDBHelper.checkQuota()) === false) {
+        this.logger(logType, 'quota overed cancel recording')
+        this.toastDefault(this.$t('service.record_fail_memory'))
+        throw 'quota overed'
+      } else {
+        return true
       }
     },
   },
