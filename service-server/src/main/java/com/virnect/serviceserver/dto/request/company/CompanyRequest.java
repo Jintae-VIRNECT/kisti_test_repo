@@ -9,7 +9,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.data.dao.SessionType;
+import com.virnect.data.domain.session.SessionType;
 import com.virnect.serviceserver.dto.request.room.LanguageRequest;
 
 @Getter

@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.dto.response.company;
 
-import com.virnect.data.dao.SessionType;
+import com.virnect.data.domain.session.SessionType;
 import com.virnect.serviceserver.dto.response.LanguageCode;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -11,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.virnect.data.dao.SessionType.PRIVATE;
+import static com.virnect.data.domain.session.SessionType.PRIVATE;
 
 @Getter
 @Setter

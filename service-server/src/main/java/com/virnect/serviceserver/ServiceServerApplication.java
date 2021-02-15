@@ -82,16 +82,13 @@ import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 //@EnableConfigurationProperties(RemoteServiceProperties.class)
 @ComponentScan(value = {
         "com.virnect.data",
-        "com.virnect.file",
         "com.virnect.serviceserver"
 })
 @EntityScan(value = {
-        "com.virnect.data.dao",
-        "com.virnect.file.dao"
+        "com.virnect.data.domain"
 })
 @EnableJpaRepositories(value = {
-        "com.virnect.data.repository",
-        "com.virnect.file.repository"
+        "com.virnect.data.dao"
 })
 //@PropertySource(value = {"classpath:feign-application.properties", "classpath:application.properties"})
 @SpringBootApplication

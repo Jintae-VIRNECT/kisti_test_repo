@@ -1,7 +1,11 @@
 package com.virnect.serviceserver.dto.request.room;
 
+<<<<<<< HEAD
 import com.virnect.data.dao.RestrictedMode;
 import com.virnect.data.dao.SessionType;
+=======
+import com.virnect.data.domain.session.SessionType;
+>>>>>>> 788943992cbe8408ee1822e4a5472230ace081d5
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.dto.response.room;
 
-import com.virnect.data.dao.SessionType;
+import com.virnect.data.domain.session.SessionType;
 import com.virnect.serviceserver.dto.response.member.MemberInfoResponse;
 
 import io.swagger.annotations.ApiModel;

@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.infra.file;
 
-import com.virnect.file.FileType;
+import com.virnect.data.domain.file.FileType;
 import com.virnect.serviceserver.dto.response.session.UploadResult;
 
 import org.springframework.web.multipart.MultipartFile;
