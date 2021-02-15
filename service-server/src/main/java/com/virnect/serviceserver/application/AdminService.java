@@ -56,13 +56,17 @@ public class AdminService {
 
 		company.setLanguage(language);
 
-		if (sessionService.createCompany(company) != null) {
-			CompanyResponse companyResponse = new CompanyResponse();
-			companyResponse.setWorkspaceId(company.getWorkspaceId());
-			companyResponse.setLicenseName(company.getLicenseName());
-			companyResponse.setSessionType(company.getSessionType());
-			responseData = new ApiResponse<>(companyResponse);
-		} else {
+		try{
+			if (sessionService.createCompany(company) != null) {
+				CompanyResponse companyResponse = new CompanyResponse();
+				companyResponse.setWorkspaceId(company.getWorkspaceId());
+				companyResponse.setLicenseName(company.getLicenseName());
+				companyResponse.setSessionType(company.getSessionType());
+				responseData = new ApiResponse<>(companyResponse);
+			} else {
+				responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
+			}
+		} catch (Exception e) {
 			responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 		}
 		return responseData;
