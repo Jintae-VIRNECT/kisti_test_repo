@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.dto.response.room;
 
+import com.virnect.data.dao.RestrictedMode;
 import com.virnect.serviceserver.dto.response.CoturnResponse;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -26,4 +27,8 @@ public class RoomResponse {
 
     @ApiModelProperty(value = "Remote Server Websocket Address", position = 3, example = "wss://")
     private String wss = "";
+
+    @ApiModelProperty(value = "Camera Operation Type", position = 4, example = "OFF")
+    private RestrictedMode restrictedMode;
+
 }

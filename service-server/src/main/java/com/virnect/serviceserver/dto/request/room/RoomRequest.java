@@ -1,5 +1,6 @@
 package com.virnect.serviceserver.dto.request.room;
 
+import com.virnect.data.dao.RestrictedMode;
 import com.virnect.data.dao.SessionType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -37,6 +38,9 @@ public class RoomRequest {
     @ApiModelProperty(value = "Workspace Identifier", position = 7, example = "40f9bbee9d85dca7a34a0dd205aae718")
     @NotNull
     private String workspaceId;
+
+    @ApiModelProperty(value = "Remote Room camera operation Type", position = 8, example = "ON")
+    private RestrictedMode restrictedMode;
 
     /**
      * test17@test.com 4705cf50e6d02c59b0eef9591666e2a3

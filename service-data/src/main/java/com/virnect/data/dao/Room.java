@@ -1,7 +1,6 @@
 package com.virnect.data.dao;
 
 import lombok.*;
-import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -57,6 +56,9 @@ public class Room extends BaseTimeEntity {
     @Column(name = "active_at")
     private LocalDateTime activeDate;
 
+    @Column(name = "restricted_mode")
+    private RestrictedMode restrictedMode;
+
     //@ElementCollection
     //private Set<Member> members = new HashSet<>();
     //private Collection<Member> Member;
@@ -75,6 +77,7 @@ public class Room extends BaseTimeEntity {
                 String workspaceId,
                 String licenseName,
                 int maxUserCount,
+                RestrictedMode restrictedMode,
                 SessionProperty sessionProperty
                       ) {
         this.sessionId = sessionId;
@@ -85,6 +88,7 @@ public class Room extends BaseTimeEntity {
         this.licenseName = licenseName;
         this.maxUserCount = maxUserCount;
         this.sessionProperty = sessionProperty;
+        this.restrictedMode = restrictedMode;
 
         //default setting
         this.profile = "default";
