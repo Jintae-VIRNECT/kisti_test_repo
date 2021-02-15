@@ -37,6 +37,7 @@ public class AdminService {
 			.sttStreaming(companyRequest.isSttStreaming())
 			.sttSync(companyRequest.isSttSync())
 			.tts(companyRequest.isTts())
+			.restrictedMode(companyRequest.isRestrictedMode())
 			.build();
 
 		LanguageRequest languageRequest = companyRequest.getLanguage();

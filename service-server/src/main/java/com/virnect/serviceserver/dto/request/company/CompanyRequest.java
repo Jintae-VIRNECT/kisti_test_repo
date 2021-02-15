@@ -55,4 +55,7 @@ public class CompanyRequest {
 
     @ApiModelProperty(value = "Support translation languages", position = 9)
     private LanguageRequest language;
+
+    @ApiModelProperty(value = "Support Restricted Mode", position = 10)
+    private boolean restrictedMode;
 }
