@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.virnect.remote.dto.rest.StopRecordingResponse;
-import com.virnect.remote.global.common.ApiResponse;
+import com.virnect.data.dto.rest.StopRecordingResponse;
+import com.virnect.data.global.common.ApiResponse;
 
 @FeignClient(name = "${feign.record-prefix}", url = "${feign.record-url}", fallbackFactory = RecordRestFallbackFactory.class)
 public interface RecordRestService {

@@ -5,9 +5,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.virnect.serviceserver.dto.rest.UserInfoListResponse;
-import com.virnect.serviceserver.dto.rest.UserInfoResponse;
-import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.data.dto.rest.UserInfoListResponse;
+import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.global.common.ApiResponse;
 
 @FeignClient(name = "${feign.user-prefix}", url = "${feign.user-url}", fallbackFactory = UserRestFallbackFactory.class)
 public interface UserRestService {

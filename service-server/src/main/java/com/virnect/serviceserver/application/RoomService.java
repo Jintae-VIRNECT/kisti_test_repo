@@ -20,20 +20,20 @@ import com.virnect.data.dao.RoomRepository;
 import com.virnect.serviceserver.api.SessionRestController;
 import com.virnect.serviceserver.dao.DataProcess;
 import com.virnect.serviceserver.dao.SessionDataRepository;
-import com.virnect.serviceserver.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.dto.constraint.PushConstants;
-import com.virnect.serviceserver.dto.push.SendSignalRequest;
-import com.virnect.serviceserver.dto.request.room.InviteRoomRequest;
-import com.virnect.serviceserver.dto.request.room.JoinRoomRequest;
-import com.virnect.serviceserver.dto.request.room.KickRoomRequest;
-import com.virnect.serviceserver.dto.request.room.RoomRequest;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.response.room.InviteRoomResponse;
-import com.virnect.serviceserver.dto.response.room.KickRoomResponse;
-import com.virnect.serviceserver.dto.response.room.RoomResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.data.dto.constraint.LicenseItem;
+import com.virnect.data.dto.constraint.PushConstants;
+import com.virnect.data.dto.push.SendSignalRequest;
+import com.virnect.data.dto.request.room.InviteRoomRequest;
+import com.virnect.data.dto.request.room.JoinRoomRequest;
+import com.virnect.data.dto.request.room.KickRoomRequest;
+import com.virnect.data.dto.request.room.RoomRequest;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.room.InviteRoomResponse;
+import com.virnect.data.dto.response.room.KickRoomResponse;
+import com.virnect.data.dto.response.room.RoomResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
 
 @Slf4j
 @Service

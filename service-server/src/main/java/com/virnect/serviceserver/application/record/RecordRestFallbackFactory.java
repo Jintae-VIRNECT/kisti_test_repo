@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.application.record;
 
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.rest.StopRecordingResponse;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.dto.rest.StopRecordingResponse;
 
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;

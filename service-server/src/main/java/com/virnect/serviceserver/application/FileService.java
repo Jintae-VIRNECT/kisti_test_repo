@@ -14,8 +14,8 @@ import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.RecordFile;
 import com.virnect.data.dao.FileRepository;
 import com.virnect.data.dao.RecordFileRepository;
-import com.virnect.serviceserver.dto.request.file.FileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
+import com.virnect.data.dto.request.file.FileUploadRequest;
+import com.virnect.data.dto.request.file.RecordFileUploadRequest;
 
 @Slf4j
 @Service

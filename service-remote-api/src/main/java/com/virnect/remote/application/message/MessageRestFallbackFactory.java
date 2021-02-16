@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.remote.dto.rest.PushResponse;
-import com.virnect.remote.dto.rest.PushSendRequest;
-import com.virnect.remote.global.common.ApiResponse;
+import com.virnect.data.dto.rest.PushResponse;
+import com.virnect.data.dto.push.PushSendRequest;
+import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @Component

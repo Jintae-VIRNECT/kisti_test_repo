@@ -40,8 +40,8 @@ import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
 import com.virnect.serviceserver.dao.DataProcess;
 import com.virnect.serviceserver.dao.FileDataRepository;
 import com.virnect.serviceserver.dao.SessionDataRepository;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.dto.response.session.SessionData;
 import com.virnect.serviceserver.dto.response.session.SessionTokenData;
 

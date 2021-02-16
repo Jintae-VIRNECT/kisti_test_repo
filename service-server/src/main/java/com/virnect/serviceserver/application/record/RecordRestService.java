@@ -1,7 +1,7 @@
 package com.virnect.serviceserver.application.record;
 
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.rest.StopRecordingResponse;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.dto.rest.StopRecordingResponse;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;

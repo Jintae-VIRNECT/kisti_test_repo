@@ -1,4 +1,4 @@
-package com.virnect.data.dto.rest;
+package com.virnect.data.dto.push;
 
 import java.util.List;
 import java.util.Map;

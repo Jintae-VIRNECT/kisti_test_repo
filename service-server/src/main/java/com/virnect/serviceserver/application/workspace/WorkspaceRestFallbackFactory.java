@@ -1,9 +1,9 @@
 package com.virnect.serviceserver.application.workspace;
 
 
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;

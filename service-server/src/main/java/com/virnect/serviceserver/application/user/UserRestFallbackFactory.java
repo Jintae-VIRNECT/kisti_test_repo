@@ -1,8 +1,8 @@
 package com.virnect.serviceserver.application.user;
 
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.dto.rest.UserInfoListResponse;
-import com.virnect.serviceserver.dto.rest.UserInfoResponse;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.dto.rest.UserInfoListResponse;
+import com.virnect.data.dto.rest.UserInfoResponse;
 
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;

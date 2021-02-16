@@ -7,9 +7,9 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.remote.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.remote.dto.rest.WorkspaceMemberInfoResponse;
-import com.virnect.remote.global.common.ApiResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
+import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @Component
