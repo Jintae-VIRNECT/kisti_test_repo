@@ -47,11 +47,13 @@ project(":service-server") {
     dependencies {
         // Include Sub Modules
         implementation(project(":service-kms"))
-        implementation(project(":service-data"))
+        //implementation(project(":service-data"))
+        implementation(project(":service-remote-api"))
+        implementation(project(":service-dashboard-api"))
 
         // Lombok and Annotation Configuration Dependencies
         compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
+        annotationProcessor 'org.projectlombok:lombok'd
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
         // Spring Test Dependencies
@@ -67,6 +69,18 @@ project(":service-server") {
                 mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
             }
         }
+    }
+}
+
+project(":service-remote-api") {
+    dependencies {
+        compile(project(":service-data"))
+    }
+}
+
+project(":service-dashboard-api") {
+    dependencies {
+        compile(project(":service-data"))
     }
 }
 
