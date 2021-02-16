@@ -16,11 +16,11 @@ import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
-import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
-import com.virnect.serviceserver.dto.constraint.LicenseConstants;
-import com.virnect.serviceserver.dto.response.PageMetadataResponse;
-import com.virnect.serviceserver.dto.response.member.MemberInfoListResponse;
-import com.virnect.serviceserver.dto.response.member.MemberInfoResponse;
+import com.virnect.remote.application.workspace.WorkspaceRestService;
+import com.virnect.data.dto.constraint.LicenseConstants;
+import com.virnect.data.dto.response.PageMetadataResponse;
+import com.virnect.data.dto.response.member.MemberInfoListResponse;
+import com.virnect.data.dto.response.member.MemberInfoResponse;
 import com.virnect.serviceserver.dto.response.member.MemberSecessionResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
@@ -30,7 +30,7 @@ import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
 @RequiredArgsConstructor
 public class MemberService {
 
-	private final ModelMapper modelMapper;
+	/*private final ModelMapper modelMapper;
 
 	private final SessionService sessionService;
 
@@ -183,5 +183,5 @@ public class MemberService {
 			sessionService.updateMemberHistory(memberHistory);
 		}
 		return new MemberSecessionResponse(userId, true, LocalDateTime.now());
-	}
+	}*/
 }
