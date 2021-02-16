@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.dto.request.room;
 
-import com.virnect.data.dao.RestrictedMode;
+import com.virnect.data.domain.RestrictedMode;
 import com.virnect.data.domain.session.SessionType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -47,6 +47,9 @@ public class CompanyInfoResponse {
     @ApiModelProperty(value = "Enable Text to speech", position = 9, example = "false")
     private boolean tts = false;
 
+    @ApiModelProperty(value = "Enable Text to speech", position = 9, example = "false")
+    private boolean restrictedMode = false;
+
     @ApiModelProperty(
             value = "Translation Language codes",
             position = 10,

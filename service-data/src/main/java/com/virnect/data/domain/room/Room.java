@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.virnect.data.dao.RestrictedMode;
+import com.virnect.data.domain.RestrictedMode;
 import com.virnect.data.domain.BaseTimeEntity;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.member.Member;
