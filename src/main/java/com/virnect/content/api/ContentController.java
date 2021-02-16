@@ -54,7 +54,8 @@ public class ContentController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(콘텐츠 이름:name / 타겟유형:type(확인필요) / 콘텐츠 등록일:createdDate / 공유상태:shared)", paramType = "query", defaultValue = "createdDate,desc"),
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL"),
-            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "query"),
+            @ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL"),
     })
     @GetMapping
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getContentList(
@@ -63,15 +64,16 @@ public class ContentController {
             @RequestParam(value = "shareds", required = false, defaultValue = "ALL") String shareds,
             @RequestParam(value = "converteds", required = false, defaultValue = "ALL") String converteds,
             @RequestParam(value = "userUUID", required = false) String userUUID,
+            @RequestParam(value = "target", required = false, defaultValue = "ALL") String targetType,
             @ApiIgnore PageRequest pageable
     ) {
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(
-                workspaceUUID, userUUID, search, shareds, converteds, pageable.of());
+                workspaceUUID, userUUID, search, shareds, converteds, pageable.of(), targetType);
         return ResponseEntity.ok(responseMessage);
     }
 
     //make, view에서 사용하고 있어서 못지움.
-    @ApiOperation(value = "내 컨텐츠 목록 조회", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.", hidden = true)
+    @ApiOperation(value = "내 컨텐츠 목록 조회", notes = "워크스페이션 내의 내가 등록한 컨텐츠의 목록을 조회함.")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "workspaceUUID", value = "워크스페이스 식별자", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "search", value = "검색어(컨텐츠명)", dataType = "string", allowEmptyValue = true, defaultValue = ""),
@@ -80,7 +82,8 @@ public class ContentController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터", paramType = "query", defaultValue = "createdDate,desc"),
             @ApiImplicitParam(name = "shareds", value = "공유 필터 옵션 (ALL, YES, NO)", paramType = "query", defaultValue = "ALL"),
             @ApiImplicitParam(name = "userUUID", value = "사용자 식별자", dataType = "string", paramType = "path", required = true, defaultValue = ""),
-            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL")
+            @ApiImplicitParam(name = "converteds", value = "컨텐츠의 공정 전환 여부(ALL, YES, NO)", dataType = "string", paramType = "query", defaultValue = "ALL"),
+            @ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL")
     })
     @GetMapping("/my/{userUUID}")
     public ResponseEntity<ApiResponse<ContentInfoListResponse>> getUserContentList(
@@ -89,13 +92,14 @@ public class ContentController {
             @RequestParam(value = "shareds", defaultValue = "ALL") String shareds,
             @RequestParam(value = "converteds", defaultValue = "ALL") String converteds,
             @RequestParam(value = "workspaceUUID", required = false) String workspaceUUID,
+            @RequestParam(value = "target", required = false, defaultValue = "ALL") String targetType,
             @ApiIgnore PageRequest pageable
     ) {
         if (userUUID.isEmpty()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         ApiResponse<ContentInfoListResponse> responseMessage = this.contentService.getContentList(
-                workspaceUUID, userUUID, search, shareds, converteds, pageable.of());
+                workspaceUUID, userUUID, search, shareds, converteds, pageable.of(), targetType);
         return ResponseEntity.ok(responseMessage);
     }
 

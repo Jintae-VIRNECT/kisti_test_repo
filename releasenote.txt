@@ -1,11 +1,12 @@
 RELEASE
 
 New Features
+- 컨텐츠 목록조회에 타겟타입 필터링 기능 추가
 
 Bug Fixes
+- 컨텐츠 다운로드 관련 권한 체크 추가
 
 Limitation
-- jvm 최소 메모리 사이즈 변경
-- 컨텐츠 복제 시 파일 업로드 방식 변경(API 응답 속도 개선)
+- 컨텐츠 삭제 응답 데이터 변경
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

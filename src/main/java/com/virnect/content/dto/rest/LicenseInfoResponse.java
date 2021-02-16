@@ -46,7 +46,8 @@ public class LicenseInfoResponse {
 	private Long workspaceDownloadHit;
 	@ApiModelProperty(value = "남은 용량", notes = "라이선스의 남은 용량", position = 13)
 	private Long usableCapacity;
-	@ApiModelProperty(value = "남은 다운로드 수", notes = "라이선스의 남은 다운로드 수", position = 14)
-	private Long usableDownloadHit;
-
+	/*@ApiModelProperty(value = "남은 다운로드 수", notes = "라이선스의 남은 다운로드 수", position = 14)
+	private Long usableDownloadHit;*/
+    @ApiModelProperty(value = "워크스페이스 현재 다운로드 횟수 정보", position = 12)
+    private Long currentUsageDownloadHit = 0L;
 }

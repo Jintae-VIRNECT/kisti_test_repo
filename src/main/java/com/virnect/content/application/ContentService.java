@@ -409,8 +409,18 @@ public class ContentService {
         List<ContentDeleteResponse> deleteResponseList = new ArrayList<>();
         for (String contentUUID : contentUUIDs) {
             // 1. 컨텐츠들 조회
-            Content content = this.contentRepository.findByUuid(contentUUID)
-                    .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+            Content content = this.contentRepository.findByUuid(contentUUID).orElse(null);
+
+            if (content == null) {
+                ContentDeleteResponse contentDeleteResponse = new ContentDeleteResponse();
+                contentDeleteResponse.setContentUUID(contentUUID);
+                contentDeleteResponse.setWorkspaceUUID(contentDeleteRequest.getWorkspaceUUID());
+                contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_NOT_FOUND.getMessage());
+                contentDeleteResponse.setResult(false);
+                contentDeleteResponse.setCode(ErrorCode.ERR_CONTENT_NOT_FOUND.getCode());
+                deleteResponseList.add(contentDeleteResponse);
+                continue;
+            }
 
             ContentDeleteResponse contentDeleteResponse = ContentDeleteResponse.builder()
                     .workspaceUUID(content.getWorkspaceUUID())
@@ -530,7 +540,7 @@ public class ContentService {
      */
     @Transactional(readOnly = true)
     public ApiResponse<ContentInfoListResponse> getContentList(
-            String workspaceUUID, String userUUID, String search, String shared, String converteds, Pageable pageable
+            String workspaceUUID, String userUUID, String search, String shared, String converteds, Pageable pageable, String targetType
     ) {
         List<ContentInfoResponse> contentInfoList;
         Map<String, UserInfoResponse> userInfoMap = new HashMap<>();
@@ -555,7 +565,7 @@ public class ContentService {
 
         // 2. 콘텐츠 조회
         Page<Content> contentPage = this.contentRepository.getContent(
-                workspaceUUID, userUUID, search, shared, converteds, userUUIDList, pageable);
+                workspaceUUID, userUUID, search, shared, converteds, userUUIDList, pageable, targetType);
 
         contentInfoList = contentPage.stream().map(content -> {
             List<ContentTargetResponse> targets = content.getTargetList().stream().map(target -> {
@@ -1057,42 +1067,6 @@ public class ContentService {
         return licenseInfoResponse;
     }
 
-    /**
-     * 라이선스 총 다운로드 수와 워크스페이스 기준 총 다운로드 수를 비교
-     *
-     * @param workspaceUUID
-     * @return
-     */
-    protected LicenseInfoResponse checkLicenseDownload(String workspaceUUID) {
-
-        LicenseInfoResponse licenseInfoResponse = new LicenseInfoResponse();
-
-        // 라이센스 총 다운로드 횟수
-        Long maxDownload = this.licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData().getMaxDownloadHit();
-
-        // 현재 워크스페이스의 다운로드 횟수
-        Long sumDownload = this.contentRepository.getWorkspaceDownload(workspaceUUID);
-
-        if (maxDownload == 0) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
-        }
-
-        // 워크스페이스 기준으로 처음 다운로드 받을 경우의 처리
-        if (Objects.isNull(sumDownload)) {
-            sumDownload = 0L;
-        }
-
-        if (maxDownload < sumDownload + 1) {
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
-        } else {
-            licenseInfoResponse.setMaxDownloadHit(maxDownload);
-            licenseInfoResponse.setWorkspaceDownloadHit(sumDownload);
-            licenseInfoResponse.setUsableDownloadHit(maxDownload - sumDownload);
-        }
-
-        return licenseInfoResponse;
-    }
-
     public String decodeData(String encodeURL) {
         String imgPath = "";
 
@@ -1161,6 +1135,8 @@ public class ContentService {
         try {
             // Database에 저장된 targetData는 URLEncoding된 값이므로 인코딩 해줌.
             encodedData = URLEncoder.encode(targetData, StandardCharsets.UTF_8.name());
+            log.info(">>>>>>>>>>>>>>>>>>> encodedData : {}", encodedData);
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
