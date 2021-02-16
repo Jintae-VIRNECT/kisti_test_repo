@@ -50,8 +50,15 @@ public class Company extends BaseTimeEntity {
     @Column(name = "tts", nullable = false)
     private boolean tts;
 
-    @Column(name = "restricted_mode", nullable = false)
-    private boolean restrictedMode;
+    /*@Column(name = "restricted_mode", nullable = false)
+    private boolean restrictedMode;*/
+
+    @Column(name = "video_restricted_mode", nullable = false)
+    private boolean videoRestrictedMode;
+
+    @Column(name = "audio_restricted_mode", nullable = false)
+    private boolean audioRestrictedMode;
+
 
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Language language;
@@ -67,7 +74,9 @@ public class Company extends BaseTimeEntity {
                    Boolean sttSync,
                    Boolean sttStreaming,
                    Boolean tts,
-                   Boolean restrictedMode,
+                   //Boolean restrictedMode,
+                   Boolean videoRestrictedMode,
+                   Boolean audioRestrictedMode,
                    Language language
     ) {
         this.companyCode = companyCode;
@@ -80,7 +89,9 @@ public class Company extends BaseTimeEntity {
         this.sttSync = sttSync;
         this.sttStreaming = sttStreaming;
         this.tts = tts;
-        this.restrictedMode = restrictedMode;
+        this.videoRestrictedMode = videoRestrictedMode;
+        this.audioRestrictedMode = audioRestrictedMode;
+        //this.restrictedMode = restrictedMode;
 
         this.language = language;
     }

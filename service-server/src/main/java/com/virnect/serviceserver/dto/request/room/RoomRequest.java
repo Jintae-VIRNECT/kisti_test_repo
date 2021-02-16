@@ -40,8 +40,14 @@ public class RoomRequest {
     @NotNull
     private String workspaceId;
 
-    @ApiModelProperty(value = "Remote Room camera operation Type", position = 8, example = "false")
-    private boolean restrictedMode;
+    /*@ApiModelProperty(value = "Remote Room camera operation Type", position = 8, example = "false")
+    private boolean restrictedMode;*/
+
+    @ApiModelProperty(value = "Remote Video Restricted Mode", position = 9, example = "false")
+    private boolean videoRestrictedMode;
+
+    @ApiModelProperty(value = "Remote Audio Restricted Mode", position = 10, example = "false")
+    private boolean audioRestrictedMode;
 
     /**
      * test17@test.com 4705cf50e6d02c59b0eef9591666e2a3

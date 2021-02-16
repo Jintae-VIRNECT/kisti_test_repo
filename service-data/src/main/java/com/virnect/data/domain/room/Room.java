@@ -74,8 +74,14 @@ public class Room extends BaseTimeEntity {
     @Column(name = "active_at")
     private LocalDateTime activeDate;
 
-    @Column(name = "restricted_mode")
-    private boolean restrictedMode;
+    /*@Column(name = "restricted_mode")
+    private boolean restrictedMode;*/
+
+    @Column(name = "video_restricted_mode")
+    private boolean videoRestrictedMode;
+
+    @Column(name = "audio_restricted_mode")
+    private boolean audioRestrictedMode;
 
     //@ElementCollection
     //private Set<Member> members = new HashSet<>();
@@ -95,7 +101,9 @@ public class Room extends BaseTimeEntity {
                 String workspaceId,
                 String licenseName,
                 int maxUserCount,
-                boolean restrictedMode,
+                //boolean restrictedMode,
+                boolean videoRestrictedMode,
+                boolean audioRestrictedMode,
                 SessionProperty sessionProperty
                       ) {
         this.sessionId = sessionId;
@@ -106,7 +114,9 @@ public class Room extends BaseTimeEntity {
         this.licenseName = licenseName;
         this.maxUserCount = maxUserCount;
         this.sessionProperty = sessionProperty;
-        this.restrictedMode = restrictedMode;
+        //this.restrictedMode = restrictedMode;
+        this.videoRestrictedMode = videoRestrictedMode;
+        this.audioRestrictedMode = audioRestrictedMode;
 
         //default setting
         this.profile = "default";
