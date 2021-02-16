@@ -9,9 +9,34 @@ repositories {
     mavenCentral()
 }
 
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// DEPENDENCIES.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testImplementation 'junit:junit:4.12'
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.data:spring-data-envers"
+
+    // Eureka
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    // Netflex Feign Client
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
+    // Swagger
+    implementation("io.springfox:springfox-swagger2:2.9.2")
+    implementation("io.springfox:springfox-swagger-ui:2.9.2")
+}
+
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+// GRADLE TASKS.
+//—————————————————————————————————————————————————————————————————————————————————————————————————
+jar {
+    enabled = true
+}
+
+bootJar {
+    enabled = false
 }
 
 test {
