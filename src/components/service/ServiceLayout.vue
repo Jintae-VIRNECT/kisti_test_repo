@@ -25,6 +25,9 @@
         <transition name="main">
           <ar-view v-show="currentView === 'ar'"></ar-view>
         </transition>
+        <transition name="main">
+          <screen-view v-show="currentView === 'screen'"></screen-view>
+        </transition>
         <transition name="popover">
           <capture-modal
             v-if="captureFile.id"
@@ -33,12 +36,7 @@
         </transition>
       </main>
 
-      <user-list
-        :class="{
-          shareview: isLeader && currentView === 'drawing',
-          fullscreen: isVideoLoaded && isFullScreen && currentView === 'stream',
-        }"
-      ></user-list>
+      <user-list :class="userListClass"></user-list>
       <!-- <div v-else>
         <figure
           v-for="participant of participants"
@@ -98,6 +96,7 @@ export default {
     StreamView: () => import('./ServiceStream'),
     DrawingView: () => import('./ServiceDrawing'),
     ArView: () => import('./ServiceAr'),
+    ScreenView: () => import('./ServiceScreen'),
     Share: () => import('./share/Share'),
     CaptureModal: () => import('./modal/CaptureModal'),
     RecordList: () => import('LocalRecordList'),
@@ -124,8 +123,19 @@ export default {
         return 'drawing'
       } else if (this.view === VIEW.AR) {
         return 'ar'
+      } else if (this.view === VIEW.SCREEN) {
+        return 'screen'
       }
       return ''
+    },
+    userListClass() {
+      return {
+        shareview: this.isLeader && this.currentView === 'drawing',
+        fullscreen:
+          this.isVideoLoaded &&
+          this.isFullScreen &&
+          (this.currentView === 'stream' || this.currentView === 'screen'),
+      }
     },
   },
 
