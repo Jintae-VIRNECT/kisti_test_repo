@@ -131,6 +131,8 @@ const getDefaultState = () => {
       //   height: 600
       // }
     ],
+    //화면 공유시 카메라 스트림을 보관하기 위함
+    myTempStream: null, //MediaStream
   }
 }
 
@@ -298,6 +300,9 @@ const mutations = {
 
     return true
   },
+  setMyTempStream(state, payload) {
+    state.myTempStream = payload
+  },
 }
 
 const actions = {
@@ -317,6 +322,9 @@ const actions = {
       commit('setMainViewForce', false)
     }
   },
+  setMyTempStream({ commit }, payload) {
+    commit('setMyTempStream', payload)
+  },
 }
 
 const getters = {
@@ -333,6 +341,7 @@ const getters = {
   chatList: state => state.chatList,
   resolutions: state => state.resolutions,
   initing: state => state.initing,
+  myTempStream: state => state.myTempStream,
 }
 
 export default {

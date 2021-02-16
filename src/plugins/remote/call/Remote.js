@@ -33,6 +33,7 @@ const _ = {
   currentZoomLevel: 1,
   maxZoomLevel: 1,
   openRoom: false,
+
   /**
    * join session
    * @param {Object} configs {coturn, wss, token}
@@ -624,6 +625,32 @@ const _ = {
     if (_.session) {
       _.session.off(type, func)
     }
+  },
+  replaceTrack(track, originStream) {
+    if (originStream) {
+      Store.commit('setMyTempStream', originStream.clone())
+    }
+    _.publisher.replaceTrack(track)
+  },
+  restoreMyStream() {
+    _.replaceTrack(Store.getters['myTempStream'].getVideoTracks()[0])
+    Store.commit('setMyTempStream', null)
+    // const settingInfo = Store.getters['settingInfo']
+
+    // const publishOptions = {
+    //   audioSource: options.audioSource,
+    //   videoSource: options.videoSource,
+    //   publishAudio: settingInfo.micOn,
+    //   publishVideo: settingInfo.videoOn,
+    //   resolution: settingInfo.quality,
+    //   // resolution: '1920x1080', // FHD
+    //   // resolution: '3840x2160', // 4K
+    //   frameRate: 30,
+    //   insertMode: 'PREPEND',
+    //   mirror: false,
+    // }
+    // debug('call::publish::', publishOptions)
+    // console.log('OV.getUserMedia::', OV.getUserMedia)
   },
 }
 
