@@ -1085,7 +1085,8 @@ public class TaskService {
 	 * @return
 	 */
 	public ApiResponse<ProcessListResponse> getProcessList(
-		String myUUID, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable
+		String myUUID, String workspaceUUID, String search, List<Conditions> filter, Pageable pageable,
+		String targetType
 	) {
 		List<String> userUUIDList = new ArrayList<>();
 
@@ -1101,7 +1102,9 @@ public class TaskService {
 
 		// 정렬에 Conditions가 들어왔을 경우 - Table의 Column이 아니기 때문에 List를 조작하여 처리.
 		if ("conditions".equals(pageable.getSort().toList().get(0).getProperty())) {
-			List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
+			//List<Process> processList = this.processRepository.findByWorkspaceUUID(workspaceUUID);
+			List<Process> processList = this.processRepository.findByWorkspaceUUIDAndTargetType(
+				workspaceUUID, targetType);
 
 			List<Process> edit = new ArrayList<Process>(processList);
 
@@ -1121,15 +1124,18 @@ public class TaskService {
 		else {
 			if (Objects.nonNull(myUUID)) {
 				// 내 작업 목록
-				processPage = this.processRepository.getMyTask(myUUID, workspaceUUID, search, pageable);
+				processPage = this.processRepository.getMyTask(
+					filter, myUUID, workspaceUUID, search, pageable, targetType);
 			} else {
 				processPage = this.processRepository.getProcessPageSearchUser(
-					workspaceUUID, search, userUUIDList, pageable);
+					filter, workspaceUUID, search, userUUIDList, pageable, targetType
+				);
 			}
 
+			/* 페이징을 거치고 난 후의 값이 아닌 전체 process 데이터를 기준으로 필터링 하기 위해 아래 코드는 주석처리하고 위에서 처리함.
 			if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
 				processPage = filterConditionsProcessPage(processPage, filter, pageable);
-			}
+			}*/
 		}
 		//
 		//        if (filter != null && filter.size() > 0 && !filter.contains(Conditions.ALL)) {
@@ -1547,8 +1553,16 @@ public class TaskService {
 				State state = process.getState();
 				String processWorkspaceUUID = process.getWorkspaceUUID();
 				// 공정상태가 종료 또는 삭제가 아니고 그리고 세부공정상태가 대기상태가 아닐 때, 마지막으로 워크스페이스가 동일한 프로세스에 대해 필터
+				/*
 				if ((state != State.CLOSED || state != State.DELETED) && subProcess.getConditions() != Conditions.WAIT
 					&& (workspaceUUID == null || processWorkspaceUUID.equals(workspaceUUID))) {
+					ing++;
+				}*/
+
+				// 세부공정 상태가 진행중일때 && 워크스페이스가 동일한 프로세스에 대해 필터링 함.
+				//https://virtualconnection.atlassian.net/browse/DPLA-535?atlOrigin=eyJpIjoiMmI1MGU1ZWUzNjdjNGUxZGIwZDA5YmU4Mzg1ODZkNzciLCJwIjoiaiJ9 으로 아래와 같이 수정함
+				if (subProcess.getConditions() == Conditions.PROGRESSING && (workspaceUUID == null
+					|| processWorkspaceUUID.equals(workspaceUUID))) {
 					ing++;
 				}
 			}
@@ -1563,7 +1577,7 @@ public class TaskService {
 
 			int percent = 0;
 
-			if (subProcessList.size() > 0) {
+			if (!subProcessList.isEmpty()) {
 				percent = (int)(((double)ing / (double)subProcessList.size()) * 100);
 			}
 

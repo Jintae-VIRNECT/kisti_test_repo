@@ -21,7 +21,7 @@ import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.config.FeignConfiguration;
 
-@FeignClient(name = "content-server", configuration = FeignConfiguration.class)
+@FeignClient(name = "content-server", configuration = FeignConfiguration.class, fallbackFactory = ContentFallbackService.class)
 public interface ContentRestService {
 	@GetMapping("/contents/metadata")
 	ApiResponse<ContentRestDto> getContentMetadata(@RequestParam("contentUUID") String contentUUID);
@@ -51,6 +51,13 @@ public interface ContentRestService {
 
 	@GetMapping("/contents/download/contentUUID/{contentUUID}")
 	ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
-		@PathVariable("contentUUID") String contentUUID, @RequestParam("memberUUID") String memberUUID
+		@PathVariable("contentUUID") String contentUUID, @RequestParam("memberUUID") String memberUUID,
+		@RequestParam("workspaceUUID") String workspaceUUID
+	);
+
+	@GetMapping("/contents/download")
+	ResponseEntity<byte[]> contentDownloadRequestForTargetHandler(
+		@RequestParam(value = "targetData") String targetData, @RequestParam("memberUUID") String memberUUID,
+		@RequestParam(value = "workspaceUUID") String workspaceUUID
 	);
 }

@@ -142,7 +142,8 @@ public class TaskController {
 		@ApiImplicitParam(name = "filter", value = "작업상태 필터(WAIT,UNPROGRESSING,PROGRESSING,COMPLETED,INCOMPLETED,FAILED,SUCCESS,FAULT,NONE,ALL)", dataType = "object", paramType = "query", defaultValue = "PROGRESSING"),
 		@ApiImplicitParam(name = "page", value = "조회할 페이지 번호(1부터)", dataType = "number", paramType = "query", defaultValue = "1"),
 		@ApiImplicitParam(name = "size", value = "페이지당 목록 개수", dataType = "number", paramType = "query", defaultValue = "10"),
-		@ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - reportedDate, name, startDate, endDate, state)", dataType = "String", paramType = "query", defaultValue = "createdDate,desc")
+		@ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(요청파라미터 명, 정렬조건 - reportedDate, name, startDate, endDate, state)", dataType = "String", paramType = "query", defaultValue = "createdDate,desc"),
+		@ApiImplicitParam(name = "target", value = "컨텐츠의 타겟 타입(ALL, QR, VTarget)", dataType = "string", paramType = "query", defaultValue = "ALL")
 	})
 	@GetMapping
 	public ResponseEntity<ApiResponse<ProcessListResponse>> getProcessList(
@@ -150,10 +151,11 @@ public class TaskController {
 		, @RequestParam(value = "search", required = false) String search
 		, @RequestParam(value = "filter", required = false) List<Conditions> filter
 		, @RequestParam(value = "myUUID", required = false) String myUUID
+		, @RequestParam(value = "target", required = false, defaultValue = "ALL") String targetType
 		, @ApiIgnore PageRequest pageable
 	) {
 		ApiResponse<ProcessListResponse> processListApiResponse = this.taskService.getProcessList(
-			myUUID, workspaceUUID, search, filter, pageable.of());
+			myUUID, workspaceUUID, search, filter, pageable.of(), targetType);
 		return ResponseEntity.ok(processListApiResponse);
 	}
 

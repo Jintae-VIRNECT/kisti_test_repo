@@ -13,7 +13,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
   servlet:
     multipart:
       max-file-size: 300MB
@@ -21,12 +21,16 @@ spring:
   cloud:
     loadbalancer:
       ribbon:
-        enabled: false
-
+        enabled: true
+  zipkin:
+    enabled: false
+content-server:
+  ribbon:
+    listOfServers: http://localhost:8078
 logging:
   level:
     com.virnect: DEBUG
-    org.hibernate.type.descriptor.sql: trace
+#    org.hibernate.type.descriptor.sql: trace
 
 eureka:
   instance:
@@ -34,6 +38,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+    enabled: false
 
 ## Server Configuration
 server:
@@ -59,7 +64,7 @@ management:
   metrics:
     tags:
       application: ${spring.application.name}
-#
+
 ## Minio
 minio:
   access-key: "virnect"

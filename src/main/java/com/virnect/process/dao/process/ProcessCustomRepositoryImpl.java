@@ -1,133 +1,212 @@
 package com.virnect.process.dao.process;
 
-import com.querydsl.jpa.JPQLQuery;
-import com.virnect.process.domain.Process;
-import com.virnect.process.domain.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.util.StringUtils;
+
+import com.querydsl.jpa.JPQLQuery;
+
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.process.domain.Conditions;
+import com.virnect.process.domain.Process;
+import com.virnect.process.domain.QIssue;
+import com.virnect.process.domain.QJob;
+import com.virnect.process.domain.QProcess;
+import com.virnect.process.domain.QSubProcess;
+import com.virnect.process.domain.QTarget;
+import com.virnect.process.domain.State;
+import com.virnect.process.domain.TargetType;
+
 @Slf4j
 public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport implements ProcessCustomRepository {
-    public ProcessCustomRepositoryImpl() {
-        super(Process.class);
-    }
+	public ProcessCustomRepositoryImpl() {
+		super(Process.class);
+	}
 
-    @Override
-    public Process findByTargetDataAndState(String targetData, State state) {
-        QProcess qProcess = QProcess.process;
-        QTarget qTarget = QTarget.target;
-        JPQLQuery<Process> query = from(qProcess).where(qProcess.state.eq(state));
-        query = query.join(qProcess.targetList, qTarget).where(qTarget.data.eq(targetData));
-        return query.fetchOne();
-    }
+	@Override
+	public Optional<Process> findByTargetDataAndState(String targetData, State state) {
+		QProcess qProcess = QProcess.process;
+		QTarget qTarget = QTarget.target;
+		Process process = from(qProcess)
+			.where(qProcess.state.eq(state))
+			.join(qProcess.targetList, qTarget)
+			.where(qTarget.data.eq(targetData)).fetchOne();
+		return Optional.ofNullable(process);
+	}
 
-    @Override
-    public Page<Process> getProcessPageSearchUser(String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable){
-        log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ProcessCustomRepository in");
+	@Override
+	public Optional<Process> findByContentUUIDAndStatus(String contentUUID, State state, String memberUUID) {
+		QProcess qProcess = QProcess.process;
+		QTarget qTarget = QTarget.target;
+		Process process = from(qProcess)
+			.where(qProcess.state.eq(state)
+				.and(qProcess.contentUUID.eq(contentUUID))
+				.and(qProcess.contentManagerUUID.eq(memberUUID)))
+			.fetchOne();
+		return Optional.ofNullable(process);
+	}
 
-        QProcess qProcess = QProcess.process;
-        QSubProcess qSubProcess = QSubProcess.subProcess;
-        QTarget qTarget = QTarget.target;
+	@Override
+	public Page<Process> getProcessPageSearchUser(
+		List<Conditions> filterList,
+		String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable, String targetType
+	) {
+		log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ProcessCustomRepository in");
 
-        JPQLQuery<Process> query = from(qProcess);
+		QProcess qProcess = QProcess.process;
+		QSubProcess qSubProcess = QSubProcess.subProcess;
+		QTarget qTarget = QTarget.target;
 
-        query = query.join(qProcess.subProcessList, qSubProcess);
+		JPQLQuery<Process> query = from(qProcess);
 
-        query = query.join(qProcess.targetList, qTarget);
+		query = query.join(qProcess.subProcessList, qSubProcess);
 
-        // 워크스페이스UUID
-        if (workspaceUUID != null) {
-            query = query.where(qProcess.workspaceUUID.eq(workspaceUUID));
-        }
+		query = query.join(qProcess.targetList, qTarget);
 
-        if (!userUUIDList.isEmpty()) {
-            query = query.where(qSubProcess.workerUUID.in(userUUIDList));
-        }else {
-            if (Objects.nonNull(search)) {
-                // or 뒤의 조건은 프로필 -> 바로가기 때문에 추가
-                query = query.where(qProcess.name.contains(search).or(qSubProcess.workerUUID.eq(search)));
-            }
-        }
+		// 워크스페이스UUID
+		if (workspaceUUID != null) {
+			query = query.where(qProcess.workspaceUUID.eq(workspaceUUID));
+		}
 
-        log.debug(">>>>>>>>>>>>>>>>>>>>>>> : {}", query);
+		if (!userUUIDList.isEmpty()) {
+			query = query.where(qSubProcess.workerUUID.in(userUUIDList));
+		} else {
+			if (Objects.nonNull(search)) {
+				// or 뒤의 조건은 프로필 -> 바로가기 때문에 추가
+				query = query.where(qProcess.name.contains(search).or(qSubProcess.workerUUID.eq(search)));
+			}
+		}
+		// 공정 상태 필터링
+		if (filterList != null && filterList.size() > 0 && !filterList.contains(Conditions.ALL)) {
+			List<Process> filterdProcessList = new ArrayList<>();
+			List<Process> processList = query.fetch();
+			processList.forEach(process -> {
+				if (filterList.contains(process.getConditions())) {
+					filterdProcessList.add(process);
+				}
+			});
+			query = query.where(qProcess.in(filterdProcessList));
+		}
 
-        query.groupBy(qProcess.id);
+		if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
+			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
+		}
 
-        final List<Process> processList = getQuerydsl().applyPagination(pageable, query).fetch(); //.stream().distinct().collect(Collectors.toList());
+		log.debug(">>>>>>>>>>>>>>>>>>>>>>> : {}", query);
 
-        return new PageImpl<>(processList, pageable, query.fetchCount());
-    }
+		query.groupBy(qProcess.id);
 
-    @Override
-    public int getCountIssuesInProcess(Long processId){
-        QProcess qProcess = QProcess.process;
-        QSubProcess qSubProcess = QSubProcess.subProcess;
-        QJob qJob = QJob.job;
-        QIssue qIssue = QIssue.issue;
+		final List<Process> processList = getQuerydsl().applyPagination(pageable, query)
+			.fetch(); //.stream().distinct().collect(Collectors.toList());
 
-        JPQLQuery<Process> query = from(qProcess);
+		return new PageImpl<>(processList, pageable, query.fetchCount());
+	}
 
-        query.join(qProcess.subProcessList, qSubProcess);
+	@Override
+	public int getCountIssuesInProcess(Long processId) {
+		QProcess qProcess = QProcess.process;
+		QSubProcess qSubProcess = QSubProcess.subProcess;
+		QJob qJob = QJob.job;
+		QIssue qIssue = QIssue.issue;
 
-        query.join(qSubProcess.jobList, qJob);
+		JPQLQuery<Process> query = from(qProcess);
 
-        query.join(qJob.issueList, qIssue);
+		query.join(qProcess.subProcessList, qSubProcess);
 
-        query.where(qProcess.id.eq(processId));
+		query.join(qSubProcess.jobList, qJob);
 
-        return (int)query.fetchCount();
-    }
+		query.join(qJob.issueList, qIssue);
 
-    @Override
-    public Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData) {
-        QProcess qProcess = QProcess.process;
-        QTarget qTarget = QTarget.target;
+		query.where(qProcess.id.eq(processId));
 
-        JPQLQuery<Process> query = from(qProcess);
+		return (int)query.fetchCount();
+	}
 
-        query.join(qProcess.targetList, qTarget);
+	@Override
+	public Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData) {
+		QProcess qProcess = QProcess.process;
+		QTarget qTarget = QTarget.target;
 
-        query.where(qTarget.data.eq(targetData));
+		JPQLQuery<Process> query = from(qProcess);
 
-        query.where(qProcess.state.eq(State.CREATED).or(qProcess.state.eq(State.UPDATED)));
+		query.join(qProcess.targetList, qTarget);
 
-        if (Objects.nonNull(workspaceUUID)) {
-            query.where(qProcess.workspaceUUID.eq(workspaceUUID));
-        }
+		query.where(qTarget.data.eq(targetData));
 
-        Process result = query.fetchOne();
+		query.where(qProcess.state.eq(State.CREATED).or(qProcess.state.eq(State.UPDATED)));
 
-        return Optional.ofNullable(result);
-    }
+		if (Objects.nonNull(workspaceUUID)) {
+			query.where(qProcess.workspaceUUID.eq(workspaceUUID));
+		}
 
-    @Override
-    public Page<Process> getMyTask(String myUUID, String workspaceUUID, String title, Pageable pageable) {
-        QProcess qProcess = QProcess.process;
-        QSubProcess qSubProcess = QSubProcess.subProcess;
-        QTarget qTarget = QTarget.target;
+		Process result = query.fetchOne();
 
-        JPQLQuery<Process> query = from(qProcess);
-        query.join(qProcess.subProcessList, qSubProcess);
-        query.join(qProcess.targetList, qTarget);
+		return Optional.ofNullable(result);
+	}
 
-        query.where(qSubProcess.workerUUID.eq(myUUID));
+	@Override
+	public Page<Process> getMyTask(
+		List<Conditions> filterList, String myUUID, String workspaceUUID, String title, Pageable pageable,
+		String targetType
+	) {
+		QProcess qProcess = QProcess.process;
+		QSubProcess qSubProcess = QSubProcess.subProcess;
+		QTarget qTarget = QTarget.target;
 
-        // 검색어가 들어왔을 경우
-        if (Objects.nonNull(title)) {
-            query.where(qProcess.name.contains(title));
-        }
+		JPQLQuery<Process> query = from(qProcess);
+		query.join(qProcess.subProcessList, qSubProcess);
+		query.join(qProcess.targetList, qTarget);
 
-        query.groupBy(qProcess.id);
+		query.where(qSubProcess.workerUUID.eq(myUUID));
 
-        final List<Process> myList = getQuerydsl().applyPagination(pageable, query).fetch();
+		// 검색어가 들어왔을 경우
+		if (Objects.nonNull(title)) {
+			query.where(qProcess.name.contains(title));
+		}
+		query.groupBy(qProcess.id);
 
-        return new PageImpl<>(myList, pageable, query.fetchCount());
-    }
+		// 공정 상태 필터링
+		if (filterList != null && filterList.size() > 0 && !filterList.contains(Conditions.ALL)) {
+			List<Process> filteredList = new ArrayList<>();
+			List<Process> processList = query.fetch();
+			processList.forEach(process -> {
+				if (filterList.contains(process.getConditions())) {
+					filteredList.add(process);
+				}
+			});
+			query = query.where(qProcess.in(filteredList));
+
+		}
+
+		if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
+			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
+		}
+
+		final List<Process> myList = getQuerydsl().applyPagination(pageable, query).fetch();
+
+		return new PageImpl<>(myList, pageable, query.fetchCount());
+	}
+
+	@Override
+	public List<Process> findByWorkspaceUUIDAndTargetType(String workspaceUUID, String targetType) {
+		QProcess qProcess = QProcess.process;
+		QTarget qTarget = QTarget.target;
+
+		JPQLQuery<Process> query = from(qProcess);
+		query.where(qProcess.workspaceUUID.eq(workspaceUUID));
+
+		if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
+			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
+		}
+
+		return query.fetch();
+	}
 }
