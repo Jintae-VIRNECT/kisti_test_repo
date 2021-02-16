@@ -1,15 +1,16 @@
 package com.virnect.serviceserver.dto.request.room;
 
-import com.virnect.data.domain.RestrictedMode;
-import com.virnect.data.domain.session.SessionType;
+import java.util.List;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.List;
+import com.virnect.data.domain.session.SessionType;
 
 @Getter
 @Setter
@@ -39,8 +40,8 @@ public class RoomRequest {
     @NotNull
     private String workspaceId;
 
-    @ApiModelProperty(value = "Remote Room camera operation Type", position = 8, example = "ON")
-    private RestrictedMode restrictedMode;
+    @ApiModelProperty(value = "Remote Room camera operation Type", position = 8, example = "false")
+    private boolean restrictedMode;
 
     /**
      * test17@test.com 4705cf50e6d02c59b0eef9591666e2a3

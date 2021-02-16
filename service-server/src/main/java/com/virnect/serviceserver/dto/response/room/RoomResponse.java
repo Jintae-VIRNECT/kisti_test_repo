@@ -1,15 +1,15 @@
 package com.virnect.serviceserver.dto.response.room;
 
-import com.virnect.data.domain.RestrictedMode;
-import com.virnect.serviceserver.dto.response.CoturnResponse;
+import java.util.ArrayList;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.virnect.serviceserver.dto.response.CoturnResponse;
 
 @Getter
 @Setter
@@ -29,6 +29,6 @@ public class RoomResponse {
     private String wss = "";
 
     @ApiModelProperty(value = "Camera Operation Type", position = 4, example = "OFF")
-    private RestrictedMode restrictedMode;
+    private boolean restrictedMode;
 
 }

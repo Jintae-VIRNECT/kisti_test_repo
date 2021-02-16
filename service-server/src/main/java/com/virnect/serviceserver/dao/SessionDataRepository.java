@@ -959,7 +959,7 @@ public class SessionDataRepository {
                     roomResponse.setSessionId(sessionResponse.getId());
                     roomResponse.setToken(sessionTokenResponse.getToken());
                     roomResponse.setWss(ServiceServerApplication.wssUrl);
-                    roomResponse.setRestrictedMode(room.getRestrictedMode());
+                    roomResponse.setRestrictedMode(room.isRestrictedMode());
                     CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
                     roomResponse.getCoturn().add(coturnResponse);
 
@@ -1014,7 +1014,7 @@ public class SessionDataRepository {
                     .workspaceId(roomRequest.getWorkspaceId())
                     .maxUserCount(licenseItem.getUserCapacity())
                     .licenseName(licenseItem.name())
-                    .restrictedMode(roomRequest.getRestrictedMode())
+                    .restrictedMode(roomRequest.isRestrictedMode())
                     .build();
 
                 // Remote Session Property Entity Create
@@ -1090,7 +1090,7 @@ public class SessionDataRepository {
                         roomResponse.setSessionId(sessionResponse.getId());
                         roomResponse.setToken(sessionTokenResponse.getToken());
                         roomResponse.setWss(ServiceServerApplication.wssUrl);
-                        roomResponse.setRestrictedMode(room.getRestrictedMode());
+                        roomResponse.setRestrictedMode(room.isRestrictedMode());
 
                         CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
                         roomResponse.getCoturn().add(coturnResponse);
@@ -1146,7 +1146,7 @@ public class SessionDataRepository {
                     .workspaceId(roomRequest.getWorkspaceId())
                     .maxUserCount(licenseItem.getUserCapacity())
                     .licenseName(licenseItem.name())
-                    .restrictedMode(roomRequest.getRestrictedMode())
+                    .restrictedMode(roomRequest.isRestrictedMode())
                     .build();
 
                 room.setProfile(profile);
@@ -1908,7 +1908,7 @@ public class SessionDataRepository {
                     roomResponse.setSessionId(sessionId);
                     roomResponse.setToken(sessionTokenResponse.getToken());
                     roomResponse.setWss(ServiceServerApplication.wssUrl);
-                    roomResponse.setRestrictedMode(room.getRestrictedMode());
+                    roomResponse.setRestrictedMode(room.isRestrictedMode());
 
                     CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
                     roomResponse.getCoturn().add(coturnResponse);
