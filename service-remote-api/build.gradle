@@ -18,6 +18,9 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-starter-web"
     implementation "org.springframework.data:spring-data-envers"
 
+    // ModelMapper
+    implementation("org.modelmapper:modelmapper:2.3.0")
+
     // Eureka
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     // Netflex Feign Client

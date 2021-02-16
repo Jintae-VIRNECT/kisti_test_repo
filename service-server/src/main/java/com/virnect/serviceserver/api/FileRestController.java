@@ -24,22 +24,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
+import com.virnect.data.dto.request.file.FileUploadRequest;
+import com.virnect.data.dto.request.file.RecordFileUploadRequest;
+import com.virnect.remote.application.FileService;
 import com.virnect.serviceserver.application.FileServiceTemp;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.serviceserver.dto.request.file.FileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RoomProfileUpdateRequest;
-import com.virnect.serviceserver.dto.response.PageRequest;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.response.file.FileDeleteResponse;
-import com.virnect.serviceserver.dto.response.file.FileDetailInfoListResponse;
-import com.virnect.serviceserver.dto.response.file.FileInfoListResponse;
-import com.virnect.serviceserver.dto.response.file.FilePreSignedResponse;
-import com.virnect.serviceserver.dto.response.file.FileUploadResponse;
-import com.virnect.serviceserver.dto.response.file.RoomProfileUpdateResponse;
+import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
+import com.virnect.data.dto.response.PageRequest;
+import com.virnect.data.dto.response.ResultResponse;
+import com.virnect.data.dto.response.file.FileDeleteResponse;
+import com.virnect.data.dto.response.file.FileDetailInfoListResponse;
+import com.virnect.data.dto.response.file.FileInfoListResponse;
+import com.virnect.data.dto.response.file.FilePreSignedResponse;
+import com.virnect.data.dto.response.file.FileUploadResponse;
+import com.virnect.data.dto.response.file.RoomProfileUpdateResponse;
 import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @RestController
@@ -53,7 +54,9 @@ public class FileRestController {
 
     //private final FileDataRepository fileDataRepository;
 
-    private final FileServiceTemp fileService;
+    //private final FileServiceTemp fileService;
+
+    private final FileService fileService;
 
     @Autowired
     private RemoteServiceConfig remoteServiceConfig;
