@@ -33,7 +33,7 @@ import com.virnect.serviceserver.global.common.ApiResponse;
 @RequiredArgsConstructor
 //public class MemberDataRepository extends DataRepository {
 public class MemberDataRepository {
-    private static final String TAG = MemberDataRepository.class.getSimpleName();
+    /*private static final String TAG = MemberDataRepository.class.getSimpleName();
 
     private final SessionService sessionService;
     private final ModelMapper modelMapper;
@@ -225,5 +225,5 @@ public class MemberDataRepository {
                 return new DataProcess<>(new MemberSecessionResponse(userId, true, LocalDateTime.now()));
             }
         }.asApiResponse();
-    }
+    }*/
 }

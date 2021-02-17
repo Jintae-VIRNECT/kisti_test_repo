@@ -50,7 +50,7 @@ import com.virnect.serviceserver.dto.response.session.UploadResult;
 @RequiredArgsConstructor
 public class FileServiceTemp {
 
-	private final IFileManagementService fileManagementService;
+	/*private final IFileManagementService fileManagementService;
 
 	private final SessionService sessionService;
 	private final FileService fileService;
@@ -82,13 +82,13 @@ public class FileServiceTemp {
 				fileUploadRequest.getFile(), bucketPath, FileType.FILE);
 			ErrorCode errorCode = uploadResult.getErrorCode();
 			switch (errorCode) {
-						/*case ErrorCode.ERR_FILE_ASSUME_DUMMY:
+						*//*case ErrorCode.ERR_FILE_ASSUME_DUMMY:
 						case ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION:
 						case ErrorCode.ERR_FILE_SIZE_LIMIT:
 							return new DataProcess<>(new FileUploadResponse(), errorCode);
 						case ErrorCode.ERR_SUCCESS:
 							objectName = uploadResult.getResult();
-							break;*/
+							break;*//*
 			}
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
@@ -462,5 +462,5 @@ public class FileServiceTemp {
 			responseData = new ApiResponse<>("", ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return responseData;
-	}
+	}*/
 }

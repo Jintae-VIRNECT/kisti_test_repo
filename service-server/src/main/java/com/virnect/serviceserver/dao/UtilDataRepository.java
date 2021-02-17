@@ -40,7 +40,7 @@ import com.virnect.serviceserver.infra.utils.LogMessage;
 @RequiredArgsConstructor
 public class UtilDataRepository {
 
-    private static final String TAG = UtilDataRepository.class.getSimpleName();
+    /*private static final String TAG = UtilDataRepository.class.getSimpleName();
 
     private final RemoteServiceConfig config;
     private final SessionService sessionService;
@@ -255,7 +255,7 @@ public class UtilDataRepository {
         }.asApiResponse();
     }
 
-    /*public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
+    *//*public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
         return new RepoDecoder<Company, CompanyInfoResponse>(RepoDecoderType.READ) {
             @Override
             Company loadFromDatabase() {
@@ -277,7 +277,7 @@ public class UtilDataRepository {
                 return new DataProcess<>(companyInfoResponse);
             }
         }.asApiResponse();
-    }*/
+    }*//*
 
     public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
         return new RepoDecoder<Company, CompanyInfoResponse>(RepoDecoderType.READ) {
@@ -333,5 +333,5 @@ public class UtilDataRepository {
             }
 
         }.asApiResponse();
-    }
+    }*/
 }
