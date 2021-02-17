@@ -66,9 +66,7 @@ const _ = {
         for (let config of configs.coturn) {
           config.url = URLS['coturnUrl']
         }
-      }
-      if (URLS['wsapi']) {
-        ws = `${URLS['wsapi']}${wsUri['REMOTE']}` || configs.wss
+        ws = `${URLS['ws']}${wsUri['REMOTE']}` || configs.wss
       }
 
       const iceServers = configs.coturn || URLS['coturn']
