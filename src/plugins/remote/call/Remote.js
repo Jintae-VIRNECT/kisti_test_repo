@@ -59,13 +59,22 @@ const _ = {
         deviceType: DEVICE.WEB,
       }
 
+      // const iceServers = URLS.coturn
+      let ws = configs.wss || `${URLS['ws']}${wsUri['REMOTE']}`
+      // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+      if (URLS['coturnUrl']) {
+        for (let config of configs.coturn) {
+          config.url = URLS['coturnUrl']
+        }
+      }
+      if (URLS['wsapi']) {
+        ws = `${URLS['wsapi']}${wsUri['REMOTE']}` || configs.wss
+      }
+
       const iceServers = configs.coturn || URLS['coturn']
       for (let ice of iceServers) {
         ice['urls'] = ice['url']
       }
-      // const iceServers = URLS.coturn
-      const ws = configs.wss || `${URLS['wsapi']}${wsUri['REMOTE']}`
-      // const ws = 'wss://192.168.6.3:8000/remote/websocket'
 
       setRecordInfo({
         token: configs['token'],
