@@ -44,6 +44,9 @@
           <template v-else-if="menus[tabIdx].key === 'translate'">
             <set-translate></set-translate>
           </template>
+          <template v-else-if="menus[tabIdx].key === 'feature'">
+            <set-feature></set-feature>
+          </template>
         </div>
       </div>
     </div>
@@ -66,6 +69,7 @@ export default {
     SetTranslate: () => import('./setting/WorkspaceSetTranslate'),
     SetRecord: () => import('./setting/WorkspaceSetRecord'),
     SetServerRecord: () => import('./setting/WorkspaceSetServerRecord'),
+    SetFeature: () => import('./setting/WorkspaceSetFeature'),
   },
   data() {
     return {
@@ -78,7 +82,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['useTranslate', 'useRecording']),
+    ...mapGetters(['useTranslate', 'useRecording', 'restrictedMode']),
     menus() {
       let menu
       if (this.isTablet && !this.useRecording) {
@@ -120,6 +124,12 @@ export default {
         menu.push({
           key: 'translate',
           text: this.$t('workspace.setting_translate'),
+        })
+      }
+      if (this.restrictedMode.audio || this.restrictedMode.video) {
+        menu.push({
+          key: 'feature',
+          text: this.$t('workspace.setting_function'),
         })
       }
       return menu

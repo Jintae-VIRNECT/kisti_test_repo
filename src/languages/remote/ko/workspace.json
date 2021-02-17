@@ -94,6 +94,11 @@
     "setting_translate_disable_message": "번역 사용을 켜주세요.",
     "access_deny": "카메라와 마이크 접근이 차단되었습니다.",
     "access_deny_description": "브라우저 주소창의 <span class='device-denied__content--emphasize'>아이콘</span>을 클릭하여<br /> 접근을 허용 후 새로고침해 주세요.",
+    "setting_function": "기능 설정",
+    "setting_camera_control": "영상 공유 제어",
+    "setting_camera_restrict": "영상 제한 모드",
+    "setting_camera_restrict_enable": "영상 제한 모드 사용",
+    "setting_camera_restrict_info": "참가자의 카메라를 제어할 수 있는 모드입니다.",
     
     "remote_name": "협업 이름",
     "remote_description": "협업 설명",

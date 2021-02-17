@@ -78,6 +78,18 @@ const _ = {
       }
       debug('coturn::', iceServers)
 
+      if (configs.audioRestrictedMode || configs.videoRestrictedMode) {
+        Store.commit('setRestrictedMode', true)
+        Store.dispatch('setDevices', {
+          video: {
+            isOn: false,
+          },
+          audio: {
+            isOn: false,
+          },
+        })
+      }
+
       const connectOption = {
         iceServers,
         wsUri: ws,
@@ -100,8 +112,10 @@ const _ = {
         const publishOptions = {
           audioSource: options.audioSource,
           videoSource: options.videoSource,
-          publishAudio: settingInfo.micOn,
-          publishVideo: settingInfo.videoOn,
+          publishAudio: configs.audioRestrictedMode ? false : settingInfo.micOn,
+          publishVideo: configs.videoRestrictedMode
+            ? false
+            : settingInfo.videoOn,
           resolution: settingInfo.quality,
           // resolution: '1920x1080', // FHD
           // resolution: '3840x2160', // 4K
@@ -141,10 +155,12 @@ const _ = {
             hasVideo: _.publisher.stream.hasVideo,
             hasCamera: _.publisher.stream.hasVideo,
             hasAudio: _.publisher.stream.hasAudio,
-            video: settingInfo.videoOn,
+            video: _.publisher.stream.videoActive, // settingInfo.videoOn,
             audio: _.publisher.stream.audioActive,
             cameraStatus: _.publisher.stream.hasVideo
-              ? settingInfo.videoOn
+              ? configs.videoRestrictedMode
+                ? CAMERA_STATUS.CAMERA_OFF
+                : _.publisher.stream.videoActive
                 ? CAMERA_STATUS.CAMERA_ON
                 : CAMERA_STATUS.CAMERA_OFF
               : CAMERA_STATUS.CAMERA_NONE,

@@ -4,6 +4,7 @@ const getDefaultState = () => {
   return {
     initing: true,
     viewForce: false,
+    restrictedMode: false,
     mainView: {},
     participants: [
       // id: uuid,
@@ -259,6 +260,10 @@ const mutations = {
     }
     Object.assign(state.resolutions[idx], payload)
   },
+  // video, audio 제한모드 설정
+  setRestrictedMode(state, payload) {
+    state.restrictedMode = payload
+  },
 
   // chat
   addChat(state, payload) {
@@ -322,6 +327,7 @@ const actions = {
 const getters = {
   viewForce: state => state.viewForce,
   mainView: state => state.mainView,
+  allowCameraControl: state => !state.restrictedMode,
   participants: state => state.participants,
   myInfo: state => {
     if (state.participants.length > 0) {

@@ -2,6 +2,10 @@
   <div class="participants" id="video-list">
     <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
       <transition-group name="list" tag="div" class="participants__view">
+        <camera-control
+          v-if="restrictedRoom && isLeader"
+          key="controlBtn"
+        ></camera-control>
         <!-- <div class="participants__view"></div> -->
         <participant-video
           v-for="participant of participants"
@@ -28,19 +32,21 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { ROLE } from 'configs/remote.config'
+import { ROLE, CONTROL } from 'configs/remote.config'
 import { kickoutMember } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
 import SelectView from '../modal/SelectView'
+import CameraControl from './CameraControl'
 export default {
   name: 'ParticipantList',
   components: {
     ParticipantVideo,
     InviteModal,
     SelectView,
+    CameraControl,
   },
   data() {
     return {
@@ -55,6 +61,7 @@ export default {
       'viewForce',
       'roomInfo',
       'openRoom',
+      'allowCameraControl',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -94,8 +101,13 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setMainView', 'addChat', 'removeMember']),
+    ...mapActions(['setMainView', 'addChat', 'removeMember', 'restrictedRoom']),
     selectMain(participant) {
+      if (this.restrictedRoom) {
+        this.$call.sendControl(CONTROL.VIDEO, true, [participant.connectionId])
+        this.$call.sendVideo(participant.id, true)
+        return
+      }
       this.selectview = {
         id: participant.id,
         nickname: participant.nickname,
