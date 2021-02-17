@@ -101,6 +101,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    targetElement: {
+      type: String,
+      default: '.remote-layout',
+    },
   },
   data() {
     return {
@@ -161,7 +165,7 @@ export default {
       if (this.$refs['popover']) {
         //this.$root.$el.append(this.$refs['popover'])
         // document.body.append(this.$refs['popover'])
-        document.querySelector('.remote-layout').append(this.$refs['popover'])
+        document.querySelector(this.targetElement).append(this.$refs['popover'])
       }
       this.visible = true
 

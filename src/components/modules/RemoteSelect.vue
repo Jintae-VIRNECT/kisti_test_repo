@@ -9,6 +9,7 @@
     :scrollHide="true"
     :disabled="disabled"
     @visible="visible => (show = visible)"
+    :targetElement="targetElement"
   >
     <button
       slot="reference"
@@ -80,6 +81,9 @@ export default {
     text: {
       type: String,
       default: 'text',
+    },
+    targetElement: {
+      type: String,
     },
   },
   watch: {
