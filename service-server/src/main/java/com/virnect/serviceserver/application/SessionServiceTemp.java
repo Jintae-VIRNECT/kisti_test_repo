@@ -17,6 +17,9 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.dao.MemberRepository;
+import com.virnect.data.dao.RoomHistoryRepository;
+import com.virnect.data.dao.RoomRepository;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
@@ -25,14 +28,6 @@ import com.virnect.data.domain.room.RoomHistory;
 import com.virnect.data.domain.room.RoomStatus;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
-import com.virnect.data.dao.MemberRepository;
-import com.virnect.data.dao.RoomHistoryRepository;
-import com.virnect.data.dao.RoomRepository;
-import com.virnect.serviceserver.api.SessionRestController;
-import com.virnect.serviceserver.application.message.MessageRestService;
-import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
-import com.virnect.serviceserver.dao.FileDataRepository;
-import com.virnect.data.dto.push.PushSendRequest;
 import com.virnect.data.dto.request.room.ModifyRoomInfoRequest;
 import com.virnect.data.dto.response.PageMetadataResponse;
 import com.virnect.data.dto.response.member.MemberInfoResponse;
@@ -40,11 +35,13 @@ import com.virnect.data.dto.response.room.RoomDeleteResponse;
 import com.virnect.data.dto.response.room.RoomDetailInfoResponse;
 import com.virnect.data.dto.response.room.RoomInfoListResponse;
 import com.virnect.data.dto.response.room.RoomInfoResponse;
-import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.serviceserver.api.SessionRestController;
+import com.virnect.remote.application.workspace.WorkspaceRestService;
+import com.virnect.serviceserver.dao.FileDataRepository;
 import com.virnect.serviceserver.infra.utils.LogMessage;
 
 @Slf4j
@@ -57,17 +54,12 @@ public class SessionServiceTemp {
 	private final ModelMapper modelMapper;
 
 	private final WorkspaceRestService workspaceRestService;
-	private final MessageRestService messageRestService;
 	private final RoomRepository roomRepository;
 	private final MemberRepository memberRepository;
 	private final RoomHistoryRepository roomHistoryRepository;
 
 	private final ServiceSessionManager serviceSessionManager;
 	private final FileDataRepository fileDataRepository;
-
-	public PushResponse sendPush(PushSendRequest pushSendRequest) {
-		return messageRestService.sendPush(pushSendRequest).getData();
-	}
 
 	public RoomInfoListResponse getRoomList(
 		String workspaceId,

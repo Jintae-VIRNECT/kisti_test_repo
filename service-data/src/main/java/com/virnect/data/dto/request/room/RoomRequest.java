@@ -41,22 +41,28 @@ public class RoomRequest {
     @NotNull
     private String workspaceId;
 
-    @ApiModelProperty(value = "Remote Room camera operation Type", position = 8, example = "ON")
-    private RestrictedMode restrictedMode;
+    /*@ApiModelProperty(value = "Remote Room camera operation Type", position = 8, example = "false")
+    private boolean restrictedMode;*/
+
+    @ApiModelProperty(value = "Remote Video Restricted Mode", position = 9, example = "false")
+    private boolean videoRestrictedMode;
+
+    @ApiModelProperty(value = "Remote Audio Restricted Mode", position = 10, example = "false")
+    private boolean audioRestrictedMode;
 
     /**
      * test17@test.com 4705cf50e6d02c59b0eef9591666e2a3
      * test19@test.com 473b12854daa6afeb9e505551d1b2743
      */
     @ApiModelProperty(
-            value = "Participants Identifier",
-            position = 8,
-            dataType = "List",
-            example = "[\n" +
-                    "    \"4705cf50e6d02c59b0eef9591666e2a3\",\n" +
-                    "    \"473b12854daa6afeb9e505551d1b2743\"\n" +
-                    "\n" +
-                    "]"
+        value = "Participants Identifier",
+        position = 8,
+        dataType = "List",
+        example = "[\n" +
+            "    \"4705cf50e6d02c59b0eef9591666e2a3\",\n" +
+            "    \"473b12854daa6afeb9e505551d1b2743\"\n" +
+            "\n" +
+            "]"
     )
     @NotNull
     private List<String> participantIds;
@@ -64,12 +70,12 @@ public class RoomRequest {
     @Override
     public String toString() {
         return "RoomRequest{" +
-                "title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", autoRecording='" + autoRecording + '\'' +
-                ", leaderId='" + leaderId + '\'' +
-                ", workspaceId='" + workspaceId + '\'' +
-                ", participantIds='" + participantIds.toString() + '\'' +
-                '}';
+            "title='" + title + '\'' +
+            ", description='" + description + '\'' +
+            ", autoRecording='" + autoRecording + '\'' +
+            ", leaderId='" + leaderId + '\'' +
+            ", workspaceId='" + workspaceId + '\'' +
+            ", participantIds='" + participantIds.toString() + '\'' +
+            '}';
     }
 }

@@ -43,11 +43,11 @@ import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.error.exception.RestServiceException;
 import com.virnect.serviceserver.global.common.ApiResponse;
 
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
-public class SessionService {
-    private static final String TAG = SessionService.class.getSimpleName();
+@RequiredArgsConstructor*/
+public class SessionServiceBefore {
+    /*private static final String TAG = SessionService.class.getSimpleName();
 
     private final ModelMapper modelMapper;
     private final RoomRepository roomRepository;
@@ -84,7 +84,7 @@ public class SessionService {
         roomRepository.save(room);
     }
 
-    /*@Transactional
+    *//*@Transactional
     public void createSession(Session sessionNotActive) {
         log.info("session create and sessionEventHandler is here");
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
@@ -94,7 +94,7 @@ public class SessionService {
         room.setActiveDate(activeTime);
         room.setRoomStatus(RoomStatus.ACTIVE);
         roomRepository.save(room);
-    }*/
+    }*//*
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public Room getRoomForWrite(String workspaceId, String sessionId) {
@@ -117,12 +117,12 @@ public class SessionService {
         return this.roomHistoryRepository.findBySessionId(sessionId).orElse(null);
     }
 
-    /**
+    *//**
      *
      * @param workspaceId
      * @param userId
      * @return
-     */
+     *//*
     public List<Room> getRoomList(String workspaceId, String userId) {
         List<Room> roomList = new ArrayList<>();
         List<Member> memberList;
@@ -204,14 +204,14 @@ public class SessionService {
         this.memberRepository.save(member);
     }
 
-    /*@Transactional
+    *//*@Transactional
     public void setMember(String workspaceId, String sessionId, String uuid, MemberStatus memberStatus) {
         Member member = this.memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, uuid).orElse(null);
         if(member != null) {
             member.setMemberStatus(memberStatus);
             this.memberRepository.save(member);
         }
-    }*/
+    }*//*
 
     @Transactional
     public void setMemberHistory(MemberHistory memberHistory) {
@@ -490,11 +490,11 @@ public class SessionService {
         }
     }
 
-    /**
+    *//**
      *
      * @param room
      * @param joinRoomRequest
-     */
+     *//*
     @Transactional
     @Deprecated
     public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
@@ -519,7 +519,7 @@ public class SessionService {
 
             //memberRepository.save(member);
 
-            /*for (Member member: room.getMembers()) {
+            *//*for (Member member: room.getMembers()) {
                 if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                     log.debug("Room has member Id is {}", member.getUuid());
                     member.setMemberType(joinRoomRequest.getMemberType());
@@ -528,8 +528,8 @@ public class SessionService {
                     //save member
                     memberRepository.save(member);
                 }
-            }*/
-            /*for (ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext(); ) {
+            }*//*
+            *//*for (ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext(); ) {
                 //Member member = it.next();
                 it.next()
                 log.info("NEW getParticipants Id is {}", joinRoomRequest.getUuid());
@@ -546,12 +546,12 @@ public class SessionService {
                 //member.setMemberStatus(MemberStatus.UNLOAD);
                 //memberRepository.save(member);
                 it.add(member);
-            }*/
+            }*//*
         }
         //roomRepository.save(room);
         //else {
             //Private
-            /*for (Member member: room.getMembers()) {
+            *//*for (Member member: room.getMembers()) {
                 if(member.getUuid().equals(joinRoomRequest.getUuid())) {
                     log.debug("Room has member Id is {}", member.getUuid());
                     member.setMemberType(joinRoomRequest.getMemberType());
@@ -560,11 +560,11 @@ public class SessionService {
                     //save member
                     memberRepository.save(member);
                 }
-            }*/
+            }*//*
         //}
     }
 
-    /*@Transactional
+    *//*@Transactional
     public ErrorCode joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
         for (Member member: room.getMembers()) {
             if(member.getUuid().equals(joinRoomRequest.getUuid())) {
@@ -584,14 +584,14 @@ public class SessionService {
             }
         }
         return ErrorCode.ERR_SUCCESS;
-    }*/
+    }*//*
 
-    /**
+    *//**
      * final step.
      * @param sessionId
      * @param connectionId
      * @param clientMetaData
-     */
+     *//*
     @Transactional
     @Deprecated
     public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
@@ -607,7 +607,7 @@ public class SessionService {
         roomRepository.save(room);
 
         //if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-            /*for(ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext();) {
+            *//*for(ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext();) {
                 Member member = it.next();
 
                 if(member.getUuid().equals(clientMetaData.getClientData())) {
@@ -629,10 +629,10 @@ public class SessionService {
                     newMember.setMemberStatus(MemberStatus.LOAD);
                     it.add(newMember);
                 }
-            }*/
+            }*//*
 
 
-            /*room.getMembers().stream().map(member -> {
+            *//*room.getMembers().stream().map(member -> {
                 if(member.getUuid().equals(clientMetaData.getClientData())) {
                     member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
                     member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
@@ -652,8 +652,8 @@ public class SessionService {
                     member.setMemberStatus(MemberStatus.LOAD);
                 }
                 return null;
-            }).collect(Collectors.toList());*/
-            /*for (Member member : memberList) {
+            }).collect(Collectors.toList());*//*
+            *//*for (Member member : memberList) {
                 if (member.getUuid().equals(clientMetaData.getClientData())) {
                     member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
                     member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
@@ -674,27 +674,27 @@ public class SessionService {
                 }
             }
             if (newMember != null)
-                room.getMembers().add(newMember);*/
+                room.getMembers().add(newMember);*//*
         //} else {
-            /*for (Member member : room.getMembers()) {
+            *//*for (Member member : room.getMembers()) {
                 if (member.getUuid().equals(clientMetaData.getClientData())) {
                     member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
                     member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
                     member.setConnectionId(connectionId);
                     member.setMemberStatus(MemberStatus.LOAD);
                 }
-            }*/
+            }*//*
         //}
         //roomRepository.save(room);
     }
 
-    /**
+    *//**
      * This method is not for leader user
      * @param room
      * @param member
      * @return
-     */
-    /*@Transactional
+     *//*
+    *//*@Transactional
     @Deprecated
     public ErrorCode exitRoom(Room room, Member member) {
         for (Member roomMember : room.getMembers()) {
@@ -711,7 +711,7 @@ public class SessionService {
             }
         }
         return ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND;
-    }*/
+    }*//*
 
     @Transactional
     public void removeMember(Room room, Member member) {
@@ -853,13 +853,13 @@ public class SessionService {
         }
     }
 
-    /*@Transactional
+    *//*@Transactional
     public void updateMember(Member member, MemberStatus memberStatus) {
         member.setMemberStatus(memberStatus);
         memberRepository.save(member);
-    }*/
+    }*//*
 
-    /*@Transactional
+    *//*@Transactional
     public void createOrUpdateMember(Room room, String userId) {
         log.debug("updateRoom member Id is {}", userId);
         for(Member member : room.getMembers()) {
@@ -879,7 +879,7 @@ public class SessionService {
             }
         }
         roomRepository.save(room);
-    }*/
+    }*//*
 
     @Transactional
     public void updateMember(Member member, MemberStatus memberStatus) {
@@ -918,7 +918,7 @@ public class SessionService {
 
 
 
-    /*@Transactional
+    *//*@Transactional
     public ApiResponse<Boolean> inviteRoom(String workspaceId ,String sessionId, InviteRoomRequest inviteRoomRequest) {
         Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
@@ -942,9 +942,9 @@ public class SessionService {
         roomRepository.save(room);
 
         return new ApiResponse<>(true);
-    }*/
+    }*//*
 
-    /*@Transactional
+    *//*@Transactional
     public ApiResponse<InviteRoomResponse> inviteRoom(
             String workspaceId ,
             String sessionId,
@@ -992,9 +992,9 @@ public class SessionService {
         inviteRoomResponse.setPublishDate(pushResponse.getData().getPublishDate());
 
         return new ApiResponse<>(inviteRoomResponse);
-    }*/
+    }*//*
 
-    /*public ApiResponse<Boolean> inviteRoomAccept(String workspaceId, String sessionId, String userId, Boolean accept, Locale locale) {
+    *//*public ApiResponse<Boolean> inviteRoomAccept(String workspaceId, String sessionId, String userId, Boolean accept, Locale locale) {
         if(accept) {
 
         } else {

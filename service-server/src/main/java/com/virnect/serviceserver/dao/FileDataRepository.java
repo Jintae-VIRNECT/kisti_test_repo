@@ -18,13 +18,17 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.dao.MemberHistoryRepository;
+import com.virnect.data.dao.MemberRepository;
+import com.virnect.data.dao.RoomHistoryRepository;
+import com.virnect.data.dao.RoomRepository;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.file.FileType;
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.RecordFile;
-import com.virnect.serviceserver.application.FileService;
-import com.virnect.serviceserver.application.SessionService;
-import com.virnect.serviceserver.application.user.UserRestService;
+import com.virnect.remote.application.FileService;
+import com.virnect.remote.application.SessionService;
+import com.virnect.remote.application.user.UserRestService;
 import com.virnect.data.dto.request.file.FileUploadRequest;
 import com.virnect.data.dto.request.file.RecordFileUploadRequest;
 import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
@@ -58,6 +62,11 @@ public class FileDataRepository {
     private final FileService fileService;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
+
+    private final RoomRepository roomRepository;
+    private final RoomHistoryRepository roomHistoryRepository;
+    private final MemberRepository memberRepository;
+    private final MemberHistoryRepository memberHistoryRepository;
 
     /**
      * Generate directory path to upload file
@@ -180,7 +189,8 @@ public class FileDataRepository {
         return new RepoDecoder<Room, RoomProfileUpdateResponse>(RepoDecoderType.UPDATE) {
             @Override
             Room loadFromDatabase() {
-                return sessionService.getRoom(workspaceId, sessionId);
+                //return sessionService.getRoom(workspaceId, sessionId);
+                return roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
             }
 
             @Override

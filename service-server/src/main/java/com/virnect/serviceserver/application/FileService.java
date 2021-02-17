@@ -17,14 +17,14 @@ import com.virnect.data.dao.RecordFileRepository;
 import com.virnect.data.dto.request.file.FileUploadRequest;
 import com.virnect.data.dto.request.file.RecordFileUploadRequest;
 
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class FileService {
-    private static final String TAG = FileService.class.getSimpleName();
+    /*private static final String TAG = FileService.class.getSimpleName();
 
-    /*private final FileRepository fileRepository;
-    private final RecordFileRepository recordFileRepository;*/
+    *//*private final FileRepository fileRepository;
+    private final RecordFileRepository recordFileRepository;*//*
 
     private final FileRepository fileRepository;
     private final RecordFileRepository recordFileRepository;
@@ -103,5 +103,5 @@ public class FileService {
     @Transactional
     public void deleteFiles(String workspaceId, String sessionId) {
         fileRepository.deleteAllByWorkspaceIdAndSessionId(workspaceId, sessionId);
-    }
+    }*/
 }

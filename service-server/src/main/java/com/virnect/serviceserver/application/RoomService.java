@@ -45,7 +45,6 @@ public class RoomService {
 	private static final String REST_PATH = "/remote/room";
 
 	private final RoomRepository roomRepository;
-
 	private final SessionDataRepository sessionDataRepository;
 	private final ServiceSessionManager serviceSessionManager;
 

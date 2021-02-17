@@ -29,7 +29,11 @@ public class RoomResponse {
     @ApiModelProperty(value = "Remote Server Websocket Address", position = 3, example = "wss://")
     private String wss = "";
 
-    @ApiModelProperty(value = "Camera Operation Type", position = 4, example = "OFF")
-    private RestrictedMode restrictedMode;
+    @ApiModelProperty(value = "Video Restricted Mode", position = 4, example = "OFF")
+    private boolean videoRestrictedMode;
+
+    @ApiModelProperty(value = "Audio Restricted Mode", position = 5, example = "OFF")
+    private boolean audioRestrictedMode;
+
 
 }

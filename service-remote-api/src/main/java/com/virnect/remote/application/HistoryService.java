@@ -35,15 +35,14 @@ import com.virnect.remote.application.workspace.WorkspaceRestService;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class HistoryService {
 
 	//private static final String TAG = HistoryDataRepository.class.getSimpleName();
 
-	private final WorkspaceRestService workspaceRestService;
-	private final RoomHistoryRepository roomHistoryRepository;
-	private final MemberHistoryRepository memberHistoryRepository;
-	private final ModelMapper modelMapper;
+	private WorkspaceRestService workspaceRestService;
+	private RoomHistoryRepository roomHistoryRepository;
+	private MemberHistoryRepository memberHistoryRepository;
+	private ModelMapper modelMapper;
 
 	public RoomHistoryInfoListResponse getRoomHistoryCurrent(
 		String workspaceId,
@@ -356,6 +355,10 @@ public class HistoryService {
 		responseDate = new ApiResponse(resultResponse);
 
 		return responseDate;
+	}
+
+	public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
+		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
 	}
 
 }

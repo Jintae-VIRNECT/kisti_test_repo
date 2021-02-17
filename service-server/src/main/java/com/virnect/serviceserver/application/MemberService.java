@@ -25,9 +25,9 @@ import com.virnect.serviceserver.dto.response.member.MemberSecessionResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
 
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class MemberService {
 
 	/*private final ModelMapper modelMapper;

@@ -1,37 +1,9 @@
 package com.virnect.serviceserver.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.member.MemberHistory;
-import com.virnect.data.domain.member.MemberStatus;
-import com.virnect.data.domain.member.MemberType;
-import com.virnect.data.domain.room.RoomHistory;
-import com.virnect.serviceserver.application.HistoryService;
-import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
-import com.virnect.data.dto.request.room.RoomHistoryDeleteRequest;
-import com.virnect.data.dto.response.PageMetadataResponse;
-import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.member.MemberInfoResponse;
-import com.virnect.data.dto.response.room.RoomHistoryDetailInfoResponse;
-import com.virnect.data.dto.response.room.RoomHistoryInfoListResponse;
-import com.virnect.data.dto.response.room.RoomHistoryInfoResponse;
-import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.infra.utils.LogMessage;
 
 @Slf4j
 @Service
@@ -39,7 +11,7 @@ import com.virnect.data.infra.utils.LogMessage;
 //public class HistoryDataRepository extends DataRepository {
 public class HistoryDataRepository {
 
-    private final HistoryService historyService;
+    /*private final HistoryService historyService;
     private final WorkspaceRestService workspaceRestService;
     private final ModelMapper modelMapper;
 
@@ -84,9 +56,9 @@ public class HistoryDataRepository {
                     .build();
 
                 // find specific member has room history and room history is not null
-                /*Map<RoomHistory, List<MemberHistory>> roomHistoryListMap = memberHistoryPage.getContent().stream()
+                *//*Map<RoomHistory, List<MemberHistory>> roomHistoryListMap = memberHistoryPage.getContent().stream()
                         .sorted((memberHistory, t1) -> memberHistory.getEndDate().compareTo(t1.getEndDate()))
-                        .collect(Collectors.toMap(MemberHistory::getRoomHistory, memberHistory -> memberHistory.getRoomHistory().getMemberHistories()));*/
+                        .collect(Collectors.toMap(MemberHistory::getRoomHistory, memberHistory -> memberHistory.getRoomHistory().getMemberHistories()));*//*
 
                 List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
                 for (MemberHistory memberHistory : memberHistoryPage.getContent()) {
@@ -196,12 +168,12 @@ public class HistoryDataRepository {
                 // get all member history by uuid
                 Page<RoomHistory> roomHistoryPage = loadFromDatabase();
 
-                /*for (RoomHistory roomHistory: roomHistoryPage.getContent()) {
+                *//*for (RoomHistory roomHistory: roomHistoryPage.getContent()) {
                     log.info("searchRoomHistoryPageList :: {}, {}", search, roomHistory.getTitle());
                     for (MemberHistory m : roomHistory.getMemberHistories()) {
                         log.info("searchRoomHistoryPageList :: Members :: {}, {}", m.getWorkspaceId(), m.getUuid());
                     }
-                }*/
+                }*//*
 
                 // Page Metadata
                 PageMetadataResponse pageMeta = PageMetadataResponse.builder()
@@ -411,12 +383,12 @@ public class HistoryDataRepository {
         }.asApiResponse();
     }
 
-    /**
+    *//**
      *
      * @param workspaceId
      * @param userId
      * @return
-     */
+     *//*
     public ApiResponse<ResultResponse> removeRoomHistory(String workspaceId, String userId) {
         return new RepoDecoder<List<MemberHistory>, ResultResponse>(RepoDecoderType.DELETE) {
             @Override
@@ -502,7 +474,7 @@ public class HistoryDataRepository {
             }
         }.asApiResponse();
     }
-    /*public DataProcess<JsonObject> requestRoom() {
+    *//*public DataProcess<JsonObject> requestRoom() {
         return new RepoDecoder<JsonObject, JsonObject>() {
 
         }.asResponseData();

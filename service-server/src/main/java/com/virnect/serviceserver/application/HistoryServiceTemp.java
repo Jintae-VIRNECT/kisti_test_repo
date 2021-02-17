@@ -34,12 +34,12 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class HistoryServiceTemp {
 
-	private static final String TAG = HistoryDataRepository.class.getSimpleName();
+	/*private static final String TAG = HistoryDataRepository.class.getSimpleName();
 
 	private final WorkspaceRestService workspaceRestService;
 	private final RoomHistoryRepository roomHistoryRepository;
@@ -358,5 +358,5 @@ public class HistoryServiceTemp {
 		responseDate = new ApiResponse(resultResponse);
 
 		return responseDate;
-	}
+	}*/
 }

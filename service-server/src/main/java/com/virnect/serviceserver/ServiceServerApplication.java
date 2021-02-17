@@ -26,7 +26,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -81,16 +83,18 @@ import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 @Import({ JsonRpcConfiguration.class })
 //@EnableConfigurationProperties(RemoteServiceProperties.class)
 @ComponentScan(value = {
-        "com.virnect.data",
-        "com.virnect.serviceserver"
+    "com.virnect.data",
+    "com.virnect.remote",
+    "com.virnect.serviceserver"
 })
 @EntityScan(value = {
-        "com.virnect.data.domain"
+    "com.virnect.data.domain"
 })
 @EnableJpaRepositories(value = {
-        "com.virnect.data.dao"
+    "com.virnect.data.dao"
 })
 //@PropertySource(value = {"classpath:feign-application.properties", "classpath:application.properties"})
+//@SpringBootApplication(scanBasePackages = {"com.virnect.remote", "com.virnect.data", "com.virnect.serviceserver"})
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 

@@ -22,12 +22,12 @@ import com.virnect.data.dao.RoomHistoryRepository;
  * Do some processing for the request.
  *
  */
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class HistoryService {
-
-	private static final String TAG = HistoryService.class.getSimpleName();
+/*
+	//private static final String TAG = HistoryService.class.getSimpleName();
 
 	private final RoomHistoryRepository roomHistoryRepository;
 
@@ -97,5 +97,5 @@ public class HistoryService {
 			memberHistory.setHistoryDeleted(true);
 			this.memberHistoryRepository.save(memberHistory);
 		}
-	}
+	}*/
 }

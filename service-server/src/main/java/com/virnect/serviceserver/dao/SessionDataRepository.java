@@ -33,15 +33,6 @@ import com.virnect.data.domain.room.RoomStatus;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
 import com.virnect.data.domain.session.SessionType;
-import com.virnect.mediaserver.core.EndReason;
-import com.virnect.mediaserver.core.Participant;
-import com.virnect.serviceserver.ServiceServerApplication;
-import com.virnect.serviceserver.application.HistoryService;
-import com.virnect.serviceserver.application.SessionService;
-import com.virnect.serviceserver.application.record.RecordRestService;
-import com.virnect.serviceserver.application.user.UserRestService;
-import com.virnect.serviceserver.application.workspace.WorkspaceRestService;
-import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.data.dto.constraint.LicenseItem;
 import com.virnect.data.dto.constraint.PushConstants;
 import com.virnect.data.dto.request.room.InviteRoomRequest;
@@ -72,6 +63,15 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.mediaserver.core.EndReason;
+import com.virnect.mediaserver.core.Participant;
+import com.virnect.remote.application.HistoryService;
+import com.virnect.remote.application.SessionService;
+import com.virnect.remote.application.record.RecordRestService;
+import com.virnect.remote.application.user.UserRestService;
+import com.virnect.remote.application.workspace.WorkspaceRestService;
+import com.virnect.serviceserver.ServiceServerApplication;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.infra.utils.PushMessageClient;
 
 @Slf4j
@@ -959,7 +959,9 @@ public class SessionDataRepository {
                     roomResponse.setSessionId(sessionResponse.getId());
                     roomResponse.setToken(sessionTokenResponse.getToken());
                     roomResponse.setWss(ServiceServerApplication.wssUrl);
-                    roomResponse.setRestrictedMode(room.getRestrictedMode());
+                    //roomResponse.setRestrictedMode(room.isRestrictedMode());
+                    roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+                    roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
                     CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
                     roomResponse.getCoturn().add(coturnResponse);
 
@@ -1014,7 +1016,9 @@ public class SessionDataRepository {
                     .workspaceId(roomRequest.getWorkspaceId())
                     .maxUserCount(licenseItem.getUserCapacity())
                     .licenseName(licenseItem.name())
-                    .restrictedMode(roomRequest.getRestrictedMode())
+                    //.restrictedMode(roomRequest.isRestrictedMode())
+                    .videoRestrictedMode(roomRequest.isVideoRestrictedMode())
+                    .audioRestrictedMode(roomRequest.isAudioRestrictedMode())
                     .build();
 
                 // Remote Session Property Entity Create
@@ -1077,7 +1081,6 @@ public class SessionDataRepository {
                 preDataProcess();
 
                 RoomHistory roomHistory = historyService.getRoomHistory(roomRequest.getWorkspaceId(), preSessionId);
-
                 if (roomHistory == null) {
                     return new DataProcess<>(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND);
                 } else {
@@ -1091,7 +1094,9 @@ public class SessionDataRepository {
                         roomResponse.setSessionId(sessionResponse.getId());
                         roomResponse.setToken(sessionTokenResponse.getToken());
                         roomResponse.setWss(ServiceServerApplication.wssUrl);
-                        roomResponse.setRestrictedMode(room.getRestrictedMode());
+                        //roomResponse.setRestrictedMode(room.isRestrictedMode());
+                        roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+                        roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
 
                         CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
                         roomResponse.getCoturn().add(coturnResponse);
@@ -1147,7 +1152,9 @@ public class SessionDataRepository {
                     .workspaceId(roomRequest.getWorkspaceId())
                     .maxUserCount(licenseItem.getUserCapacity())
                     .licenseName(licenseItem.name())
-                    .restrictedMode(roomRequest.getRestrictedMode())
+                    //.restrictedMode(roomRequest.isRestrictedMode())
+                    .videoRestrictedMode(roomRequest.isVideoRestrictedMode())
+                    .audioRestrictedMode(roomRequest.isAudioRestrictedMode())
                     .build();
 
                 room.setProfile(profile);
@@ -1909,7 +1916,9 @@ public class SessionDataRepository {
                     roomResponse.setSessionId(sessionId);
                     roomResponse.setToken(sessionTokenResponse.getToken());
                     roomResponse.setWss(ServiceServerApplication.wssUrl);
-                    roomResponse.setRestrictedMode(room.getRestrictedMode());
+                    //roomResponse.setRestrictedMode(room.isRestrictedMode());
+                    roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+                    roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
 
                     CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
                     roomResponse.getCoturn().add(coturnResponse);

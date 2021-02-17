@@ -13,12 +13,12 @@ import com.virnect.serviceserver.dto.request.room.LanguageRequest;
 import com.virnect.serviceserver.error.ErrorCode;
 import com.virnect.serviceserver.global.common.ApiResponse;
 
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class AdminService {
 
-	private final SessionService sessionService;
+	/*private final SessionService sessionService;
 
 		public ApiResponse<CompanyResponse> createCompany(CompanyRequest companyRequest) {
 
@@ -68,5 +68,5 @@ public class AdminService {
 				responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 			}
 		return responseData;
-	}
+	}*/
 }
