@@ -59,6 +59,7 @@ public class LicenseController {
 		if (!StringUtils.hasText(workspaceId)) {
 			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
+		// Todo: 필터 기능 추가
 		WorkspaceLicensePlanInfoResponse responseMessage = licenseService.getWorkspaceLicensePlanInfo(workspaceId);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
@@ -72,6 +73,7 @@ public class LicenseController {
 		if (!StringUtils.hasText(userId)) {
 			throw new LicenseServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
+		// Todo: 페이징 및 필터 기능 추가
 		ApiResponse<MyLicenseInfoListResponse> responseMessage = licenseService.getMyLicenseInfoList(
 			userId,
 			workspaceId

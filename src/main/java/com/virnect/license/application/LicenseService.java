@@ -237,6 +237,7 @@ public class LicenseService {
 	 */
 	@Transactional(readOnly = true)
 	public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoList(String userId, String workspaceId) {
+		// Todo: 페이징 기능 넣기
 		LicensePlan licensePlan = licensePlanRepository.findByWorkspaceIdAndPlanStatusNot(
 			workspaceId, PlanStatus.TERMINATE)
 			.orElseThrow(() -> new LicenseServiceException(ErrorCode.ERR_LICENSE_PLAN_NOT_FOUND));

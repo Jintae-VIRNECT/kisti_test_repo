@@ -38,15 +38,15 @@ import com.virnect.license.domain.product.LicenseProduct;
 import com.virnect.license.domain.product.LicenseProductStatus;
 import com.virnect.license.domain.product.Product;
 import com.virnect.license.dto.ResourceCalculate;
-import com.virnect.license.dto.billing.response.AllocateCouponInfoResponse;
-import com.virnect.license.dto.billing.response.AllocateProductInfoResponse;
 import com.virnect.license.dto.billing.request.LicenseAllocateCheckRequest;
 import com.virnect.license.dto.billing.request.LicenseProductAllocateRequest;
 import com.virnect.license.dto.billing.request.LicenseProductDeallocateRequest;
 import com.virnect.license.dto.billing.request.ProductTypeRequest;
+import com.virnect.license.dto.billing.response.AllocateCouponInfoResponse;
+import com.virnect.license.dto.billing.response.AllocateProductInfoResponse;
+import com.virnect.license.dto.billing.response.LicenseProductAllocateResponse;
 import com.virnect.license.dto.license.response.LicenseProductAllocateCheckResponse;
 import com.virnect.license.dto.license.response.LicenseProductDeallocateResponse;
-import com.virnect.license.dto.billing.response.LicenseProductAllocateResponse;
 import com.virnect.license.dto.rest.user.UserInfoRestResponse;
 import com.virnect.license.dto.rest.user.WorkspaceInfoListResponse;
 import com.virnect.license.dto.rest.user.WorkspaceInfoResponse;
@@ -89,6 +89,11 @@ public class BillingService {
 	public ApiResponse<LicenseProductAllocateCheckResponse> licenseAllocateCheckRequest(
 		LicenseAllocateCheckRequest allocateCheckRequest
 	) {
+		// 요청 데이터 검증
+		if (!termLicenseAllocateRequestValidationCheck(allocateCheckRequest)) {
+			throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_ALLOCATE_DENIED);
+		}
+
 		log.info("[BILLING][LICENSE ALLOCATE CHECK REQUEST] -> [{}]", allocateCheckRequest.toString());
 		// 1. 상품 지급 여부 검사 요청 사용자 정보 조회
 		UserInfoRestResponse requestUserInfo = getUserInfoRestResponseByUserId(
@@ -281,14 +286,16 @@ public class BillingService {
 
 		// 11. 기존 활성화 되어있는 라이선스 플랜이 기간 결제인 경우
 		if (userLicensePlan.isTermPlan()) {
-			// 기간 결제 요청일 때 100% 할인 쿠폰 정보가 없는 경우 예외 발생
-			AllocateCouponInfoResponse freeCouponInfo = Optional.ofNullable(
-				licenseAllocateRequest.getCouponList().get(0)).orElseThrow(() -> {
-				log.error(
-					"[BILLING][LICENSE_ALLOCATE_TERM_PAYMENT] - Term Payment request fail. Coupon Information Not Found.");
+
+			// 기간 결제 요청일 때 쿠폰 정보가 없는 경우 예외 발생
+			if (licenseAllocateRequest.getCouponList() == null || licenseAllocateRequest.getCouponList().isEmpty()) {
+				log.error("[BILLING][LICENSE_ALLOCATE_TERM_PAYMENT] - Term Payment Request Fail. Coupon Not Found.");
 				log.error("[BILLING][LICENSE_ALLOCATE_TERM_PAYMENT] - {}", licenseAllocateRequest.toString());
-				return new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
-			});
+				throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
+			}
+
+			// 쿠폰 정보 추출
+			AllocateCouponInfoResponse freeCouponInfo = licenseAllocateRequest.getCouponList().get(0);
 
 			log.info("[BILLING][LICENSE_ALLOCATE_TERM_PAYMENT][COUPON_INFO][BEGIN]");
 			licenseAllocateRequest.getCouponList()
@@ -301,8 +308,6 @@ public class BillingService {
 			LocalDateTime expiredDate = calculateExpiredDateOfTermPaymentPlan(freeCouponInfo);
 			userLicensePlan.setEndDate(expiredDate);
 			userLicensePlan.setTermPlan(true);
-			// log.error("[BILLING][LICENSE_ALLOCATE][PREVIOUS_TERM_PLAN_INFO] - {}", userLicensePlan.toString());
-			// throw new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
 		} else {
 			// 일반 지급 월 결제의 경우
 			userLicensePlan.setEndDate(userLicensePlan.getEndDate().plusMonths(1));
@@ -541,7 +546,7 @@ public class BillingService {
 					return new BillingServiceException(ErrorCode.ERR_BILLING_PRODUCT_LICENSE_ASSIGNMENT_FROM_PAYMENT);
 				}
 			);
-		// 축소된 라이선스 갯수 할당		
+		// 축소된 라이선스 갯수 할당
 		licenseProduct.setQuantity(decreaseLicenseProductInfo.getProductAmount());
 		// 라이선스 초과 상태로 변경
 		licenseProduct.setStatus(LicenseProductStatus.EXCEEDED);
@@ -887,5 +892,18 @@ public class BillingService {
 		//해당되지 않은 타임의 경우, 1개월 단위 라이선스 연장
 		return LocalDate.now().plusDays(30)
 			.atTime(LICENSE_EXPIRED_HOUR, LICENSE_EXPIRED_MINUTE, LICENSE_EXPIRED_SECONDS);
+	}
+
+	/**
+	 * 기간 결제로 들어온 라이선스 할당 요청 정보 검사
+	 * @param allocateCheckRequest - 라이선스 할당 정보
+	 * @return - 요청 정보 검사 결과
+	 */
+	private boolean termLicenseAllocateRequestValidationCheck(LicenseAllocateCheckRequest allocateCheckRequest) {
+		if (allocateCheckRequest.isTermPaymentRequest() &&
+			(allocateCheckRequest.getCouponList() == null || allocateCheckRequest.getCouponList().isEmpty())){
+			return false;
+		}
+		return true;
 	}
 }
