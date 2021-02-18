@@ -69,7 +69,7 @@ const _ = {
         ws = `${URLS['ws']}${wsUri['REMOTE']}` || configs.wss
       }
 
-      const iceServers = configs.coturn || URLS['coturn']
+      const iceServers = configs.coturn
       for (let ice of iceServers) {
         ice['urls'] = ice['url']
       }
