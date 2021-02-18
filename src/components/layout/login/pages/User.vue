@@ -406,7 +406,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .el-dialog {
   border: solid 1px #e6e9ee;
   border-radius: 4px;

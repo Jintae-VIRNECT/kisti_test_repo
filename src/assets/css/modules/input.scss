@@ -124,6 +124,9 @@
     border-width: 2px;
   }
 }
+.el-checkbox__input.is-focus .el-checkbox__inner {
+  border-color: transparent;
+}
 
 .must-check {
   .el-checkbox__label {

@@ -1,6 +1,6 @@
 {
   "name": "frontend",
-  "version": "1.2.26.3",
+  "version": "1.2.26.4",
   "description": "Virnect Platofrm Login FrontEnd",
   "author": "SungHyun Kang <k23sh138@gmail.com>",
   "private": true,
@@ -9,7 +9,8 @@
     "build": "webpack --progress --config build/webpack.prod.conf.js",
     "build:local": "cross-env VIRNECT_ENV=develop NODE_ENV=develop webpack --mode production --progress --config build/webpack.prod.conf.js",
     "start:local": "cross-env VIRNECT_ENV=onpremise NODE_ENV=onpremise node server.js",
-    "start": "node server.js"
+    "start": "node server.js",
+    "lint": "eslint --fix src/**"
   },
   "dependencies": {
     "@virnect/logger": "^1.0.2",
