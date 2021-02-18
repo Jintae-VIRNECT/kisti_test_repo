@@ -216,8 +216,7 @@ public class ValidationService {
 		String workspaceId,
 		String userId,
 		int companyCode
-	) {
-
+	) throws IOException {
 		companyCode = 1;
 
 		ApiResponse<CompanyInfoResponse> responseData;
@@ -233,8 +232,12 @@ public class ValidationService {
 				companyInfoResponse.setLanguageCodes(languageCodes);
 				responseData = new ApiResponse<>(companyInfoResponse);
 			} else {
-				CompanyInfoResponse empty = new CompanyInfoResponse();
-				responseData = new ApiResponse<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);
+				companyInfoResponse = loadServicePolicy(workspaceId);
+				companyInfoResponse.setAudioRestrictedMode(false);
+				companyInfoResponse.setVideoRestrictedMode(true);
+				responseData = new ApiResponse<>(companyInfoResponse);
+				/*CompanyInfoResponse empty = new CompanyInfoResponse();
+				responseData = new ApiResponse<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);*/
 			}
 		} else {
 			try {
