@@ -10,30 +10,30 @@ import NetworkError from 'WC-Modules/vue/components/errors/NetworkError'
 import BrowserNotSupport from 'WC-Modules/vue/components/errors/BrowserNotSupport'
 
 const router = new Router({
-	name: 'router',
-	mode: 'history',
-	routes: [
-		MainRouter,
-		{
-			path: '',
-			component: App,
-		},
-		{
-			path: '*',
-			name: 'pageNotFound',
-			component: PageNotFound,
-		},
-		{
-			path: '/504',
-			name: 'NetworkError',
-			component: NetworkError,
-		},
-		{
-			path: '/nobrowser',
-			name: 'BrowserNotSupport',
-			component: BrowserNotSupport,
-		},
-	],
+  name: 'router',
+  mode: 'history',
+  routes: [
+    MainRouter,
+    {
+      path: '',
+      component: App,
+    },
+    {
+      path: '*',
+      name: 'pageNotFound',
+      component: PageNotFound,
+    },
+    {
+      path: '/504',
+      name: 'NetworkError',
+      component: NetworkError,
+    },
+    {
+      path: '/nobrowser',
+      name: 'BrowserNotSupport',
+      component: BrowserNotSupport,
+    },
+  ],
 })
 
 // router.beforeEach((to, from, next) => {

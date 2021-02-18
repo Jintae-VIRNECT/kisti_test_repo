@@ -5,15 +5,15 @@ const markdowns = require.context('.', false, /\.md$/)
 const modules = {}
 
 files.keys().forEach(key => {
-	if (key === './index.js') return
-	Object.assign(modules, files(key))
+  if (key === './index.js') return
+  Object.assign(modules, files(key))
 })
 markdowns.keys().forEach(key => {
-	modules[key.replace('./', '')] = markdowns(key).default
+  modules[key.replace('./', '')] = markdowns(key).default
 })
 
 module.exports = {
-	languageAbbr: 'ENG',
-	...locale,
-	...modules,
+  languageAbbr: 'ENG',
+  ...locale,
+  ...modules,
 }

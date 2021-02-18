@@ -228,6 +228,7 @@ const config = {
         ignore: ['*.gitkeep'],
       },
     ),
+    ...htmlWebpackPluginArray,
   ],
   node: {
     net: 'empty',
@@ -237,5 +238,5 @@ const config = {
     fs: 'empty',
   },
 }
-config.plugins = [...config.plugins, ...htmlWebpackPluginArray]
+config.plugins = [...config.plugins]
 module.exports = config

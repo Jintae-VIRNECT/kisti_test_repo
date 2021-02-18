@@ -36,24 +36,24 @@ Vue.config.productionTip = false
 
 Vue.use(VeeValidate)
 Vue.use(ElementUI, {
-	i18n: (key, value) => i18n.t(key, value),
+  i18n: (key, value) => i18n.t(key, value),
 })
 Vue.use(VueQrcodeReader)
 
 Vue.use(VueI18n)
 const i18n = new VueI18n({
-	locale: 'ko',
-	fallbackLocale: process.env.VIRNECT_ENV === 'production' ? 'ko' : null,
-	messages: messages,
+  locale: 'ko',
+  fallbackLocale: process.env.VIRNECT_ENV === 'production' ? 'ko' : null,
+  messages: messages,
 })
 
 const versionCss = 'font-size: 2rem; color: #297af3;'
 console.log('%cVIRNECT Console %s', versionCss, version)
 
 new Vue({
-	el: '#app',
-	router,
-	store,
-	i18n,
-	render: h => h(App),
+  el: '#app',
+  router,
+  store,
+  i18n,
+  render: h => h(App),
 })

@@ -199,20 +199,50 @@ export default {
           this.redirection(res.data)
         } else throw res
       } catch (e) {
-        if (e.code === 2000) {
-          this.loading = false
+        const failCount = e.failCount || 0
+        this.loading = false
+
+        // 일반 에러
+        if (e.code === 2000 && failCount < 2) {
           this.message =
             this.$env !== 'onpremise'
               ? this.$t('login.accountError.contents')
               : this.$t('onpremise.login.error')
-        } else {
+        }
+        // 2회 이상 실패
+        else if (1 < failCount && failCount < 5) {
+          this.$confirm(
+            this.$tc('login.securityError.contents', failCount),
+            this.$t('login.securityError.title'),
+            {
+              confirmButtonText: this.$t('login.resetPassword'),
+              cancelButtonText: this.$t('login.accountError.btn'),
+              dangerouslyUseHTMLString: true,
+            },
+          ).then(() => this.$router.push({ name: 'reset_password' }))
+        }
+        // 계졍 잠김
+        else if (e.code === 2002 || failCount === 5) {
+          this.$confirm(
+            this.$t('login.lockedError.contents'),
+            e.code === 2002
+              ? this.$t('login.lockedError.title')
+              : this.$t('login.lockedError.changed'),
+            {
+              confirmButtonText: this.$t('login.resetPassword'),
+              cancelButtonText: this.$t('login.accountError.btn'),
+              dangerouslyUseHTMLString: true,
+            },
+          ).then(() => this.$router.push({ name: 'reset_password' }))
+        }
+        // 기타
+        else {
           this.alertMessage(
             this.$t('login.networkError.title'),
             this.$t('login.networkError.contents'),
             'error',
           )
           this.message = e.message
-          this.loading = false
         }
       }
     },

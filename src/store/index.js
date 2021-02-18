@@ -8,12 +8,12 @@ import { custom } from './custom'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-	modules: {
-		auth,
-		lang,
-		custom,
-	},
-	mutations: {},
-	actions: {},
-	strict: true,
+  modules: {
+    auth,
+    lang,
+    custom,
+  },
+  mutations: {},
+  actions: {},
+  strict: true,
 })
