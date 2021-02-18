@@ -218,6 +218,8 @@ public class ValidationService {
 		int companyCode
 	) {
 
+		companyCode = 1;
+
 		ApiResponse<CompanyInfoResponse> responseData;
 
 		CompanyInfoResponse companyInfoResponse = null;

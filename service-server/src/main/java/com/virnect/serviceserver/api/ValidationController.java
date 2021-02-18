@@ -103,7 +103,8 @@ public class ValidationController {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId);
+        //ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId);
+        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfoByCompanyCode(workspaceId, userId, 1);
         return ResponseEntity.ok(responseData);
 
         //todo: delete check user is valid
