@@ -9,7 +9,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.virnect.data.domain.file.FileType;
-import com.virnect.data.dto.response.session.UploadResult;
+import com.virnect.remote.dto.response.session.UploadResult;
 
 public interface IFileManagementService {
     String DEFAULT_ROOM_PROFILE = "default";

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 import com.google.gson.JsonObject;
 import com.virnect.data.domain.file.FileType;
-import com.virnect.data.dto.response.session.UploadResult;
+import com.virnect.remote.dto.response.session.UploadResult;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.infra.utils.JsonUtil;

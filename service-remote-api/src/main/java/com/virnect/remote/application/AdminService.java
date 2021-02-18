@@ -7,9 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.domain.Company;
 import com.virnect.data.domain.Language;
-import com.virnect.data.dto.request.company.CompanyRequest;
-import com.virnect.data.dto.request.company.CompanyResponse;
-import com.virnect.data.dto.request.room.LanguageRequest;
+import com.virnect.remote.dto.request.company.CompanyRequest;
+import com.virnect.remote.dto.request.company.CompanyResponse;
+import com.virnect.remote.dto.request.room.LanguageRequest;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 

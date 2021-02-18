@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.remote.application.AdminService;
-import com.virnect.data.dto.request.company.CompanyRequest;
-import com.virnect.data.dto.request.company.CompanyResponse;
+import com.virnect.remote.dto.request.company.CompanyRequest;
+import com.virnect.remote.dto.request.company.CompanyResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;

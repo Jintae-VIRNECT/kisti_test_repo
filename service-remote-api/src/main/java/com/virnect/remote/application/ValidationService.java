@@ -25,8 +25,7 @@ import com.virnect.remote.dto.constraint.CompanyConstants;
 import com.virnect.remote.dto.constraint.LicenseConstants;
 import com.virnect.remote.dto.constraint.LicenseItem;
 import com.virnect.remote.dto.constraint.LanguageCode;
-import com.virnect.remote.dto.company.CompanyInfoResponse;
-import com.virnect.data.dto.response.license.LicenseItemResponse;
+import com.virnect.remote.dto.response.license.LicenseItemResponse;
 import com.virnect.data.dto.rest.LicenseInfoListResponse;
 import com.virnect.data.dto.rest.LicenseInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -35,6 +34,7 @@ import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.data.application.license.LicenseRestService;
 import com.virnect.remote.dto.constraint.TranslationItem;
+import com.virnect.remote.dto.response.company.CompanyInfoResponse;
 
 @Slf4j
 @Service

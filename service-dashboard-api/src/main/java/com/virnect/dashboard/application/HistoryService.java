@@ -53,7 +53,7 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.room.RoomStatus;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.roomhistory.RoomHistorySortType;
-import com.virnect.data.dto.response.file.RecordServerFileInfoResponse;
+import com.virnect.data.dto.rest.RecordServerFileInfoResponse;
 import com.virnect.dashboard.dto.response.RoomHistoryInfoListResponse;
 import com.virnect.dashboard.dto.response.HistoryCountResponse;
 import com.virnect.data.dto.rest.UserInfoListResponse;

@@ -9,7 +9,7 @@ import com.virnect.data.domain.file.FileType;
 import com.virnect.remote.infra.file.IFileManagementService;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.data.dto.response.session.UploadResult;
+import com.virnect.remote.dto.response.session.UploadResult;
 import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.data.infra.utils.LogMessage;
 import io.minio.*;

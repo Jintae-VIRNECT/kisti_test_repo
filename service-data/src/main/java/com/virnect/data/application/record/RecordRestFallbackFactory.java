@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dto.response.file.RecordServerFileInfoListResponse;
-import com.virnect.data.dto.response.file.SuccessResponse;
+import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.SuccessResponse;
 import com.virnect.data.dto.rest.StopRecordingResponse;
 import com.virnect.data.global.common.ApiResponse;
 

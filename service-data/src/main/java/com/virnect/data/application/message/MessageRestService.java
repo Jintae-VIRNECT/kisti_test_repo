@@ -4,7 +4,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.virnect.data.dto.push.PushSendRequest;
+import com.virnect.remote.dto.push.PushSendRequest;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.global.common.ApiResponse;
 

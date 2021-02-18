@@ -23,8 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.client.RemoteServiceException;
-import com.virnect.data.dto.response.session.SessionData;
-import com.virnect.data.dto.response.session.SessionTokenData;
+import com.virnect.remote.dto.response.session.SessionData;
+import com.virnect.remote.dto.response.session.SessionTokenData;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.java.client.MediaMode;

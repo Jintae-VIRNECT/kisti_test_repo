@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dto.push.InviteRoomContents;
-import com.virnect.data.dto.push.PushSendRequest;
+import com.virnect.remote.dto.push.InviteRoomContents;
+import com.virnect.remote.dto.push.PushSendRequest;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.application.message.MessageRestService;

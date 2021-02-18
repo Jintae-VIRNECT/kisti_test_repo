@@ -20,7 +20,7 @@ import com.virnect.dashboard.dto.response.FileDeleteResponse;
 import com.virnect.dashboard.dto.response.FileDetailInfoListResponse;
 import com.virnect.dashboard.dto.response.FileInfoListResponse;
 import com.virnect.dashboard.dto.response.FilePreSignedResponse;
-import com.virnect.data.dto.response.file.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;

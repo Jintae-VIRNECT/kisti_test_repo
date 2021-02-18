@@ -33,7 +33,7 @@ import com.virnect.data.dao.file.RecordFileRepository;
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.FileType;
 import com.virnect.data.domain.file.RecordFile;
-import com.virnect.data.dto.response.file.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;

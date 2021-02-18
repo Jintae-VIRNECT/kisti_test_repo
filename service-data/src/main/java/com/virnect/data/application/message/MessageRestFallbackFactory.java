@@ -7,7 +7,7 @@ import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.dto.rest.PushResponse;
-import com.virnect.data.dto.push.PushSendRequest;
+import com.virnect.remote.dto.push.PushSendRequest;
 import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j

@@ -24,22 +24,21 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.data.dto.request.file.FileUploadRequest;
-import com.virnect.data.dto.request.file.RecordFileUploadRequest;
+import com.virnect.remote.dto.request.file.FileUploadRequest;
+import com.virnect.remote.dto.request.file.RecordFileUploadRequest;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.remote.application.FileService;
-import com.virnect.serviceserver.application.FileServiceTemp;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
-import com.virnect.data.dto.response.PageRequest;
-import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.file.FileDeleteResponse;
-import com.virnect.data.dto.response.file.FileDetailInfoListResponse;
-import com.virnect.data.dto.response.file.FileInfoListResponse;
-import com.virnect.data.dto.response.file.FilePreSignedResponse;
-import com.virnect.data.dto.response.file.FileUploadResponse;
-import com.virnect.data.dto.response.file.RoomProfileUpdateResponse;
+import com.virnect.remote.dto.request.file.RoomProfileUpdateRequest;
+import com.virnect.remote.dto.response.PageRequest;
+import com.virnect.remote.dto.response.ResultResponse;
+import com.virnect.remote.dto.response.file.FileDeleteResponse;
+import com.virnect.remote.dto.response.file.FileDetailInfoListResponse;
+import com.virnect.remote.dto.response.file.FileInfoListResponse;
+import com.virnect.remote.dto.response.file.FilePreSignedResponse;
+import com.virnect.remote.dto.response.file.FileUploadResponse;
+import com.virnect.remote.dto.response.file.RoomProfileUpdateResponse;
 import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j

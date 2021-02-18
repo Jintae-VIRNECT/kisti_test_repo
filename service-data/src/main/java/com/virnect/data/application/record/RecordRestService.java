@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.virnect.data.dto.response.file.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
 import com.virnect.data.dto.rest.StopRecordingResponse;
 import com.virnect.data.global.common.ApiResponse;
 

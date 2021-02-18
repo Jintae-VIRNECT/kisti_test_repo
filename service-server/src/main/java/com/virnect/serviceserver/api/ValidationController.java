@@ -11,9 +11,9 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dto.response.license.LicenseItemResponse;
+import com.virnect.remote.dto.response.license.LicenseItemResponse;
 import com.virnect.remote.application.ValidationService;
-import com.virnect.remote.dto.company.CompanyInfoResponse;
+import com.virnect.remote.dto.response.company.CompanyInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
