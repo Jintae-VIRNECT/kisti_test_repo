@@ -22,9 +22,9 @@ import com.virnect.dashboard.dto.request.RoomHistoryStatsRequest;
 import com.virnect.dashboard.dto.response.HistoryCountResponse;
 import com.virnect.dashboard.dto.response.RoomHistoryDetailInfoResponse;
 import com.virnect.dashboard.dto.response.RoomHistoryInfoListResponse;
-import com.virnect.dashboard.error.ErrorCode;
-import com.virnect.dashboard.error.exception.DashboardServiceException;
-import com.virnect.dashboard.global.common.ApiResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @RestController
@@ -67,7 +67,7 @@ public class HistoryRestController {
 		BindingResult bindingResult
 	) {
 		if (bindingResult.hasErrors() || workspaceId.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		RoomHistoryInfoListResponse responseData = historyService.getRoomHistory(option, workspaceId, null);
@@ -93,7 +93,7 @@ public class HistoryRestController {
 		@RequestParam(name = "timeDifference") int timeDifference
 	) {
 		if (workspaceId.isEmpty() || userId.isEmpty() || selectedDate.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 		RoomHistoryStatsRequest option = RoomHistoryStatsRequest.builder()
 			.workspaceId(workspaceId)
@@ -125,7 +125,7 @@ public class HistoryRestController {
 		@RequestParam(name = "timeDifference") int timeDifference
 	) {
 		if (workspaceId.isEmpty() || userId.isEmpty() || selectedMonth.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		RoomHistoryStatsRequest option = RoomHistoryStatsRequest.builder()
@@ -168,7 +168,7 @@ public class HistoryRestController {
 		BindingResult bindingResult
 	) {
 		if (workspaceId.isEmpty() || userId.isEmpty() || bindingResult.hasErrors()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		option.setWorkspaceId(workspaceId);
@@ -188,7 +188,7 @@ public class HistoryRestController {
 		@PathVariable("sessionId") String sessionId
 	) {
 		if (sessionId.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		RoomHistoryDetailRequest option = RoomHistoryDetailRequest.builder()

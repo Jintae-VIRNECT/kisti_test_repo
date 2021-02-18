@@ -22,26 +22,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.dashboard.application.rest.record.RecordRestService;
-import com.virnect.dashboard.application.rest.user.UserRestService;
-import com.virnect.dashboard.application.rest.workspace.WorkspaceRestService;
-import com.virnect.dashboard.dao.MemberHistoryRepository;
-import com.virnect.dashboard.dao.MemberRepository;
-import com.virnect.dashboard.dao.file.FileRepository;
-import com.virnect.dashboard.dao.file.RecordFileRepository;
-import com.virnect.dashboard.dao.room.RoomRepository;
-import com.virnect.dashboard.dao.roomhistory.RoomHistoryRepository;
-import com.virnect.dashboard.domain.files.File;
-import com.virnect.dashboard.domain.files.RecordFile;
-import com.virnect.dashboard.domain.member.Member;
-import com.virnect.dashboard.domain.member.MemberHistory;
-import com.virnect.dashboard.domain.member.MemberStatus;
-import com.virnect.dashboard.domain.member.MemberType;
-import com.virnect.dashboard.domain.room.OrderType;
-import com.virnect.dashboard.domain.room.Room;
-import com.virnect.dashboard.domain.room.RoomHistory;
-import com.virnect.dashboard.domain.room.RoomHistorySortType;
-import com.virnect.dashboard.domain.room.RoomStatus;
 import com.virnect.dashboard.dto.PageMetadataResponse;
 import com.virnect.dashboard.dto.request.RoomHistoryDetailRequest;
 import com.virnect.dashboard.dto.request.RoomHistoryListRequest;
@@ -49,20 +29,40 @@ import com.virnect.dashboard.dto.request.RoomHistoryStatsRequest;
 import com.virnect.dashboard.dto.response.FileDetailInfoResponse;
 import com.virnect.dashboard.dto.response.FileInfoResponse;
 import com.virnect.dashboard.dto.response.FileUserInfoResponse;
-import com.virnect.dashboard.dto.response.HistoryCountResponse;
 import com.virnect.dashboard.dto.response.MemberInfoResponse;
-import com.virnect.dashboard.dto.response.RecordServerFileInfoResponse;
 import com.virnect.dashboard.dto.response.RoomDetailInfoResponse;
 import com.virnect.dashboard.dto.response.RoomHistoryDetailInfoResponse;
-import com.virnect.dashboard.dto.response.RoomHistoryInfoListResponse;
 import com.virnect.dashboard.dto.response.RoomHistoryInfoResponse;
-import com.virnect.dashboard.dto.rest.UserInfoListResponse;
-import com.virnect.dashboard.dto.rest.UserInfoResponse;
-import com.virnect.dashboard.dto.rest.WorkspaceMemberInfoResponse;
-import com.virnect.dashboard.error.ErrorCode;
-import com.virnect.dashboard.error.exception.DashboardServiceException;
-import com.virnect.dashboard.global.common.ApiResponse;
-import com.virnect.dashboard.global.util.ListUtils;
+import com.virnect.data.application.record.RecordRestService;
+import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.application.workspace.WorkspaceRestService;
+import com.virnect.data.dao.file.FileRepository;
+import com.virnect.data.dao.file.RecordFileRepository;
+import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
+import com.virnect.data.dao.room.RoomRepository;
+import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
+import com.virnect.data.domain.OrderType;
+import com.virnect.data.domain.file.File;
+import com.virnect.data.domain.file.RecordFile;
+import com.virnect.data.domain.member.Member;
+import com.virnect.data.domain.member.MemberHistory;
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.domain.member.MemberType;
+import com.virnect.data.domain.room.Room;
+import com.virnect.data.domain.room.RoomStatus;
+import com.virnect.data.domain.roomhistory.RoomHistory;
+import com.virnect.data.domain.roomhistory.RoomHistorySortType;
+import com.virnect.data.dto.response.file.RecordServerFileInfoResponse;
+import com.virnect.dashboard.dto.response.RoomHistoryInfoListResponse;
+import com.virnect.dashboard.dto.response.HistoryCountResponse;
+import com.virnect.data.dto.rest.UserInfoListResponse;
+import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.global.util.ListUtils;
 
 @Slf4j
 @Service
@@ -186,7 +186,7 @@ public class HistoryService {
 				hour++;
 			}
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_ROOM_HISTORY_STATS_IN_DATE);
+			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_STATS_IN_DATE);
 		}
 		return new HistoryCountResponse(myHistory, entireHistory, myDuration, entireDuration);
 	}
@@ -280,7 +280,7 @@ public class HistoryService {
 				day++;
 			}
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_ROOM_HISTORY_STATS_ON_MONTH);
+			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_STATS_ON_MONTH);
 		}
 		return new HistoryCountResponse(myHistory, entireHistory, myDuration, entireDuration);
 	}
@@ -305,7 +305,7 @@ public class HistoryService {
 		Room ongoingRoom = roomRepository.findRoomHistoryByWorkspaceAndSessionId(workspaceId, sessionId);
 
 		if (ongoingRoom == null) {
-			throw new DashboardServiceException(ErrorCode.ERR_ROOM_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_ROOM_FOUND);
 		} else {
 			try {
 				roomDetailInfoResponse = modelMapper.map(ongoingRoom, RoomDetailInfoResponse.class);
@@ -341,7 +341,7 @@ public class HistoryService {
 
 				}
 			} catch (Exception exception) {
-				throw new DashboardServiceException(ErrorCode.ERR_ROOM_MAPPER);
+				throw new RestServiceException(ErrorCode.ERR_ROOM_MAPPER);
 			}
 		}
 
@@ -364,7 +364,7 @@ public class HistoryService {
 		);
 
 		if (endRoom == null) {
-			throw new DashboardServiceException(ErrorCode.ERR_ROOM_HISTORY_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_FOUND);
 		} else {
 			try {
 				roomHistoryDetailInfoResponse = modelMapper.map(endRoom, RoomHistoryDetailInfoResponse.class);
@@ -399,7 +399,7 @@ public class HistoryService {
 
 				}
 			} catch (Exception exception) {
-				throw new DashboardServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
+				throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
 			}
 		}
 
@@ -637,7 +637,7 @@ public class HistoryService {
 						.build();
 				}
 			} catch (Exception exception) {
-				throw new DashboardServiceException(ErrorCode.ERR_ROOM_HISTORY_HANDLE);
+				throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_HANDLE);
 			}
 		}
 
@@ -680,7 +680,7 @@ public class HistoryService {
 				roomHistoryInfoResponse.setMemberList(memberInfoResponses);
 			}
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_ROOM_MAPPER);
+			throw new RestServiceException(ErrorCode.ERR_ROOM_MAPPER);
 		}
 		return roomHistoryResponse;
 	}
@@ -717,7 +717,7 @@ public class HistoryService {
 				roomHistoryInfoResponse.setMemberList(memberInfoResponses);
 			}
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
+			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
 		}
 		return roomHistoryResponse;
 	}
@@ -728,7 +728,7 @@ public class HistoryService {
 	 * @param deleted - 삭제 유무
 	 * @return - 로컬 첨부파일 목록
 	 */
-	public List<FileInfoResponse> getAttachedFileList(
+	public List<FileInfoResponse> getAttached1FileList(
 		String workspaceId,
 		boolean deleted
 	) {
@@ -750,7 +750,7 @@ public class HistoryService {
 				.map(file -> modelMapper.map(file, FileInfoResponse.class))
 				.collect(Collectors.toList());
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
 		}
 
 		return fileInfoResponses;
@@ -759,13 +759,12 @@ public class HistoryService {
 	/**
 	 * 로컬 첨부파일 목록 요청 처리
 	 * @param workspaceId - 대상 Workspace Id
-	 * @param sessionId - 대상 Session Id
 	 * @param deleted - 삭제 유무
 	 * @return - 로컬 첨부파일 목록
 	 */
 	public List<FileInfoResponse> getAttachedFileList(
 		String workspaceId,
-		String sessionId,
+		//String sessionId,
 		boolean deleted
 	) {
 
@@ -780,13 +779,13 @@ public class HistoryService {
 				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(workspaceId, sessionId);
 			}*/
 
-			List<File> files = fileRepository.findByWorkspaceIdAndSessionIdAndDeleted(workspaceId, sessionId, deleted);
+			List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
 
 			fileInfoResponses = files.stream()
 				.map(file -> modelMapper.map(file, FileInfoResponse.class))
 				.collect(Collectors.toList());
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
 		}
 
 		return fileInfoResponses;
@@ -831,7 +830,7 @@ public class HistoryService {
 				fileDetailInfoResponses.add(fileDetailInfoResponse);
 			}
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_LOCAL_RECORD_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_LOCAL_RECORD_FILE_FOUND);
 		}
 		return fileDetailInfoResponses;
 	}
@@ -877,7 +876,7 @@ public class HistoryService {
 				fileDetailInfoResponses.add(fileDetailInfoResponse);
 			}
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_LOCAL_RECORD_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_LOCAL_RECORD_FILE_FOUND);
 		}
 		return fileDetailInfoResponses;
 	}

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.dto.rest.UserInfoListOnlyResponse;
 import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.global.common.ApiResponse;
@@ -37,6 +38,16 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
                 log.info("[USER INFORMATION API FALLBACK] => USER_ID: {}", userId);
                 UserInfoResponse empty = new UserInfoResponse();
                 return new ApiResponse<>(empty);
+            }
+
+            @Override
+            public ApiResponse<UserInfoListResponse> getUserInfo(boolean paging) {
+                return null;
+            }
+
+            @Override
+            public ApiResponse<UserInfoListOnlyResponse> getUserInfoListByUserUUIDArray(String[] uuid) {
+                return null;
             }
         };
 

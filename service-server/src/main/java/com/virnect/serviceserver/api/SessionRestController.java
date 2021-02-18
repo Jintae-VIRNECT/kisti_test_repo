@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.data.dto.constraint.LicenseItem;
+import com.virnect.remote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.application.RoomService;
 import com.virnect.serviceserver.application.SessionServiceTemp;
 import com.virnect.data.dto.push.PushSendRequest;

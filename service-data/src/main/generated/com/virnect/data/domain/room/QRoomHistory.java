@@ -9,6 +9,7 @@ import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
 
+import com.virnect.data.domain.roomhistory.RoomHistory;
 
 /**
  * QRoomHistory is a Querydsl query type for RoomHistory

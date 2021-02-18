@@ -1,8 +1,7 @@
 package com.virnect.serviceserver.infra.file;
 
 import com.virnect.data.domain.file.FileType;
-import com.virnect.serviceserver.dto.response.session.UploadResult;
-
+import com.virnect.data.dto.response.session.UploadResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

@@ -26,4 +26,10 @@ public interface WorkspaceRestService {
 		@PathVariable("workspaceId") String workspaceId,
 		@RequestParam(value = "userId") String userId
 	);
+
+
+	@GetMapping("/workspaces/{workspaceId}/members/simple")
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembers(
+		@PathVariable("workspaceId") String workspaceId
+	);
 }

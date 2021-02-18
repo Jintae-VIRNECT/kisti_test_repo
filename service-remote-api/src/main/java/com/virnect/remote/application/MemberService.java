@@ -18,7 +18,7 @@ import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
-import com.virnect.data.dto.constraint.LicenseConstants;
+import com.virnect.remote.dto.constraint.LicenseConstants;
 import com.virnect.data.dto.response.PageMetadataResponse;
 import com.virnect.data.dto.response.member.MemberInfoListResponse;
 import com.virnect.data.dto.response.member.MemberInfoResponse;

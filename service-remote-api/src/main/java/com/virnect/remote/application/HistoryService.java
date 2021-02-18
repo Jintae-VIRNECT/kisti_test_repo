@@ -18,7 +18,7 @@ import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
-import com.virnect.data.domain.room.RoomHistory;
+import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.data.dto.response.PageMetadataResponse;
 import com.virnect.data.dto.response.ResultResponse;

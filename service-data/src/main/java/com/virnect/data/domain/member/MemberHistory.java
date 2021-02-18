@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 import com.virnect.data.domain.BaseTimeEntity;
 import com.virnect.data.domain.DeviceType;
-import com.virnect.data.domain.room.RoomHistory;
+import com.virnect.data.domain.roomhistory.RoomHistory;
 
 @Entity
 @Getter

@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,4 +35,13 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
     Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(final String workspaceId, final String userId, Pageable pageable);
 
     void deleteAllByUuid(final String userId);
+
+    List<MemberHistory> findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(
+        String workspaceId,
+        LocalDateTime start,
+        LocalDateTime end
+    );
+
+    List<MemberHistory> findByWorkspaceId(final String workspaceId);
+
 }

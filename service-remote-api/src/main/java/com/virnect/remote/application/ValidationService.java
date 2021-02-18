@@ -21,12 +21,11 @@ import com.virnect.data.dao.company.CompanyRepository;
 import com.virnect.data.domain.Company;
 import com.virnect.data.domain.Language;
 import com.virnect.data.domain.session.SessionType;
-import com.virnect.data.dto.constraint.CompanyConstants;
-import com.virnect.data.dto.constraint.LicenseConstants;
-import com.virnect.data.dto.constraint.LicenseItem;
-import com.virnect.data.dto.constraint.TranslationItem;
-import com.virnect.data.dto.response.LanguageCode;
-import com.virnect.data.dto.response.company.CompanyInfoResponse;
+import com.virnect.remote.dto.constraint.CompanyConstants;
+import com.virnect.remote.dto.constraint.LicenseConstants;
+import com.virnect.remote.dto.constraint.LicenseItem;
+import com.virnect.remote.dto.constraint.LanguageCode;
+import com.virnect.remote.dto.company.CompanyInfoResponse;
 import com.virnect.data.dto.response.license.LicenseItemResponse;
 import com.virnect.data.dto.rest.LicenseInfoListResponse;
 import com.virnect.data.dto.rest.LicenseInfoResponse;
@@ -35,6 +34,7 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.data.application.license.LicenseRestService;
+import com.virnect.remote.dto.constraint.TranslationItem;
 
 @Slf4j
 @Service

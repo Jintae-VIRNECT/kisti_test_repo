@@ -12,9 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.dashboard.application.HistoryService;
 import com.virnect.dashboard.dto.response.RoomDetailInfoResponse;
-import com.virnect.dashboard.error.ErrorCode;
-import com.virnect.dashboard.error.exception.DashboardServiceException;
-import com.virnect.dashboard.global.common.ApiResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @RestController
@@ -34,7 +34,7 @@ public class SessionRestController {
 		@PathVariable("sessionId") String sessionId
 	) {
 		if (workspaceId.isEmpty() || sessionId.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		RoomDetailInfoResponse responseData = historyService.getOngoingRoomDetail(workspaceId, sessionId);

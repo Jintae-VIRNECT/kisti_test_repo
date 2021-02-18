@@ -15,7 +15,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.dashboard.application.FileService;
-import com.virnect.data.dto.response.file.FileInfoListResponse;
+import com.virnect.dashboard.dto.request.FileDataRequest;
+import com.virnect.dashboard.dto.response.FileDeleteResponse;
+import com.virnect.dashboard.dto.response.FileDetailInfoListResponse;
+import com.virnect.dashboard.dto.response.FileInfoListResponse;
+import com.virnect.dashboard.dto.response.FilePreSignedResponse;
+import com.virnect.data.dto.response.file.RecordServerFileInfoListResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
@@ -55,7 +62,7 @@ public class FileRestController {
 		@RequestParam(value = "deleted") boolean deleted
 	) {
 		if (workspaceId.isEmpty() || userId.isEmpty() || sessionId.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		FileDataRequest option = FileDataRequest.builder()
@@ -88,7 +95,7 @@ public class FileRestController {
 		@RequestParam(name = "deleted") boolean deleted
 	) {
 		if (workspaceId.isEmpty() || userId.isEmpty() || sessionId.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		FileDataRequest option = FileDataRequest.builder()
@@ -121,7 +128,7 @@ public class FileRestController {
 		@RequestParam(name = "order") String order
 	) {
 		if (workspaceId.isEmpty() || userId.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		FileDataRequest option = FileDataRequest.builder()
@@ -152,7 +159,7 @@ public class FileRestController {
 		@RequestParam(name = "id") String id
 	) {
 		if (workspaceId.isEmpty() || userId.isEmpty() || id.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		FileDataRequest option = FileDataRequest.builder()
@@ -184,7 +191,7 @@ public class FileRestController {
 		@RequestParam(name = "objectName") String objectName
 	) {
 		if (workspaceId.isEmpty() || sessionId.isEmpty() || userId.isEmpty() || objectName.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		FileDataRequest option = FileDataRequest.builder()
@@ -217,7 +224,7 @@ public class FileRestController {
 		@RequestParam(name = "objectName") String objectName
 	) {
 		if (workspaceId.isEmpty() || sessionId.isEmpty() || userId.isEmpty() || objectName.isEmpty()) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		FileDataRequest option = FileDataRequest.builder()
@@ -250,7 +257,7 @@ public class FileRestController {
 		@RequestParam(name = "objectName") String objectName
 	) {
 		if (userId == null && objectName == null) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		FileDataRequest option = FileDataRequest.builder()
@@ -310,7 +317,7 @@ public class FileRestController {
 		@RequestParam(name = "objectName") String objectName
 	) {
 		if (userId == null && objectName == null) {
-			throw new DashboardServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
 		FileDataRequest option = FileDataRequest.builder()

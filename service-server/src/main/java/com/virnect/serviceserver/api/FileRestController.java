@@ -26,6 +26,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.data.dto.request.file.FileUploadRequest;
 import com.virnect.data.dto.request.file.RecordFileUploadRequest;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.remote.application.FileService;
 import com.virnect.serviceserver.application.FileServiceTemp;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
@@ -38,8 +40,6 @@ import com.virnect.data.dto.response.file.FileInfoListResponse;
 import com.virnect.data.dto.response.file.FilePreSignedResponse;
 import com.virnect.data.dto.response.file.FileUploadResponse;
 import com.virnect.data.dto.response.file.RoomProfileUpdateResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j

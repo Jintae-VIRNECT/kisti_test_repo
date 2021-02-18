@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.List;
 
-import com.virnect.dashboard.domain.files.FileType;
+import com.virnect.data.domain.file.FileType;
 
 public interface IFileManagementService {
 

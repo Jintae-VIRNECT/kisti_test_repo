@@ -13,7 +13,7 @@ import java.util.Optional;
 import com.virnect.data.domain.file.File;
 
 @Repository
-public interface FileRepository extends JpaRepository<File, Long> {
+public interface FileRepository extends JpaRepository<File, Long>, CustomFileRepository{
     Optional<File> findByWorkspaceIdAndSessionIdAndName(final String workspaceId, final String sessionId, final String name);
 
     Optional<File> findByWorkspaceIdAndSessionIdAndObjectName(final String workspaceId, final String sessionId, final String objectName);
@@ -26,5 +26,14 @@ public interface FileRepository extends JpaRepository<File, Long> {
 
     @Modifying
     @Query("delete from File f where f.workspaceId = ?1 and f.sessionId = ?2")
+
     void deleteAllByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
+
+    List<File> findByWorkspaceIdAndSessionIdAndDeletedIsTrue(String workspaceId, String sessionId);
+
+    List<File> findByWorkspaceIdAndSessionIdAndDeletedIsFalse(String workspaceId, String sessionId);
+
+    List<File> findByWorkspaceIdAndDeletedIsTrue(String workspaceId);
+
+    List<File> findByWorkspaceIdAndDeletedIsFalse(String workspaceId);
 }

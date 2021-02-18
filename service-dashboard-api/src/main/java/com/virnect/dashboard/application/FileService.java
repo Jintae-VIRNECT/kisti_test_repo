@@ -16,14 +16,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.dashboard.application.rest.record.RecordRestService;
-import com.virnect.dashboard.application.rest.user.UserRestService;
-import com.virnect.dashboard.application.rest.workspace.WorkspaceRestService;
-import com.virnect.dashboard.dao.file.FileRepository;
-import com.virnect.dashboard.dao.file.RecordFileRepository;
-import com.virnect.dashboard.domain.files.File;
-import com.virnect.dashboard.domain.files.FileType;
-import com.virnect.dashboard.domain.files.RecordFile;
 import com.virnect.dashboard.dto.request.FileDataRequest;
 import com.virnect.dashboard.dto.response.FileDeleteResponse;
 import com.virnect.dashboard.dto.response.FileDetailInfoListResponse;
@@ -32,13 +24,21 @@ import com.virnect.dashboard.dto.response.FileInfoListResponse;
 import com.virnect.dashboard.dto.response.FileInfoResponse;
 import com.virnect.dashboard.dto.response.FilePreSignedResponse;
 import com.virnect.dashboard.dto.response.FileUserInfoResponse;
-import com.virnect.dashboard.dto.response.RecordServerFileInfoListResponse;
-import com.virnect.dashboard.dto.rest.UserInfoResponse;
-import com.virnect.dashboard.dto.rest.WorkspaceMemberInfoResponse;
-import com.virnect.dashboard.error.ErrorCode;
-import com.virnect.dashboard.error.exception.DashboardServiceException;
-import com.virnect.dashboard.global.common.ApiResponse;
 import com.virnect.dashboard.infra.file.IFileManagementService;
+import com.virnect.data.application.record.RecordRestService;
+import com.virnect.data.application.user.UserRestService;
+import com.virnect.data.application.workspace.WorkspaceRestService;
+import com.virnect.data.dao.file.FileRepository;
+import com.virnect.data.dao.file.RecordFileRepository;
+import com.virnect.data.domain.file.File;
+import com.virnect.data.domain.file.FileType;
+import com.virnect.data.domain.file.RecordFile;
+import com.virnect.data.dto.response.file.RecordServerFileInfoListResponse;
+import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @Service
@@ -108,7 +108,7 @@ public class FileService {
 				file.setNickName(workspaceMemberInfo.getData().getNickName());
 			}
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_ATTACHED_FILE_FOUND);
 		}
 		return new FileInfoListResponse(fileInfoList);
 	}
@@ -157,7 +157,7 @@ public class FileService {
 				.stream()
 				.sorted(Comparator.comparing(FileDetailInfoResponse::getCreatedDate));
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_FILE_FIND_LIST_FAILED);
+			throw new RestServiceException(ErrorCode.ERR_FILE_FIND_LIST_FAILED);
 		}
 		return new FileDetailInfoListResponse(fileDetailInfoList);
 	}
@@ -178,7 +178,7 @@ public class FileService {
 				fileDataRequest.getOrder()
 			).getData();
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_SERVER_RECORD_FILE_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_FILE_FOUND);
 		}
 		return responseData;
 	}
@@ -223,10 +223,10 @@ public class FileService {
 				filePreSignedResponse.setUrl(url);
 
 			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-				throw new DashboardServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+				throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 			}
 		} else {
-			throw new DashboardServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 
 		return filePreSignedResponse;
@@ -273,10 +273,10 @@ public class FileService {
 				filePreSignedResponse.setExpiry(expiry);
 				filePreSignedResponse.setUrl(url);
 			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-				throw new DashboardServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+				throw new RestServiceException(ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 			}
 		} else {
-			throw new DashboardServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 		return filePreSignedResponse;
 	}
@@ -296,7 +296,7 @@ public class FileService {
 				fileDataRequest.getId()
 			).getData();
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_SERVER_RECORD_URL_FOUND);
+			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_URL_FOUND);
 		}
 		return responseUrl;
 	}
@@ -336,7 +336,7 @@ public class FileService {
 			fileDeleteResponse.setSessionId(file.getSessionId());
 			fileDeleteResponse.setFileName(file.getName());
 		} else {
-			throw new DashboardServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
+			throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
 		}
 
 		return fileDeleteResponse;
@@ -379,7 +379,7 @@ public class FileService {
 			fileDeleteResponse.setSessionId(file.getSessionId());
 			fileDeleteResponse.setFileName(file.getName());
 		} else {
-			throw new DashboardServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
+			throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
 		}
 		return fileDeleteResponse;
 	}
@@ -399,7 +399,7 @@ public class FileService {
 				fileDataRequest.getId()
 			).getData();
 		} catch (Exception exception) {
-			throw new DashboardServiceException(ErrorCode.ERR_SERVER_RECORD_DELETE);
+			throw new RestServiceException(ErrorCode.ERR_SERVER_RECORD_DELETE);
 		}
 		return responseData;
 	}

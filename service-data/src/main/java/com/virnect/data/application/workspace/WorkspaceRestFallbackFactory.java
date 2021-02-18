@@ -32,6 +32,13 @@ public class WorkspaceRestFallbackFactory implements FallbackFactory<WorkspaceRe
                 WorkspaceMemberInfoResponse empty = new WorkspaceMemberInfoResponse();
                 return new ApiResponse<>(empty);
             }
+
+            @Override
+            public ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembers(String workspaceId) {
+                log.error("[USER WORKSPACE MEMBERS INFO API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
+                WorkspaceMemberInfoListResponse empty = new WorkspaceMemberInfoListResponse();
+                return new ApiResponse<>(empty);
+            }
         };
     }
 }

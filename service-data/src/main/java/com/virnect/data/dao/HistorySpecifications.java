@@ -1,7 +1,7 @@
 package com.virnect.data.dao;
 
 import com.virnect.data.domain.member.MemberHistory;
-import com.virnect.data.domain.room.RoomHistory;
+import com.virnect.data.domain.roomhistory.RoomHistory;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;

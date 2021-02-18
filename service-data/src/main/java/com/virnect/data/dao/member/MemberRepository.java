@@ -42,4 +42,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Modifying
     @Query("delete from Member m where m.room.sessionId=:sessionId")
     void deleteBySessionId(@Param("sessionId")final String sessionId);
+
 }

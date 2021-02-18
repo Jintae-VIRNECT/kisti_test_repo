@@ -24,7 +24,7 @@ import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.room.Room;
-import com.virnect.data.domain.room.RoomHistory;
+import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.room.RoomStatus;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
