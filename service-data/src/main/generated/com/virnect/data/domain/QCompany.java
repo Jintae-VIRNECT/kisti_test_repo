@@ -24,6 +24,8 @@ public class QCompany extends EntityPathBase<Company> {
 
     public final QBaseTimeEntity _super = new QBaseTimeEntity(this);
 
+    public final BooleanPath audioRestrictedMode = createBoolean("audioRestrictedMode");
+
     public final NumberPath<Integer> companyCode = createNumber("companyCode", Integer.class);
 
     //inherited
@@ -36,8 +38,6 @@ public class QCompany extends EntityPathBase<Company> {
     public final StringPath licenseName = createString("licenseName");
 
     public final BooleanPath recording = createBoolean("recording");
-
-    public final BooleanPath restrictedMode = createBoolean("restrictedMode");
 
     public final EnumPath<com.virnect.data.domain.session.SessionType> sessionType = createEnum("sessionType", com.virnect.data.domain.session.SessionType.class);
 
@@ -53,6 +53,8 @@ public class QCompany extends EntityPathBase<Company> {
 
     //inherited
     public final DateTimePath<java.time.LocalDateTime> updatedDate = _super.updatedDate;
+
+    public final BooleanPath videoRestrictedMode = createBoolean("videoRestrictedMode");
 
     public final StringPath workspaceId = createString("workspaceId");
 
