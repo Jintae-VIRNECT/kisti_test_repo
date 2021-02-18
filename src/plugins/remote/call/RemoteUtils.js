@@ -55,6 +55,11 @@ export const addSessionEventListener = session => {
             event.connection.connectionId,
           )
         }
+        if (Store.getters['restrictedRoom']) {
+          _.sendControlRestrict('video', !Store.getters['allowCameraControl'], [
+            event.connection.connectionId,
+          ])
+        }
       }
       if (_.publisher.stream.hasVideo) {
         _.sendCamera(
@@ -220,10 +225,25 @@ export const addSessionEventListener = session => {
           Store.dispatch('setMainView', { id: data.id, force: true })
         })
       } else {
+        if (data.id === _.account.uuid && Store.getters['restrictedRoom']) {
+          _.sendCamera(CAMERA_STATUS.CAMERA_ON)
+          Store.dispatch('setDevices', {
+            video: {
+              isOn: true,
+            },
+          })
+        }
         Store.dispatch('setMainView', { id: data.id, force: true })
       }
     } else {
-      Store.dispatch('setMainView', { force: false })
+      if (!Store.getters['allowCameraControl']) {
+        Store.dispatch('setMainView', {
+          force: false,
+          id: Store.getters['account'].uuid,
+        })
+      } else {
+        Store.dispatch('setMainView', { force: false })
+      }
     }
   })
   /** 상대방 마이크 활성 정보 수신 */
@@ -314,9 +334,36 @@ export const addSessionEventListener = session => {
       Store.dispatch('setAllow', {
         pointing: data.enable,
       })
-    } else if (data.type === CONTROL.LOCAL_RECORD) {
+    }
+
+    if (data.type === CONTROL.LOCAL_RECORD) {
       Store.dispatch('setAllow', {
         localRecord: data.enable,
+      })
+    }
+
+    if (data.type === CONTROL.RESTRICTED_MODE) {
+      Store.commit('setRestrictedMode', data.enable)
+      if (!data.enable) {
+        Store.dispatch('addChat', {
+          status: 'camera-control-on',
+          type: 'system',
+        })
+      } else {
+        Store.dispatch('addChat', {
+          status: 'camera-control-off',
+          type: 'system',
+        })
+      }
+    }
+    if (data.type === CONTROL.VIDEO) {
+      _.sendCamera(
+        data.enable ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
+      )
+      Store.dispatch('setDevices', {
+        video: {
+          isOn: data.enable,
+        },
       })
     }
   })

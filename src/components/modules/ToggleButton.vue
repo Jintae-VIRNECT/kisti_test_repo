@@ -1,7 +1,7 @@
 <template>
   <button
     class="toggle-button"
-    :class="[{ active: active }, customClass]"
+    :class="[{ active: active, disabled: disabled }, customClass]"
     :style="{
       backgroundImage: 'url(' + src + ')',
       width: size,
@@ -43,6 +43,10 @@ export default {
       type: [Number, String],
       default: 12,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     src() {
@@ -70,6 +74,10 @@ export default {
   }
   &.toggle-header__small {
     background-size: 70%;
+  }
+  &.disabled {
+    cursor: default;
+    opacity: 0.2;
   }
 }
 </style>

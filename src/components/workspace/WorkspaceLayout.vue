@@ -238,6 +238,8 @@ export default {
         storage: res.storage,
         sessionType: res.sessionType,
         languageCodes,
+        audioRestrictedMode: res.audioRestrictedMode,
+        videoRestrictedMode: res.videoRestrictedMode,
       })
     },
   },

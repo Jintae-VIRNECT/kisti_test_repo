@@ -28,6 +28,9 @@ const SYSTEM = {
   RECORD_ALLOW_NOT: 'record-not-allow',
 
   SEND_CANCEL: 'send-cancel',
+
+  CAMERA_CONTROL_ON: 'camera-control-on',
+  CAMERA_CONTROL_OFF: 'camera-control-off',
 }
 
 export const systemClass = status => {
@@ -62,6 +65,9 @@ export const systemClass = status => {
     case SYSTEM.RECORD_ALLOW:
     case SYSTEM.RECORD_ALLOW_NOT:
       return 'record'
+    case SYSTEM.CAMERA_CONTROL_ON:
+    case SYSTEM.CAMERA_CONTROL_OFF:
+      return 'camera'
     default:
       return ''
   }
@@ -129,5 +135,9 @@ export const systemText = (type, name) => {
       return vue.$t('service.chat_record_not_allow')
     case SYSTEM.SEND_CANCEL:
       return vue.$t('service.chat_send_cancel', { name: name })
+    case SYSTEM.CAMERA_CONTROL_ON:
+      return vue.$t('service.chat_camera_control_on')
+    case SYSTEM.CAMERA_CONTROL_OFF:
+      return vue.$t('service.chat_camera_control_off')
   }
 }

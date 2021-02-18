@@ -71,8 +71,7 @@ export default {
   }
 }
 .check-text {
-  margin: auto;
-  margin-left: 0.714rem;
+  margin: auto 0.714rem;
   color: rgba($color_white, 0.6);
   font-weight: 400;
   line-height: 1.429rem;

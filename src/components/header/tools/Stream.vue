@@ -5,6 +5,7 @@
       customClass="toggle-header"
       :description="`${$t('common.video')} on/off`"
       size="2.429rem"
+      :disabled="disable"
       :active="video.isOn"
       :activeSrc="require('assets/image/ic_video_on.svg')"
       :inactiveSrc="require('assets/image/ic_video_off.svg')"
@@ -19,6 +20,7 @@ import { mapGetters, mapActions } from 'vuex'
 import Tooltip from 'Tooltip'
 import ToggleButton from 'ToggleButton'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
+import { ROLE } from 'configs/remote.config'
 export default {
   name: 'Stream',
   components: {
@@ -29,11 +31,20 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['video']),
+    ...mapGetters(['video', 'roomInfo', 'allowCameraControl']),
+    disable() {
+      if (this.$route.name !== 'service') return false
+      if (!this.roomInfo.videoRestrictedMode) return false
+      if (this.account.roleType === ROLE.LEADER) return false
+      return !this.allowCameraControl
+    },
   },
   methods: {
     ...mapActions(['setDevices']),
     streamOnOff() {
+      if (this.disable) {
+        return
+      }
       let video = !this.video.isOn
 
       this.setDevices({
