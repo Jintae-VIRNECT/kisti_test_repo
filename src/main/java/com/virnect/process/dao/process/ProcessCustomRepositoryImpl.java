@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.StringUtils;
 
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 
 import lombok.extern.slf4j.Slf4j;
@@ -31,10 +32,14 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		super(Process.class);
 	}
 
+	QProcess qProcess = QProcess.process;
+	QSubProcess qSubProcess = QSubProcess.subProcess;
+	QTarget qTarget = QTarget.target;
+	QJob qJob = QJob.job;
+	QIssue qIssue = QIssue.issue;
+
 	@Override
 	public Optional<Process> findByTargetDataAndState(String targetData, State state) {
-		QProcess qProcess = QProcess.process;
-		QTarget qTarget = QTarget.target;
 		Process process = from(qProcess)
 			.where(qProcess.state.eq(state))
 			.join(qProcess.targetList, qTarget)
@@ -44,8 +49,6 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
 	@Override
 	public Optional<Process> findByContentUUIDAndStatus(String contentUUID, State state, String memberUUID) {
-		QProcess qProcess = QProcess.process;
-		QTarget qTarget = QTarget.target;
 		Process process = from(qProcess)
 			.where(qProcess.state.eq(state)
 				.and(qProcess.contentUUID.eq(contentUUID))
@@ -60,10 +63,6 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		String workspaceUUID, String search, List<String> userUUIDList, Pageable pageable, String targetType
 	) {
 		log.debug(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ProcessCustomRepository in");
-
-		QProcess qProcess = QProcess.process;
-		QSubProcess qSubProcess = QSubProcess.subProcess;
-		QTarget qTarget = QTarget.target;
 
 		JPQLQuery<Process> query = from(qProcess);
 
@@ -112,11 +111,6 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
 	@Override
 	public int getCountIssuesInProcess(Long processId) {
-		QProcess qProcess = QProcess.process;
-		QSubProcess qSubProcess = QSubProcess.subProcess;
-		QJob qJob = QJob.job;
-		QIssue qIssue = QIssue.issue;
-
 		JPQLQuery<Process> query = from(qProcess);
 
 		query.join(qProcess.subProcessList, qSubProcess);
@@ -132,9 +126,6 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
 	@Override
 	public Optional<Process> getProcessUnClosed(String workspaceUUID, String targetData) {
-		QProcess qProcess = QProcess.process;
-		QTarget qTarget = QTarget.target;
-
 		JPQLQuery<Process> query = from(qProcess);
 
 		query.join(qProcess.targetList, qTarget);
@@ -157,7 +148,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		List<Conditions> filterList, String myUUID, String workspaceUUID, String title, Pageable pageable,
 		String targetType
 	) {
-		QProcess qProcess = QProcess.process;
+		/*QProcess qProcess = QProcess.process;
 		QSubProcess qSubProcess = QSubProcess.subProcess;
 		QTarget qTarget = QTarget.target;
 
@@ -192,7 +183,56 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
 		final List<Process> myList = getQuerydsl().applyPagination(pageable, query).fetch();
 
+		return new PageImpl<>(myList, pageable, query.fetchCount());*/
+		JPQLQuery<Process> query = from(qProcess);
+		query.join(qProcess.subProcessList, qSubProcess);
+		query.join(qProcess.targetList, qTarget);
+		query.where(eqWorkspaceUUID(workspaceUUID));
+		query.where(eqWorkerUUID(myUUID));
+		query.where(eqTitle(title));
+
+		query.groupBy(qProcess.id);
+
+		// 공정 상태 필터링
+		if (filterList != null && filterList.size() > 0 && !filterList.contains(Conditions.ALL)) {
+			List<Process> filteredList = new ArrayList<>();
+			List<Process> processList = query.fetch();
+			processList.forEach(process -> {
+				if (filterList.contains(process.getConditions())) {
+					filteredList.add(process);
+				}
+			});
+			query = query.where(qProcess.in(filteredList));
+		}
+
+		if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
+			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
+		}
+
+		final List<Process> myList = getQuerydsl().applyPagination(pageable, query).fetch();
+
 		return new PageImpl<>(myList, pageable, query.fetchCount());
+	}
+
+	private BooleanExpression eqWorkspaceUUID(String workspaceUUID) {
+		if (StringUtils.isEmpty(workspaceUUID)) {
+			return null;
+		}
+		return qProcess.workspaceUUID.eq(workspaceUUID);
+	}
+
+	private BooleanExpression eqWorkerUUID(String workerUUID) {
+		if (StringUtils.isEmpty(workerUUID)) {
+			return null;
+		}
+		return qSubProcess.workerUUID.eq(workerUUID);
+	}
+
+	private BooleanExpression eqTitle(String title) {
+		if (StringUtils.isEmpty(title)) {
+			return null;
+		}
+		return qProcess.name.contains(title);
 	}
 
 	@Override
