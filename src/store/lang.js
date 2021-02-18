@@ -28,7 +28,11 @@ export const lang = {
       }
       // let lang = Cookies.get('lang', cookieOption)
       if (!lang) {
-        if (navigator.language.substr(0, 2) == 'ko') {
+        if (navigator.language.substr(0, 2) !== 'ko') {
+          lang = 'en'
+        } else if (navigator.userLanguage.substr(0, 2) !== 'ko') {
+          lang = 'en'
+        } else if (navigator.systemLanguage.substr(0, 2) !== 'ko') {
           lang = 'en'
         } else {
           lang = 'ko'
@@ -44,7 +48,7 @@ export const lang = {
         //   lang = 'ko'
         // }
       }
-      console.log(lang)
+      // console.log(lang)
       Cookies.set('lang', lang, cookieOption)
       commit('CHANGE_LANG', lang)
     },
