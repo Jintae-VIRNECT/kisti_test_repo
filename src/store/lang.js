@@ -28,16 +28,23 @@ export const lang = {
       }
       // let lang = Cookies.get('lang', cookieOption)
       if (!lang) {
-        if (navigator.language != null) {
-          lang = navigator.language.substr(0, 2)
-        } else if (navigator.userLanguage != null) {
-          lang = navigator.userLanguage.substr(0, 2)
-        } else if (navigator.systemLanguage != null) {
-          lang = navigator.systemLanguage.substr(0, 2)
+        if (navigator.language.substr(0, 2) == 'ko') {
+          lang = 'en'
         } else {
           lang = 'ko'
         }
+
+        // if (navigator.language != null) {
+        //   lang = navigator.language.substr(0, 2)
+        // } else if (navigator.userLanguage != null) {
+        //   lang = navigator.userLanguage.substr(0, 2)
+        // } else if (navigator.systemLanguage != null) {
+        //   lang = navigator.systemLanguage.substr(0, 2)
+        // } else {
+        //   lang = 'ko'
+        // }
       }
+      console.log(lang)
       Cookies.set('lang', lang, cookieOption)
       commit('CHANGE_LANG', lang)
     },
