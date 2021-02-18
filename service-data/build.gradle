@@ -1,3 +1,8 @@
+
+plugins {
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+}
+
 //—————————————————————————————————————————————————————————————————————————————————————————————————
 // DEPENDENCIES.
 //—————————————————————————————————————————————————————————————————————————————————————————————————
@@ -12,6 +17,10 @@ dependencies {
     implementation("io.springfox:springfox-swagger-ui:2.9.2")
 
     implementation("com.google.code.gson:gson:2.8.6")
+
+    // Query DSL
+    implementation("com.querydsl:querydsl-jpa") // querydsl
+    implementation("com.querydsl:querydsl-apt") // querydsl
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————
@@ -23,4 +32,29 @@ jar {
 
 bootJar {
     enabled = false
+}
+
+// querydsl 적용
+def querydslSrcDir = 'src/main/generated'
+
+querydsl {
+    library = "com.querydsl:querydsl-apt"
+    jpa = true
+    querydslSourcesDir = querydslSrcDir
+}
+
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+configurations {
+    querydsl.extendsFrom compileClasspath
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', querydslSrcDir]
+        }
+    }
 }
