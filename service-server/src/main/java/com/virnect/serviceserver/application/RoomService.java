@@ -60,6 +60,9 @@ public class RoomService {
 		int companyCode
 	) {
 
+		// 임시 셋팅
+		companyCode = 0;
+
 		ApiResponse<RoomResponse> responseData;
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
@@ -119,6 +122,9 @@ public class RoomService {
 		int companyCode
 	) {
 		ApiResponse<RoomResponse> responseData;
+
+		// 임시 셋팅
+		companyCode = 0;
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
