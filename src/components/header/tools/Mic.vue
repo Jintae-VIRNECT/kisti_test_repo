@@ -27,10 +27,10 @@ export default {
     ToggleButton,
   },
   computed: {
-    ...mapGetters(['mic', 'restrictedRoom', 'allowCameraControl']),
+    ...mapGetters(['mic', 'roomInfo', 'allowCameraControl']),
     disable() {
       if (this.$route.name !== 'service') return false
-      if (!this.restrictedRoom) return false
+      if (!this.roomInfo.audioRestrictedMode) return false
       if (this.account.roleType === ROLE.LEADER) return false
       return !this.allowCameraControl
     },

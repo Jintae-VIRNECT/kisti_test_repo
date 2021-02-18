@@ -50,7 +50,7 @@ export default {
   },
   watch: {
     allowCameraControl(flag) {
-      this.$call.sendControl(CONTROL.RESTRICTED_MODE, !flag)
+      this.$call.sendControlRestrict('video', !flag)
     },
   },
   methods: {

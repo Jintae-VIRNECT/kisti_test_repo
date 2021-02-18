@@ -9,6 +9,7 @@ import {
   VIDEO,
   AR_FEATURE,
   FILE,
+  CONTROL,
 } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import {
@@ -348,6 +349,24 @@ const _ = {
   sendControl: (type, enable, target = null) => {
     const params = {
       type,
+      enable,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.CONTROL,
+    })
+  },
+  /**
+   * @BROADCATE
+   * @TARGET
+   * other user's pointing, recording control
+   * @param {String} type = remote.config.CONTROL
+   */
+  sendControlRestrict: (device, enable, target = null) => {
+    const params = {
+      type: CONTROL.RESTRICTED_MODE,
+      target: device,
       enable,
     }
     _.session.signal({

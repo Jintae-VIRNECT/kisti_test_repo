@@ -104,7 +104,7 @@ export default {
     ...mapActions(['setMainView', 'addChat', 'removeMember', 'restrictedRoom']),
     selectMain(participant) {
       if (this.restrictedRoom) {
-        this.$call.sendControl(CONTROL.VIDEO, true, [participant.connectionId])
+        // this.$call.sendControl(CONTROL.VIDEO, true, [participant.connectionId])
         this.$call.sendVideo(participant.id, true)
         return
       }

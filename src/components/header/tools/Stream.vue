@@ -31,10 +31,10 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['video', 'restrictedRoom', 'allowCameraControl']),
+    ...mapGetters(['video', 'roomInfo', 'allowCameraControl']),
     disable() {
       if (this.$route.name !== 'service') return false
-      if (!this.restrictedRoom) return false
+      if (!this.roomInfo.videoRestrictedMode) return false
       if (this.account.roleType === ROLE.LEADER) return false
       return !this.allowCameraControl
     },

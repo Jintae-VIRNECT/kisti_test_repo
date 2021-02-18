@@ -56,11 +56,9 @@ export const addSessionEventListener = session => {
           )
         }
         if (Store.getters['restrictedRoom']) {
-          _.sendControl(
-            CONTROL.RESTRICTED_MODE,
-            !Store.getters['allowCameraControl'],
-            [event.connection.connectionId],
-          )
+          _.sendControlRestrict('video', !Store.getters['allowCameraControl'], [
+            event.connection.connectionId,
+          ])
         }
       }
       if (_.publisher.stream.hasVideo) {
@@ -227,6 +225,14 @@ export const addSessionEventListener = session => {
           Store.dispatch('setMainView', { id: data.id, force: true })
         })
       } else {
+        if (data.id === _.account.uuid && Store.getters['restrictedRoom']) {
+          _.sendCamera(CAMERA_STATUS.CAMERA_ON)
+          Store.dispatch('setDevices', {
+            video: {
+              isOn: true,
+            },
+          })
+        }
         Store.dispatch('setMainView', { id: data.id, force: true })
       }
     } else {
