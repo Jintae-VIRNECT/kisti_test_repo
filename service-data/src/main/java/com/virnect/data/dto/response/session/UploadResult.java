@@ -1,6 +1,6 @@
 package com.virnect.data.dto.response.session;
 
-import com.virnect.data.error.ErrorCode;
+import com.virnect.serviceserver.error.ErrorCode;
 
 public class UploadResult {
     private String result;
