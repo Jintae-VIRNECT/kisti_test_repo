@@ -11,11 +11,11 @@ import com.virnect.data.global.common.ApiResponse;
 @FeignClient(name = "${feign.license-prefix}", url = "${feign.license-url}", fallbackFactory = LicenseRestFallbackFactory.class)
 public interface LicenseRestService {
 
-    @GetMapping("/licenses/{workspaceId}/{userId}")
-    ApiResponse<LicenseInfoListResponse> getUserLicenseValidation(
-            @PathVariable(name = "workspaceId") String workspaceId,
-            @PathVariable(name = "userId") String userId);
+	@GetMapping("/licenses/{workspaceId}/{userId}")
+	ApiResponse<LicenseInfoListResponse> getUserLicenseValidation(
+		@PathVariable(name = "workspaceId") String workspaceId,
+		@PathVariable(name = "userId") String userId);
 
-    @GetMapping("/licenses/{workspaceId}/plan")
-    ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspacePlan(@PathVariable(name = "workspaceId") String workspaceId);
+	@GetMapping("/licenses/{workspaceId}/plan")
+	ApiResponse<WorkspaceLicensePlanInfoResponse> getWorkspacePlan(@PathVariable(name = "workspaceId") String workspaceId);
 }

@@ -11,9 +11,9 @@ import com.virnect.data.global.common.ApiResponse;
 @FeignClient(name = "${feign.record-prefix}", url = "${feign.record-url}", fallbackFactory = RecordRestFallbackFactory.class)
 public interface RecordRestService {
 
-    @DeleteMapping("/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings")
-    ApiResponse<StopRecordingResponse> stopRecordingBySessionId(
-            @PathVariable(name = "workspaceId") String workspaceId,
-            @PathVariable(name = "userId") String userId,
-            @RequestParam(name = "sessionId") String sessionId);
+	@DeleteMapping("/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings")
+	ApiResponse<StopRecordingResponse> stopRecordingBySessionId(
+		@PathVariable(name = "workspaceId") String workspaceId,
+		@PathVariable(name = "userId") String userId,
+		@RequestParam(name = "sessionId") String sessionId);
 }

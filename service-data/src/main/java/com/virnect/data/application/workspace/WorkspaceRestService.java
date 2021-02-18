@@ -12,18 +12,18 @@ import com.virnect.data.global.common.ApiResponse;
 @FeignClient(name = "${feign.workspace-prefix}", url = "${feign.workspace-url}", fallbackFactory = WorkspaceRestFallbackFactory.class)
 public interface WorkspaceRestService {
 
-    @GetMapping("/workspaces/{workspaceId}/members")
-    ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
-            @PathVariable("workspaceId") String workspaceId,
-            @RequestParam(value = "filter", required = false) String filter,
-            @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "page") int page,
-            @RequestParam(value = "size") int size
-            );
+	@GetMapping("/workspaces/{workspaceId}/members")
+	ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestParam(value = "filter", required = false) String filter,
+		@RequestParam(value = "search", required = false) String search,
+		@RequestParam(value = "page") int page,
+		@RequestParam(value = "size") int size
+	);
 
-    @GetMapping("/workspaces/{workspaceId}/members/info")
-    ApiResponse<WorkspaceMemberInfoResponse> getWorkspaceMemberInfo(
-            @PathVariable("workspaceId") String workspaceId,
-            @RequestParam(value = "userId") String userId
-    );
+	@GetMapping("/workspaces/{workspaceId}/members/info")
+	ApiResponse<WorkspaceMemberInfoResponse> getWorkspaceMemberInfo(
+		@PathVariable("workspaceId") String workspaceId,
+		@RequestParam(value = "userId") String userId
+	);
 }

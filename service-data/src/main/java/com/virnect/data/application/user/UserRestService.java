@@ -11,20 +11,20 @@ import com.virnect.data.global.common.ApiResponse;
 
 @FeignClient(name = "${feign.user-prefix}", url = "${feign.user-url}", fallbackFactory = UserRestFallbackFactory.class)
 public interface UserRestService {
-    /**
-     * User Information List
-     * @param search
-     * @param paging
-     * @return
-     */
-    @GetMapping("/users")
-    ApiResponse<UserInfoListResponse> getUserInfoList(
-            @RequestParam(name = "search", required = false) String search,
-            @RequestParam("paging") boolean paging);
+	/**
+	 * User Information List
+	 * @param search
+	 * @param paging
+	 * @return
+	 */
+	@GetMapping("/users")
+	ApiResponse<UserInfoListResponse> getUserInfoList(
+		@RequestParam(name = "search", required = false) String search,
+		@RequestParam("paging") boolean paging);
 
-    @GetMapping("/users")
-    ApiResponse<UserInfoListResponse> getUserInfoList(@RequestParam("paging") boolean paging);
+	@GetMapping("/users")
+	ApiResponse<UserInfoListResponse> getUserInfoList(@RequestParam("paging") boolean paging);
 
-    @GetMapping("/users/{userId}")
-    ApiResponse<UserInfoResponse> getUserInfoByUserId(@PathVariable("userId") String userId);
+	@GetMapping("/users/{userId}")
+	ApiResponse<UserInfoResponse> getUserInfoByUserId(@PathVariable("userId") String userId);
 }
