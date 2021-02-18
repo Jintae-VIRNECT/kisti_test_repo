@@ -41,7 +41,7 @@ public class QSessionPropertyHistory extends EntityPathBase<SessionPropertyHisto
 
     public final StringPath recordingMode = createString("recordingMode");
 
-    public final com.virnect.data.domain.room.QRoomHistory roomHistory;
+    public final com.virnect.data.domain.roomhistory.QRoomHistory roomHistory;
 
     public final EnumPath<SessionType> sessionType = createEnum("sessionType", SessionType.class);
 
@@ -66,7 +66,7 @@ public class QSessionPropertyHistory extends EntityPathBase<SessionPropertyHisto
 
     public QSessionPropertyHistory(Class<? extends SessionPropertyHistory> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.roomHistory = inits.isInitialized("roomHistory") ? new com.virnect.data.domain.room.QRoomHistory(forProperty("roomHistory"), inits.get("roomHistory")) : null;
+        this.roomHistory = inits.isInitialized("roomHistory") ? new com.virnect.data.domain.roomhistory.QRoomHistory(forProperty("roomHistory"), inits.get("roomHistory")) : null;
     }
 
 }

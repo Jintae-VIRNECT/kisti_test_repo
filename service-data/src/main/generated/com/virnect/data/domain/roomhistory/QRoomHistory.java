@@ -1,4 +1,4 @@
-package com.virnect.data.domain.room;
+package com.virnect.data.domain.roomhistory;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -9,7 +9,6 @@ import javax.annotation.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
 
-import com.virnect.data.domain.roomhistory.RoomHistory;
 
 /**
  * QRoomHistory is a Querydsl query type for RoomHistory
@@ -17,7 +16,7 @@ import com.virnect.data.domain.roomhistory.RoomHistory;
 @Generated("com.querydsl.codegen.EntitySerializer")
 public class QRoomHistory extends EntityPathBase<RoomHistory> {
 
-    private static final long serialVersionUID = 776372224L;
+    private static final long serialVersionUID = -1446651574L;
 
     private static final PathInits INITS = PathInits.DIRECT2;
 

@@ -85,6 +85,7 @@ import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 @ComponentScan(value = {
     "com.virnect.data",
     "com.virnect.remote",
+    "com.virnect.dashboard",
     "com.virnect.serviceserver"
 })
 @EntityScan(value = {

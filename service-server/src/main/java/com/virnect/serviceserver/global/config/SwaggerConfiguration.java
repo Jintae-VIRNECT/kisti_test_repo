@@ -24,8 +24,8 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.ErrorResponseMessage;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.ErrorResponseMessage;
 
 @Profile({"!staging", "!production"})
 @Configuration

@@ -68,7 +68,7 @@ import com.virnect.data.global.util.ListUtils;
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional(readOnly = true)
-public class HistoryService {
+public class DashboardHistoryService {
 
 	private final ModelMapper modelMapper;
 

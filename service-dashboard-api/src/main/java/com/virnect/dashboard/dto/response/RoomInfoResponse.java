@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.dashboard.domain.session.SessionType;
+import com.virnect.data.domain.session.SessionType;
 
 @Getter
 @Setter

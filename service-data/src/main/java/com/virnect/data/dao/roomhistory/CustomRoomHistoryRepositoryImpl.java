@@ -1,7 +1,7 @@
 package com.virnect.data.dao.roomhistory;
 
 import static com.virnect.data.domain.member.QMemberHistory.*;
-import static com.virnect.data.domain.room.QRoomHistory.*;
+import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
 import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
 import java.time.LocalDateTime;

@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.dashboard.application.FileService;
+import com.virnect.dashboard.application.DashboardFileService;
 import com.virnect.dashboard.dto.request.FileDataRequest;
 import com.virnect.dashboard.dto.response.FileDeleteResponse;
 import com.virnect.dashboard.dto.response.FileDetailInfoListResponse;
@@ -29,9 +29,9 @@ import com.virnect.data.global.common.ApiResponse;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/remote/dashboard/file")
-public class FileRestController {
+public class DashboardFileRestController {
 
-	private final FileService fileService;
+	private final DashboardFileService fileService;
 	/*
 	 *	2. 협업에서 업로드된 첨부파일 목록을 반환하는 API
 	 *	3. 로컬 녹화 파일 목록을 반환하는 API

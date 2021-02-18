@@ -10,7 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.dashboard.application.HistoryService;
+import com.virnect.dashboard.application.DashboardHistoryService;
 import com.virnect.dashboard.dto.response.RoomDetailInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
@@ -20,9 +20,9 @@ import com.virnect.data.global.common.ApiResponse;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/remote/dashboard/")
-public class SessionRestController {
+public class DashboardSessionRestController {
 
-	private final HistoryService historyService;
+	private final DashboardHistoryService historyService;
 
 	/**
 	 * 현재 진행 중입 협업 상세 정보 가져오는 API

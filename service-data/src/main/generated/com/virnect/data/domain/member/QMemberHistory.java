@@ -39,7 +39,7 @@ public class QMemberHistory extends EntityPathBase<MemberHistory> {
 
     public final EnumPath<MemberType> memberType = createEnum("memberType", MemberType.class);
 
-    public final com.virnect.data.domain.room.QRoomHistory roomHistory;
+    public final com.virnect.data.domain.roomhistory.QRoomHistory roomHistory;
 
     public final StringPath sessionId = createString("sessionId");
 
@@ -70,7 +70,7 @@ public class QMemberHistory extends EntityPathBase<MemberHistory> {
 
     public QMemberHistory(Class<? extends MemberHistory> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.roomHistory = inits.isInitialized("roomHistory") ? new com.virnect.data.domain.room.QRoomHistory(forProperty("roomHistory"), inits.get("roomHistory")) : null;
+        this.roomHistory = inits.isInitialized("roomHistory") ? new com.virnect.data.domain.roomhistory.QRoomHistory(forProperty("roomHistory"), inits.get("roomHistory")) : null;
     }
 
 }

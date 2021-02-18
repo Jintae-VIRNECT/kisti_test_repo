@@ -46,8 +46,8 @@ import com.virnect.remote.dto.response.file.RoomProfileUpdateResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
-import com.virnect.remote.infra.file.IFileManagementService;
-import com.virnect.remote.dto.response.session.UploadResult;
+import com.virnect.data.infra.file.IFileManagementService;
+import com.virnect.data.dto.UploadResult;
 
 @Slf4j
 @Service

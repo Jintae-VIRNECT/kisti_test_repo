@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.dashboard.application.HistoryService;
+import com.virnect.dashboard.application.DashboardHistoryService;
 import com.virnect.dashboard.dto.request.RoomHistoryDetailRequest;
 import com.virnect.dashboard.dto.request.RoomHistoryListRequest;
 import com.virnect.dashboard.dto.request.RoomHistoryStatsRequest;
@@ -30,9 +30,9 @@ import com.virnect.data.global.common.ApiResponse;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/remote/dashboard/")
-public class HistoryRestController {
+public class DashboardHistoryRestController {
 
-	private final HistoryService historyService;
+	private final DashboardHistoryService historyService;
 	/*
 	 *  1. 워크스페이스 내의 모든 협업 기록을 반환하는 API
 	 *	4. 워크스페이스의 지정일 내에서 발생한 시간별 개인 & 전체 협업 수

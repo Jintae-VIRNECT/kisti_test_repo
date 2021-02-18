@@ -1,4 +1,4 @@
-package com.virnect.remote.infra.file;
+package com.virnect.data.infra.file;
 
 import java.io.IOException;
 import java.security.InvalidKeyException;
@@ -9,7 +9,7 @@ import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.virnect.data.domain.file.FileType;
-import com.virnect.remote.dto.response.session.UploadResult;
+import com.virnect.data.dto.UploadResult;
 
 public interface IFileManagementService {
     String DEFAULT_ROOM_PROFILE = "default";

@@ -1,4 +1,4 @@
-package com.virnect.remote.dto.response.session;
+package com.virnect.data.dto;
 
 import com.virnect.data.error.ErrorCode;
 

@@ -14,25 +14,25 @@ import lombok.Setter;
 @Setter
 @ApiModel
 public class SendSignalRequest {
-    @NotBlank
-    @ApiModelProperty(value = "Remote Session Identifier")
-    private String sessionId;
+	@NotBlank
+	@ApiModelProperty(value = "Remote Session Identifier")
+	private String sessionId;
 
-    @ApiModelProperty(position = 1)
-    private List<String> to = new ArrayList<>();
+	@ApiModelProperty(position = 1)
+	private List<String> to = new ArrayList<>();
 
-    @ApiModelProperty(position = 2)
-    private String type;
+	@ApiModelProperty(position = 2)
+	private String type;
 
-    @ApiModelProperty(position = 3)
-    private String data;
+	@ApiModelProperty(position = 3)
+	private String data;
 
-    @Override
-    public String toString() {
-        return "SendSignalRequest{" +
-                "sessionId='" + sessionId + '\'' +
-                "type='" + type + '\'' +
-                "data='" + data + '\'' +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "SendSignalRequest{" +
+			"sessionId='" + sessionId + '\'' +
+			"type='" + type + '\'' +
+			"data='" + data + '\'' +
+			'}';
+	}
 }

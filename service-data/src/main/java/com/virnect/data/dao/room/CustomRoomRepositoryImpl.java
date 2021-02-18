@@ -1,8 +1,8 @@
 package com.virnect.data.dao.room;
 
-import static com.virnect.dashboard.domain.member.QMember.*;
-import static com.virnect.dashboard.domain.room.QRoom.*;
-import static com.virnect.dashboard.domain.session.QSessionProperty.*;
+import static com.virnect.data.domain.member.QMember.*;
+import static com.virnect.data.domain.room.QRoom.*;
+import static com.virnect.data.domain.session.QSessionProperty.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,8 +14,8 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.dashboard.domain.room.Room;
-import com.virnect.dashboard.domain.room.RoomStatus;
+import com.virnect.data.domain.room.Room;
+import com.virnect.data.domain.room.RoomStatus;
 
 @RequiredArgsConstructor
 public class CustomRoomRepositoryImpl implements CustomRoomRepository {

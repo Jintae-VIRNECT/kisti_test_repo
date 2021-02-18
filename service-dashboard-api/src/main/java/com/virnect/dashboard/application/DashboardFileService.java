@@ -24,7 +24,6 @@ import com.virnect.dashboard.dto.response.FileInfoListResponse;
 import com.virnect.dashboard.dto.response.FileInfoResponse;
 import com.virnect.dashboard.dto.response.FilePreSignedResponse;
 import com.virnect.dashboard.dto.response.FileUserInfoResponse;
-import com.virnect.dashboard.infra.file.IFileManagementService;
 import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
@@ -39,12 +38,13 @@ import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.file.IFileManagementService;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 @Transactional
-public class FileService {
+public class DashboardFileService {
 
 	private final ModelMapper modelMapper;
 
