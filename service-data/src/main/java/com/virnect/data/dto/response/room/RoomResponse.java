@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import com.virnect.data.dao.RestrictedMode;
 import com.virnect.data.dto.response.CoturnResponse;
 
 @Getter

@@ -1,4 +1,4 @@
-package com.virnect.remote.application.record;
+package com.virnect.data.application.record;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;

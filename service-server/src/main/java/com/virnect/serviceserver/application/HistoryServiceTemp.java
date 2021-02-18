@@ -1,38 +1,6 @@
 package com.virnect.serviceserver.application;
 
-import static com.virnect.data.dao.HistorySpecifications.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.member.MemberHistory;
-import com.virnect.data.domain.member.MemberStatus;
-import com.virnect.data.domain.member.MemberType;
-import com.virnect.data.domain.room.RoomHistory;
-import com.virnect.data.dao.MemberHistoryRepository;
-import com.virnect.data.dao.RoomHistoryRepository;
-import com.virnect.remote.application.workspace.WorkspaceRestService;
-import com.virnect.serviceserver.dao.HistoryDataRepository;
-import com.virnect.data.dto.request.room.RoomHistoryDeleteRequest;
-import com.virnect.data.dto.response.PageMetadataResponse;
-import com.virnect.data.dto.response.ResultResponse;
-import com.virnect.data.dto.response.member.MemberInfoResponse;
-import com.virnect.data.dto.response.room.RoomHistoryDetailInfoResponse;
-import com.virnect.data.dto.response.room.RoomHistoryInfoListResponse;
-import com.virnect.data.dto.response.room.RoomHistoryInfoResponse;
-import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.data.application.workspace.WorkspaceRestService;
 
 /*@Slf4j
 @Service

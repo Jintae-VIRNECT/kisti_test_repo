@@ -1,4 +1,4 @@
-package com.virnect.remote.application.user;
+package com.virnect.data.application.user;
 
 import java.util.ArrayList;
 

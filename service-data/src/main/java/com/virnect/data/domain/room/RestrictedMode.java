@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.domain.room;
 
 import java.util.HashMap;
 import java.util.Map;

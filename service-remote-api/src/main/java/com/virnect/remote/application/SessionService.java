@@ -18,11 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.CompanyRepository;
-import com.virnect.data.dao.MemberHistoryRepository;
-import com.virnect.data.dao.MemberRepository;
-import com.virnect.data.dao.RoomHistoryRepository;
-import com.virnect.data.dao.RoomRepository;
+import com.virnect.data.dao.company.CompanyRepository;
+import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
+import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
+import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.Company;
 import com.virnect.data.domain.DeviceType;
 import com.virnect.data.domain.member.Member;

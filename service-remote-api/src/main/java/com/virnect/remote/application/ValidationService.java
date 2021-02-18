@@ -17,7 +17,7 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.CompanyRepository;
+import com.virnect.data.dao.company.CompanyRepository;
 import com.virnect.data.domain.Company;
 import com.virnect.data.domain.Language;
 import com.virnect.data.domain.session.SessionType;
@@ -34,7 +34,7 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.remote.application.license.LicenseRestService;
+import com.virnect.data.application.license.LicenseRestService;
 
 @Slf4j
 @Service

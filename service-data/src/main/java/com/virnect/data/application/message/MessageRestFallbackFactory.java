@@ -1,4 +1,4 @@
-package com.virnect.remote.application.message;
+package com.virnect.data.application.message;
 
 
 import org.springframework.stereotype.Component;

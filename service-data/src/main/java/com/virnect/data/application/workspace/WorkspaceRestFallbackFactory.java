@@ -1,4 +1,4 @@
-package com.virnect.remote.application.workspace;
+package com.virnect.data.application.workspace;
 
 import java.util.ArrayList;
 

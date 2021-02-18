@@ -16,7 +16,7 @@ import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.session.SessionType;
-import com.virnect.data.dao.RoomRepository;
+import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.serviceserver.api.SessionRestController;
 import com.virnect.serviceserver.dao.DataProcess;
 import com.virnect.serviceserver.dao.SessionDataRepository;

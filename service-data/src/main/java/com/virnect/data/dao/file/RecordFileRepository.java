@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.dao.file;
 
 import com.virnect.data.domain.file.RecordFile;
 import org.springframework.data.domain.Page;

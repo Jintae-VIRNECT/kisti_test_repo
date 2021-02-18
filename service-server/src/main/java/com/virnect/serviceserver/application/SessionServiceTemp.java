@@ -17,9 +17,9 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.MemberRepository;
-import com.virnect.data.dao.RoomHistoryRepository;
-import com.virnect.data.dao.RoomRepository;
+import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
+import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
@@ -40,7 +40,7 @@ import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.serviceserver.api.SessionRestController;
-import com.virnect.remote.application.workspace.WorkspaceRestService;
+import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.serviceserver.dao.FileDataRepository;
 import com.virnect.serviceserver.infra.utils.LogMessage;
 

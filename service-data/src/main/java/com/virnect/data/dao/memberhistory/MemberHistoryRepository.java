@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.dao.memberhistory;
 
 import com.virnect.data.domain.member.MemberHistory;
 import org.springframework.data.domain.Page;

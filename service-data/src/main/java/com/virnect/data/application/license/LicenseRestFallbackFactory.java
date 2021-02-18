@@ -1,4 +1,4 @@
-package com.virnect.remote.application.license;
+package com.virnect.data.application.license;
 
 import java.util.ArrayList;
 

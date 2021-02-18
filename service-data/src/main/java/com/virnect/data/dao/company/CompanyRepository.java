@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.dao.company;
 
 import com.virnect.data.domain.Company;
 import org.springframework.data.jpa.repository.JpaRepository;

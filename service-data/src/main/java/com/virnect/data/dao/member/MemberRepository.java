@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.dao.member;
 
 import com.virnect.data.domain.member.Member;
 import org.springframework.data.domain.Page;

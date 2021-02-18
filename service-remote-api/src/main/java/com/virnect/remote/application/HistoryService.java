@@ -11,11 +11,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.MemberHistoryRepository;
-import com.virnect.data.dao.RoomHistoryRepository;
+import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
+import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
@@ -31,7 +30,7 @@ import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.remote.application.workspace.WorkspaceRestService;
+import com.virnect.data.application.workspace.WorkspaceRestService;
 
 @Slf4j
 @Service

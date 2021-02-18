@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.dao.roomhistory;
 
 public interface IRoomHistoryRepo<T> {
 

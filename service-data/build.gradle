@@ -21,6 +21,11 @@ dependencies {
     // Query DSL
     implementation("com.querydsl:querydsl-jpa") // querydsl
     implementation("com.querydsl:querydsl-apt") // querydsl
+
+    // Eureka
+    implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+    // Netflex Feign Client
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————

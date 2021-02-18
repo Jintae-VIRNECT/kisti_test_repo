@@ -1,29 +1,6 @@
 package com.virnect.serviceserver.application;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.member.Member;
-import com.virnect.data.domain.member.MemberHistory;
-import com.virnect.data.domain.member.MemberStatus;
-import com.virnect.data.domain.member.MemberType;
-import com.virnect.data.domain.room.Room;
-import com.virnect.remote.application.workspace.WorkspaceRestService;
-import com.virnect.data.dto.constraint.LicenseConstants;
-import com.virnect.data.dto.response.PageMetadataResponse;
-import com.virnect.data.dto.response.member.MemberInfoListResponse;
-import com.virnect.data.dto.response.member.MemberInfoResponse;
-import com.virnect.serviceserver.dto.response.member.MemberSecessionResponse;
-import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoResponse;
+import com.virnect.data.application.workspace.WorkspaceRestService;
 
 /*@Slf4j
 @Service

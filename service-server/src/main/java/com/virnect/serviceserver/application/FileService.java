@@ -1,22 +1,5 @@
 package com.virnect.serviceserver.application;
 
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.file.File;
-import com.virnect.data.domain.file.RecordFile;
-import com.virnect.data.dao.FileRepository;
-import com.virnect.data.dao.RecordFileRepository;
-import com.virnect.data.dto.request.file.FileUploadRequest;
-import com.virnect.data.dto.request.file.RecordFileUploadRequest;
-
 /*@Slf4j
 @Service
 @RequiredArgsConstructor*/

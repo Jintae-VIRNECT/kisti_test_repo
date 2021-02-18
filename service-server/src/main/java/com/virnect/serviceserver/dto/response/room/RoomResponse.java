@@ -1,6 +1,6 @@
 package com.virnect.serviceserver.dto.response.room;
 
-import com.virnect.data.dao.RestrictedMode;
+import com.virnect.data.domain.room.RestrictedMode;
 import com.virnect.serviceserver.dto.response.CoturnResponse;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -17,7 +17,7 @@ import com.virnect.data.dto.push.InviteRoomContents;
 import com.virnect.data.dto.push.PushSendRequest;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.global.common.ApiResponse;
-import com.virnect.remote.application.message.MessageRestService;
+import com.virnect.data.application.message.MessageRestService;
 
 @Slf4j
 @Service

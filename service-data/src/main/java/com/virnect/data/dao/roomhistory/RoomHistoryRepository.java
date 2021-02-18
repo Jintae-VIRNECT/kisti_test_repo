@@ -1,4 +1,4 @@
-package com.virnect.data.dao;
+package com.virnect.data.dao.roomhistory;
 
 import com.virnect.data.domain.room.RoomHistory;
 import org.springframework.data.domain.Page;

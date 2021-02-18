@@ -1,48 +1,5 @@
 package com.virnect.serviceserver.application;
 
-import static com.virnect.data.dao.RoomSpecifications.*;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.Company;
-import com.virnect.data.domain.DeviceType;
-import com.virnect.data.domain.member.Member;
-import com.virnect.data.domain.member.MemberHistory;
-import com.virnect.data.domain.member.MemberStatus;
-import com.virnect.data.domain.member.MemberType;
-import com.virnect.data.domain.room.Room;
-import com.virnect.data.domain.room.RoomHistory;
-import com.virnect.data.domain.room.RoomStatus;
-import com.virnect.data.domain.session.SessionProperty;
-import com.virnect.data.domain.session.SessionPropertyHistory;
-import com.virnect.data.domain.session.SessionType;
-import com.virnect.data.dao.CompanyRepository;
-import com.virnect.data.dao.MemberHistoryRepository;
-import com.virnect.data.dao.MemberRepository;
-import com.virnect.data.dao.RoomHistoryRepository;
-import com.virnect.data.dao.RoomRepository;
-import com.virnect.serviceserver.dto.request.room.InviteRoomRequest;
-import com.virnect.serviceserver.dto.request.room.JoinRoomRequest;
-import com.virnect.serviceserver.dto.request.room.ModifyRoomInfoRequest;
-import com.virnect.serviceserver.dto.rpc.ClientMetaData;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.global.common.ApiResponse;
-
 /*@Slf4j
 @Service
 @RequiredArgsConstructor*/

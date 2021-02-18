@@ -1,4 +1,4 @@
-package com.virnect.remote.application.record;
+package com.virnect.data.application.record;
 
 import org.springframework.stereotype.Component;
 

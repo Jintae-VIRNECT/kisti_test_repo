@@ -17,14 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.FileRepository;
-import com.virnect.data.dao.RecordFileRepository;
-import com.virnect.data.dao.RoomRepository;
+import com.virnect.data.dao.file.FileRepository;
+import com.virnect.data.dao.file.RecordFileRepository;
+import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.FileType;
 import com.virnect.data.domain.file.RecordFile;
 import com.virnect.data.domain.room.Room;
-import com.virnect.remote.application.user.UserRestService;
+import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.dto.request.file.FileUploadRequest;
 import com.virnect.data.dto.request.file.RecordFileUploadRequest;
 import com.virnect.data.dto.request.file.RoomProfileUpdateRequest;
