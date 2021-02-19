@@ -50,7 +50,7 @@ public class DownloadService {
 		//1. contentUUID 정보가 없을때
 		Process process = processRepository.findByContentUUIDAndStatus(contentUUID, State.CREATED)
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-		
+
 		//2. 현재 사용자에게 할당된 작업이 아닐때
 		ownerValidCheck(memberUUID, process);
 
@@ -143,10 +143,10 @@ public class DownloadService {
 
 		boolean anySubTaskWorkerUUID = subTaskWorkerUUIDList.stream().anyMatch(s -> s.equals(memberUUID));
 
-		if (!process.getContentManagerUUID().equals(memberUUID) && !anySubTaskWorkerUUID) {
+		if (!anySubTaskWorkerUUID) {
 			log.error(
-				"[CONTENT DOWNLOAD][PROCESS WORKSPACE CHECK] contents upload uuid : [{}], sub task worker uuid : [{}],request user uuid : [{}],",
-				process.getContentManagerUUID(), String.join(",", subTaskWorkerUUIDList), memberUUID
+				"[CONTENT DOWNLOAD][PROCESS WORKSPACE CHECK] subTask worker uuid list : [{}], request user uuid : [{}],",
+				String.join(",", subTaskWorkerUUIDList), memberUUID
 			);
 			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}
