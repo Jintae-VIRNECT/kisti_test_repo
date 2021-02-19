@@ -460,7 +460,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         }
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+    /*@EventListener(ApplicationReadyEvent.class)
     public void whenReady() {
         String websocket = wsUrl + WS_PATH + "/";
 
@@ -482,5 +482,5 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
         //
         //sessionDataRepository.removeAllRoom();
-    }
+    }*/
 }
