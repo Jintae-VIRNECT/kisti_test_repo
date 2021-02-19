@@ -41,12 +41,8 @@ feign:
 
 logging:
     level:
-        org:
-        hibernate:
-        type:
-        descriptor:
-        sql: trace
         root: info
+        org.hibernate.type.descriptor.sql: trace
 
 server:
     address: 0.0.0.0
@@ -84,5 +80,5 @@ storage:
     bucket-profile-name: profile
     bucket-record-name: record
     policy-enabled: true
-    policy-lifecycle: ''
-    policy-location: ''
+    policy-lifecycle: 
+    policy-location: ""
