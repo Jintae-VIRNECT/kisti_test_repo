@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
@@ -34,14 +35,15 @@ import com.virnect.data.application.workspace.WorkspaceRestService;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class HistoryService {
 
 	//private static final String TAG = HistoryDataRepository.class.getSimpleName();
 
-	private WorkspaceRestService workspaceRestService;
-	private RoomHistoryRepository roomHistoryRepository;
-	private MemberHistoryRepository memberHistoryRepository;
-	private ModelMapper modelMapper;
+	private final WorkspaceRestService workspaceRestService;
+	private final RoomHistoryRepository roomHistoryRepository;
+	private final MemberHistoryRepository memberHistoryRepository;
+	private final ModelMapper modelMapper;
 
 	public RoomHistoryInfoListResponse getRoomHistoryCurrent(
 		String workspaceId,
