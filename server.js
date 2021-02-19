@@ -31,15 +31,18 @@ app.use((req, res, next) => {
     } else {
       res.send(util.GenMetaHTML(meta['en']))
     }
+    return
   }
 
   if (util.IsAllowBrowser(req)) {
     if (util.IsMobileBrowser(req)) {
       res.redirect(remoteAddr + '/support')
+      return
     }
     next()
   } else {
     res.redirect(remoteAddr + '/support')
+    return
   }
 })
 
