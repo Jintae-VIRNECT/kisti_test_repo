@@ -40,6 +40,7 @@ import com.virnect.remote.dto.response.file.FilePreSignedResponse;
 import com.virnect.remote.dto.response.file.FileUploadResponse;
 import com.virnect.remote.dto.response.file.RoomProfileUpdateResponse;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 
 @Slf4j
 @RestController
@@ -56,6 +57,8 @@ public class FileRestController {
     //private final FileServiceTemp fileService;
 
     private final FileService fileService;
+
+    private final RemoteStorageProperties remoteStorageProperties;
 
     @Autowired
     private RemoteServiceConfig remoteServiceConfig;
@@ -76,7 +79,7 @@ public class FileRestController {
         log.info("REST API::POST::#fileUploadRequestHandler::{}/upload", REST_FILE_PATH);
 
         ApiResponse<FileUploadResponse> responseData;
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
             if (result.hasErrors()) {
                 result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -104,7 +107,7 @@ public class FileRestController {
     ) {
         log.info("REST API::POST#recordFileUploadRequestHandler::{}/upload", REST_RECORD_PATH);
         ApiResponse<FileUploadResponse> responseData;
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
             if (result.hasErrors()) {
                 result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -140,7 +143,7 @@ public class FileRestController {
         );
 
         ApiResponse<RoomProfileUpdateResponse> responseData;
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
             if (result.hasErrors()) {
                 result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
@@ -198,7 +201,7 @@ public class FileRestController {
         );
 
         ApiResponse<FilePreSignedResponse> responseData;
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
             if (userId == null && objectName == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
@@ -235,7 +238,7 @@ public class FileRestController {
 
         ApiResponse<FilePreSignedResponse> responseData;
 
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
             if (userId == null && objectName == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
@@ -273,7 +276,7 @@ public class FileRestController {
 
         ApiResponse<FileInfoListResponse> responseData;
 
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
 
             responseData = fileService.getFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.ofSortBy());
 
@@ -309,7 +312,7 @@ public class FileRestController {
 
         ApiResponse<FileDetailInfoListResponse> responseData;
 
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
 
             responseData = fileService.getRecordFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.ofSortBy());
 
@@ -341,7 +344,7 @@ public class FileRestController {
 
         ApiResponse<FileDeleteResponse> responseData;
 
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
             if (userId == null || objectName == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
@@ -373,7 +376,7 @@ public class FileRestController {
 
         ApiResponse<String> responseData;
 
-        if (this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if (remoteStorageProperties.isEnabled()) {
             if (objectName == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }

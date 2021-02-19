@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.global.config;
+package com.virnect.data.global.config;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;

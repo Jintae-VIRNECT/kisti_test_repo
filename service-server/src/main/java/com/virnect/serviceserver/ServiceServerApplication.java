@@ -57,6 +57,7 @@ import com.virnect.mediaserver.kurento.core.KurentoSessionEventsHandler;
 import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
 import com.virnect.mediaserver.kurento.kms.DummyLoadManager;
 import com.virnect.mediaserver.kurento.kms.FixedKmsManager;
+import com.virnect.mediaserver.kurento.kms.FixedOneKmsManager;
 import com.virnect.mediaserver.kurento.kms.KmsManager;
 import com.virnect.mediaserver.kurento.kms.LoadManager;
 import com.virnect.mediaserver.recording.DummyRecordingDownloader;
@@ -75,6 +76,7 @@ import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
 import com.virnect.serviceserver.application.ServiceSessionManager;
 import com.virnect.serviceserver.global.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -114,11 +116,11 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @Autowired
     RemoteServiceConfig config;
 
-    @Autowired
-    MediaServerProperties mediaServerProperties;
+    /*@Autowired
+    MediaServerProperties mediaServerProperties;*/
 
-    @Autowired
-    ServiceSessionManager serviceSessionManager;
+    /*@Autowired
+    ServiceSessionManager serviceSessionManager;*/
 
     @Bean
     public ModelMapper modelMapper() {
@@ -142,23 +144,24 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
-    }
+    }*/
 
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceProperties")
     public RemoteServiceConfig remoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
         return new RemoteServiceConfig();
-    }*/
+    }
 
     /*@Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
     public RemoteServiceProperties remoteServiceProperties() {
         return new RemoteServiceProperties();
-    }
+    }*/
 
-    @Bean
+
+    /*@Bean
     @ConditionalOnMissingBean
     public FileService fileService() {
         return new FileService();
@@ -210,6 +213,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         }
         return new CallDetailRecord(loggers);
     }
+
     /*public CallDetailRecord cdr(RemoteServiceConfig remoteServiceConfig) {
         List<CDRLogger> loggers = new ArrayList<>();
         if (remoteServiceConfig.isCdrEnabled()) {

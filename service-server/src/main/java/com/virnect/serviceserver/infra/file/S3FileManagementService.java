@@ -12,13 +12,11 @@ import com.google.gson.JsonObject;
 import com.virnect.data.domain.file.FileType;
 import com.virnect.data.dto.UploadResult;
 import com.virnect.data.error.ErrorCode;
-import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 import com.virnect.serviceserver.infra.utils.JsonUtil;
 import com.virnect.serviceserver.infra.utils.LogMessage;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,25 +41,23 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class S3FileManagementService implements IFileManagementService {
     private static final String TAG = S3FileManagementService.class.getSimpleName();
-    private String bucketName;
-    private String fileBucketName;
-    private String profileBucketName;
-    private String recordBucketName;
 
-    private boolean policyEnabled;
-    private boolean policyLifeCycleEnabled;
-    private String policyLocation;
+    private String bucketName;
+    private String bucketFileName;
+    private String bucketProfileName;
+    private String bucketRecordName;
 
     private final AmazonS3 amazonS3Client;
 
     private JsonUtil jsonUtil;
-    private RemoteServiceConfig remoteServiceConfig;
+    private final RemoteStorageProperties remoteStorageProperties;
+    //private final RemoteServiceConfig remoteServiceConfig;
 
-    @Qualifier(value = "remoteServiceConfig")
+    /*@Qualifier(value = "remoteServiceConfig")
     @Autowired
     public void setRemoteServiceConfig(RemoteServiceConfig remoteServiceConfig) {
         this.remoteServiceConfig = remoteServiceConfig;
-    }
+    }*/
 
     private List<String> fileAllowExtensionList = null;
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/virnect-remote/";
@@ -137,11 +133,11 @@ public class S3FileManagementService implements IFileManagementService {
     @Override
     public void loadStoragePolicy() {
         try {
-            this.policyEnabled = this.remoteServiceConfig.remoteStorageProperties.isPolicyEnabled();
-            this.policyLifeCycleEnabled = this.remoteServiceConfig.remoteStorageProperties.getPolicyLifeCycle() > 0;
+            boolean policyEnabled = remoteStorageProperties.isPolicyEnabled();
+            boolean policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
             if (policyEnabled) {
-                this.policyLocation = this.remoteServiceConfig.remoteStorageProperties.getPolicyLocation();
-                if (this.policyLocation == null || this.policyLocation.isEmpty()) {
+                String policyLocation = remoteStorageProperties.getPolicyLocation();
+                if (policyLocation == null || policyLocation.isEmpty()) {
                     LogMessage.formedInfo(
                             TAG,
                             "initialise aws storage service",
@@ -169,7 +165,7 @@ public class S3FileManagementService implements IFileManagementService {
                         inputStream.close();
                     }
                 } else {
-                    Path path = getPolicyFilePath(this.policyLocation);
+                    Path path = getPolicyFilePath(policyLocation);
                     jsonUtil = new JsonUtil();
                     JsonObject jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
                     LogMessage.formedInfo(
@@ -177,7 +173,7 @@ public class S3FileManagementService implements IFileManagementService {
                             "initialise aws storage service",
                             "init",
                             "storage service policy is enabled",
-                            String.valueOf(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled())
+                            String.valueOf(remoteStorageProperties.isEnabled())
                     );
                     fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
                 }
@@ -197,20 +193,20 @@ public class S3FileManagementService implements IFileManagementService {
 
     @PostConstruct
     public void init() {
-        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if(remoteStorageProperties.isEnabled()) {
             LogMessage.formedInfo(
                     TAG,
                     "initialise aws storage service",
                     "init",
                     "storage service is enabled",
-                    String.valueOf(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled())
+                    String.valueOf(remoteStorageProperties.isEnabled())
             );
             loadStoragePolicy();
 
-            this.bucketName = this.remoteServiceConfig.remoteStorageProperties.getBucketName();
-            this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
-            this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
-            this.recordBucketName = this.remoteServiceConfig.remoteStorageProperties.getRecordBucketName();
+            this.bucketName = remoteStorageProperties.getBucketName();
+            this.bucketFileName = remoteStorageProperties.getBucketFileName();
+            this.bucketProfileName = remoteStorageProperties.getBucketProfileName();
+            this.bucketRecordName = remoteStorageProperties.getBucketRecordName();
 
             LogMessage.formedInfo(
                     TAG,
@@ -275,7 +271,7 @@ public class S3FileManagementService implements IFileManagementService {
                     return new UploadResult(null, ErrorCode.ERR_FILE_SIZE_LIMIT);
                 }
 
-                objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
+                objectPath.append(dirPath).append(bucketFileName).append("/").append(objectName);
                 // Create headers
                 ObjectMetadata objectMetadata = new ObjectMetadata();
                 objectMetadata.setContentType(file.getContentType());
@@ -286,7 +282,7 @@ public class S3FileManagementService implements IFileManagementService {
                 break;
             }
             case RECORD: {
-                objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                objectPath.append(dirPath).append(bucketRecordName).append("/").append(objectName);
                 // Create headers
                 ObjectMetadata objectMetadata = new ObjectMetadata();
                 objectMetadata.setContentType(file.getContentType());
@@ -356,7 +352,7 @@ public class S3FileManagementService implements IFileManagementService {
 
         // check profile directory name or path
         if (dirPath == null)
-            dirPath = profileBucketName;
+            dirPath = bucketProfileName;
 
         // file upload with create a InputStream for object upload.
         String objectName = String.format("%s_%s", LocalDate.now(), RandomStringUtils.randomAlphabetic(20));
@@ -429,13 +425,16 @@ public class S3FileManagementService implements IFileManagementService {
 
     @Override
     public void removeBucket(String bucketName, String dirPath, List<String> objects, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
-        if(this.policyLifeCycleEnabled) {
+
+        boolean policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
+
+        if(policyLifeCycleEnabled) {
             LogMessage.formedInfo(
                     TAG,
                     "delete bucket objects",
                     "removeBucket",
                     "not support delete object",
-                    "life cycle is " + this.policyLifeCycleEnabled
+                    "life cycle is " + policyLifeCycleEnabled
             );
         } else {
             try {
@@ -443,10 +442,10 @@ public class S3FileManagementService implements IFileManagementService {
                 String targetDir = null;
                 switch (fileType) {
                     case FILE:
-                        targetDir = this.fileBucketName;
+                        targetDir = this.bucketFileName;
                         break;
                     case RECORD:
-                        targetBucket = this.recordBucketName;
+                        targetBucket = this.bucketRecordName;
                         break;
                 }
                 LogMessage.formedInfo(
@@ -516,7 +515,7 @@ public class S3FileManagementService implements IFileManagementService {
         String url = null;
         switch (fileType) {
             case FILE: {
-                objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
+                objectPath.append(dirPath).append(bucketFileName).append("/").append(objectName);
                 url = amazonS3Client.getUrl(bucketName, objectPath.toString()).toString();
                 LogMessage.formedInfo(
                         TAG,
@@ -529,7 +528,7 @@ public class S3FileManagementService implements IFileManagementService {
             }
 
             case RECORD: {
-                objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                objectPath.append(dirPath).append(bucketRecordName).append("/").append(objectName);
                 url = amazonS3Client.getUrl(bucketName, objectPath.toString()).toString();
                 LogMessage.formedInfo(
                         TAG,
