@@ -144,7 +144,13 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 			EncryptDecryptMessage message = objectMapper.readValue(body, EncryptDecryptMessage.class);
 			logger.info("[ENCRYPTED_MESSAGE] - {}", message.getData());
 			String decodeMessage = EncryptDecryptHelper.decrypt(secretKey, message.getData());
-			logger.info("[DECRYPTED_MESSAGE] - {}", decodeMessage);
+
+			if (decodeMessage.contains("password") || decodeMessage.contains("Password")) {
+				logger.info("[DECRYPTED_MESSAGE] - Skip.. ", decodeMessage);
+			}else{
+				logger.info("[DECRYPTED_MESSAGE] - {}", decodeMessage);
+			}
+
 			byte[] decryptMessageBytes = decodeMessage.getBytes(StandardCharsets.UTF_8);
 
 			return new ServerHttpRequestDecorator(exchange.getRequest()) {
@@ -199,9 +205,7 @@ public class MessageEncryptDecryptFilter extends AbstractGatewayFilterFactory<Me
 						HttpHeaders headers = getDelegate().getHeaders();
 						headers.setContentType(MediaType.APPLICATION_JSON);
 						if (headers.containsKey(HttpHeaders.CONTENT_LENGTH)) {
-							messageBody = messageBody.doOnNext(dataBuffer -> {
-								headers.setContentLength(dataBuffer.readableByteCount());
-							});
+							messageBody = messageBody.doOnNext(dataBuffer -> headers.setContentLength(dataBuffer.readableByteCount()));
 						}
 						return getDelegate().writeWith(messageBody);
 					}));
