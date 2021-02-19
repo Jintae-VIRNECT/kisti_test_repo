@@ -14,9 +14,9 @@
     "build": "vue-cli-service lint && vue-cli-service build",
     "build:develop": "vue-cli-service build --mode development",
     "test:unit": "vue-cli-service test:unit",
-    "test:cover":"vue-cli-service test:unit --coverage",
+    "test:cover": "vue-cli-service test:unit --coverage",
     "lint": "vue-cli-service lint",
-    "report":"vue-cli-service build --report"
+    "report": "vue-cli-service build --report"
   },
   "dependencies": {
     "@virnect/logger": "^1.0.2",
@@ -26,6 +26,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "helmet": "^4.3.1",
+    "isbot": "^3.0.24",
     "vue": "^2.6.11"
   },
   "devDependencies": {
