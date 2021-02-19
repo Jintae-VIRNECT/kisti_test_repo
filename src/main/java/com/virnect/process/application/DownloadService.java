@@ -3,8 +3,10 @@ package com.virnect.process.application;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,7 @@ import com.virnect.process.dao.process.ProcessRepository;
 import com.virnect.process.domain.Conditions;
 import com.virnect.process.domain.Process;
 import com.virnect.process.domain.State;
+import com.virnect.process.domain.SubProcess;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.error.ErrorCode;
 
@@ -44,14 +47,17 @@ public class DownloadService {
 	public ResponseEntity<byte[]> contentDownloadForUUIDHandler(
 		String contentUUID, String memberUUID, String workspaceUUID
 	) {
-		//1.현재 사용자에게 할당 된 작업이 아니거나 contentUUID 정보가 없을때
-		Process process = processRepository.findByContentUUIDAndStatus(contentUUID, State.CREATED, memberUUID)
+		//1. contentUUID 정보가 없을때
+		Process process = processRepository.findByContentUUIDAndStatus(contentUUID, State.CREATED)
 			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
-
-		//2. 현재 접속한 워크스페이스에 해당하는 작업이 아닐 때
-		workspaceValidCheck(workspaceUUID, process);
 		
-		//3.대기 중이거나 마감 된 작업일 때
+		//2. 현재 사용자에게 할당된 작업이 아닐때
+		ownerValidCheck(memberUUID, process);
+
+		//3. 현재 접속한 워크스페이스에 해당하는 작업이 아닐 때
+		workspaceValidCheck(workspaceUUID, process);
+
+		//4.대기 중이거나 마감 된 작업일 때
 		conditionValidCheck(process);
 
 		return contentRestService.contentDownloadForUUIDRequestHandler(contentUUID, memberUUID, workspaceUUID);
@@ -123,11 +129,24 @@ public class DownloadService {
 		}
 	}
 
+	/**
+	 * 컨텐츠 다운로드 가능한 유저 체크
+	 * 컨텐츠의 업로드 유저이거나, 작업의 학위작업 담당자여야 한다.
+	 * @param memberUUID - 다운로드 요청 유저
+	 * @param process - 다운로드 요청 작업
+	 */
 	private void ownerValidCheck(String memberUUID, Process process) {
-		if (!process.getContentManagerUUID().equals(memberUUID)) {
+		List<String> subTaskWorkerUUIDList = process.getSubProcessList()
+			.stream()
+			.map(SubProcess::getWorkerUUID)
+			.collect(Collectors.toList());
+
+		boolean anySubTaskWorkerUUID = subTaskWorkerUUIDList.stream().anyMatch(s -> s.equals(memberUUID));
+
+		if (!process.getContentManagerUUID().equals(memberUUID) && !anySubTaskWorkerUUID) {
 			log.error(
-				"[CONTENT DOWNLOAD][PROCESS WORKSPACE CHECK]  process manager uuid : [{}], request user uuid : [{}]",
-				process.getContentManagerUUID(), memberUUID
+				"[CONTENT DOWNLOAD][PROCESS WORKSPACE CHECK] contents upload uuid : [{}], sub task worker uuid : [{}],request user uuid : [{}],",
+				process.getContentManagerUUID(), String.join(",", subTaskWorkerUUIDList), memberUUID
 			);
 			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
 		}

@@ -48,11 +48,10 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 	}
 
 	@Override
-	public Optional<Process> findByContentUUIDAndStatus(String contentUUID, State state, String memberUUID) {
+	public Optional<Process> findByContentUUIDAndStatus(String contentUUID, State state) {
 		Process process = from(qProcess)
 			.where(qProcess.state.eq(state)
-				.and(qProcess.contentUUID.eq(contentUUID))
-				.and(qProcess.contentManagerUUID.eq(memberUUID)))
+				.and(qProcess.contentUUID.eq(contentUUID)))
 			.fetchOne();
 		return Optional.ofNullable(process);
 	}
@@ -187,12 +186,10 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		JPQLQuery<Process> query = from(qProcess);
 		query.join(qProcess.subProcessList, qSubProcess);
 		query.join(qProcess.targetList, qTarget);
-		query.where(eqWorkspaceUUID(workspaceUUID));
-		query.where(eqWorkerUUID(myUUID));
-		query.where(eqTitle(title));
-
+		query.where(eqWorkspaceUUID(workspaceUUID), eqWorkerUUID(myUUID), eqTitle(title));
 		query.groupBy(qProcess.id);
 
+		//TODO: 작업 상태 필터링 부분 쿼리 개선 필요
 		// 공정 상태 필터링
 		if (filterList != null && filterList.size() > 0 && !filterList.contains(Conditions.ALL)) {
 			List<Process> filteredList = new ArrayList<>();
@@ -206,7 +203,7 @@ public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport imple
 		}
 
 		if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
-			query.join(qProcess.targetList, qTarget).where(qTarget.type.eq(TargetType.valueOf(targetType)));
+			query.where(qTarget.type.eq(TargetType.valueOf(targetType)));
 		}
 
 		final List<Process> myList = getQuerydsl().applyPagination(pageable, query).fetch();
