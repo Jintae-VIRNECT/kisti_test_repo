@@ -15,9 +15,9 @@ app.use(
 
 app.use(bodyParser.json())
 
-app.use(express.static(path.join(__dirname, 'dist')))
-
 app.use(route)
+
+app.use(express.static(path.join(__dirname, 'dist')))
 
 server
   .start(app)
