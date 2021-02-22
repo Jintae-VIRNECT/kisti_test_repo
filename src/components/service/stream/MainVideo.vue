@@ -173,6 +173,7 @@ export default {
       viewForce: 'viewForce',
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
+      view: 'view',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -231,6 +232,10 @@ export default {
       }
     },
     emptyStream() {
+      if (this.view === VIEW.SCREEN) {
+        return false
+      }
+
       return (
         this.cameraStatus !== -1 &&
         ((this.loaded && this.cameraStatus.state === 'off') ||
@@ -295,6 +300,9 @@ export default {
       if (status === 'STOP') {
         this.closeServerTimer()
       }
+    },
+    view() {
+      this.hideFullBtn = this.view === VIEW.STREAM ? false : true
     },
   },
   methods: {
