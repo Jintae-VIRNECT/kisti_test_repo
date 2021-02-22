@@ -1,0 +1,84 @@
+spring:
+    application:
+        name: remote-service-server-local
+    profiles: local
+    main:
+        allow-bean-definition-overriding: true
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: dndqmffldb
+        url: jdbc:mysql://localhost:3306/woong?serverTimezone=UTC&characterEncoding=UTF-8
+        username: root
+    jpa:
+        database: mysql
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+        generate-ddl: true
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                format_sql: true
+                use_sql_comments: true
+        show-sql: true
+
+eureka:
+    client:
+        enabled: false
+        registry-fetch-interval-seconds: 3
+        service-url:
+        defaultZone: http://localhost:8761/eureka
+    instance:
+        prefer-ip-address: true
+
+feign:
+    hystrix:
+        enabled: true
+    license-url: http://192.168.6.3:8632
+    message-url: http://192.168.6.3:8084
+    record-url: http://192.168.6.3:8083
+    user-url: http://192.168.6.3:8081
+    workspace-url: http://192.168.6.3:8082
+
+logging:
+    level:
+        root: info
+        org.hibernate.type.descriptor.sql: trace
+
+server:
+    address: 0.0.0.0
+    ssl:
+        enabled: true
+        key-store: virnect.pfx
+        key-store-password: 123456
+        key-store-type: PKCS12
+
+service:
+    certificate_type: selfsigned
+    coturn-credential: remote
+    coturn-mysql-connect-timeout: 100
+    coturn-mysql-dbname: coturn
+    coturn-mysql-ip: 192.168.6.3:4336
+    coturn-mysql-password: virnect1234
+    coturn-mysql-username: virnect-coturn
+    coturn-name: remot
+    coturn-uris-conference: '["turn:192.168.6.3:3478"]'
+    coturn-uris-streaming: '[]'
+    domain_or_public_ip: 192.168.13.36
+    https_port: 8000
+    kms-uris-conference: '["ws://192.168.6.3:8888/kurento"]'
+    kms-uris-streaming: '[]'
+    policy-location: '"policy/privateServicePolicy.json"'
+    wss: wss://192.168.13.36:8000
+
+storage:
+    enabled: true
+    serverUrl: https://192.168.6.3:2838
+    access-key: virnect
+    secret-key: Qjsprxm13@$
+    bucket-name: virnect-remote
+    bucket-file-name: file
+    bucket-profile-name: profile
+    bucket-record-name: record
+    policy-enabled: true
+    policy-lifecycle: 
+    policy-location: ""

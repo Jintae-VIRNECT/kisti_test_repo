@@ -21,19 +21,19 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.serviceserver.application.HistoryServiceTemp;
+import com.virnect.remote.dto.request.room.RoomHistoryDeleteRequest;
+import com.virnect.remote.dto.request.room.RoomRequest;
+import com.virnect.remote.application.HistoryService;
 import com.virnect.serviceserver.application.RoomService;
-import com.virnect.serviceserver.dto.request.room.RoomHistoryDeleteRequest;
-import com.virnect.serviceserver.dto.request.room.RoomRequest;
-import com.virnect.serviceserver.dto.response.PageRequest;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.response.room.RoomHistoryDetailInfoResponse;
-import com.virnect.serviceserver.dto.response.room.RoomHistoryInfoListResponse;
-import com.virnect.serviceserver.dto.response.room.RoomResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.remote.dto.response.PageRequest;
+import com.virnect.remote.dto.response.ResultResponse;
+import com.virnect.remote.dto.response.room.RoomHistoryDetailInfoResponse;
+import com.virnect.remote.dto.response.room.RoomHistoryInfoListResponse;
+import com.virnect.remote.dto.response.room.RoomResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
 
 @Slf4j
 @RestController
@@ -50,7 +50,8 @@ public class HistoryRestController {
     //private final HistoryDataRepository historyDataRepository;
 
     private final RoomService roomService;
-    private final HistoryServiceTemp historyService;
+    //private final HistoryServiceTemp historyService;
+    private final HistoryService historyService;
 
 	/*@Qualifier(value = "sessionDataRepository")
 	@Autowired

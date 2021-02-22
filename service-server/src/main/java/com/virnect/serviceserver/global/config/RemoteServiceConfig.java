@@ -92,8 +92,8 @@ public class RemoteServiceConfig {
 	@Autowired
 	public RemoteServiceProperties remoteServiceProperties;
 
-	@Autowired
-	public RemoteStorageProperties remoteStorageProperties;
+	/*@Autowired
+	public RemoteStorageProperties remoteStorageProperties;*/
 
 	@Value("#{'${spring.profiles.active:}'.length() > 0 ? '${spring.profiles.active:}'.split(',') : \"default\"}")
 	protected String springProfile;
@@ -141,7 +141,7 @@ public class RemoteServiceConfig {
 	public Map<String, String> getConfigProps() {
 		Map<String, String> configMap = new HashMap<>();
 		configMap.putAll(this.remoteServiceProperties.configProps);
-		configMap.putAll(this.remoteStorageProperties.configProps);
+		//configMap.putAll(this.remoteStorageProperties.configProps);
 		return configMap;
 		//return this.remoteServiceProperties.configProps;
 	}
@@ -168,7 +168,7 @@ public class RemoteServiceConfig {
 				log.warn("Be sure checking .env file does not use.");
 			}
 			this.remoteServiceProperties.checkConfigurationProperties(loadDotenv);
-			this.remoteStorageProperties.checkStorageProperties();
+			//this.remoteStorageProperties.checkStorageProperties();
 		} catch (Exception e) {
 			log.error("Exception checking configuration", e);
 			this.remoteServiceProperties.addError(
@@ -177,7 +177,7 @@ public class RemoteServiceConfig {
 		//userConfigProps = new ArrayList<>(this.remoteServiceProperties.configProps.keySet());
 		userConfigProps = new ArrayList<>();
 		userConfigProps.addAll(this.remoteServiceProperties.configProps.keySet());
-		userConfigProps.addAll(this.remoteStorageProperties.configProps.keySet());
+		//userConfigProps.addAll(this.remoteStorageProperties.configProps.keySet());
 		userConfigProps.removeAll(getNonUserProperties());
 	}
 

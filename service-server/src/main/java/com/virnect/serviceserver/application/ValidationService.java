@@ -1,48 +1,11 @@
 package com.virnect.serviceserver.application;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.Company;
-import com.virnect.data.domain.Language;
-import com.virnect.data.domain.session.SessionType;
-import com.virnect.data.dao.CompanyRepository;
-import com.virnect.serviceserver.application.license.LicenseRestService;
-import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.serviceserver.dto.constraint.CompanyConstants;
-import com.virnect.serviceserver.dto.constraint.LicenseConstants;
-import com.virnect.serviceserver.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.dto.constraint.TranslationItem;
-import com.virnect.serviceserver.dto.response.LanguageCode;
-import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
-import com.virnect.serviceserver.dto.response.lisence.LicenseItemResponse;
-import com.virnect.serviceserver.dto.rest.LicenseInfoListResponse;
-import com.virnect.serviceserver.dto.rest.LicenseInfoResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.infra.utils.JsonUtil;
-import com.virnect.serviceserver.infra.utils.LogMessage;
-
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class ValidationService {
 
-	private static final String TAG = ValidationService.class.getSimpleName();
+	/*private static final String TAG = ValidationService.class.getSimpleName();
 
 	private final RemoteServiceConfig config;
 
@@ -236,8 +199,8 @@ public class ValidationService {
 				companyInfoResponse.setAudioRestrictedMode(false);
 				companyInfoResponse.setVideoRestrictedMode(true);
 				responseData = new ApiResponse<>(companyInfoResponse);
-				/*CompanyInfoResponse empty = new CompanyInfoResponse();
-				responseData = new ApiResponse<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);*/
+				*//*CompanyInfoResponse empty = new CompanyInfoResponse();
+				responseData = new ApiResponse<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);*//*
 			}
 		} else {
 			try {
@@ -289,6 +252,6 @@ public class ValidationService {
 			languageCodes.add(languageCode);
 		}
 		return languageCodes;
-	}
+	}*/
 
 }

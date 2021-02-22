@@ -6,15 +6,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Files;
 import com.google.gson.JsonObject;
 import com.virnect.data.domain.file.FileType;
-import com.virnect.serviceserver.error.ErrorCode;
+import com.virnect.data.infra.file.IFileManagementService;
+import com.virnect.data.error.ErrorCode;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.serviceserver.dto.response.session.UploadResult;
-import com.virnect.serviceserver.infra.utils.JsonUtil;
-import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.data.dto.UploadResult;
+import com.virnect.data.infra.utils.JsonUtil;
+import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
+
 import io.minio.*;
 import io.minio.errors.MinioException;
 import io.minio.messages.DeleteError;
 import io.minio.messages.DeleteObject;
+import lombok.RequiredArgsConstructor;
 import okhttp3.OkHttpClient;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,9 +50,13 @@ import java.util.*;
 
 @Profile({"local", "onpremise", "develop"})
 @Component
+@RequiredArgsConstructor
 public class LocalFileManagementService implements IFileManagementService {
 
     private static final String TAG = LocalFileManagementService.class.getSimpleName();
+
+    private final MinioClient minioClient;
+
     private String bucketName;
     private String fileBucketName;
     private String profileBucketName;
@@ -59,15 +67,15 @@ public class LocalFileManagementService implements IFileManagementService {
     private String policyLocation;
 
     private JsonUtil jsonUtil;
-    private RemoteServiceConfig remoteServiceConfig;
+    //private final RemoteServiceConfig remoteServiceConfig;
 
-    @Qualifier(value = "remoteServiceConfig")
+    private final RemoteStorageProperties remoteStorageProperties;
+
+    /*@Qualifier(value = "remoteServiceConfig")
     @Autowired
     public void setRemoteServiceConfig(RemoteServiceConfig remoteServiceConfig) {
         this.remoteServiceConfig = remoteServiceConfig;
-    }
-
-    private MinioClient minioClient = null;
+    }*/
 
     private List<String> fileAllowExtensionList = null;
     String HOST_REGEX = "^(http://|https://)([0-9.A-Za-z]+):[0-9]+/virnect-remote/";
@@ -186,10 +194,10 @@ public class LocalFileManagementService implements IFileManagementService {
     @Override
     public void loadStoragePolicy() {
         try {
-            this.policyEnabled = this.remoteServiceConfig.remoteStorageProperties.isPolicyEnabled();
-            this.policyLifeCycleEnabled = this.remoteServiceConfig.remoteStorageProperties.getPolicyLifeCycle() > 0;
+            this.policyEnabled = remoteStorageProperties.isPolicyEnabled();
+            this.policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
             if (policyEnabled) {
-                this.policyLocation = this.remoteServiceConfig.remoteStorageProperties.getPolicyLocation();
+                this.policyLocation = remoteStorageProperties.getPolicyLocation();
                 if (this.policyLocation == null || this.policyLocation.isEmpty()) {
                     LogMessage.formedInfo(
                             TAG,
@@ -226,7 +234,7 @@ public class LocalFileManagementService implements IFileManagementService {
                             "initialise local file service",
                             "init",
                             "storage service policy is enabled",
-                            String.valueOf(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled())
+                            String.valueOf(remoteStorageProperties.isEnabled())
                     );
                     fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
                 }
@@ -295,27 +303,27 @@ public class LocalFileManagementService implements IFileManagementService {
 
     @PostConstruct
     public void init() throws NoSuchAlgorithmException, InvalidKeyException {
-        if(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled()) {
+        if(remoteStorageProperties.isEnabled()) {
             LogMessage.formedInfo(
                     TAG,
                     "initialise local file service",
                     "init",
                     "storage service is enabled",
-                    String.valueOf(this.remoteServiceConfig.remoteStorageProperties.isServiceEnabled())
+                    String.valueOf(remoteStorageProperties.isEnabled())
             );
             try {
                 disableSslVerification();
 
                 loadStoragePolicy();
 
-                this.bucketName = this.remoteServiceConfig.remoteStorageProperties.getBucketName();
-                this.fileBucketName = this.remoteServiceConfig.remoteStorageProperties.getFileBucketName();
-                this.profileBucketName = this.remoteServiceConfig.remoteStorageProperties.getProfileBucketName();
-                this.recordBucketName = this.remoteServiceConfig.remoteStorageProperties.getRecordBucketName();
+                this.bucketName = remoteStorageProperties.getBucketName();
+                this.fileBucketName = remoteStorageProperties.getBucketFileName();
+                this.profileBucketName = remoteStorageProperties.getBucketProfileName();
+                this.recordBucketName = remoteStorageProperties.getBucketRecordName();
 
-                String accessKey = this.remoteServiceConfig.remoteStorageProperties.getAccessKey();
-                String secretKey = this.remoteServiceConfig.remoteStorageProperties.getSecretKey();
-                String serverUrl = this.remoteServiceConfig.remoteStorageProperties.getServerUrl();
+                //String accessKey = this.remoteServiceConfig.remoteStorageProperties.getAccessKey();
+                //String secretKey = this.remoteServiceConfig.remoteStorageProperties.getSecretKey();
+                //String serverUrl = this.remoteServiceConfig.remoteStorageProperties.getServerUrl();
                 LogMessage.formedInfo(
                         TAG,
                         "initialise local file service",
@@ -324,18 +332,13 @@ public class LocalFileManagementService implements IFileManagementService {
                         "allow extension " + fileAllowExtensionList.toString()
                 );
 
-                minioClient = MinioClient.builder()
+                /*minioClient = MinioClient.builder()
                         .endpoint(serverUrl)
                         .credentials(accessKey, secretKey)
-                        .build();
+                        .build();*/
 
                 minioClient.ignoreCertCheck();
-
-                boolean isBucketExist = false;
-
-                //create file bucket
-                isBucketExist = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
-                if (isBucketExist) {
+                if (minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build())) {
                     LogMessage.formedInfo(
                             TAG,
                             "initialise local file service",
@@ -355,7 +358,7 @@ public class LocalFileManagementService implements IFileManagementService {
                         "Bucket ConnectException error occurred",
                         e.getMessage()
                 );
-                this.remoteServiceConfig.remoteStorageProperties.setServiceEnabled(false);
+                remoteStorageProperties.setEnabled(false);
             } catch (MinioException e) {
                 LogMessage.formedError(
                         TAG,

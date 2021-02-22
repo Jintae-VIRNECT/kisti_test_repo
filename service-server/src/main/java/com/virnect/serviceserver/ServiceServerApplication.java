@@ -26,7 +26,9 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -55,6 +57,7 @@ import com.virnect.mediaserver.kurento.core.KurentoSessionEventsHandler;
 import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
 import com.virnect.mediaserver.kurento.kms.DummyLoadManager;
 import com.virnect.mediaserver.kurento.kms.FixedKmsManager;
+import com.virnect.mediaserver.kurento.kms.FixedOneKmsManager;
 import com.virnect.mediaserver.kurento.kms.KmsManager;
 import com.virnect.mediaserver.kurento.kms.LoadManager;
 import com.virnect.mediaserver.recording.DummyRecordingDownloader;
@@ -73,6 +76,7 @@ import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
 import com.virnect.serviceserver.application.ServiceSessionManager;
 import com.virnect.serviceserver.global.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 
 //import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -81,16 +85,19 @@ import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 @Import({ JsonRpcConfiguration.class })
 //@EnableConfigurationProperties(RemoteServiceProperties.class)
 @ComponentScan(value = {
-        "com.virnect.data",
-        "com.virnect.serviceserver"
+    "com.virnect.data",
+    "com.virnect.remote",
+    "com.virnect.dashboard",
+    "com.virnect.serviceserver"
 })
 @EntityScan(value = {
-        "com.virnect.data.domain"
+    "com.virnect.data.domain"
 })
 @EnableJpaRepositories(value = {
-        "com.virnect.data.dao"
+    "com.virnect.data.dao"
 })
 //@PropertySource(value = {"classpath:feign-application.properties", "classpath:application.properties"})
+//@SpringBootApplication(scanBasePackages = {"com.virnect.remote", "com.virnect.data", "com.virnect.serviceserver"})
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 
@@ -109,11 +116,11 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @Autowired
     RemoteServiceConfig config;
 
-    @Autowired
-    MediaServerProperties mediaServerProperties;
+    /*@Autowired
+    MediaServerProperties mediaServerProperties;*/
 
-    @Autowired
-    ServiceSessionManager serviceSessionManager;
+    /*@Autowired
+    ServiceSessionManager serviceSessionManager;*/
 
     @Bean
     public ModelMapper modelMapper() {
@@ -137,23 +144,24 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
-    }
+    }*/
 
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceProperties")
     public RemoteServiceConfig remoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
         return new RemoteServiceConfig();
-    }*/
+    }
 
     /*@Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
     public RemoteServiceProperties remoteServiceProperties() {
         return new RemoteServiceProperties();
-    }
+    }*/
 
-    @Bean
+
+    /*@Bean
     @ConditionalOnMissingBean
     public FileService fileService() {
         return new FileService();
@@ -205,6 +213,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         }
         return new CallDetailRecord(loggers);
     }
+
     /*public CallDetailRecord cdr(RemoteServiceConfig remoteServiceConfig) {
         List<CDRLogger> loggers = new ArrayList<>();
         if (remoteServiceConfig.isCdrEnabled()) {
@@ -451,7 +460,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         }
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+    /*@EventListener(ApplicationReadyEvent.class)
     public void whenReady() {
         String websocket = wsUrl + WS_PATH + "/";
 
@@ -473,5 +482,5 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
         //
         //sessionDataRepository.removeAllRoom();
-    }
+    }*/
 }

@@ -16,24 +16,24 @@ import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.session.SessionType;
-import com.virnect.data.dao.RoomRepository;
+import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.serviceserver.api.SessionRestController;
 import com.virnect.serviceserver.dao.DataProcess;
 import com.virnect.serviceserver.dao.SessionDataRepository;
-import com.virnect.serviceserver.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.dto.constraint.PushConstants;
-import com.virnect.serviceserver.dto.push.SendSignalRequest;
-import com.virnect.serviceserver.dto.request.room.InviteRoomRequest;
-import com.virnect.serviceserver.dto.request.room.JoinRoomRequest;
-import com.virnect.serviceserver.dto.request.room.KickRoomRequest;
-import com.virnect.serviceserver.dto.request.room.RoomRequest;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.response.room.InviteRoomResponse;
-import com.virnect.serviceserver.dto.response.room.KickRoomResponse;
-import com.virnect.serviceserver.dto.response.room.RoomResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.remote.dto.constraint.LicenseItem;
+import com.virnect.remote.dto.constraint.PushConstants;
+import com.virnect.remote.dto.push.SendSignalRequest;
+import com.virnect.remote.dto.request.room.InviteRoomRequest;
+import com.virnect.remote.dto.request.room.JoinRoomRequest;
+import com.virnect.remote.dto.request.room.KickRoomRequest;
+import com.virnect.remote.dto.request.room.RoomRequest;
+import com.virnect.remote.dto.response.ResultResponse;
+import com.virnect.remote.dto.response.room.InviteRoomResponse;
+import com.virnect.remote.dto.response.room.KickRoomResponse;
+import com.virnect.remote.dto.response.room.RoomResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
 
 @Slf4j
 @Service
@@ -45,7 +45,6 @@ public class RoomService {
 	private static final String REST_PATH = "/remote/room";
 
 	private final RoomRepository roomRepository;
-
 	private final SessionDataRepository sessionDataRepository;
 	private final ServiceSessionManager serviceSessionManager;
 

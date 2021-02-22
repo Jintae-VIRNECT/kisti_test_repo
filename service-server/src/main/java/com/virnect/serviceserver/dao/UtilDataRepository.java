@@ -1,46 +1,16 @@
 package com.virnect.serviceserver.dao;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.Company;
-import com.virnect.data.domain.Language;
-import com.virnect.data.domain.session.SessionType;
-import com.virnect.serviceserver.application.SessionService;
-import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.serviceserver.dto.constraint.CompanyConstants;
-import com.virnect.serviceserver.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.dto.constraint.TranslationItem;
-import com.virnect.serviceserver.dto.request.company.CompanyRequest;
-import com.virnect.serviceserver.dto.request.company.CompanyResponse;
-import com.virnect.serviceserver.dto.request.room.LanguageRequest;
-import com.virnect.serviceserver.dto.response.LanguageCode;
-import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.infra.utils.JsonUtil;
-import com.virnect.serviceserver.infra.utils.LogMessage;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UtilDataRepository {
 
-    private static final String TAG = UtilDataRepository.class.getSimpleName();
+    /*private static final String TAG = UtilDataRepository.class.getSimpleName();
 
     private final RemoteServiceConfig config;
     private final SessionService sessionService;
@@ -255,7 +225,7 @@ public class UtilDataRepository {
         }.asApiResponse();
     }
 
-    /*public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
+    *//*public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
         return new RepoDecoder<Company, CompanyInfoResponse>(RepoDecoderType.READ) {
             @Override
             Company loadFromDatabase() {
@@ -277,7 +247,7 @@ public class UtilDataRepository {
                 return new DataProcess<>(companyInfoResponse);
             }
         }.asApiResponse();
-    }*/
+    }*//*
 
     public ApiResponse<CompanyInfoResponse> loadCompanyInformation(String workspaceId) {
         return new RepoDecoder<Company, CompanyInfoResponse>(RepoDecoderType.READ) {
@@ -333,5 +303,5 @@ public class UtilDataRepository {
             }
 
         }.asApiResponse();
-    }
+    }*/
 }

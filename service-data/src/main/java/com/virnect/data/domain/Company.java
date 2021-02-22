@@ -50,34 +50,30 @@ public class Company extends BaseTimeEntity {
     @Column(name = "tts", nullable = false)
     private boolean tts;
 
-    /*@Column(name = "restricted_mode", nullable = false)
-    private boolean restrictedMode;*/
-
     @Column(name = "video_restricted_mode", nullable = false)
     private boolean videoRestrictedMode;
 
     @Column(name = "audio_restricted_mode", nullable = false)
     private boolean audioRestrictedMode;
 
-
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Language language;
 
     @Builder
     public Company(int companyCode,
-                   String workspaceId,
-                   String licenseName,
-                   SessionType sessionType,
-                   Boolean recording,
-                   Boolean storage,
-                   Boolean translation,
-                   Boolean sttSync,
-                   Boolean sttStreaming,
-                   Boolean tts,
-                   //Boolean restrictedMode,
-                   Boolean videoRestrictedMode,
-                   Boolean audioRestrictedMode,
-                   Language language
+        String workspaceId,
+        String licenseName,
+        SessionType sessionType,
+        Boolean recording,
+        Boolean storage,
+        Boolean translation,
+        Boolean sttSync,
+        Boolean sttStreaming,
+        Boolean tts,
+        //Boolean restrictedMode,
+        Boolean videoRestrictedMode,
+        Boolean audioRestrictedMode,
+        Language language
     ) {
         this.companyCode = companyCode;
         this.workspaceId = workspaceId;
@@ -99,15 +95,15 @@ public class Company extends BaseTimeEntity {
     @Override
     public String toString() {
         return "Company{" +
-                "companyCode=" + companyCode +
-                ", workspaceId='" + workspaceId + '\'' +
-                ", licenseName='" + licenseName + '\'' +
-                ", sessionType='" + sessionType + '\'' +
-                ", recording='" + recording + '\'' +
-                ", storage='" + storage + '\'' +
-                ", sttSync='" + sttSync + '\'' +
-                ", sttStreaming='" + sttStreaming + '\'' +
-                ", tts='" + tts + '\'' +
-                '}';
+            "companyCode=" + companyCode +
+            ", workspaceId='" + workspaceId + '\'' +
+            ", licenseName='" + licenseName + '\'' +
+            ", sessionType='" + sessionType + '\'' +
+            ", recording='" + recording + '\'' +
+            ", storage='" + storage + '\'' +
+            ", sttSync='" + sttSync + '\'' +
+            ", sttStreaming='" + sttStreaming + '\'' +
+            ", tts='" + tts + '\'' +
+            '}';
     }
 }

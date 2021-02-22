@@ -1,7 +1,5 @@
 package com.virnect.serviceserver.api;
 
-
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,11 +14,11 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.application.MemberService;
-import com.virnect.serviceserver.dto.response.member.MemberInfoListResponse;
-import com.virnect.serviceserver.dto.response.member.MemberSecessionResponse;
-import com.virnect.serviceserver.dto.rest.WorkspaceMemberInfoListResponse;
-import com.virnect.serviceserver.global.common.ApiResponse;
+import com.virnect.remote.application.MemberService;
+import com.virnect.remote.dto.response.member.MemberInfoListResponse;
+import com.virnect.remote.dto.response.member.MemberSecessionResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @RestController

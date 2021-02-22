@@ -1,56 +1,16 @@
 package com.virnect.serviceserver.application;
 
-import static com.virnect.serviceserver.infra.file.IFileManagementService.*;
-
-import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.room.Room;
-import com.virnect.data.dao.RoomRepository;
-import com.virnect.data.domain.file.File;
-import com.virnect.data.domain.file.FileType;
-import com.virnect.data.domain.file.RecordFile;
-import com.virnect.data.dao.FileRepository;
-import com.virnect.data.dao.RecordFileRepository;
-import com.virnect.serviceserver.application.user.UserRestService;
-import com.virnect.serviceserver.dto.request.file.FileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RoomProfileUpdateRequest;
-import com.virnect.serviceserver.dto.response.PageMetadataResponse;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.response.file.FileDeleteResponse;
-import com.virnect.serviceserver.dto.response.file.FileDetailInfoListResponse;
-import com.virnect.serviceserver.dto.response.file.FileDetailInfoResponse;
-import com.virnect.serviceserver.dto.response.file.FileInfoListResponse;
-import com.virnect.serviceserver.dto.response.file.FileInfoResponse;
-import com.virnect.serviceserver.dto.response.file.FilePreSignedResponse;
-import com.virnect.serviceserver.dto.response.file.FileUploadResponse;
-import com.virnect.serviceserver.dto.response.file.FileUserInfoResponse;
-import com.virnect.serviceserver.dto.response.file.RoomProfileUpdateResponse;
-import com.virnect.serviceserver.dto.rest.UserInfoResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.infra.file.IFileManagementService;
-import com.virnect.serviceserver.dto.response.session.UploadResult;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileServiceTemp {
 
-	private final IFileManagementService fileManagementService;
+	/*private final IFileManagementService fileManagementService;
 
 	private final SessionService sessionService;
 	private final FileService fileService;
@@ -82,13 +42,13 @@ public class FileServiceTemp {
 				fileUploadRequest.getFile(), bucketPath, FileType.FILE);
 			ErrorCode errorCode = uploadResult.getErrorCode();
 			switch (errorCode) {
-						/*case ErrorCode.ERR_FILE_ASSUME_DUMMY:
+						*//*case ErrorCode.ERR_FILE_ASSUME_DUMMY:
 						case ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION:
 						case ErrorCode.ERR_FILE_SIZE_LIMIT:
 							return new DataProcess<>(new FileUploadResponse(), errorCode);
 						case ErrorCode.ERR_SUCCESS:
 							objectName = uploadResult.getResult();
-							break;*/
+							break;*//*
 			}
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
@@ -462,5 +422,5 @@ public class FileServiceTemp {
 			responseData = new ApiResponse<>("", ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return responseData;
-	}
+	}*/
 }

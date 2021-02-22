@@ -10,7 +10,7 @@ import feign.Logger;
 import feign.Retryer;
 
 @Configuration
-@EnableFeignClients(basePackages = "com.virnect.serviceserver.application")
+@EnableFeignClients(basePackages = "com.virnect.data.application")
 public class FeignConfiguration {
 	// Feign retry set
 	@Bean

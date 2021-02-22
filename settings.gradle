@@ -4,3 +4,6 @@ include "service-client"
 include "service-java-client"
 include "service-kms"
 include "service-data"
+include 'service-remote-api'
+include 'service-dashboard-api'
+

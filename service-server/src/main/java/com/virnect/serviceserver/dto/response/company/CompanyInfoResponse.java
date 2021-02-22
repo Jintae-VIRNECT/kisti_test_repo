@@ -1,7 +1,8 @@
 package com.virnect.serviceserver.dto.response.company;
 
 import com.virnect.data.domain.session.SessionType;
-import com.virnect.serviceserver.dto.response.LanguageCode;
+import com.virnect.remote.dto.constraint.LanguageCode;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;

@@ -1,6 +1,5 @@
 package com.virnect.serviceserver.api;
 
-
 import java.io.IOException;
 
 import org.springframework.http.ResponseEntity;
@@ -14,13 +13,14 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.application.ValidationService;
-import com.virnect.serviceserver.dto.response.company.CompanyInfoResponse;
-import com.virnect.serviceserver.dto.response.lisence.LicenseItemResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.error.exception.RestServiceException;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.infra.utils.LogMessage;
+import com.virnect.remote.dto.response.license.LicenseItemResponse;
+import com.virnect.remote.application.ValidationService;
+import com.virnect.remote.dto.response.company.CompanyInfoResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 
 @Slf4j
 @RestController
@@ -36,6 +36,7 @@ public class ValidationController {
     //private final LicenseRestService licenseRestService;
 
     private final ValidationService validationService;
+    private final RemoteServiceConfig config;
 
     @ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
     @GetMapping(value = "licenses/{workspaceId}/{userId}")
@@ -105,8 +106,10 @@ public class ValidationController {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
+        String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
+        //ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId, policyLocation);
         //ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId);
-        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfoByCompanyCode(workspaceId, userId, 1);
+        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfoByCompanyCode(workspaceId, userId, 1, policyLocation);
         return ResponseEntity.ok(responseData);
 
         //todo: delete check user is valid
@@ -131,7 +134,8 @@ public class ValidationController {
             "getCompanyInfoRequestHandler"
         );
 
-        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfoByCompanyCode(workspaceId, userId, companyCode);
+        String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
+        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfoByCompanyCode(workspaceId, userId, companyCode, policyLocation);
         return ResponseEntity.ok(responseData);
 
 		/*ApiResponse<CompanyInfoResponse> apiResponse = this.utilDataRepository.loadCompanyInformation(

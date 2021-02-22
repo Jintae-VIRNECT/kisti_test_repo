@@ -6,7 +6,7 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 
 import com.virnect.data.domain.BaseTimeEntity;
-import com.virnect.data.domain.room.RoomHistory;
+import com.virnect.data.domain.roomhistory.RoomHistory;
 
 @Entity
 @Getter

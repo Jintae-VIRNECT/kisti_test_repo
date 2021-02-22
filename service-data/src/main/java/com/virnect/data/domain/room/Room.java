@@ -95,17 +95,17 @@ public class Room extends BaseTimeEntity {
 
     @Builder
     public Room(String sessionId,
-                String title,
-                String description,
-                String leaderId,
-                String workspaceId,
-                String licenseName,
-                int maxUserCount,
-                //boolean restrictedMode,
-                boolean videoRestrictedMode,
-                boolean audioRestrictedMode,
-                SessionProperty sessionProperty
-                      ) {
+        String title,
+        String description,
+        String leaderId,
+        String workspaceId,
+        String licenseName,
+        int maxUserCount,
+        //boolean restrictedMode,
+        boolean videoRestrictedMode,
+        boolean audioRestrictedMode,
+        SessionProperty sessionProperty
+    ) {
         this.sessionId = sessionId;
         this.title = title;
         this.description = description;
@@ -127,13 +127,13 @@ public class Room extends BaseTimeEntity {
     @Override
     public String toString() {
         return "Room{" +
-                "id=" + id +
-                ", sessionId='" + sessionId + '\'' +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", leaderId='" + leaderId + '\'' +
-                ", workspaceId='" + workspaceId + '\'' +
-                ", profile='" + profile + '\'' +
-                '}';
+            "id=" + id +
+            ", sessionId='" + sessionId + '\'' +
+            ", title='" + title + '\'' +
+            ", description='" + description + '\'' +
+            ", leaderId='" + leaderId + '\'' +
+            ", workspaceId='" + workspaceId + '\'' +
+            ", profile='" + profile + '\'' +
+            '}';
     }
 }

@@ -18,32 +18,36 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
+import com.virnect.data.dao.member.MemberRepository;
+import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
+import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.file.FileType;
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.RecordFile;
-import com.virnect.serviceserver.application.FileService;
-import com.virnect.serviceserver.application.SessionService;
-import com.virnect.serviceserver.application.user.UserRestService;
-import com.virnect.serviceserver.dto.request.file.FileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RecordFileUploadRequest;
-import com.virnect.serviceserver.dto.request.file.RoomProfileUpdateRequest;
-import com.virnect.serviceserver.dto.response.PageMetadataResponse;
-import com.virnect.serviceserver.dto.response.ResultResponse;
-import com.virnect.serviceserver.dto.response.file.FileDeleteResponse;
-import com.virnect.serviceserver.dto.response.file.FileDetailInfoListResponse;
-import com.virnect.serviceserver.dto.response.file.FileDetailInfoResponse;
-import com.virnect.serviceserver.dto.response.file.FileInfoListResponse;
-import com.virnect.serviceserver.dto.response.file.FileInfoResponse;
-import com.virnect.serviceserver.dto.response.file.FilePreSignedResponse;
-import com.virnect.serviceserver.dto.response.file.FileUploadResponse;
-import com.virnect.serviceserver.dto.response.file.FileUserInfoResponse;
-import com.virnect.serviceserver.dto.response.file.RoomProfileUpdateResponse;
-import com.virnect.serviceserver.dto.rest.UserInfoResponse;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.global.common.ApiResponse;
-import com.virnect.serviceserver.infra.file.IFileManagementService;
-import com.virnect.serviceserver.dto.response.session.UploadResult;
+import com.virnect.remote.application.FileService;
+import com.virnect.remote.application.SessionService;
+import com.virnect.data.application.user.UserRestService;
+import com.virnect.remote.dto.request.file.FileUploadRequest;
+import com.virnect.remote.dto.request.file.RecordFileUploadRequest;
+import com.virnect.remote.dto.request.file.RoomProfileUpdateRequest;
+import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.remote.dto.response.ResultResponse;
+import com.virnect.remote.dto.response.file.FileDeleteResponse;
+import com.virnect.remote.dto.response.file.FileDetailInfoListResponse;
+import com.virnect.remote.dto.response.file.FileDetailInfoResponse;
+import com.virnect.remote.dto.response.file.FileInfoListResponse;
+import com.virnect.remote.dto.response.file.FileInfoResponse;
+import com.virnect.remote.dto.response.file.FilePreSignedResponse;
+import com.virnect.remote.dto.response.file.FileUploadResponse;
+import com.virnect.remote.dto.response.file.FileUserInfoResponse;
+import com.virnect.remote.dto.response.file.RoomProfileUpdateResponse;
+import com.virnect.data.dto.rest.UserInfoResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.file.IFileManagementService;
+import com.virnect.data.dto.UploadResult;
 
 @Slf4j
 @Service
@@ -58,6 +62,11 @@ public class FileDataRepository {
     private final FileService fileService;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
+
+    private final RoomRepository roomRepository;
+    private final RoomHistoryRepository roomHistoryRepository;
+    private final MemberRepository memberRepository;
+    private final MemberHistoryRepository memberHistoryRepository;
 
     /**
      * Generate directory path to upload file
@@ -180,7 +189,8 @@ public class FileDataRepository {
         return new RepoDecoder<Room, RoomProfileUpdateResponse>(RepoDecoderType.UPDATE) {
             @Override
             Room loadFromDatabase() {
-                return sessionService.getRoom(workspaceId, sessionId);
+                //return sessionService.getRoom(workspaceId, sessionId);
+                return roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
             }
 
             @Override

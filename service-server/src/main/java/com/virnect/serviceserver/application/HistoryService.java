@@ -1,33 +1,15 @@
 package com.virnect.serviceserver.application;
 
-import static com.virnect.data.dao.HistorySpecifications.*;
-import static org.springframework.data.jpa.domain.Specification.*;
-
-import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.member.MemberHistory;
-import com.virnect.data.domain.room.RoomHistory;
-import com.virnect.data.dao.MemberHistoryRepository;
-import com.virnect.data.dao.RoomHistoryRepository;
-
 /**
  * Do some processing for the request.
  *
  */
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class HistoryService {
-
-	private static final String TAG = HistoryService.class.getSimpleName();
+/*
+	//private static final String TAG = HistoryService.class.getSimpleName();
 
 	private final RoomHistoryRepository roomHistoryRepository;
 
@@ -97,5 +79,5 @@ public class HistoryService {
 			memberHistory.setHistoryDeleted(true);
 			this.memberHistoryRepository.save(memberHistory);
 		}
-	}
+	}*/
 }

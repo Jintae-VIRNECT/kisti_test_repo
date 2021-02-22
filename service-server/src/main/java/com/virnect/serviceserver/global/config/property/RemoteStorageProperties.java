@@ -3,42 +3,47 @@ package com.virnect.serviceserver.global.config.property;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.serviceserver.ServiceServerApplication;
 
 @Slf4j
-@Component
-@ConfigurationProperties(prefix = "minio", ignoreInvalidFields = true)
-public class RemoteStorageProperties extends PropertyService {
+//@Component
+@Getter
+@Setter
+@ConfigurationProperties(prefix = "storage", ignoreInvalidFields = true)
+//public class RemoteStorageProperties extends PropertyService {
+public class RemoteStorageProperties {
 
 	//Local File Config properties
-	private String bucketName;
-	private String profileBucketName;
-	private String fileBucketName;
-	private String recordBucketName;
+	private boolean enabled;
+	private String serverUrl;
 	private String accessKey;
 	private String secretKey;
-	private String serverUrl;
-	private boolean serviceEnabled;
+	private String bucketName;
+	private String bucketProfileName;
+	private String bucketFileName;
+	private String bucketRecordName;
 	private boolean policyEnabled;
 	private String policyLocation;
 	private int policyLifeCycle;
 
-	public String getBucketName() {
+	/*public String getBucketName() {
 		return this.bucketName;
 	}
 
-	public String getFileBucketName() {
-		return this.fileBucketName;
+	public String getBucketFileName() {
+		return this.bucketFileName;
 	}
 
-	public String getRecordBucketName() {
-		return this.recordBucketName;
+	public String getBucketRecordName() {
+		return this.bucketRecordName;
 	}
 
-	public String getProfileBucketName() {
-		return profileBucketName;
+	public String getBucketProfileName() {
+		return bucketProfileName;
 	}
 
 	public String getAccessKey() {
@@ -53,12 +58,12 @@ public class RemoteStorageProperties extends PropertyService {
 		return serverUrl;
 	}
 
-	public boolean isServiceEnabled() {
-		return serviceEnabled;
+	public boolean isEnabled() {
+		return enabled;
 	}
 
-	public void setServiceEnabled(boolean enabled) {
-		this.serviceEnabled = enabled;
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public boolean isPolicyEnabled() {
@@ -78,16 +83,16 @@ public class RemoteStorageProperties extends PropertyService {
 		this.policyLifeCycle = asNonNegativeInteger("storage.policy.lifecycle");
 		this.policyLocation = getValue("storage.policy.location");
 
-		this.serviceEnabled = asBoolean("storage.enabled");
+		this.enabled = asBoolean("storage.enabled");
 		this.bucketName = getValue("storage.bucket.name");
-		this.fileBucketName = getValue("storage.bucket.file");
-		this.profileBucketName = getValue("storage.bucket.profile");
-		this.recordBucketName = getValue("storage.bucket.record");
+		this.bucketFileName = getValue("storage.bucket.file");
+		this.bucketProfileName = getValue("storage.bucket.profile");
+		this.bucketRecordName = getValue("storage.bucket.record");
 		this.accessKey = getValue("storage.access-key");
 		this.secretKey = getValue("storage.secret-key");
 		this.serverUrl = getValue("storage.serverUrl");
 
-        /*log.info("checkFileServiceProperties {}", bucketName);
+        *//*log.info("checkFileServiceProperties {}", bucketName);
         log.info("checkFileServiceProperties {}", fileBucketName);
         log.info("checkFileServiceProperties {}", profileBucketName);
         log.info("checkFileServiceProperties {}", recordBucketName);
@@ -97,8 +102,8 @@ public class RemoteStorageProperties extends PropertyService {
         log.info("checkFileServiceProperties {}", serviceEnabled);
 
         log.info("checkFileServiceProperties {}", policyEnabled);
-        log.info("checkFileServiceProperties {}", policyLocation);*/
+        log.info("checkFileServiceProperties {}", policyLocation);*//*
 
 		ServiceServerApplication.storageUrl = serverUrl;
-	}
+	}*/
 }

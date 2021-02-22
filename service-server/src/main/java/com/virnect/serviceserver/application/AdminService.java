@@ -1,26 +1,13 @@
 package com.virnect.serviceserver.application;
 
-import org.springframework.stereotype.Service;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
-import com.virnect.data.domain.Company;
-import com.virnect.data.domain.Language;
-import com.virnect.serviceserver.dto.request.company.CompanyRequest;
-import com.virnect.serviceserver.dto.request.company.CompanyResponse;
-import com.virnect.serviceserver.dto.request.room.LanguageRequest;
-import com.virnect.serviceserver.error.ErrorCode;
-import com.virnect.serviceserver.global.common.ApiResponse;
-
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class AdminService {
 
-	private final SessionService sessionService;
+	/*private final SessionService sessionService;
 
-	public ApiResponse<CompanyResponse> createCompany(CompanyRequest companyRequest) {
+		public ApiResponse<CompanyResponse> createCompany(CompanyRequest companyRequest) {
 
 		ApiResponse<CompanyResponse> responseData;
 
@@ -54,21 +41,21 @@ public class AdminService {
 			.company(company)
 			.build();
 
-		company.setLanguage(language);
+			company.setLanguage(language);
 
-		try{
-			if (sessionService.createCompany(company) != null) {
-				CompanyResponse companyResponse = new CompanyResponse();
-				companyResponse.setWorkspaceId(company.getWorkspaceId());
-				companyResponse.setLicenseName(company.getLicenseName());
-				companyResponse.setSessionType(company.getSessionType());
-				responseData = new ApiResponse<>(companyResponse);
-			} else {
+			try{
+				if (sessionService.createCompany(company) != null) {
+					CompanyResponse companyResponse = new CompanyResponse();
+					companyResponse.setWorkspaceId(company.getWorkspaceId());
+					companyResponse.setLicenseName(company.getLicenseName());
+					companyResponse.setSessionType(company.getSessionType());
+					responseData = new ApiResponse<>(companyResponse);
+				} else {
+					responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
+				}
+			} catch (Exception e) {
 				responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 			}
-		} catch (Exception e) {
-			responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
-		}
 		return responseData;
-	}
+	}*/
 }
