@@ -1,4 +1,5 @@
 @import "~assets/style/vars";
+@import "~assets/style/mixin";
 
 .createroom-user {
   display: flex;
@@ -63,9 +64,11 @@
   background-color: $color_darkgray_600;
   border: solid 2px transparent;
   cursor: pointer;
-  &:hover,
-  &:active {
-    background-color: $color_darkgray_500;
+  @include hover {
+    &:hover,
+    &:active {
+      background-color: $color_darkgray_500;
+    }
   }
   &.selected {
     border-color: $color_primary;

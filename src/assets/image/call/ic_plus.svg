@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>0858C32E-14F7-4DA3-A196-F33C99B76FDB@1x</title>
+    <defs>
+        <polygon id="path-1" points="19 13 13 13 13 19 11 19 11 13 5 13 5 11 11 11 11 5 13 5 13 11 19 11"></polygon>
+    </defs>
+    <g id="Remote_Cowork_Leader" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="OVE_0020-_영상-제한-모드_참가자-권한-_1" transform="translate(-196.000000, -953.000000)">
+            <g id="frame_list" transform="translate(189.000000, 915.000000)">
+                <g id="Group-6" transform="translate(0.000000, 31.000000)">
+                    <g id="icon_set" transform="translate(7.000000, 7.000000)">
+                        <rect id="tr" x="0" y="0" width="24" height="24"></rect>
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/content/add_circle_24px" fill="#CFCFCF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

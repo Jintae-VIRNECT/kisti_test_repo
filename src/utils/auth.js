@@ -187,7 +187,7 @@ class Auth {
   }
   login() {
     cookieClear()
-    location.href = `${URLS['console']}/?continue=${location.href}&token=123`
+    location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
   logout() {
@@ -195,7 +195,7 @@ class Auth {
     isLogin = false
     myInfo = {}
     myWorkspaces = []
-    location.href = `${URLS['console']}/?continue=${location.href}&token=123`
+    location.href = `${URLS['console']}/?continue=${location.href}`
     return this
   }
 }

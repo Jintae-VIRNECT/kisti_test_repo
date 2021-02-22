@@ -30,7 +30,7 @@ export default {
         position: 'top-center',
         className: ['remote-toast'],
         type: 'info',
-        duration: 2000,
+        duration: 3000,
         action: null,
         containerClass: 'toast-default',
         ...options,

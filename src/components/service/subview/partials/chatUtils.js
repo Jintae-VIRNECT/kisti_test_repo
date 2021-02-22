@@ -30,6 +30,8 @@ const SYSTEM = {
   SEND_CANCEL: 'send-cancel',
 
   SCREEN_SHARING: 'screen-sharing',
+  CAMERA_CONTROL_ON: 'camera-control-on',
+  CAMERA_CONTROL_OFF: 'camera-control-off',
 }
 
 export const systemClass = status => {
@@ -66,6 +68,9 @@ export const systemClass = status => {
       return 'record'
     case SYSTEM.SCREEN_SHARING:
       return 'screen'
+    case SYSTEM.CAMERA_CONTROL_ON:
+    case SYSTEM.CAMERA_CONTROL_OFF:
+      return 'camera'
     default:
       return ''
   }
@@ -137,5 +142,9 @@ export const systemText = (type, name) => {
       return vue.$t('<em>{name}</em>님의 화면 공유를 진행합니다.​', {
         name: name,
       })
+    case SYSTEM.CAMERA_CONTROL_ON:
+      return vue.$t('service.chat_camera_control_on')
+    case SYSTEM.CAMERA_CONTROL_OFF:
+      return vue.$t('service.chat_camera_control_off')
   }
 }

@@ -193,6 +193,12 @@
   }
 }
 
+@mixin hover {
+  @media (hover: hover) and (pointer: fine) {
+    @content;
+  }
+}
+
 /* MediaQuery */
 // PC
 @mixin desktop {
