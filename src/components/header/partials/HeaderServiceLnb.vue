@@ -57,12 +57,6 @@ export default {
           icon: require('assets/image/call/gnb_ic_creat_ar.svg'),
           notice: false,
         },
-        {
-          text: this.$t('화면 공유'),
-          key: VIEW.SCREEN,
-          icon: require('assets/image/call/gnb_ic_screen_share.svg'),
-          notice: false,
-        },
       ],
     }
   },
@@ -350,9 +344,6 @@ export default {
       }
     },
     async getScreenStream() {
-      //@TODO: 화면 공유 요청
-      //@TODO: getDisplayMedia 처리
-      //@TODO: video track replace
       //pc자체에서 나오는 소리도 오디오 트랙에 넣어서..? 믹싱해서 보내야할듯?
 
       if (
@@ -379,13 +370,15 @@ export default {
           displayStream.getVideoTracks()[0],
           this.mainView.stream,
         )
+
+        this.$call.sendScreenSharing(true)
       }
-      this.addChat({
-        //TODO: 협업 공유 대상의 이름이 필요함.
-        name: '누구누구님',
-        status: 'screen-sharing',
-        type: 'system',
-      })
+      // this.addChat({
+      //   //TODO: 협업 공유 대상의 이름이 필요함.
+      //   name: '누구누구님',
+      //   status: 'screen-sharing',
+      //   type: 'system',
+      // })
     },
   },
 
@@ -393,6 +386,14 @@ export default {
   created() {
     this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
+    const onlyChromeWithPC = !this.isTablet && !this.isSafari
+    if (onlyChromeWithPC)
+      this.menus.push({
+        text: this.$t('화면 공유'),
+        key: VIEW.SCREEN,
+        icon: require('assets/image/call/gnb_ic_screen_share.svg'),
+        notice: false,
+      })
   },
 }
 </script>
