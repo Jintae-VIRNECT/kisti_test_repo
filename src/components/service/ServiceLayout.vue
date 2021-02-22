@@ -16,7 +16,9 @@
       >
         <transition name="main">
           <stream-view
-            :class="{ hide: currentView !== 'stream' }"
+            :class="{
+              hide: currentView !== 'stream' && currentView !== 'screen',
+            }"
           ></stream-view>
         </transition>
         <transition name="main">
@@ -24,9 +26,6 @@
         </transition>
         <transition name="main">
           <ar-view v-show="currentView === 'ar'"></ar-view>
-        </transition>
-        <transition name="main">
-          <screen-view v-show="currentView === 'screen'"></screen-view>
         </transition>
         <transition name="popover">
           <capture-modal
@@ -96,7 +95,6 @@ export default {
     StreamView: () => import('./ServiceStream'),
     DrawingView: () => import('./ServiceDrawing'),
     ArView: () => import('./ServiceAr'),
-    ScreenView: () => import('./ServiceScreen'),
     Share: () => import('./share/Share'),
     CaptureModal: () => import('./modal/CaptureModal'),
     RecordList: () => import('LocalRecordList'),
