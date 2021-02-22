@@ -9,7 +9,6 @@ import {
   VIDEO,
   AR_FEATURE,
   FILE,
-  SCREEN,
   CONTROL,
 } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
@@ -464,15 +463,22 @@ const _ = {
    * @TARGET
    * my video stream control
    * @param {Boolean, String} status CAMERA_STATUS
+   * @param {Boolean} publish video publish 여부. 기본값 true
    */
-  sendCamera: (status = CAMERA_STATUS.CAMERA_NONE, target = null) => {
+  sendCamera: (
+    status = CAMERA_STATUS.CAMERA_NONE,
+    target = null,
+    publish = true,
+  ) => {
     if (!_.publisher) return
     // if (!_.publisher.stream.hasVideo) return
     if (
       status === CAMERA_STATUS.CAMERA_ON ||
       status === CAMERA_STATUS.CAMERA_OFF
     ) {
-      _.publisher.publishVideo(status === CAMERA_STATUS.CAMERA_ON)
+      if (publish) {
+        _.publisher.publishVideo(status === CAMERA_STATUS.CAMERA_ON)
+      }
     }
 
     const params = {
@@ -626,13 +632,19 @@ const _ = {
     }
     _.session.forceDisconnect(_.subscribers[idx].stream.connection)
   },
-  sendScreenSharingClosed: (target = null) => {
+  /**
+   * 화면 공유 여부
+   * 현재는 false 만 보냄. 필요시 true 보낼 수 있음.
+   * @param {Boolean} enable 화면 공유 기능 중단 여부 true, false
+   */
+  sendScreenSharing: enable => {
     const params = {
-      type: SCREEN.STOP,
+      type: VIDEO.SCREEN_SHARE,
+      enable: enable,
     }
     _.session.signal({
-      type: SIGNAL.SCREEN,
-      to: target,
+      type: SIGNAL.VIDEO,
+      to: null,
       data: JSON.stringify(params),
     })
   },
@@ -691,11 +703,17 @@ const _ = {
     }
     _.publisher.replaceTrack(track)
   },
+
   /**
    * 내 스트림을 보존되어 있는 스트림으로 변경
+   * @param {Boolean} play 보존 되어있는 스트림의 재생 처리 여부
    */
-  restoreMyStream() {
-    _.replaceTrack(Store.getters['myTempStream'].getVideoTracks()[0])
+  restoreMyStream(play) {
+    const videoTrack = Store.getters['myTempStream'].getVideoTracks()[0]
+    if (play) {
+      videoTrack.enabled = true
+    }
+    _.replaceTrack(videoTrack)
     Store.commit('setMyTempStream', null)
   },
 }
