@@ -75,12 +75,8 @@ public class DownloadService {
 	) {
 		//0. 타겟데이터 체크
 		String encodedData = checkParameterEncoded(targetData);
-		Process process = processRepository.findByTargetDataAndState(encodedData, State.CREATED).orElse(null);
-		if (process == null) {
-			process = processRepository.findByTargetDataAndState(
-				toUpperCaseUrlEncodedString(encodedData), State.CREATED)
-				.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
-		}
+		Process process = processRepository.findByTargetDataAndState(encodedData, State.CREATED)
+			.orElseGet(() -> getProcessByUpperCaseTargetData(encodedData));
 
 		//1.현재 사용자에게 할당 된 작업이 아닐 때
 		ownerValidCheck(memberUUID, process);
@@ -92,6 +88,12 @@ public class DownloadService {
 		//작업 전환의 경우에는 타겟정보를 작업서버에 만들어놓기 때문에 contents 서버에 타겟정보가 없다. 그래서 타겟정보로 다운로드하는 것으로 요청하면 안된다.
 		return contentRestService.contentDownloadForUUIDRequestHandler(
 			process.getContentUUID(), memberUUID, workspaceUUID);
+	}
+
+	private Process getProcessByUpperCaseTargetData(String encodedData) {
+		return processRepository.findByTargetDataAndState(
+			toUpperCaseUrlEncodedString(encodedData), State.CREATED)
+			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
 	}
 
 	private String toUpperCaseUrlEncodedString(String urlString) {
