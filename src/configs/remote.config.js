@@ -16,7 +16,6 @@ export const SIGNAL = {
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
   SYSTEM: 'signal:system',
-  SCREEN: 'signal:screen',
 }
 
 export const FILE = {
@@ -26,6 +25,7 @@ export const FILE = {
 export const VIDEO = {
   NORMAL: 'normal',
   SHARE: 'share',
+  SCREEN_SHARE: 'screenShare',
 }
 
 export const CAMERA = {
@@ -121,8 +121,4 @@ export const ROLE = {
   WORKER: 'WORKER',
   UNKNOWN: 'UNKNOWN',
   SECESSION: 'SECESSION',
-}
-
-export const SCREEN = {
-  STOP: 'stop',
 }
