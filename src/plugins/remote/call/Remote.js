@@ -9,6 +9,7 @@ import {
   VIDEO,
   AR_FEATURE,
   FILE,
+  SCREEN,
 } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import {
@@ -583,6 +584,16 @@ const _ = {
     }
     _.session.forceDisconnect(_.subscribers[idx].stream.connection)
   },
+  sendScreenSharingClosed: (target = null) => {
+    const params = {
+      type: SCREEN.STOP,
+    }
+    _.session.signal({
+      type: SIGNAL.SCREEN,
+      to: target,
+      data: JSON.stringify(params),
+    })
+  },
   getState: () => {
     if (_.publisher) {
       return {
@@ -626,31 +637,24 @@ const _ = {
       _.session.off(type, func)
     }
   },
+  /**
+   * 현재 자신의 비디오 트랙을 교체할 비디오 트랙으로 변경
+   *
+   * @param {MediaStreamTrack} track 교체할 비디오 트랙
+   * @param {MediaStream} originStream 보존할 원래 스트림
+   */
   replaceTrack(track, originStream) {
     if (originStream) {
       Store.commit('setMyTempStream', originStream.clone())
     }
     _.publisher.replaceTrack(track)
   },
+  /**
+   * 내 스트림을 보존되어 있는 스트림으로 변경
+   */
   restoreMyStream() {
     _.replaceTrack(Store.getters['myTempStream'].getVideoTracks()[0])
     Store.commit('setMyTempStream', null)
-    // const settingInfo = Store.getters['settingInfo']
-
-    // const publishOptions = {
-    //   audioSource: options.audioSource,
-    //   videoSource: options.videoSource,
-    //   publishAudio: settingInfo.micOn,
-    //   publishVideo: settingInfo.videoOn,
-    //   resolution: settingInfo.quality,
-    //   // resolution: '1920x1080', // FHD
-    //   // resolution: '3840x2160', // 4K
-    //   frameRate: 30,
-    //   insertMode: 'PREPEND',
-    //   mirror: false,
-    // }
-    // debug('call::publish::', publishOptions)
-    // console.log('OV.getUserMedia::', OV.getUserMedia)
   },
 }
 

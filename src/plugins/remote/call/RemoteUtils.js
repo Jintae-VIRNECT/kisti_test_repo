@@ -376,6 +376,12 @@ export const addSessionEventListener = session => {
       })
     }
   })
+  session.on(SIGNAL.SCREEN, event => {
+    // if (session.connection.connectionId === event.from.connectionId) return
+    const data = JSON.parse(event.data)
+    console.log('connectionId::', event.from.connectionId)
+    console.log(data)
+  })
 }
 
 const setUserObject = event => {

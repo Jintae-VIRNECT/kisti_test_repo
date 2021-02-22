@@ -12,6 +12,7 @@ export default {
   methods: {
     ...mapActions(['setView']),
     stopScreenSharing() {
+      this.$call.sendScreenSharingClosed()
       this.$call.restoreMyStream()
       this.setView(VIEW.STREAM)
     },
