@@ -5,15 +5,19 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { VIEW } from 'configs/view.config'
 export default {
   name: 'ScreenStopButton',
+  computed: {
+    ...mapGetters(['myInfo']),
+  },
   methods: {
     ...mapActions(['setView']),
     stopScreenSharing() {
-      this.$call.sendScreenSharingClosed()
-      this.$call.restoreMyStream()
+      this.$call.sendScreenSharing(false)
+
+      this.$call.restoreMyStream(this.myInfo.video)
       this.setView(VIEW.STREAM)
     },
   },
