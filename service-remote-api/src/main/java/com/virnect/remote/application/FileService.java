@@ -80,13 +80,13 @@ public class FileService {
 				fileUploadRequest.getFile(), bucketPath, FileType.FILE);
 			ErrorCode errorCode = uploadResult.getErrorCode();
 			switch (errorCode) {
-						/*case ErrorCode.ERR_FILE_ASSUME_DUMMY:
-						case ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION:
-						case ErrorCode.ERR_FILE_SIZE_LIMIT:
-							return new DataProcess<>(new FileUploadResponse(), errorCode);
-						case ErrorCode.ERR_SUCCESS:
+						case ERR_FILE_ASSUME_DUMMY:
+						case ERR_FILE_UNSUPPORTED_EXTENSION:
+						case ERR_FILE_SIZE_LIMIT:
+							return new ApiResponse<>(new FileUploadResponse(), errorCode);
+						case ERR_SUCCESS:
 							objectName = uploadResult.getResult();
-							break;*/
+							break;
 			}
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
