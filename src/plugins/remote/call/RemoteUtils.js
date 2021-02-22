@@ -235,6 +235,45 @@ export const addSessionEventListener = session => {
         }
         Store.dispatch('setMainView', { id: data.id, force: true })
       }
+    } else if (data.type === VIDEO.SCREEN_SHARE) {
+      const isLeader = _.account.roleType === ROLE.LEADER
+      const participants = Store.getters['participants']
+      const idx = participants.findIndex(
+        user => user.connectionId === event.from.connectionId,
+      )
+      if (idx < 0) return
+
+      const noCamera = !participants[idx].hasCamera
+      // const noCamera = true
+      const disabled = !data.enable
+      const forcedView = Store.getters['viewForce'] === true
+      const isSame =
+        event.from.connectionId === Store.getters['mainView'].connectionId
+
+      console.log({
+        'event.from.connectionId': event.from.connectionId,
+        "Store.getters['mainView'].connectionId":
+          Store.getters['mainView'].connectionId,
+      })
+
+      if (isLeader) {
+        console.log('리더임')
+        if (disabled) {
+          console.log('종료 요청임')
+          if (forcedView) {
+            console.log('화면 공유 중임')
+            if (noCamera) {
+              console.log('카메라가 없음')
+              if (isSame) {
+                console.log(
+                  '현재 화면 공유중인 사람하고 PC 공유 종료한사람이 같은 사람임',
+                )
+                _.sendVideo(Store.getters['mainView'].id, false)
+              }
+            }
+          }
+        }
+      }
     } else {
       if (!Store.getters['allowCameraControl']) {
         Store.dispatch('setMainView', {
@@ -422,12 +461,6 @@ export const addSessionEventListener = session => {
         file: data.fileInfo,
       })
     }
-  })
-  session.on(SIGNAL.SCREEN, event => {
-    // if (session.connection.connectionId === event.from.connectionId) return
-    const data = JSON.parse(event.data)
-    console.log('connectionId::', event.from.connectionId)
-    console.log(data)
   })
 }
 
