@@ -222,6 +222,8 @@ public class ValidationService {
 
 		CompanyInfoResponse companyInfoResponse = null;
 
+		companyCode = 1;
+
 		if (companyCode != CompanyConstants.COMPANY_VIRNECT) {
 			Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
 			if (company != null) {

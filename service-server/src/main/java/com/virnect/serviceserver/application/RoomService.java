@@ -59,6 +59,8 @@ public class RoomService {
 		int companyCode
 	) {
 
+		companyCode = 1;
+
 		ApiResponse<RoomResponse> responseData;
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
