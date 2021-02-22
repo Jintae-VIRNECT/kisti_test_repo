@@ -100,11 +100,13 @@ public class ProcessCustomRepositoryImpl implements ProcessCustomRepository {
 	private BooleanExpression inWorkerUUIDOrEqSearch(List<String> userUUIDList, String search) {
 		if (!userUUIDList.isEmpty()) {
 			return qSubProcess.workerUUID.in(userUUIDList);
-		} else {
-			if (StringUtils.hasText(search))
-				// or 뒤의 조건은 프로필 -> 바로가기 때문에 추가
-				return qProcess.name.contains(search).or(qSubProcess.workerUUID.eq(search));
 		}
+
+		if (StringUtils.hasText(search)) {
+			// or 뒤의 조건은 프로필 -> 바로가기 때문에 추가
+			return qProcess.name.contains(search).or(qSubProcess.workerUUID.eq(search));
+		}
+		
 		return null;
 	}
 
