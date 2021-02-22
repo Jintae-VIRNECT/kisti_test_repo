@@ -964,7 +964,6 @@ public class SessionDataRepository {
                     roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
                     CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
                     roomResponse.getCoturn().add(coturnResponse);
-
                     return new DataProcess<>(roomResponse);
                 } else {
                     return new DataProcess<>(ErrorCode.ERR_ROOM_CREATE_FAIL);

@@ -1,5 +1,7 @@
 package com.virnect.serviceserver.api;
 
+import java.io.IOException;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -89,7 +91,7 @@ public class ValidationController {
     public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(
         @PathVariable String workspaceId,
         @PathVariable String userId
-    ) {
+    ) throws IOException {
         LogMessage.formedInfo(
             TAG,
             "REST API: GET " + REST_COMPANY_PATH + "/" + workspaceId + "/" + userId,
@@ -105,7 +107,9 @@ public class ValidationController {
         }
 
         String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
-        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId, policyLocation);
+        //ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId, policyLocation);
+        //ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId);
+        ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfoByCompanyCode(workspaceId, userId, 1, policyLocation);
         return ResponseEntity.ok(responseData);
 
         //todo: delete check user is valid
@@ -123,7 +127,7 @@ public class ValidationController {
         @RequestParam(name = "companyCode") int companyCode,
         @RequestParam(name = "workspaceId") String workspaceId,
         @RequestParam(name = "userId") String userId
-    ) {
+    ) throws IOException {
         LogMessage.formedInfo(
             TAG,
             "REST API: GET " + REST_COMPANY_PATH,

@@ -59,7 +59,8 @@ public class RoomService {
 		int companyCode
 	) {
 
-		companyCode = 1;
+		// 임시 셋팅
+		companyCode = 0;
 
 		ApiResponse<RoomResponse> responseData;
 
@@ -120,6 +121,9 @@ public class RoomService {
 		int companyCode
 	) {
 		ApiResponse<RoomResponse> responseData;
+
+		// 임시 셋팅
+		companyCode = 0;
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
@@ -183,8 +187,12 @@ public class RoomService {
 		int companyCode
 	) {
 
+		// test를 위한 임시 company code 설정
+		companyCode = 0;
+
 		ApiResponse<RoomResponse> responseData;
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
+
 		if (licenseItem == null) {
 			responseData = new ApiResponse<>(
 				new RoomResponse(),
@@ -243,6 +251,8 @@ public class RoomService {
 		int companyCode
 	) {
 
+		// test를 위한 임시 company code 설정
+		companyCode = 0;
 		ApiResponse<RoomResponse> responseData;
 
 		// check license item using company code if not virnect

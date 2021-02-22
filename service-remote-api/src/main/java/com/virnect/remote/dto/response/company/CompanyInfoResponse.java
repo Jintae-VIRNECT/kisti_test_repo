@@ -57,6 +57,15 @@ public class CompanyInfoResponse {
 	@NotNull
 	private List<LanguageCode> languageCodes = new ArrayList<>();
 
+        /*@ApiModelProperty(value = "Enable Text to speech", position = 9, example = "false")
+    private boolean restrictedMode = false;*/
+
+	@ApiModelProperty(value = "Enable Text to Video restricted Mode", position = 11, example = "false")
+	private boolean videoRestrictedMode = false;
+
+	@ApiModelProperty(value = "Enable Text to Audio restricted Mode", position = 12, example = "false")
+	private boolean audioRestrictedMode = false;
+
 	@Override
 	public String toString() {
 		return "CompanyInfoResponse{" +
@@ -70,10 +79,11 @@ public class CompanyInfoResponse {
 			", sttSync=" + sttSync +
 			", sttStreaming=" + sttStreaming +
 			", tts=" + tts +
+			", videoRestrictedMode=" + videoRestrictedMode +
+			", audioRestrictedMode=" + audioRestrictedMode +
 			'}';
 	}
 }
-
 /*
 
  "allowedRoomTypes":["PRIVATE", "OPEN", "PUBLIC"], // 허용 된 Room 타입

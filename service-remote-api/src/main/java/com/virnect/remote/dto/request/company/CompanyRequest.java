@@ -56,7 +56,7 @@ public class CompanyRequest {
     @ApiModelProperty(value = "Support translation languages", position = 9)
     private LanguageRequest language;
 
-    @ApiModelProperty(value = "Support Video Restricted Mode", position = 10)
+   @ApiModelProperty(value = "Support Video Restricted Mode", position = 10)
     private boolean videoRestrictedMode;
 
     @ApiModelProperty(value = "Support Audio Restricted Mode", position = 10)

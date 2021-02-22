@@ -22,7 +22,9 @@ public class AdminService {
 			.sttStreaming(companyRequest.isSttStreaming())
 			.sttSync(companyRequest.isSttSync())
 			.tts(companyRequest.isTts())
-			.restrictedMode(companyRequest.isRestrictedMode())
+			//.restrictedMode(companyRequest.isRestrictedMode())
+			.videoRestrictedMode(companyRequest.isVideoRestrictedMode())
+			.audioRestrictedMode(companyRequest.isAudioRestrictedMode())
 			.build();
 
 		LanguageRequest languageRequest = companyRequest.getLanguage();
