@@ -16,6 +16,7 @@ COPY service-server service-server
 COPY virnect.pfx .
 
 RUN chmod +x ./gradlew
+RUN ./gradlew clean
 RUN ./gradlew :service-server:build -x test
 
 # Runtime Stage
