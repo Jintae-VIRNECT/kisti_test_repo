@@ -27,7 +27,7 @@ import com.virnect.data.domain.file.FileType;
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.RecordFile;
 import com.virnect.remote.application.FileService;
-import com.virnect.remote.application.SessionService;
+import com.virnect.remote.application.SessionTransactionalService;
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.remote.dto.request.file.FileUploadRequest;
 import com.virnect.remote.dto.request.file.RecordFileUploadRequest;
@@ -58,7 +58,7 @@ public class FileDataRepository {
 
     private final IFileManagementService fileManagementService;
 
-    private final SessionService sessionService;
+    private final SessionTransactionalService sessionService;
     private final FileService fileService;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;

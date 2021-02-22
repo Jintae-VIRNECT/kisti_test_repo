@@ -27,7 +27,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import com.virnect.remote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.application.RoomService;
-import com.virnect.serviceserver.application.SessionServiceTemp;
+import com.virnect.serviceserver.application.SessionService;
 import com.virnect.data.dto.PushSendRequest;
 import com.virnect.remote.dto.push.SendSignalRequest;
 import com.virnect.remote.dto.request.room.InviteRoomRequest;
@@ -67,7 +67,7 @@ public class SessionRestController {
 
     private final PushMessageClient pushMessageClient;
 
-    private final SessionServiceTemp sessionService;
+    private final SessionService sessionService;
     private final RoomService roomService;
 
     @Autowired(required = false)

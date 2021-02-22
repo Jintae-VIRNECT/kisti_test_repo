@@ -47,7 +47,7 @@ import com.virnect.serviceserver.infra.utils.LogMessage;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SessionServiceTemp {
+public class SessionService {
 
 	private static final String TAG = SessionRestController.class.getSimpleName();
 

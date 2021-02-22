@@ -66,7 +66,7 @@ import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.mediaserver.core.EndReason;
 import com.virnect.mediaserver.core.Participant;
 import com.virnect.remote.application.HistoryService;
-import com.virnect.remote.application.SessionService;
+import com.virnect.remote.application.SessionTransactionalService;
 import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
@@ -85,7 +85,7 @@ public class SessionDataRepository {
     private final ObjectMapper objectMapper;
 
     private final RemoteServiceConfig config;
-    private final SessionService sessionService;
+    private final SessionTransactionalService sessionService;
     private final HistoryService historyService;
 
     private final PushMessageClient pushMessageClient;

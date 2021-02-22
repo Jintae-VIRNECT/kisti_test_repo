@@ -46,7 +46,7 @@ import com.virnect.data.global.common.ApiResponse;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SessionService {
+public class SessionTransactionalService {
 
 	private final ModelMapper modelMapper;
 	private final RoomRepository roomRepository;

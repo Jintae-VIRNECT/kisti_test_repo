@@ -18,7 +18,7 @@ import com.virnect.data.global.common.ApiResponse;
 @RequiredArgsConstructor
 public class AdminService {
 
-	private final SessionService sessionService;
+	private final SessionTransactionalService sessionService;
 
 	public ApiResponse<CompanyResponse> createCompany(CompanyRequest companyRequest) {
 
