@@ -21,6 +21,7 @@ import Tooltip from 'Tooltip'
 import ToggleButton from 'ToggleButton'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { ROLE } from 'configs/remote.config'
+import { VIEW } from 'configs/view.config'
 export default {
   name: 'Stream',
   components: {
@@ -31,7 +32,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['video', 'roomInfo', 'allowCameraControl']),
+    ...mapGetters(['video', 'roomInfo', 'allowCameraControl', 'view']),
     disable() {
       if (this.$route.name !== 'service') return false
       if (!this.roomInfo.videoRestrictedMode) return false
@@ -52,9 +53,19 @@ export default {
           isOn: video,
         },
       })
-      this.$call.sendCamera(
-        video ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
-      )
+
+      if (this.view === VIEW.SCREEN) {
+        this.$call.sendCamera(
+          video ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
+          null,
+          false,
+        )
+      } else {
+        this.$call.sendCamera(
+          video ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
+        )
+      }
+
       this.$localStorage.setDevice('video', 'isOn', video)
     },
   },
