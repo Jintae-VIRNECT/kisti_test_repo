@@ -37,6 +37,7 @@ public class AdminService {
 			.tts(companyRequest.isTts())
 			.videoRestrictedMode(companyRequest.isVideoRestrictedMode())
 			.audioRestrictedMode(companyRequest.isAudioRestrictedMode())
+			.localRecording(companyRequest.isLocalRecording())
 			.build();
 
 		LanguageRequest languageRequest = companyRequest.getLanguage();

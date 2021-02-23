@@ -5,6 +5,8 @@ import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
+
 import com.virnect.data.domain.session.SessionType;
 
 @Entity
@@ -56,6 +58,9 @@ public class Company extends BaseTimeEntity {
     @Column(name = "audio_restricted_mode", nullable = false)
     private boolean audioRestrictedMode;
 
+    @Column(name = "local_recording", nullable = false)
+    private boolean localRecording;
+
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Language language;
 
@@ -70,9 +75,9 @@ public class Company extends BaseTimeEntity {
         Boolean sttSync,
         Boolean sttStreaming,
         Boolean tts,
-        //Boolean restrictedMode,
         Boolean videoRestrictedMode,
         Boolean audioRestrictedMode,
+        Boolean localRecording,
         Language language
     ) {
         this.companyCode = companyCode;
@@ -87,8 +92,7 @@ public class Company extends BaseTimeEntity {
         this.tts = tts;
         this.videoRestrictedMode = videoRestrictedMode;
         this.audioRestrictedMode = audioRestrictedMode;
-        //this.restrictedMode = restrictedMode;
-
+        this.localRecording = localRecording;
         this.language = language;
     }
 
