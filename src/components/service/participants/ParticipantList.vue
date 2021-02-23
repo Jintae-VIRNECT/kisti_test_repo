@@ -32,7 +32,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { ROLE, CONTROL } from 'configs/remote.config'
+import { ROLE } from 'configs/remote.config'
 import { kickoutMember } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 
@@ -62,6 +62,7 @@ export default {
       'roomInfo',
       'openRoom',
       'allowCameraControl',
+      'restrictedRoom',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -101,10 +102,9 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['setMainView', 'addChat', 'removeMember', 'restrictedRoom']),
+    ...mapActions(['setMainView', 'addChat', 'removeMember']),
     selectMain(participant) {
       if (this.restrictedRoom) {
-        // this.$call.sendControl(CONTROL.VIDEO, true, [participant.connectionId])
         this.$call.sendVideo(participant.id, true)
         return
       }
@@ -159,9 +159,6 @@ export default {
       // this.$call.disconnect(this.participant.connectionId)
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 <style>
