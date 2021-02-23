@@ -26,11 +26,9 @@ import com.virnect.data.infra.utils.LogMessage;
 @RequiredArgsConstructor
 @RequestMapping("/remote")
 public class AdminRestController {
+
     private static final String TAG = AdminRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/admin";
-    //private static final String REST_COMPANY_PATH = "/remote/company";
-
-    //private final UtilDataRepository utilDataRepository;
 
     private final AdminService adminService;
 
@@ -46,7 +44,6 @@ public class AdminRestController {
             "createCompanyRequestHandler"
         );
 
-        // check company request handler
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message ->
                 LogMessage.formedError(
@@ -61,8 +58,7 @@ public class AdminRestController {
         }
 
         ApiResponse<CompanyResponse> responseData = adminService.createCompany(companyRequest);
+
         return ResponseEntity.ok(responseData);
-		/*ApiResponse<CompanyResponse> apiResponse = utilDataRepository.generateCompany(companyRequest);
-		return ResponseEntity.ok(apiResponse);*/
     }
 }
