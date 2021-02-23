@@ -66,8 +66,8 @@ public class CompanyInfoResponse {
 	@ApiModelProperty(value = "Enable Text to Audio restricted Mode", position = 12, example = "false")
 	private boolean audioRestrictedMode = false;
 
-	@ApiModelProperty(value = "Local Recording", position = 13, example = "false")
-	private boolean localRecording = false;
+	@ApiModelProperty(value = "Local Recording", position = 13, example = "true")
+	private boolean localRecording = true;
 
 	@Override
 	public String toString() {

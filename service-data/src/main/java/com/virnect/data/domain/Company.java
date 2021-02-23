@@ -1,11 +1,23 @@
 package com.virnect.data.domain;
 
-import lombok.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
-
-import com.sun.org.apache.xpath.internal.operations.Bool;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import com.virnect.data.domain.session.SessionType;
 
