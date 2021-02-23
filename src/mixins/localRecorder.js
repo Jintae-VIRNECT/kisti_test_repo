@@ -73,10 +73,11 @@ export default {
     resolutions: {
       handler() {
         if (this.recorder !== null) {
+          const orientation = this.resolution.orientation
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-            this.recorder.changeCanvasOrientation(this.resolution.orientation)
+            this.changeCanvasOrientation(orientation, this.mainView.stream)
           } else {
-            this.recorder.changeCanvasOrientation('landscape')
+            this.changeCanvasOrientation(orientation, this.screenStream)
           }
         }
       },
@@ -84,20 +85,21 @@ export default {
     },
     mainView: {
       handler(current) {
-        if (
-          this.recorder !== null &&
-          this.localRecordTarget === RECORD_TARGET.WORKER
-        ) {
-          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+        if (this.recorder !== null) {
+          const orientation = this.resolution.orientation
 
-          this.changeVideoStream(
-            current.stream,
-            getWH(
-              this.localRecord.resolution,
-              this.resolution.width,
-              this.resolution.height,
-            ),
-          )
+          if (this.localRecordTarget === RECORD_TARGET.WORKER) {
+            this.changeVideoStream(
+              current.stream,
+              getWH(
+                this.localRecord.resolution,
+                this.resolution.width,
+                this.resolution.height,
+              ),
+            )
+          }
+
+          this.changeCanvasOrientation(orientation, current.stream)
         }
       },
     },
@@ -175,10 +177,12 @@ export default {
       this.recorder.setConfig(config)
 
       if (await this.recorder.initRecorder()) {
+        const orientation = this.resolution.orientation
+
         if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+          this.changeCanvasOrientation(orientation, this.mainView.stream)
         } else {
-          this.recorder.changeCanvasOrientation('landscape')
+          this.changeCanvasOrientation(orientation, this.screenStream)
         }
 
         this.recorder.setOndataAvailableCallBack(this.ondataAvailableCallBack)
@@ -274,15 +278,18 @@ export default {
       ) {
         throw 'NotSupportDisplayError'
       }
-      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
-        video: getWH(this.localRecord.resolution),
+        //이 부분을 고쳐야함
+        // video: getWH(this.localRecord.resolution),
+        //그냥 true로  해도 어차피 해상도 제한 걸리니까 필요없을것같음.
+        video: true,
       })
 
-      displayStream.getVideoTracks()[0].onended = () => {
+      screenStream.getVideoTracks()[0].onended = () => {
         this.stopLocalRecord()
       }
-      this.screenStream = displayStream
+      this.screenStream = screenStream
     },
 
     changeVideoStream(videoStream, resolution) {
@@ -459,6 +466,42 @@ export default {
       }
 
       this.fileCount++
+    },
+    /**
+     * 영상의 orientation을 추측
+     * @param {MediaStream} mediaStream 판단할 비디오 스트림
+     */
+    guessOrientation(mediaStream) {
+      if (mediaStream) {
+        const tracks = mediaStream.getVideoTracks()
+        if (tracks.length > 0) {
+          const settings = tracks[0].getSettings()
+          if (settings.width >= settings.height) {
+            return 'landscape'
+          } else {
+            return 'portrait'
+          }
+        } else {
+          return 'landscape'
+        }
+      } else {
+        return 'landscape'
+      }
+    },
+    /**
+     * 녹화용 canvas의 orientation을 지정값 혹은 추측값으로 변경
+     *
+     * @param {String} orientation 지정할 orientation
+     * @param {MediaStream} mediaStream
+     */
+    changeCanvasOrientation(orientation, mediaStream) {
+      if (orientation && orientation !== '') {
+        this.recorder.changeCanvasOrientation(orientation)
+      } else {
+        const guessedOrientation = this.guessOrientation(mediaStream)
+        console.log('guessedOrientation::', guessedOrientation)
+        this.recorder.changeCanvasOrientation(guessedOrientation)
+      }
     },
   },
   mounted() {
