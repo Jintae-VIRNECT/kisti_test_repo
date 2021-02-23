@@ -68,6 +68,7 @@ export default {
       'shareFile',
       'viewForce',
       'settingInfo',
+      'myInfo',
     ]),
     hasLeader() {
       const idx = this.participants.findIndex(
@@ -363,7 +364,7 @@ export default {
           video: video,
         })
         displayStream.getVideoTracks()[0].onended = () => {
-          this.$call.restoreMyStream()
+          this.$call.restoreMyStream(this.myInfo.video)
           this.setView(VIEW.STREAM)
         }
         this.$call.replaceTrack(
