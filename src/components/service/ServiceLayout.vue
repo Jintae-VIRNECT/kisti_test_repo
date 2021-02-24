@@ -128,8 +128,6 @@ export default {
         return 'drawing'
       } else if (this.view === VIEW.AR) {
         return 'ar'
-      } else if (this.view === VIEW.SCREEN) {
-        return 'screen'
       }
       return ''
     },
