@@ -54,7 +54,10 @@
           class="main-video__pointing"
         ></pointing>
         <!-- 화면 이동 -->
-        <moving v-if="actionMoving" class="main-video__moving"></moving>
+        <moving
+          v-if="isLeader && viewForce"
+          class="main-video__moving"
+        ></moving>
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
@@ -241,9 +244,6 @@ export default {
         ((this.loaded && this.cameraStatus.state === 'off') ||
           this.cameraStatus.state === 'background')
       )
-    },
-    actionMoving() {
-      return this.viewAction === ACTION.STREAM_MOVING && this.isLeader
     },
   },
   watch: {
