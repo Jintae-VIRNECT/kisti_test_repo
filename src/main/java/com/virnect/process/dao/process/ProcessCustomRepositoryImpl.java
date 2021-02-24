@@ -7,14 +7,13 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.util.StringUtils;
 
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.process.domain.Conditions;
@@ -28,8 +27,7 @@ import com.virnect.process.domain.State;
 import com.virnect.process.domain.TargetType;
 
 @Slf4j
-@RequiredArgsConstructor
-public class ProcessCustomRepositoryImpl implements ProcessCustomRepository {
+public class ProcessCustomRepositoryImpl extends QuerydslRepositorySupport implements ProcessCustomRepository {
 	private final JPAQueryFactory queryFactory;
 
 	QProcess qProcess = QProcess.process;
@@ -37,6 +35,11 @@ public class ProcessCustomRepositoryImpl implements ProcessCustomRepository {
 	QTarget qTarget = QTarget.target;
 	QJob qJob = QJob.job;
 	QIssue qIssue = QIssue.issue;
+
+	public ProcessCustomRepositoryImpl(JPAQueryFactory queryFactory) {
+		super(Process.class);
+		this.queryFactory = queryFactory;
+	}
 
 	@Override
 	public Optional<Process> findByTargetDataAndState(String targetData, State state) {
@@ -85,9 +88,9 @@ public class ProcessCustomRepositoryImpl implements ProcessCustomRepository {
 			});
 			query = query.where(qProcess.in(filterdProcessList));
 		}
-
-		QueryResults<Process> result = query.fetchResults();
-		return new PageImpl<>(result.getResults(), pageable, result.getTotal());
+		
+		final List<Process> result = getQuerydsl().applyPagination(pageable, query).fetch();
+		return new PageImpl<>(result, pageable, query.fetchCount());
 	}
 
 	private BooleanExpression eqTargetType(String targetType) {
@@ -106,7 +109,7 @@ public class ProcessCustomRepositoryImpl implements ProcessCustomRepository {
 			// or 뒤의 조건은 프로필 -> 바로가기 때문에 추가
 			return qProcess.name.contains(search).or(qSubProcess.workerUUID.eq(search));
 		}
-		
+
 		return null;
 	}
 
@@ -159,9 +162,8 @@ public class ProcessCustomRepositoryImpl implements ProcessCustomRepository {
 			});
 			query = query.where(qProcess.in(filteredList));
 		}
-
-		QueryResults<Process> result = query.fetchResults();
-		return new PageImpl<>(result.getResults(), pageable, result.getTotal());
+		final List<Process> result = getQuerydsl().applyPagination(pageable, query).fetch();
+		return new PageImpl<>(result, pageable, query.fetchCount());
 	}
 
 	private BooleanExpression eqWorkspaceUUID(String workspaceUUID) {
