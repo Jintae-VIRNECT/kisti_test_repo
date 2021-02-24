@@ -49,32 +49,26 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.file.IFileManagementService;
 import com.virnect.data.dto.UploadResult;
 
-@Slf4j
+/*@Slf4j
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor*/
 public class FileDataRepository {
-    //public class FileDataRepository extends DataRepository {
-    private static final String TAG = FileDataRepository.class.getSimpleName();
 
-    private final IFileManagementService fileManagementService;
-
+    /*private final IFileManagementService fileManagementService;
     private final SessionTransactionalService sessionService;
     private final FileService fileService;
     private final UserRestService userRestService;
     private final ModelMapper modelMapper;
 
     private final RoomRepository roomRepository;
-    private final RoomHistoryRepository roomHistoryRepository;
-    private final MemberRepository memberRepository;
-    private final MemberHistoryRepository memberHistoryRepository;
 
-    /**
+    *//**
      * Generate directory path to upload file
      *
      * @param args string argument array
      * @return Directory path with args
      * @see StringBuilder#toString()
-     */
+     *//*
     private String generateDirPath(String... args) {
         StringBuilder stringBuilder;
         stringBuilder = new StringBuilder();
@@ -103,13 +97,13 @@ public class FileDataRepository {
                         fileUploadRequest.getFile(), bucketPath, FileType.FILE);
                     ErrorCode errorCode = uploadResult.getErrorCode();
                     switch (errorCode) {
-						/*case ErrorCode.ERR_FILE_ASSUME_DUMMY:
+						*//*case ErrorCode.ERR_FILE_ASSUME_DUMMY:
 						case ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION:
 						case ErrorCode.ERR_FILE_SIZE_LIMIT:
 							return new DataProcess<>(new FileUploadResponse(), errorCode);
 						case ErrorCode.ERR_SUCCESS:
 							objectName = uploadResult.getResult();
-							break;*/
+							break;*//*
                     }
                 } catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
                     log.info("{}", exception.getMessage());
@@ -612,5 +606,5 @@ public class FileDataRepository {
                 return new DataProcess<>(true);
             }
         }.asResponseData();
-    }
+    }*/
 }

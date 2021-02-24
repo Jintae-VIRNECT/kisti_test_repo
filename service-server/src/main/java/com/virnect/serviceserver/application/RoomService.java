@@ -320,8 +320,12 @@ public class RoomService {
 
 		ApiResponse<RoomResponse> responseData;
 
-		DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
+		/*DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
 			workspaceId, sessionId, joinRoomRequest.getUuid());
+*/
+		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
+			workspaceId, sessionId, joinRoomRequest.getUuid());
+
 
 		if (dataProcess.getData()) {
 			// generate session id and token

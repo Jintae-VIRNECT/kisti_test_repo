@@ -23,8 +23,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.client.RemoteServiceException;
-import com.virnect.remote.dto.response.session.SessionData;
-import com.virnect.remote.dto.response.session.SessionTokenData;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.java.client.MediaMode;
@@ -41,8 +39,10 @@ import com.virnect.mediaserver.core.SessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoSession;
 import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
+import com.virnect.remote.application.FileService;
+import com.virnect.remote.dto.response.session.SessionData;
+import com.virnect.remote.dto.response.session.SessionTokenData;
 import com.virnect.serviceserver.dao.DataProcess;
-import com.virnect.serviceserver.dao.FileDataRepository;
 import com.virnect.serviceserver.dao.SessionDataRepository;
 
 @Slf4j
@@ -56,7 +56,9 @@ public class ServiceSessionManager {
 
 	SessionManager sessionManager;
 	private final SessionDataRepository sessionDataRepository;
-	FileDataRepository fileDataRepository;
+	//FileDataRepository fileDataRepository;
+
+	private final FileService fileService;
 
 	@Autowired
 	public void setSessionManager(SessionManager sessionManager) {
@@ -68,10 +70,10 @@ public class ServiceSessionManager {
         this.sessionDataRepository = sessionDataRepository;
     }*/
 
-	@Autowired
+	/*@Autowired
 	public void setFileDataRepository(FileDataRepository fileDataRepository) {
 		this.fileDataRepository = fileDataRepository;
-	}
+	}*/
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -95,8 +97,10 @@ public class ServiceSessionManager {
 					"event received"
 				);
 				String sessionId = sessionNotActive.getSessionId();
-				DataProcess<Boolean> result = sessionDataRepository.generateRoomSession(sessionId);
-				if (result.getData()) {
+				//DataProcess<Boolean> result = sessionDataRepository.generateRoomSession(sessionId);
+				Boolean result = sessionDataRepository.generateRoomSession(sessionId);
+				//if (result.getData()) {
+				if (result) {
 					sessionDataRepository.sendSessionCreate(sessionId);
 				}
 			}
@@ -124,13 +128,14 @@ public class ServiceSessionManager {
 					);
 					return true;
 				} else {
-					DataProcess<ErrorCode> dataProcess = sessionDataRepository.joinSession(participant, sessionId);
-					if (dataProcess.getCode() == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID.getCode()) {
+					//DataProcess<ErrorCode> dataProcess = sessionDataRepository.joinSession(participant, sessionId);
+					ErrorCode errorCode = sessionDataRepository.joinSession(participant, sessionId);
+					if (errorCode == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID) {
 						LogMessage.formedError(
 							TAG,
 							"JOIN SESSION EVENT_ERROR",
 							"joinSession",
-							dataProcess.getMessage(),
+							errorCode.getMessage(),
 							"return false"
 						);
 						return false;
@@ -184,7 +189,8 @@ public class ServiceSessionManager {
 					"session destroy and sessionEventHandler is here",
 					result
 				);
-				fileDataRepository.removeFiles(session.getSessionId());
+
+				fileService.removeFiles(session.getSessionId());
 				sessionDataRepository.stopRecordSession(session.getSessionId());
 				sessionDataRepository.destroySession(session.getSessionId(), reason);
 

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,6 +58,8 @@ public class FileService {
 	private final FileRepository fileRepository;
 	private final RoomRepository roomRepository;
 	private final RecordFileRepository recordFileRepository;
+
+	private final SessionTransactionalService sessionTransactionalService;
 
 	private String generateDirPath(String... args) {
 		StringBuilder stringBuilder;
@@ -493,6 +496,52 @@ public class FileService {
 			responseData = new ApiResponse<>("", ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 		}
 		return responseData;
+	}
+
+	public Boolean removeFiles(String sessionId) {
+
+		String workspaceId = sessionTransactionalService.getRoom(sessionId).getWorkspaceId();
+		if (workspaceId != null) {
+			try {
+
+				List<String> listName = new LinkedList<>();
+				List<File> files = getFileList(workspaceId, sessionId);
+				for (File file : files) {
+					listName.add(file.getObjectName());
+				}
+
+				if (!listName.isEmpty()) {
+					String dirPath = generateDirPath(workspaceId, sessionId);
+					fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
+				}
+			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+				e.printStackTrace();
+			}
+			deleteFiles(workspaceId, sessionId);
+		}
+		return true;
+	}
+
+	public Boolean removeFiles(String workspaceId, String sessionId) {
+
+		log.info("ROOM removeFiles {}, {}", workspaceId, sessionId);
+		try {
+
+			List<String> listName = new ArrayList<>();
+			List<File> files = getFileList(workspaceId, sessionId);
+			for (File file : files) {
+				listName.add(file.getObjectName());
+			}
+
+			if (!listName.isEmpty()) {
+				String dirPath = generateDirPath(workspaceId, sessionId);
+				fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
+			}
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+			e.printStackTrace();
+		}
+		deleteFiles(workspaceId, sessionId);
+		return true;
 	}
 
 	@Transactional
