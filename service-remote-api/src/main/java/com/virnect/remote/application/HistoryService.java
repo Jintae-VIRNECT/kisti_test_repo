@@ -38,8 +38,6 @@ import com.virnect.data.application.workspace.WorkspaceRestService;
 @RequiredArgsConstructor
 public class HistoryService {
 
-	//private static final String TAG = HistoryDataRepository.class.getSimpleName();
-
 	private final WorkspaceRestService workspaceRestService;
 	private final RoomHistoryRepository roomHistoryRepository;
 	private final MemberHistoryRepository memberHistoryRepository;

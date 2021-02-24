@@ -38,9 +38,12 @@ public class AdminRestController {
         @RequestBody @Valid CompanyRequest companyRequest,
         BindingResult result
     ) {
+
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: POST "
+                + REST_PATH + "::"
+                + (companyRequest.toString() != null ? companyRequest.toString() : "{}"),
             "createCompanyRequestHandler"
         );
 

@@ -1844,11 +1844,11 @@ public class SessionDataRepository {
                     case PUBLIC: {
                         if (member != null) {
                             MemberStatus memberStatus = member.getMemberStatus();
-                            if (memberStatus.equals(MemberStatus.UNLOAD) ||
-                                memberStatus.equals(MemberStatus.EVICTED)) {
+                            if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED)) {
                                 member.setMemberStatus(MemberStatus.LOADING);
                                 sessionService.setMember(member);
                                 result = true;
+
                             } else {
                                 errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                             }
@@ -1860,8 +1860,7 @@ public class SessionDataRepository {
                     case OPEN: {
                         if (member != null) {
                             MemberStatus memberStatus = member.getMemberStatus();
-                            if (memberStatus.equals(MemberStatus.UNLOAD) ||
-                                memberStatus.equals(MemberStatus.EVICTED)) {
+                            if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED)) {
                                 member.setMemberStatus(MemberStatus.LOADING);
                                 sessionService.setMember(member);
                                 result = true;
@@ -1921,7 +1920,6 @@ public class SessionDataRepository {
 
                     CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
                     roomResponse.getCoturn().add(coturnResponse);
-
                     return new DataProcess<>(roomResponse);
                 } else {
                     return new DataProcess<>(new RoomResponse(), errorCode);

@@ -40,30 +40,14 @@ import com.virnect.data.infra.utils.LogMessage;
 @RequiredArgsConstructor
 @RequestMapping("/remote")
 public class HistoryRestController {
+
     private static final String TAG = HistoryRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/history";
-    private static String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
-    //private final ServiceSessionManager serviceSessionManager;
-
-    //private final SessionDataRepository sessionDataRepository;
-    //private final HistoryDataRepository historyDataRepository;
+    private final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 
     private final RoomService roomService;
-    //private final HistoryServiceTemp historyService;
     private final HistoryService historyService;
-
-	/*@Qualifier(value = "sessionDataRepository")
-	@Autowired
-	public void setSessionDataRepository(SessionDataRepository sessionDataRepository) {
-		this.sessionDataRepository = sessionDataRepository;
-	}
-
-	@Qualifier(value = "historyDataRepository")
-	@Autowired
-	public void setHistoryDataRepository(HistoryDataRepository historyDataRepository) {
-		this.historyDataRepository = historyDataRepository;
-	}*/
 
     @ApiOperation(value = "Load Room History Information List", notes = "최근 기록 리스트를 조회하는 API 입니다.")
     @ApiImplicitParams({
@@ -84,19 +68,11 @@ public class HistoryRestController {
         LogMessage.formedInfo(
             TAG,
             "REST API: GET "
-                + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (userId != null ? userId : "{}"),
-            "getHistoryList"
+                + REST_PATH + "::"
+                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
+                + "userId:" + (userId != null ? userId : "{}"),
+            "getHistoryListCurrent"
         );
-
-		/*ApiResponse<RoomHistoryInfoListResponse> apiResponse;
-		if (paging) {
-			apiResponse = this.historyDataRepository.loadRoomHistoryPageList(workspaceId, userId, pageable.ofSortBy());
-		} else {
-			apiResponse = this.historyDataRepository.loadRoomHistoryList(workspaceId, userId, pageable.ofSortBy());
-		}
-		return ResponseEntity.ok(apiResponse);*/
 
         RoomHistoryInfoListResponse responseData = historyService.getRoomHistoryCurrent(
             workspaceId, userId, paging, pageable.ofSortBy());
@@ -122,21 +98,12 @@ public class HistoryRestController {
         LogMessage.formedInfo(
             TAG,
             "REST API: GET "
-                + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (userId != null ? userId : "{}") + "/"
-                + (search != null ? search : "{}"),
-            "getHistoryList"
+                + REST_PATH + "::"
+                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
+                + "userId:" + (userId != null ? userId : "{}") + "/"
+                + "search:" + (search != null ? search : "{}"),
+            "getHistoryListStandardSearch"
         );
-
-		/*ApiResponse<RoomHistoryInfoListResponse> apiResponse = this.historyDataRepository.searchRoomHistoryPageList(
-			workspaceId,
-			userId,
-			search,
-			pageable.ofSortBy()
-		);*/
-
-        //return ResponseEntity.ok(apiResponse);
 
         RoomHistoryInfoListResponse responseData = historyService.getHistoryListStandardSearch(
             workspaceId, userId, search, pageable.ofSortBy());
@@ -155,10 +122,11 @@ public class HistoryRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH +
-                (roomRequest != null ? roomRequest.toString() : "{}") + "\n"
-                + (sessionId != null ? sessionId : "{}") + "\n"
-                + "COMPANY CODE: " + companyCode,
+            "REST API: POST "
+                + REST_PATH + "::"
+                + (roomRequest.toString() != null ? roomRequest.toString() : "{}") + "/"
+                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "companyCode:" + companyCode,
             "redialRoomRequest"
         );
 
@@ -183,87 +151,6 @@ public class HistoryRestController {
         );
 
         return ResponseEntity.ok(responseData);
-
-        // check user is valid
-        //DataProcess<UserInfoResponse> userInfo = this.historyDataRepository.checkUserValidation(roomRequest.getLeaderId());
-
-        // check user license type using user id
-        /*DataProcess<LicenseItem> licenseItem = this.historyDataRepository.checkLicenseValidation(roomRequest.getWorkspaceId(), roomRequest.getLeaderId());
-        if (licenseItem.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-            ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-                    new RoomResponse(),
-                    licenseItem.getCode(),
-                    licenseItem.getMessage()
-            );
-            return ResponseEntity.ok(apiResponse);
-        }*/
-
-		/*// change license item using company code if not virnect
-		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
-		if (licenseItem == null) {
-			ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-				new RoomResponse(),
-				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
-			);
-			return ResponseEntity.ok(apiResponse);
-		}
-        *//*if (companyCode != CompanyConstants.COMPANY_VIRNECT) {
-            LicenseItem companyLicenseItem = LicenseItem.getLicenseItem(companyCode);
-            if (companyLicenseItem == null) {
-                ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-                        new RoomResponse(),
-                        ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
-                );
-                return ResponseEntity.ok(apiResponse);
-            } else {
-                licenseItem.setData(companyLicenseItem);
-            }
-        }*//*
-
-		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
-			.equals(SessionType.PUBLIC)) {
-			// check room request member count is over
-			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-					new RoomResponse(),
-					ErrorCode.ERR_ROOM_MEMBER_IS_OVER
-				);
-				return ResponseEntity.ok(apiResponse);
-			}
-			// generate session id and token
-			JsonObject sessionJson = serviceSessionManager.generateSession();
-			JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-			// create room
-			ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
-				sessionId,
-				roomRequest,
-				licenseItem,
-				roomRequest.getLeaderId(),
-				sessionJson.toString(),
-				tokenResult.toString()
-			);
-
-			return ResponseEntity.ok(apiResponse);
-		} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
-			//open session is not need to check member count.
-			// generate session id and token
-			JsonObject sessionJson = serviceSessionManager.generateSession();
-			JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-			// create room
-			ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
-				sessionId, roomRequest, licenseItem, roomRequest.getLeaderId(), sessionJson.toString(),
-				tokenResult.toString()
-			);
-			return ResponseEntity.ok(apiResponse);
-		} else {
-			ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-				new RoomResponse(),
-				ErrorCode.ERR_ROOM_CREATE_FAIL
-			);
-			return ResponseEntity.ok(apiResponse);
-		}*/
     }
 
     @ApiOperation(value = "Redial a History Remote Room with Company Code", notes = "Redial Remote Session")
@@ -278,15 +165,15 @@ public class HistoryRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH +
-                (roomRequest != null ? roomRequest.toString() : "{}") + "\n"
-                + (sessionId != null ? sessionId : "{}") + "\n"
-                + ("COMPANY CODE: " + companyCode) + "\n"
-                + ("REQ USERID: " + userId) + "\n"
-                + ("REQ HEADER: " + client),
-            "redialRoomRequestHandler"
+            "REST API: POST "
+                + REST_PATH + "::"
+                + (roomRequest.toString() != null ? roomRequest.toString() : "{}") + "/"
+                + "client:" + (client != null ? client : "{}") + "/"
+                + "userId:" + (userId != null ? userId : "{}") + "/"
+                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "companyCode:" + companyCode,
+            "redialRoomRequestByUserId"
         );
-
         // check room request handler
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message ->
@@ -310,65 +197,6 @@ public class HistoryRestController {
         );
 
         return ResponseEntity.ok(responseData);
-
-		/*LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
-		if (licenseItem == null) {
-			ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-				new RoomResponse(),
-				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
-			);
-			return ResponseEntity.ok(apiResponse);
-		}
-
-		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
-			.equals(SessionType.PUBLIC)) {
-			// check room request member count is over
-			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-					new RoomResponse(),
-					ErrorCode.ERR_ROOM_MEMBER_IS_OVER
-				);
-				return ResponseEntity.ok(apiResponse);
-			}
-			// generate session id and token
-			JsonObject sessionJson = serviceSessionManager.generateSession();
-			JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-			// create room
-			ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
-				sessionId,
-				roomRequest,
-				licenseItem,
-				userId,
-				sessionJson.toString(),
-				tokenResult.toString()
-			);
-
-			return ResponseEntity.ok(apiResponse);
-		} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
-			//open session is not need to check member count.
-			// generate session id and token
-			JsonObject sessionJson = serviceSessionManager.generateSession();
-			JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-			// create room
-			ApiResponse<RoomResponse> apiResponse = this.sessionDataRepository.generateRoom(
-				sessionId,
-				roomRequest,
-				licenseItem,
-				userId,
-				sessionJson.toString(),
-				tokenResult.toString()
-			);
-
-			return ResponseEntity.ok(apiResponse);
-		} else {
-			ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-				new RoomResponse(),
-				ErrorCode.ERR_ROOM_CREATE_FAIL
-			);
-			return ResponseEntity.ok(apiResponse);
-		}*/
     }
 
     @ApiOperation(value = "Load Room History Detail Information", notes = "특정 원격협업 방 최근 기록 상세 정보를 조회하는 API 입니다.")
@@ -379,9 +207,10 @@ public class HistoryRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: DELETE " + REST_PATH +
-                (workspaceId != null ? workspaceId : "{}") +
-                (sessionId != null ? sessionId : "{}"),
+            "REST API: GET "
+                + REST_PATH + "/"
+                + (workspaceId != null ? workspaceId : "{}") + "/"
+                + (sessionId != null ? sessionId : "{}"),
             "getHistoryById"
         );
 
@@ -393,10 +222,6 @@ public class HistoryRestController {
         ApiResponse<RoomHistoryDetailInfoResponse> responseData = historyService.getHistoryBySessionId(workspaceId, sessionId);
 
         return ResponseEntity.ok(responseData);
-
-		/*return ResponseEntity.ok(
-			this.historyDataRepository.loadRoomHistoryDetail(workspaceId, sessionId)
-		);*/
     }
 
     @ApiOperation(value = "Delete all Room Histories", notes = "모든 최근 기록 리스트를 삭제하는 API 입니다.")
@@ -407,9 +232,10 @@ public class HistoryRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: DELETE " + REST_PATH +
-                (workspaceId != null ? workspaceId : "{}") +
-                (userId != null ? userId : "{}"),
+            "REST API: DELETE "
+                + REST_PATH + "/"
+                + (workspaceId != null ? workspaceId : "{}") + "/"
+                + (userId != null ? userId : "{}"),
             "deleteHistory"
         );
         if ((workspaceId == null || workspaceId.isEmpty()) ||
@@ -420,10 +246,6 @@ public class HistoryRestController {
         ApiResponse<ResultResponse> responseData = historyService.deleteHistory(workspaceId, userId);
 
         return ResponseEntity.ok(responseData);
-
-		/*return ResponseEntity.ok(
-			this.historyDataRepository.removeRoomHistory(workspaceId, userId)
-		);*/
     }
 
     @ApiOperation(value = "Delete a specific room", notes = "특정 최근기록을 삭제하는 API 입니다.")
@@ -435,9 +257,10 @@ public class HistoryRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: DELETE " + REST_PATH +
-                (workspaceId != null ? workspaceId : "{}") +
-                roomHistoryDeleteRequest.toString(),
+            "REST API: DELETE "
+                + REST_PATH + "/"
+                + (workspaceId != null ? workspaceId : "{}") + "::"
+                + (roomHistoryDeleteRequest.toString() != null ? roomHistoryDeleteRequest.toString() : "{}"),
             "deleteHistoryById"
         );
         if (result.hasErrors()) {
@@ -451,9 +274,5 @@ public class HistoryRestController {
         );
 
         return ResponseEntity.ok(responseData);
-
-		/*return ResponseEntity.ok(
-			this.historyDataRepository.removeRoomHistory(workspaceId, roomHistoryDeleteRequest)
-		);*/
     }
 }

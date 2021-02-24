@@ -33,7 +33,7 @@ public class ConfigRestController {
 
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: GET " + REST_PATH,
             "getRemoteServiceConfiguration"
         );
 
@@ -46,7 +46,7 @@ public class ConfigRestController {
 
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: GET " + REST_PATH,
             "getRemoteServiceServerVersion"
         );
 
@@ -59,7 +59,7 @@ public class ConfigRestController {
 
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: GET " + REST_PATH,
             "getRemoteServicePublicUrl"
         );
 
@@ -72,7 +72,7 @@ public class ConfigRestController {
 
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: GET " + REST_PATH,
             "getRemoteServicePublicUrl"
         );
 
@@ -85,7 +85,7 @@ public class ConfigRestController {
 
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: GET " + REST_PATH,
             "getRemoteServiceRecordingPath"
         );
 
@@ -98,7 +98,7 @@ public class ConfigRestController {
 
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: GET " + REST_PATH,
             "getRemoteServiceCdrEnabled"
         );
 

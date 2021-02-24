@@ -48,4 +48,16 @@ public class PushSendRequest {
             "  \"custom2\": \"string\"\n" +
             "}", required = true, position = 5)
     private Map<Object, Object> contents;
+
+    @Override
+    public String toString() {
+        return "PushSendRequest{" +
+            "service='" + service + '\'' +
+            ", workspaceId='" + workspaceId + '\'' +
+            ", userId='" + userId + '\'' +
+            ", targetUserIds=" + targetUserIds +
+            ", event='" + event + '\'' +
+            ", contents=" + contents +
+            '}';
+    }
 }

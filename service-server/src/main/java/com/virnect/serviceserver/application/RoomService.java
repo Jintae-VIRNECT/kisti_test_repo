@@ -200,8 +200,10 @@ public class RoomService {
 			);
 		}
 
-		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
-			.equals(SessionType.PUBLIC)) {
+		if (
+			roomRequest.getSessionType().equals(SessionType.PRIVATE)
+				|| roomRequest.getSessionType().equals(SessionType.PUBLIC))
+		{
 			// check room request member count is over
 			if (IsValidUserCapacity(roomRequest, licenseItem)) {
 				// generate session id and token

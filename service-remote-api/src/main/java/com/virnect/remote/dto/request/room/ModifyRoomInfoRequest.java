@@ -22,4 +22,12 @@ public class ModifyRoomInfoRequest {
     @ApiModelProperty(value = "To be changed Remote Session Description", position = 2, example = "Changed Description")
     private String description;
 
+    @Override
+    public String toString() {
+        return "ModifyRoomInfoRequest{" +
+            "uuid='" + uuid + '\'' +
+            ", title='" + title + '\'' +
+            ", description='" + description + '\'' +
+            '}';
+    }
 }

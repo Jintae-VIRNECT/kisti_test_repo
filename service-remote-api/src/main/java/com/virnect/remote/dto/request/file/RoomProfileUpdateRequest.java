@@ -19,4 +19,12 @@ public class RoomProfileUpdateRequest {
 
     @ApiModelProperty(value = "To be changed Remote Session Profile Image file",  dataType = "__file", hidden = true)
     private MultipartFile profile;
+
+    @Override
+    public String toString() {
+        return "RoomProfileUpdateRequest{" +
+            "uuid='" + uuid + '\'' +
+            ", profile=" + profile +
+            '}';
+    }
 }

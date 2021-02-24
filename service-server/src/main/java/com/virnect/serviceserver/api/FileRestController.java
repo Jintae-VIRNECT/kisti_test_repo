@@ -71,10 +71,11 @@ public class FileRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
-            "createCompanyRequestHandler"
+            "REST API: POST "
+                + REST_PATH + "::"
+                + (fileUploadRequest.toString() != null ? fileUploadRequest.toString() : "{}"),
+            "fileUploadRequestHandler"
         );
-
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message ->
                 LogMessage.formedError(
@@ -116,7 +117,9 @@ public class FileRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: POST "
+                + REST_PATH + "::"
+                + (recordFileUploadRequest.toString() != null ? recordFileUploadRequest.toString() : "{}"),
             "recordFileUploadRequestHandler"
         );
 
@@ -160,10 +163,13 @@ public class FileRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: POST "
+                + REST_PATH + "/"
+                + (workspaceId != null ? workspaceId : "{}") + "/"
+                + (sessionId != null ? sessionId : "{}") + "::"
+                + (roomProfileUpdateRequest.toString() != null ? roomProfileUpdateRequest.toString() : "{}"),
             "profileUploadRequestHandler"
         );
-
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message ->
                 LogMessage.formedError(
@@ -197,11 +203,13 @@ public class FileRestController {
         @PathVariable("workspaceId") String workspaceId,
         @PathVariable("sessionId") String sessionId
     ) {
-        log.info(
-            "REST API::DELETE::#profileDeleteRequestHandler::{}/{}/{}/profile",
-            REST_PATH,
-            workspaceId != null ? workspaceId : "{}",
-            sessionId != null ? sessionId : "{}"
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: DELETE "
+                + REST_PATH + "/"
+                + (workspaceId != null ? workspaceId : "{}") + "/"
+                + (sessionId != null ? sessionId : "{}"),
+            "profileDeleteRequestHandler"
         );
 
         ApiResponse<ResultResponse> responseData = fileService.deleteProfile(workspaceId, sessionId);
@@ -222,13 +230,14 @@ public class FileRestController {
         @RequestParam(name = "userId") String userId,
         @RequestParam(name = "objectName") String objectName
     ) {
-        log.info(
-            "REST API::GET::#fileDownloadUrlRequestHandler::{}/download/url/{}/{}",
-            REST_PATH,
-            workspaceId != null ? workspaceId : "{}",
-            sessionId != null ? sessionId : "{}"
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "/"
+                + (workspaceId != null ? workspaceId : "{}") + "/"
+                + (sessionId != null ? sessionId : "{}"),
+            "fileDownloadUrlRequestHandler"
         );
-
         ApiResponse<FilePreSignedResponse> responseData;
         if (remoteStorageProperties.isEnabled()) {
             if (userId == null && objectName == null) {
@@ -255,11 +264,13 @@ public class FileRestController {
         @RequestParam(name = "userId") String userId,
         @RequestParam(name = "objectName") String objectName
     ) {
-        log.info(
-            "REST API::GET::#recordFileDownloadUrlRequestHandler::{}/download/url/{}/{}",
-            REST_PATH,
-            workspaceId != null ? workspaceId : "{}",
-            sessionId != null ? sessionId : "{}"
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "/"
+                + (workspaceId != null ? workspaceId : "{}") + "/"
+                + (sessionId != null ? sessionId : "{}"),
+            "recordFileDownloadUrlRequestHandler"
         );
 
         ApiResponse<FilePreSignedResponse> responseData;
@@ -290,13 +301,16 @@ public class FileRestController {
         @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
         @ApiIgnore PageRequest pageRequest
     ) {
-        log.info("REST API::GET::#getFileList::{}/{}/{}/{}",
-            REST_PATH,
-            workspaceId != null ? workspaceId : "{}",
-            sessionId != null ? sessionId : "{}",
-            userId != null ? userId : "{}"
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "::"
+                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
+                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "userId:" + (userId != null ? sessionId : "{}") + "/"
+                + "deleted:" + deleted,
+            "recordFileDownloadUrlRequestHandler"
         );
-
         ApiResponse<FileInfoListResponse> responseData;
 
         if (remoteStorageProperties.isEnabled()) {
@@ -322,11 +336,15 @@ public class FileRestController {
         @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
         @ApiIgnore PageRequest pageRequest
     ) {
-        log.info("REST API::GET::#getDetailFileList::{}/{}/{}/{}",
-            REST_PATH,
-            workspaceId != null ? workspaceId : "{}",
-            sessionId != null ? sessionId : "{}",
-            userId != null ? userId : "{}"
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "::"
+                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
+                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "userId:" + (userId != null ? sessionId : "{}") + "/"
+                + "deleted:" + deleted,
+            "getDetailFileList"
         );
 
         ApiResponse<FileDetailInfoListResponse> responseData;
@@ -347,14 +365,16 @@ public class FileRestController {
         @RequestParam("userId") String userId,
         @RequestParam("objectName") String objectName
     ) {
-        log.info(
-            "REST API::GET::#deleteFileRequestHandler::{}/{}/{}/{}",
-            REST_PATH,
-            workspaceId != null ? workspaceId : "{}",
-            sessionId != null ? sessionId : "{}",
-            objectName != null ? objectName : "{}"
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: DELETE "
+                + REST_PATH + "::"
+                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
+                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "userId:" + (userId != null ? sessionId : "{}") + "/"
+                + "objectName:" + (objectName != null ? objectName : "{}"),
+            "deleteFileRequestHandler"
         );
-
         ApiResponse<FileDeleteResponse> responseData;
 
         if (remoteStorageProperties.isEnabled()) {
@@ -377,12 +397,13 @@ public class FileRestController {
     public ResponseEntity<ApiResponse<String>> fileDownloadUrlRequestHandler(
         @RequestParam(name = "objectName") String objectName
     ) {
-        log.info(
-            "REST API::GET::#fileDownloadUrlRequestHandler::{}/guide/{}",
-            REST_PATH,
-            objectName != null ? objectName : "{}"
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "::"
+                + "objectName:" + (objectName != null ? objectName : "{}"),
+            "fileDownloadUrlRequestHandler"
         );
-
         ApiResponse<String> responseData;
 
         if (remoteStorageProperties.isEnabled()) {
