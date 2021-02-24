@@ -6,7 +6,6 @@ export const VIEW = {
   STREAM: 'stream',
   DRAWING: 'drawing',
   AR: 'ar',
-  SCREEN: 'screen',
 }
 
 export const ACTION = {
@@ -17,5 +16,4 @@ export const ACTION = {
   AR_POINTING: 'arPointing',
   AR_AREA: 'arArea',
   AR_DRAWING: 'arDrawing',
-  SCREEN_SHARING: 'screenSharing',
 }
