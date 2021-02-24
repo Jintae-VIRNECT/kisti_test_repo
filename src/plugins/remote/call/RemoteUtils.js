@@ -354,6 +354,10 @@ export const addSessionEventListener = session => {
       if (data.status === CAMERA_STATUS.CAMERA_ON) {
         params.hasVideo = true
       }
+      if (data.status === CAMERA_STATUS.CAMERA_NONE) {
+        params.hasCamera = false
+        params.hasVideo = false
+      }
       Store.commit('updateParticipant', params)
     }
   })

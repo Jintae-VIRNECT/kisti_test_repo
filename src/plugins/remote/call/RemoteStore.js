@@ -243,10 +243,11 @@ const mutations = {
     if (state.participants[idx].me === true) {
       setTimeout(() => {
         state.initing = false
-        if (
-          param['hasVideo'] === true &&
-          (!state.mainView || !state.mainView.id)
-        ) {
+
+        const hasVideo = param['hasVideo'] === true
+        const noMainView = !state.mainView || !state.mainView.id
+
+        if (hasVideo && noMainView) {
           state.mainView = state.participants[idx]
         }
       }, 100)
