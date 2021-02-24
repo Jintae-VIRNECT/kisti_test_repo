@@ -35,6 +35,10 @@ const _ = {
   maxZoomLevel: 1,
   openRoom: false,
 
+  configs: null,
+  options: null,
+
+  tempPublisher: null,
   /**
    * join session
    * @param {Object} configs {coturn, wss, token}
@@ -44,6 +48,8 @@ const _ = {
     try {
       _.account = Store.getters['account']
       _.openRoom = open
+      _.configs = configs
+      _.options = options
 
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -115,12 +121,18 @@ const _ = {
         roleType: role,
       })
       _.account.roleType = role
-      if (options !== false) {
+      console.log('options::', options)
+
+      //더미 옵션 넣기.
+      // if (options !== false) {
+      if (true) {
         const settingInfo = Store.getters['settingInfo']
 
         const publishOptions = {
-          audioSource: options.audioSource,
-          videoSource: options.videoSource,
+          // audioSource: options.audioSource,
+          // videoSource: options.videoSource,
+          audioSource: options ? options.audioSource : false,
+          videoSource: options ? options.videoSource : false,
           publishAudio: configs.audioRestrictedMode ? false : settingInfo.micOn,
           publishVideo: configs.videoRestrictedMode
             ? false
@@ -158,7 +170,8 @@ const _ = {
           logger('room', 'publish success')
           debug('publisher stream :: ', _.publisher.stream)
           const mediaStream = _.publisher.stream.mediaStream
-          Store.commit('updateParticipant', {
+
+          const participantInfo = {
             connectionId: _.publisher.stream.connection.connectionId,
             stream: mediaStream,
             hasVideo: _.publisher.stream.hasVideo,
@@ -173,7 +186,9 @@ const _ = {
                 ? CAMERA_STATUS.CAMERA_ON
                 : CAMERA_STATUS.CAMERA_OFF
               : CAMERA_STATUS.CAMERA_NONE,
-          })
+          }
+
+          Store.commit('updateParticipant', participantInfo)
           if (_.publisher.stream.hasVideo) {
             const track = mediaStream.getVideoTracks()[0]
             const settings = track.getSettings()
@@ -237,7 +252,7 @@ const _ = {
       }
       return true
     } catch (err) {
-      console.err(err)
+      console.error(err)
       throw err
     }
   },
@@ -470,6 +485,9 @@ const _ = {
     target = null,
     publish = true,
   ) => {
+    console.log('sendCamera')
+    console.log('sendCameraStatus', status)
+    console.trace()
     if (!_.publisher) return
     // if (!_.publisher.stream.hasVideo) return
     if (
@@ -709,12 +727,149 @@ const _ = {
    * @param {Boolean} play 보존 되어있는 스트림의 재생 처리 여부
    */
   restoreMyStream(play) {
-    const videoTrack = Store.getters['myTempStream'].getVideoTracks()[0]
-    if (play) {
-      videoTrack.enabled = true
+    const myTempStream = Store.getters['myTempStream']
+
+    if (myTempStream) {
+      const videoTrack = myTempStream.getVideoTracks()[0]
+      if (play) {
+        videoTrack.enabled = true
+      }
+      _.replaceTrack(videoTrack)
+    } else {
+      _.replaceTrack(_.getDummyVideTrack())
     }
-    _.replaceTrack(videoTrack)
+
     Store.commit('setMyTempStream', null)
+  },
+
+  getDummyVideTrack() {
+    let canvas = Object.assign(document.createElement('canvas'), {
+      width: 640,
+      height: 480,
+    })
+    canvas.getContext('2d').fillRect(0, 0, 640, 480)
+    let stream = canvas.captureStream()
+    return Object.assign(stream.getVideoTracks()[0], { enabled: false })
+  },
+  async rePublish(videoTrack) {
+    try {
+      let videoSource = false
+      if (videoTrack) {
+        videoSource = videoTrack
+      } else {
+        videoSource = _.options ? _.options.videoSource : false
+      }
+
+      const settingInfo = Store.getters['settingInfo']
+
+      const publishOptions = {
+        audioSource: _.options ? _.options.audioSource : false,
+        videoSource: videoSource,
+        publishAudio: _.configs.audioRestrictedMode ? false : settingInfo.micOn,
+        publishVideo: videoTrack ? true : false,
+        resolution: settingInfo.quality,
+        // resolution: '1920x1080', // FHD
+        // resolution: '3840x2160', // 4K
+        frameRate: 30,
+        insertMode: 'PREPEND',
+        mirror: false,
+      }
+      debug('call::publish::', publishOptions)
+
+      _.tempPublisher = OV.initPublisher('', publishOptions)
+      _.tempPublisher.onIceStateChanged(state => {
+        if (['failed', 'disconnected', 'closed'].includes(state)) {
+          Store.commit('updateParticipant', {
+            connectionId: _.tempPublisher.stream.connection.connectionId,
+            status: 'disconnected',
+          })
+        } else if (['connected', 'completed'].includes(state)) {
+          Store.commit('updateParticipant', {
+            connectionId: _.tempPublisher.stream.connection.connectionId,
+            status: 'good',
+          })
+        } else {
+          Store.commit('updateParticipant', {
+            connectionId: _.tempPublisher.stream.connection.connectionId,
+            status: 'normal',
+          })
+        }
+        logger('ice state change', state)
+      })
+      _.tempPublisher.on('streamCreated', () => {
+        logger('room', 'publish success')
+        debug('publisher stream :: ', _.tempPublisher.stream)
+        const mediaStream = _.tempPublisher.stream.mediaStream
+
+        const participantInfo = {
+          connectionId: _.tempPublisher.stream.connection.connectionId,
+          stream: mediaStream,
+          hasVideo: _.tempPublisher.stream.hasVideo,
+          hasCamera: _.tempPublisher.stream.hasVideo,
+          hasAudio: _.tempPublisher.stream.hasAudio,
+          video: _.tempPublisher.stream.videoActive, // settingInfo.videoOn,
+          audio: _.tempPublisher.stream.audioActive,
+          cameraStatus: _.tempPublisher.stream.hasVideo
+            ? _.configs.videoRestrictedMode
+              ? CAMERA_STATUS.CAMERA_OFF
+              : _.tempPublisher.stream.videoActive
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_OFF
+            : CAMERA_STATUS.CAMERA_NONE,
+        }
+
+        Store.commit('updateParticipant', participantInfo)
+        if (_.tempPublisher.stream.hasVideo) {
+          const track = mediaStream.getVideoTracks()[0]
+          const settings = track.getSettings()
+          const capability = track.getCapabilities()
+          logger('call', `resolution::${settings.width}X${settings.height}`)
+          debug('call::setting::', settings)
+          debug('call::capability::', capability)
+          if ('zoom' in capability) {
+            track.applyConstraints({
+              advanced: [{ zoom: capability['zoom'].min }],
+            })
+            _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
+            _.minZoomLevel = parseInt(capability.zoom.min)
+          }
+
+          _.sendResolution({
+            width: settings.width,
+            height: settings.height,
+            orientation: '',
+          })
+        } else if (_.openRoom) {
+          checkInput({ video: true, audio: false }).then(hasCamera => {
+            const params = {
+              connectionId: _.tempPublisher.stream.connection.connectionId,
+              hasAudio: true,
+            }
+            if (!hasCamera) {
+              params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
+              params.hasCamera = false
+              // _.changeProperty(true)
+            } else {
+              params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
+              params.hasCamera = true
+            }
+            Store.commit('updateParticipant', params)
+            // _.sendCamera(
+            //   !hasCamera ? CAMERA_STATUS.CAMERA_NONE : CAMERA_STATUS.CAMERA_OFF,
+            // )
+          })
+        }
+      })
+      await _.session.unpublish(_.publisher)
+
+      _.publisher = _.tempPublisher
+      _.session.publish(_.publisher)
+
+      return true
+    } catch (err) {
+      console.error(err)
+      throw err
+    }
   },
 }
 
