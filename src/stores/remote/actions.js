@@ -40,8 +40,6 @@ export default {
       commit(types.CALL_ACTION_SET, ACTION.DRAWING_LINE)
     } else if (state === VIEW.AR) {
       commit(types.CALL_ACTION_SET, ACTION.AR_POINTING)
-    } else if (state === VIEW.SCREEN) {
-      commit(types.CALL_ACTION_SET, ACTION.SCREEN_SHARING)
     }
     commit(types.CALL_MODE_SET, state)
   },
