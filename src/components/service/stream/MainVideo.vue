@@ -4,7 +4,10 @@
       class="main-video__box"
       @mouseenter="hoverTools = true"
       @mouseleave="hoverTools = false"
-      :class="{ shutter: showShutter, hidden: !loaded || emptyStream }"
+      :class="{
+        shutter: showShutter,
+        hidden: !loaded || emptyStream,
+      }"
     >
       <!-- 메인 비디오 뷰 -->
       <video
@@ -54,7 +57,7 @@
           class="main-video__pointing"
         ></pointing>
         <!-- 디바이스 컨트롤 뷰 -->
-        <template v-if="allowTools">
+        <template v-if="allowTools && !screenShare">
           <transition name="opacity">
             <video-tools v-if="hoverTools"></video-tools>
           </transition>
@@ -62,12 +65,15 @@
         <transition name="opacity">
           <fullscreen
             :hide.sync="hideFullBtn"
-            v-show="!hideFullBtn"
+            v-show="!hideFullBtn && !screenShare"
           ></fullscreen>
         </transition>
       </template>
     </div>
-    <div class="main-video__empty" v-if="!loaded">
+    <div
+      class="main-video__empty"
+      v-if="!loaded || cameraStatus.state === 'none'"
+    >
       <transition name="opacity">
         <!-- 영상 연결중 -->
         <!-- <div class="main-video__empty-inner" v-if="resolutions.length > 0">
@@ -162,6 +168,8 @@ export default {
       serverTime: 0,
       serverStart: 0,
       hideFullBtn: false,
+
+      screenShare: false,
     }
   },
   computed: {
@@ -205,6 +213,11 @@ export default {
             state: 'background',
             id: this.mainView.id,
           }
+        } else if (this.mainView.cameraStatus === CAMERA.CAMERA_NONE) {
+          return {
+            state: 'none',
+            id: this.mainView.id,
+          }
         }
         return {
           state: 'on',
@@ -232,15 +245,11 @@ export default {
       }
     },
     emptyStream() {
-      if (this.view === VIEW.SCREEN) {
-        return false
-      }
+      const validStatus = this.cameraStatus !== -1
+      const cameraOff = this.cameraStatus.state === 'off'
+      const cameraBackground = this.cameraStatus.state === 'background'
 
-      return (
-        this.cameraStatus !== -1 &&
-        ((this.loaded && this.cameraStatus.state === 'off') ||
-          this.cameraStatus.state === 'background')
-      )
+      return validStatus && ((this.loaded && cameraOff) || cameraBackground)
     },
   },
   watch: {
@@ -300,9 +309,6 @@ export default {
       if (status === 'STOP') {
         this.closeServerTimer()
       }
-    },
-    view() {
-      this.hideFullBtn = this.view === VIEW.STREAM ? false : true
     },
   },
   methods: {
@@ -430,6 +436,9 @@ export default {
         this.optimizeVideoSize()
       }, 500)
     },
+    toggleScreenShare() {
+      this.screenShare = !this.screenShare
+    },
   },
 
   /* Lifecycles */
@@ -437,12 +446,14 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('showServerTimer', this.showServerTimer)
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
+    this.$eventBus.$off('toggleScreenShare', this.toggleScreenShare)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('showServerTimer', this.showServerTimer)
     this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
+    this.$eventBus.$on('toggleScreenShare', this.toggleScreenShare)
     window.addEventListener('resize', this.nextOptimize)
   },
 }
