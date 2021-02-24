@@ -35,7 +35,7 @@
           </template>
 
           <template v-else-if="menus[tabIdx].key === 'record'">
-            <set-record v-if="!isTablet"></set-record>
+            <set-record v-if="!isTablet && useLocalRecording"></set-record>
             <set-server-record v-if="useRecording"></set-server-record>
           </template>
           <template v-else-if="menus[tabIdx].key === 'language'">
@@ -82,44 +82,33 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['useTranslate', 'useRecording', 'restrictedMode']),
+    ...mapGetters([
+      'useTranslate',
+      'useRecording',
+      'useLocalRecording',
+      'restrictedMode',
+    ]),
     menus() {
-      let menu
-      if (this.isTablet && !this.useRecording) {
-        menu = [
-          {
-            key: 'video',
-            text: this.$t('workspace.setting_video'),
-          },
-          {
-            key: 'audio',
-            text: this.$t('workspace.setting_audio'),
-          },
-          {
-            key: 'language',
-            text: this.$t('workspace.setting_language'),
-          },
-        ]
-      } else {
-        menu = [
-          {
-            key: 'video',
-            text: this.$t('workspace.setting_video'),
-          },
-          {
-            key: 'audio',
-            text: this.$t('workspace.setting_audio'),
-          },
-          {
-            key: 'record',
-            text: this.$t('workspace.setting_record'),
-          },
-          {
-            key: 'language',
-            text: this.$t('workspace.setting_language'),
-          },
-        ]
+      let menu = [
+        {
+          key: 'video',
+          text: this.$t('workspace.setting_video'),
+        },
+        {
+          key: 'audio',
+          text: this.$t('workspace.setting_audio'),
+        },
+      ]
+      if (!this.isTablet && (this.useLocalRecording || this.useRecording)) {
+        menu.push({
+          key: 'record',
+          text: this.$t('workspace.setting_record'),
+        })
       }
+      menu.push({
+        key: 'language',
+        text: this.$t('workspace.setting_language'),
+      })
       if (this.useTranslate) {
         menu.push({
           key: 'translate',

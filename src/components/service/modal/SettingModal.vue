@@ -67,21 +67,16 @@ import toastMixin from 'mixins/toast'
 import { mapGetters, mapActions } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 
-import SetLocalRecord from './partials/ServiceSetLocalRecord'
-import SetPointing from './partials/ServiceSetPointing'
-import SetServerRecord from './partials/ServiceSetServerRecord'
-import SetTranslate from './partials/ServiceSetTranslate'
-
 export default {
   name: 'SettingModal',
   mixins: [toastMixin],
   components: {
     Modal,
 
-    SetLocalRecord,
-    SetPointing,
-    SetServerRecord,
-    SetTranslate,
+    SetPointing: () => import('./partials/ServiceSetPointing'),
+    SetLocalRecord: () => import('./partials/ServiceSetLocalRecord'),
+    SetServerRecord: () => import('./partials/ServiceSetServerRecord'),
+    SetTranslate: () => import('./partials/ServiceSetTranslate'),
   },
   data() {
     return {
@@ -95,6 +90,7 @@ export default {
     ...mapGetters([
       'modalSetting',
       'useRecording',
+      'useLocalRecording',
       'useTranslate',
       'allowLocalRecord',
     ]),
@@ -103,7 +99,9 @@ export default {
       return this.account.roleType === ROLE.LEADER
     },
     isLocalRecordEnable() {
-      if (!this.isLeader && this.isSafari) {
+      if (!this.useLocalRecording) {
+        return false
+      } else if (!this.isLeader && this.isSafari) {
         return false
       } else if (!this.isLeader && !this.allowLocalRecord) {
         return false

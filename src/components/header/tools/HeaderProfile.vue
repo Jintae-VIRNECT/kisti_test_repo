@@ -29,7 +29,7 @@
           {{ $t('common.dashboard') }}
         </button>
       </div>
-      <div class="popover-profile__link" v-if="!isSafari">
+      <div class="popover-profile__link" v-if="useLocalRecording && !isSafari">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
       </div>
       <div class="popover-profile__link">
@@ -53,7 +53,7 @@ export default {
     Profile,
   },
   computed: {
-    ...mapGetters(['account', 'useStorage']),
+    ...mapGetters(['account', 'useStorage', 'useLocalRecording']),
     urlLink() {
       return URLS['workstation']
     },

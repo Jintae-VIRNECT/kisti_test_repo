@@ -29,6 +29,7 @@ const companyInfo = {
   sessionType: 'PRIVATE', // 오픈방 유무 (PRIVATE, OPEN, PUBLIC)
   licenseName: '',
   languageCodes: [],
+  localRecording: false,
   audioRestrictedMode: false,
   videoRestrictedMode: false,
 }
@@ -123,6 +124,7 @@ const getters = {
     return state.companyInfo.sessionType === 'OPEN'
   },
   languageCodes: state => state.companyInfo.languageCodes,
+  useLocalRecording: state => state.companyInfo.localRecording,
   useRecording: state => state.companyInfo.recording,
   useStorage: state => state.companyInfo.storage,
   restrictedMode: state => {

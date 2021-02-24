@@ -24,7 +24,10 @@
         v-if="!onpremise && showCookie"
         :visible.sync="showCookie"
       ></cookie-policy>
-      <record-list :visible.sync="showList"></record-list>
+      <record-list
+        v-if="useLocalRecording"
+        :visible.sync="showList"
+      ></record-list>
       <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
@@ -43,7 +46,7 @@ import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
 
@@ -91,6 +94,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['useLocalRecording']),
     onpremise() {
       return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
@@ -235,6 +239,7 @@ export default {
         sttSync: res.sttSync,
         sttStreaming: res.sttStreaming,
         recording: res.recording,
+        localRecording: res.localRecording,
         storage: res.storage,
         sessionType: res.sessionType,
         languageCodes,

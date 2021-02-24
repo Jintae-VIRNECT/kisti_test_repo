@@ -57,7 +57,7 @@
     </div>
     <reconnect-modal :visible.sync="connectVisible"></reconnect-modal>
     <setting-modal></setting-modal>
-    <record-list></record-list>
+    <record-list v-if="useLocalRecording"></record-list>
   </section>
 </template>
 
@@ -120,6 +120,7 @@ export default {
       'myInfo',
       'video',
       'restrictedRoom',
+      'useLocalRecording',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER

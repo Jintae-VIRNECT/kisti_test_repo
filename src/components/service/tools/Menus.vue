@@ -8,7 +8,7 @@
           :disabled="!hasMainView"
         ></server-record>
       </template>
-      <template v-if="!isSafari">
+      <template v-if="!isSafari && useLocalRecording">
         <local-record :disabled="!hasMainView"></local-record>
         <local-record-list></local-record-list>
       </template>
@@ -43,7 +43,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'useRecording', 'useTranslate']),
+    ...mapGetters([
+      'mainView',
+      'useRecording',
+      'useLocalRecording',
+      'useTranslate',
+    ]),
     hasMainView() {
       return this.mainView && this.mainView.id
     },
