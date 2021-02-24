@@ -446,14 +446,14 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('showServerTimer', this.showServerTimer)
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
-    this.$eventBus.$off('toggleScreenShare', this.toggleScreenShare)
+    this.$eventBus.$off('video:share', this.toggleScreenShare)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('showServerTimer', this.showServerTimer)
     this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
-    this.$eventBus.$on('toggleScreenShare', this.toggleScreenShare)
+    this.$eventBus.$on('video:share', this.toggleScreenShare)
     window.addEventListener('resize', this.nextOptimize)
   },
 }
