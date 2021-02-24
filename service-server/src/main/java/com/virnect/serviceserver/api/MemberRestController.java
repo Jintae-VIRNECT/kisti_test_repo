@@ -142,7 +142,7 @@ public class MemberRestController {
 
     @ApiOperation(value = "Member Account Withdrawal", notes = "")
     @DeleteMapping(value = "members/{userId}")
-    public ResponseEntity<ApiResponse<MemberSecessionResponse>> deleteMembersBySession(
+    public ResponseEntity<ApiResponse<MemberSecessionResponse>> deleteMembersByUserId(
         @PathVariable(name = "userId") String userId
     ) {
         LogMessage.formedInfo(
@@ -150,7 +150,7 @@ public class MemberRestController {
             "REST API: DELETE "
                 + REST_PATH + "/"
                 + (userId != null ? userId : "{}"),
-            "deleteMembersBySession"
+            "deleteMembersByUserId"
         );
         MemberSecessionResponse responseData = memberService.deleteMembersBySession(
             userId

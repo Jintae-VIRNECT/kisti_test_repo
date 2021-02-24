@@ -134,7 +134,7 @@ public class SessionRestController {
      */
     @ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "Generate Remote Session")
     @PostMapping(value = "room/{userId}")
-    public ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandler(
+    public ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandlerByUserId(
         @RequestHeader(name = "client", required = false) String client,
         @PathVariable(name = "userId") String userId,
         @RequestBody @Valid RoomRequest roomRequest,
@@ -149,7 +149,7 @@ public class SessionRestController {
                 + "client:" + (client != null ? client : "{}") + "/"
                 + "companyCode:" + companyCode + "/"
                 + (roomRequest.toString() != null ? roomRequest.toString() : "{}"),
-            "createRoomRequestHandler"
+            "createRoomRequestHandlerByUserId"
         );
 
         // check room request handler

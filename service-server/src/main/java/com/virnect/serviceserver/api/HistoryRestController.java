@@ -201,7 +201,7 @@ public class HistoryRestController {
 
     @ApiOperation(value = "Load Room History Detail Information", notes = "특정 원격협업 방 최근 기록 상세 정보를 조회하는 API 입니다.")
     @GetMapping(value = "history/{workspaceId}/{sessionId}")
-    public ResponseEntity<ApiResponse<RoomHistoryDetailInfoResponse>> getHistoryById(
+    public ResponseEntity<ApiResponse<RoomHistoryDetailInfoResponse>> getHistoryByWorkspaceIdAndSessionId(
         @PathVariable("workspaceId") String workspaceId,
         @PathVariable("sessionId") String sessionId
     ) {
@@ -211,7 +211,7 @@ public class HistoryRestController {
                 + REST_PATH + "/"
                 + (workspaceId != null ? workspaceId : "{}") + "/"
                 + (sessionId != null ? sessionId : "{}"),
-            "getHistoryById"
+            "getHistoryByWorkspaceIdAndSessionId"
         );
 
         if ((workspaceId == null || workspaceId.isEmpty()) ||
@@ -226,7 +226,7 @@ public class HistoryRestController {
 
     @ApiOperation(value = "Delete all Room Histories", notes = "모든 최근 기록 리스트를 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{workspaceId}/{userId}")
-    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistory(
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryByWorkspaceIdAndUserId(
         @PathVariable("workspaceId") String workspaceId,
         @PathVariable("userId") String userId
     ) {
@@ -236,7 +236,7 @@ public class HistoryRestController {
                 + REST_PATH + "/"
                 + (workspaceId != null ? workspaceId : "{}") + "/"
                 + (userId != null ? userId : "{}"),
-            "deleteHistory"
+            "deleteHistoryByWorkspaceIdAndUserId"
         );
         if ((workspaceId == null || workspaceId.isEmpty()) ||
             (userId == null || userId.isEmpty())) {
@@ -250,7 +250,7 @@ public class HistoryRestController {
 
     @ApiOperation(value = "Delete a specific room", notes = "특정 최근기록을 삭제하는 API 입니다.")
     @DeleteMapping(value = "history/{workspaceId}")
-    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryById(
+    public ResponseEntity<ApiResponse<ResultResponse>> deleteHistoryByWorkspaceId(
         @PathVariable("workspaceId") String workspaceId,
         @RequestBody @Valid RoomHistoryDeleteRequest roomHistoryDeleteRequest,
         BindingResult result
@@ -261,7 +261,7 @@ public class HistoryRestController {
                 + REST_PATH + "/"
                 + (workspaceId != null ? workspaceId : "{}") + "::"
                 + (roomHistoryDeleteRequest.toString() != null ? roomHistoryDeleteRequest.toString() : "{}"),
-            "deleteHistoryById"
+            "deleteHistoryByWorkspaceId"
         );
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
