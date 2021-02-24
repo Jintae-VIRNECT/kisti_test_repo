@@ -224,7 +224,8 @@ export default {
         this.viewAction !== ACTION.STREAM_POINTING
       ) {
         if (
-          this.mainView.flash === FLASH.FLASH_NONE &&
+          (this.mainView.flash === FLASH.FLASH_NONE ||
+            this.mainView.flash === 'default') &&
           this.mainView.zoomMax === 1
         ) {
           return false
