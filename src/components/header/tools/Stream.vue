@@ -21,7 +21,6 @@ import Tooltip from 'Tooltip'
 import ToggleButton from 'ToggleButton'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { ROLE } from 'configs/remote.config'
-import { VIEW } from 'configs/view.config'
 export default {
   name: 'Stream',
   components: {
@@ -47,25 +46,14 @@ export default {
         return
       }
       let video = !this.video.isOn
-
       this.setDevices({
         video: {
           isOn: video,
         },
       })
-
-      if (this.view === VIEW.SCREEN) {
-        this.$call.sendCamera(
-          video ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
-          null,
-          false,
-        )
-      } else {
-        this.$call.sendCamera(
-          video ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
-        )
-      }
-
+      this.$call.sendCamera(
+        video ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
+      )
       this.$localStorage.setDevice('video', 'isOn', video)
     },
   },
