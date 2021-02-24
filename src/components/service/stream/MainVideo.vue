@@ -53,6 +53,8 @@
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
+        <!-- 화면 이동 -->
+        <moving v-if="actionMoving" class="main-video__moving"></moving>
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
@@ -133,6 +135,7 @@ import { VIEW, ACTION } from 'configs/view.config'
 import { CAMERA, FLASH } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
+import Moving from './StreamMoving'
 import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
@@ -142,6 +145,7 @@ export default {
   mixins: [shutterMixin, toastMixin],
   components: {
     Pointing,
+    Moving,
     VideoTools,
     Fullscreen,
   },
@@ -236,6 +240,9 @@ export default {
         ((this.loaded && this.cameraStatus.state === 'off') ||
           this.cameraStatus.state === 'background')
       )
+    },
+    actionMoving() {
+      return this.viewAction === ACTION.STREAM_MOVING && this.isLeader
     },
   },
   watch: {

@@ -11,6 +11,7 @@ export const VIEW = {
 export const ACTION = {
   STREAM_DEFAULT: 'default',
   STREAM_POINTING: 'pointing',
+  STREAM_MOVING: 'moving',
   DRAWING_LINE: 'line',
   DRAWING_TEXT: 'text',
   AR_POINTING: 'arPointing',
