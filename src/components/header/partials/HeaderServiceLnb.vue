@@ -147,7 +147,6 @@ export default {
           return
         }
         if (this.view === VIEW.DRAWING) {
-          //현재 view가 DRAWING 일때 다른 view를 선택하면 정말 이동할건지 확인 메시지
           if (this.shareFile && this.shareFile.id) {
             // TODO: MESSAGE
             this.confirmCancel(this.$t('service.toast_exit_drawing'), {
@@ -161,13 +160,6 @@ export default {
           }
         }
 
-        if (this.view === VIEW.SCREEN) {
-          this.toastDefault(
-            this.$t('화면 공유 중에는 다른 메뉴로 이동할 수 없습니다.​'),
-          )
-          return
-        }
-
         this.goTabConfirm(type)
       } // other user
       else {
@@ -175,20 +167,11 @@ export default {
           this.toastDefault(this.$t('service.toast_cannot_leave_ar'))
           return
         }
-        if (this.view === VIEW.SCREEN) {
-          this.toastDefault(
-            this.$t('화면 공유 중에는 다른 메뉴로 이동할 수 없습니다.​'),
-          )
-          return
-        }
 
         if (type === VIEW.STREAM) {
           this.setView(VIEW.STREAM)
         }
-        if (type === VIEW.SCREEN) {
-          await this.getScreenStream()
-          this.setView(VIEW.SCREEN)
-        }
+
         if (type === 'drawing') {
           if (this.shareFile && this.shareFile.id) {
             // this.drawingNotice = false
@@ -213,10 +196,6 @@ export default {
       }
       if (type === VIEW.DRAWING) {
         this.setView(VIEW.DRAWING)
-      }
-      if (type === VIEW.SCREEN) {
-        await this.getScreenStream()
-        this.setView(VIEW.SCREEN)
       }
       if (type === VIEW.AR) {
         if (this.viewForce === false) {
@@ -344,57 +323,12 @@ export default {
         }
       }
     },
-    async getScreenStream() {
-      //pc자체에서 나오는 소리도 오디오 트랙에 넣어서..? 믹싱해서 보내야할듯?
-
-      if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices['getDisplayMedia']
-      ) {
-        throw 'NotSupportDisplayError'
-      } else {
-        const size = this.settingInfo.quality.split('X')
-        const video = {
-          width: parseInt(size[0]),
-          height: parseInt(size[1]),
-        }
-        //@TODO: 스트림 못가지고오면 빠꾸
-        const displayStream = await navigator.mediaDevices.getDisplayMedia({
-          audio: true,
-          video: video,
-        })
-        displayStream.getVideoTracks()[0].onended = () => {
-          this.$call.restoreMyStream(this.myInfo.video)
-          this.setView(VIEW.STREAM)
-        }
-        this.$call.replaceTrack(
-          displayStream.getVideoTracks()[0],
-          this.mainView.stream,
-        )
-
-        this.$call.sendScreenSharing(true)
-      }
-      // this.addChat({
-      //   //TODO: 협업 공유 대상의 이름이 필요함.
-      //   name: '누구누구님',
-      //   status: 'screen-sharing',
-      //   type: 'system',
-      // })
-    },
   },
 
   /* Lifecycles */
   created() {
     this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
-    const onlyChromeWithPC = !this.isTablet && !this.isSafari
-    if (onlyChromeWithPC)
-      this.menus.push({
-        text: this.$t('화면 공유'),
-        key: VIEW.SCREEN,
-        icon: require('assets/image/call/gnb_ic_screen_share.svg'),
-        notice: false,
-      })
   },
 }
 </script>
