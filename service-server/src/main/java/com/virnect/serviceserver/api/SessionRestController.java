@@ -25,9 +25,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
+import com.virnect.remote.application.FileService;
+import com.virnect.remote.application.SessionService;
 import com.virnect.remote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.application.RoomService;
-import com.virnect.serviceserver.application.SessionService;
 import com.virnect.data.dto.PushSendRequest;
 import com.virnect.remote.dto.push.SendSignalRequest;
 import com.virnect.remote.dto.request.room.InviteRoomRequest;
@@ -46,6 +47,7 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.application.ServiceSessionManager;
 import com.virnect.serviceserver.infra.utils.PushMessageClient;
 
 @Slf4j
@@ -60,6 +62,9 @@ public class SessionRestController {
     private final PushMessageClient pushMessageClient;
     private final SessionService sessionService;
     private final RoomService roomService;
+
+    private final ServiceSessionManager serviceSessionManager;
+    private final FileService fileService;
 
     private RestTemplate restTemplate;
 
@@ -330,6 +335,26 @@ public class SessionRestController {
 
         ApiResponse<RoomDeleteResponse> responseData = sessionService.deleteRoomById(
             workspaceId, sessionId, userId);
+
+        if (responseData.getData().result) {
+            if (this.serviceSessionManager.closeActiveSession(sessionId)) {
+                LogMessage.formedInfo(
+                    TAG,
+                    "serviceSessionManager",
+                    "closeActiveSession"
+                );
+                fileService.removeFiles(workspaceId, sessionId);
+            }
+
+            if (this.serviceSessionManager.closeNotActiveSession(sessionId)) {
+                LogMessage.formedInfo(
+                    TAG,
+                    "serviceSessionManager",
+                    "closeNotActiveSession"
+                );
+                fileService.removeFiles(workspaceId, sessionId);
+            }
+        }
 
         return ResponseEntity.ok(responseData);
     }

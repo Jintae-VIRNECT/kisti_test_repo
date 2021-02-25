@@ -1149,7 +1149,7 @@ public class SessionDataRepository {
         }.asResponseData();*/
     }
 
-    private CoturnResponse setCoturnResponse(SessionType sessionType) {
+    /*private CoturnResponse setCoturnResponse(SessionType sessionType) {
         CoturnResponse coturnResponse = new CoturnResponse();
         switch (sessionType) {
             case OPEN: {
@@ -1180,7 +1180,7 @@ public class SessionDataRepository {
             break;
         }
         return coturnResponse;
-    }
+    }*/
 
     //public DataProcess<PushResponse> sendSessionCreate(String sessionId) {
         //return new RepoDecoder<Room, PushResponse>(RepoDecoderType.READ) {
@@ -1516,8 +1516,11 @@ public class SessionDataRepository {
             //roomResponse.setRestrictedMode(room.isRestrictedMode());
             roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
             roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
-            CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
-            roomResponse.getCoturn().add(coturnResponse);
+            /*CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+            roomResponse.getCoturn().add(coturnResponse);*/
+
+            roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
             return new ApiResponse<>(roomResponse);
         } else {
             return new ApiResponse<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
@@ -1749,8 +1752,11 @@ public class SessionDataRepository {
                 roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
                 roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
 
-                CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
-                roomResponse.getCoturn().add(coturnResponse);
+                //CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+                //roomResponse.getCoturn().add(coturnResponse);
+
+                roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
                 return new ApiResponse<>(roomResponse);
             } else {
                 return new ApiResponse<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
@@ -3126,8 +3132,11 @@ public class SessionDataRepository {
             roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
             roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
 
-            CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
-            roomResponse.getCoturn().add(coturnResponse);
+            /*CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+            roomResponse.getCoturn().add(coturnResponse);*/
+
+            roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
             return new ApiResponse<>(roomResponse);
         } else {
             return new ApiResponse<>(new RoomResponse(), errorCode);
