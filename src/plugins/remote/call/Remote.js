@@ -751,6 +751,10 @@ const _ = {
     let stream = canvas.captureStream()
     return Object.assign(stream.getVideoTracks()[0], { enabled: false })
   },
+  /**
+   *
+   * @param {MediaStreamTrack} videoTrack
+   */
   async rePublish(videoTrack) {
     try {
       let videoSource = false
@@ -774,7 +778,7 @@ const _ = {
         insertMode: 'PREPEND',
         mirror: false,
       }
-      debug('call::publish::', publishOptions)
+      debug('call::republish::', publishOptions)
 
       _.tempPublisher = OV.initPublisher('', publishOptions)
       _.tempPublisher.onIceStateChanged(state => {
