@@ -61,15 +61,19 @@ export const addSessionEventListener = session => {
           ])
         }
       }
-      if (_.publisher.stream.hasVideo) {
-        _.sendCamera(
-          Store.getters['video'].isOn
-            ? CAMERA_STATUS.CAMERA_ON
-            : CAMERA_STATUS.CAMERA_OFF,
-          [event.connection.connectionId],
-        )
-      } else {
-        _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [event.connection.connectionId])
+      if (_.publisher) {
+        if (_.publisher.stream.hasVideo) {
+          _.sendCamera(
+            Store.getters['video'].isOn
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_OFF,
+            [event.connection.connectionId],
+          )
+        } else {
+          _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [
+            event.connection.connectionId,
+          ])
+        }
       }
     }, 300)
   })
@@ -244,7 +248,6 @@ export const addSessionEventListener = session => {
       if (idx < 0) return
 
       const noCamera = !participants[idx].hasCamera
-      // const noCamera = true
       const disabled = !data.enable
       const forcedView = Store.getters['viewForce'] === true
       const isSame =
@@ -268,12 +271,18 @@ export const addSessionEventListener = session => {
                 console.log(
                   '현재 화면 공유중인 사람하고 PC 공유 종료한사람이 같은 사람임',
                 )
+                //전체 공유 해제
                 _.sendVideo(Store.getters['mainView'].id, false)
               }
             }
           }
         }
       }
+
+      if (disabled && isSame && noCamera) {
+        Store.commit('clearMainViewStream', event.from.connectionId)
+      }
+      //end of video share
     } else {
       if (!Store.getters['allowCameraControl']) {
         Store.dispatch('setMainView', {
