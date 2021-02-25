@@ -76,7 +76,8 @@ export default {
         } else {
           console.log('rePublish 호출')
           this.$call.rePublish(displayStream.getVideoTracks()[0])
-          this.$call.sendCamera(CAMERA_STATUS.CAMERA_ON)
+          //카메라가 없는데 카메라를 ON 하면 다른 디바이스에 불필요한 영향을 미침
+          // this.$call.sendCamera(CAMERA_STATUS.CAMERA_ON)
           this.$eventBus.$emit('camera:hide', true)
         }
 
