@@ -14,7 +14,6 @@
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
 import { ACTION } from 'configs/view.config'
-// import { VIEW } from 'configs/view.config'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { mapGetters } from 'vuex'
 export default {
@@ -33,6 +32,7 @@ export default {
       'myInfo',
       'myTempStream',
       'settingInfo',
+      'mainView',
     ]),
   },
   methods: {
@@ -45,8 +45,6 @@ export default {
       this.share = !this.share
     },
     async getScreenStream() {
-      //pc자체에서 나오는 소리도 오디오 트랙에 넣어서..? 믹싱해서 보내야할듯?
-
       if (
         !navigator.mediaDevices ||
         !navigator.mediaDevices['getDisplayMedia']
@@ -58,7 +56,7 @@ export default {
           width: parseInt(size[0]),
           height: parseInt(size[1]),
         }
-        //@TODO: 스트림 못가지고오면 빠꾸
+
         const displayStream = await navigator.mediaDevices.getDisplayMedia({
           audio: true,
           video: video,
@@ -69,7 +67,6 @@ export default {
           this.share = false
         }
 
-        //카메라가 꺼진 상태에서 스트림을 체크해봐야겠음
         if (this.myInfo.cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
           console.log('replace track 호출')
           this.$call.replaceTrack(
@@ -80,10 +77,11 @@ export default {
           console.log('rePublish 호출')
           this.$call.rePublish(displayStream.getVideoTracks()[0])
           this.$call.sendCamera(CAMERA_STATUS.CAMERA_ON)
+          this.$eventBus.$emit('camera:hide', true)
         }
 
         this.$call.sendScreenSharing(true)
-        this.$eventBus.$emit('toggleScreenShare', true)
+        this.$eventBus.$emit('video:share', true)
       }
     },
     stopScreenSharing() {
@@ -96,6 +94,7 @@ export default {
       }
 
       this.$call.sendScreenSharing(false)
+      this.$eventBus.$emit('streamctl:hide', false)
       this.$eventBus.$emit('video:share', false)
     },
   },

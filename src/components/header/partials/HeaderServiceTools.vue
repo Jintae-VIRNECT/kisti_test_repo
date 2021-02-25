@@ -39,7 +39,9 @@ export default {
     Chat,
   },
   data() {
-    return {}
+    return {
+      hideStream: true,
+    }
   },
   computed: {
     ...mapGetters(['myInfo']),
@@ -47,7 +49,7 @@ export default {
       if (this.$route.name === 'workspace') {
         return true
       }
-      return !!this.myInfo.hasVideo
+      return !!this.myInfo.hasVideo && !this.hideStream
     },
     hasAudio() {
       if (this.$route.name === 'workspace') {
@@ -65,14 +67,24 @@ export default {
         this.$router.push({ name: 'workspace' })
       }
     },
+    /**
+     * 현재 내 카메라가 없으나 화면 공유를 위해
+     * 활성화 되는 카메라를 숨기기 위한 코드
+     * @param {Boolean} flag 플래그값
+     */
+    toggleStream(flag) {
+      this.hideStream = flag
+    },
   },
 
   /* Lifecycles */
   created() {
     this.$eventBus.$on('call:logout', this.leave)
+    this.$eventBus.$on('streamctl:hide', this.toggleStream)
   },
   beforeDestroy() {
     this.$eventBus.$off('call:logout', this.leave)
+    this.$eventBus.$off('streamctl:hide', this.toggleStream)
   },
 }
 </script>
