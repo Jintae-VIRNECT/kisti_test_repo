@@ -150,6 +150,37 @@ const mutations = {
     // if (!state.mainView || !state.mainView.id) return
     state.viewForce = force
   },
+
+  clearMainViewStream(state, connectionId) {
+    const idx = state.participants.findIndex(
+      obj => obj.connectionId === connectionId,
+    )
+    if (idx >= 0) {
+      // 메인뷰를 보고있으면 메인뷰 변경
+      if (
+        state.participants[idx].connectionId === state.mainView.connectionId
+      ) {
+        const pIdx = state.participants.findIndex(
+          user =>
+            user.connectionId !== state.mainView.connectionId &&
+            user.video === true,
+        )
+        if (pIdx > -1) {
+          state.mainView = state.participants[pIdx]
+          state.viewForce = false
+        } else {
+          state.mainView = {}
+          state.viewForce = false
+        }
+      }
+    }
+    // resolution 데이터 제거
+    const rIdx = state.resolutions.findIndex(
+      obj => obj.connectionId === connectionId,
+    )
+    if (rIdx < 0) return
+    state.resolutions.splice(rIdx, 1)
+  },
   addStream(state, payload) {
     if (payload.me) {
       state.participants.splice(0, 0, payload)
