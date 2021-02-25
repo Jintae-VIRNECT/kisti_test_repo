@@ -8,20 +8,24 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import javax.swing.text.html.Option;
-
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import lombok.RequiredArgsConstructor;
-
 import com.virnect.data.domain.roomhistory.RoomHistory;
 
-@RequiredArgsConstructor
-public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryRepository {
+@Repository
+public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport implements CustomRoomHistoryRepository {
+
 	private final JPAQueryFactory query;
+
+	public CustomRoomHistoryRepositoryImpl(JPAQueryFactory query) {
+		super(RoomHistory.class);
+		this.query = query;
+	}
 
 	@Override
 	public List<RoomHistory> findRoomHistoryInWorkspaceIdWithDateOrSpecificUserId(
@@ -122,8 +126,8 @@ public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryReposit
 		if(StringUtils.isEmpty(userId)){
 			return null;
 		}
-		List<Long> roomHistoryIdList = query.selectFrom(memberHistory)
-			.select(memberHistory.roomHistory.id)
+		List<Long> roomHistoryIdList = query.selectFrom(roomHistory)
+			.select(roomHistory.roomHistory.id)
 			.where(memberHistory.uuid.eq(userId))
 			.fetch();
 

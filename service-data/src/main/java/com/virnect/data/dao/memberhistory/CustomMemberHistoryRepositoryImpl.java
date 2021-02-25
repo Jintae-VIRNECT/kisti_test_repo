@@ -11,19 +11,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
 
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
 
 import com.virnect.data.domain.member.MemberHistory;
 
-@RequiredArgsConstructor
-public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRepository{
+@Repository
+public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport implements CustomMemberHistoryRepository{
 
 	private final JPAQueryFactory query;
+
+	public CustomMemberHistoryRepositoryImpl(JPAQueryFactory query) {
+		super(MemberHistory.class);
+		this.query = query;
+	}
 
 	/**
 	 * 사용자 기록 조회 다이나믹 쿼리
@@ -36,17 +42,16 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 	public Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
 		String workspaceId, String userId, Pageable pageable
 	) {
-		QueryResults<MemberHistory> result = query
+		JPQLQuery<MemberHistory> queryResult = query
 			.selectFrom(memberHistory)
-			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
 				memberHistory.workspaceId.eq(workspaceId),
 				memberHistory.uuid.eq(userId)
-			)
-			//.offset(pageable.getOffset())
-			//.limit(pageable.getPageSize())
-			.fetchResults();
-		return new PageImpl<>(result.getResults(), pageable, result.getTotal());
+			).distinct();
+		long totalCount = queryResult.fetchCount();
+		List<MemberHistory> result = getQuerydsl().applyPagination(pageable, queryResult).fetch();
+		return new PageImpl<>(result, pageable, totalCount);
 	}
 
 	/**
@@ -58,7 +63,7 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 	public List<MemberHistory> findAllBySessionId(String sessionId) {
 		return query
 			.selectFrom(memberHistory)
-			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
 				memberHistory.sessionId.eq(sessionId)
 			)
@@ -70,7 +75,7 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 	public List<MemberHistory> findByWorkspaceIdAndUuid(String workspaceId, String userId) {
 		return query
 			.selectFrom(memberHistory)
-			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
 				memberHistory.workspaceId.eq(workspaceId),
 				memberHistory.uuid.eq(userId)
@@ -85,7 +90,7 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 	) {
 		return Optional.ofNullable(
 			query.selectFrom(memberHistory)
-			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
 				memberHistory.workspaceId.eq(workspaceId),
 				memberHistory.sessionId.eq(sessionId),
@@ -99,7 +104,7 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 	public List<MemberHistory> findAllByUuid(String userId) {
 		return query
 			.selectFrom(memberHistory)
-			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
 				memberHistory.uuid.eq(userId)
 			)
@@ -113,7 +118,7 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 	) {
 		return query
 			.selectFrom(memberHistory)
-			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
 				memberHistory.workspaceId.eq(workspaceId),
 				memberHistory.roomHistory.isNotNull(),
@@ -127,7 +132,7 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 	public List<MemberHistory> findByWorkspaceId(String workspaceId) {
 		return query
 			.selectFrom(memberHistory)
-			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
 				memberHistory.workspaceId.eq(workspaceId)
 			)

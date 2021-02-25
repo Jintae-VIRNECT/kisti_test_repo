@@ -9,20 +9,27 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import lombok.RequiredArgsConstructor;
 
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.room.RoomStatus;
 
-@RequiredArgsConstructor
-public class CustomRoomRepositoryImpl implements CustomRoomRepository {
+@Repository
+public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implements CustomRoomRepository {
 	private final JPAQueryFactory query;
+
+	public CustomRoomRepositoryImpl(JPAQueryFactory query) {
+		super(Room.class);
+		this.query = query;
+	}
 
 	@Override
 	public List<Room> findRoomHistoryInWorkspaceWithDateOrSpecificUserId(
@@ -109,7 +116,15 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
 
 	@Override
 	public Optional<Room> findBySessionId(String sessionId) {
-		return null;
+		return Optional.ofNullable(
+			query.selectFrom(room)
+				.innerJoin(room.members, member).fetchJoin()
+				.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
+				.where(
+					room.sessionId.eq(sessionId)
+				)
+				.distinct()
+				.fetchOne());
 	}
 
 	@Override
@@ -132,12 +147,27 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
 	public Page<Room> findRoomByWorkspaceId(
 		String workspaceId, Pageable pageable
 	) {
-		return null;
+		JPQLQuery<Room> queryResult =query.selectFrom(room)
+			.innerJoin(room.members, member).fetchJoin()
+			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
+			.where(
+				room.workspaceId.eq(workspaceId)
+			);
+		long totalCount = queryResult.fetchCount();
+		List<Room> result = getQuerydsl().applyPagination(pageable, queryResult).fetch();
+		return new PageImpl<>(result, pageable, totalCount);
 	}
 
 	@Override
 	public List<Room> findByWorkspaceId(String workspaceId) {
-		return null;
+		return query.selectFrom(room)
+			.innerJoin(room.members, member).fetchJoin()
+			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
+			.where(
+				room.workspaceId.eq(workspaceId)
+			)
+			.distinct()
+			.fetch();
 	}
 
 }
