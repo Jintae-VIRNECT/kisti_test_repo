@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -90,10 +92,11 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
 	 * @return - 해당 사용자가 참여한 room 검색 조건 쿼리
 	 */
 	@Override
-	public Room findRoomByWorkspaceIdAndSessionId(
+	public Optional<Room> findRoomByWorkspaceIdAndSessionId(
 		String workspaceId, String sessionId
 	) {
-		return query.selectFrom(room)
+		return Optional.ofNullable(
+			query.selectFrom(room)
 			.innerJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
@@ -101,7 +104,40 @@ public class CustomRoomRepositoryImpl implements CustomRoomRepository {
 				room.sessionId.eq(sessionId)
 			)
 			.distinct()
-			.fetchOne();
+			.fetchOne());
+	}
+
+	@Override
+	public Optional<Room> findBySessionId(String sessionId) {
+		return null;
+	}
+
+	@Override
+	public Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(
+		String workspaceId, String sessionId
+	) {
+		return Optional.ofNullable(
+			query.selectFrom(room)
+			.innerJoin(room.members, member).fetchJoin()
+			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
+			.where(
+				room.workspaceId.eq(workspaceId),
+				room.sessionId.eq(sessionId)
+			)
+			.distinct()
+			.fetchOne());
+	}
+
+	@Override
+	public Page<Room> findRoomByWorkspaceId(
+		String workspaceId, Pageable pageable
+	) {
+		return null;
+	}
+
+	@Override
+	public List<Room> findByWorkspaceId(String workspaceId) {
+		return null;
 	}
 
 }

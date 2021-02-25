@@ -28,7 +28,7 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
 
     //List<MemberHistory> findByWorkspaceIdAndUuid(final String workspaceId, final String userId);
 
-    List<MemberHistory> findAllByUuid(final String userId);
+    //List<MemberHistory> findAllByUuid(final String userId);
 
     Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNull(final String workspaceId, final String userId, Pageable pageable);
 
@@ -36,12 +36,8 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
 
     void deleteAllByUuid(final String userId);
 
-    List<MemberHistory> findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(
-        String workspaceId,
-        LocalDateTime start,
-        LocalDateTime end
-    );
+    //List<MemberHistory> findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(String workspaceId, LocalDateTime start, LocalDateTime end);
 
-    List<MemberHistory> findByWorkspaceId(final String workspaceId);
+    //List<MemberHistory> findByWorkspaceId(final String workspaceId);
 
 }

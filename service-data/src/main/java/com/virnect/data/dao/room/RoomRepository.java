@@ -21,33 +21,33 @@ import com.virnect.data.domain.room.RoomStatus;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificationExecutor<Room>, CustomRoomRepository {
 
-    Optional<Room> findBySessionId(final String sessionId);
+    //Optional<Room> findBySessionId(final String sessionId);
 
-    //Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
-
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    /*@Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from Room r where r.workspaceId = ?1 and r.sessionId = ?2")
-    Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(final String workspaceId, final String sessionId);
+    Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(final String workspaceId, final String sessionId);*/
+
+    /*@Query("select r from Room r where r.workspaceId = ?1 and r.roomStatus = 0")
+    Page<Room> findRoomsByWorkspaceId(final String workspaceId, Pageable pageable);*/
+
+    /*@Query("select r from Room r where r.workspaceId = ?1 and r.roomStatus = 0")
+    Page<Room> findRoomByWorkspaceId(final String workspaceId, Pageable pageable);*/
+
+    //List<Room> findByWorkspaceId(final String workspaceId);
+
+    @Modifying
+    @Query("delete from Room r where r.workspaceId = ?1 and r.sessionId = ?2")
+    void deleteByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     //Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
-    @Query("select r from Room r where r.workspaceId = ?1 and r.roomStatus = 0")
-    Page<Room> findRoomsByWorkspaceId(final String workspaceId, Pageable pageable);
-
-    @Query("select r from Room r where r.workspaceId = ?1 and r.roomStatus = 0")
-    Page<Room> findRoomByWorkspaceId(final String workspaceId, Pageable pageable);
-
-    List<Room> findByWorkspaceId(final String workspaceId);
+    //Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     List<Room> findByWorkspaceIdAndTitleIsContaining(final String workspaceId, final String title);
 
     //Page<Room> findByTitleIsContaining(final String title, Pageable pageable);
 
     Page<Room> findByWorkspaceIdAndTitleIsContaining(final String workspaceId, final String title, Pageable pageable);
-
-    @Modifying
-    @Query("delete from Room r where r.workspaceId = ?1 and r.sessionId = ?2")
-    void deleteByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     List<Room> findByWorkspaceIdAndRoomStatusAndActiveDateBetween(String workspaceId, RoomStatus active, LocalDateTime startDateTime, LocalDateTime endDateTime);
 

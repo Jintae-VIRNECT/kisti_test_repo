@@ -40,6 +40,7 @@ import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.remote.dto.constraint.LicenseItem;
@@ -560,7 +561,7 @@ public class SessionService {
 
 		List<MemberInfoResponse> memberInfoList;
 
-		Room room = sessionService.getRoom(workspaceId, sessionId);
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 		if (room == null) {
 			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		} else {
@@ -605,7 +606,7 @@ public class SessionService {
 	public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
 		//return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
 		Room room = null;
-		room = sessionService.getRoom(workspaceId, sessionId);
+		room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 		if (room == null) {
 			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
@@ -777,7 +778,7 @@ public class SessionService {
 	) {
 		SessionTokenResponse sessionTokenResponse = null;
 
-		Room room = sessionService.getRoom(workspaceId, sessionId);
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 
 		if (room == null) {
 			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
@@ -832,7 +833,7 @@ public class SessionService {
 		//return new RepoDecoder<Room, ResultResponse>(RepoDecoderType.DELETE) {
 		Member member = null;
 
-		Room room = sessionService.getRoom(workspaceId, sessionId);
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 		if (room == null) {
 			return new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		} else {
@@ -873,7 +874,7 @@ public class SessionService {
 	) {
 		//return new RepoDecoder<Room, KickRoomResponse>(RepoDecoderType.DELETE) {
 
-		Room room = sessionService.getRoom(workspaceId, sessionId);
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 		if (room == null) {
 			return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
@@ -927,7 +928,7 @@ public class SessionService {
 		String workspaceId, String sessionId, InviteRoomRequest inviteRoomRequest
 	) {
 		//return new RepoDecoder<Room, InviteRoomResponse>(RepoDecoderType.UPDATE) {
-		Room room = sessionService.getRoom(workspaceId, sessionId);
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 		if (room == null)
 			return new ApiResponse<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 
@@ -1077,7 +1078,7 @@ public class SessionService {
 		List<MemberInfoResponse> memberInfoList;
 
 		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_FOUND));
 
 
 		LogMessage.formedInfo(
@@ -1087,44 +1088,40 @@ public class SessionService {
 			"room info retrieve by session id",
 			sessionId
 		);
-		if (room == null) {
-			responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		if (room.getRoomStatus() != RoomStatus.ACTIVE) {
+			responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
 		} else {
-			if (room.getRoomStatus() != RoomStatus.ACTIVE) {
-				responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
-			} else {
-				// mapping data
-				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
-					room, RoomDetailInfoResponse.class);
-				roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+			// mapping data
+			RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
+				room, RoomDetailInfoResponse.class);
+			roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
-				// Get Member List by Room Session ID
-				// Mapping Member List Data to Member Information List
-				memberInfoList = memberRepository.findAllBySessionId(sessionId)
-					.stream()
-					.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-					.collect(Collectors.toList());
+			// Get Member List by Room Session ID
+			// Mapping Member List Data to Member Information List
+			memberInfoList = memberRepository.findAllBySessionId(sessionId)
+				.stream()
+				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
 
-				// find and get extra information from workspace-server using uuid
-				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-						workspaceId, memberInfoResponse.getUuid());
-					log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-					//todo://user infomation does not have role and role id change to workspace member info
-					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-					memberInfoResponse.setRole(workspaceMemberData.getRole());
-					//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-					memberInfoResponse.setName(workspaceMemberData.getName());
-					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-				}
-
-				// Set Member List to Room Detail Information Response
-				roomDetailInfoResponse.setMemberList(memberInfoList);
-				responseData = new ApiResponse<>(roomDetailInfoResponse);
+			// find and get extra information from workspace-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					workspaceId, memberInfoResponse.getUuid());
+				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+				//todo://user infomation does not have role and role id change to workspace member info
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
+
+			// Set Member List to Room Detail Information Response
+			roomDetailInfoResponse.setMemberList(memberInfoList);
+			responseData = new ApiResponse<>(roomDetailInfoResponse);
 		}
 		return responseData;
 	}
@@ -1288,8 +1285,7 @@ public class SessionService {
 
 		ApiResponse<RoomDetailInfoResponse> responseData;
 
-		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
 		List<MemberInfoResponse> memberInfoList;
 
 		LogMessage.formedInfo(
@@ -1352,8 +1348,8 @@ public class SessionService {
 
 		ApiResponse<RoomDeleteResponse> responseData;
 
-		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+
 		if (room == null) {
 			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		}

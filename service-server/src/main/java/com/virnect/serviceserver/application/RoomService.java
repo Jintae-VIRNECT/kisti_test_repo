@@ -382,8 +382,8 @@ public class RoomService {
 
 		Member member = null;
 
-		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+
 		if (room == null) {
 			responseData = new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		} else {

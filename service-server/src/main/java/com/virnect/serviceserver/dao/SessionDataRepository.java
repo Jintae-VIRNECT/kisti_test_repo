@@ -1099,7 +1099,7 @@ public class SessionDataRepository {
 
         List<MemberInfoResponse> memberInfoList;
 
-        Room room = sessionService.getRoom(workspaceId, sessionId);
+        Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
         if (room == null) {
             return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         } else {
@@ -1159,7 +1159,7 @@ public class SessionDataRepository {
             sessionId
         );
 
-        room = sessionService.getRoom(workspaceId, sessionId);
+        room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
         String userId = room.getLeaderId();
         if (room != null) {
             if (userId.equals(modifyRoomInfoRequest.getUuid())) {
@@ -1211,7 +1211,7 @@ public class SessionDataRepository {
     public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
         //return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
         Room room = null;
-        room = sessionService.getRoom(workspaceId, sessionId);
+        room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
         if (room == null) {
             return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
@@ -1385,7 +1385,7 @@ public class SessionDataRepository {
         //return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.READ) {
         SessionTokenResponse sessionTokenResponse = null;
 
-        Room room = sessionService.getRoom(workspaceId, sessionId);
+        Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 
         if (room == null) {
             return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
@@ -1441,7 +1441,7 @@ public class SessionDataRepository {
     public ApiResponse<ResultResponse> exitRoom(String workspaceId, String sessionId, String userId) {
         Member member = null;
 
-        Room room = sessionService.getRoom(workspaceId, sessionId);
+        Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
         if (room == null) {
             return new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         } else {
@@ -1481,7 +1481,7 @@ public class SessionDataRepository {
         String workspaceId, String sessionId, KickRoomRequest kickRoomRequest
     ) {
 
-        Room room = sessionService.getRoom(workspaceId, sessionId);
+        Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
         if (room == null) {
             return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
@@ -1520,7 +1520,7 @@ public class SessionDataRepository {
         String workspaceId, String sessionId, InviteRoomRequest inviteRoomRequest
     ) {
         //return new RepoDecoder<Room, InviteRoomResponse>(RepoDecoderType.UPDATE) {
-        Room room = sessionService.getRoom(workspaceId, sessionId);
+        Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
         if (room == null)
             return new ApiResponse<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 

@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -88,9 +89,9 @@ public class SessionTransactionalService {
 		return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 	}
 
-	public Room getRoom(String workspaceId, String sessionId) {
+	public Optional<Room> getRoom(String workspaceId, String sessionId) {
 		//return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		return this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
 	}
 
 	public Room getRoom(String sessionId) {
@@ -98,7 +99,7 @@ public class SessionTransactionalService {
 	}
 
 	public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
-		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
 	}
 
 	public RoomHistory getRoomHistory(String sessionId) {
@@ -312,7 +313,7 @@ public class SessionTransactionalService {
 	@Deprecated
 	public void removeRoom(String workspaceId, String sessionId) {
 		log.info("ROOM INFO REMOVE BY removeRoom => [{}]");
-		Room room = getRoom(workspaceId, sessionId);
+		Room room = getRoom(workspaceId, sessionId).orElse(null);
 		//List<Member> members = sessionService.getMemberList(room.getWorkspaceId(), room.getSessionId());
 		List<Member> members = room.getMembers()
 			.stream()

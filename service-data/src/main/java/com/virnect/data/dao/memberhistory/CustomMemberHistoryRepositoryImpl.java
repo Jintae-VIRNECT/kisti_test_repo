@@ -2,15 +2,18 @@ package com.virnect.data.dao.memberhistory;
 
 import static com.virnect.data.domain.member.QMemberHistory.*;
 import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
-import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import lombok.RequiredArgsConstructor;
@@ -40,8 +43,8 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 				memberHistory.workspaceId.eq(workspaceId),
 				memberHistory.uuid.eq(userId)
 			)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
+			//.offset(pageable.getOffset())
+			//.limit(pageable.getPageSize())
 			.fetchResults();
 		return new PageImpl<>(result.getResults(), pageable, result.getTotal());
 	}
@@ -77,11 +80,11 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 	}
 
 	@Override
-	public MemberHistory findByWorkspaceIdAndSessionIdAndUuid(
+	public Optional<MemberHistory> findByWorkspaceIdAndSessionIdAndUuid(
 		String workspaceId, String sessionId, String uuid
 	) {
-		return query
-			.selectFrom(memberHistory)
+		return Optional.ofNullable(
+			query.selectFrom(memberHistory)
 			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.where(
 				memberHistory.workspaceId.eq(workspaceId),
@@ -89,6 +92,61 @@ public class CustomMemberHistoryRepositoryImpl implements CustomMemberHistoryRep
 				memberHistory.uuid.eq(uuid)
 			)
 			.distinct()
-			.fetchOne();
+			.fetchOne());
 	}
+
+	@Override
+	public List<MemberHistory> findAllByUuid(String userId) {
+		return query
+			.selectFrom(memberHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.where(
+				memberHistory.uuid.eq(userId)
+			)
+			.distinct()
+			.fetch();
+	}
+
+	@Override
+	public List<MemberHistory> findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(
+		String workspaceId, LocalDateTime startDate, LocalDateTime endDate
+	) {
+		return query
+			.selectFrom(memberHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.where(
+				memberHistory.workspaceId.eq(workspaceId),
+				memberHistory.roomHistory.isNotNull(),
+				betweenDate(startDate, endDate)
+			)
+			.distinct()
+			.fetch();
+	}
+
+	@Override
+	public List<MemberHistory> findByWorkspaceId(String workspaceId) {
+		return query
+			.selectFrom(memberHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.where(
+				memberHistory.workspaceId.eq(workspaceId)
+			)
+			.distinct()
+			.fetch();
+	}
+
+	/**
+	 * 기간 검색 다이나믹 쿼리
+	 * @param startDate - 검색 시작 일자
+	 * @param endDate - 검색 종료 일자
+	 * @return - 기간 검색 조건 쿼리
+	 */
+	private BooleanExpression betweenDate(LocalDateTime startDate, LocalDateTime endDate) {
+		if (startDate == null || endDate == null) {
+			return null;
+		}
+		return roomHistory.unactiveDate.between(startDate, endDate.plusDays(1).minusSeconds(1));
+	}
+
+
 }

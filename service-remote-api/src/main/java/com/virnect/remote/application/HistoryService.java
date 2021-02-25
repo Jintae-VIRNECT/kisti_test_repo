@@ -216,7 +216,7 @@ public class HistoryService {
 		ApiResponse<RoomHistoryDetailInfoResponse> responseData;
 
 		List<MemberInfoResponse> memberInfoList;
-		RoomHistory roomHistory = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		RoomHistory roomHistory = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
 
 		LogMessage.formedInfo(
 			//TAG,
@@ -328,7 +328,7 @@ public class HistoryService {
 			String userId = roomHistoryDeleteRequest.getUuid();
 			MemberHistory memberHistory = memberHistoryRepository.findByWorkspaceIdAndSessionIdAndUuid(
 				workspaceId, sessionId, userId
-			);
+			).orElse(null);
 			if (memberHistory != null) {
 				if (memberHistory.getRoomHistory() != null) {
 					//memberHistory.setRoomHistory(null);
@@ -357,7 +357,7 @@ public class HistoryService {
 	}
 
 	public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
-		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
 	}
 
 }

@@ -6,6 +6,9 @@ import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import javax.swing.text.html.Option;
 
 import org.springframework.util.StringUtils;
 
@@ -37,12 +40,19 @@ public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryReposit
 			.fetch();
 	}
 
+	/**
+	 * 협업 검색 다이나믹 쿼리
+	 * @param workspaceId - 조회 대상 워크스페이스
+	 * @param sessionId - 조회 대상 세션
+	 * @return - 기간 검색 조건 쿼리
+	 */
 	@Override
-	public RoomHistory findRoomHistoryByWorkspaceIdAndSessionId(
+	public Optional<RoomHistory> findRoomHistoryByWorkspaceIdAndSessionId(
 		String workspaceId,
 		String sessionId
 	) {
-		return query
+		return Optional.ofNullable(
+			query
 			.selectFrom(roomHistory)
 			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
@@ -51,7 +61,43 @@ public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryReposit
 				roomHistory.sessionId.eq(sessionId)
 			)
 			.distinct()
+			.fetchOne());
+	}
+
+	@Override
+	public Optional<RoomHistory> findBySessionId(String sessionId) {
+		return Optional.ofNullable(
+			query
+			.selectFrom(roomHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				roomHistory.sessionId.eq(sessionId)
+			)
+			.distinct()
+			.fetchOne());
+	}
+
+	@Override
+	public boolean existsByWorkspaceIdAndSessionId(String workspaceId, String sessionId) {
+
+		boolean result = true;
+
+		RoomHistory queryResult = query
+			.selectFrom(roomHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				roomHistory.sessionId.eq(sessionId)
+			)
+			.distinct()
 			.fetchOne();
+
+		if (queryResult == null) {
+			result = false;
+		}
+
+		return result;
 	}
 
 	/**
