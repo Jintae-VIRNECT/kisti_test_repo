@@ -302,7 +302,7 @@ public class DashboardHistoryService {
 
 		RoomDetailInfoResponse roomDetailInfoResponse = new RoomDetailInfoResponse();
 
-		Room ongoingRoom = roomRepository.findRoomHistoryByWorkspaceAndSessionId(workspaceId, sessionId);
+		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
 
 		if (ongoingRoom == null) {
 			throw new RestServiceException(ErrorCode.ERR_ROOM_FOUND);
@@ -358,7 +358,7 @@ public class DashboardHistoryService {
 
 		RoomHistoryDetailInfoResponse roomHistoryDetailInfoResponse = new RoomHistoryDetailInfoResponse();
 
-		RoomHistory endRoom = roomHistoryRepository.findRoomHistoryByWorksapceAndSessionId(
+		RoomHistory endRoom = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(
 			request.getWorkspaceId(),
 			request.getSessionId()
 		);
@@ -1168,7 +1168,7 @@ public class DashboardHistoryService {
 		RoomHistoryListRequest option, String workspaceId, String userId
 	) {
 
-		List<RoomHistory> roomHistories = roomHistoryRepository.findRoomHistoryInWorksapceWithDateOrSpecificUserId(
+		List<RoomHistory> roomHistories = roomHistoryRepository.findRoomHistoryInWorkspaceIdWithDateOrSpecificUserId(
 			option.getSearchStartDate(), option.getSearchEndDate(), workspaceId, userId
 		);
 

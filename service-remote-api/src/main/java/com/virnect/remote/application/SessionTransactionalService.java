@@ -89,7 +89,8 @@ public class SessionTransactionalService {
 	}
 
 	public Room getRoom(String workspaceId, String sessionId) {
-		return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		//return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
 	}
 
 	public Room getRoom(String sessionId) {
@@ -97,7 +98,7 @@ public class SessionTransactionalService {
 	}
 
 	public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
-		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId);
 	}
 
 	public RoomHistory getRoomHistory(String sessionId) {

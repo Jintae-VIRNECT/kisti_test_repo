@@ -21,7 +21,7 @@ public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryReposit
 	private final JPAQueryFactory query;
 
 	@Override
-	public List<RoomHistory> findRoomHistoryInWorksapceWithDateOrSpecificUserId(
+	public List<RoomHistory> findRoomHistoryInWorkspaceIdWithDateOrSpecificUserId(
 		LocalDateTime startDate, LocalDateTime endDate, String workspaceId, String userId
 	) {
 		return query
@@ -38,7 +38,7 @@ public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryReposit
 	}
 
 	@Override
-	public RoomHistory findRoomHistoryByWorksapceAndSessionId(
+	public RoomHistory findRoomHistoryByWorkspaceIdAndSessionId(
 		String workspaceId,
 		String sessionId
 	) {

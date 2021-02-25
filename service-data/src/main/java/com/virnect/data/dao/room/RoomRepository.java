@@ -23,7 +23,7 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
 
     Optional<Room> findBySessionId(final String sessionId);
 
-    Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
+    //Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from Room r where r.workspaceId = ?1 and r.sessionId = ?2")
@@ -53,7 +53,7 @@ public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificat
 
     List<Room> findByWorkspaceIdAndRoomStatus(String workspaceId, RoomStatus active);
 
-    Room findRoomHistoryByWorkspaceAndSessionId(String workspaceId, String sessionId);
+    //Room findRoomHistoryByWorkspaceAndSessionId(String workspaceId, String sessionId);
 
     //List<Room> findByTitleIsContaining(final String title);
 
