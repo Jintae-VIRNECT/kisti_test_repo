@@ -46,11 +46,7 @@ export default {
   computed: {
     ...mapGetters(['mainView', 'useRecording', 'useTranslate', 'myInfo']),
     hasMainView() {
-      return (
-        this.mainView &&
-        this.mainView.id &&
-        this.myInfo.cameraStatus !== CAMERA_STATUS.CAMERA_NONE
-      )
+      return this.mainView && this.mainView.id
     },
     isMainViewOn() {
       return this.mainView && this.mainView.id && this.mainView.video
