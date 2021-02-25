@@ -60,6 +60,11 @@ public class SessionService {
 	public Company createCompany(Company company) {
 		return companyRepository.save(company);
 	}
+	//===========================================  Admin Services     =================================================//
+	@Transactional
+	public Company updateCompany(Company company) {
+		return companyRepository.save(company);
+	}
 
 	public Company getCompany(String workspaceId) {
 		return companyRepository.findByWorkspaceId(workspaceId).orElse(null);
