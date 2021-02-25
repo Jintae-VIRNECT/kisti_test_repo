@@ -70,10 +70,7 @@
         </transition>
       </template>
     </div>
-    <div
-      class="main-video__empty"
-      v-if="!loaded || cameraStatus.state === 'none'"
-    >
+    <div class="main-video__empty" v-if="!loaded">
       <transition name="opacity">
         <!-- 영상 연결중 -->
         <!-- <div class="main-video__empty-inner" v-if="resolutions.length > 0">
@@ -211,11 +208,6 @@ export default {
         } else if (this.mainView.cameraStatus === CAMERA.APP_IS_BACKGROUND) {
           return {
             state: 'background',
-            id: this.mainView.id,
-          }
-        } else if (this.mainView.cameraStatus === CAMERA.CAMERA_NONE) {
-          return {
-            state: 'none',
             id: this.mainView.id,
           }
         }
