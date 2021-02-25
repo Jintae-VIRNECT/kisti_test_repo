@@ -181,7 +181,6 @@ public class S3UploadService implements FileUploadService {
             PutObjectRequest putObjectRequest = new PutObjectRequest(
                     bucketName, s3FileKey, file.getInputStream(), objectMetadata
             ).withCannedAcl(CannedAccessControlList.PublicRead);
-
             amazonS3Client.putObject(putObjectRequest);
             log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD END");
             String url = amazonS3Client.getUrl(bucketName, s3FileKey)

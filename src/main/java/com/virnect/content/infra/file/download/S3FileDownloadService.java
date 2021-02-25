@@ -68,24 +68,21 @@ public class S3FileDownloadService implements FileDownloadService {
 
     @Override
     public void copyFileS3ToLocal(String fileName) {
-        try {
-            String resourcePath = "contents/" + fileName;
-            GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
-            S3Object o = amazonS3Client.getObject(getObjectRequest);
-            S3ObjectInputStream s3is = o.getObjectContent();
+        String resourcePath = "contents/" + fileName;
+        GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
+        File file = new File("upload/" + fileName);
+        try (S3Object o = amazonS3Client.getObject(getObjectRequest);
+             S3ObjectInputStream s3is = o.getObjectContent();
+             FileOutputStream fos = new FileOutputStream(file)) {
 
-            File file = new File("upload/" + fileName);
-
-            FileOutputStream fos = new FileOutputStream(file);
             byte[] read_buf = new byte[1024];
             int read_len = 0;
             while ((read_len = s3is.read(read_buf)) > 0) {
                 fos.write(read_buf, 0, read_len);
             }
-            s3is.close();
-            fos.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error Message:     {}", e.getMessage());
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
         }
     }
 
@@ -93,56 +90,62 @@ public class S3FileDownloadService implements FileDownloadService {
         String resourcePath = "contents/" + fileName;
         String key = bucketResource + resourcePath;
         GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
-        S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
-        S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();
-        MultipartFile multipartFile = new MultipartFile() {
-            @Override
-            public String getName() {
-                return "content";
-            }
+        try (S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
+             S3ObjectInputStream s3ObjectInputStream = s3Object.getObjectContent();) {
+            MultipartFile multipartFile = new MultipartFile() {
+                @Override
+                public String getName() {
+                    return "content";
+                }
 
-            @Override
-            public String getOriginalFilename() {
-                return fileName;
-            }
+                @Override
+                public String getOriginalFilename() {
+                    return fileName;
+                }
 
-            @Override
-            public String getContentType() {
-                return s3Object.getObjectMetadata().getContentType();
-            }
+                @Override
+                public String getContentType() {
+                    return s3Object.getObjectMetadata().getContentType();
+                }
 
-            @Override
-            public boolean isEmpty() {
-                return false;
-            }
+                @Override
+                public boolean isEmpty() {
+                    return false;
+                }
 
-            @Override
-            public long getSize() {
-                return s3Object.getObjectMetadata().getContentLength();
-            }
+                @Override
+                public long getSize() {
+                    return s3Object.getObjectMetadata().getContentLength();
+                }
 
-            @Override
-            public byte[] getBytes() throws IOException {
-                return IOUtils.toByteArray(s3ObjectInputStream);
-            }
+                @Override
+                public byte[] getBytes() throws IOException {
+                    return IOUtils.toByteArray(s3ObjectInputStream);
+                }
 
-            @Override
-            public InputStream getInputStream() throws IOException {
-                return s3ObjectInputStream;
-            }
+                @Override
+                public InputStream getInputStream() throws IOException {
+                    return s3ObjectInputStream;
+                }
 
-            @Override
-            public void transferTo(File dest) throws IOException, IllegalStateException {
-            }
-        };
-        log.info(
-                "[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
-                , amazonS3Client.getUrl(bucketName, key).toExternalForm()
-                , multipartFile.getContentType()
-                , multipartFile.getSize()
-                , multipartFile.getOriginalFilename()
-        );
-        return multipartFile;
+                @Override
+                public void transferTo(File dest) throws IOException, IllegalStateException {
+                }
+            };
+            log.info(
+                    "[CONVERT INPUTSTREAM TO MULTIPARTFILE] Convert success. uploaded url : [{}], contentType : [{}], file size : [{}], originalFileName : [{}],"
+                    , amazonS3Client.getUrl(bucketName, key).toExternalForm()
+                    , multipartFile.getContentType()
+                    , multipartFile.getSize()
+                    , multipartFile.getOriginalFilename()
+            );
+            return multipartFile;
+        } catch (IOException e) {
+            log.error("Error Message:     {}", e.getMessage());
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+        }
+
+
     }
 
     @Override

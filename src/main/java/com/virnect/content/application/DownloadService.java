@@ -5,6 +5,8 @@ import com.virnect.content.application.workspace.WorkspaceRestService;
 import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.YesOrNo;
+import com.virnect.content.dto.request.DownloadLogAddRequest;
+import com.virnect.content.dto.response.DownloadLogAddResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
 import com.virnect.content.dto.rest.MemberListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
@@ -120,5 +122,10 @@ public class DownloadService {
         }
     }
 
-
+    public DownloadLogAddResponse contentDownloadLogForUUIDHandler(DownloadLogAddRequest downloadLogAddRequest) {
+        Content content = this.contentRepository.findByUuid(downloadLogAddRequest.getContentUUID())
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, downloadLogAddRequest.getMemberUUID()));
+        return new DownloadLogAddResponse(true);
+    }
 }
