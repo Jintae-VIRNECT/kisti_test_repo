@@ -55,24 +55,12 @@ public class ServiceSessionManager {
 
 	SessionManager sessionManager;
 	private final SessionDataRepository sessionDataRepository;
-	//FileDataRepository fileDataRepository;
-
 	private final FileService fileService;
 
 	@Autowired
 	public void setSessionManager(SessionManager sessionManager) {
 		this.sessionManager = sessionManager;
 	}
-
-    /*@Autowired
-    public void setSessionDataRepository(SessionDataRepository sessionDataRepository) {
-        this.sessionDataRepository = sessionDataRepository;
-    }*/
-
-	/*@Autowired
-	public void setFileDataRepository(FileDataRepository fileDataRepository) {
-		this.fileDataRepository = fileDataRepository;
-	}*/
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -96,7 +84,6 @@ public class ServiceSessionManager {
 					"event received"
 				);
 				String sessionId = sessionNotActive.getSessionId();
-				//DataProcess<Boolean> result = sessionDataRepository.generateRoomSession(sessionId);
 				Boolean result = sessionDataRepository.generateRoomSession(sessionId);
 				//if (result.getData()) {
 				if (result) {
@@ -127,7 +114,6 @@ public class ServiceSessionManager {
 					);
 					return true;
 				} else {
-					//DataProcess<ErrorCode> dataProcess = sessionDataRepository.joinSession(participant, sessionId);
 					ErrorCode errorCode = sessionDataRepository.joinSession(participant, sessionId);
 					if (errorCode == ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID) {
 						LogMessage.formedError(
