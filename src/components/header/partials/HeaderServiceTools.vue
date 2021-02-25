@@ -40,7 +40,7 @@ export default {
   },
   data() {
     return {
-      hideStream: true,
+      hideStream: false,
     }
   },
   computed: {
