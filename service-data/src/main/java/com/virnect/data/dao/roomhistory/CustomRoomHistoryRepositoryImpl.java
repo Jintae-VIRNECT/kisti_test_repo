@@ -84,10 +84,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 
 	@Override
 	public boolean existsByWorkspaceIdAndSessionId(String workspaceId, String sessionId) {
-
-		boolean result = true;
-
-		RoomHistory queryResult = query
+		boolean result = Optional.ofNullable(query
 			.selectFrom(roomHistory)
 			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
@@ -95,12 +92,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				roomHistory.sessionId.eq(sessionId)
 			)
 			.distinct()
-			.fetchOne();
-
-		if (queryResult == null) {
-			result = false;
-		}
-
+			.fetchOne()).isPresent();
 		return result;
 	}
 
