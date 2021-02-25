@@ -84,8 +84,8 @@ button {
 }
 
 * {
-  -ms-touch-action: pinch-zoom pan-y;
-  touch-action: pinch-zoom pan-y;
+  -ms-touch-action: pinch-zoom;
+  touch-action: pinch-zoom;
 }
 
 html,
@@ -96,10 +96,10 @@ body {
   font-size: 14px;
   font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
   line-height: 1.6;
-  overscroll-behavior-y: contain;
 }
 html {
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 button {
