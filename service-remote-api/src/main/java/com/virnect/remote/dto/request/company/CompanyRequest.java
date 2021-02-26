@@ -62,6 +62,6 @@ public class CompanyRequest {
     @ApiModelProperty(value = "Support Audio Restricted Mode", position = 10)
     private boolean audioRestrictedMode;
 
-    @ApiModelProperty(value = "Local Recording Mode", position = 11)
+    @ApiModelProperty(value = "Local Recording", position = 11)
     private boolean localRecording;
 }

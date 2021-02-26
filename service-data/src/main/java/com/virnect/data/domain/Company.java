@@ -1,9 +1,23 @@
 package com.virnect.data.domain;
 
-import lombok.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
 import org.hibernate.envers.Audited;
 
-import javax.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import com.virnect.data.domain.session.SessionType;
 
@@ -56,6 +70,9 @@ public class Company extends BaseTimeEntity {
     @Column(name = "audio_restricted_mode", nullable = false)
     private boolean audioRestrictedMode;
 
+    @Column(name = "local_recording", nullable = false)
+    private boolean localRecording;
+
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private Language language;
 
@@ -70,9 +87,9 @@ public class Company extends BaseTimeEntity {
         Boolean sttSync,
         Boolean sttStreaming,
         Boolean tts,
-        //Boolean restrictedMode,
         Boolean videoRestrictedMode,
         Boolean audioRestrictedMode,
+        Boolean localRecording,
         Language language
     ) {
         this.companyCode = companyCode;
@@ -87,8 +104,7 @@ public class Company extends BaseTimeEntity {
         this.tts = tts;
         this.videoRestrictedMode = videoRestrictedMode;
         this.audioRestrictedMode = audioRestrictedMode;
-        //this.restrictedMode = restrictedMode;
-
+        this.localRecording = localRecording;
         this.language = language;
     }
 
