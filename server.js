@@ -2,6 +2,7 @@ const express = require('express')
 const route = require('./route')
 const app = express()
 const server = require('./server/module')
+const config = require('./server/config')
 const path = require('path')
 const isbot = require('isbot')
 const { metaHTML } = require('./server/metadata')
@@ -9,16 +10,18 @@ const { metaHTML } = require('./server/metadata')
 var bodyParser = require('body-parser')
 
 app.use((req, res, next) => {
-  const isBot = isbot(req.headers['user-agent'])
-  const lang = req.acceptsLanguages('ko', 'en')
+  if (config.getEnv() !== 'onpremise') {
+    const isBot = isbot(req.headers['user-agent'])
+    const lang = req.acceptsLanguages('ko', 'en')
 
-  if (isBot) {
-    if (lang) {
-      res.send(metaHTML(lang))
-    } else {
-      res.send(metaHTML('en'))
+    if (isBot) {
+      if (lang) {
+        res.send(metaHTML(lang))
+      } else {
+        res.send(metaHTML('en'))
+      }
+      return
     }
-    return
   }
   next()
 })
