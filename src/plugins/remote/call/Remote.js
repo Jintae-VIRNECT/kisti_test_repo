@@ -38,7 +38,6 @@ const _ = {
   configs: null,
   options: null,
 
-  tempPublisher: null,
   /**
    * join session
    * @param {Object} configs {coturn, wss, token}
@@ -784,50 +783,50 @@ const _ = {
         }
         debug('call::republish::', publishOptions)
 
-        _.tempPublisher = OV.initPublisher('', publishOptions)
-        _.tempPublisher.onIceStateChanged(state => {
+        const tempPublisher = OV.initPublisher('', publishOptions)
+        tempPublisher.onIceStateChanged(state => {
           if (['failed', 'disconnected', 'closed'].includes(state)) {
             Store.commit('updateParticipant', {
-              connectionId: _.tempPublisher.stream.connection.connectionId,
+              connectionId: tempPublisher.stream.connection.connectionId,
               status: 'disconnected',
             })
           } else if (['connected', 'completed'].includes(state)) {
             Store.commit('updateParticipant', {
-              connectionId: _.tempPublisher.stream.connection.connectionId,
+              connectionId: tempPublisher.stream.connection.connectionId,
               status: 'good',
             })
           } else {
             Store.commit('updateParticipant', {
-              connectionId: _.tempPublisher.stream.connection.connectionId,
+              connectionId: tempPublisher.stream.connection.connectionId,
               status: 'normal',
             })
           }
           logger('ice state change', state)
         })
-        _.tempPublisher.on('streamCreated', () => {
+        tempPublisher.on('streamCreated', () => {
           logger('room', 'publish success')
-          debug('publisher stream :: ', _.tempPublisher.stream)
-          const mediaStream = _.tempPublisher.stream.mediaStream
+          debug('publisher stream :: ', tempPublisher.stream)
+          const mediaStream = tempPublisher.stream.mediaStream
 
           const participantInfo = {
-            connectionId: _.tempPublisher.stream.connection.connectionId,
+            connectionId: tempPublisher.stream.connection.connectionId,
             stream: mediaStream,
-            hasVideo: _.tempPublisher.stream.hasVideo,
-            hasCamera: _.tempPublisher.stream.hasVideo,
-            hasAudio: _.tempPublisher.stream.hasAudio,
-            video: _.tempPublisher.stream.videoActive, // settingInfo.videoOn,
-            audio: _.tempPublisher.stream.audioActive,
-            cameraStatus: _.tempPublisher.stream.hasVideo
+            hasVideo: tempPublisher.stream.hasVideo,
+            hasCamera: tempPublisher.stream.hasVideo,
+            hasAudio: tempPublisher.stream.hasAudio,
+            video: tempPublisher.stream.videoActive, // settingInfo.videoOn,
+            audio: tempPublisher.stream.audioActive,
+            cameraStatus: tempPublisher.stream.hasVideo
               ? _.configs.videoRestrictedMode
                 ? CAMERA_STATUS.CAMERA_OFF
-                : _.tempPublisher.stream.videoActive
+                : tempPublisher.stream.videoActive
                 ? CAMERA_STATUS.CAMERA_ON
                 : CAMERA_STATUS.CAMERA_OFF
               : CAMERA_STATUS.CAMERA_NONE,
           }
 
           Store.commit('updateParticipant', participantInfo)
-          if (_.tempPublisher.stream.hasVideo) {
+          if (tempPublisher.stream.hasVideo) {
             const track = mediaStream.getVideoTracks()[0]
             const settings = track.getSettings()
             const capability = track.getCapabilities()
@@ -852,7 +851,7 @@ const _ = {
           } else if (_.openRoom) {
             checkInput({ video: true, audio: false }).then(hasCamera => {
               const params = {
-                connectionId: _.tempPublisher.stream.connection.connectionId,
+                connectionId: tempPublisher.stream.connection.connectionId,
                 hasAudio: true,
               }
               if (!hasCamera) {
@@ -876,7 +875,7 @@ const _ = {
           _.publisher = null
         }
 
-        _.publisher = _.tempPublisher
+        _.publisher = tempPublisher
         _.session.publish(_.publisher)
       } else {
         if (_.publisher) {
