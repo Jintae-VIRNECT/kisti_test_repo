@@ -92,19 +92,19 @@ public class DownloadService {
         MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(memberUUID, workspaceUUID).getData();
         if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
             log.error("[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is empty. user uuid : [{}], workspace uuid : [{}]", memberUUID, workspaceUUID);
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
         }
         boolean containViewLicense = myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).anyMatch(productName -> productName.equals("VIEW"));
         if (!containViewLicense) {
             log.error("[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is not contain view plan. user uuid : [{}], workspace uuid : [{}], contain view license : [{}]", memberUUID, workspaceUUID, containViewLicense);
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
         }
     }
 
     private void contentShardCheck(String memberUUID, Content content) {
         if (content.getShared().equals(YesOrNo.NO) && !content.getUserUUID().equals(memberUUID)) {
             log.error("[CONTENT DOWNLOAD][SHARED CHECK] content shared : [{}], user uuid : [{}], content owner user uuid : [{}]", content.getShared(), memberUUID, content.getUserUUID());
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_SHARED);
         }
     }
 
@@ -118,7 +118,7 @@ public class DownloadService {
 
         if (maxDownload < sumDownload + 1) {
             log.error("[CONTENT DOWNLOAD][LICENSE CHECK] content download count is over workspace max download count. max download count : [{}], content download count(include current request) : [{}]", maxDownload, sumDownload + 1);
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
         }
     }
 
