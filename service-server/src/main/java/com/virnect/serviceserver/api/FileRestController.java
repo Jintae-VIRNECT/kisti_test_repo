@@ -81,7 +81,7 @@ public class FileRestController {
                 LogMessage.formedError(
                     TAG,
                     "REST API: POST " + REST_PATH,
-                    "createCompanyRequestHandler",
+                    "fileUploadRequestHandler",
                     LogMessage.PARAMETER_ERROR,
                     message.toString()
                 )
@@ -309,7 +309,7 @@ public class FileRestController {
                 + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
                 + "userId:" + (userId != null ? sessionId : "{}") + "/"
                 + "deleted:" + deleted,
-            "recordFileDownloadUrlRequestHandler"
+            "getFileList"
         );
         ApiResponse<FileInfoListResponse> responseData;
 
