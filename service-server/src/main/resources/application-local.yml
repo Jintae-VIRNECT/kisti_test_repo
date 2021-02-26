@@ -6,15 +6,15 @@ spring:
         allow-bean-definition-overriding: true
     datasource:
         driver-class-name: com.mysql.cj.jdbc.Driver
-        password: dndqmffldb
-        url: jdbc:mysql://localhost:3306/woong?serverTimezone=UTC&characterEncoding=UTF-8
-        username: root
+        url: jdbc:mysql://192.168.6.3:4336/remote?serverTimezone=UTC&characterEncoding=UTF-8
+        username: virnect-remote2
+        password: virnect1234
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
         generate-ddl: true
         hibernate:
-            ddl-auto: update
+            ddl-auto: validate
         properties:
             hibernate:
                 format_sql: true
@@ -30,14 +30,51 @@ eureka:
     instance:
         prefer-ip-address: true
 
+cloud:
+    loadbalancer:
+        ribbon:
+            enabled: true
+
 feign:
+    okhttp:
+        enabled: true
+    httpclient:
+        enabled: false
+        disable-ssl-validation: true
     hystrix:
         enabled: true
+    license-prefix: license-server
+    workspace-prefix: workspace-server
+    user-prefix: user-server
+    message-prefix: message-server
+    remote-prefix: remote-service-server
+    record-prefix: remote-record-server
     license-url: http://192.168.6.3:8632
-    message-url: http://192.168.6.3:8084
-    record-url: http://192.168.6.3:8083
-    user-url: http://192.168.6.3:8081
     workspace-url: http://192.168.6.3:8082
+    user-url: http://192.168.6.3:8081
+    message-url: http://192.168.6.3:8084
+    remote-url: http://192.168.6.3:8000
+    record-url: https://192.168.6.3:8083
+
+workspace-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8082
+
+user-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8081
+
+remote-record-server:
+    ribbon:
+        listOfServers: https://192.168.6.3:8083
+
+license-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8632
+
+message-server:
+    ribbon:
+        listOfServers: http://192.168.6.3:8084
 
 logging:
     level:
@@ -82,3 +119,6 @@ storage:
     policy-enabled: true
     policy-lifecycle: 
     policy-location: ""
+
+hystrix:
+    command.default.execution.isolation.thread.timeoutInMilliseconds: 10000

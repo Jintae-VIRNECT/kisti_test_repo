@@ -8,7 +8,7 @@ import com.virnect.data.dto.PushSendRequest;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.global.common.ApiResponse;
 
-@FeignClient(name = "${feign.message-prefix}", url = "${feign.message-url}", fallbackFactory = MessageRestFallbackFactory.class)
+@FeignClient(name = "message-server", fallbackFactory = MessageRestFallbackFactory.class)
 public interface MessageRestService {
 
 	@PostMapping("/messages/push")

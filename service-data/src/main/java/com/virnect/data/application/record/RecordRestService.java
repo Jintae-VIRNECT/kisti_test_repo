@@ -10,7 +10,7 @@ import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
 import com.virnect.data.dto.rest.StopRecordingResponse;
 import com.virnect.data.global.common.ApiResponse;
 
-@FeignClient(name = "${feign.record-prefix}", url = "${feign.record-url}", fallbackFactory = RecordRestFallbackFactory.class)
+@FeignClient(name = "remote-record-server", fallbackFactory = RecordRestFallbackFactory.class)
 public interface RecordRestService {
 
 	@DeleteMapping("/remote/recorder/workspaces/{workspaceId}/users/{userId}/recordings")

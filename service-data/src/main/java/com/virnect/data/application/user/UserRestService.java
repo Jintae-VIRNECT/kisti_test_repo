@@ -10,7 +10,7 @@ import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.global.common.ApiResponse;
 
-@FeignClient(name = "${feign.user-prefix}", url = "${feign.user-url}", fallbackFactory = UserRestFallbackFactory.class)
+@FeignClient(name = "user-server", fallbackFactory = UserRestFallbackFactory.class)
 public interface UserRestService {
 	/**
 	 * User Information List
