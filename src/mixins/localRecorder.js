@@ -7,7 +7,7 @@ import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 import IDBHelper from 'utils/idbHelper'
 import { v4 as uuidv4 } from 'uuid'
 
-const logType = 'LocalRecorder(util)'
+const logType = 'LocalRecorder'
 
 export default {
   name: 'localRecorder',
@@ -499,7 +499,6 @@ export default {
         this.recorder.changeCanvasOrientation(orientation)
       } else {
         const guessedOrientation = this.guessOrientation(mediaStream)
-        console.log('guessedOrientation::', guessedOrientation)
         this.recorder.changeCanvasOrientation(guessedOrientation)
       }
     },
