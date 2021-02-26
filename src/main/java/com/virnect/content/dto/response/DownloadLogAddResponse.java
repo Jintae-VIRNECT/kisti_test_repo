@@ -1,5 +1,6 @@
 package com.virnect.content.dto.response;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
  * DESCRIPTION:
  */
 @RequiredArgsConstructor
+@Getter
 public class DownloadLogAddResponse {
     private final boolean downloadLogAddResult;
 }
