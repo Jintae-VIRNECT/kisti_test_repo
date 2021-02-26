@@ -77,7 +77,7 @@ export default {
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
             this.changeCanvasOrientation(orientation, this.mainView.stream)
           } else {
-            this.changeCanvasOrientation(orientation, this.screenStream)
+            this.changeCanvasOrientation(null, this.screenStream)
           }
         }
       },
@@ -97,9 +97,8 @@ export default {
                 this.resolution.height,
               ),
             )
+            this.changeCanvasOrientation(orientation, current.stream)
           }
-
-          this.changeCanvasOrientation(orientation, current.stream)
         }
       },
     },
@@ -182,7 +181,7 @@ export default {
         if (this.localRecordTarget === RECORD_TARGET.WORKER) {
           this.changeCanvasOrientation(orientation, this.mainView.stream)
         } else {
-          this.changeCanvasOrientation(orientation, this.screenStream)
+          this.changeCanvasOrientation(null, this.screenStream)
         }
 
         this.recorder.setOndataAvailableCallBack(this.ondataAvailableCallBack)
@@ -471,11 +470,15 @@ export default {
      * 영상의 orientation을 추측
      * @param {MediaStream} mediaStream 판단할 비디오 스트림
      */
-    guessOrientation(mediaStream) {
+    async guessOrientation(mediaStream) {
       if (mediaStream) {
         const tracks = mediaStream.getVideoTracks()
         if (tracks.length > 0) {
-          const settings = tracks[0].getSettings()
+          //크롬 getSettings() 버그해결을 위한 슈뢰딩거 코드
+          mediaStream.getVideoTracks()[0].getSettings()
+          await new Promise(r => setTimeout(r, 100))
+          const settings = mediaStream.getVideoTracks()[0].getSettings()
+
           if (settings.width >= settings.height) {
             return 'landscape'
           } else {
@@ -492,13 +495,13 @@ export default {
      * 녹화용 canvas의 orientation을 지정값 혹은 추측값으로 변경
      *
      * @param {String} orientation 지정할 orientation
-     * @param {MediaStream} mediaStream
+     * @param {MediaStream} mediaStream 판단할 미디어 스트림
      */
-    changeCanvasOrientation(orientation, mediaStream) {
+    async changeCanvasOrientation(orientation, mediaStream) {
       if (orientation && orientation !== '') {
         this.recorder.changeCanvasOrientation(orientation)
       } else {
-        const guessedOrientation = this.guessOrientation(mediaStream)
+        const guessedOrientation = await this.guessOrientation(mediaStream)
         this.recorder.changeCanvasOrientation(guessedOrientation)
       }
     },
