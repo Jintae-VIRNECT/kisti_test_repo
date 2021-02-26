@@ -20,8 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.application.record.RecordRestService;
-import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.room.RoomRepository;
@@ -49,7 +47,6 @@ import com.virnect.remote.dto.request.room.JoinRoomRequest;
 import com.virnect.remote.dto.request.room.KickRoomRequest;
 import com.virnect.remote.dto.request.room.ModifyRoomInfoRequest;
 import com.virnect.remote.dto.request.room.RoomRequest;
-import com.virnect.remote.dto.response.CoturnResponse;
 import com.virnect.remote.dto.response.ResultResponse;
 import com.virnect.remote.dto.response.member.MemberInfoResponse;
 import com.virnect.remote.dto.response.room.InviteRoomResponse;
@@ -78,8 +75,6 @@ public class SessionService {
 	private final RoomRepository roomRepository;
 	private final RoomHistoryRepository roomHistoryRepository;
 	private final ModelMapper modelMapper;
-
-	private final FileService fileService;
 
 	public ApiResponse<RoomResponse> generateRoom(
 		RoomRequest roomRequest,
@@ -146,7 +141,6 @@ public class SessionService {
 				.uuid(roomRequest.getLeaderId())
 				.sessionId(room.getSessionId())
 				.build();
-
 			room.getMembers().add(member);
 		} else {
 			log.info("leader Id is null");

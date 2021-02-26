@@ -71,4 +71,60 @@ public class AdminService {
 		}
 		return responseData;
 	}
+
+	public ApiResponse<CompanyResponse> updateCompany(CompanyRequest companyRequest) {
+
+		ApiResponse<CompanyResponse> responseData;
+
+		Company company = sessionService.getCompany(companyRequest.getWorkspaceId());
+
+		if (company == null) {
+			responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_NOT_EXIST);
+		} else {
+
+			company.setCompanyCode(companyRequest.getCompanyCode());
+			company.setLicenseName(companyRequest.getLicenseName());
+			company.setSessionType(companyRequest.getSessionType());
+			company.setRecording(companyRequest.isRecording());
+			company.setStorage(companyRequest.isStorage());
+			company.setTranslation(companyRequest.isTranslation());
+			company.setSttStreaming(companyRequest.isSttStreaming());
+			company.setSttSync(companyRequest.isSttSync());
+			company.setTts(companyRequest.isTts());
+			company.setVideoRestrictedMode(companyRequest.isVideoRestrictedMode());
+			company.setAudioRestrictedMode(companyRequest.isAudioRestrictedMode());
+			company.setLocalRecording(companyRequest.isLocalRecording());
+
+			LanguageRequest languageRequest = companyRequest.getLanguage();
+			Language language = Language.builder()
+				.transKoKr(languageRequest.isTransKoKr())
+				.transEnUs(languageRequest.isTransEnUs())
+				.transJaJp(languageRequest.isTransJaJp())
+				.transZh(languageRequest.isTransZh())
+				.transEsEs(languageRequest.isTransEsEs())
+				.transFrFr(languageRequest.isTransFrFr())
+				.transPlPl(languageRequest.isTransPlPl())
+				.transRuRu(languageRequest.isTransRuRu())
+				.transUkUa(languageRequest.isTransUkUa())
+				.company(company)
+				.build();
+
+			company.setLanguage(language);
+
+			try{
+				if (sessionService.updateCompany(company) != null) {
+					CompanyResponse companyResponse = new CompanyResponse();
+					companyResponse.setWorkspaceId(company.getWorkspaceId());
+					companyResponse.setLicenseName(company.getLicenseName());
+					companyResponse.setSessionType(company.getSessionType());
+					responseData = new ApiResponse<>(companyResponse);
+				} else {
+					responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
+				}
+			} catch (Exception e) {
+				responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
+			}
+		}
+		return responseData;
+	}
 }

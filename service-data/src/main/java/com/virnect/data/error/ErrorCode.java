@@ -25,6 +25,8 @@ public enum ErrorCode {
 	// error code for company information
 	ERR_COMPANY_CREATE_FAIL(3500, "Company information create is failed"),
 	ERR_COMPANY_INVALID_CODE(3501, "Company information request is invalid"),
+	ERR_COMPANY_NOT_EXIST(3502, "company in workspace is not exist"),
+	ERR_COMPANY_UPDATE_FAIL(3503, "Company information update is failed"),
 
 	// error code for remote session
 	ERR_ROOM_INFO(4000, "Room Info Error"),

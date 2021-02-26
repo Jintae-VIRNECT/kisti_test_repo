@@ -56,9 +56,13 @@ public class SessionTransactionalService {
 	private final MemberHistoryRepository memberHistoryRepository;
 	private final CompanyRepository companyRepository;
 
-	//===========================================  Admin Services     =================================================//
 	@Transactional
 	public Company createCompany(Company company) {
+		return companyRepository.save(company);
+	}
+	//===========================================  Admin Services     =================================================//
+	@Transactional
+	public Company updateCompany(Company company) {
 		return companyRepository.save(company);
 	}
 
