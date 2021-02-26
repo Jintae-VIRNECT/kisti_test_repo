@@ -57,7 +57,7 @@
           class="main-video__pointing"
         ></pointing>
         <!-- 디바이스 컨트롤 뷰 -->
-        <template v-if="allowTools && !screenShare">
+        <template v-if="allowTools">
           <transition name="opacity">
             <video-tools v-if="hoverTools"></video-tools>
           </transition>
@@ -65,7 +65,7 @@
         <transition name="opacity">
           <fullscreen
             :hide.sync="hideFullBtn"
-            v-show="!hideFullBtn && !screenShare"
+            v-show="!hideFullBtn && !mainView.screenShare"
           ></fullscreen>
         </transition>
       </template>
@@ -165,8 +165,6 @@ export default {
       serverTime: 0,
       serverStart: 0,
       hideFullBtn: false,
-
-      screenShare: false,
     }
   },
   computed: {
@@ -220,6 +218,9 @@ export default {
       }
     },
     allowTools() {
+      if (this.mainView.screenShare) {
+        return false
+      }
       if (
         this.viewForce === true &&
         this.account.roleType === ROLE.LEADER &&
@@ -237,11 +238,13 @@ export default {
       }
     },
     emptyStream() {
-      const validStatus = this.cameraStatus !== -1
+      const validCameraStatus = this.cameraStatus !== -1
       const cameraOff = this.cameraStatus.state === 'off'
       const cameraBackground = this.cameraStatus.state === 'background'
 
-      return validStatus && ((this.loaded && cameraOff) || cameraBackground)
+      return (
+        validCameraStatus && ((this.loaded && cameraOff) || cameraBackground)
+      )
     },
   },
   watch: {
@@ -428,9 +431,6 @@ export default {
         this.optimizeVideoSize()
       }, 500)
     },
-    toggleScreenShare() {
-      this.screenShare = !this.screenShare
-    },
   },
 
   /* Lifecycles */
@@ -438,14 +438,12 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('showServerTimer', this.showServerTimer)
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
-    this.$eventBus.$off('video:share', this.toggleScreenShare)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('showServerTimer', this.showServerTimer)
     this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
-    this.$eventBus.$on('video:share', this.toggleScreenShare)
     window.addEventListener('resize', this.nextOptimize)
   },
 }
