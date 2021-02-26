@@ -2,6 +2,10 @@
   <div class="participants" id="video-list">
     <vue2-scrollbar ref="sessionListScrollbar" :reverseAxios="true">
       <transition-group name="list" tag="div" class="participants__view">
+        <camera-control
+          v-if="restrictedRoom && isLeader"
+          key="controlBtn"
+        ></camera-control>
         <!-- <div class="participants__view"></div> -->
         <participant-video
           v-for="participant of participants"
@@ -35,12 +39,14 @@ import { maxParticipants } from 'utils/callOptions'
 import ParticipantVideo from './ParticipantVideo'
 import InviteModal from '../modal/InviteModal'
 import SelectView from '../modal/SelectView'
+import CameraControl from './CameraControl'
 export default {
   name: 'ParticipantList',
   components: {
     ParticipantVideo,
     InviteModal,
     SelectView,
+    CameraControl,
   },
   data() {
     return {
@@ -55,6 +61,8 @@ export default {
       'viewForce',
       'roomInfo',
       'openRoom',
+      'allowCameraControl',
+      'restrictedRoom',
     ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -96,6 +104,10 @@ export default {
   methods: {
     ...mapActions(['setMainView', 'addChat', 'removeMember']),
     selectMain(participant) {
+      if (this.restrictedRoom) {
+        this.$call.sendVideo(participant.id, true)
+        return
+      }
       this.selectview = {
         id: participant.id,
         nickname: participant.nickname,
@@ -147,9 +159,6 @@ export default {
       // this.$call.disconnect(this.participant.connectionId)
     },
   },
-
-  /* Lifecycles */
-  mounted() {},
 }
 </script>
 <style>

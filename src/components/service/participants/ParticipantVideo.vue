@@ -166,6 +166,7 @@ export default {
       'viewForce',
       'view',
       'initing',
+      'restrictedRoom',
     ]),
     profileUrl() {
       if (!this.participant.path) {
@@ -286,6 +287,7 @@ export default {
       this.changeMain()
     },
     changeMain() {
+      if (this.restrictedRoom && this.account.roleType !== ROLE.LEADER) return
       if (!this.participant.hasCamera) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
@@ -402,7 +404,7 @@ export default {
     },
   },
   beforeDestroy() {
-    if (this.$call.session) {
+    if (!this.participant.me && this.$call.session) {
       this.toastDefault(
         this.$t('service.chat_leave', { name: this.participant.nickname }),
       )

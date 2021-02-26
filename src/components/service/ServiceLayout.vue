@@ -113,7 +113,14 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['view', 'captureFile', 'chatBox', 'myInfo', 'video']),
+    ...mapGetters([
+      'view',
+      'captureFile',
+      'chatBox',
+      'myInfo',
+      'video',
+      'restrictedRoom',
+    ]),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
@@ -248,6 +255,12 @@ export default {
 
     this.$eventBus.$off('video:fullscreen', this.setFullScreen)
     this.$eventBus.$off('video:loaded', this.setVideoLoaded)
+  },
+
+  mounted() {
+    if (this.restrictedRoom) {
+      this.toastDefault(this.$t('service.toast_video_restrict_mode'))
+    }
   },
 }
 </script>

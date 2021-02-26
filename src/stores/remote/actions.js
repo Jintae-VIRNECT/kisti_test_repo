@@ -155,6 +155,9 @@ export default {
       commit(types.SETTINGS.SET_TTS_ALLOW, payload['ttsAllow'])
     }
   },
+  setScreenStrict({ commit }, payload) {
+    commit(types.SETTINGS.SET_SCREEN_STRICT, payload)
+  },
 
   /**
    * set local record target

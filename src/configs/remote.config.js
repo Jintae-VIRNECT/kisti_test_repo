@@ -40,6 +40,10 @@ export const FLASH = {
 export const CONTROL = {
   POINTING: 'pointing',
   LOCAL_RECORD: 'localRecord',
+  VIDEO: 'video',
+  AUDIO: 'audio',
+  AUDIO_VIDEO: 'audioVideo',
+  RESTRICTED_MODE: 'restrictedMode',
 }
 
 export const DRAWING = {

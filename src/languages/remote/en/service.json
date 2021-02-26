@@ -32,6 +32,7 @@
     "toast_ar_start": "AR sharing has started by <em>{name}</em>.",
     "toast_ar_exit": "The leader has ended the AR sharing.",
     "toast_no_sharing": "No videos are being shared.",
+    "toast_video_restrict_mode": "This is the video restriction mode.<br>Participants all connect with the camera turned off.​",
 
     "participant_mute": "Mute",
     "participant_mute_cancel": "Unmute",
@@ -169,6 +170,8 @@
     "chat_record_allow": "The local recording is allowed for the participants.",
     "chat_record_not_allow": "The local recording is canceled for the participants.",
     "chat_send_cancel": "The trasfer was canceled by <em>{name}</em>.",
+    "chat_camera_control_on": "Camera <em>On/Off</em> control function allowed.​",
+    "chat_camera_control_off": "Camera <em>On/Off</em> control function is limited.",
     "chat_text_exceed": "You cannot enter more than 200 characters.​",
     "file": "File",
     "file_validdatae": "Valid date ",
@@ -216,6 +219,11 @@
     "reconnect_network_connecting": "Connecting to the network...",
     "reconnect_room_connecting": "Reconnecting collaboration...",
     "reconnect_disconnected": "The connection has ended due to the network/server issue. <br>Would you like to reconnect?​",
-    "reconnect_reconnect_cancel": "Collabo reconnection has been canceled."
+    "reconnect_reconnect_cancel": "Collabo reconnection has been canceled.",
+
+    "camera_control": "Camera Control",
+    "camera_control_allow": "Allow camera control",
+    "camera_control_every_on": "Turn on all cameras",
+    "camera_control_every_off": "Turn off all cameras"
   }
 }

@@ -29,6 +29,8 @@ const companyInfo = {
   sessionType: 'PRIVATE', // 오픈방 유무 (PRIVATE, OPEN, PUBLIC)
   licenseName: '',
   languageCodes: [],
+  audioRestrictedMode: false,
+  videoRestrictedMode: false,
 }
 
 const state = {
@@ -123,6 +125,12 @@ const getters = {
   languageCodes: state => state.companyInfo.languageCodes,
   useRecording: state => state.companyInfo.recording,
   useStorage: state => state.companyInfo.storage,
+  restrictedMode: state => {
+    return {
+      audio: state.companyInfo.audioRestrictedMode,
+      video: state.companyInfo.videoRestrictedMode,
+    }
+  },
 }
 
 export default {

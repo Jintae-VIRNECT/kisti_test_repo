@@ -30,6 +30,7 @@ const state = {
     pointing: true,
     localRecord: true,
   },
+  useScreenStrict: true,
 
   videoDevice: null,
   language: null,
@@ -91,6 +92,9 @@ const mutations = {
   [SETTINGS.SET_TTS_ALLOW](state, flag) {
     state.translate.ttsAllow = flag
   },
+  [SETTINGS.SET_SCREEN_STRICT](state, flag) {
+    state.useScreenStrict = flag
+  },
 
   // [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
   //   state.videoDevice = videoDevice
@@ -126,6 +130,7 @@ const getters = {
   language: state => state.language,
 
   translate: state => state.translate,
+  useScreenStrict: state => state.useScreenStrict,
 
   // used Remote.js
   settingInfo: state => {

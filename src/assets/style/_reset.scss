@@ -84,8 +84,8 @@ button {
 }
 
 * {
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
+  -ms-touch-action: pinch-zoom;
+  touch-action: pinch-zoom;
 }
 
 html,

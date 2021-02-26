@@ -9,6 +9,7 @@ import {
   VIDEO,
   AR_FEATURE,
   FILE,
+  CONTROL,
 } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import {
@@ -59,13 +60,20 @@ const _ = {
         deviceType: DEVICE.WEB,
       }
 
-      const iceServers = configs.coturn || URLS['coturn']
+      // const iceServers = URLS.coturn
+      let ws = configs.wss || `${URLS['ws']}${wsUri['REMOTE']}`
+      // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+      if (URLS['coturnUrl']) {
+        for (let config of configs.coturn) {
+          config.url = URLS['coturnUrl']
+        }
+        ws = `${URLS['ws']}${wsUri['REMOTE']}` || configs.wss
+      }
+
+      const iceServers = configs.coturn
       for (let ice of iceServers) {
         ice['urls'] = ice['url']
       }
-      // const iceServers = URLS.coturn
-      const ws = configs.wss || `${URLS['wsapi']}${wsUri['REMOTE']}`
-      // const ws = 'wss://192.168.6.3:8000/remote/websocket'
 
       setRecordInfo({
         token: configs['token'],
@@ -77,6 +85,18 @@ const _ = {
         throw 'ice server를 찾을 수 없습니다.'
       }
       debug('coturn::', iceServers)
+
+      if (configs.audioRestrictedMode || configs.videoRestrictedMode) {
+        Store.commit('setRestrictedMode', true)
+        Store.dispatch('setDevices', {
+          video: {
+            isOn: false,
+          },
+          audio: {
+            isOn: false,
+          },
+        })
+      }
 
       const connectOption = {
         iceServers,
@@ -100,8 +120,10 @@ const _ = {
         const publishOptions = {
           audioSource: options.audioSource,
           videoSource: options.videoSource,
-          publishAudio: settingInfo.micOn,
-          publishVideo: settingInfo.videoOn,
+          publishAudio: configs.audioRestrictedMode ? false : settingInfo.micOn,
+          publishVideo: configs.videoRestrictedMode
+            ? false
+            : settingInfo.videoOn,
           resolution: settingInfo.quality,
           // resolution: '1920x1080', // FHD
           // resolution: '3840x2160', // 4K
@@ -141,10 +163,12 @@ const _ = {
             hasVideo: _.publisher.stream.hasVideo,
             hasCamera: _.publisher.stream.hasVideo,
             hasAudio: _.publisher.stream.hasAudio,
-            video: settingInfo.videoOn,
+            video: _.publisher.stream.videoActive, // settingInfo.videoOn,
             audio: _.publisher.stream.audioActive,
             cameraStatus: _.publisher.stream.hasVideo
-              ? settingInfo.videoOn
+              ? configs.videoRestrictedMode
+                ? CAMERA_STATUS.CAMERA_OFF
+                : _.publisher.stream.videoActive
                 ? CAMERA_STATUS.CAMERA_ON
                 : CAMERA_STATUS.CAMERA_OFF
               : CAMERA_STATUS.CAMERA_NONE,
@@ -332,6 +356,24 @@ const _ = {
   sendControl: (type, enable, target = null) => {
     const params = {
       type,
+      enable,
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: target,
+      type: SIGNAL.CONTROL,
+    })
+  },
+  /**
+   * @BROADCATE
+   * @TARGET
+   * other user's pointing, recording control
+   * @param {String} type = remote.config.CONTROL
+   */
+  sendControlRestrict: (device, enable, target = null) => {
+    const params = {
+      type: CONTROL.RESTRICTED_MODE,
+      target: device,
       enable,
     }
     _.session.signal({

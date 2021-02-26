@@ -66,7 +66,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['targetCompany']),
+    ...mapGetters(['targetCompany', 'restrictedMode', 'useScreenStrict']),
   },
   props: {
     visible: {
@@ -184,6 +184,10 @@ export default {
             sessionId: this.sessionId,
             sessionType: ROOM_STATUS.PRIVATE,
             companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
           })
         } else {
           createdRes = await createRoom({
@@ -196,6 +200,10 @@ export default {
             workspaceId: this.workspace.uuid,
             sessionType: ROOM_STATUS.PRIVATE,
             companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
           })
         }
         if (info.imageFile) {
@@ -222,6 +230,8 @@ export default {
           ...roomInfo,
           leaderId: this.account.uuid,
           open: false,
+          videoRestrictedMode: createdRes.videoRestrictedMode,
+          audioRestrictedMode: createdRes.audioRestrictedMode,
         })
         if (connRes) {
           this.$eventBus.$emit('popover:close')
