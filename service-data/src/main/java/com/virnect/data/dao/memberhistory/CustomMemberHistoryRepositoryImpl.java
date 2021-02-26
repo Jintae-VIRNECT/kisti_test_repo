@@ -47,7 +47,9 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
 				memberHistory.workspaceId.eq(workspaceId),
-				memberHistory.uuid.eq(userId)
+				memberHistory.uuid.eq(userId),
+				memberHistory.roomHistory.isNotNull(),
+				memberHistory.historyDeleted.isFalse()
 			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<MemberHistory> result = getQuerydsl().applyPagination(pageable, queryResult).fetch();
