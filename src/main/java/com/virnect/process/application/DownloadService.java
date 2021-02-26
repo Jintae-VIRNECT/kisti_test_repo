@@ -8,6 +8,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +19,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.process.application.content.ContentRestService;
+import com.virnect.process.application.license.LicenseRestService;
 import com.virnect.process.dao.process.ProcessRepository;
 import com.virnect.process.domain.Conditions;
 import com.virnect.process.domain.Process;
 import com.virnect.process.domain.State;
 import com.virnect.process.domain.SubProcess;
+import com.virnect.process.dto.rest.request.content.DownloadLogAddRequest;
+import com.virnect.process.dto.rest.response.content.ContentInfoResponse;
+import com.virnect.process.dto.rest.response.license.LicenseInfoResponse;
+import com.virnect.process.dto.rest.response.license.MyLicenseInfoListResponse;
+import com.virnect.process.dto.rest.response.license.MyLicenseInfoResponse;
 import com.virnect.process.exception.ProcessServiceException;
 import com.virnect.process.global.error.ErrorCode;
+import com.virnect.process.infra.file.FileDownloadService;
 
 /**
  * Project: PF-ProcessManagement
@@ -36,6 +47,11 @@ import com.virnect.process.global.error.ErrorCode;
 public class DownloadService {
 	private final ContentRestService contentRestService;
 	private final ProcessRepository processRepository;
+	private final FileDownloadService fileDownloadService;
+	private final LicenseRestService licenseRestService;
+
+	@Value("${minio.bucket-resource}")
+	private String bucketResource;
 
 	/**
 	 * 컨텐츠UUID로 컨텐츠 다운로드
@@ -47,20 +63,83 @@ public class DownloadService {
 	public ResponseEntity<byte[]> contentDownloadForUUIDHandler(
 		String contentUUID, String memberUUID, String workspaceUUID
 	) {
-		//1. contentUUID 정보가 없을때
+		//1. content 식별자 체크
 		Process process = processRepository.findByContentUUIDAndStatus(contentUUID, State.CREATED)
-			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_PROCESS));
+			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_NOT_FOUND_INFO));
 
-		//2. 현재 사용자에게 할당된 작업이 아닐때
+		ContentInfoResponse contentInfo = contentValidCheck(process.getContentUUID());
+
+		//2. 현재 사용자에게 할당된 작업인지 체크
 		ownerValidCheck(memberUUID, process);
 
-		//3. 현재 접속한 워크스페이스에 해당하는 작업이 아닐 때
-		workspaceValidCheck(workspaceUUID, process);
+		//3. 현재 워크스페이스에 해당하는 작업인지 체크
+		workspaceValidCheck(workspaceUUID, process, contentInfo.getWorkspaceUUID());
 
-		//4.대기 중이거나 마감 된 작업일 때
+		//4.대기 중이거나 마감 된 작업인지 체크
 		conditionValidCheck(process);
 
-		return contentRestService.contentDownloadForUUIDRequestHandler(contentUUID, memberUUID, workspaceUUID);
+		//5. 라이선스 체크
+		licenseMaxDownloadValidCheck(workspaceUUID);
+		licenseValidCheck(memberUUID, workspaceUUID);
+
+		byte[] bytes = fileDownloadService.fileDownloadByFileName(contentInfo.getPath());
+		contentRestService.contentDownloadLogForUUIDHandler(
+			new DownloadLogAddRequest(process.getContentUUID(), memberUUID));
+		return new ResponseEntity<>(bytes, getHeaders(contentInfo.getPath(), bytes), HttpStatus.OK);
+	}
+
+	private HttpHeaders getHeaders(String path, byte[] bytes) {
+		String resourcePath = path.split(bucketResource)[1];
+		log.info("PARSER - RESOURCE PATH: [{}]", resourcePath);
+		String[] resources = resourcePath.split("/");
+		for (String url : resources) {
+			log.info("PARSER - RESOURCE URL: [{}]", url);
+		}
+		HttpHeaders httpHeaders = new HttpHeaders();
+		httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		httpHeaders.setContentLength(bytes.length);
+		httpHeaders.setContentDispositionFormData("attachment", resources[1]);
+		return httpHeaders;
+	}
+
+	private void licenseValidCheck(String memberUUID, String workspaceUUID) {
+		MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
+			memberUUID, workspaceUUID).getData();
+		if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+			log.error(
+				"[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is empty. user uuid : [{}], workspace uuid : [{}]",
+				memberUUID, workspaceUUID
+			);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
+		}
+		boolean containViewLicense = myLicenseInfoListResponse.getLicenseInfoList()
+			.stream()
+			.map(MyLicenseInfoResponse::getProductName)
+			.anyMatch(productName -> productName.equals("VIEW"));
+		if (!containViewLicense) {
+			log.error(
+				"[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is not contain view plan. user uuid : [{}], workspace uuid : [{}], contain view license : [{}]",
+				memberUUID, workspaceUUID, containViewLicense
+			);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
+		}
+	}
+
+	protected void licenseMaxDownloadValidCheck(String workspaceUUID) {
+		// 라이센스 총 다운로드 횟수
+		LicenseInfoResponse licenseInfoResponse = licenseRestService.getWorkspaceLicenseInfo(workspaceUUID).getData();
+		Long maxDownload = licenseInfoResponse.getMaxDownloadHit();
+
+		// 현재 워크스페이스의 총 다운로드 횟수
+		long sumDownload = licenseInfoResponse.getCurrentUsageDownloadHit();
+
+		if (maxDownload < sumDownload + 1) {
+			log.error(
+				"[CONTENT DOWNLOAD][LICENSE CHECK] content download count is over workspace max download count. max download count : [{}], content download count(include current request) : [{}]",
+				maxDownload, sumDownload + 1
+			);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
+		}
 	}
 
 	/**
@@ -77,23 +156,37 @@ public class DownloadService {
 		String encodedData = checkParameterEncoded(targetData);
 		Process process = processRepository.findByTargetDataAndState(encodedData, State.CREATED)
 			.orElseGet(() -> getProcessByUpperCaseTargetData(encodedData));
+		ContentInfoResponse contentInfo = contentValidCheck(process.getContentUUID());
 
 		//1.현재 사용자에게 할당 된 작업이 아닐 때
 		ownerValidCheck(memberUUID, process);
 		//2. 현재 접속한 워크스페이스에 해당하는 작업이 아닐 때
-		workspaceValidCheck(workspaceUUID, process);
+		workspaceValidCheck(workspaceUUID, process, contentInfo.getWorkspaceUUID());
 		//3.대기 중이거나 마감 된 작업일 때
 		conditionValidCheck(process);
 
-		//작업 전환의 경우에는 타겟정보를 작업서버에 만들어놓기 때문에 contents 서버에 타겟정보가 없다. 그래서 타겟정보로 다운로드하는 것으로 요청하면 안된다.
-		return contentRestService.contentDownloadForUUIDRequestHandler(
-			process.getContentUUID(), memberUUID, workspaceUUID);
+		//4. 라이선스 체크
+		licenseMaxDownloadValidCheck(workspaceUUID);
+		licenseValidCheck(memberUUID, workspaceUUID);
+
+		byte[] bytes = fileDownloadService.fileDownloadByFileName(contentInfo.getPath());
+		contentRestService.contentDownloadLogForUUIDHandler(
+			new DownloadLogAddRequest(process.getContentUUID(), memberUUID));
+		return new ResponseEntity<>(bytes, getHeaders(contentInfo.getPath(), bytes), HttpStatus.OK);
+	}
+
+	private ContentInfoResponse contentValidCheck(String contentUUID) {
+		ContentInfoResponse contentInfo = contentRestService.getContentInfo(contentUUID).getData();
+		if (contentInfo == null) {
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_NOT_FOUND_INFO);
+		}
+		return contentInfo;
 	}
 
 	private Process getProcessByUpperCaseTargetData(String encodedData) {
 		return processRepository.findByTargetDataAndState(
 			toUpperCaseUrlEncodedString(encodedData), State.CREATED)
-			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
+			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_NOT_FOUND_INFO));
 	}
 
 	private String toUpperCaseUrlEncodedString(String urlString) {
@@ -117,17 +210,24 @@ public class DownloadService {
 				"[CONTENT DOWNLOAD][PROCESS CONDITION CHECK] process is not in progress. content uuid : [{}], process current condition : [{}],",
 				process.getContentUUID(), process.getConditions()
 			);
-			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_CONDITION);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_STATE);
 		}
 	}
 
-	private void workspaceValidCheck(String workspaceUUID, Process process) {
+	private void workspaceValidCheck(String workspaceUUID, Process process, String contentWorkspaceUUID) {
 		if (!process.getWorkspaceUUID().equals(workspaceUUID)) {
 			log.error(
 				"[CONTENT DOWNLOAD][PROCESS WORKSPACE CHECK] process current workspace uuid : [{}], request workspace uuid : [{}]",
 				process.getWorkspaceUUID(), workspaceUUID
 			);
-			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_WORKSPACE);
+		}
+		if (!contentWorkspaceUUID.equals(workspaceUUID)) {
+			log.error(
+				"[CONTENT DOWNLOAD][CONTENT WORKSPACE CHECK] content workspace not matched request workspace. content workspace uuid : [{}], request workspace uuid : [{}]",
+				contentWorkspaceUUID, workspaceUUID
+			);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_WORKSPACE);
 		}
 	}
 
@@ -150,7 +250,7 @@ public class DownloadService {
 				"[CONTENT DOWNLOAD][PROCESS WORKSPACE CHECK] subTask worker uuid list : [{}], request user uuid : [{}],",
 				String.join(",", subTaskWorkerUUIDList), memberUUID
 			);
-			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+			throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_WORKER);
 		}
 	}
 

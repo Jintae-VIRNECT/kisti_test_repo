@@ -9,11 +9,13 @@ import feign.hystrix.FallbackFactory;
 
 import com.virnect.process.domain.YesOrNo;
 import com.virnect.process.dto.rest.request.content.ContentDeleteRequest;
+import com.virnect.process.dto.rest.request.content.DownloadLogAddRequest;
 import com.virnect.process.dto.rest.response.content.ContentCountResponse;
 import com.virnect.process.dto.rest.response.content.ContentDeleteListResponse;
 import com.virnect.process.dto.rest.response.content.ContentInfoResponse;
 import com.virnect.process.dto.rest.response.content.ContentRestDto;
 import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
+import com.virnect.process.dto.rest.response.content.DownloadLogAddResponse;
 import com.virnect.process.global.common.ApiResponse;
 
 @Service
@@ -70,6 +72,13 @@ public class ContentFallbackService implements FallbackFactory<ContentRestServic
 			@Override
 			public ResponseEntity<byte[]> contentDownloadRequestForTargetHandler(
 				String targetData, String memberUUID, String workspaceUUID
+			) {
+				return null;
+			}
+
+			@Override
+			public ApiResponse<DownloadLogAddResponse> contentDownloadLogForUUIDHandler(
+				DownloadLogAddRequest downloadLogAddRequest
 			) {
 				return null;
 			}
