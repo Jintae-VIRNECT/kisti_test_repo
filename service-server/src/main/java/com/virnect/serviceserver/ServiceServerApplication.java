@@ -113,9 +113,9 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public static List<String> coturnConferenceUris;
     public static List<String> coturnStreamingUris;
 
-    @Autowired
+    /*@Autowired
     RemoteServiceConfig config;
-
+*/
     /*@Autowired
     MediaServerProperties mediaServerProperties;*/
 
@@ -146,12 +146,12 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         return modelMapper;
     }*/
 
-    @Bean
+    /*@Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceProperties")
     public RemoteServiceConfig remoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
         return new RemoteServiceConfig();
-    }
+    }*/
 
     /*@Bean
     @ConditionalOnMissingBean

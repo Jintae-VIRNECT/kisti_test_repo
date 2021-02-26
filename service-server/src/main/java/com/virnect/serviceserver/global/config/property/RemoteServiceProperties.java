@@ -252,13 +252,13 @@ public class RemoteServiceProperties extends PropertyService {
 		/**
 		 * check later...
 		 */
-		checkCoturnIp();
+		//checkCoturnIp();
 
-		checkCoturnRedisIp();
+		//checkCoturnRedisIp();
 
-		checkWebhook();
+		//checkWebhook();
 
-		checkCertificateType();
+		//checkCertificateType();
 
 	}
 
