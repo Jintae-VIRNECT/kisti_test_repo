@@ -121,7 +121,6 @@ const _ = {
         roleType: role,
       })
       _.account.roleType = role
-      console.log('options::', options)
 
       if (options !== false) {
         const settingInfo = Store.getters['settingInfo']
@@ -750,22 +749,27 @@ const _ = {
     return Object.assign(stream.getVideoTracks()[0], { enabled: false })
   },
   /**
+   * 주어진 비디오 트랙으로 기존 publisher를 초기화하고 다시
+   * initPublisher를 실행.
+   *
    * @param {MediaStreamTrack} videoTrack
    */
   async rePublish(videoTrack) {
     try {
       let videoSource = false
+
       if (videoTrack) {
         videoSource = videoTrack
       } else {
         videoSource = _.options ? _.options.videoSource : false
       }
 
+      const audioSource = _.options ? _.options.audioSource : false
       const settingInfo = Store.getters['settingInfo']
 
-      if (videoSource) {
+      if (videoSource || audioSource) {
         const publishOptions = {
-          audioSource: _.options ? _.options.audioSource : false,
+          audioSource: audioSource,
           videoSource: videoSource,
           publishAudio: _.configs.audioRestrictedMode
             ? false
@@ -883,7 +887,7 @@ const _ = {
         const mainView = Store.getters['mainView']
 
         if (mainView.connectionId === _.connectionId) {
-          Store.commit('clearMainViewStream', _.connectionId)
+          Store.commit('clearMainView', _.connectionId)
         }
 
         Store.commit('updateParticipant', {
