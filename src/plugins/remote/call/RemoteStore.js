@@ -25,6 +25,7 @@ const getDefaultState = () => {
       // zoomMax: 5, // zoom 최대 레벨
       // cameraStatus: 'default', // 'default': 초기세팅
       // flash: 'default', // flash 제어
+      // screenShare: true, false //PC 화면공유 여부
     ],
     chatList: [
       // {
@@ -151,7 +152,7 @@ const mutations = {
     state.viewForce = force
   },
 
-  clearMainViewStream(state, connectionId) {
+  clearMainView(state, connectionId) {
     const idx = state.participants.findIndex(
       obj => obj.connectionId === connectionId,
     )
