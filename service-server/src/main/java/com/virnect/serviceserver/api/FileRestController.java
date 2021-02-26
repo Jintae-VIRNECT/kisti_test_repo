@@ -1,7 +1,5 @@
 package com.virnect.serviceserver.api;
 
-import java.io.IOException;
-
 import javax.validation.Valid;
 
 import org.springframework.http.MediaType;

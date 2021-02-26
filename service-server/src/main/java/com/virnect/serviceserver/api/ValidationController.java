@@ -1,6 +1,7 @@
 package com.virnect.serviceserver.api;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +50,8 @@ public class ValidationController {
             "getLicenseInfo"
         );
 
-        if (workspaceId.isEmpty() || userId.isEmpty()) {
+        assert workspaceId != null;
+        if (workspaceId.isEmpty() || Objects.requireNonNull(userId).isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
@@ -62,7 +64,7 @@ public class ValidationController {
     public ResponseEntity<ApiResponse<CompanyInfoResponse>> getCompanyInfo(
         @PathVariable String workspaceId,
         @PathVariable String userId
-    ) throws IOException {
+    ) {
         LogMessage.formedInfo(
             TAG,
             "REST API: GET "

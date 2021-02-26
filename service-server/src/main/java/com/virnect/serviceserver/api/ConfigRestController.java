@@ -37,8 +37,7 @@ public class ConfigRestController {
             "getRemoteServiceConfiguration"
         );
 
-        ResponseEntity<String> responseData = configService.getRemoteServiceConfiguration();
-        return responseData;
+        return configService.getRemoteServiceConfiguration();
     }
 
     @GetMapping(value = "config/version")
@@ -50,8 +49,7 @@ public class ConfigRestController {
             "getRemoteServiceServerVersion"
         );
 
-        String responseData = configService.getRemoteServiceServerVersion();
-        return responseData;
+        return configService.getRemoteServiceServerVersion();
     }
 
     @GetMapping(value = "config/publicurl")
@@ -63,8 +61,7 @@ public class ConfigRestController {
             "getRemoteServicePublicUrl"
         );
 
-        String responseData = configService.getRemoteServicePublicUrl();
-        return responseData;
+        return configService.getRemoteServicePublicUrl();
     }
 
     @GetMapping(value = "config/recording")
@@ -76,8 +73,7 @@ public class ConfigRestController {
             "getRemoteServicePublicUrl"
         );
 
-        Boolean responseData = configService.getRemoteServiceRecordingEnabled();
-        return responseData;
+        return configService.getRemoteServiceRecordingEnabled();
     }
 
     @GetMapping(value = "config/recording-path")
@@ -89,8 +85,7 @@ public class ConfigRestController {
             "getRemoteServiceRecordingPath"
         );
 
-        String responseData = configService.getRemoteServiceRecordingPath();
-        return responseData;
+        return configService.getRemoteServiceRecordingPath();
     }
 
     @GetMapping(value = "config/cdr")
@@ -102,8 +97,7 @@ public class ConfigRestController {
             "getRemoteServiceCdrEnabled"
         );
 
-        Boolean responseData = configService.getRemoteServiceCdrEnabled();
-        return responseData;
+        return configService.getRemoteServiceCdrEnabled();
     }
 
 }

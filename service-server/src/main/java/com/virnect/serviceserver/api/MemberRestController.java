@@ -98,7 +98,7 @@ public class MemberRestController {
             size
         );
 
-        return ResponseEntity.ok(new ApiResponse(responseData));
+        return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
     @ApiOperation(value = "Lookup Invitable Remote Member Information List", notes = "초대 가능한 워크스페이스 리모트 멤버 리스트를 조회하는 API 입니다.(원격협업 참가자 제외)")
@@ -137,7 +137,7 @@ public class MemberRestController {
             page + 1,
             size
         );
-        return ResponseEntity.ok(new ApiResponse(responseData));
+        return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
     @ApiOperation(value = "Member Account Withdrawal", notes = "")
@@ -155,7 +155,7 @@ public class MemberRestController {
         MemberSecessionResponse responseData = memberService.deleteMembersBySession(
             userId
         );
-        return ResponseEntity.ok(new ApiResponse(responseData));
+        return ResponseEntity.ok(new ApiResponse<>(responseData));
 
     }
 }

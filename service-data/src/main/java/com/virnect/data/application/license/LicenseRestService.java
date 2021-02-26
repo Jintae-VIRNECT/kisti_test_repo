@@ -8,7 +8,7 @@ import com.virnect.data.dto.rest.LicenseInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceLicensePlanInfoResponse;
 import com.virnect.data.global.common.ApiResponse;
 
-@FeignClient(name = "message-server", fallbackFactory = LicenseRestFallbackFactory.class)
+@FeignClient(name = "license-server", fallbackFactory = LicenseRestFallbackFactory.class)
 public interface LicenseRestService {
 
 	@GetMapping("/licenses/{workspaceId}/{userId}")

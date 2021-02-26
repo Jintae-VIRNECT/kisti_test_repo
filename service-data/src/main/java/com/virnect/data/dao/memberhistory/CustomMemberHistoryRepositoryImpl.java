@@ -5,6 +5,7 @@ import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,8 +17,6 @@ import org.springframework.stereotype.Repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import lombok.RequiredArgsConstructor;
 
 import com.virnect.data.domain.member.MemberHistory;
 
@@ -52,7 +51,7 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 				memberHistory.historyDeleted.isFalse()
 			).distinct();
 		long totalCount = queryResult.fetchCount();
-		List<MemberHistory> result = getQuerydsl().applyPagination(pageable, queryResult).fetch();
+		List<MemberHistory> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(result, pageable, totalCount);
 	}
 

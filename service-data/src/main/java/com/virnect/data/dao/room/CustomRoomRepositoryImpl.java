@@ -6,6 +6,7 @@ import static com.virnect.data.domain.session.QSessionProperty.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -154,7 +155,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 				room.workspaceId.eq(workspaceId)
 			);
 		long totalCount = queryResult.fetchCount();
-		List<Room> result = getQuerydsl().applyPagination(pageable, queryResult).fetch();
+		List<Room> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(result, pageable, totalCount);
 	}
 

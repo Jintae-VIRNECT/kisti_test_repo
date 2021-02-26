@@ -1,5 +1,7 @@
 package com.virnect.serviceserver.api;
 
+import java.util.Objects;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -251,7 +253,7 @@ public class SessionRestController {
         RoomInfoListResponse responseData = sessionService.getRoomList(
             workspaceId, userId, paging, pageRequest.ofSortBy());
 
-        return ResponseEntity.ok(new ApiResponse(responseData));
+        return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
     @ApiOperation(value = "Search Room Information List", notes = "검색 기준으로 원격협헙 방 리스트 조회하는 API 입니다.")
@@ -284,7 +286,7 @@ public class SessionRestController {
             pageRequest.ofSortBy()
         );
 
-        return ResponseEntity.ok(new ApiResponse(responseData));
+        return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
     @ApiOperation(value = "Load Room Detail Information", notes = "특정 원격협업 방 상세 정보를 조회하는 API 입니다.")
@@ -301,7 +303,8 @@ public class SessionRestController {
                 + (sessionId != null ? sessionId : "{}"),
             "getRoomByWorkspaceIdAndSessionId"
         );
-        if (workspaceId.isEmpty() || sessionId.isEmpty()) {
+        assert workspaceId != null;
+        if (workspaceId.isEmpty() || Objects.requireNonNull(sessionId).isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 

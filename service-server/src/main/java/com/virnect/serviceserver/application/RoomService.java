@@ -2,6 +2,7 @@ package com.virnect.serviceserver.application;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,7 +44,6 @@ import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 public class RoomService {
 
 	private static final String TAG = SessionRestController.class.getSimpleName();
-	private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 	private static final String REST_PATH = "/remote/room";
 
 	private final RoomRepository roomRepository;
@@ -70,7 +70,7 @@ public class RoomService {
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new RoomResponse(),
 				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
 			);
@@ -79,8 +79,9 @@ public class RoomService {
 		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
 			.equals(SessionType.PUBLIC)) {
 			// check room request member count is over
+			assert licenseItem != null;
 			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				responseData = new ApiResponse<>(
+				new ApiResponse<>(
 					new RoomResponse(),
 					ErrorCode.ERR_ROOM_MEMBER_IS_OVER
 				);
@@ -131,7 +132,7 @@ public class RoomService {
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new RoomResponse(),
 				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
 			);
@@ -140,8 +141,9 @@ public class RoomService {
 		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
 			.equals(SessionType.PUBLIC)) {
 			// check room request member count is over
+			assert licenseItem != null;
 			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				responseData = new ApiResponse<>(
+				new ApiResponse<>(
 					new RoomResponse(),
 					ErrorCode.ERR_ROOM_MEMBER_IS_OVER
 				);
@@ -198,7 +200,7 @@ public class RoomService {
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new RoomResponse(),
 				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
 			);
@@ -209,6 +211,7 @@ public class RoomService {
 				|| roomRequest.getSessionType().equals(SessionType.PUBLIC))
 		{
 			// check room request member count is over
+			assert licenseItem != null;
 			if (IsValidUserCapacity(roomRequest, licenseItem)) {
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -271,7 +274,7 @@ public class RoomService {
 		// check license item using company code if not virnect
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new RoomResponse(),
 				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
 			);
@@ -280,6 +283,7 @@ public class RoomService {
 		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
 			.equals(SessionType.PUBLIC)) {
 			// check room request member count is over
+			assert licenseItem != null;
 			if (IsValidUserCapacity(roomRequest, licenseItem)) {
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -337,12 +341,8 @@ public class RoomService {
 
 		ApiResponse<RoomResponse> responseData;
 
-		/*DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
-			workspaceId, sessionId, joinRoomRequest.getUuid());
-*/
 		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
 			workspaceId, sessionId, joinRoomRequest.getUuid());
-
 
 		if (dataProcess.getData()) {
 			// generate session id and token
@@ -452,7 +452,7 @@ public class RoomService {
 	) {
 		ApiResponse<KickRoomResponse> apiResponse = this.sessionDataRepository.kickFromRoom(
 			workspaceId, sessionId, kickRoomRequest);
-		ApiResponse<ResultResponse> resultResponse = null;
+		ApiResponse<ResultResponse> resultResponse;
 		if (apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
 			String connectionId = apiResponse.getData().getConnectionId();
 			if (connectionId == null || connectionId.isEmpty()) {
@@ -465,7 +465,7 @@ public class RoomService {
 				//send rpc message to connection id user of the session id
 				JsonObject jsonObject = serviceSessionManager.generateMessage(
 					sessionId,
-					Arrays.asList(connectionId),
+					Collections.singletonList(connectionId),
 					PushConstants.PUSH_SIGNAL_SYSTEM,
 					PushConstants.SEND_PUSH_ROOM_EVICT
 				);

@@ -12,12 +12,7 @@ import com.virnect.data.global.common.ApiResponse;
 
 @FeignClient(name = "user-server", fallbackFactory = UserRestFallbackFactory.class)
 public interface UserRestService {
-	/**
-	 * User Information List
-	 * @param search
-	 * @param paging
-	 * @return
-	 */
+
 	@GetMapping("/users")
 	ApiResponse<UserInfoListResponse> getUserInfoList(
 		@RequestParam(name = "search", required = false) String search,

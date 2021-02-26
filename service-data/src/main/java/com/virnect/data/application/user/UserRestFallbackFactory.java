@@ -25,7 +25,7 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
                 log.info("[USER WORKSPACE LIST API FALLBACK] => USER_ID: {}");
                 UserInfoListResponse empty = new UserInfoListResponse();
                 empty.setUserInfoList(new ArrayList<>());
-                return new ApiResponse<UserInfoListResponse>(empty);
+                return new ApiResponse<>(empty);
             }
 
             @Override

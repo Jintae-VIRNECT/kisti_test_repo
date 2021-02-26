@@ -37,7 +37,7 @@ public class RecordRestFallbackFactory implements FallbackFactory<RecordRestServ
                 );
                 RecordServerFileInfoListResponse empty = new RecordServerFileInfoListResponse();
                 empty.setInfos(new ArrayList<>());
-                return new ApiResponse<RecordServerFileInfoListResponse>(empty);
+                return new ApiResponse<>(empty);
             }
 
             @Override
@@ -50,7 +50,7 @@ public class RecordRestFallbackFactory implements FallbackFactory<RecordRestServ
                 );
                 RecordServerFileInfoListResponse empty = new RecordServerFileInfoListResponse();
                 empty.setInfos(new ArrayList<>());
-                return new ApiResponse<RecordServerFileInfoListResponse>(empty);
+                return new ApiResponse<>(empty);
             }
 
             @Override
@@ -66,7 +66,7 @@ public class RecordRestFallbackFactory implements FallbackFactory<RecordRestServ
                 );
                 RecordServerFileInfoListResponse empty = new RecordServerFileInfoListResponse();
                 empty.setInfos(new ArrayList<>());
-                return new ApiResponse<RecordServerFileInfoListResponse>(empty);
+                return new ApiResponse<>(empty);
             }
 
             @Override
@@ -79,7 +79,7 @@ public class RecordRestFallbackFactory implements FallbackFactory<RecordRestServ
                 );
                 SuccessResponse empty = new SuccessResponse();
                 empty.setData(null);
-                return new ApiResponse<Object>(empty);
+                return new ApiResponse<>(empty);
             }
 
             @Override
@@ -92,7 +92,7 @@ public class RecordRestFallbackFactory implements FallbackFactory<RecordRestServ
                 );
                 SuccessResponse empty = new SuccessResponse();
                 empty.setData(null);
-                return new ApiResponse<String>();
+                return new ApiResponse<>();
             }
 
         };
