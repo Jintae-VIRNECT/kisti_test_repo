@@ -1,5 +1,6 @@
 package com.virnect.process.dto.rest.response.content;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
  * DESCRIPTION:
  */
 @RequiredArgsConstructor
+@Getter
 public class DownloadLogAddResponse {
 	private final boolean downloadLogAddResult;
 }

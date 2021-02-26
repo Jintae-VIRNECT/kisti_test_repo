@@ -1,6 +1,7 @@
 package com.virnect.process.dto.rest.request.content;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
  * DESCRIPTION:
  */
 @RequiredArgsConstructor
+@Getter
 public class DownloadLogAddRequest {
 	@ApiModelProperty(value = "컨텐츠 식별자", example = "2f10b4f0-64ef-474a-ac0b-0362b4e345c9")
 	private final String contentUUID;
