@@ -44,5 +44,30 @@ const metaHTML = lang => {
   </html>`
   return htmlText
 }
+const metaHEAD = (html, lang) => {
+  const htmlText = html.replace(
+    /<head>.*?<\/head>/gs,
+    `<head>
+    <meta charset="utf-8">
+    <title>VIRNECT | REMOTE</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta
+        name="viewport"
+        content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+    <meta name="keywords" content="VIRNECT Remote,원격협업,AR,증강현실">
+    <meta name="theme-color" content="#0064ff">
+    <title>${metaData[lang].title}</title>
+    <meta name="description" content="${metaData[lang].description}">
+    <meta property="og:title" content="${metaData[lang].og.title}">
+    <meta property="og:description" content="${metaData[lang].og.description}">
+    <meta property="og:image" content="${metaData[lang].og.image}">
+    <meta property="og:site_name" content="${metaData[lang].og.site_name}">
+    <meta property="og:url" content="${metaData[lang].og.url}">
+    <meta property="og:type" content="${metaData[lang].og.type}">
+    <link rel="shortcut icon" href="/favicon.ico">
+    </head>`,
+  )
+  return htmlText
+}
 
-module.exports = { metaHTML }
+module.exports = { metaHTML, metaHEAD }
