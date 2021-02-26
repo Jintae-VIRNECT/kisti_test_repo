@@ -71,6 +71,7 @@ import com.virnect.remote.dto.response.session.SessionResponse;
 import com.virnect.remote.dto.response.session.SessionTokenResponse;
 import com.virnect.serviceserver.ServiceServerApplication;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.UrlConstants;
 import com.virnect.serviceserver.infra.utils.PushMessageClient;
 
 @Slf4j
@@ -714,7 +715,7 @@ public class SessionDataRepository {
             //not set session create at property
             roomResponse.setSessionId(sessionResponse.getId());
             roomResponse.setToken(sessionTokenResponse.getToken());
-            roomResponse.setWss(ServiceServerApplication.wssUrl);
+            roomResponse.setWss(UrlConstants.wssUrl);
             //roomResponse.setRestrictedMode(room.isRestrictedMode());
             roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
             roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
@@ -831,7 +832,7 @@ public class SessionDataRepository {
                 //not set session create at property
                 roomResponse.setSessionId(sessionResponse.getId());
                 roomResponse.setToken(sessionTokenResponse.getToken());
-                roomResponse.setWss(ServiceServerApplication.wssUrl);
+                roomResponse.setWss(UrlConstants.wssUrl);
                 //roomResponse.setRestrictedMode(room.isRestrictedMode());
                 roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
                 roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
@@ -1422,7 +1423,7 @@ public class SessionDataRepository {
             //not set session create at property
             roomResponse.setSessionId(sessionId);
             roomResponse.setToken(sessionTokenResponse.getToken());
-            roomResponse.setWss(ServiceServerApplication.wssUrl);
+            roomResponse.setWss(UrlConstants.wssUrl);
             //roomResponse.setRestrictedMode(room.isRestrictedMode());
             roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
             roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());

@@ -178,7 +178,6 @@ public class ServiceSessionManager {
 				fileService.removeFiles(session.getSessionId());
 				sessionDataRepository.stopRecordSession(session.getSessionId());
 				sessionDataRepository.destroySession(session.getSessionId(), reason);
-
 			}
 		};
 	}

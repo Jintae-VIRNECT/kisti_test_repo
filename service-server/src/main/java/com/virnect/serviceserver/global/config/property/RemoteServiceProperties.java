@@ -26,6 +26,7 @@ import com.virnect.mediaserver.cdr.CDREventName;
 import com.virnect.mediaserver.config.MediaServerProperties;
 import com.virnect.mediaserver.recording.RecordingNotification;
 import com.virnect.serviceserver.ServiceServerApplication;
+import com.virnect.serviceserver.global.config.UrlConstants;
 
 @Slf4j
 @Component
@@ -192,9 +193,9 @@ public class RemoteServiceProperties extends PropertyService {
 		mediaServerProperties.coturnProperty.setCoturnCredential(getValue("service.coturn-credential"));
 		mediaServerProperties.coturnProperty.setCoturnUrisConference(checkCoturnUris("service.coturn-uris-conference"));
 		mediaServerProperties.coturnProperty.setCoturnUrisSteaming(checkCoturnUris("service.coturn-uris-streaming"));
-		ServiceServerApplication.coturnConferenceUris = new ArrayList<>(
+		UrlConstants.coturnConferenceUris = new ArrayList<>(
 			mediaServerProperties.coturnProperty.getCoturnUrisConference());
-		ServiceServerApplication.coturnStreamingUris = new ArrayList<>(
+		UrlConstants.coturnStreamingUris = new ArrayList<>(
 			mediaServerProperties.coturnProperty.getCoturnUrisStreaming());
 
 		mediaServerProperties.coturnProperty.setCoturnRedisDbname(getValue("service.coturn-redis-dbname"));
@@ -244,9 +245,9 @@ public class RemoteServiceProperties extends PropertyService {
 
 		mediaServerProperties.serverProperty.setKmsUrisConference(checkKmsUris("service.kms-uris-conference"));
 		mediaServerProperties.serverProperty.setKmsUrisStreaming(checkKmsUris("service.kms-uris-streaming"));
-		ServiceServerApplication.mediaConferenceUris = new ArrayList<>(
+		UrlConstants.mediaConferenceUris = new ArrayList<>(
 			mediaServerProperties.serverProperty.getKmsUrisConference());
-		ServiceServerApplication.mediaStreamingUris = new ArrayList<>(
+		UrlConstants.mediaStreamingUris = new ArrayList<>(
 			mediaServerProperties.serverProperty.getKmsUrisStreaming());
 
 		/**
@@ -384,22 +385,22 @@ public class RemoteServiceProperties extends PropertyService {
 	private void calculatePublicUrl() {
 		final String publicUrl = this.getRemoteServicePublicUrl();
 		if (publicUrl.startsWith("https://")) {
-			ServiceServerApplication.wsUrl = publicUrl.replace("https://", "wss://");
+			UrlConstants.wsUrl = publicUrl.replace("https://", "wss://");
 		} else if (publicUrl.startsWith("http://")) {
-			ServiceServerApplication.wsUrl = publicUrl.replace("http://", "wss://");
+			UrlConstants.wsUrl = publicUrl.replace("http://", "wss://");
 		}
-		if (ServiceServerApplication.wsUrl.endsWith("/")) {
-			ServiceServerApplication.wsUrl = ServiceServerApplication.wsUrl.substring(
-				0, ServiceServerApplication.wsUrl.length() - 1);
+		if (UrlConstants.wsUrl.endsWith("/")) {
+			UrlConstants.wsUrl = UrlConstants.wsUrl.substring(
+				0, UrlConstants.wsUrl.length() - 1);
 		}
-		String finalUrl = ServiceServerApplication.wsUrl.replaceFirst("wss://", "https://")
+		String finalUrl = UrlConstants.wsUrl.replaceFirst("wss://", "https://")
 			.replaceFirst("ws://", "http://");
 		log.info("calculatePublicUrl : {}", finalUrl);
 		this.setFinalUrl(finalUrl);
-		ServiceServerApplication.httpUrl = finalUrl;
+		UrlConstants.httpUrl = finalUrl;
 		//
-		ServiceServerApplication.wssUrl = this.remoteWebsocketUrl + ServiceServerApplication.WS_PATH;
-		log.info("calculateWssUrl : {}", ServiceServerApplication.wssUrl);
+		UrlConstants.wssUrl = this.remoteWebsocketUrl + UrlConstants.WS_PATH;
+		log.info("calculateWssUrl : {}", UrlConstants.wssUrl);
 	}
 
 	public List<String> checkCoturnUris(String property) {
