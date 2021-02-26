@@ -37,14 +37,37 @@ export default {
   },
   methods: {
     async toggleShare() {
-      if (this.share) {
-        this.stopScreenSharing()
-      } else {
-        await this.getScreenStream()
+      try {
+        if (this.share) {
+          this.stopScreenSharing()
+        } else {
+          await this.startScreenShare()
+        }
+      } catch (e) {
+        console.error(e)
+        this.share = false
       }
-      this.share = !this.share
     },
-    async getScreenStream() {
+    async startScreenShare() {
+      const displayStream = await this.getDisplayStream()
+
+      if (displayStream && displayStream.getVideoTracks().length > 0) {
+        if (this.myInfo.cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
+          this.$call.replaceTrack(
+            displayStream.getVideoTracks()[0],
+            this.mainView.stream,
+          )
+        } else {
+          this.$call.rePublish(displayStream.getVideoTracks()[0])
+          this.$eventBus.$emit('streamctl:hide', true)
+        }
+
+        this.$call.sendScreenSharing(true)
+        this.share = true
+      }
+    },
+
+    async getDisplayStream() {
       if (
         !navigator.mediaDevices ||
         !navigator.mediaDevices['getDisplayMedia']
@@ -53,8 +76,8 @@ export default {
       } else {
         const size = this.settingInfo.quality.split('X')
         const video = {
-          width: parseInt(size[0]),
-          height: parseInt(size[1]),
+          width: parseInt(size[0], 10),
+          height: parseInt(size[1], 10),
         }
 
         const displayStream = await navigator.mediaDevices.getDisplayMedia({
@@ -64,29 +87,11 @@ export default {
 
         displayStream.getVideoTracks()[0].onended = () => {
           this.stopScreenSharing()
-          this.share = false
         }
-
-        if (this.myInfo.cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
-          console.log('replace track 호출')
-          this.$call.replaceTrack(
-            displayStream.getVideoTracks()[0],
-            this.mainView.stream,
-          )
-        } else {
-          console.log('rePublish 호출')
-          this.$call.rePublish(displayStream.getVideoTracks()[0])
-          //카메라가 없는데 카메라를 ON 하면 다른 디바이스에 불필요한 영향을 미침
-          // this.$call.sendCamera(CAMERA_STATUS.CAMERA_ON)
-          this.$eventBus.$emit('camera:hide', true)
-        }
-
-        this.$call.sendScreenSharing(true)
-        this.$eventBus.$emit('video:share', true)
+        return displayStream
       }
     },
     stopScreenSharing() {
-      //보존된 스트림이 없으면 리스토어 말고 그냥 리퍼블리시
       if (this.myTempStream) {
         this.$call.restoreMyStream(this.myInfo.video)
       } else {
@@ -96,7 +101,7 @@ export default {
 
       this.$call.sendScreenSharing(false)
       this.$eventBus.$emit('streamctl:hide', false)
-      this.$eventBus.$emit('video:share', false)
+      this.share = false
     },
   },
 }
