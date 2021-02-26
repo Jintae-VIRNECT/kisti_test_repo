@@ -170,8 +170,11 @@ const mutations = {
           state.mainView = state.participants[pIdx]
           state.viewForce = false
         } else {
-          state.mainView = {}
           state.viewForce = false
+          //mainView 객체를 참조하는 동작을 위함
+          setTimeout(() => {
+            state.mainView = {}
+          })
         }
       }
     }
