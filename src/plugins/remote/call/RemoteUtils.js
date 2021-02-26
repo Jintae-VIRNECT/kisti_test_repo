@@ -253,36 +253,33 @@ export const addSessionEventListener = session => {
       const isSame =
         event.from.connectionId === Store.getters['mainView'].connectionId
 
-      console.log({
-        'event.from.connectionId': event.from.connectionId,
-        "Store.getters['mainView'].connectionId":
-          Store.getters['mainView'].connectionId,
+      Store.commit('updateParticipant', {
+        connectionId: event.from.connectionId,
+        screenShare: data.enable,
       })
 
-      if (isLeader) {
-        console.log('리더임')
-        if (disabled) {
-          console.log('종료 요청임')
-          if (forcedView) {
-            console.log('화면 공유 중임')
-            if (noCamera) {
-              console.log('카메라가 없음')
-              if (isSame) {
-                console.log(
-                  '현재 화면 공유중인 사람하고 PC 공유 종료한사람이 같은 사람임',
-                )
-                //전체 공유 해제
-                _.sendVideo(Store.getters['mainView'].id, false)
-              }
-            }
-          }
-        }
+      const releaseForcedView = [
+        isLeader,
+        disabled,
+        forcedView,
+        noCamera,
+        isSame,
+      ].every(condition => condition)
+
+      if (releaseForcedView) {
+        debug('screen share::', 'release forced view')
+        _.sendVideo(Store.getters['mainView'].id, false)
       }
 
-      if (disabled && isSame && noCamera) {
-        Store.commit('clearMainViewStream', event.from.connectionId)
+      //상대방이 더이상 보낼 스트림(카메라, PC 공유)이 없음.
+      const noStream = [disabled, isSame, noCamera].every(
+        condition => condition,
+      )
+      if (noStream) {
+        Store.commit('clearMainView', event.from.connectionId)
       }
-      //end of video share
+
+      //end of screen share
     } else {
       if (!Store.getters['allowCameraControl']) {
         Store.dispatch('setMainView', {
@@ -512,6 +509,7 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
+    screenShare: false,
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {
