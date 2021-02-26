@@ -48,7 +48,7 @@ import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.application.ServiceSessionManager;
-import com.virnect.serviceserver.infra.utils.PushMessageClient;
+import com.virnect.remote.application.PushMessageClient;
 
 @Slf4j
 @RestController

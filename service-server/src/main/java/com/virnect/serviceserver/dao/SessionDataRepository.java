@@ -69,10 +69,8 @@ import com.virnect.remote.dto.response.room.RoomResponse;
 import com.virnect.remote.dto.response.rpc.ClientMetaData;
 import com.virnect.remote.dto.response.session.SessionResponse;
 import com.virnect.remote.dto.response.session.SessionTokenResponse;
-import com.virnect.serviceserver.ServiceServerApplication;
-import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.global.config.UrlConstants;
-import com.virnect.serviceserver.infra.utils.PushMessageClient;
+import com.virnect.remote.application.PushMessageClient;
 
 @Slf4j
 @Service
@@ -83,7 +81,6 @@ public class SessionDataRepository {
 
     private final ObjectMapper objectMapper;
 
-    private final RemoteServiceConfig config;
     private final SessionTransactionalService sessionService;
     private final HistoryService historyService;
 

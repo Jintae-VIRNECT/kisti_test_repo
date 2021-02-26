@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.infra.utils;
+package com.virnect.remote.application;
 
 import java.util.HashMap;
 import java.util.List;
