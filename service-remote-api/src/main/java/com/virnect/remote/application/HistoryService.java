@@ -20,6 +20,7 @@ import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.roomhistory.RoomHistory;
+import com.virnect.data.infra.utils.ModelMapperConfig;
 import com.virnect.remote.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.remote.dto.response.ResultResponse;

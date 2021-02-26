@@ -122,12 +122,12 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     /*@Autowired
     ServiceSessionManager serviceSessionManager;*/
 
-    @Bean
+   /* @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
-    }
+    }*/
 
     /*@Autowired
     SessionDataRepository sessionDataRepository;*/
