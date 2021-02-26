@@ -43,9 +43,9 @@ pipeline {
             branch 'develop'
           }
           steps {
-            sh 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'count=`docker ps -a | grep pf-contentsmanagement | grep -v batch |  wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 8078:8078 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=develop" -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement pf-contentsmanagement'
-            sh 'count=`docker ps -a | grep pf-contentsmanagement-onpremise | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement-onpremise && docker rm pf-contentsmanagement-onpremise; else echo "Not Running STOP&DELETE"; fi;'
+            sh 'count=`docker ps -a | grep pf-contentsmanagement-onpremise | grep -v batch | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement-onpremise && docker rm pf-contentsmanagement-onpremise; else echo "Not Running STOP&DELETE"; fi;'
             sh 'docker run -p 18078:8078 --restart=always -e "CONFIG_SERVER=http://192.168.6.3:6383" -e "VIRNECT_ENV=onpremise" -v /data/content/contentsmanagement:/usr/app/upload -d --name=pf-contentsmanagement-onpremise pf-contentsmanagement'
             catchError {
                sh "if [ `docker images | grep pf-contentsmanagement | grep -v batch | grep -v 103505534696 | wc -l` -gt 2 ]; then docker rmi  -f \$(docker images | grep \"pf-contentsmanagement\" | grep -v batch | grep -v \\${GIT_TAG} | grep -v \"latest\"  | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
@@ -80,7 +80,7 @@ pipeline {
                         execCommand: "docker pull $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
                       ),
                       sshTransfer(
-                        execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                        execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | grep -v batch | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
                       ),
                       sshTransfer(
                         execCommand: "docker run -p 8078:8078 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
@@ -108,7 +108,7 @@ pipeline {
                         execCommand: "docker pull $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
                       ),
                       sshTransfer(
-                        execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                        execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | grep -v batch | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
                       ),
                       sshTransfer(
                         execCommand: "docker run -p 8078:8078 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
@@ -153,7 +153,7 @@ pipeline {
                         execCommand: "docker pull $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
                       ),
                       sshTransfer(
-                        execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
+                        execCommand: 'count=`docker ps -a | grep pf-contentsmanagement | grep -v batch | wc -l`; if [ ${count} -gt 0 ]; then echo "Running STOP&DELETE"; docker stop pf-contentsmanagement && docker rm pf-contentsmanagement; else echo "Not Running STOP&DELETE"; fi;'
                       ),
                       sshTransfer(
                         execCommand: "docker run -p 8078:8078 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -e eureka.instance.ip-address=`hostname -I | awk  \'{print \$1}\'` -d --name=pf-contentsmanagement $aws_ecr_address/pf-contentsmanagement:\\${GIT_TAG}"
