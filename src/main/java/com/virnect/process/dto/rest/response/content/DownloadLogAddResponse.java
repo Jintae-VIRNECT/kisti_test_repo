@@ -1,7 +1,9 @@
 package com.virnect.process.dto.rest.response.content;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 /**
  * Project: PF-ContentManagement
@@ -10,8 +12,14 @@ import lombok.RequiredArgsConstructor;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@RequiredArgsConstructor
 @Getter
 public class DownloadLogAddResponse {
+	@JsonProperty("downloadLogAddResult")
 	private final boolean downloadLogAddResult;
+
+	@JsonCreator
+	public DownloadLogAddResponse(final boolean downloadLogAddResult) {
+		this.downloadLogAddResult = downloadLogAddResult;
+	}
+
 }
