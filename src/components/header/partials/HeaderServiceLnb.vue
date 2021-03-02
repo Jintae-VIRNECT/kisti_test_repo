@@ -321,8 +321,12 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
-    this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
   },
 }
 </script>

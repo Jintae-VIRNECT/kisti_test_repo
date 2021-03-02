@@ -1,4 +1,5 @@
 export const SIGNAL = {
+  SYSTEM: 'signal:system',
   VIDEO: 'signal:video',
   CHAT: 'signal:chat',
   RESOLUTION: 'signal:resolution',
@@ -15,7 +16,6 @@ export const SIGNAL = {
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
-  SYSTEM: 'signal:system',
 }
 
 export const FILE = {

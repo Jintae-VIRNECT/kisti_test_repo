@@ -139,7 +139,10 @@ export default {
   /* Lifecycles */
   created() {
     if (this.$call) {
-      this.$call.addListener(SIGNAL.DRAWING, this.drawingListener)
+      this.$eventBus.$on(SIGNAL.DRAWING, this.drawingListener)
     }
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.DRAWING, this.drawingListener)
   },
 }

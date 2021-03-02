@@ -137,12 +137,13 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.AR_DRAWING, this.receiveDrawing)
+    this.$eventBus.$on(SIGNAL.AR_DRAWING, this.receiveDrawing)
     this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:undo`, this.stackUndo)
     this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:redo`, this.stackRedo)
     this.$eventBus.$on(`control:${ACTION.AR_DRAWING}:clear`, this.drawingClear)
   },
   beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.AR_DRAWING, this.receiveDrawing)
     this.$eventBus.$off(`control:${ACTION.AR_DRAWING}:undo`, this.stackUndo)
     this.$eventBus.$off(`control:${ACTION.AR_DRAWING}:redo`, this.stackRedo)
     this.$eventBus.$off(`control:${ACTION.AR_DRAWING}:clear`, this.drawingClear)

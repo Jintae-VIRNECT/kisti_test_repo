@@ -150,7 +150,7 @@ export default {
 
   /* Lifecycling */
   created() {
-    this.$call.addListener(SIGNAL.POINTING, this.receivePointing)
+    this.$eventBus.$on(SIGNAL.POINTING, this.receivePointing)
   },
   mounted() {
     this.lottieOption.animationData.layers.forEach(layer => {
@@ -159,7 +159,7 @@ export default {
     })
   },
   beforeDestroy() {
-    this.$call.removeListener(SIGNAL.POINTING, this.receivePointing)
+    this.$eventBus.$off(SIGNAL.POINTING, this.receivePointing)
   },
 }
 </script>
