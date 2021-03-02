@@ -26,6 +26,9 @@ dependencies {
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
     // Netflex Feign Client
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
+
+    // ModelMapper
+    implementation("org.modelmapper:modelmapper:2.3.0")
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————
@@ -40,7 +43,7 @@ bootJar {
 }
 
 // querydsl 적용
-def querydslSrcDir = 'src/main/generated'
+def querydslSrcDir = "$buildDir/generated/querydsl"
 
 querydsl {
     library = "com.querydsl:querydsl-apt"

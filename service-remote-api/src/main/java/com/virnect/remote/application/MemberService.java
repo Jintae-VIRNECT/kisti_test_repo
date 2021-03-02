@@ -118,7 +118,6 @@ public class MemberService {
 
 		//Room room = sessionService.getRoom(workspaceId, sessionId);
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-
 		if (room == null) {
 			// insert return custom error
 		} else {

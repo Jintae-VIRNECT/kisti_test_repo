@@ -64,5 +64,4 @@ public class CompanyRequest {
 
     @ApiModelProperty(value = "Local Recording", position = 11)
     private boolean localRecording;
-
 }

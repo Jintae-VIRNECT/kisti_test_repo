@@ -37,6 +37,8 @@ public class QCompany extends EntityPathBase<Company> {
 
     public final StringPath licenseName = createString("licenseName");
 
+    public final BooleanPath localRecording = createBoolean("localRecording");
+
     public final BooleanPath recording = createBoolean("recording");
 
     public final EnumPath<com.virnect.data.domain.session.SessionType> sessionType = createEnum("sessionType", com.virnect.data.domain.session.SessionType.class);

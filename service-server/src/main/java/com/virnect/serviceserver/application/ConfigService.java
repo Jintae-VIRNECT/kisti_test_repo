@@ -109,29 +109,24 @@ public class ConfigService {
 	}
 
 	public String getRemoteServiceServerVersion() {
-		log.info("REST API: GET {}/version", REST_CONFIG_PATH);
 		return remoteServiceBuildInfo.getRemoteServiceServerVersion();
 	}
 
 	public String getRemoteServicePublicUrl() {
-		log.info("REST API: GET {}/publicurl", REST_CONFIG_PATH);
 		return remoteServiceConfig.getFinalUrl();
 	}
 
 	public Boolean getRemoteServiceRecordingEnabled() {
-		log.info("REST API: GET {}/recording", REST_CONFIG_PATH);
 		//return remoteServiceConfig.isRecordingModuleEnabled();
 		return true;
 	}
 
 	public String getRemoteServiceRecordingPath() {
-		log.info("REST API: GET {}/recording-path", REST_CONFIG_PATH);
 		//return remoteServiceConfig.getRemoteServiceRecordingPath();
 		return "";
 	}
 
 	public Boolean getRemoteServiceCdrEnabled() {
-		log.info("REST API: GET {}/cdr", REST_CONFIG_PATH);
 		return remoteServiceConfig.isCdrEnabled();
 	}
 }

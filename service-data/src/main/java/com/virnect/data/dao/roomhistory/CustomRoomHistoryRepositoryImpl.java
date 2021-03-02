@@ -6,22 +6,29 @@ import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import lombok.RequiredArgsConstructor;
-
 import com.virnect.data.domain.roomhistory.RoomHistory;
 
-@RequiredArgsConstructor
-public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryRepository {
+@Repository
+public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport implements CustomRoomHistoryRepository {
+
 	private final JPAQueryFactory query;
 
+	public CustomRoomHistoryRepositoryImpl(JPAQueryFactory query) {
+		super(RoomHistory.class);
+		this.query = query;
+	}
+
 	@Override
-	public List<RoomHistory> findRoomHistoryInWorksapceWithDateOrSpecificUserId(
+	public List<RoomHistory> findRoomHistoryInWorkspaceIdWithDateOrSpecificUserId(
 		LocalDateTime startDate, LocalDateTime endDate, String workspaceId, String userId
 	) {
 		return query
@@ -37,12 +44,19 @@ public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryReposit
 			.fetch();
 	}
 
+	/**
+	 * 협업 검색 다이나믹 쿼리
+	 * @param workspaceId - 조회 대상 워크스페이스
+	 * @param sessionId - 조회 대상 세션
+	 * @return - 기간 검색 조건 쿼리
+	 */
 	@Override
-	public RoomHistory findRoomHistoryByWorksapceAndSessionId(
+	public Optional<RoomHistory> findRoomHistoryByWorkspaceIdAndSessionId(
 		String workspaceId,
 		String sessionId
 	) {
-		return query
+		return Optional.ofNullable(
+			query
 			.selectFrom(roomHistory)
 			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
@@ -51,7 +65,35 @@ public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryReposit
 				roomHistory.sessionId.eq(sessionId)
 			)
 			.distinct()
-			.fetchOne();
+			.fetchOne());
+	}
+
+	@Override
+	public Optional<RoomHistory> findBySessionId(String sessionId) {
+		return Optional.ofNullable(
+			query
+			.selectFrom(roomHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				roomHistory.sessionId.eq(sessionId)
+			)
+			.distinct()
+			.fetchOne());
+	}
+
+	@Override
+	public boolean existsByWorkspaceIdAndSessionId(String workspaceId, String sessionId) {
+		boolean result = Optional.ofNullable(query
+			.selectFrom(roomHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				roomHistory.sessionId.eq(sessionId)
+			)
+			.distinct()
+			.fetchOne()).isPresent();
+		return result;
 	}
 
 	/**
@@ -76,8 +118,8 @@ public class CustomRoomHistoryRepositoryImpl implements CustomRoomHistoryReposit
 		if(StringUtils.isEmpty(userId)){
 			return null;
 		}
-		List<Long> roomHistoryIdList = query.selectFrom(memberHistory)
-			.select(memberHistory.roomHistory.id)
+		List<Long> roomHistoryIdList = query.selectFrom(roomHistory)
+			.select(roomHistory.roomHistory.id)
 			.where(memberHistory.uuid.eq(userId))
 			.fetch();
 

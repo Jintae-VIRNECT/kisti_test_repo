@@ -28,79 +28,55 @@ public class JsonUtil {
     }*/
 
     public JsonObject fromInputStreamToJsonObject(InputStream inputStream)
-            throws IOException, FileNotFoundException, JsonParseException, IllegalStateException{
+            throws IOException, JsonParseException, IllegalStateException{
         return this.fromInputStreamToJsonElement(inputStream).getAsJsonObject();
 
     }
 
     public JsonObject fromFileToJsonObject(String filePath)
-            throws IOException, FileNotFoundException, JsonParseException, IllegalStateException {
+            throws IOException, JsonParseException, IllegalStateException {
         return this.fromFileToJsonElement(filePath).getAsJsonObject();
     }
 
     public JsonObject fromFileToJsonObject(File file)
-            throws IOException, FileNotFoundException, JsonParseException, IllegalStateException {
+            throws IOException, JsonParseException, IllegalStateException {
         return this.fromFileToJsonElement(file).getAsJsonObject();
     }
 
     public JsonArray fromFileToJsonArray(String filePath)
-            throws IOException, FileNotFoundException, JsonParseException, IllegalStateException {
+            throws IOException, JsonParseException, IllegalStateException {
         return this.fromFileToJsonElement(filePath).getAsJsonArray();
     }
 
     public JsonElement fromFileToJsonElement(String filePath)
-            throws IOException, FileNotFoundException, JsonParseException, IllegalStateException {
-        JsonElement json = null;
-        FileReader reader = null;
-        try {
-            reader = new FileReader(filePath);
-        } catch (FileNotFoundException e) {
-            throw e;
-        }
+            throws IOException, JsonParseException, IllegalStateException {
+        JsonElement json;
+        FileReader reader;
+        reader = new FileReader(filePath);
         try {
             json = JsonParser.parseReader(reader);
-        } catch (JsonParseException | IllegalStateException exception) {
-            throw exception;
         } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                throw e;
-            }
+            reader.close();
         }
         return json;
     }
 
     public JsonElement fromFileToJsonElement(File file)
-            throws IOException, FileNotFoundException, JsonParseException, IllegalStateException {
-        JsonElement json = null;
-        FileReader reader = null;
-        try {
-            reader = new FileReader(file);
-        } catch (FileNotFoundException e) {
-            throw e;
-        }
+            throws IOException, JsonParseException, IllegalStateException {
+        JsonElement json;
+        FileReader reader;
+        reader = new FileReader(file);
         try {
             json = JsonParser.parseReader(reader);
-        } catch (JsonParseException | IllegalStateException exception) {
-            throw exception;
         } finally {
-            try {
-                reader.close();
-            } catch (IOException e) {
-                throw e;
-            }
+            reader.close();
         }
         return json;
     }
 
     public JsonElement fromInputStreamToJsonElement(InputStream inputStream) {
-        JsonElement json = null;
-        try {
-            json = JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        } catch (JsonParseException | IllegalStateException exception) {
-            throw exception;
-        }
+        JsonElement json;
+        json = JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         return json;
     }
 }

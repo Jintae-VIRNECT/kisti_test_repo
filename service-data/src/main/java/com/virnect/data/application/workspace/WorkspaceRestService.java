@@ -9,7 +9,7 @@ import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.global.common.ApiResponse;
 
-@FeignClient(name = "${feign.workspace-prefix}", url = "${feign.workspace-url}", fallbackFactory = WorkspaceRestFallbackFactory.class)
+@FeignClient(name = "workspace-server", fallbackFactory = WorkspaceRestFallbackFactory.class)
 public interface WorkspaceRestService {
 
 	@GetMapping("/workspaces/{workspaceId}/members")

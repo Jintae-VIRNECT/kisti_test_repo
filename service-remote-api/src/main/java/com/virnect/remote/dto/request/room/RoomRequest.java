@@ -70,10 +70,14 @@ public class RoomRequest {
         return "RoomRequest{" +
             "title='" + title + '\'' +
             ", description='" + description + '\'' +
-            ", autoRecording='" + autoRecording + '\'' +
+            ", autoRecording=" + autoRecording +
+            ", isKeepAlive=" + isKeepAlive +
+            ", sessionType=" + sessionType +
             ", leaderId='" + leaderId + '\'' +
             ", workspaceId='" + workspaceId + '\'' +
-            ", participantIds='" + participantIds.toString() + '\'' +
+            ", videoRestrictedMode=" + videoRestrictedMode +
+            ", audioRestrictedMode=" + audioRestrictedMode +
+            ", participantIds=" + participantIds +
             '}';
     }
 }

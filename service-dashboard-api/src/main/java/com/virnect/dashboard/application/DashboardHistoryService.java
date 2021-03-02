@@ -302,49 +302,44 @@ public class DashboardHistoryService {
 
 		RoomDetailInfoResponse roomDetailInfoResponse = new RoomDetailInfoResponse();
 
-		Room ongoingRoom = roomRepository.findRoomHistoryByWorkspaceAndSessionId(workspaceId, sessionId);
+		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_FOUND));
 
-		if (ongoingRoom == null) {
-			throw new RestServiceException(ErrorCode.ERR_ROOM_FOUND);
-		} else {
-			try {
-				roomDetailInfoResponse = modelMapper.map(ongoingRoom, RoomDetailInfoResponse.class);
-				roomDetailInfoResponse.setSessionType(ongoingRoom.getSessionProperty().getSessionType());
+		try {
+			roomDetailInfoResponse = modelMapper.map(ongoingRoom, RoomDetailInfoResponse.class);
+			roomDetailInfoResponse.setSessionType(ongoingRoom.getSessionProperty().getSessionType());
 
-				List<MemberInfoResponse> memberInfoResponses = ongoingRoom.getMembers()
-					.stream()
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-					.collect(Collectors.toList());
+			List<MemberInfoResponse> memberInfoResponses = ongoingRoom.getMembers()
+				.stream()
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
 
-				memberInfoResponses.removeIf(
-					memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+			memberInfoResponses.removeIf(
+				memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
-				roomDetailInfoResponse.setMemberList(memberInfoResponses);
+			roomDetailInfoResponse.setMemberList(memberInfoResponses);
 
-				// Set Member Info
-				if (!roomDetailInfoResponse.getMemberList().isEmpty()) {
+			// Set Member Info
+			if (!roomDetailInfoResponse.getMemberList().isEmpty()) {
 
-					for (MemberInfoResponse memberInfoResponse : roomDetailInfoResponse.getMemberList()) {
-						ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo =
-							workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
-						WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-						memberInfoResponse.setRole(workspaceMemberData.getRole());
-						memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-						memberInfoResponse.setName(workspaceMemberData.getName());
-						memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-						memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-					}
-
-					roomDetailInfoResponse.setMemberList(
-						setLeader(roomDetailInfoResponse.getMemberList())
-					);
-
+				for (MemberInfoResponse memberInfoResponse : roomDetailInfoResponse.getMemberList()) {
+					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo =
+						workspaceRestService.getWorkspaceMemberInfo(workspaceId, memberInfoResponse.getUuid());
+					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+					memberInfoResponse.setRole(workspaceMemberData.getRole());
+					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+					memberInfoResponse.setName(workspaceMemberData.getName());
+					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 				}
-			} catch (Exception exception) {
-				throw new RestServiceException(ErrorCode.ERR_ROOM_MAPPER);
-			}
-		}
 
+				roomDetailInfoResponse.setMemberList(
+					setLeader(roomDetailInfoResponse.getMemberList())
+				);
+
+			}
+		} catch (Exception exception) {
+			throw new RestServiceException(ErrorCode.ERR_ROOM_MAPPER);
+		}
 		return roomDetailInfoResponse;
 	}
 
@@ -358,55 +353,51 @@ public class DashboardHistoryService {
 
 		RoomHistoryDetailInfoResponse roomHistoryDetailInfoResponse = new RoomHistoryDetailInfoResponse();
 
-		RoomHistory endRoom = roomHistoryRepository.findRoomHistoryByWorksapceAndSessionId(
+		RoomHistory endRoom = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(
 			request.getWorkspaceId(),
 			request.getSessionId()
-		);
+		).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_FOUND));
 
-		if (endRoom == null) {
-			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_FOUND);
-		} else {
-			try {
-				roomHistoryDetailInfoResponse = modelMapper.map(endRoom, RoomHistoryDetailInfoResponse.class);
-				roomHistoryDetailInfoResponse.setSessionType(endRoom.getSessionPropertyHistory().getSessionType());
+		try {
+			roomHistoryDetailInfoResponse = modelMapper.map(endRoom, RoomHistoryDetailInfoResponse.class);
+			roomHistoryDetailInfoResponse.setSessionType(endRoom.getSessionPropertyHistory().getSessionType());
 
-				List<MemberInfoResponse> memberInfoList = endRoom.getMemberHistories()
-					.stream()
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-					.collect(Collectors.toList());
+			List<MemberInfoResponse> memberInfoList = endRoom.getMemberHistories()
+				.stream()
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
 
-				memberInfoList.removeIf(
-					memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
+			memberInfoList.removeIf(
+				memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED));
 
-				roomHistoryDetailInfoResponse.setMemberList(memberInfoList);
+			roomHistoryDetailInfoResponse.setMemberList(memberInfoList);
 
-				// Set Member Info
-				if (!endRoom.getMemberHistories().isEmpty()) {
-					for (MemberInfoResponse memberInfoResponse : roomHistoryDetailInfoResponse.getMemberList()) {
-						ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo =
-							workspaceRestService.getWorkspaceMemberInfo(request.getWorkspaceId(), memberInfoResponse.getUuid());
-						WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-						memberInfoResponse.setRole(workspaceMemberData.getRole());
-						memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-						memberInfoResponse.setName(workspaceMemberData.getName());
-						memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-						memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-					}
-
-					roomHistoryDetailInfoResponse.setMemberList(
-						setLeader(roomHistoryDetailInfoResponse.getMemberList())
-					);
-
+			// Set Member Info
+			if (!endRoom.getMemberHistories().isEmpty()) {
+				for (MemberInfoResponse memberInfoResponse : roomHistoryDetailInfoResponse.getMemberList()) {
+					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo =
+						workspaceRestService.getWorkspaceMemberInfo(request.getWorkspaceId(), memberInfoResponse.getUuid());
+					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+					memberInfoResponse.setRole(workspaceMemberData.getRole());
+					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+					memberInfoResponse.setName(workspaceMemberData.getName());
+					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 				}
-			} catch (Exception exception) {
-				throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
-			}
-		}
 
+				roomHistoryDetailInfoResponse.setMemberList(
+					setLeader(roomHistoryDetailInfoResponse.getMemberList())
+				);
+
+			}
+		} catch (Exception exception) {
+			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
+
+		}
 		return roomHistoryDetailInfoResponse;
 	}
 
-	public List<RoomHistoryInfoResponse> makeOngoingRooms(RoomHistoryListRequest request) {
+	/*public List<RoomHistoryInfoResponse> makeOngoingRooms(RoomHistoryListRequest request) {
 
 		LocalDateTime startDateTime = null;
 		LocalDateTime endDateTime = null;
@@ -429,9 +420,9 @@ public class DashboardHistoryService {
 		List<Member> ongoingRoomMemberHistories = memberRepository.findByWorkspaceIdAndRoomNotNull(
 			request.getWorkspaceId());
 		return ongoingRoomMapper(ongoingRooms, ongoingRoomMemberHistories);
-	}
+	}*/
 
-	public List<RoomHistoryInfoResponse> makeEndRooms(RoomHistoryListRequest request) {
+	/*public List<RoomHistoryInfoResponse> makeEndRooms(RoomHistoryListRequest request) {
 
 		List<RoomHistory> endRooms = new ArrayList<>();
 
@@ -475,7 +466,7 @@ public class DashboardHistoryService {
 		List<MemberHistory> endRoomMemberHistories = memberHistoryRepository.findByWorkspaceId(
 			request.getWorkspaceId());
 		return endRoomMapper(endRooms, endRoomMemberHistories);
-	}
+	}*/
 
 	/**
 	 * 협업 히스토리 데이터 핸들링 처리
@@ -649,7 +640,7 @@ public class DashboardHistoryService {
 		return roomHistoryInfoListResponse;
 	}
 
-	public List<RoomHistoryInfoResponse> ongoingRoomMapper(
+	/*public List<RoomHistoryInfoResponse> ongoingRoomMapper(
 		List<Room> ongoingRooms,
 		List<Member> ongoingRoomMemberHistories
 	) {
@@ -683,9 +674,9 @@ public class DashboardHistoryService {
 			throw new RestServiceException(ErrorCode.ERR_ROOM_MAPPER);
 		}
 		return roomHistoryResponse;
-	}
+	}*/
 
-	public List<RoomHistoryInfoResponse> endRoomMapper(
+	/*public List<RoomHistoryInfoResponse> endRoomMapper(
 		List<RoomHistory> endRooms,
 		List<MemberHistory> endRoomMemberHistories
 	) {
@@ -720,7 +711,7 @@ public class DashboardHistoryService {
 			throw new RestServiceException(ErrorCode.ERR_ROOM_HISTORY_MAPPER);
 		}
 		return roomHistoryResponse;
-	}
+	}*/
 
 	/**
 	 * 로컬 첨부파일 목록 요청 처리
@@ -728,7 +719,7 @@ public class DashboardHistoryService {
 	 * @param deleted - 삭제 유무
 	 * @return - 로컬 첨부파일 목록
 	 */
-	public List<FileInfoResponse> getAttached1FileList(
+	/*public List<FileInfoResponse> getAttached1FileList(
 		String workspaceId,
 		boolean deleted
 	) {
@@ -736,13 +727,13 @@ public class DashboardHistoryService {
 		List<FileInfoResponse> fileInfoResponses;
 		try {
 
-			/*List<File> files;
+			*//*List<File> files;
 
 			if (deleted) {
 				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId);
 			} else {
 				files = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(workspaceId, sessionId);
-			}*/
+			}*//*
 
 			List<File> files = fileRepository.findByWorkspaceIdAndDeleted(workspaceId, deleted);
 
@@ -754,7 +745,7 @@ public class DashboardHistoryService {
 		}
 
 		return fileInfoResponses;
-	}
+	}*/
 
 	/**
 	 * 로컬 첨부파일 목록 요청 처리
@@ -842,7 +833,7 @@ public class DashboardHistoryService {
 	 * @param deleted - 삭제 유무
 	 * @return - 로컬 녹화파일 목록
 	 */
-	public List<FileDetailInfoResponse> getLocalRecordFileList(
+	/*public List<FileDetailInfoResponse> getLocalRecordFileList(
 		String workspaceId,
 		String sessionId,
 		boolean deleted
@@ -850,7 +841,7 @@ public class DashboardHistoryService {
 		List<FileDetailInfoResponse> fileDetailInfoResponses = new ArrayList<>();
 		try {
 
-			/*List<RecordFile> recordFiles;
+			*//*List<RecordFile> recordFiles;
 
 			if (deleted) {
 				recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId);
@@ -858,7 +849,7 @@ public class DashboardHistoryService {
 				recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsFalse(
 					workspaceId, sessionId);
 			}
-*/
+*//*
 			List<RecordFile> recordFiles = recordFileRepository.findByWorkspaceIdAndSessionIdAndDeleted(workspaceId, sessionId, deleted);
 
 			ApiResponse<UserInfoListResponse> listResponse = userRestService.getUserInfo(false);
@@ -879,7 +870,7 @@ public class DashboardHistoryService {
 			throw new RestServiceException(ErrorCode.ERR_LOCAL_RECORD_FILE_FOUND);
 		}
 		return fileDetailInfoResponses;
-	}
+	}*/
 
 	/**
 	 * 정렬, 글 번호 설정
@@ -1168,7 +1159,7 @@ public class DashboardHistoryService {
 		RoomHistoryListRequest option, String workspaceId, String userId
 	) {
 
-		List<RoomHistory> roomHistories = roomHistoryRepository.findRoomHistoryInWorksapceWithDateOrSpecificUserId(
+		List<RoomHistory> roomHistories = roomHistoryRepository.findRoomHistoryInWorkspaceIdWithDateOrSpecificUserId(
 			option.getSearchStartDate(), option.getSearchEndDate(), workspaceId, userId
 		);
 

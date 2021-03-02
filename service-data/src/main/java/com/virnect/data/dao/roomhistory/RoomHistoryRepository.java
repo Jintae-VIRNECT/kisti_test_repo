@@ -14,9 +14,9 @@ import java.util.Optional;
 
 @Repository
 public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long>, JpaSpecificationExecutor<RoomHistory>, CustomRoomHistoryRepository {
-    Optional<RoomHistory> findBySessionId(final String sessionId);
+    //Optional<RoomHistory> findBySessionId(final String sessionId);
 
-    Optional<RoomHistory> findRoomHistoryByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
+    //Optional<RoomHistory> findRoomHistoryByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     //Page<RoomHistory> findRoomHistoriesByWorkspaceIdAndMemberHistoriesIsNotNull(final String workspaceId, Pageable pageable);
 
@@ -27,7 +27,7 @@ public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long>,
 
     List<RoomHistory> findByTitleIsContaining(final String title);
 
-    boolean existsByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
+    //boolean existsByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
     List<RoomHistory> findRoomHistoryByWorkspaceIdAndMemberHistories_Uuid(String workspaceId, String userId);
 
@@ -37,7 +37,7 @@ public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long>,
 
     List<RoomHistory> findRoomHistoryByWorkspaceId(String workspaceId);
 
-    List<RoomHistory> findRoomHistoryInWorksapceWithDateOrSpecificUserId(LocalDateTime searchStartDate, LocalDateTime searchEndDate, String workspaceId, String userId);
+    //List<RoomHistory> findRoomHistoryInWorkspaceIdWithDateOrSpecificUserId(LocalDateTime searchStartDate, LocalDateTime searchEndDate, String workspaceId, String userId);
 
-    RoomHistory findRoomHistoryByWorksapceAndSessionId(String workspaceId, String sessionId);
+    //RoomHistory findRoomHistoryByWorkspaceIdAndSessionId(String workspaceId, String sessionId);
 }

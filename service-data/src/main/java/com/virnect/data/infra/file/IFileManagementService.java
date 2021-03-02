@@ -15,8 +15,8 @@ public interface IFileManagementService {
     String DEFAULT_ROOM_PROFILE = "default";
 
     int EXPIRE_DAY = 7; // 7 days expire time
-    final long MAX_USER_PROFILE_IMAGE_SIZE = 1048576 * 5; // 5MB in binary
-    final long MAX_FILE_SIZE = 1048576 * 20; // 20MB in binary
+    long MAX_USER_PROFILE_IMAGE_SIZE = 1048576 * 5; // 5MB in binary
+    long MAX_FILE_SIZE = 1048576 * 20; // 20MB in binary
 
     //default file extension list
     List<String> FILE_PROFILE_ALLOW_EXTENSION = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");

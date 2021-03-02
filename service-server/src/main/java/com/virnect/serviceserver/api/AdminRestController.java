@@ -27,11 +27,9 @@ import com.virnect.data.infra.utils.LogMessage;
 @RequiredArgsConstructor
 @RequestMapping("/remote")
 public class AdminRestController {
+
     private static final String TAG = AdminRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/admin";
-    //private static final String REST_COMPANY_PATH = "/remote/company";
-
-    //private final UtilDataRepository utilDataRepository;
 
     private final AdminService adminService;
 
@@ -41,13 +39,15 @@ public class AdminRestController {
         @RequestBody @Valid CompanyRequest companyRequest,
         BindingResult result
     ) {
+
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: POST "
+                + REST_PATH + "::"
+                + (companyRequest.toString() != null ? companyRequest.toString() : "{}"),
             "createCompanyRequestHandler"
         );
 
-        // check company request handler
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message ->
                 LogMessage.formedError(
@@ -62,9 +62,8 @@ public class AdminRestController {
         }
 
         ApiResponse<CompanyResponse> responseData = adminService.createCompany(companyRequest);
+
         return ResponseEntity.ok(responseData);
-		/*ApiResponse<CompanyResponse> apiResponse = utilDataRepository.generateCompany(companyRequest);
-		return ResponseEntity.ok(apiResponse);*/
     }
 
     @ApiOperation(value = "Update Company Information ", notes = "생성한 회사 정보를 수정합니다.")

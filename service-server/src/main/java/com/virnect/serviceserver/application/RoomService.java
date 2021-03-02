@@ -2,7 +2,9 @@ package com.virnect.serviceserver.application;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
@@ -11,15 +13,15 @@ import com.google.gson.JsonObject;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.session.SessionType;
-import com.virnect.data.dao.room.RoomRepository;
-import com.virnect.serviceserver.api.SessionRestController;
-import com.virnect.serviceserver.dao.DataProcess;
-import com.virnect.serviceserver.dao.SessionDataRepository;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.remote.dto.constraint.LicenseItem;
 import com.virnect.remote.dto.constraint.PushConstants;
 import com.virnect.remote.dto.push.SendSignalRequest;
@@ -27,13 +29,14 @@ import com.virnect.remote.dto.request.room.InviteRoomRequest;
 import com.virnect.remote.dto.request.room.JoinRoomRequest;
 import com.virnect.remote.dto.request.room.KickRoomRequest;
 import com.virnect.remote.dto.request.room.RoomRequest;
+import com.virnect.remote.dto.response.CoturnResponse;
 import com.virnect.remote.dto.response.ResultResponse;
 import com.virnect.remote.dto.response.room.InviteRoomResponse;
 import com.virnect.remote.dto.response.room.KickRoomResponse;
 import com.virnect.remote.dto.response.room.RoomResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.api.SessionRestController;
+import com.virnect.serviceserver.dao.SessionDataRepository;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 
 @Slf4j
 @Service
@@ -41,12 +44,13 @@ import com.virnect.data.infra.utils.LogMessage;
 public class RoomService {
 
 	private static final String TAG = SessionRestController.class.getSimpleName();
-	private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 	private static final String REST_PATH = "/remote/room";
 
 	private final RoomRepository roomRepository;
 	private final SessionDataRepository sessionDataRepository;
 	private final ServiceSessionManager serviceSessionManager;
+
+	private final RemoteServiceConfig config;
 
 	private boolean IsValidUserCapacity(RoomRequest roomRequest, LicenseItem licenseItem) {
 		// check room request member count is over
@@ -66,7 +70,7 @@ public class RoomService {
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new RoomResponse(),
 				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
 			);
@@ -75,8 +79,9 @@ public class RoomService {
 		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
 			.equals(SessionType.PUBLIC)) {
 			// check room request member count is over
+			assert licenseItem != null;
 			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				responseData = new ApiResponse<>(
+				new ApiResponse<>(
 					new RoomResponse(),
 					ErrorCode.ERR_ROOM_MEMBER_IS_OVER
 				);
@@ -127,7 +132,7 @@ public class RoomService {
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new RoomResponse(),
 				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
 			);
@@ -136,8 +141,9 @@ public class RoomService {
 		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
 			.equals(SessionType.PUBLIC)) {
 			// check room request member count is over
+			assert licenseItem != null;
 			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				responseData = new ApiResponse<>(
+				new ApiResponse<>(
 					new RoomResponse(),
 					ErrorCode.ERR_ROOM_MEMBER_IS_OVER
 				);
@@ -194,15 +200,18 @@ public class RoomService {
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new RoomResponse(),
 				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
 			);
 		}
 
-		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
-			.equals(SessionType.PUBLIC)) {
+		if (
+			roomRequest.getSessionType().equals(SessionType.PRIVATE)
+				|| roomRequest.getSessionType().equals(SessionType.PUBLIC))
+		{
 			// check room request member count is over
+			assert licenseItem != null;
 			if (IsValidUserCapacity(roomRequest, licenseItem)) {
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -216,6 +225,9 @@ public class RoomService {
 					sessionJson.toString(),
 					tokenResult.toString()
 				);
+
+				CoturnResponse coturnResponse = setCoturnResponse(responseData.getData().getSessionType());
+				responseData.getData().getCoturn().add(coturnResponse);
 
 			} else {
 				responseData = new ApiResponse<>(
@@ -237,6 +249,10 @@ public class RoomService {
 				sessionJson.toString(),
 				tokenResult.toString()
 			);
+
+			CoturnResponse coturnResponse = setCoturnResponse(responseData.getData().getSessionType());
+			responseData.getData().getCoturn().add(coturnResponse);
+
 		} else {
 			responseData = new ApiResponse<>(
 				new RoomResponse(),
@@ -258,7 +274,7 @@ public class RoomService {
 		// check license item using company code if not virnect
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new RoomResponse(),
 				ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
 			);
@@ -267,6 +283,7 @@ public class RoomService {
 		if (roomRequest.getSessionType().equals(SessionType.PRIVATE) || roomRequest.getSessionType()
 			.equals(SessionType.PUBLIC)) {
 			// check room request member count is over
+			assert licenseItem != null;
 			if (IsValidUserCapacity(roomRequest, licenseItem)) {
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -279,6 +296,9 @@ public class RoomService {
 					sessionJson.toString(),
 					tokenResult.toString()
 				);
+
+				CoturnResponse coturnResponse = setCoturnResponse(responseData.getData().getSessionType());
+				responseData.getData().getCoturn().add(coturnResponse);
 
 			} else {
 				responseData = new ApiResponse<>(
@@ -301,6 +321,9 @@ public class RoomService {
 				tokenResult.toString()
 			);
 
+			CoturnResponse coturnResponse = setCoturnResponse(responseData.getData().getSessionType());
+			responseData.getData().getCoturn().add(coturnResponse);
+
 		} else {
 			responseData = new ApiResponse<>(
 				new RoomResponse(),
@@ -318,7 +341,7 @@ public class RoomService {
 
 		ApiResponse<RoomResponse> responseData;
 
-		DataProcess<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
+		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
 			workspaceId, sessionId, joinRoomRequest.getUuid());
 
 		if (dataProcess.getData()) {
@@ -328,6 +351,10 @@ public class RoomService {
 
 			responseData = this.sessionDataRepository.joinRoom(
 				workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
+
+			CoturnResponse coturnResponse = setCoturnResponse(responseData.getData().getSessionType());
+			responseData.getData().getCoturn().add(coturnResponse);
+
 		} else {
 			LogMessage.formedInfo(
 				TAG,
@@ -356,6 +383,7 @@ public class RoomService {
 		Member member = null;
 
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+
 		if (room == null) {
 			responseData = new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		} else {
@@ -424,7 +452,7 @@ public class RoomService {
 	) {
 		ApiResponse<KickRoomResponse> apiResponse = this.sessionDataRepository.kickFromRoom(
 			workspaceId, sessionId, kickRoomRequest);
-		ApiResponse<ResultResponse> resultResponse = null;
+		ApiResponse<ResultResponse> resultResponse;
 		if (apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
 			String connectionId = apiResponse.getData().getConnectionId();
 			if (connectionId == null || connectionId.isEmpty()) {
@@ -437,7 +465,7 @@ public class RoomService {
 				//send rpc message to connection id user of the session id
 				JsonObject jsonObject = serviceSessionManager.generateMessage(
 					sessionId,
-					Arrays.asList(connectionId),
+					Collections.singletonList(connectionId),
 					PushConstants.PUSH_SIGNAL_SYSTEM,
 					PushConstants.SEND_PUSH_ROOM_EVICT
 				);
@@ -489,4 +517,38 @@ public class RoomService {
 		apiResponse.setData(response);
 		return apiResponse;
 	}
+
+	private CoturnResponse setCoturnResponse(SessionType sessionType) {
+		CoturnResponse coturnResponse = new CoturnResponse();
+		switch (sessionType) {
+			case OPEN: {
+				List<String> urlList = config.remoteServiceProperties.getCoturnUrisStreaming();
+				if (urlList.isEmpty()) {
+					for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+						coturnResponse.setUrl(coturnUrl);
+					}
+				} else {
+					for (String coturnUrl : urlList) {
+						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+						coturnResponse.setUrl(coturnUrl);
+					}
+				}
+			}
+			break;
+			case PUBLIC:
+			case PRIVATE: {
+				for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
+					coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+					coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+					coturnResponse.setUrl(coturnUrl);
+				}
+			}
+			break;
+		}
+		return coturnResponse;
+	}
+
 }

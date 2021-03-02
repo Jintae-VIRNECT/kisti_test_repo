@@ -17,7 +17,7 @@ import java.util.List;
 
 public class RoomSpecifications {
     public static Specification<Room> joinMember(String workspaceId, String userId) {
-        return (Specification<Room>) ((root, query, criteriaBuilder) -> {
+        return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             Join<Room, Member> roomJoinMember = root.join("members", JoinType.LEFT);
@@ -37,11 +37,11 @@ public class RoomSpecifications {
                     .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
                     .distinct(true)
                     .getRestriction();
-        });
+        };
     }
 
     public static Specification<Room> joinMember(String workspaceId, String userId, List<String> userIds, String keyword) {
-        return (Specification<Room>) ((root, query, criteriaBuilder) -> {
+        return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             Join<Room, Member> roomJoinMember = root.join("members", JoinType.LEFT);
@@ -65,11 +65,11 @@ public class RoomSpecifications {
                     .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
                     .distinct(true)
                     .getRestriction();
-        });
+        };
     }
 
     public static Specification<Room> joinMember(String workspaceId, String userId, String keyword) {
-        return (Specification<Room>) ((root, query, criteriaBuilder) -> {
+        return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
             Join<Room, Member> roomJoinMember = root.join("members", JoinType.LEFT);
@@ -90,6 +90,6 @@ public class RoomSpecifications {
                     .where(criteriaBuilder.and(predicates.toArray(new Predicate[0])))
                     .distinct(true)
                     .getRestriction();
-        });
+        };
     }
 }

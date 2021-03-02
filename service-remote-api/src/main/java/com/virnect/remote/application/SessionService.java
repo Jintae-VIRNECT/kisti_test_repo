@@ -10,239 +10,995 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.data.dao.company.CompanyRepository;
-import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
+import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.member.MemberRepository;
-import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
 import com.virnect.data.dao.room.RoomRepository;
-import com.virnect.data.domain.Company;
-import com.virnect.data.domain.DeviceType;
+import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
-import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.room.RoomStatus;
+import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
 import com.virnect.data.domain.session.SessionType;
-import com.virnect.remote.dto.request.room.InviteRoomRequest;
-import com.virnect.remote.dto.request.room.JoinRoomRequest;
-import com.virnect.remote.dto.request.room.ModifyRoomInfoRequest;
-import com.virnect.remote.dto.response.rpc.ClientMetaData;
+import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.remote.dto.constraint.LicenseItem;
+import com.virnect.remote.dto.request.room.InviteRoomRequest;
+import com.virnect.remote.dto.request.room.JoinRoomRequest;
+import com.virnect.remote.dto.request.room.KickRoomRequest;
+import com.virnect.remote.dto.request.room.ModifyRoomInfoRequest;
+import com.virnect.remote.dto.request.room.RoomRequest;
+import com.virnect.remote.dto.response.ResultResponse;
+import com.virnect.remote.dto.response.member.MemberInfoResponse;
+import com.virnect.remote.dto.response.room.InviteRoomResponse;
+import com.virnect.remote.dto.response.room.KickRoomResponse;
+import com.virnect.remote.dto.response.room.RoomDeleteResponse;
+import com.virnect.remote.dto.response.room.RoomDetailInfoResponse;
+import com.virnect.remote.dto.response.room.RoomInfoListResponse;
+import com.virnect.remote.dto.response.room.RoomInfoResponse;
+import com.virnect.remote.dto.response.room.RoomResponse;
+import com.virnect.remote.dto.response.session.SessionResponse;
+import com.virnect.remote.dto.response.session.SessionTokenResponse;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionService {
 
-	private final ModelMapper modelMapper;
-	private final RoomRepository roomRepository;
+	private static final String TAG = SessionService.class.getSimpleName();
+
+	private final ObjectMapper objectMapper;
+
+	private final SessionTransactionalService sessionService;
+	private final HistoryService historyService;
+	private final WorkspaceRestService workspaceRestService;
 	private final MemberRepository memberRepository;
+	private final RoomRepository roomRepository;
 	private final RoomHistoryRepository roomHistoryRepository;
-	private final MemberHistoryRepository memberHistoryRepository;
-	private final CompanyRepository companyRepository;
+	private final ModelMapper modelMapper;
 
-	//===========================================  Admin Services     =================================================//
-	@Transactional
-	public Company createCompany(Company company) {
-		return companyRepository.save(company);
-	}
-	//===========================================  Admin Services     =================================================//
-	@Transactional
-	public Company updateCompany(Company company) {
-		return companyRepository.save(company);
+	public ApiResponse<RoomResponse> generateRoom(
+		RoomRequest roomRequest,
+		LicenseItem licenseItem,
+		String publisherId,
+		String session,
+		String sessionToken
+	) {
+		//return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.CREATE) {
+
+		SessionResponse sessionResponse = null;
+		SessionTokenResponse sessionTokenResponse = null;
+
+		// Prepare data process
+		try {
+			sessionResponse = objectMapper.readValue(session, SessionResponse.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		try {
+			sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		assert sessionResponse != null;
+		assert sessionTokenResponse != null;
+
+		// Set data
+		// Remote Room Entity Create
+		Room room = Room.builder()
+			.sessionId(sessionResponse.getId())
+			.title(roomRequest.getTitle())
+			.description(roomRequest.getDescription())
+			.leaderId(roomRequest.getLeaderId())
+			.workspaceId(roomRequest.getWorkspaceId())
+			.maxUserCount(licenseItem.getUserCapacity())
+			.licenseName(licenseItem.name())
+			//.restrictedMode(roomRequest.isRestrictedMode())
+			.videoRestrictedMode(roomRequest.isVideoRestrictedMode())
+			.audioRestrictedMode(roomRequest.isAudioRestrictedMode())
+			.build();
+
+		// Remote Session Property Entity Create
+		SessionProperty sessionProperty = SessionProperty.builder()
+			.mediaMode("ROUTED")
+			.recordingMode("MANUAL")
+			.defaultOutputMode("COMPOSED")
+			.defaultRecordingLayout("BEST_FIT")
+			.recording(true)
+			.keepalive(roomRequest.isKeepAlive())
+			.sessionType(roomRequest.getSessionType())
+			.publisherId(publisherId)
+			.room(room)
+			.build();
+
+		room.setSessionProperty(sessionProperty);
+
+		if (!roomRequest.getLeaderId().isEmpty()) {
+			log.info("leader Id is {}", roomRequest.getLeaderId());
+			Member member = Member.builder()
+				.room(room)
+				.memberType(MemberType.LEADER)
+				.workspaceId(roomRequest.getWorkspaceId())
+				.uuid(roomRequest.getLeaderId())
+				.sessionId(room.getSessionId())
+				.build();
+			room.getMembers().add(member);
+		} else {
+			log.info("leader Id is null");
+		}
+
+		// Set member
+		if (!roomRequest.getParticipantIds().isEmpty()) {
+			for (String participant : roomRequest.getParticipantIds()) {
+				log.info("getParticipants Id is {}", participant);
+				Member member = Member.builder()
+					.room(room)
+					.memberType(MemberType.UNKNOWN)
+					.workspaceId(roomRequest.getWorkspaceId())
+					.uuid(participant)
+					.sessionId(room.getSessionId())
+					.build();
+
+				room.getMembers().add(member);
+			}
+		} else {
+			log.info("participants Id List is null");
+		}
+
+		// Process
+		if (sessionService.createRoom(room) != null) {
+			RoomResponse roomResponse = new RoomResponse();
+			//not set session create at property
+			roomResponse.setSessionId(sessionResponse.getId());
+			roomResponse.setToken(sessionTokenResponse.getToken());
+			///roomResponse.setWss(ServiceServerApplication.wssUrl);
+			//roomResponse.setRestrictedMode(room.isRestrictedMode());
+			roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+			roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+			/*CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+			roomResponse.getCoturn().add(coturnResponse);*/
+
+			roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+			return new ApiResponse<>(roomResponse);
+		} else {
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
+		}
 	}
 
-	public Company getCompany(String workspaceId) {
-		return companyRepository.findByWorkspaceId(workspaceId).orElse(null);
+	public ApiResponse<RoomResponse> generateRoom(
+		String preSessionId,
+		RoomRequest roomRequest,
+		LicenseItem licenseItem,
+		String publisherId,
+		String session,
+		String sessionToken
+	) {
+		//return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.CREATE) {
+		SessionResponse sessionResponse = null;
+		SessionTokenResponse sessionTokenResponse = null;
+		String profile;
+
+		// Prepair data process
+		try {
+			sessionResponse = objectMapper.readValue(session, SessionResponse.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		try {
+			sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+		assert sessionResponse != null;
+		assert sessionTokenResponse != null;
+
+		RoomHistory roomHistory = historyService.getRoomHistory(roomRequest.getWorkspaceId(), preSessionId);
+		if (roomHistory == null) {
+			return new ApiResponse<>(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND);
+		} else {
+			log.info(
+				"REDIAL ROOM::#generateRoom::re-generate room by history::session_id => [{}]", preSessionId);
+			profile = roomHistory.getProfile();
+
+			Room room = Room.builder()
+				.sessionId(sessionResponse.getId())
+				.title(roomRequest.getTitle())
+				.description(roomRequest.getDescription())
+				.leaderId(roomRequest.getLeaderId())
+				.workspaceId(roomRequest.getWorkspaceId())
+				.maxUserCount(licenseItem.getUserCapacity())
+				.licenseName(licenseItem.name())
+				//.restrictedMode(roomRequest.isRestrictedMode())
+				.videoRestrictedMode(roomRequest.isVideoRestrictedMode())
+				.audioRestrictedMode(roomRequest.isAudioRestrictedMode())
+				.build();
+
+			room.setProfile(profile);
+
+			// Remote Session Property Entity Create
+			SessionProperty sessionProperty = SessionProperty.builder()
+				.mediaMode("ROUTED")
+				.recordingMode("MANUAL")
+				.defaultOutputMode("COMPOSED")
+				.defaultRecordingLayout("BEST_FIT")
+				.recording(true)
+				.keepalive(roomRequest.isKeepAlive())
+				.sessionType(roomRequest.getSessionType())
+				.publisherId(publisherId)
+				.room(room)
+				.build();
+
+			room.setSessionProperty(sessionProperty);
+
+			// set room members
+			if (!roomRequest.getLeaderId().isEmpty()) {
+				log.info("leader Id is {}", roomRequest.getLeaderId());
+				Member member = Member.builder()
+					.room(room)
+					.memberType(MemberType.LEADER)
+					.workspaceId(roomRequest.getWorkspaceId())
+					.uuid(roomRequest.getLeaderId())
+					.sessionId(room.getSessionId())
+					.build();
+
+				room.getMembers().add(member);
+			} else {
+				log.info("leader Id is null");
+			}
+
+			if (!roomRequest.getParticipantIds().isEmpty()) {
+				for (String participant : roomRequest.getParticipantIds()) {
+					log.info("getParticipants Id is {}", participant);
+					Member member = Member.builder()
+						.room(room)
+						.memberType(MemberType.UNKNOWN)
+						.workspaceId(roomRequest.getWorkspaceId())
+						.uuid(participant)
+						.sessionId(room.getSessionId())
+						.build();
+
+					room.getMembers().add(member);
+				}
+			} else {
+				log.info("participants Id List is null");
+			}
+
+			if (sessionService.createRoom(room) != null) {
+				RoomResponse roomResponse = new RoomResponse();
+				//not set session create at property
+				roomResponse.setSessionId(sessionResponse.getId());
+				roomResponse.setToken(sessionTokenResponse.getToken());
+				//roomResponse.setWss(ServiceServerApplication.wssUrl);
+				//roomResponse.setRestrictedMode(room.isRestrictedMode());
+				roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+				roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+
+				//CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+				//roomResponse.getCoturn().add(coturnResponse);
+				roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+				return new ApiResponse<>(roomResponse);
+			} else {
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
+			}
+		}
 	}
 
-	//===========================================  Room Services     =================================================//
-	@Transactional
-	public Room createRoom(Room room) {
-		return roomRepository.save(room);
+	public ApiResponse<RoomInfoListResponse> loadRoomPageList(
+		String workspaceId,
+		String userId,
+		Pageable pageable
+	) {
+		//return new RepoDecoder<Page<Room>, RoomInfoListResponse>(RepoDecoderType.READ) {
+		Page<Room> roomPage = sessionService.getRoomPageList(workspaceId, userId, pageable);
+
+		// Page Metadata
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(pageable.getPageNumber())
+			.currentSize(pageable.getPageSize())
+			.numberOfElements(roomPage.getNumberOfElements())
+			.totalPage(roomPage.getTotalPages())
+			.totalElements(roomPage.getTotalElements())
+			.last(roomPage.isLast())
+			.build();
+
+		for (Room room : roomPage.getContent()) {
+			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
+		}
+
+                /*Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
+                        .filter(room -> {
+                            if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                                return true;
+                            } else {
+                                for (Member member : room.getMembers()) {
+                                    if (member.getUuid().equals(userId) && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        })
+                        .collect(Collectors.toMap(room -> room, Room::getMembers));
+
+                for (Room room : roomListMap.keySet()) {
+                    log.info("mapping key invokeDataProcess: {}", room.getSessionId());
+                    for (Member member : roomListMap.get(room)) {
+                        log.info("mapping value invokeDataProcess: {}", member.getUuid());
+                    }
+                }*/
+
+		List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+		//for (Room room: roomListMap.keySet()) {
+		for (Room room : roomPage.getContent()) {
+			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+			// Mapping Member List Data to Member Information List
+			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
+				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			// find and get extra information from workspace-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					workspaceId, memberInfoResponse.getUuid());
+				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+				//todo://user infomation does not have role and role id change to workspace member info
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+			}
+			roomInfoResponse.setMemberList(memberInfoList);
+
+			roomInfoList.add(roomInfoResponse);
+		}
+		return new ApiResponse<>(new RoomInfoListResponse(roomInfoList, pageMeta));
 	}
 
-	@Transactional
-	public void createSession(String sessionId) {
-		log.info("session create and sessionEventHandler is here");
-		Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
+	public ApiResponse<RoomInfoListResponse> searchRoomPageList(
+		String workspaceId,
+		String userId,
+		String search,
+		Pageable pageable
+	) {
+		List<MemberInfoResponse> memberInfoList;
+
+		// Prepair data process
+		ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
+			workspaceId,
+			"remote",
+			search,
+			pageable.getPageNumber(),
+			pageable.getPageSize()
+		);
+
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
+		memberInfoList = workspaceMemberInfoList.stream()
+			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.collect(Collectors.toList());
+
+		log.info("fetchFromRepository::searchRoomPageList:: {}", feignResponse.getData().getPageMeta());
+
+		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+			log.info("fetchFromRepository::searchRoomPageList:: {}", memberInfoResponse.toString());
+		}
+
+		//search all activated room
+		Page<Room> roomPage;
+
+		// Load data
+		List<String> userIds = new ArrayList<>();
+		for (MemberInfoResponse memberInfo : memberInfoList) {
+			if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
+				//if memberInfo is empty
+				log.info("loadFromDatabase::searchRoomPageList:: some member dose not have uuid");
+			} else {
+				userIds.add(memberInfo.getUuid());
+			}
+		}
+		if (userIds.isEmpty()) {
+			log.info(
+				"loadFromDatabase::searchRoomPageList::memberInfoList is empty can not find, search with room title");
+			roomPage = sessionService.getRoomPageList(workspaceId, userId, search, pageable);
+		} else {
+			log.info("loadFromDatabase::searchRoomPageList::memberInfoList is not empty");
+			roomPage = sessionService.getRoomPageList(workspaceId, userId, userIds, search, pageable);
+		}
+
+		// Page Metadata
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(pageable.getPageNumber())
+			.currentSize(pageable.getPageSize())
+			.numberOfElements(roomPage.getNumberOfElements())
+			.totalPage(roomPage.getTotalPages())
+			.totalElements(roomPage.getTotalElements())
+			.last(roomPage.isLast())
+			.build();
+
+		for (Room room : roomPage.getContent()) {
+			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
+		}
+
+		List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+		for (Room room : roomPage.getContent()) {
+			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+			// Mapping Member List Data to Member Information List
+			List<MemberInfoResponse> memberInfoResponses = room.getMembers().stream()
+				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			// find and get extra information from workspace-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoResponses) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					workspaceId, memberInfoResponse.getUuid());
+				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+			}
+			roomInfoResponse.setMemberList(memberInfoResponses);
+
+			roomInfoList.add(roomInfoResponse);
+		}
+		return new ApiResponse<>(new RoomInfoListResponse(roomInfoList, pageMeta));
+	}
+
+	public ApiResponse<RoomInfoListResponse> loadRoomList(
+		String workspaceId,
+		String userId,
+		Pageable pageable
+	) {
+		Page<Room> roomPage = sessionService.getRoomPageList(workspaceId, userId, pageable);
+
+		// Page Metadata Empty
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(0)
+			.currentSize(0)
+			.numberOfElements(roomPage.getNumberOfElements())
+			.totalPage(roomPage.getTotalPages())
+			.totalElements(roomPage.getTotalElements())
+			.last(roomPage.isLast())
+			.build();
+
+                /*Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
+                        .filter(room -> {
+                            if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
+                                return true;
+                            } else {
+                                for (Member member : room.getMembers()) {
+                                    if (member.getUuid().equals(userId)
+                                            && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            }
+                        })
+                        .collect(Collectors.toMap(room -> room, Room::getMembers));
+
+                */
+		List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+		//for (Room room : roomListMap.keySet()) {
+		for (Room room : roomPage.getContent()) {
+			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+			// Mapping Member List Data to Member Information List
+			List<MemberInfoResponse> memberInfoList = room.getMembers()
+				.stream()
+				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			// find and get extra information from workspace-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					workspaceId, memberInfoResponse.getUuid());
+				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+				//todo://user infomation does not have role and role id change to workspace member info
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+			}
+			roomInfoResponse.setMemberList(memberInfoList);
+
+			roomInfoList.add(roomInfoResponse);
+		}
+		return new ApiResponse<>(new RoomInfoListResponse(roomInfoList, pageMeta));
+	}
+
+	public ApiResponse<RoomDetailInfoResponse> loadRoom(String workspaceId, String sessionId) {
+		//return new RepoDecoder<Room, RoomDetailInfoResponse>(RepoDecoderType.READ) {
+		LogMessage.formedInfo(
+			TAG,
+			"invokeDataProcess",
+			"loadRoom",
+			"room info retrieve by session id",
+			sessionId
+		);
+
+		List<MemberInfoResponse> memberInfoList;
+
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+		if (room == null) {
+			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		} else {
+			if (room.getRoomStatus() != RoomStatus.ACTIVE) {
+				return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
+			} else {
+				// mapping data
+				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
+					room, RoomDetailInfoResponse.class);
+				roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+				// Get Member List by Room Session ID
+				// Mapping Member List Data to Member Information List
+				memberInfoList = sessionService.getMemberList(roomDetailInfoResponse.getSessionId())
+					.stream()
+					.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+					.collect(Collectors.toList());
+
+				// find and get extra information from workspace-server using uuid
+				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+						workspaceId, memberInfoResponse.getUuid());
+					log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+					//todo://user infomation does not have role and role id change to workspace member info
+					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+					memberInfoResponse.setRole(workspaceMemberData.getRole());
+					//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+					memberInfoResponse.setName(workspaceMemberData.getName());
+					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+				}
+
+				// Set Member List to Room Detail Information Response
+				roomDetailInfoResponse.setMemberList(memberInfoList);
+				return new ApiResponse<>(roomDetailInfoResponse);
+			}
+		}
+	}
+
+	public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
+		//return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
+		Room room = null;
+		room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+		if (room == null) {
+			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
+
+		//check request user has valid permission
+		if (!room.getLeaderId().equals(userId)) {
+			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+		}
+
+		for (Member member : room.getMembers()) {
+			if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus()
+				.equals(MemberStatus.LOAD)) {
+				return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
+			}
+		}
+
+		log.info("ROOM INFO DELETE BY SESSION ID => [{}]", room.getMembers().size());
+
+		// Set History
+		RoomHistory roomHistory = RoomHistory.builder()
+			.sessionId(room.getSessionId())
+			.title(room.getTitle())
+			.description(room.getDescription())
+			.profile(room.getProfile())
+			.leaderId(room.getLeaderId())
+			.workspaceId(room.getWorkspaceId())
+			.maxUserCount(room.getMaxUserCount())
+			.licenseName(room.getLicenseName())
+			.build();
+
+		// Remote Session Property Entity Create
+		SessionProperty sessionProperty = room.getSessionProperty();
+		SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
+			.mediaMode(sessionProperty.getMediaMode())
+			.recordingMode(sessionProperty.getRecordingMode())
+			.defaultOutputMode(sessionProperty.getDefaultOutputMode())
+			.defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
+			.recording(sessionProperty.isRecording())
+			.keepalive(sessionProperty.isKeepalive())
+			.sessionType(sessionProperty.getSessionType())
+			.roomHistory(roomHistory)
+			.build();
+
+		roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+		// Set room member history
+		// Mapping Member List Data to Member History List
+		for (Member roomMember : room.getMembers()) {
+			MemberHistory memberHistory = MemberHistory.builder()
+				.roomHistory(roomHistory)
+				.workspaceId(roomMember.getWorkspaceId())
+				.uuid(roomMember.getUuid())
+				.memberType(roomMember.getMemberType())
+				.deviceType(roomMember.getDeviceType())
+				.sessionId(roomMember.getSessionId())
+				.startDate(roomMember.getStartDate())
+				.endDate(roomMember.getEndDate())
+				.durationSec(roomMember.getDurationSec())
+				.build();
+
+			//sessionService.setMemberHistory(memberHistory);
+			roomHistory.getMemberHistories().add(memberHistory);
+
+			//delete member
+			sessionService.deleteMember(roomMember);
+		}
 
 		//set active time
-		LocalDateTime activeTime = LocalDateTime.now();
-		room.setActiveDate(activeTime);
-		room.setRoomStatus(RoomStatus.ACTIVE);
-		roomRepository.save(room);
-	}
+		roomHistory.setActiveDate(room.getActiveDate());
 
-	@Transactional(isolation = Isolation.SERIALIZABLE)
-	public Room getRoomForWrite(String workspaceId, String sessionId) {
-		return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
-	}
+		//set un active  time
+		LocalDateTime endTime = LocalDateTime.now();
+		roomHistory.setUnactiveDate(endTime);
 
-	public Room getRoom(String workspaceId, String sessionId) {
-		return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-	}
+		//time diff seconds
+		Duration duration = Duration.between(room.getActiveDate(), endTime);
+		roomHistory.setDurationSec(duration.getSeconds());
 
-	public Room getRoom(String sessionId) {
-		return  this.roomRepository.findBySessionId(sessionId).orElse(null);
-	}
+		//save room history
+		sessionService.setRoomHistory(roomHistory);
 
-	public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
-		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-	}
+		sessionService.deleteRoom(room);
 
-	public RoomHistory getRoomHistory(String sessionId) {
-		return this.roomHistoryRepository.findBySessionId(sessionId).orElse(null);
+                /*DataProcess<RoomDeleteResponse> dataProcess = null;
+                try {
+                    dataProcess = new DataProcess<>(RoomDeleteResponse.class);
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                    e.printStackTrace();
+                }*/
+		//log.info("ROOM INFO DELETE BY dataProcess => [{}]", dataProcess.data.toString());
+
+		return new ApiResponse<>(new RoomDeleteResponse(sessionId, true, LocalDateTime.now()));
 	}
 
 	/**
-	 *
-	 * @param workspaceId
-	 * @param userId
-	 * @return
+	 * Prepare to join the room the user is....
 	 */
-	public List<Room> getRoomList(String workspaceId, String userId) {
-		List<Room> roomList = new ArrayList<>();
-		List<Member> memberList;
-		memberList = this.memberRepository.findByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId);
-		for(Member member : memberList ) {
-			//member status condition added
-			if (member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
-				&& !member.getRoom().getSessionProperty().getSessionType().equals(SessionType.OPEN)
-				&& !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-				roomList.add(member.getRoom());
+	public ApiResponse<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
+
+		Room room;
+		//room = sessionService.getRoom(workspaceId, sessionId);
+		room = sessionService.getRoomForWrite(workspaceId, sessionId);
+		if (room == null) {
+			return new ApiResponse<>(false);
+		}
+		SessionType sessionType = room.getSessionProperty().getSessionType();
+
+		Member member = null;
+		for (Member m : room.getMembers()) {
+			if (m.getUuid().equals(userId)) {
+				member = m;
 			}
 		}
-		return roomList;
-	}
+		boolean result = false;
+		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
+		switch (sessionType) {
+			case PRIVATE:
+			case PUBLIC: {
+				if (member != null) {
+					MemberStatus memberStatus = member.getMemberStatus();
+					if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED)) {
+						member.setMemberStatus(MemberStatus.LOADING);
+						sessionService.setMember(member);
+						result = true;
 
-	@Deprecated
-	public Page<Room> getRoomPageList(String workspaceId, Pageable pageable) {
-		return this.roomRepository.findRoomByWorkspaceId(workspaceId, pageable);
-	}
-
-	public Page<Room> getRoomPageList(String workspaceId, String userId, Pageable pageable) {
-		return this.roomRepository.findAll(joinMember(workspaceId, userId), pageable);
-	}
-
-	public Page<Room> getRoomPageList(String workspaceId, String userId, String search, Pageable pageable) {
-		return this.roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
-	}
-
-	public Page<Room> getRoomPageList(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable) {
-		return this.roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
-	}
-
-	public List<Room> getRoomList() {
-		return this.roomRepository.findAll();
-	}
-
-	public List<Room> getRoomList(String workspaceId) {
-		List<Room> roomList = new ArrayList<>();
-		for(Room room : this.roomRepository.findByWorkspaceId(workspaceId)) {
-			if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)
-				&& room.getRoomStatus().equals(RoomStatus.ACTIVE)) {
-				roomList.add(room);
+					} else {
+						errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+					}
+				} else {
+					errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
+				}
+			}
+			break;
+			case OPEN: {
+				if (member != null) {
+					MemberStatus memberStatus = member.getMemberStatus();
+					if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED)) {
+						member.setMemberStatus(MemberStatus.LOADING);
+						sessionService.setMember(member);
+						result = true;
+					} else {
+						errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+					}
+				} else {
+					Member roomMember = Member.builder()
+						.room(room)
+						.memberType(MemberType.UNKNOWN)
+						.uuid(userId)
+						.workspaceId(workspaceId)
+						.sessionId(sessionId)
+						.build();
+					roomMember.setMemberStatus(MemberStatus.LOADING);
+					room.getMembers().add(roomMember);
+					sessionService.updateRoom(room);
+					result = true;
+				}
+			}
+			break;
+			default: {
+				result = false;
+				errorCode = ErrorCode.ERR_UNSUPPORTED_DATA_TYPE_EXCEPTION;
 			}
 		}
-
-		return roomList;
+		return new ApiResponse<>(result, errorCode);
 	}
 
-	public List<Room> getRoomList(Page<Member> memberPage) {
-		List<Room> roomList = new ArrayList<>();
-		for(Member member : memberPage.getContent() ) {
-			//member status condition added
-			if(member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
-				&& !member.getRoom().getSessionProperty().getSessionType().equals(SessionType.OPEN)
-				&& !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-				roomList.add(member.getRoom());
+	public ApiResponse<RoomResponse> joinRoom(
+		String workspaceId, String sessionId, String sessionToken, JoinRoomRequest joinRoomRequest
+	) {
+		SessionTokenResponse sessionTokenResponse = null;
+
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+
+		if (room == null) {
+			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
+
+		//sessionType = room.getSessionProperty().getSessionType();
+
+		// Pre data process
+		try {
+			sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+		}
+
+		//ErrorCode errorCode = getErrorStatus();
+		ErrorCode errorCode;
+		for (Member member : room.getMembers()) {
+			if (member.getUuid().equals(joinRoomRequest.getUuid())) {
+				MemberStatus memberStatus = member.getMemberStatus();
+				switch (memberStatus) {
+					case LOADING:
+						errorCode = ErrorCode.ERR_SUCCESS;
+					case LOAD:
+						errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
+					case EVICTED:
+						errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+				}
 			}
 		}
-		return roomList;
-	}
+		errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
 
-	@Transactional
-	public void setRoom(Room room) {
-		this.roomRepository.save(room);
-	}
+		if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+			RoomResponse roomResponse = new RoomResponse();
+			//not set session create at property
+			roomResponse.setSessionId(sessionId);
+			roomResponse.setToken(sessionTokenResponse.getToken());
+			//roomResponse.setWss(ServiceServerApplication.wssUrl);
+			//roomResponse.setRestrictedMode(room.isRestrictedMode());
+			roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+			roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
 
-	@Transactional
-	public void setRoomHistory(RoomHistory roomHistory) {
-		boolean result = this.roomHistoryRepository.existsByWorkspaceIdAndSessionId(roomHistory.getWorkspaceId(), roomHistory.getSessionId());
-		if(result) {
-			log.error("Duplicate entry {}", roomHistory.getSessionId());
+			/*CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+			roomResponse.getCoturn().add(coturnResponse);*/
+			roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+			return new ApiResponse<>(roomResponse);
 		} else {
-			this.roomHistoryRepository.save(roomHistory);
+			return new ApiResponse<>(new RoomResponse(), errorCode);
 		}
 	}
 
-	@Transactional
-	public void setMember(Member member) {
-		this.memberRepository.save(member);
+	public ApiResponse<ResultResponse> exitRoom(String workspaceId, String sessionId, String userId) {
+		//return new RepoDecoder<Room, ResultResponse>(RepoDecoderType.DELETE) {
+		Member member = null;
+
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+		if (room == null) {
+			return new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		} else {
+			for (Member participant : room.getMembers()) {
+				if (participant.getUuid().equals(userId)) {
+					member = participant;
+				}
+			}
+			if (member == null) {
+				return new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+			} else {
+
+				ErrorCode errorCode;
+
+				if (member.getMemberType().equals(MemberType.LEADER)) {
+					errorCode = ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
+				} else if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+					errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+				} else {
+					errorCode = ErrorCode.ERR_SUCCESS;
+				}
+
+				if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+					sessionService.removeMember(room, member);
+					ResultResponse resultResponse = new ResultResponse();
+					resultResponse.setUserId(userId);
+					resultResponse.setResult(true);
+					return new ApiResponse<>(resultResponse);
+				} else {
+					return new ApiResponse<>(new ResultResponse(), errorCode);
+				}
+			}
+		}
 	}
 
-	/*@Transactional
-    public void setMember(String workspaceId, String sessionId, String uuid, MemberStatus memberStatus) {
-        Member member = this.memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, uuid).orElse(null);
-        if(member != null) {
-            member.setMemberStatus(memberStatus);
-            this.memberRepository.save(member);
-        }
-    }*/
+	public ApiResponse<KickRoomResponse> kickFromRoom(
+		String workspaceId, String sessionId, KickRoomRequest kickRoomRequest
+	) {
+		//return new RepoDecoder<Room, KickRoomResponse>(RepoDecoderType.DELETE) {
 
-	@Transactional
-	public void setMemberHistory(MemberHistory memberHistory) {
-		this.memberHistoryRepository.save(memberHistory);
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+		if (room == null) {
+			return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
+
+		Member member = null;
+		for (Member participant : room.getMembers()) {
+			if (participant.getUuid().equals(kickRoomRequest.getParticipantId())) {
+				member = participant;
+			}
+		}
+
+		if (member == null) {
+			return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+		} else {
+			if (!room.getLeaderId().equals(kickRoomRequest.getLeaderId())) {
+				return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+			} else {
+				String connectionId = member.getConnectionId();
+
+				KickRoomResponse kickRoomResponse = new KickRoomResponse();
+				kickRoomResponse.setWorkspaceId(room.getWorkspaceId());
+				kickRoomResponse.setSessionId(room.getSessionId());
+				kickRoomResponse.setLeaderId(room.getLeaderId());
+				kickRoomResponse.setParticipantId(kickRoomRequest.getParticipantId());
+				kickRoomResponse.setConnectionId(connectionId);
+				//if connection id cannot find, push message and just remove user
+				if (connectionId == null || connectionId.isEmpty()) {
+
+					sessionService.updateMember(member, MemberStatus.EVICTED);
+                            /*return new DataProcess<>(new ResultResponse(
+                                    kickRoomRequest.getLeaderId(),
+                                    true,
+                                    LocalDateTime.now()
+                            ));*/
+				}
+				return new ApiResponse<>(kickRoomResponse);
+
+                        /*if(sessionService.removeMember(room, kickRoomRequest.getParticipantId()).equals(ErrorCode.ERR_SUCCESS)) {
+                            resultResponse.setResult(true);
+                            return new DataProcess<>(resultResponse);
+                            //resultResponse.setResult(true);
+                        } else {
+                            return new DataProcess<>(ErrorCode.ERR_ROOM_PROCESS_FAIL);
+                        }*/
+
+			}
+		}
 	}
 
-	@Transactional
-	public Member getMemberForWrite(String workspaceId, String sessionId, String userId) {
-		return memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, userId).orElse(null);
+	public ApiResponse<InviteRoomResponse> inviteMember(
+		String workspaceId, String sessionId, InviteRoomRequest inviteRoomRequest
+	) {
+		//return new RepoDecoder<Room, InviteRoomResponse>(RepoDecoderType.UPDATE) {
+		Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+		if (room == null)
+			return new ApiResponse<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+
+		if (!room.getLeaderId().equals(inviteRoomRequest.getLeaderId())) {
+			return new ApiResponse<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+		} else {
+			List<Member> members = room.getMembers().stream()
+				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.collect(Collectors.toList());
+
+			//remove if member status is evicted
+			//room.getMembers().removeIf(member -> member.getRoom() == null);
+			//room.getMembers().removeIf(member -> member.getMemberStatus().equals(MemberStatus.EVICTED));
+
+			//check room member is exceeded limitation
+			if (members.size() + inviteRoomRequest.getParticipantIds().size() > room.getMaxUserCount()) {
+				return new ApiResponse<>(new InviteRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+			}
+
+			//check invited member is already joined
+			List<String> userIds = members.stream()
+				.map(Member::getUuid)
+				.collect(Collectors.toList());
+			for (String participant : inviteRoomRequest.getParticipantIds()) {
+				if (userIds.contains(participant)) {
+					return new ApiResponse<>(
+						new InviteRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED);
+				}
+			}
+
+			//update room member using iterator avoid to ConcurrentModificationException? ...
+			sessionService.updateMember(room, inviteRoomRequest.getParticipantIds());
+
+			InviteRoomResponse response = new InviteRoomResponse();
+			response.setWorkspaceId(workspaceId);
+			response.setSessionId(sessionId);
+			response.setLeaderId(inviteRoomRequest.getLeaderId());
+			response.setParticipantIds(inviteRoomRequest.getParticipantIds());
+			response.setTitle(room.getTitle());
+
+			return new ApiResponse<>(response);
+
+			//sessionService.updateRoom(room, inviteRoomRequest.getParticipantIds());
+                        /*for(String participant : inviteRoomRequest.getParticipantIds()) {
+                            sessionService.createOrUpdateMember(room, participant);
+                        }*/
+                        /*List<String> additionalIds = new ArrayList<>();
+                        for(String participant : inviteRoomRequest.getParticipantIds()) {
+                            for(Member member: room.getMembers()) {
+                                if(participant.equals(member.getUuid()) && member.getMemberStatus().equals(MemberStatus.EVICTED)) {
+                                    additionalIds.add();
+                                } else {
+                                    additionalIds.add();
+                                }
+                            }
+                            sessionService.createOrUpdateMember(room, participant);
+                        }*/
+		}
 	}
 
-	public Member getMember(String workspaceId, String sessionId, String userId) {
-		return memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);
-	}
+	/**
+	 * todo: need to change this process to batch process
+	 */
+	//public DataProcess<Void> removeAllRoom() {
+	//return new RepoDecoder<List<Room>, Void>(RepoDecoderType.DELETE) {
+	public void removeAllRoom() {
+		LogMessage.formedInfo(
+			TAG,
+			"invokeDataProcess",
+			"removeAllRoom",
+			"the server restarts and deletes the room list information"
+		);
+		List<Room> roomList = sessionService.getRoomList();
+		for (Room room : roomList) {
 
-	public List<Member> getMemberList(String sessionId) {
-		return this.memberRepository.findAllBySessionId(sessionId);
-	}
-
-	public List<Member> getMemberList(String workspaceId, String sessionId) {
-		return this.memberRepository.findByWorkspaceIdAndSessionIdAndRoomNotNull(workspaceId, sessionId);
-	}
-
-	public Page<Member> getMemberList(String workspaceId, String userId, Pageable pageable) {
-		return this.memberRepository.findMemberByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId, pageable);
-	}
-
-	public List<MemberHistory> getMemberHistoryList(String userId) {
-		return this.memberHistoryRepository.findAllByUuid(userId);
-	}
-
-	@Deprecated
-	@Transactional
-	public ApiResponse<Boolean> removeAllRoom(String workspaceId) {
-		log.info("ROOM INFO DELETE BY SESSION ID => [{}]", workspaceId);
-		// Get Specific Room using Session ID
-		List<Room> roomList = roomRepository.findByWorkspaceId(workspaceId);
-
-		for (Room room: roomList) {
+			// Remote Room History Entity Create
 			RoomHistory roomHistory = RoomHistory.builder()
 				.sessionId(room.getSessionId())
 				.title(room.getTitle())
@@ -269,27 +1025,27 @@ public class SessionService {
 
 			roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
 
-
 			// Set room member history
-			// Get Member List by Room Session Ids
-			List<Member> memberList = this.memberRepository.findAllBySessionId(room.getSessionId());
 			// Mapping Member List Data to Member History List
-			for (Member member : memberList) {
+			for (Member roomMember : room.getMembers()) {
 				MemberHistory memberHistory = MemberHistory.builder()
 					.roomHistory(roomHistory)
-					.workspaceId(member.getWorkspaceId())
-					.uuid(member.getUuid())
-					.memberType(member.getMemberType())
-					.deviceType(member.getDeviceType())
-					.sessionId(member.getSessionId())
-					.startDate(member.getStartDate())
-					.endDate(member.getEndDate())
-					.durationSec(member.getDurationSec())
+					.workspaceId(roomMember.getWorkspaceId())
+					.uuid(roomMember.getUuid())
+					.memberType(roomMember.getMemberType())
+					.deviceType(roomMember.getDeviceType())
+					.sessionId(roomMember.getSessionId())
+					.startDate(roomMember.getStartDate())
+					.endDate(roomMember.getEndDate())
+					.durationSec(roomMember.getDurationSec())
 					.build();
-				memberHistoryRepository.save(memberHistory);
-				roomHistory.getMemberHistories().add(memberHistory);
-			}
 
+				//sessionService.setMemberHistory(memberHistory);
+				roomHistory.getMemberHistories().add(memberHistory);
+
+				//delete member
+				sessionService.deleteMember(roomMember);
+			}
 
 			//set active time
 			roomHistory.setActiveDate(room.getActiveDate());
@@ -303,717 +1059,420 @@ public class SessionService {
 			roomHistory.setDurationSec(duration.getSeconds());
 
 			//save room history
-			roomHistoryRepository.save(roomHistory);
+			sessionService.setRoomHistory(roomHistory);
 
-			//delete room
-			roomRepository.delete(room);
-		}
-
-		return new ApiResponse<>(true);
-	}
-
-	@Transactional
-	@Deprecated
-	public void removeRoom(String workspaceId, String sessionId) {
-		log.info("ROOM INFO REMOVE BY removeRoom => [{}]");
-		Room room = getRoom(workspaceId, sessionId);
-		//List<Member> members = sessionService.getMemberList(room.getWorkspaceId(), room.getSessionId());
-		List<Member> members = room.getMembers()
-			.stream()
-			.map(member -> modelMapper.map(member, Member.class))
-			.collect(Collectors.toList());
-		for (Member member: members) {
-			log.info("ROOM INFO REMOVE BY removeRoom => [{}]", member.getUuid());
-
+			sessionService.deleteRoom(room);
 		}
 	}
 
-	@Transactional
-	public void deleteRoom(Room room) {
-		//roomRepository.deleteByWorkspaceIdAndSessionId(room.getWorkspaceId(), room.getSessionId());
-		roomRepository.delete(room);
-	}
+	public ApiResponse<RoomDetailInfoResponse> getRoomDetailBySessionId(String workspaceId, String sessionId) {
 
-	@Transactional
-	@Deprecated
-	public void destroySession(String sessionId) {
-		Room room = roomRepository.findBySessionId(sessionId).orElse(null);
-		if(room == null) {
-			log.info("session destroy and sessionEventHandler is faild. room data is null");
+		ApiResponse<RoomDetailInfoResponse> responseData;
+
+		List<MemberInfoResponse> memberInfoList;
+
+		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_FOUND));
+
+
+		LogMessage.formedInfo(
+			TAG,
+			"invokeDataProcess",
+			"loadRoom",
+			"room info retrieve by session id",
+			sessionId
+		);
+		if (room.getRoomStatus() != RoomStatus.ACTIVE) {
+			responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
 		} else {
-			// check the same session id history room is already exist
-			RoomHistory oldRoomHistory = roomHistoryRepository.findBySessionId(room.getSessionId()).orElse(null);
-			if(oldRoomHistory != null) {
-				log.info("FOUND THE SAME SESSION ID => [{}]", oldRoomHistory.getSessionId());
+			// mapping data
+			RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
+				room, RoomDetailInfoResponse.class);
+			roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
-				oldRoomHistory.setTitle(room.getTitle());
-				oldRoomHistory.setDescription(room.getDescription());
-				oldRoomHistory.setProfile(room.getProfile());
-				oldRoomHistory.setMaxUserCount(room.getMaxUserCount());
-				oldRoomHistory.setLicenseName(room.getLicenseName());
+			// Get Member List by Room Session ID
+			// Mapping Member List Data to Member Information List
+			memberInfoList = memberRepository.findAllBySessionId(sessionId)
+				.stream()
+				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
 
-				// Remote Session Property Entity Create
-				SessionProperty sessionProperty = room.getSessionProperty();
-				SessionPropertyHistory sessionPropertyHistory = oldRoomHistory.getSessionPropertyHistory();
-				sessionPropertyHistory.setMediaMode(sessionProperty.getMediaMode());
-				sessionPropertyHistory.setRecordingMode(sessionProperty.getRecordingMode());
-				sessionPropertyHistory.setDefaultOutputMode(sessionProperty.getDefaultOutputMode());
-				sessionPropertyHistory.setDefaultRecordingLayout(sessionProperty.getDefaultRecordingLayout());
-				sessionPropertyHistory.setRecording(sessionProperty.isRecording());
-				sessionPropertyHistory.setKeepalive(sessionProperty.isKeepalive());
-				sessionPropertyHistory.setSessionType(sessionProperty.getSessionType());
-				sessionPropertyHistory.setRoomHistory(oldRoomHistory);
-
-				oldRoomHistory.setSessionPropertyHistory(sessionPropertyHistory);
-
-				// Set room member history
-				// Get Member history list and set room null
-				List<MemberHistory> memberHistoryList = oldRoomHistory.getMemberHistories();
-				for (MemberHistory memberHistory: memberHistoryList) {
-					memberHistory.setRoomHistory(null);
-					this.memberHistoryRepository.save(memberHistory);
-				}
-
-				// Get Member List by Room Session Ids
-				List<Member> memberList = room.getMembers();
-				//List<Member> memberList = this.getMemberList(room.getWorkspaceId(), room.getSessionId());
-				// Mapping Member List Data to Member History List
-				for (Member member : memberList) {
-					MemberHistory memberHistory = MemberHistory.builder()
-						.roomHistory(oldRoomHistory)
-						.workspaceId(member.getWorkspaceId())
-						.uuid(member.getUuid())
-						.memberType(member.getMemberType())
-						.deviceType(member.getDeviceType())
-						.sessionId(member.getSessionId())
-						.startDate(member.getStartDate())
-						.endDate(member.getEndDate())
-						.durationSec(member.getDurationSec())
-						.build();
-					memberHistoryRepository.save(memberHistory);
-					oldRoomHistory.getMemberHistories().add(memberHistory);
-
-					//delete member
-					memberRepository.delete(member);
-				}
-
-				//set active time do not update active date
-				//oldRoomHistory.setActiveDate(room.getActiveDate());
-
-				//set un active  time
-				LocalDateTime endTime = LocalDateTime.now();
-				oldRoomHistory.setUnactiveDate(endTime);
-
-				//time diff seconds
-				Duration duration = Duration.between(room.getActiveDate(), endTime);
-				Long totalDuration = duration.getSeconds() + oldRoomHistory.getDurationSec();
-				oldRoomHistory.setDurationSec(totalDuration);
-
-				//save room history
-				roomHistoryRepository.save(oldRoomHistory);
-			} else {
-				// Remote Room History Entity Create
-				RoomHistory roomHistory = RoomHistory.builder()
-					.sessionId(room.getSessionId())
-					.title(room.getTitle())
-					.description(room.getDescription())
-					.profile(room.getProfile())
-					.leaderId(room.getLeaderId())
-					.workspaceId(room.getWorkspaceId())
-					.maxUserCount(room.getMaxUserCount())
-					.licenseName(room.getLicenseName())
-					.build();
-
-				// Remote Session Property Entity Create
-				SessionProperty sessionProperty = room.getSessionProperty();
-				SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
-					.mediaMode(sessionProperty.getMediaMode())
-					.recordingMode(sessionProperty.getRecordingMode())
-					.defaultOutputMode(sessionProperty.getDefaultOutputMode())
-					.defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
-					.recording(sessionProperty.isRecording())
-					.keepalive(sessionProperty.isKeepalive())
-					.sessionType(sessionProperty.getSessionType())
-					.roomHistory(roomHistory)
-					.build();
-
-				roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
-
-				// Set room member history
-				// Get Member List by Room Session Ids
-				List<Member> memberList = room.getMembers();
-				// Mapping Member List Data to Member History List
-				for (Member member : memberList) {
-					MemberHistory memberHistory = MemberHistory.builder()
-						.roomHistory(roomHistory)
-						.workspaceId(member.getWorkspaceId())
-						.uuid(member.getUuid())
-						.memberType(member.getMemberType())
-						.deviceType(member.getDeviceType())
-						.sessionId(member.getSessionId())
-						.startDate(member.getStartDate())
-						.endDate(member.getEndDate())
-						.durationSec(member.getDurationSec())
-						.build();
-					memberHistoryRepository.save(memberHistory);
-					roomHistory.getMemberHistories().add(memberHistory);
-
-					//delete member
-					memberRepository.delete(member);
-				}
-
-				//set active time
-				roomHistory.setActiveDate(room.getActiveDate());
-
-				//set un active  time
-				LocalDateTime endTime = LocalDateTime.now();
-				roomHistory.setUnactiveDate(endTime);
-
-				//time diff seconds
-				Duration duration = Duration.between(room.getActiveDate(), endTime);
-				roomHistory.setDurationSec(duration.getSeconds());
-
-				//save room history
-				roomHistoryRepository.save(roomHistory);
-
-			}
-			//delete room
-			roomRepository.delete(room);
-		}
-	}
-
-	/**
-	 *
-	 * @param room
-	 * @param joinRoomRequest
-	 */
-	@Transactional
-	@Deprecated
-	public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
-		if (room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-			Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(
-				room.getWorkspaceId(),
-				room.getWorkspaceId(),
-				joinRoomRequest.getUuid()
-			).orElse(null);
-			if (member == null) {
-				Member newMember = Member.builder()
-					.room(room)
-					.memberType(joinRoomRequest.getMemberType())
-					.uuid(joinRoomRequest.getUuid())
-					.workspaceId(room.getWorkspaceId())
-					.sessionId(room.getSessionId())
-					.build();
-
-				room.getMembers().add(newMember);
-				roomRepository.save(room);
+			// find and get extra information from workspace-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					workspaceId, memberInfoResponse.getUuid());
+				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+				//todo://user infomation does not have role and role id change to workspace member info
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
 
-			//memberRepository.save(member);
-
-            /*for (Member member: room.getMembers()) {
-                if (member.getUuid().equals(joinRoomRequest.getUuid())) {
-                    log.debug("Room has member Id is {}", member.getUuid());
-                    member.setMemberType(joinRoomRequest.getMemberType());
-                    member.setDeviceType(joinRoomRequest.getDeviceType());
-                    member.setMemberStatus(MemberStatus.LOAD);
-                    //save member
-                    memberRepository.save(member);
-                }
-            }*/
-            /*for (ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext(); ) {
-                //Member member = it.next();
-                it.next()
-                log.info("NEW getParticipants Id is {}", joinRoomRequest.getUuid());
-                Member member = Member.builder()
-                        .room(room)
-                        .memberType(joinRoomRequest.getMemberType())
-                        .uuid(joinRoomRequest.getUuid())
-                        .workspaceId(room.getWorkspaceId())
-                        .sessionId(room.getSessionId())
-                        .build();
-
-                //member.setMemberType(joinRoomRequest.getMemberType());
-                //member.setDeviceType(joinRoomRequest.getDeviceType());
-                //member.setMemberStatus(MemberStatus.UNLOAD);
-                //memberRepository.save(member);
-                it.add(member);
-            }*/
+			// Set Member List to Room Detail Information Response
+			roomDetailInfoResponse.setMemberList(memberInfoList);
+			responseData = new ApiResponse<>(roomDetailInfoResponse);
 		}
-		//roomRepository.save(room);
-		//else {
-		//Private
-            /*for (Member member: room.getMembers()) {
-                if(member.getUuid().equals(joinRoomRequest.getUuid())) {
-                    log.debug("Room has member Id is {}", member.getUuid());
-                    member.setMemberType(joinRoomRequest.getMemberType());
-                    member.setDeviceType(joinRoomRequest.getDeviceType());
-                    member.setMemberStatus(MemberStatus.LOAD);
-                    //save member
-                    memberRepository.save(member);
-                }
-            }*/
-		//}
+		return responseData;
 	}
 
-    /*@Transactional
-    public ErrorCode joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
-        for (Member member: room.getMembers()) {
-            if(member.getUuid().equals(joinRoomRequest.getUuid())) {
-                log.debug("Room has member Id is {}", member.getUuid());
+	public RoomInfoListResponse getRoomList(
+		String workspaceId,
+		String userId,
+		boolean paging,
+		Pageable pageable
+	) {
 
-                if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                    return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-                }
+		Page<Room> roomPage = roomRepository.findAll(joinMember(workspaceId, userId), pageable);
+		PageMetadataResponse pageMeta;
 
-                member.setMemberType(joinRoomRequest.getMemberType());
-                member.setDeviceType(joinRoomRequest.getDeviceType());
-                member.setMemberStatus(MemberStatus.LOAD);
-                //save member
-                memberRepository.save(member);
-                //room.getMembers().add(member);
-                //roomRepository.save(room);
-            }
-        }
-        return ErrorCode.ERR_SUCCESS;
-    }*/
+		for (Room room : roomPage.getContent()) {
+			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
+		}
 
-	/**
-	 * final step.
-	 * @param sessionId
-	 * @param connectionId
-	 * @param clientMetaData
-	 */
-	@Transactional
-	@Deprecated
-	public void joinSession(String sessionId, String connectionId, ClientMetaData clientMetaData) {
-		Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-		for (Member member : room.getMembers()) {
-			if (member.getUuid().equals(clientMetaData.getClientData())) {
-				member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-				member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-				member.setConnectionId(connectionId);
-				member.setMemberStatus(MemberStatus.LOAD);
+		List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+		//for (Room room: roomListMap.keySet()) {
+		for (Room room : roomPage.getContent()) {
+			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+			// Mapping Member List Data to Member Information List
+			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
+				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			// find and get extra information from workspace-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					workspaceId, memberInfoResponse.getUuid());
+				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+				//todo://user infomation does not have role and role id change to workspace member info
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
+			roomInfoResponse.setMemberList(memberInfoList);
+
+			roomInfoList.add(roomInfoResponse);
 		}
-		roomRepository.save(room);
 
-		//if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-            /*for(ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext();) {
-                Member member = it.next();
-
-                if(member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                } else {
-                    Member newMember = Member.builder()
-                            .room(room)
-                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
-                            .workspaceId(room.getWorkspaceId())
-                            .uuid(clientMetaData.getClientData())
-                            .sessionId(room.getSessionId())
-                            .build();
-
-                    newMember.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    newMember.setConnectionId(connectionId);
-                    newMember.setMemberStatus(MemberStatus.LOAD);
-                    it.add(newMember);
-                }
-            }*/
-
-
-            /*room.getMembers().stream().map(member -> {
-                if(member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                } else {
-                    member = Member.builder()
-                            .room(room)
-                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
-                            .workspaceId(room.getWorkspaceId())
-                            .uuid(clientMetaData.getClientData())
-                            .sessionId(room.getSessionId())
-                            .build();
-
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                }
-                return null;
-            }).collect(Collectors.toList());*/
-            /*for (Member member : memberList) {
-                if (member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                } else {
-                    newMember = Member.builder()
-                            .room(room)
-                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
-                            .workspaceId(room.getWorkspaceId())
-                            .uuid(clientMetaData.getClientData())
-                            .sessionId(room.getSessionId())
-                            .build();
-
-                    newMember.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    newMember.setConnectionId(connectionId);
-                    newMember.setMemberStatus(MemberStatus.LOAD);
-                }
-            }
-            if (newMember != null)
-                room.getMembers().add(newMember);*/
-		//} else {
-            /*for (Member member : room.getMembers()) {
-                if (member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                }
-            }*/
-		//}
-		//roomRepository.save(room);
-	}
-
-	/**
-	 * This method is not for leader user
-	 * @param room
-	 * @param member
-	 * @return
-	 */
-    /*@Transactional
-    @Deprecated
-    public ErrorCode exitRoom(Room room, Member member) {
-        for (Member roomMember : room.getMembers()) {
-            if (member.getUuid().equals(roomMember.getUuid())) {
-                if (member.getMemberType().equals(MemberType.LEADER)) {
-                    return ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
-                } else if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                    return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
-                } else {
-                    room.getMembers().remove(roomMember);
-                    roomRepository.save(room);
-                    return ErrorCode.ERR_SUCCESS;
-                }
-            }
-        }
-        return ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND;
-    }*/
-
-	@Transactional
-	public void removeMember(Room room, Member member) {
-		room.getMembers().remove(member);
-		roomRepository.save(room);
-	}
-
-	@Transactional
-	@Deprecated
-	public void leaveSession(String sessionId, ClientMetaData clientMetaData) {
-		//Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-		Room room = roomRepository.findBySessionId(sessionId).orElse(null);
-		if (room == null) {
-			log.info("session leave and sessionEventHandler is faild. room data is null");
-		} else {
-			if (room.getMembers().isEmpty()) {
-				log.info("session leave and sessionEventHandler is here: room members empty");
-			} else {
-				if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-					room.getMembers().removeIf(member -> member.getUuid().equals(clientMetaData.getClientData()));
-					roomRepository.save(room);
-				} else {
-					for (Member member : room.getMembers()) {
-						if (member.getUuid().equals(clientMetaData.getClientData())) {
-							//set status unload
-							member.setMemberStatus(MemberStatus.UNLOAD);
-							//set connection id to empty
-							member.setConnectionId("");
-							//set end time
-							LocalDateTime endTime = LocalDateTime.now();
-							member.setEndDate(endTime);
-
-							//time diff seconds
-							Long totalDuration = member.getDurationSec();
-							Duration duration = Duration.between(member.getStartDate(), endTime);
-							member.setDurationSec(totalDuration + duration.getSeconds());
-
-							//save member
-							memberRepository.save(member);
-						}
-					}
-				}
-				//log.info("session leave and sessionEventHandler is here: room members not found");
-			}
-		}
-	}
-
-	@Transactional
-	@Deprecated
-	public void disconnectSession(String sessionId, ClientMetaData clientMetaData) {
-		Room room = roomRepository.findBySessionId(sessionId).orElse(null);
-		if (room == null) {
-			log.info("session disconnect and sessionEventHandler is faild. room data is null");
-		} else {
-			if (room.getMembers().isEmpty()) {
-				log.info("session disconnect and sessionEventHandler is here: room members empty");
-			} else {
-				log.info("session disconnect and sessionEventHandler is try to user evict by disconnection");
-				for (Member member : room.getMembers()) {
-					if (member.getUuid().equals(clientMetaData.getClientData())) {
-						log.info("session disconnect and sessionEventHandler evict user id::{}", member.getUuid());
-						//set status evicted
-						member.setMemberStatus(MemberStatus.EVICTED);
-						//set connection id to empty
-						member.setConnectionId("");
-						//set end time
-						LocalDateTime endTime = LocalDateTime.now();
-						member.setEndDate(endTime);
-
-						//time diff seconds
-						Long totalDuration = member.getDurationSec();
-						Duration duration = Duration.between(member.getStartDate(), endTime);
-						member.setDurationSec(totalDuration + duration.getSeconds());
-
-						//set room null
-						//member.setRoom(null);
-
-						//save member
-						memberRepository.save(member);
-					}
-				}
-				//log.info("session leave and sessionEventHandler is here: room members not found");
-			}
-		}
-	}
-
-	@Transactional
-	public Room updateRoom(Room room, InviteRoomRequest inviteRoomRequest) {
-		log.info("updateRoom by InviteRoomRequest");
-		for (String participant : inviteRoomRequest.getParticipantIds()) {
-			log.debug("getParticipants Id is {}", participant);
-			Member member = Member.builder()
-				.room(room)
-				.memberType(MemberType.UNKNOWN)
-				.workspaceId(room.getWorkspaceId())
-				.uuid(participant)
-				.sessionId(room.getSessionId())
+		if (paging) {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(pageable.getPageNumber())
+				.currentSize(pageable.getPageSize())
+				.numberOfElements(roomPage.getNumberOfElements())
+				.totalPage(roomPage.getTotalPages())
+				.totalElements(roomPage.getTotalElements())
+				.last(roomPage.isLast())
 				.build();
-			room.getMembers().add(member);
+		} else {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(0)
+				.currentSize(0)
+				.numberOfElements(roomPage.getNumberOfElements())
+				.totalPage(roomPage.getTotalPages())
+				.totalElements(roomPage.getTotalElements())
+				.last(roomPage.isLast())
+				.build();
 		}
-		return roomRepository.save(room);
+
+		return new RoomInfoListResponse(roomInfoList, pageMeta);
 	}
 
-	@Transactional
-	public Room updateRoom(Room room, ModifyRoomInfoRequest modifyRoomInfoRequest) {
-		return this.roomRepository.save(room);
-	}
+	public RoomInfoListResponse getRoomListStandardSearch(
+		String workspaceId,
+		String userId,
+		String search,
+		PageRequest pageable
+	) {
 
-	@Transactional
-	public void updateRoom(Room room, String profile) {
-		log.info("generate room profile string is {}", profile);
-		room.setProfile(profile);
-		roomRepository.save(room);
-	}
+		ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
+			workspaceId,
+			"remote",
+			search,
+			pageable.getPageNumber(),
+			pageable.getPageSize()
+		);
 
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
+		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.collect(Collectors.toList());
 
-	@Transactional
-	public Room updateRoom(Room room) {
-		return this.roomRepository.save(room);
-	}
-
-	@Transactional
-	public void updateMember(Room room, List<String> userIds) {
-		for (String userId: userIds) {
-			Member member = memberRepository.findByWorkspaceIdAndSessionIdAndUuid(room.getWorkspaceId(), room.getSessionId(), userId).orElse(null);
-			if(member == null) {
-				memberRepository.save(Member.builder()
-					.room(room)
-					.memberType(MemberType.UNKNOWN)
-					.workspaceId(room.getWorkspaceId())
-					.uuid(userId)
-					.sessionId(room.getSessionId())
-					.build());
+		Page<Room> roomPage;
+		List<String> userIds = new ArrayList<>();
+		for (MemberInfoResponse memberInfo : memberInfoList) {
+			if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
+				//if memberInfo is empty
+				log.info("loadFromDatabase::searchRoomPageList:: some member dose not have uuid");
 			} else {
-				member.setMemberStatus(MemberStatus.UNLOAD);
-				member.setMemberType(MemberType.UNKNOWN);
-				memberRepository.save(member);
+				userIds.add(memberInfo.getUuid());
 			}
 		}
-	}
-
-	/*@Transactional
-    public void updateMember(Member member, MemberStatus memberStatus) {
-        member.setMemberStatus(memberStatus);
-        memberRepository.save(member);
-    }*/
-
-    /*@Transactional
-    public void createOrUpdateMember(Room room, String userId) {
-        log.debug("updateRoom member Id is {}", userId);
-        for(Member member : room.getMembers()) {
-            if(member.getUuid().equals(userId) && member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-                member.setMemberStatus(MemberStatus.UNLOAD);
-                memberRepository.save(member);
-            } else {
-                room.getMembers().add(
-                        Member.builder()
-                                .room(room)
-                                .memberType(MemberType.UNKNOWN)
-                                .workspaceId(room.getWorkspaceId())
-                                .uuid(userId)
-                                .sessionId(room.getSessionId())
-                                .build()
-                );
-            }
-        }
-        roomRepository.save(room);
-    }*/
-
-	@Transactional
-	public void updateMember(Member member, MemberStatus memberStatus) {
-		switch (memberStatus) {
-			case EVICTED: {
-				//member.setRoom(null);
-				member.setMemberStatus(memberStatus);
-			} break;
+		if (userIds.isEmpty()) {
+			log.info(
+				"loadFromDatabase::searchRoomPageList::memberInfoList is empty can not find, search with room title");
+			roomPage = roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
+		} else {
+			log.info("loadFromDatabase::searchRoomPageList::memberInfoList is not empty");
+			roomPage = roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
 		}
-		memberRepository.save(member);
+
+		// Page Metadata
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(pageable.getPageNumber())
+			.currentSize(pageable.getPageSize())
+			.numberOfElements(roomPage.getNumberOfElements())
+			.totalPage(roomPage.getTotalPages())
+			.totalElements(roomPage.getTotalElements())
+			.last(roomPage.isLast())
+			.build();
+
+		for (Room room : roomPage.getContent()) {
+			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
+		}
+
+		List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+		for (Room room : roomPage.getContent()) {
+			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+			// Mapping Member List Data to Member Information List
+			List<MemberInfoResponse> memberInfos = room.getMembers().stream()
+				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			// find and get extra information from workspace-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfos) {
+				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+					workspaceId, memberInfoResponse.getUuid());
+				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+				memberInfoResponse.setRole(workspaceMemberData.getRole());
+				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+				memberInfoResponse.setName(workspaceMemberData.getName());
+				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+			}
+			roomInfoResponse.setMemberList(memberInfos);
+
+			roomInfoList.add(roomInfoResponse);
+		}
+		return new RoomInfoListResponse(roomInfoList, pageMeta);
 	}
 
-	@Transactional
-	public void deleteMember(Member member) {
-		this.memberRepository.delete(member);
+	public ApiResponse<RoomDetailInfoResponse> updateRoom(
+		String workspaceId,
+		String sessionId,
+		ModifyRoomInfoRequest modifyRoomInfoRequest
+	) {
+
+		ApiResponse<RoomDetailInfoResponse> responseData;
+
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		List<MemberInfoResponse> memberInfoList;
+
+		LogMessage.formedInfo(
+			TAG,
+			"invokeDataProcess",
+			"updateRoom",
+			"room info retrieve by session id",
+			sessionId
+		);
+
+		String userId = room.getLeaderId();
+		if (room != null) {
+			if (userId.equals(modifyRoomInfoRequest.getUuid())) {
+
+				room.setTitle(modifyRoomInfoRequest.getTitle());
+				room.setDescription(modifyRoomInfoRequest.getDescription());
+
+				Room updatedRoom = roomRepository.save(room);
+
+				// mapping data
+				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
+					updatedRoom, RoomDetailInfoResponse.class);
+				roomDetailInfoResponse.setSessionType(updatedRoom.getSessionProperty().getSessionType());
+				// Get Member List by Room Session ID
+				// Mapping Member List Data to Member Information List
+				memberInfoList = memberRepository.findAllBySessionId(sessionId)
+					.stream()
+					.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+					.collect(Collectors.toList());
+
+				// find and get extra information from use-server using uuid
+				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+						workspaceId, memberInfoResponse.getUuid());
+					log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+					//todo://user infomation does not have role and role id change to workspace member info
+					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+					memberInfoResponse.setRole(workspaceMemberData.getRole());
+					//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+					memberInfoResponse.setName(workspaceMemberData.getName());
+					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+				}
+
+				// Set Member List to Room Detail Information Response
+				roomDetailInfoResponse.setMemberList(memberInfoList);
+				responseData = new ApiResponse<>(roomDetailInfoResponse);
+			} else {
+				responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+			}
+		} else {
+			responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
+		return responseData;
 	}
 
-	@Transactional
-	@Deprecated
-	public ErrorCode removeMember(Room room, String userId) {
+	public ApiResponse<RoomDeleteResponse> deleteRoomById(String workspaceId, String sessionId, String userId) {
+
+		ApiResponse<RoomDeleteResponse> responseData;
+
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+
+		if (room == null) {
+			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
+
+		//check request user has valid permission
+		if (!room.getLeaderId().equals(userId)) {
+			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+		}
+
+		for (Member member : room.getMembers()) {
+			if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus()
+				.equals(MemberStatus.LOAD)) {
+				return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
+			}
+		}
+
+		log.info("ROOM INFO DELETE BY SESSION ID => [{}]", room.getMembers().size());
+
+		// Set Logging
+		RoomHistory roomHistory = RoomHistory.builder()
+			.sessionId(room.getSessionId())
+			.title(room.getTitle())
+			.description(room.getDescription())
+			.profile(room.getProfile())
+			.leaderId(room.getLeaderId())
+			.workspaceId(room.getWorkspaceId())
+			.maxUserCount(room.getMaxUserCount())
+			.licenseName(room.getLicenseName())
+			.build();
+
+		// Remote Session Property Entity Create
+		SessionProperty sessionProperty = room.getSessionProperty();
+		SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
+			.mediaMode(sessionProperty.getMediaMode())
+			.recordingMode(sessionProperty.getRecordingMode())
+			.defaultOutputMode(sessionProperty.getDefaultOutputMode())
+			.defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
+			.recording(sessionProperty.isRecording())
+			.keepalive(sessionProperty.isKeepalive())
+			.sessionType(sessionProperty.getSessionType())
+			.roomHistory(roomHistory)
+			.build();
+
+		roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+		// Set room member history
+		// Mapping Member List Data to Member History List
 		for (Member roomMember : room.getMembers()) {
-			if (roomMember.getUuid().equals(userId)) {
-				//this.memberRepository.delete(member);
-				room.getMembers().remove(roomMember);
-				roomRepository.save(room);
-				return ErrorCode.ERR_SUCCESS;
-			}
+			MemberHistory memberHistory = MemberHistory.builder()
+				.roomHistory(roomHistory)
+				.workspaceId(roomMember.getWorkspaceId())
+				.uuid(roomMember.getUuid())
+				.memberType(roomMember.getMemberType())
+				.deviceType(roomMember.getDeviceType())
+				.sessionId(roomMember.getSessionId())
+				.startDate(roomMember.getStartDate())
+				.endDate(roomMember.getEndDate())
+				.durationSec(roomMember.getDurationSec())
+				.build();
+
+			//sessionService.setMemberHistory(memberHistory);
+			roomHistory.getMemberHistories().add(memberHistory);
+
+			//delete member
+			memberRepository.delete(roomMember);
 		}
-		return ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND;
+
+		//set active time
+		roomHistory.setActiveDate(room.getActiveDate());
+
+		//set un active  time
+		LocalDateTime endTime = LocalDateTime.now();
+		roomHistory.setUnactiveDate(endTime);
+
+		//time diff seconds
+		Duration duration = Duration.between(room.getActiveDate(), endTime);
+		roomHistory.setDurationSec(duration.getSeconds());
+
+		//save room history
+		boolean result = roomHistoryRepository.existsByWorkspaceIdAndSessionId(
+			roomHistory.getWorkspaceId(), roomHistory.getSessionId());
+		if (result) {
+			log.error("Duplicate entry {}", roomHistory.getSessionId());
+		} else {
+			this.roomHistoryRepository.save(roomHistory);
+		}
+
+		// end Set Logging
+		roomRepository.delete(room);
+
+		responseData = new ApiResponse<>(new RoomDeleteResponse(
+			sessionId,
+			true,
+			LocalDateTime.now()
+		));
+
+		/*if (responseData.getData().result) {
+			//send rpc message to connection id user of the session id
+            *//*DataProcess<List<String>> dataProcess = this.sessionDataRepository.getConnectionIds(workspaceId, sessionId);
+            JsonObject jsonObject = serviceSessionManager.generateMessage(
+                    sessionId,
+                    dataProcess.getData(),
+                    PushConstants.PUSH_SIGNAL_SYSTEM,
+                    PushConstants.SEND_PUSH_ROOM_CLOSED
+            );*//*
+
+			if (this.serviceSessionManager.closeActiveSession(sessionId)) {
+				LogMessage.formedInfo(
+					TAG,
+					"serviceSessionManager",
+					"closeActiveSession"
+				);
+				fileService.removeFiles(workspaceId, sessionId);
+				//fileDataRepository.removeFiles(workspaceId, sessionId);
+				//return ResponseEntity.ok(apiResponse);
+			}
+
+			if (this.serviceSessionManager.closeNotActiveSession(sessionId)) {
+				LogMessage.formedInfo(
+					TAG,
+					"serviceSessionManager",
+					"closeNotActiveSession"
+				);
+				fileService.removeFiles(workspaceId, sessionId);
+				//this.fileDataRepository.removeFiles(workspaceId, sessionId);
+				//return ResponseEntity.ok(apiResponse);
+			}
+		}*/
+		return responseData;
 	}
-
-	@Transactional
-	public void updateMemberHistory(MemberHistory memberHistory) {
-		memberHistoryRepository.save(memberHistory);
-	}
-
-
-
-    /*@Transactional
-    public ApiResponse<Boolean> inviteRoom(String workspaceId ,String sessionId, InviteRoomRequest inviteRoomRequest) {
-        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        if(!inviteRoomRequest.getParticipants().isEmpty()) {
-            for (InviteRoomRequest.Participant participant : inviteRoomRequest.getParticipants()) {
-                log.debug("getParticipants Id is {}", participant.toString());
-                Member member = Member.builder()
-                        .room(room)
-                        .workspaceId(workspaceId)
-                        .memberType(MemberType.WORKER)
-                        .uuid(participant.getId())
-                        .email(participant.getEmail())
-                        .sessionId(room.getSessionId())
-                        .build();
-                room.getMembers().add(member);
-            }
-        } else {
-            log.debug("participants Id List is null");
-        }
-
-        roomRepository.save(room);
-
-        return new ApiResponse<>(true);
-    }*/
-
-    /*@Transactional
-    public ApiResponse<InviteRoomResponse> inviteRoom(
-            String workspaceId ,
-            String sessionId,
-            InviteRoomRequest inviteRoomRequest) {
-
-        PushSendRequest pushSendRequest = new PushSendRequest();
-        pushSendRequest.setWorkspaceId(workspaceId);
-        pushSendRequest.setUserId(inviteRoomRequest.getLeaderId());
-        pushSendRequest.setEvent(PushConstrants.SEND_PUSH_ROOM_INVITE);
-        for (InviteRoomRequest.Participant participant: inviteRoomRequest.getParticipants()) {
-            pushSendRequest.getTargetUserIds().add(participant.getId());
-        }
-
-        //pushSendRequest.setContents();
-
-
-        ApiResponse<PushResponse> pushResponse = messageRestService.sendPush(pushSendRequest);
-        log.info("getPush message {}", pushResponse.toString());
-
-        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        if(!inviteRoomRequest.getParticipants().isEmpty()) {
-            for (InviteRoomRequest.Participant participant : inviteRoomRequest.getParticipants()) {
-                log.debug("getParticipants Id is {}", participant.toString());
-                Member member = Member.builder()
-                        .room(room)
-                        .workspaceId(workspaceId)
-                        .memberType(MemberType.UNKNOWN)
-                        .uuid(participant.getId())
-                        .email(participant.getEmail())
-                        .sessionId(room.getSessionId())
-                        .build();
-                room.getMembers().add(member);
-            }
-        } else {
-            log.debug("participants Id List is null");
-        }
-        roomRepository.save(room);
-
-        InviteRoomResponse inviteRoomResponse = new InviteRoomResponse();
-        inviteRoomResponse.setEvent(pushResponse.getData().getEvent());
-        inviteRoomResponse.setWorkspaceId(pushResponse.getData().getWorkspaceId());
-        inviteRoomResponse.setSessionId(sessionId);
-        inviteRoomResponse.setPublished(pushResponse.getData().isPublished());
-        inviteRoomResponse.setPublishDate(pushResponse.getData().getPublishDate());
-
-        return new ApiResponse<>(inviteRoomResponse);
-    }*/
-
-    /*public ApiResponse<Boolean> inviteRoomAccept(String workspaceId, String sessionId, String userId, Boolean accept, Locale locale) {
-        if(accept) {
-
-        } else {
-
-        }
-        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        if(!inviteRoomRequest.getParticipants().isEmpty()) {
-            for (InviteRoomRequest.Participant participant : inviteRoomRequest.getParticipants()) {
-                log.debug("getParticipants Id is {}", participant.toString());
-                Member member = Member.builder()
-                        .room(room)
-                        .workspaceId(workspaceId)
-                        .memberType(MemberType.WORKER)
-                        .uuid(participant.getId())
-                        .email(participant.getEmail())
-                        .sessionId(room.getSessionId())
-                        .build();
-                room.getMembers().add(member);
-            }
-        } else {
-            log.debug("participants Id List is null");
-        }
-
-        roomRepository.save(room);
-
-        return new ApiResponse<>(true);
-    }*/
 
 }

@@ -17,7 +17,6 @@
 
 package com.virnect.serviceserver.global.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -38,8 +37,8 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-	@Autowired
-	RemoteServiceConfig remoteServiceConfig;
+	/*@Autowired
+	RemoteServiceConfig remoteServiceConfig;*/
 
 	/*@Override
 	protected void configure(HttpSecurity http) throws Exception {

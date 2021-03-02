@@ -64,8 +64,8 @@ public class KurentoSessionRestController {
     //@Autowired
     //private RecordingManager recordingManager;
 
-    @Autowired
-    private RemoteServiceConfig remoteServiceConfig;
+    /*@Autowired
+    private RemoteServiceConfig remoteServiceConfig;*/
 
     @RequestMapping(value = "/sessions", method = RequestMethod.POST)
     public ResponseEntity<?> getSessionId(@RequestBody(required = false) Map<?, ?> params) {

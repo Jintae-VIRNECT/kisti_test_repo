@@ -76,14 +76,11 @@ import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
 import com.virnect.serviceserver.application.ServiceSessionManager;
 import com.virnect.serviceserver.global.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.UrlConstants;
 import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 
-//import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-
-//@EnableWebSecurity
 @Import({ JsonRpcConfiguration.class })
-//@EnableConfigurationProperties(RemoteServiceProperties.class)
 @ComponentScan(value = {
     "com.virnect.data",
     "com.virnect.remote",
@@ -96,38 +93,37 @@ import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 @EnableJpaRepositories(value = {
     "com.virnect.data.dao"
 })
-//@PropertySource(value = {"classpath:feign-application.properties", "classpath:application.properties"})
-//@SpringBootApplication(scanBasePackages = {"com.virnect.remote", "com.virnect.data", "com.virnect.serviceserver"})
 @SpringBootApplication
 public class ServiceServerApplication extends SpringBootServletInitializer implements JsonRpcConfigurer {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
-    public static final String WS_PATH = "/remote/websocket";
-    public static String wsUrl;
+    //public static final String WS_PATH = "/remote/websocket";
+
+    /*public static String wsUrl;
     public static String wssUrl;
     public static String httpUrl;
     public static String storageUrl;
     public static List<String> mediaConferenceUris;
     public static List<String> mediaStreamingUris;
     public static List<String> coturnConferenceUris;
-    public static List<String> coturnStreamingUris;
+    public static List<String> coturnStreamingUris;*/
 
-    @Autowired
+    /*@Autowired
     RemoteServiceConfig config;
-
+*/
     /*@Autowired
     MediaServerProperties mediaServerProperties;*/
 
     /*@Autowired
     ServiceSessionManager serviceSessionManager;*/
 
-    @Bean
+   /* @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
         modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         return modelMapper;
-    }
+    }*/
 
     /*@Autowired
     SessionDataRepository sessionDataRepository;*/
@@ -146,12 +142,12 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         return modelMapper;
     }*/
 
-    @Bean
+    /*@Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceProperties")
     public RemoteServiceConfig remoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
         return new RemoteServiceConfig();
-    }
+    }*/
 
     /*@Bean
     @ConditionalOnMissingBean
@@ -320,7 +316,8 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @Override
     public void registerJsonRpcHandlers(JsonRpcHandlerRegistry registry) {
         registry.addHandler(rpcHandler().withPingWatchdog(true).withInterceptors(new HttpHandshakeInterceptor()),
-                WS_PATH);
+            UrlConstants.WS_PATH
+        );
     }
 
     public static String getContainerIp() throws IOException, InterruptedException {
@@ -418,7 +415,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         return null;
     }
 
-    private static void disableSslVerification() {
+    /*private static void disableSslVerification() {
         try {
             // Create a trust manager that does not validate certificate chains
             TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
@@ -458,7 +455,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         } catch (KeyManagementException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     /*@EventListener(ApplicationReadyEvent.class)
     public void whenReady() {
