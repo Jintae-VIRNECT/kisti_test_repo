@@ -1,11 +1,16 @@
 import toastMixin from 'mixins/toast'
 
-import LocalRecorder from 'utils/localRecorder'
+import { StreamRecorder } from '@virnect/remote-stream-recorder'
 import { mapGetters, mapActions } from 'vuex'
 import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 
+import IDBHelper from 'utils/idbHelper'
+import { v4 as uuidv4 } from 'uuid'
+
+const logType = 'LocalRecorder'
+
 export default {
-  name: 'LocalRecordMenu',
+  name: 'localRecorder',
   mixins: [toastMixin],
   data() {
     return {
@@ -16,6 +21,13 @@ export default {
       audioContextDes: null,
       audioSourceMap: new Map(),
       screenStream: null,
+
+      fileCount: 0,
+      today: null,
+      groupId: null,
+      fileName: '',
+      totalPlayTime: 0,
+      timeMark: 0,
     }
   },
   computed: {
@@ -47,19 +59,25 @@ export default {
     },
   },
   watch: {
-    'participants.length': 'participantsChanged',
     initing(flag, bFlag) {
       if (flag === false && flag !== bFlag) {
         this.participantsChanged()
       }
     },
+    participants: {
+      handler() {
+        this.participantsChanged()
+      },
+      deep: true,
+    },
     resolutions: {
       handler() {
         if (this.recorder !== null) {
+          const orientation = this.resolution.orientation
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-            this.recorder.changeCanvasOrientation(this.resolution.orientation)
+            this.changeCanvasOrientation(orientation, this.mainView.stream)
           } else {
-            this.recorder.changeCanvasOrientation('landscape')
+            this.changeCanvasOrientation(null, this.screenStream)
           }
         }
       },
@@ -67,20 +85,20 @@ export default {
     },
     mainView: {
       handler(current) {
-        if (
-          this.recorder !== null &&
-          this.localRecordTarget === RECORD_TARGET.WORKER
-        ) {
-          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+        if (this.recorder !== null) {
+          const orientation = this.resolution.orientation
 
-          this.changeVideoStream(
-            current.stream,
-            getWH(
-              this.localRecord.resolution,
-              this.resolution.width,
-              this.resolution.height,
-            ),
-          )
+          if (this.localRecordTarget === RECORD_TARGET.WORKER) {
+            this.changeVideoStream(
+              current.stream,
+              getWH(
+                this.localRecord.resolution,
+                this.resolution.width,
+                this.resolution.height,
+              ),
+            )
+            this.changeCanvasOrientation(orientation, current.stream)
+          }
         }
       },
     },
@@ -93,6 +111,10 @@ export default {
   },
   methods: {
     ...mapActions(['setLocalRecordStatus']),
+
+    /**
+     * participants 변경관련 처리 수행
+     */
     participantsChanged() {
       //for joined
       this.connectAudio()
@@ -112,54 +134,15 @@ export default {
       }
     },
 
-    async startLocalRecord() {
-      this.recorder = new LocalRecorder()
-      try {
-        await this.initRecorder()
-        this.recorder.startRecord()
-        this.setLocalRecordStatus('START')
-        this.toastDefault(this.$t('service.record_start_message'))
-      } catch (err) {
-        if (err && err.name) {
-          if (err.name === 'NotAllowedError') {
-            if (err.message === 'Invalid state') {
-              this.toastError(this.$t('화면 공유가 불가능한 브라우저 입니다.'))
-            } else {
-              this.toastError(this.$t('화면 공유 접근이 차단되었습니다.'))
-            }
-          } else if (err.name === 'NotSupportedError') {
-            this.toastError(
-              this.$t('로컬 녹화를 지원하지 않는 브라우저 입니다.'),
-            )
-          }
-        } else {
-          if (err === 'initRecorder Failed') {
-            // 초기화 에러
-            this.toastError(this.$t('로컬 녹화에 실패하였습니다.'))
-          } else if (err === 'idb init failed') {
-            // idb 초기화 에러
-            this.toastError(this.$t('로컬 녹화에 실패하였습니다.'))
-          } else if (err === 'quota overed') {
-            // 용량 없음
-          } else if (err === 'no streams') {
-            // 스트림 없음
-          } else if (err === 'MediaRecorder is not support') {
-            this.toastError(
-              this.$t('로컬 녹화를 지원하지 않는 브라우저 입니다.'),
-            )
-          } else if (err === 'NotSupportDisplayError') {
-            this.toastError(this.$t('화면 공유가 불가능한 브라우저 입니다.'))
-          }
-        }
-      }
-    },
-
     /**
-     * init recorder with config object
+     * recorder 객체 초기화
      */
     async initRecorder() {
+      this.fileCount = 0
+      this.groupId = uuidv4()
+      this.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
+
       const config = {}
-      config.today = this.$dayjs().format('YYYY-MM-DD HH-mm-ss')
 
       if (this.localRecordTarget === RECORD_TARGET.WORKER) {
         config.options = {
@@ -177,46 +160,31 @@ export default {
 
       try {
         config.streams = await this.getStreams()
+        if (config.streams.length <= 0) {
+          throw 'no streams'
+        }
       } catch (err) {
-        // 필요한 영상, 음성을 가지고 오지 못했을 때에 대한 처리
-        console.err(err)
+        console.error(err)
         throw err
       }
 
-      config.maxTime = this.localRecord.time
-      config.interval = this.localRecord.interval
+      const maxTime = Number.parseInt(this.localRecord.time, 10)
+      const interval = Number.parseInt(this.localRecord.interval, 10)
 
-      if (
-        Number.parseInt(this.localRecord.time, 10) <
-        Number.parseInt(this.localRecord.interval, 10)
-      ) {
-        config.interval = this.localRecord.time
-      }
-      config.roomTitle = this.roomInfo.title
-      config.sessionId = this.roomInfo.sessionId
-
-      //get nickname
-      if (this.account) {
-        config.nickname = this.account.nickname
-        config.userId = this.account.uuid
-      }
-
-      this.recorder.setStopSignal(() => {
-        this.stopLocalRecord()
-      })
-
-      this.recorder.setNoQuotaCallback(() => {
-        this.toastDefault(this.$t('service.record_fail_memory'))
-      })
+      config.interval = maxTime < interval ? maxTime : interval
 
       this.recorder.setConfig(config)
 
       if (await this.recorder.initRecorder()) {
+        const orientation = this.resolution.orientation
+
         if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-          this.recorder.changeCanvasOrientation(this.resolution.orientation)
+          this.changeCanvasOrientation(orientation, this.mainView.stream)
         } else {
-          this.recorder.changeCanvasOrientation('landscape')
+          this.changeCanvasOrientation(null, this.screenStream)
         }
+
+        this.recorder.setOndataAvailableCallBack(this.ondataAvailableCallBack)
 
         return true
       } else {
@@ -225,6 +193,30 @@ export default {
       }
     },
 
+    /**
+     * 로컬 녹화 시작
+     */
+    async startLocalRecord() {
+      this.recorder = new StreamRecorder()
+      try {
+        await IDBHelper.initIDB()
+        await this.checkQuota()
+        await this.initRecorder()
+
+        this.recorder.startRecord()
+        this.timeMark = performance.now()
+
+        this.setLocalRecordStatus('START')
+        this.toastDefault(this.$t('service.record_start_message'))
+      } catch (err) {
+        this.localRecordErrorHandler(err)
+      }
+    },
+
+    /**
+     * 로컬 녹화 종료
+     * @param {String} stopType 종료 유형. '', nostream
+     */
     async stopLocalRecord(stopType) {
       try {
         if (this.recorder) {
@@ -255,7 +247,7 @@ export default {
     },
 
     /**
-     * get streams
+     * 녹화에 필요한 스트림 생성
      */
     async getStreams() {
       const streams = []
@@ -285,15 +277,15 @@ export default {
       ) {
         throw 'NotSupportDisplayError'
       }
-      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+      const screenStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
-        video: getWH(this.localRecord.resolution),
+        video: true,
       })
 
-      displayStream.getVideoTracks()[0].onended = () => {
+      screenStream.getVideoTracks()[0].onended = () => {
         this.stopLocalRecord()
       }
-      this.screenStream = displayStream
+      this.screenStream = screenStream
     },
 
     changeVideoStream(videoStream, resolution) {
@@ -316,6 +308,9 @@ export default {
       }
     },
 
+    /**
+     * audioSourceMap에 새로운 participant의 audio stream 연결
+     */
     connectAudio() {
       this.participants.forEach(participant => {
         const conId = participant.connectionId
@@ -330,6 +325,9 @@ export default {
       })
     },
 
+    /**
+     * audioSourceMap에 나간 participant의 audio stream 제거
+     */
     disconnectAudio() {
       for (let conId of this.audioSourceMap.keys()) {
         const isStay = this.participants.some(participant => {
@@ -342,6 +340,168 @@ export default {
         }
       }
     },
+
+    /**
+     * get file number 0 ~ 59
+     * 60 over is not exits
+     */
+    getFileNumberString(number) {
+      let count = ''
+      if (number < 10) {
+        count = '0' + number
+      } else {
+        count = number.toString(10)
+      }
+      return count
+    },
+
+    async checkQuota() {
+      if ((await IDBHelper.checkQuota()) === false) {
+        this.logger(logType, 'quota overed cancel recording')
+        throw 'quota overed'
+      } else {
+        return true
+      }
+    },
+
+    /**
+     * 로컬 녹화 시작시 발생하는 에러 처리
+     * @param {Object} err 에러 객체
+     */
+    localRecordErrorHandler(err) {
+      if (err && err.name) {
+        if (err.name === 'NotAllowedError') {
+          if (err.message === 'Invalid state') {
+            this.toastError(
+              this.$t('service.record_local_browser_not_allow_local_record'),
+            )
+          } else {
+            this.toastError(
+              this.$t('service.record_local_blocked_screen_sharing'),
+            )
+          }
+        } else if (err.name === 'NotSupportedError') {
+          this.toastError(
+            this.$t('service.record_local_browser_not_allow_local_record'),
+          )
+        } else {
+          this.toastError(this.$t('service.record_local_start_failed'))
+          console.error(err)
+        }
+      } else {
+        if (err === 'initRecorder Failed') {
+          // 초기화 에러
+          this.toastError(this.$t('service.record_local_start_failed'))
+        } else if (err === 'idb init failed') {
+          // idb 초기화 에러
+          this.toastError(this.$t('service.record_local_start_failed'))
+        } else if (err === 'quota overed') {
+          // 용량 없음
+          this.toastDefault(this.$t('service.record_fail_memory'))
+        } else if (err === 'no streams') {
+          // 스트림 없음
+          this.toastError(this.$t('service.record_local_start_failed'))
+        } else if (err === 'MediaRecorder is not support') {
+          this.toastError(
+            this.$t('service.record_local_browser_not_allow_local_record'),
+          )
+        } else if (err === 'NotSupportDisplayError') {
+          this.toastError(
+            this.$t('service.record_local_browser_not_allow_screen_sharing'),
+          )
+        } else {
+          this.toastError(this.$t('service.record_local_start_failed'))
+          console.error(err)
+        }
+      }
+    },
+
+    /**
+     * blob을 저장하는 콜백 함수
+     * @param {blob} blob 영상 청크
+     */
+    async ondataAvailableCallBack(blob) {
+      //create private uuid for media chunk
+      const privateId = uuidv4()
+
+      //make file name
+      const fileNumber = this.getFileNumberString(this.fileCount)
+      this.fileName =
+        this.today + '_' + fileNumber + '_' + this.account.nickname + '.mp4'
+
+      //get media chunk play time
+      const currentTime = performance.now()
+      const playTime = (currentTime - this.timeMark) / 1000
+      this.timeMark = currentTime
+
+      this.totalPlayTime = this.totalPlayTime + playTime / 60
+
+      try {
+        await this.checkQuota()
+        //insert IDB
+        IDBHelper.addMediaChunk(
+          this.groupId,
+          privateId,
+          this.fileName,
+          playTime,
+          blob.size,
+          blob,
+          this.account.uuid,
+          this.account.nickname,
+          this.roomInfo.title,
+          this.roomInfo.sessionId,
+        )
+      } catch (err) {
+        console.error(err)
+        this.stopLocalRecord()
+        await IDBHelper.deleteGroupMediaChunk(this.groupId)
+      }
+
+      if (this.totalPlayTime >= this.localRecord.time) {
+        this.stopLocalRecord()
+      }
+
+      this.fileCount++
+    },
+    /**
+     * 영상의 orientation을 추측
+     * @param {MediaStream} mediaStream 판단할 비디오 스트림
+     */
+    async guessOrientation(mediaStream) {
+      if (mediaStream) {
+        const tracks = mediaStream.getVideoTracks()
+        if (tracks.length > 0) {
+          //크롬 getSettings() 버그해결을 위한 슈뢰딩거 코드
+          mediaStream.getVideoTracks()[0].getSettings()
+          await new Promise(r => setTimeout(r, 100))
+          const settings = mediaStream.getVideoTracks()[0].getSettings()
+
+          if (settings.width >= settings.height) {
+            return 'landscape'
+          } else {
+            return 'portrait'
+          }
+        } else {
+          return 'landscape'
+        }
+      } else {
+        return 'landscape'
+      }
+    },
+    /**
+     * 녹화용 canvas의 orientation을 지정값 혹은 추측값으로 변경
+     *
+     * @param {String} orientation 지정할 orientation
+     * @param {MediaStream} mediaStream 판단할 미디어 스트림
+     */
+    async changeCanvasOrientation(orientation, mediaStream) {
+      if (orientation && orientation !== '') {
+        this.recorder.changeCanvasOrientation(orientation)
+      } else {
+        const guessedOrientation = await this.guessOrientation(mediaStream)
+        this.recorder.changeCanvasOrientation(guessedOrientation)
+      }
+    },
   },
   mounted() {
     this.$eventBus.$on('localRecord', this.toggleLocalRecordStatus)
@@ -349,6 +509,7 @@ export default {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     this.audioContextDes = this.audioContext.createMediaStreamDestination()
   },
+
   beforeDestroy() {
     this.$eventBus.$off('localRecord', this.toggleLocalRecordStatus)
   },
