@@ -11,9 +11,6 @@ COPY service-client service-client
 COPY service-java-client service-java-client
 
 COPY service-data service-data
-COPY service-remote-api service-remote-api
-COPY service-dashboard-api service-dashboard-api
-
 COPY service-server service-server
 
 COPY virnect.pfx .
