@@ -4,6 +4,7 @@ import utc from 'dayjs/plugin/utc'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
 import calendar from 'dayjs/plugin/calendar'
 import 'dayjs/locale/ko'
+import 'dayjs/locale/ja'
 
 export default {
   install(Vue) {

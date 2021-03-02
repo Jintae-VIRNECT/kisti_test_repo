@@ -40,6 +40,11 @@ export default {
             value: 'ko',
             imgSrc: require('assets/image/img_flag_korea.svg'),
           },
+          {
+            text: '日本語',
+            value: 'ja',
+            imgSrc: require('assets/image/img_flag_JP.svg'),
+          },
         ],
         text: 'text',
         value: 'value',
@@ -66,8 +71,12 @@ export default {
   background-color: $color_bg_sub;
   border-radius: 2px;
 
-  .radio-option:first-of-type {
+  .radio-option {
     border-bottom: solid 1px rgba(#3d3d3d, 0.5);
+    // border-bottom: transparent;
+    &:last-child {
+      border-bottom: none;
+    }
   }
 }
 </style>
