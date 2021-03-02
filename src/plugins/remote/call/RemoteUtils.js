@@ -66,17 +66,6 @@ export const addSessionEventListener = session => {
         _.sendScreenSharing(true)
       }
 
-      // if (_.publisher.stream.hasVideo) {
-      //   _.sendCamera(
-      //     Store.getters['video'].isOn
-      //       ? CAMERA_STATUS.CAMERA_ON
-      //       : CAMERA_STATUS.CAMERA_OFF,
-      //     [event.connection.connectionId],
-      //   )
-      // } else {
-      //   console.log('호출좀')
-      //   _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [event.connection.connectionId])
-      // }
       if (_.publisher) {
         checkInput({ video: true, audio: false }).then(info => {
           const hasVideo = info.hasVideo
