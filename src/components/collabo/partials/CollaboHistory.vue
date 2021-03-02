@@ -41,29 +41,28 @@
           >{{ $t('list.room_status') }}</span
         >
       </div>
-      <template v-if="allowFileInfo">
-        <div class="history__header--text count">
-          <span
-            @click="setSort('SERVER_RECORD_FILE_COUNT')"
-            :class="{ active: sort.column === 'SERVER_RECORD_FILE_COUNT' }"
-            >{{ $t('list.room_server_record') }}</span
-          >
-        </div>
-        <div class="history__header--text count">
-          <span
-            @click="setSort('LOCAL_RECORD_FILE_COUNT')"
-            :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
-            >{{ $t('list.room_local_record') }}</span
-          >
-        </div>
-        <div class="history__header--text count">
-          <span
-            @click="setSort('ATTACHED_FILE_COUNT')"
-            :class="{ active: sort.column === 'ATTACHED_FILE_COUNT' }"
-            >{{ $t('list.room_attach_file') }}</span
-          >
-        </div>
-      </template>
+
+      <div v-if="allowServerRecordFileInfo" class="history__header--text count">
+        <span
+          @click="setSort('SERVER_RECORD_FILE_COUNT')"
+          :class="{ active: sort.column === 'SERVER_RECORD_FILE_COUNT' }"
+          >{{ $t('list.room_server_record') }}</span
+        >
+      </div>
+      <div v-if="allowLocalRecordFileInfo" class="history__header--text count">
+        <span
+          @click="setSort('LOCAL_RECORD_FILE_COUNT')"
+          :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
+          >{{ $t('list.room_local_record') }}</span
+        >
+      </div>
+      <div v-if="allowAttachFileInfo" class="history__header--text count">
+        <span
+          @click="setSort('ATTACHED_FILE_COUNT')"
+          :class="{ active: sort.column === 'ATTACHED_FILE_COUNT' }"
+          >{{ $t('list.room_attach_file') }}</span
+        >
+      </div>
     </div>
 
     <div class="history__body" :class="{ nodata: !listExists }">
@@ -100,44 +99,43 @@
           >
             <collabo-status :status="history.status"> </collabo-status>
           </div>
-          <template v-if="allowFileInfo">
-            <div class="history__text count">
-              <count-button
-                :count="history.serverRecord"
-                :images="{
-                  select: require('assets/image/ic_rec_select.svg'),
-                  active: require('assets/image/ic_rec_active.svg'),
-                  default: require('assets/image/ic_rec_default.svg'),
-                }"
-                @click="showFiles('server', history, index)"
-                :hover="hover && hoverIndex === index"
-              ></count-button>
-            </div>
-            <div class="history__text count">
-              <count-button
-                :count="history.localRecord"
-                :images="{
-                  select: require('assets/image/ic_video_select.svg'),
-                  active: require('assets/image/ic_video_active.svg'),
-                  default: require('assets/image/ic_video_default.svg'),
-                }"
-                @click="showFiles('local', history, index)"
-                :hover="hover && hoverIndex === index"
-              ></count-button>
-            </div>
-            <div class="history__text count">
-              <count-button
-                :count="history.attach"
-                :images="{
-                  select: require('assets/image/ic_file_select.svg'),
-                  active: require('assets/image/ic_file_active.svg'),
-                  default: require('assets/image/ic_file_default.svg'),
-                }"
-                @click="showFiles('attach', history, index)"
-                :hover="hover && hoverIndex === index"
-              ></count-button>
-            </div>
-          </template>
+
+          <div v-if="allowServerRecordFileInfo" class="history__text count">
+            <count-button
+              :count="history.serverRecord"
+              :images="{
+                select: require('assets/image/ic_rec_select.svg'),
+                active: require('assets/image/ic_rec_active.svg'),
+                default: require('assets/image/ic_rec_default.svg'),
+              }"
+              @click="showFiles('server', history, index)"
+              :hover="hover && hoverIndex === index"
+            ></count-button>
+          </div>
+          <div v-if="allowLocalRecordFileInfo" class="history__text count">
+            <count-button
+              :count="history.localRecord"
+              :images="{
+                select: require('assets/image/ic_video_select.svg'),
+                active: require('assets/image/ic_video_active.svg'),
+                default: require('assets/image/ic_video_default.svg'),
+              }"
+              @click="showFiles('local', history, index)"
+              :hover="hover && hoverIndex === index"
+            ></count-button>
+          </div>
+          <div v-if="allowAttachFileInfo" class="history__text count">
+            <count-button
+              :count="history.attach"
+              :images="{
+                select: require('assets/image/ic_file_select.svg'),
+                active: require('assets/image/ic_file_active.svg'),
+                default: require('assets/image/ic_file_default.svg'),
+              }"
+              @click="showFiles('attach', history, index)"
+              :hover="hover && hoverIndex === index"
+            ></count-button>
+          </div>
         </div>
         <history-info
           :sessionId="sessionId"
@@ -259,6 +257,13 @@ export default {
   computed: {
     listExists() {
       return this.historys.length > 0
+    },
+    allowFileInfo() {
+      return (
+        this.allowServerRecordFileInfo &&
+        this.allowLocalRecordFileInfo &&
+        this.allowAttachFileInfo
+      )
     },
   },
   methods: {

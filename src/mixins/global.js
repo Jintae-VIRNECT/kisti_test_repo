@@ -98,8 +98,14 @@ export default {
     isOnpremise() {
       return RUNTIME_ENV === RUNTIME.ONPREMISE ? true : false
     },
-    allowFileInfo() {
-      return SETTINGS.ALLOW_FILE_INFO
+    allowServerRecordFileInfo() {
+      return SETTINGS.ALLOW_SERVER_RECORD_FILE_INFO
+    },
+    allowLocalRecordFileInfo() {
+      return SETTINGS.ALLOW_LOCAL_RECORD_FILE_INFO
+    },
+    allowAttachFileInfo() {
+      return SETTINGS.ALLOW_ATTACH_FILE_INFO
     },
   },
   methods: {

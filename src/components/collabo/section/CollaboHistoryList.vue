@@ -181,7 +181,11 @@ export default {
           }
         })
 
-        exportExcel(historys, this, this.allowFileInfo)
+        exportExcel(historys, this, {
+          allowServerRecordFileInfo: this.allowServerRecordFileInfo,
+          allowLocalRecordFileInfo: this.allowLocalRecordFileInfo,
+          allowAttachFileInfo: this.allowAttachFileInfo,
+        })
 
         this.excelLoading = false
       } catch (err) {
