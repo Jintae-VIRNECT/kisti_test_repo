@@ -167,3 +167,52 @@
       url("~assets/font/notosc/noto-sans-sc-v11-chinese-simplified-700.woff")
       format("woff");
 }
+
+/* noto-sans-ja-100 - japanese */
+@font-face {
+  font-weight: 100;
+  font-family: $font_family4;
+  font-style: normal;
+
+  src: url("~assets/font/notojp/NotoSansJP-Thin.otf");
+}
+/* noto-sans-ja-300 - japanese */
+@font-face {
+  font-weight: 300;
+  font-family: $font_family4;
+  font-style: normal;
+
+  src: url("~assets/font/notojp/NotoSansJP-Light.otf");
+}
+/* noto-sans-ja-400 - japanese */
+@font-face {
+  font-weight: 400;
+  font-family: $font_family4;
+  font-style: normal;
+
+  src: url("~assets/font/notojp/NotoSansJP-Regular.otf");
+}
+/* noto-sans-ja-500 - japanese */
+@font-face {
+  font-weight: 500;
+  font-family: $font_family4;
+  font-style: normal;
+
+  src: url("~assets/font/notojp/NotoSansJP-Medium.otf");
+}
+/* noto-sans-ja-700 - japanese */
+@font-face {
+  font-weight: 700;
+  font-family: $font_family4;
+  font-style: normal;
+
+  src: url("~assets/font/notojp/NotoSansJP-Bold.otf");
+}
+/* noto-sans-ja-900 - japanese */
+@font-face {
+  font-weight: 900;
+  font-family: $font_family4;
+  font-style: normal;
+
+  src: url("~assets/font/notojp/NotoSansJP-Black.otf");
+}
