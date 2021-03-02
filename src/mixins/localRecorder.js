@@ -279,9 +279,6 @@ export default {
       }
       const screenStream = await navigator.mediaDevices.getDisplayMedia({
         audio: true,
-        //이 부분을 고쳐야함
-        // video: getWH(this.localRecord.resolution),
-        //그냥 true로  해도 어차피 해상도 제한 걸리니까 필요없을것같음.
         video: true,
       })
 
