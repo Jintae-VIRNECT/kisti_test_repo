@@ -1,10 +1,11 @@
 # Build Stage
-FROM openjdk:8 AS builder
+FROM gradle:6.0.1-jdk8 AS builder
+ENV APP_HOME=/usr/app/
+WORKDIR $APP_HOME
 
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle .
-COPY settings.gradle .
+# Only copy dependency-related files
+COPY build.gradle settings.gradle ./
+COPY virnect.pfx .
 
 COPY service-kms service-kms
 COPY service-client service-client
@@ -16,11 +17,10 @@ COPY service-dashboard-api service-dashboard-api
 
 COPY service-server service-server
 
-COPY virnect.pfx .
+# build soruce file with dependnecies
+RUN gradle clean
+RUN gradle :service-server:build -x test --stacktrace
 
-RUN chmod +x ./gradlew
-RUN ./gradlew clean
-RUN ./gradlew :service-server:build -x test
 
 # Runtime Stage
 FROM openjdk:8-jre-alpine
@@ -28,8 +28,9 @@ FROM openjdk:8-jre-alpine
 ENV APP_HOME=/usr/app/
 WORKDIR $APP_HOME
 
-COPY --from=builder virnect.pfx .
-COPY --from=builder service-server/build/libs/RM-Service-*.jar ./RM-Service-2.0.jar
+
+COPY --from=builder ${APP_HOME}/virnect.pfx .
+COPY --from=builder ${APP_HOME}/service-server/build/libs/RM-Service-2.0.jar ./RM-Service-2.0.jar
 
 EXPOSE 8000
 CMD ["java", "-XX:+UseG1GC", "-Xmx400M", "-jar", "RM-Service-2.0.jar"]
