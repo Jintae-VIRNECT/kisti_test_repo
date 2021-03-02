@@ -743,6 +743,7 @@ const _ = {
       width: 640,
       height: 480,
     })
+    canvas.getContext('2d').fillStyle = 'BLUE'
     canvas.getContext('2d').fillRect(0, 0, 640, 480)
     let stream = canvas.captureStream()
     return Object.assign(stream.getVideoTracks()[0], { enabled: false })
@@ -905,6 +906,19 @@ const _ = {
       throw err
     }
   },
+  // addTrack() {
+  //   console.log(_.session)
+  //   console.log(_.session.connection.stream.webRtcPeer.pc)
+  //   console.log(_.session.connection.stream.webRtcPeer.pc.addTrack)
+  //   console.log(_.session.connection.stream.webRtcPeer.pc.getLocalStreams())
+  //   const dummyTrack = _.getDummyVideTrack()
+  //   console.log('더미트랙', dummyTrack)
+  //   _.session.connection.stream.webRtcPeer.pc.addTrack(
+  //     dummyTrack,
+  //     _.session.connection.stream.webRtcPeer.pc.getLocalStreams()[0],
+  //   )
+  //   _.sendCamera(1)
+  // },
 }
 
 export const addSubscriber = subscriber => {

@@ -17,6 +17,7 @@ import {
 
 import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
+import { checkInput } from 'utils/deviceCheck'
 
 export const addSessionEventListener = session => {
   let loading = false
@@ -25,7 +26,7 @@ export const addSessionEventListener = session => {
     const user = setUserObject(event)
 
     if (user === 'me') return
-    setTimeout(() => {
+    setTimeout(async () => {
       // send default signals
       if (_.publisher) {
         _.sendMic(Store.getters['mic'].isOn, [event.connection.connectionId])
@@ -61,19 +62,27 @@ export const addSessionEventListener = session => {
           ])
         }
       }
+      if (Store.getters['myInfo'].screenShare) {
+        _.sendScreenSharing(true)
+      }
       if (_.publisher) {
-        if (_.publisher.stream.hasVideo) {
-          _.sendCamera(
-            Store.getters['video'].isOn
-              ? CAMERA_STATUS.CAMERA_ON
-              : CAMERA_STATUS.CAMERA_OFF,
-            [event.connection.connectionId],
-          )
-        } else {
-          _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [
-            event.connection.connectionId,
-          ])
-        }
+        checkInput({ video: true, audio: false }).then(info => {
+          const hasVideo = info.hasVideo
+          if (hasVideo) {
+            if (_.publisher.stream.hasVideo) {
+              _.sendCamera(
+                Store.getters['video'].isOn
+                  ? CAMERA_STATUS.CAMERA_ON
+                  : CAMERA_STATUS.CAMERA_OFF,
+                [event.connection.connectionId],
+              )
+            }
+          } else {
+            _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [
+              event.connection.connectionId,
+            ])
+          }
+        })
       }
     }, 300)
   })
@@ -257,6 +266,13 @@ export const addSessionEventListener = session => {
         connectionId: event.from.connectionId,
         screenShare: data.enable,
       })
+
+      if (!disabled) {
+        Store.commit('updateParticipant', {
+          connectionId: event.from.connectionId,
+          hasVideo: data.enable,
+        })
+      }
 
       const releaseForcedView = [
         isLeader,
