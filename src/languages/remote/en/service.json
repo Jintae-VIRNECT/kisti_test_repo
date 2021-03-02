@@ -205,6 +205,11 @@
     "record_fail_memory": "Stopping the recording due to lack of PC storage. The file being recorded is not saved.",
     "record_end_message": "Local recording was successful, please check the file from the recording file menu.",
     "record_end_no_stream_message": "Stopping the local recording since there is no video.",
+    "record_local_browser_not_allow_screen_sharing":"This browser does not allow screen sharing.",
+    "record_local_browser_not_allow_local_record":"This browser does not support local recording.",
+    "record_local_blocked_screen_sharing":"Screen sharing access is blocked.",
+    "record_local_start_failed":"Local recording failed.",
+
 
     "record_server_start_message":"Starting the server recording.",
     "record_server_start_failed":"Server recording could not be started. please try again.​",
