@@ -39,9 +39,9 @@ import com.virnect.mediaserver.core.SessionManager;
 import com.virnect.mediaserver.kurento.core.KurentoSession;
 import com.virnect.mediaserver.kurento.core.KurentoSessionListener;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
-import com.virnect.remote.application.FileService;
-import com.virnect.remote.dto.response.session.SessionData;
-import com.virnect.remote.dto.response.session.SessionTokenData;
+import com.virnect.serviceserver.serviceremote.application.FileService;
+import com.virnect.serviceserver.serviceremote.dto.response.session.SessionData;
+import com.virnect.serviceserver.serviceremote.dto.response.session.SessionTokenData;
 import com.virnect.serviceserver.dao.SessionDataRepository;
 
 @Slf4j
