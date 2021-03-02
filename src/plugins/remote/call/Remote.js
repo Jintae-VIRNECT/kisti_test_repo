@@ -879,6 +879,8 @@ const _ = {
         _.publisher = tempPublisher
         _.session.publish(_.publisher)
       } else {
+        //이 경우는 리퍼블리시 하려고 하는데 비디오, 마이크가 없는경우임
+        //즉 고려하지 않아도 되는 경우이며 삭제해야함
         if (_.publisher) {
           await _.session.unpublish(_.publisher)
           _.publisher = null
@@ -906,19 +908,6 @@ const _ = {
       throw err
     }
   },
-  // addTrack() {
-  //   console.log(_.session)
-  //   console.log(_.session.connection.stream.webRtcPeer.pc)
-  //   console.log(_.session.connection.stream.webRtcPeer.pc.addTrack)
-  //   console.log(_.session.connection.stream.webRtcPeer.pc.getLocalStreams())
-  //   const dummyTrack = _.getDummyVideTrack()
-  //   console.log('더미트랙', dummyTrack)
-  //   _.session.connection.stream.webRtcPeer.pc.addTrack(
-  //     dummyTrack,
-  //     _.session.connection.stream.webRtcPeer.pc.getLocalStreams()[0],
-  //   )
-  //   _.sendCamera(1)
-  // },
 }
 
 export const addSubscriber = subscriber => {
