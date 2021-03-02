@@ -94,17 +94,12 @@ body {
   height: 100%;
   font-weight: 300;
   font-size: 14px;
-  font-family: $font_family, $font_family2, $font_family3, $font_family4,
-    verdana, sans-serif;
+  font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
   line-height: 1.6;
-  &:lang(en) {
-    font-family: $font_family2, $font_family, $font_family3, $font_family4,
-      verdana, sans-serif;
-  }
-  &:lang(ja) {
-    font-family: $font_family4, $font_family, $font_family2, $font_family3,
-      verdana, sans-serif;
-  }
+  // &:lang(en) {
+  //   font-family: $font_family2, $font_family, $font_family3,
+  //     verdana, sans-serif;
+  // }
 }
 html {
   overflow: hidden;
