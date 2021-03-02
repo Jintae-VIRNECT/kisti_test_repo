@@ -1,7 +1,6 @@
 package com.virnect.content.api;
 
 import com.virnect.content.application.DownloadService;
-import com.virnect.content.domain.ContentDownloadLog;
 import com.virnect.content.dto.request.DownloadLogAddRequest;
 import com.virnect.content.dto.response.DownloadLogAddResponse;
 import com.virnect.content.exception.ContentServiceException;

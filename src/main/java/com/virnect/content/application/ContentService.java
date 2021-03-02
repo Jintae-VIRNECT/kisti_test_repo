@@ -695,7 +695,7 @@ public class ContentService {
         JsonParser jsonParse = new JsonParser();
         JsonObject metaData = (JsonObject) jsonParse.parse(content.getMetadata());
         JsonObject contents = metaData.getAsJsonObject("contents");
-        Float targetSize = 10f;
+        float targetSize = 10f;
         if (contents.get("targetSize") != null) {
             targetSize = contents.get("targetSize").getAsFloat();
         }
@@ -869,7 +869,6 @@ public class ContentService {
         String fileUploadPath = this.fileUploadService.copyByFileObject(FilenameUtils.getName(oldContents.getPath()), newContentUUID.concat(ARES_FILE_EXTENSION));
         log.info("CONTENT UPLOAD - file upload path : {}", fileUploadPath);
 
-        //작업 -> 작업 '복제' 또는 컨텐츠 -> 작업 '복제' 할때 컨텐츠 공유 상태는 YES 여야 한다.
         Content newContent = Content.builder()
                 // TODO : 유효한 워크스페이스 인지 검증 필요.
                 .workspaceUUID(workspaceUUID)
@@ -878,7 +877,7 @@ public class ContentService {
                 .metadata(oldContents.getMetadata())
                 .properties(oldContents.getProperties())
                 .userUUID(userUUID)
-                .shared(YesOrNo.YES)
+                .shared(INIT_IS_SHARED)
                 .converted(YesOrNo.YES)
                 .deleted(INIT_IS_DELETED)
                 .size(originFile.getSize())
