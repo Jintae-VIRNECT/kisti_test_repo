@@ -509,6 +509,7 @@ export default {
     this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
     this.audioContextDes = this.audioContext.createMediaStreamDestination()
   },
+
   beforeDestroy() {
     this.$eventBus.$off('localRecord', this.toggleLocalRecordStatus)
   },
