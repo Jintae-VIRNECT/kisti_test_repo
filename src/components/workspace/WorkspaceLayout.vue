@@ -58,7 +58,9 @@ export default {
       auth.login()
     } else {
       await getSettings()
-      next()
+      next(vm => {
+        vm.$call.leave()
+      })
     }
   },
   mixins: [confirmMixin, langMixin, toastMixin],
