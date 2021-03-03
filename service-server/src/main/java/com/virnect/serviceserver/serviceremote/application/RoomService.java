@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.application;
+package com.virnect.serviceserver.serviceremote.application;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -34,7 +34,7 @@ import com.virnect.serviceserver.serviceremote.dto.response.room.InviteRoomRespo
 import com.virnect.serviceserver.serviceremote.dto.response.room.KickRoomResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomResponse;
 import com.virnect.serviceserver.serviceremote.api.SessionRestController;
-import com.virnect.serviceserver.dao.SessionDataRepository;
+import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 
 @Slf4j

@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.application;
+package com.virnect.serviceserver.serviceremote.application;
 
 import org.apache.http.Header;
 import org.springframework.http.HttpHeaders;

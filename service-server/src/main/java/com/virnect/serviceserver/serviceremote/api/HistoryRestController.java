@@ -24,7 +24,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import com.virnect.serviceserver.serviceremote.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.RoomRequest;
 import com.virnect.serviceserver.serviceremote.application.HistoryService;
-import com.virnect.serviceserver.application.RoomService;
+import com.virnect.serviceserver.serviceremote.application.RoomService;
 import com.virnect.serviceserver.serviceremote.dto.response.PageRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryDetailInfoResponse;

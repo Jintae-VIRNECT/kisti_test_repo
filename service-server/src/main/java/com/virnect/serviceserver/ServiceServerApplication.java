@@ -1,46 +1,28 @@
 package com.virnect.serviceserver;
 
 import java.io.IOException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
 import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
 import org.kurento.jsonrpc.server.JsonRpcConfigurer;
 import org.kurento.jsonrpc.server.JsonRpcHandlerRegistry;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import com.virnect.mediaserver.cdr.CDRLogger;
@@ -57,7 +39,6 @@ import com.virnect.mediaserver.kurento.core.KurentoSessionEventsHandler;
 import com.virnect.mediaserver.kurento.core.KurentoSessionManager;
 import com.virnect.mediaserver.kurento.kms.DummyLoadManager;
 import com.virnect.mediaserver.kurento.kms.FixedKmsManager;
-import com.virnect.mediaserver.kurento.kms.FixedOneKmsManager;
 import com.virnect.mediaserver.kurento.kms.KmsManager;
 import com.virnect.mediaserver.kurento.kms.LoadManager;
 import com.virnect.mediaserver.recording.DummyRecordingDownloader;
@@ -73,11 +54,9 @@ import com.virnect.mediaserver.utils.MediaNodeStatusManagerDummy;
 import com.virnect.mediaserver.utils.QuarantineKiller;
 import com.virnect.mediaserver.utils.QuarantineKillerDummy;
 import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
-import com.virnect.serviceserver.application.ServiceSessionManager;
 import com.virnect.serviceserver.global.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.global.config.UrlConstants;
-import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 
 @Import({ JsonRpcConfiguration.class })

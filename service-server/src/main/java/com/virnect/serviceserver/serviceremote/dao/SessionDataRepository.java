@@ -1,4 +1,4 @@
-package com.virnect.serviceserver.dao;
+package com.virnect.serviceserver.serviceremote.dao;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

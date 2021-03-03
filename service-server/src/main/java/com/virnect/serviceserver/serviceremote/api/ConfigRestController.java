@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.serviceserver.application.ConfigService;
+import com.virnect.serviceserver.serviceremote.application.ConfigService;
 
 @Slf4j
 @RestController

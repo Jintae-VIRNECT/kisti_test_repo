@@ -30,7 +30,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import com.virnect.serviceserver.serviceremote.application.FileService;
 import com.virnect.serviceserver.serviceremote.application.SessionService;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.application.RoomService;
+import com.virnect.serviceserver.serviceremote.application.RoomService;
 import com.virnect.data.dto.PushSendRequest;
 import com.virnect.serviceserver.serviceremote.dto.push.SendSignalRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.InviteRoomRequest;
@@ -49,7 +49,7 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.serviceserver.application.ServiceSessionManager;
+import com.virnect.serviceserver.serviceremote.application.ServiceSessionManager;
 import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 
 @Slf4j
