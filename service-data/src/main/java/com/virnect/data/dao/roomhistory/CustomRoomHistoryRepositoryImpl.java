@@ -118,8 +118,10 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 		if(StringUtils.isEmpty(userId)){
 			return null;
 		}
-		List<Long> roomHistoryIdList = query.selectFrom(roomHistory)
-			.select(roomHistory.roomHistory.id)
+		List<Long> roomHistoryIdList =
+			query
+			.selectFrom(memberHistory)
+			.select(memberHistory.roomHistory.id)
 			.where(memberHistory.uuid.eq(userId))
 			.fetch();
 

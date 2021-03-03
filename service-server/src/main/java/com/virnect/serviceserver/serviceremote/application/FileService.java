@@ -70,6 +70,7 @@ public class FileService {
 		return stringBuilder.toString();
 	}
 
+	@Transactional
 	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest) {
 
 		ApiResponse<FileUploadResponse> responseData;
@@ -120,6 +121,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional
 	public ApiResponse<FileUploadResponse> uploadRecordFile(RecordFileUploadRequest recordFileUploadRequest) {
 
 		ApiResponse<FileUploadResponse> responseData;
@@ -175,6 +177,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional
 	public ApiResponse<RoomProfileUpdateResponse> profileUpload(
 		String workspaceId,
 		String sessionId,
@@ -234,6 +237,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional
 	public ApiResponse<ResultResponse> deleteProfile(
 		String workspaceId,
 		String sessionId
@@ -261,6 +265,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional(readOnly = true)
 	public ApiResponse<FilePreSignedResponse> downloadFileUrl(
 		String workspaceId,
 		String sessionId,
@@ -303,6 +308,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional(readOnly = true)
 	public ApiResponse<FilePreSignedResponse> downloadRecordFileUrl(
 		String workspaceId,
 		String sessionId,
@@ -348,6 +354,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional(readOnly = true)
 	public ApiResponse<FileInfoListResponse> getFileInfoList(
 		String workspaceId,
 		String sessionId,
@@ -389,6 +396,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional(readOnly = true)
 	public ApiResponse<FileDetailInfoListResponse> getRecordFileInfoList(
 		String workspaceId,
 		String sessionId,
@@ -438,6 +446,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional
 	public ApiResponse<FileDeleteResponse> removeFile(
 		String workspaceId,
 		String sessionId,
@@ -496,6 +505,7 @@ public class FileService {
 		return responseData;
 	}
 
+	@Transactional
 	public Boolean removeFiles(String sessionId) {
 
 		String workspaceId = sessionTransactionalService.getRoom(sessionId).getWorkspaceId();
@@ -520,6 +530,7 @@ public class FileService {
 		return true;
 	}
 
+	@Transactional
 	public Boolean removeFiles(String workspaceId, String sessionId) {
 
 		log.info("ROOM removeFiles {}, {}", workspaceId, sessionId);

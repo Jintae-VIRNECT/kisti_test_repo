@@ -1398,23 +1398,24 @@ public class SessionDataRepository {
             e.printStackTrace();
         }
 
-        //ErrorCode errorCode = getErrorStatus();
-        ErrorCode errorCode;
+        ErrorCode errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
         for (Member member : room.getMembers()) {
             if (member.getUuid().equals(joinRoomRequest.getUuid())) {
                 MemberStatus memberStatus = member.getMemberStatus();
                 switch (memberStatus) {
                     case LOADING:
                         errorCode = ErrorCode.ERR_SUCCESS;
+                        break;
                     case LOAD:
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
+                        break;
                     case EVICTED:
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+                        break;
                 }
             }
         }
-        errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
-
+        
         if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
             RoomResponse roomResponse = new RoomResponse();
             //not set session create at property
