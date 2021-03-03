@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +95,7 @@ public class FileService {
 			}
 		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 			log.info("{}", exception.getMessage());
-			responseData = new ApiResponse<>(
+			new ApiResponse<>(
 				new FileUploadResponse(),
 				ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
 				exception.getMessage()
@@ -112,7 +114,7 @@ public class FileService {
 
 		File uploadResult = fileRepository.save(file);
 
-		if (uploadResult != null) {
+		if (!ObjectUtils.isEmpty(uploadResult)) {
 			FileUploadResponse fileUploadResponse = modelMapper.map(file, FileUploadResponse.class);
 			responseData = new ApiResponse<>(fileUploadResponse);
 		} else {
@@ -168,7 +170,7 @@ public class FileService {
 
 		RecordFile uploadResult = recordFileRepository.save(recordFile);
 
-		if (uploadResult != null) {
+		if (!ObjectUtils.isEmpty(uploadResult)) {
 			FileUploadResponse fileUploadResponse = modelMapper.map(recordFile, FileUploadResponse.class);
 			responseData = new ApiResponse<>(fileUploadResponse);
 		} else {
@@ -222,7 +224,7 @@ public class FileService {
 
 				Room uploadResult = roomRepository.save(room);
 
-				if (uploadResult != null) {
+				if (!ObjectUtils.isEmpty(uploadResult)) {
 					responseData = new ApiResponse<>(roomProfileUpdateResponse);
 				} else {
 					responseData = new ApiResponse<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_PROFILE_UPLOAD_FAILED);
@@ -258,9 +260,9 @@ public class FileService {
 				exception.printStackTrace();
 			}
 			resultResponse.setResult(true);
-			responseData = new ApiResponse(resultResponse);
+			responseData = new ApiResponse<>(resultResponse);
 		} else {
-			responseData = new ApiResponse(ErrorCode.ERR_ROOM_NOT_FOUND);
+			responseData = new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 		return responseData;
 	}
@@ -297,13 +299,13 @@ public class FileService {
 				filePreSignedResponse.setContentType(file.getContentType());
 				filePreSignedResponse.setUrl(url);
 				filePreSignedResponse.setExpiry(expiry);
-				responseData = new ApiResponse(filePreSignedResponse);
+				responseData = new ApiResponse<>(filePreSignedResponse);
 			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
 				log.info("{}", exception.getMessage());
-				responseData = new ApiResponse(new FilePreSignedResponse(), ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+				responseData = new ApiResponse<>(new FilePreSignedResponse(), ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
 			}
 		} else {
-			responseData = new ApiResponse(new FilePreSignedResponse(), ErrorCode.ERR_FILE_NOT_FOUND);
+			responseData = new ApiResponse<>(new FilePreSignedResponse(), ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 		return responseData;
 	}
@@ -455,32 +457,38 @@ public class FileService {
 	) {
 
 		ApiResponse<FileDeleteResponse> responseData;
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
-		file.setDeleted(true);
-		fileRepository.save(file);
 
-		//remove object
-		boolean result = false;
-		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(workspaceId).append("/")
-				.append(sessionId).append("/")
-				.append(file.getObjectName());
-			result = fileManagementService.removeObject(stringBuilder.toString());
-		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-			exception.printStackTrace();
-			log.info("{}", exception.getMessage());
-			responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_EXCEPTION);
-		}
-		if (result) {
-			FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
-			fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
-			fileDeleteResponse.setSessionId(file.getSessionId());
-			fileDeleteResponse.setFileName(file.getName());
-			responseData = new ApiResponse<>(fileDeleteResponse);
+		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+
+		if (!ObjectUtils.isEmpty(file)) {
+			Objects.requireNonNull(file).setDeleted(true);
+			fileRepository.save(file);
+
+			//remove object
+			boolean result = false;
+			try {
+				StringBuilder stringBuilder;
+				stringBuilder = new StringBuilder();
+				stringBuilder.append(workspaceId).append("/")
+					.append(sessionId).append("/")
+					.append(file.getObjectName());
+				result = fileManagementService.removeObject(stringBuilder.toString());
+			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+				exception.printStackTrace();
+				log.info("{}", exception.getMessage());
+				new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_EXCEPTION);
+			}
+			if (result) {
+				FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
+				fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
+				fileDeleteResponse.setSessionId(file.getSessionId());
+				fileDeleteResponse.setFileName(file.getName());
+				responseData = new ApiResponse<>(fileDeleteResponse);
+			} else {
+				responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_FAILED);
+			}
 		} else {
-			responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_FAILED);
+			responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 		return responseData;
 	}
@@ -506,7 +514,7 @@ public class FileService {
 	}
 
 	@Transactional
-	public Boolean removeFiles(String sessionId) {
+	public void removeFiles(String sessionId) {
 
 		String workspaceId = sessionTransactionalService.getRoom(sessionId).getWorkspaceId();
 		if (workspaceId != null) {
@@ -527,11 +535,10 @@ public class FileService {
 			}
 			deleteFiles(workspaceId, sessionId);
 		}
-		return true;
 	}
 
 	@Transactional
-	public Boolean removeFiles(String workspaceId, String sessionId) {
+	public void removeFiles(String workspaceId, String sessionId) {
 
 		log.info("ROOM removeFiles {}, {}", workspaceId, sessionId);
 		try {
@@ -550,7 +557,6 @@ public class FileService {
 			e.printStackTrace();
 		}
 		deleteFiles(workspaceId, sessionId);
-		return true;
 	}
 
 	@Transactional
