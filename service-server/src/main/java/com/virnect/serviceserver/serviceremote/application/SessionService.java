@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -1290,8 +1291,8 @@ public class SessionService {
 			sessionId
 		);
 
-		String userId = room.getLeaderId();
-		if (room != null) {
+		if (!ObjectUtils.isEmpty(room)) {
+			String userId = room.getLeaderId();
 			if (userId.equals(modifyRoomInfoRequest.getUuid())) {
 
 				room.setTitle(modifyRoomInfoRequest.getTitle());

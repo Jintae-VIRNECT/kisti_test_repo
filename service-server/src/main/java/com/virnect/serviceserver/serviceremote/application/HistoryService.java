@@ -228,7 +228,7 @@ public class HistoryService {
 
 		if (roomHistory == null) {
 			RoomHistoryDetailInfoResponse empty = new RoomHistoryDetailInfoResponse();
-			responseData = new ApiResponse(empty, ErrorCode.ERR_ROOM_NOT_FOUND);
+			responseData = new ApiResponse<>(empty, ErrorCode.ERR_ROOM_NOT_FOUND);
 		} else {
 			// mapping data
 			RoomHistoryDetailInfoResponse resultResponse = modelMapper.map(
@@ -270,7 +270,7 @@ public class HistoryService {
 
 			// Set Member List to Room Detail Information Response
 			resultResponse.setMemberList(memberInfoList);
-			responseData = new ApiResponse(resultResponse);
+			responseData = new ApiResponse<>(resultResponse);
 		}
 		return responseData;
 	}
@@ -304,7 +304,7 @@ public class HistoryService {
 		resultResponse.userId = userId;
 		resultResponse.setResult(true);
 
-		responseDate = new ApiResponse(resultResponse);
+		responseDate = new ApiResponse<>(resultResponse);
 
 		return responseDate;
 	}
@@ -351,7 +351,7 @@ public class HistoryService {
 		ResultResponse resultResponse = new ResultResponse();
 		resultResponse.userId = roomHistoryDeleteRequest.getUuid();
 		resultResponse.setResult(true);
-		responseDate = new ApiResponse(resultResponse);
+		responseDate = new ApiResponse<>(resultResponse);
 
 		return responseDate;
 	}

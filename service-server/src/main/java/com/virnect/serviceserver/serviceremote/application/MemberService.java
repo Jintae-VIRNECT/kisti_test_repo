@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -118,7 +119,7 @@ public class MemberService {
 
 		//Room room = sessionService.getRoom(workspaceId, sessionId);
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		if (room == null) {
+		if (ObjectUtils.isEmpty(room)) {
 			// insert return custom error
 		} else {
 			// Get Member List from Room
@@ -148,12 +149,10 @@ public class MemberService {
 			//remove member who has the same user id(::uuid)
 			//do not remove member who has status evicted;
 			//workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
-			memberList.forEach(member -> {
-				workspaceMemberInfoList.removeIf(memberInfoResponses ->
-					member.getMemberStatus() != MemberStatus.EVICTED &&
-						memberInfoResponses.getUuid().equals(member.getUuid())
-				);
-			});
+			memberList.forEach(member -> workspaceMemberInfoList.removeIf(memberInfoResponses ->
+				member.getMemberStatus() != MemberStatus.EVICTED &&
+					memberInfoResponses.getUuid().equals(member.getUuid())
+			));
 
 			// Page Metadata
 			PageMetadataResponse pageMeta = PageMetadataResponse.builder()

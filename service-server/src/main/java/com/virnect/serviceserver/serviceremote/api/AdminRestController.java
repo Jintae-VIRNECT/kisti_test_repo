@@ -39,7 +39,6 @@ public class AdminRestController {
         @RequestBody @Valid CompanyRequest companyRequest,
         BindingResult result
     ) {
-
         LogMessage.formedInfo(
             TAG,
             "REST API: POST "
@@ -47,7 +46,6 @@ public class AdminRestController {
                 + (companyRequest.toString() != null ? companyRequest.toString() : "{}"),
             "createCompanyRequestHandler"
         );
-
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message ->
                 LogMessage.formedError(
@@ -77,8 +75,6 @@ public class AdminRestController {
             "REST API: POST " + REST_PATH,
             "updateCompanyRequestHandler"
         );
-
-        // check company request handler
         if (result.hasErrors()) {
             result.getAllErrors().forEach(message ->
                 LogMessage.formedError(

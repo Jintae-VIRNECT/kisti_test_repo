@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -387,7 +388,7 @@ public class ServiceSessionManager {
 		tokenData.setRole("PUBLISHER");
 		tokenData.setData("");
 
-		if (tokenData == null) {
+		if (ObjectUtils.isEmpty(tokenData)) {
 			return generateErrorMessage(
 				"Error in body parameters. Cannot be empty",
 				SESSION_TOKEN_METHOD,

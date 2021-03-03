@@ -240,7 +240,7 @@ public class ValidationService {
 			try {
 				companyInfoResponse = loadServicePolicy(workspaceId, policyLocation);
 			} catch (IOException e) {
-				responseData = new ApiResponse<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
+				new ApiResponse<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
 			}
 			responseData = new ApiResponse<>(companyInfoResponse);
 		}

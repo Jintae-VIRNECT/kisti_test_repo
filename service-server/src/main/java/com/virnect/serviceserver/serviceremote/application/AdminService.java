@@ -40,17 +40,16 @@ public class AdminService {
 			.localRecording(companyRequest.isLocalRecording())
 			.build();
 
-		LanguageRequest languageRequest = companyRequest.getLanguage();
 		Language language = Language.builder()
-			.transKoKr(languageRequest.isTransKoKr())
-			.transEnUs(languageRequest.isTransEnUs())
-			.transJaJp(languageRequest.isTransJaJp())
-			.transZh(languageRequest.isTransZh())
-			.transEsEs(languageRequest.isTransEsEs())
-			.transFrFr(languageRequest.isTransFrFr())
-			.transPlPl(languageRequest.isTransPlPl())
-			.transRuRu(languageRequest.isTransRuRu())
-			.transUkUa(languageRequest.isTransUkUa())
+			.transKoKr(companyRequest.getLanguage().isTransKoKr())
+			.transEnUs(companyRequest.getLanguage().isTransEnUs())
+			.transJaJp(companyRequest.getLanguage().isTransJaJp())
+			.transZh(companyRequest.getLanguage().isTransZh())
+			.transEsEs(companyRequest.getLanguage().isTransEsEs())
+			.transFrFr(companyRequest.getLanguage().isTransFrFr())
+			.transPlPl(companyRequest.getLanguage().isTransPlPl())
+			.transRuRu(companyRequest.getLanguage().isTransRuRu())
+			.transUkUa(companyRequest.getLanguage().isTransUkUa())
 			.company(company)
 			.build();
 
@@ -95,17 +94,16 @@ public class AdminService {
 			company.setAudioRestrictedMode(companyRequest.isAudioRestrictedMode());
 			company.setLocalRecording(companyRequest.isLocalRecording());
 
-			LanguageRequest languageRequest = companyRequest.getLanguage();
 			Language language = Language.builder()
-				.transKoKr(languageRequest.isTransKoKr())
-				.transEnUs(languageRequest.isTransEnUs())
-				.transJaJp(languageRequest.isTransJaJp())
-				.transZh(languageRequest.isTransZh())
-				.transEsEs(languageRequest.isTransEsEs())
-				.transFrFr(languageRequest.isTransFrFr())
-				.transPlPl(languageRequest.isTransPlPl())
-				.transRuRu(languageRequest.isTransRuRu())
-				.transUkUa(languageRequest.isTransUkUa())
+				.transKoKr(companyRequest.getLanguage().isTransKoKr())
+				.transEnUs(companyRequest.getLanguage().isTransEnUs())
+				.transJaJp(companyRequest.getLanguage().isTransJaJp())
+				.transZh(companyRequest.getLanguage().isTransZh())
+				.transEsEs(companyRequest.getLanguage().isTransEsEs())
+				.transFrFr(companyRequest.getLanguage().isTransFrFr())
+				.transPlPl(companyRequest.getLanguage().isTransPlPl())
+				.transRuRu(companyRequest.getLanguage().isTransRuRu())
+				.transUkUa(companyRequest.getLanguage().isTransUkUa())
 				.company(company)
 				.build();
 

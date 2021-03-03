@@ -325,7 +325,6 @@ public class SessionTransactionalService {
 			.collect(Collectors.toList());
 		for (Member member: members) {
 			log.info("ROOM INFO REMOVE BY removeRoom => [{}]", member.getUuid());
-
 		}
 	}
 
@@ -876,11 +875,8 @@ public class SessionTransactionalService {
 
 	@Transactional
 	public void updateMember(Member member, MemberStatus memberStatus) {
-		switch (memberStatus) {
-			case EVICTED: {
-				//member.setRoom(null);
-				member.setMemberStatus(memberStatus);
-			} break;
+		if (memberStatus == MemberStatus.EVICTED) {//member.setRoom(null);
+			member.setMemberStatus(memberStatus);
 		}
 		memberRepository.save(member);
 	}

@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -278,7 +279,7 @@ public class SessionDataRepository {
     public Boolean closeSession(Participant participant, String sessionId, EndReason reason) {
 
         ClientMetaData clientMetaData = null;
-        Room room = null;
+        Room room;
 
         // pre data process
         JsonObject jsonObject = JsonParser.parseString(participant.getClientMetadata()).getAsJsonObject();
@@ -386,7 +387,7 @@ public class SessionDataRepository {
 
     public ErrorCode joinSession(Participant participant, String sessionId) {
 
-        ClientMetaData clientMetaData = null;
+        ClientMetaData clientMetaData;
         Room room = sessionService.getRoom(sessionId);
         if (room == null) {
             return ErrorCode.ERR_ROOM_NOT_FOUND;
@@ -451,7 +452,7 @@ public class SessionDataRepository {
 
     public Boolean disconnectSession(Participant participant, String sessionId, EndReason reason) {
 
-        Room room = null;
+        Room room;
         ClientMetaData clientMetaData = null;
 
         // Pre data process
@@ -1158,8 +1159,8 @@ public class SessionDataRepository {
         );
 
         room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
-        String userId = room.getLeaderId();
-        if (room != null) {
+        if (!ObjectUtils.isEmpty(room)) {
+            String userId = room.getLeaderId();
             if (userId.equals(modifyRoomInfoRequest.getUuid())) {
 
                 // update data
@@ -1208,7 +1209,7 @@ public class SessionDataRepository {
 
     public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
         //return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
-        Room room = null;
+        Room room;
         room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
         if (room == null) {
             return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
