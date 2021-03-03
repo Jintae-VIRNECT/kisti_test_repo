@@ -47,67 +47,7 @@ project(":service-server") {
     dependencies {
         // Include Sub Modules
         implementation(project(":service-kms"))
-        //implementation(project(":service-data"))
-        implementation(project(":service-remote-api"))
-        implementation(project(":service-dashboard-api"))
-
-        // Lombok and Annotation Configuration Dependencies
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
-        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-        // Spring Test Dependencies
-        testImplementation('org.springframework.boot:spring-boot-starter-test') {
-            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-        }
-    }
-
-    // Spring Cloud Dependencies Management
-    dependencyManagement {
-        dependencyManagement {
-            imports {
-                mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-            }
-        }
-    }
-}
-
-project(":service-remote-api") {
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
-
-    dependencies {
-        // Include Sub Modules
-        compile(project(":service-data"))
-
-        // Lombok and Annotation Configuration Dependencies
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
-        annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-
-        // Spring Test Dependencies
-        testImplementation('org.springframework.boot:spring-boot-starter-test') {
-            exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
-        }
-    }
-
-    // Spring Cloud Dependencies Management
-    dependencyManagement {
-        dependencyManagement {
-            imports {
-                mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
-            }
-        }
-    }
-}
-
-project(":service-dashboard-api") {
-    apply plugin: 'org.springframework.boot'
-    apply plugin: 'io.spring.dependency-management'
-
-    dependencies {
-        // Include Sub Modules
-        compile(project(":service-data"))
+        implementation(project(":service-data"))
 
         // Lombok and Annotation Configuration Dependencies
         compileOnly 'org.projectlombok:lombok'
