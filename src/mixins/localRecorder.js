@@ -20,6 +20,7 @@ export default {
       audioContext: null,
       audioContextDes: null,
       audioSourceMap: new Map(),
+      streamMap: new Map(),
       screenStream: null,
 
       fileCount: 0,
@@ -101,6 +102,7 @@ export default {
           }
         }
       },
+      deep: true,
     },
     allowLocalRecord(allow) {
       if (allow === false && this.localRecordStatus === 'START') {
@@ -116,6 +118,9 @@ export default {
      * participants 변경관련 처리 수행
      */
     participantsChanged() {
+      //for stream updated
+      this.reconnectAudio()
+
       //for joined
       this.connectAudio()
 
@@ -342,6 +347,30 @@ export default {
     },
 
     /**
+     * 특정 참가자의 오디오를 강제로 해제하고 다시 연결
+     *
+     * @param {String} conId 커넥션 id
+     */
+    forceReConnectAudio(conId) {
+      if (this.audioSourceMap.get(conId)) {
+        this.audioSourceMap.get(conId).disconnect()
+        this.audioSourceMap.delete(conId)
+      }
+
+      const target = this.participants.find(participant => {
+        return participant.connectionId === conId
+      })
+
+      if (target.stream) {
+        let audioSource = this.audioContext.createMediaStreamSource(
+          target.stream,
+        )
+        audioSource.connect(this.audioContextDes)
+        this.audioSourceMap.set(conId, audioSource)
+      }
+    },
+
+    /**
      * get file number 0 ~ 59
      * 60 over is not exits
      */
@@ -501,6 +530,26 @@ export default {
         const guessedOrientation = await this.guessOrientation(mediaStream)
         this.recorder.changeCanvasOrientation(guessedOrientation)
       }
+    },
+
+    /**
+     * stream이 변경되는 경우를 위한 업데이트
+     */
+    reconnectAudio() {
+      this.participants.forEach(participant => {
+        const conId = participant.connectionId
+        if (participant.stream) {
+          if (this.streamMap.has(conId)) {
+            const streamId = this.streamMap.get(conId)
+            if (participant.stream.id !== streamId) {
+              this.streamMap.set(conId, participant.stream.id)
+              this.forceReConnectAudio(conId)
+            }
+          } else {
+            this.streamMap.set(conId, participant.stream.id)
+          }
+        }
+      })
     },
   },
   mounted() {

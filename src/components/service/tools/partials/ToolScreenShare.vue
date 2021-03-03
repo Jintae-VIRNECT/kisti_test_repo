@@ -60,6 +60,7 @@ export default {
         } else {
           this.$call.rePublish(displayStream.getVideoTracks()[0])
           this.$eventBus.$emit('streamctl:hide', true)
+
           //모바일에서 대응할 수 있는 시간을 주기위한 딜레이
           await new Promise(r => setTimeout(r, 500))
         }
