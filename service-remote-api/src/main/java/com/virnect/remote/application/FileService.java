@@ -49,7 +49,7 @@ import com.virnect.data.infra.file.IFileManagementService;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-//@Transactional(readOnly=true)
+@Transactional
 public class FileService {
 
 	private final IFileManagementService fileManagementService;
