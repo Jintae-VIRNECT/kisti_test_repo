@@ -248,4 +248,8 @@ public class RemoteServiceConfig {
 		return null;
 	}
 
+	public String getProfile() {
+		return this.remoteServiceProperties.getProfile();
+	}
+
 }

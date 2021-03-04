@@ -600,7 +600,7 @@ public class SessionService {
 
 	public ApiResponse<RoomDeleteResponse> removeRoom(String workspaceId, String sessionId, String userId) {
 		//return new RepoDecoder<Room, RoomDeleteResponse>(RepoDecoderType.DELETE) {
-		Room room = null;
+		Room room;
 		room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 		if (room == null) {
 			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);

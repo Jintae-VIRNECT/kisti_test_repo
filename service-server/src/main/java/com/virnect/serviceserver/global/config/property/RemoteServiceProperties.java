@@ -560,4 +560,8 @@ public class RemoteServiceProperties extends PropertyService {
 		}
 		return ip;
 	}
+
+	public String getProfile() {
+		return env.getActiveProfiles()[0];
+	}
 }

@@ -21,6 +21,9 @@ import com.virnect.data.domain.session.SessionType;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.serviceremote.api.SessionRestController;
+import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.serviceremote.dto.constraint.PushConstants;
 import com.virnect.serviceserver.serviceremote.dto.push.SendSignalRequest;
@@ -33,9 +36,6 @@ import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.InviteRoomResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.KickRoomResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomResponse;
-import com.virnect.serviceserver.serviceremote.api.SessionRestController;
-import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
-import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 
 @Slf4j
 @Service
@@ -62,8 +62,7 @@ public class RoomService {
 		int companyCode
 	) {
 
-		// 임시 셋팅
-		companyCode = 0;
+		companyCode = checkCompanyCode(companyCode);
 
 		ApiResponse<RoomResponse> responseData;
 
@@ -126,8 +125,7 @@ public class RoomService {
 	) {
 		ApiResponse<RoomResponse> responseData;
 
-		// 임시 셋팅
-		companyCode = 0;
+		companyCode = checkCompanyCode(companyCode);
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
@@ -192,8 +190,7 @@ public class RoomService {
 		int companyCode
 	) {
 
-		// test를 위한 임시 company code 설정
-		companyCode = 0;
+		companyCode = checkCompanyCode(companyCode);
 
 		ApiResponse<RoomResponse> responseData;
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
@@ -266,8 +263,8 @@ public class RoomService {
 		int companyCode
 	) {
 
-		// test를 위한 임시 company code 설정
-		companyCode = 0;
+		companyCode = checkCompanyCode(companyCode);
+
 		ApiResponse<RoomResponse> responseData;
 
 		// check license item using company code if not virnect
@@ -548,6 +545,13 @@ public class RoomService {
 			break;
 		}
 		return coturnResponse;
+	}
+
+	private int checkCompanyCode(int companyCode) {
+		if (config.getProfile().equals("local") || config.getProfile().equals("develop")) {
+			companyCode = 0;
+		}
+		return companyCode;
 	}
 
 }

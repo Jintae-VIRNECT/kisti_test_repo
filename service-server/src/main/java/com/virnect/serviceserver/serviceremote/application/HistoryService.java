@@ -14,24 +14,24 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
 import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
 import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.roomhistory.RoomHistory;
-import com.virnect.serviceserver.serviceremote.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.serviceremote.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryDetailInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryInfoListResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomHistoryInfoResponse;
-import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.data.application.workspace.WorkspaceRestService;
 
 @Slf4j
 @Service

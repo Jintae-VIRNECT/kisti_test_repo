@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonArray;
@@ -25,6 +26,8 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.serviceremote.dto.constraint.CompanyConstants;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LanguageCode;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
@@ -43,6 +46,7 @@ public class CompanyService {
 	private final ModelMapper modelMapper;
 	private final SessionTransactionalService sessionService;
 	private final CompanyRepository companyRepository;
+	private final RemoteServiceConfig remoteServiceConfig;
 
 	public ApiResponse<CompanyResponse> createCompany(CompanyRequest companyRequest) {
 
@@ -181,9 +185,14 @@ public class CompanyService {
 
 		CompanyInfoResponse companyInfoResponse = null;
 
-		companyCode = 0;
+		if (remoteServiceConfig.getProfile().equals("local")
+			|| remoteServiceConfig.getProfile().equals("develop")
+		) {
+			companyCode = 0;
+		}
 
 		if (companyCode != CompanyConstants.COMPANY_VIRNECT) {
+			//Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
 			Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
 			if (company != null) {
 				companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
@@ -358,5 +367,4 @@ public class CompanyService {
 		}
 		return languageCodes;
 	}
-
 }

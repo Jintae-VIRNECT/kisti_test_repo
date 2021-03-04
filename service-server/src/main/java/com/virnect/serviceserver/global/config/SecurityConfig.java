@@ -115,5 +115,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		*//*auth.inMemoryAuthentication().withUser("remote").password("{noop}" + remoteServiceConfig.getRemoteServiceSecret())
 				.roles("ADMIN");*//*
 	}*/
-
 }

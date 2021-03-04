@@ -6,6 +6,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -319,7 +320,7 @@ public class SessionTransactionalService {
 		log.info("ROOM INFO REMOVE BY removeRoom => [{}]");
 		Room room = getRoom(workspaceId, sessionId).orElse(null);
 		//List<Member> members = sessionService.getMemberList(room.getWorkspaceId(), room.getSessionId());
-		List<Member> members = room.getMembers()
+		List<Member> members = Objects.requireNonNull(room).getMembers()
 			.stream()
 			.map(member -> modelMapper.map(member, Member.class))
 			.collect(Collectors.toList());
@@ -482,11 +483,6 @@ public class SessionTransactionalService {
 		}
 	}
 
-	/**
-	 *
-	 * @param room
-	 * @param joinRoomRequest
-	 */
 	@Transactional
 	@Deprecated
 	public void joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
