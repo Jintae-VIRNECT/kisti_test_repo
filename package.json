@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.7.7",
+    "@egjs/view360": "^3.4.3",
     "@sentry/browser": "^5.20.1",
     "@sentry/integrations": "^5.19.2",
     "@stomp/stompjs": "^5.4.4",
