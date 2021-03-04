@@ -18,6 +18,17 @@
         playsinline
         loop
       ></video>
+      <!-- 테스트용 -->
+      <pano-video
+        targetRef="mainVideo"
+        :connectionId="mainView.connectionId"
+      ></pano-video>
+      <!-- 실사용 -->
+      <!-- <pano-video
+        v-if="mainView.streamMode"
+        targetRef="mainVideo"
+        :connectionId="mainView.connectionId"
+      ></pano-video> -->
       <template v-if="loaded">
         <!-- 전체공유 표출 -->
         <transition name="opacity">
@@ -136,6 +147,7 @@ import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW, ACTION } from 'configs/view.config'
 import { CAMERA, FLASH } from 'configs/device.config'
+import PanoVideo from 'PanoVideo'
 
 import Pointing from './StreamPointing'
 import Moving from './StreamMoving'
@@ -143,6 +155,7 @@ import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
+
 export default {
   name: 'MainVideo',
   mixins: [shutterMixin, toastMixin],
@@ -151,6 +164,7 @@ export default {
     Moving,
     VideoTools,
     Fullscreen,
+    PanoVideo,
   },
   data() {
     return {
@@ -169,6 +183,8 @@ export default {
       serverTime: 0,
       serverStart: 0,
       hideFullBtn: false,
+
+      usePano: true,
     }
   },
   computed: {

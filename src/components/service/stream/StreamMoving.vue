@@ -70,7 +70,7 @@ export default {
   beforeDestroy() {
     window.removeEventListener('keydown', this.keyEventHandler)
     window.removeEventListener('keyup', this.keyUpEventHandler)
-    window.addEventLisremoveEventListenertener('blur', this.focusOut)
+    window.removeEventListener('blur', this.focusOut)
   },
 }
 </script>
