@@ -63,7 +63,7 @@ export const addSessionEventListener = session => {
         }
       }
       if (Store.getters['myInfo'].screenShare) {
-        _.sendScreenSharing(true)
+        _.sendScreenSharing(true, [event.connection.connectionId])
       }
 
       if (_.publisher) {
