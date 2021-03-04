@@ -1,5 +1,5 @@
 <template>
-  <audio preload="auto" ref="ttsAudio" autoplay playsinline>
+  <audio ref="ttsAudio" controls playsinline preload="auto">
     <source :src="audioSrc" />
   </audio>
 </template>
@@ -9,7 +9,7 @@ import { tts } from 'plugins/remote/translate'
 export default {
   data() {
     return {
-      audioSrc: '',
+      audioSrc: require('assets/media/end.mp3'),
     }
   },
   computed: {
@@ -38,9 +38,27 @@ export default {
         audio.onended = () => {
           resolve(true)
         }
+        audio.oncanplay = () => {
+          audio.play()
+        }
         audio.load()
       })
     },
+    loadTtsAudio() {
+      this.$refs['ttsAudio'].play()
+      this.$refs['ttsAudio'].pause()
+      window.removeEventListener('touchstart', this.loadTtsAudio)
+    },
+  },
+  mounted() {
+    const audio = this.$refs['ttsAudio']
+    audio.onloadeddata = () => {
+      window.addEventListener('touchstart', this.loadTtsAudio)
+    }
+    audio.load()
+  },
+  beforeDestroy() {
+    window.removeEventListener('touchstart', this.loadTtsAudio)
   },
 }
 </script>

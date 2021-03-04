@@ -104,7 +104,13 @@
         <span>{{ $t('alarm.saved_duration') }}</span>
       </div> -->
     </div>
-    <audio preload="auto" ref="noticeAudio" playsinline>
+    <audio
+      preload="auto"
+      ref="noticeAudio"
+      playsinline
+      autoplay
+      @loadeddata="loadeddata"
+    >
       <source src="~assets/media/end.mp3" />
     </audio>
   </popover>
@@ -171,6 +177,14 @@ export default {
       'inviteResponseAlarm',
       'clearWorkspace',
     ]),
+    loadeddata() {
+      window.addEventListener('touchstart', this.loadAudio)
+    },
+    loadAudio() {
+      window.removeEventListener('touchstart', this.loadAudio)
+      this.$refs['noticeAudio'].play()
+      this.$refs['noticeAudio'].pause()
+    },
     setVisible(value) {
       this.visible = value
     },
