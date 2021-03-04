@@ -11,17 +11,12 @@ import StreamTools from './tools/StreamTools'
 import Menus from './tools/Menus'
 import MainVideo from './stream/MainVideo'
 
-import { mapGetters } from 'vuex'
-
 export default {
   name: 'ServiceStream',
   components: {
     StreamTools,
     Menus,
     MainVideo,
-  },
-  computed: {
-    ...mapGetters(['view']),
   },
 }
 </script>

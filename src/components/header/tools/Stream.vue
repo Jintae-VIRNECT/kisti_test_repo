@@ -31,7 +31,7 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['video', 'roomInfo', 'allowCameraControl', 'view']),
+    ...mapGetters(['video', 'roomInfo', 'allowCameraControl']),
     disable() {
       if (this.$route.name !== 'service') return false
       if (!this.roomInfo.videoRestrictedMode) return false
