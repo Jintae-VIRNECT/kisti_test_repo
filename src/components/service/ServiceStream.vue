@@ -10,6 +10,7 @@
 import StreamTools from './tools/StreamTools'
 import Menus from './tools/Menus'
 import MainVideo from './stream/MainVideo'
+
 export default {
   name: 'ServiceStream',
   components: {

@@ -16,7 +16,9 @@
       >
         <transition name="main">
           <stream-view
-            :class="{ hide: currentView !== 'stream' }"
+            :class="{
+              hide: currentView !== 'stream' && currentView !== 'screen',
+            }"
           ></stream-view>
         </transition>
         <transition name="main">
@@ -33,12 +35,7 @@
         </transition>
       </main>
 
-      <user-list
-        :class="{
-          shareview: isLeader && currentView === 'drawing',
-          fullscreen: isVideoLoaded && isFullScreen && currentView === 'stream',
-        }"
-      ></user-list>
+      <user-list :class="userListClass"></user-list>
       <!-- <div v-else>
         <figure
           v-for="participant of participants"
@@ -134,6 +131,15 @@ export default {
         return 'ar'
       }
       return ''
+    },
+    userListClass() {
+      return {
+        shareview: this.isLeader && this.currentView === 'drawing',
+        fullscreen:
+          this.isVideoLoaded &&
+          this.isFullScreen &&
+          (this.currentView === 'stream' || this.currentView === 'screen'),
+      }
     },
   },
 

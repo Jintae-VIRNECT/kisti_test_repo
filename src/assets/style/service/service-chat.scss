@@ -339,6 +339,9 @@
   &.record::before {
     background-image: url(~assets/image/call/ic_chat_local_record.svg);
   }
+  &.screen::before {
+    background-image: url(~assets/image/call/ic_chat_screen.svg);
+  }
   &.camera::before {
     background-image: url(~assets/image/call/ic_chat_camera.svg);
   }
