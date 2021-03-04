@@ -3,7 +3,10 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 import { PanoViewer } from '@egjs/view360'
+import { ROLE } from 'configs/remote.config'
 
 export default {
   name: 'PanoVideo',
@@ -17,15 +20,36 @@ export default {
       // required: true,
     },
   },
+  data() {
+    return {
+      panoViewer: null,
+      defaultFov: 85, //fix
+    }
+  },
+  computed: {
+    ...mapGetters(['myInfo']),
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
+  },
   methods: {
     rotate(info) {
       console.log('panovideo::', info)
       // connectionId: connectionId,
       // yaw: data.yaw,
       // pitch: data.pitch,
-      if (info.connectionId === this.connectionId) {
-        console.log('돌아요')
-      }
+
+      const signalFromMe = this.myInfo.connectionId === info.connectionId
+
+      if (this.connectionId !== info.connectionId) return
+      if (signalFromMe && this.targetRef === 'mainVideo') return
+
+      //도세요
+      this.panoViewer.lookAt({
+        yaw: info.yaw,
+        pitch: info.pitch,
+        fov: this.defaultFov,
+      })
     },
     initPano() {
       //동적으로 캔버스 크기 제어 필요함
@@ -55,12 +79,22 @@ export default {
           projectionType: PanoViewer.PROJECTION_TYPE.EQUIRECTANGULAR,
           stereoFormat: '',
           useZoom: false,
+          touchDirection: PanoViewer.TOUCH_DIRECTION.NONE,
         })
-        //see you later
-        // this.panoViewer.on('viewChange', e => {
-        //   if (!this.isLeader) return
-        //   this.$call.sendPanoView({ yaw: e.yaw, pitch: e.pitch, fov: e.fov })
-        // })
+
+        if (this.targetRef === 'mainVideo') {
+          this.panoViewer.setTouchDirection(PanoViewer.TOUCH_DIRECTION.ALL)
+        }
+
+        //@To-do:전체 공유 체크
+        this.panoViewer.on('viewChange', e => {
+          if (!this.isLeader || this.targetRef !== 'mainVideo') return
+
+          this.$call.sendLinkFlowControl({
+            yaw: e.yaw.toFixed(2),
+            pitch: e.pitch.toFixed(2),
+          })
+        })
       }
     },
   },
