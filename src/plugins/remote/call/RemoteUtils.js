@@ -26,7 +26,7 @@ export const addSessionEventListener = session => {
     const user = setUserObject(event)
 
     if (user === 'me') return
-    setTimeout(async () => {
+    setTimeout(() => {
       // send default signals
       if (_.publisher) {
         _.sendMic(Store.getters['mic'].isOn, [event.connection.connectionId])
