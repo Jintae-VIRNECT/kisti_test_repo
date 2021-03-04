@@ -18,7 +18,7 @@ public interface CustomRoomRepository {
 
 	//Room findRoomHistoryByWorkspaceAndSessionId(String workspaceId, String sessionId);
 
-	Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
+	//Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
 	Optional<Room> findBySessionId(final String sessionId);
 

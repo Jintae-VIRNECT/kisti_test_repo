@@ -95,7 +95,7 @@ public class SessionTransactionalService {
 
 	public Optional<Room> getRoom(String workspaceId, String sessionId) {
 		//return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		return this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId);
 	}
 
 	public Room getRoom(String sessionId) {
@@ -875,8 +875,11 @@ public class SessionTransactionalService {
 
 	@Transactional
 	public void updateMember(Member member, MemberStatus memberStatus) {
-		if (memberStatus == MemberStatus.EVICTED) {//member.setRoom(null);
-			member.setMemberStatus(memberStatus);
+		switch (memberStatus) {
+			case EVICTED: {
+				//member.setRoom(null);
+				member.setMemberStatus(memberStatus);
+			} break;
 		}
 		memberRepository.save(member);
 	}

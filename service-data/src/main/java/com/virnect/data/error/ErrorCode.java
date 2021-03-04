@@ -87,11 +87,10 @@ public enum ErrorCode {
 
 	ERR_ROOM_HISTORY_FOUND(3101, "Room History can not found"),
 	ERR_ROOM_HISTORY_HANDLE(3102, "Room History handling fail"),
-	ERR_ROOM_MAPPER(4104, "Room mapper fail"),
-	ERR_ROOM_FOUND(4102, "Room Not found maybe session is not active"),
 	ERR_ROOM_HISTORY_STATS_IN_DATE(3105, "Room History stats error in date"),
 	ERR_ROOM_HISTORY_STATS_ON_MONTH(3106, "Room History stats error on month"),
-	ERR_ROOM_HISTORY_MAPPER(6103, "Room history mapper fail"),
+	ERR_ROOM_MAPPER(4104, "Room mapper fail"),
+	ERR_ROOM_HISTORY_MAPPER(4103, "Room history mapper fail"),
 	// error code for file upload and download
 	ERR_ATTACHED_FILE_FOUND(7101, "Attached file can can not found"),
 	ERR_LOCAL_RECORD_FILE_FOUND(7102, "Local record file can not found"),
@@ -99,9 +98,6 @@ public enum ErrorCode {
 	ERR_SERVER_RECORD_URL_FOUND(7104, "Server record file can not found"),
 	ERR_SERVER_RECORD_DELETE(7105, "Server record file can not delete"),
 	ERR_FILE_FIND_LIST_FAILED(7114, "This file list can not found."),
-
-
-
 
     /*ERR_PASSWORD_INIT_CODE_NOT_FOUND(4007, "User password initialize info not found"),
     ERR_USER_PASSWORD_CHANGE(4008, "User Password Change Error"),
