@@ -19,6 +19,7 @@
         <pano-video
           targetRef="participant-video"
           :connectionId="participant.connectionId"
+          type="sub"
         ></pano-video>
       </div>
       <div class="participant-video__profile" v-else>

@@ -18,6 +18,7 @@
         targetRef="subVideo"
         :connectionId="mainView.connectionId"
         key="sub-video-pano"
+        type="sub"
       ></pano-video>
     </transition-group>
   </div>

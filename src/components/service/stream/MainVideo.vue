@@ -22,12 +22,14 @@
       <pano-video
         targetRef="mainVideo"
         :connectionId="mainView.connectionId"
+        type="main"
       ></pano-video>
       <!-- 실사용 -->
       <!-- <pano-video
         v-if="mainView.streamMode"
         targetRef="mainVideo"
         :connectionId="mainView.connectionId"
+        type="main"
       ></pano-video> -->
       <template v-if="loaded">
         <!-- 전체공유 표출 -->
