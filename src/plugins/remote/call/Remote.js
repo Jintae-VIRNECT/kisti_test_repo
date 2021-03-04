@@ -47,8 +47,6 @@ const _ = {
     try {
       _.account = Store.getters['account']
       _.openRoom = open
-      _.configs = configs
-      _.options = options
 
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -119,7 +117,10 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
+
       _.account.roleType = role
+      _.configs = configs
+      _.options = options
 
       if (options !== false) {
         const settingInfo = Store.getters['settingInfo']
@@ -640,15 +641,16 @@ const _ = {
    * 화면 공유 여부
    * 현재는 false 만 보냄. 필요시 true 보낼 수 있음.
    * @param {Boolean} enable 화면 공유 기능 중단 여부 true, false
+   * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
    */
-  sendScreenSharing: enable => {
+  sendScreenSharing: (enable, target = null) => {
     const params = {
       type: VIDEO.SCREEN_SHARE,
       enable: enable,
     }
     _.session.signal({
       type: SIGNAL.VIDEO,
-      to: null,
+      to: target,
       data: JSON.stringify(params),
     })
   },
