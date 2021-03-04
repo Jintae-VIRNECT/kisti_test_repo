@@ -119,7 +119,7 @@ export default {
   methods: {
     ...mapActions(['setView', 'addChat', 'showImage']),
     ...mapMutations(['updateParticipant']),
-    async goTab(type) {
+    goTab(type) {
       if (type === this.view) return
 
       // leader
@@ -190,7 +190,7 @@ export default {
         }
       }
     },
-    async goTabConfirm(type) {
+    goTabConfirm(type) {
       if (type === VIEW.STREAM) {
         this.setView(VIEW.STREAM)
       }
