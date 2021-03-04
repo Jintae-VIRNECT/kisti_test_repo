@@ -79,7 +79,7 @@ public class SwaggerConfiguration {
 			.globalResponseMessage(RequestMethod.PUT, globalResponseMessage())
 			.globalResponseMessage(RequestMethod.DELETE, globalResponseMessage())
 			.select()
-			.apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver.api"))
+			.apis(RequestHandlerSelectors.basePackage("com.virnect.serviceserver"))
 			.paths(PathSelectors.any())
 			//.paths(PathSelectors.ant("/remote/**"))
 			.build()
