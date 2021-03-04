@@ -51,7 +51,7 @@ dependencies {
     implementation("org.springframework.data:spring-data-envers")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains:annotations:20.1.0")
+    //implementation("org.jetbrains:annotations:20.1.0")
 
     //developmentOnly("org.springframework.boot:spring-boot-devtools") //Unresolved reference: developmentOnly under boot version 2.3.1
     runtimeOnly("mysql:mysql-connector-java")
