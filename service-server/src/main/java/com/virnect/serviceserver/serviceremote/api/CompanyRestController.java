@@ -153,20 +153,4 @@ public class CompanyRestController {
         ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfoByCompanyCode(workspaceId, userId, companyCode, policyLocation);
         return ResponseEntity.ok(responseData);
     }
-
-    /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
-    @GetMapping(value = "licenses/{workspaceId}/{userId}")
-    public ResponseEntity<ApiResponse<LicenseInfoListResponse>> getLicenseInfo(
-            @PathVariable String workspaceId,
-            @PathVariable String userId) {
-
-        log.info("REST API: GET {}/licenses/{}/{}", REST_PATH,
-                workspaceId != null ? workspaceId.toString() : "{}",
-                userId != null ? userId : "{}");
-        if(workspaceId.isEmpty() || userId.isEmpty()) {
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<LicenseInfoListResponse> response = this.remoteGatewayService.getLicenseValidity(workspaceId, userId);
-        return ResponseEntity.ok(response);
-    }*/
 }
