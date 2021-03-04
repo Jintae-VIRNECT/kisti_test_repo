@@ -46,7 +46,6 @@ export default {
         return
       }
       let video = !this.video.isOn
-
       this.setDevices({
         video: {
           isOn: video,

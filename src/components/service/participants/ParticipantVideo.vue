@@ -288,7 +288,11 @@ export default {
     },
     changeMain() {
       if (this.restrictedRoom && this.account.roleType !== ROLE.LEADER) return
-      if (!this.participant.hasCamera) {
+      // if (!this.participant.hasCamera) {
+      //   this.toastDefault(this.$t('service.participant_no_stream'))
+      //   return
+      // }
+      if (!this.participant.hasVideo) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
@@ -396,7 +400,11 @@ export default {
       )
     },
     requestVideo() {
-      if (this.participant.cameraStatus === CAMERA.CAMREA_NONE) {
+      // if (this.participant.cameraStatus === CAMERA.CAMREA_NONE) {
+      //   this.toastDefault(this.$t('service.participant_no_stream'))
+      //   return
+      // }
+      if (!this.participant.hasVideo) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }

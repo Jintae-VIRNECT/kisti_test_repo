@@ -17,6 +17,7 @@ import {
 
 import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
+import { checkInput } from 'utils/deviceCheck'
 
 export const addSessionEventListener = session => {
   let loading = false
@@ -61,13 +62,28 @@ export const addSessionEventListener = session => {
           ])
         }
       }
-      if (_.publisher.stream.hasVideo) {
-        _.sendCamera(
-          Store.getters['video'].isOn
-            ? CAMERA_STATUS.CAMERA_ON
-            : CAMERA_STATUS.CAMERA_OFF,
-          [event.connection.connectionId],
-        )
+      if (Store.getters['myInfo'].screenShare) {
+        _.sendScreenSharing(true, [event.connection.connectionId])
+      }
+
+      if (_.publisher) {
+        checkInput({ video: true, audio: false }).then(info => {
+          const hasVideo = info.hasVideo
+          if (hasVideo) {
+            if (_.publisher.stream.hasVideo) {
+              _.sendCamera(
+                Store.getters['video'].isOn
+                  ? CAMERA_STATUS.CAMERA_ON
+                  : CAMERA_STATUS.CAMERA_OFF,
+                [event.connection.connectionId],
+              )
+            }
+          } else {
+            _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [
+              event.connection.connectionId,
+            ])
+          }
+        })
       } else {
         _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [event.connection.connectionId])
       }
@@ -235,6 +251,54 @@ export const addSessionEventListener = session => {
         }
         Store.dispatch('setMainView', { id: data.id, force: true })
       }
+    } else if (data.type === VIDEO.SCREEN_SHARE) {
+      const isLeader = _.account.roleType === ROLE.LEADER
+      const participants = Store.getters['participants']
+      const idx = participants.findIndex(
+        user => user.connectionId === event.from.connectionId,
+      )
+      if (idx < 0) return
+
+      const noCamera = !participants[idx].hasCamera
+      const disabled = !data.enable
+      const forcedView = Store.getters['viewForce'] === true
+      const isSame =
+        event.from.connectionId === Store.getters['mainView'].connectionId
+
+      Store.commit('updateParticipant', {
+        connectionId: event.from.connectionId,
+        screenShare: data.enable,
+      })
+
+      if (!disabled) {
+        Store.commit('updateParticipant', {
+          connectionId: event.from.connectionId,
+          hasVideo: data.enable,
+        })
+      }
+
+      const releaseForcedView = [
+        isLeader,
+        disabled,
+        forcedView,
+        noCamera,
+        isSame,
+      ].every(condition => condition)
+
+      if (releaseForcedView) {
+        debug('screen share::', 'release forced view')
+        _.sendVideo(Store.getters['mainView'].id, false)
+      }
+
+      //상대방이 더이상 보낼 스트림(카메라, PC 공유)이 없음.
+      const noStream = [disabled, isSame, noCamera].every(
+        condition => condition,
+      )
+      if (noStream) {
+        Store.commit('clearMainView', event.from.connectionId)
+      }
+
+      //end of screen share
     } else {
       if (!Store.getters['allowCameraControl']) {
         Store.dispatch('setMainView', {
@@ -314,6 +378,10 @@ export const addSessionEventListener = session => {
       }
       if (data.status === CAMERA_STATUS.CAMERA_ON) {
         params.hasVideo = true
+      }
+      if (data.status === CAMERA_STATUS.CAMERA_NONE) {
+        params.hasCamera = false
+        params.hasVideo = false
       }
       Store.commit('updateParticipant', params)
     }
@@ -460,6 +528,7 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
+    screenShare: false,
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {

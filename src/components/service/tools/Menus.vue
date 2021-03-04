@@ -27,6 +27,7 @@ import {
 } from './partials'
 import { mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
+import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
 
 export default {
   name: 'Menus',
@@ -43,7 +44,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'useRecording', 'useTranslate']),
+    ...mapGetters(['mainView', 'useRecording', 'useTranslate', 'myInfo']),
     hasMainView() {
       return this.mainView && this.mainView.id
     },

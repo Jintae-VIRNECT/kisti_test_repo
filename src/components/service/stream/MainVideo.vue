@@ -4,7 +4,10 @@
       class="main-video__box"
       @mouseenter="hoverTools = true"
       @mouseleave="hoverTools = false"
-      :class="{ shutter: showShutter, hidden: !loaded || emptyStream }"
+      :class="{
+        shutter: showShutter,
+        hidden: !loaded || emptyStream,
+      }"
     >
       <!-- 메인 비디오 뷰 -->
       <video
@@ -62,7 +65,7 @@
         <transition name="opacity">
           <fullscreen
             :hide.sync="hideFullBtn"
-            v-show="!hideFullBtn"
+            v-show="!hideFullBtn && !mainView.screenShare"
           ></fullscreen>
         </transition>
       </template>
@@ -173,6 +176,7 @@ export default {
       viewForce: 'viewForce',
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
+      view: 'view',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -214,6 +218,9 @@ export default {
       }
     },
     allowTools() {
+      if (this.mainView.screenShare) {
+        return false
+      }
       if (
         this.viewForce === true &&
         this.account.roleType === ROLE.LEADER &&
@@ -231,10 +238,12 @@ export default {
       }
     },
     emptyStream() {
+      const validCameraStatus = this.cameraStatus !== -1
+      const cameraOff = this.cameraStatus.state === 'off'
+      const cameraBackground = this.cameraStatus.state === 'background'
+
       return (
-        this.cameraStatus !== -1 &&
-        ((this.loaded && this.cameraStatus.state === 'off') ||
-          this.cameraStatus.state === 'background')
+        validCameraStatus && ((this.loaded && cameraOff) || cameraBackground)
       )
     },
   },

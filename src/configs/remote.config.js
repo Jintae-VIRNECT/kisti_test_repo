@@ -25,6 +25,7 @@ export const FILE = {
 export const VIDEO = {
   NORMAL: 'normal',
   SHARE: 'share',
+  SCREEN_SHARE: 'screenShare',
 }
 
 export const CAMERA = {
