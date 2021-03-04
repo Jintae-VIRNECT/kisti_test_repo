@@ -237,14 +237,7 @@ const _ = {
 
         _.session.publish(_.publisher)
       } else {
-        Store.commit('updateParticipant', {
-          connectionId: _.connectionId,
-          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
-          hasVideo: false,
-          hasAudio: false,
-          video: false,
-          audio: false,
-        })
+        updateParticipantEmpty(_.connectionId)
       }
       return true
     } catch (err) {
@@ -752,7 +745,7 @@ const _ = {
    * 주어진 비디오 트랙으로 기존 publisher를 초기화하고 다시
    * initPublisher를 실행.
    *
-   * @param {MediaStreamTrack} videoTrack
+   * @param {MediaStreamTrack} videoTrack 교체할 비디오 트랙
    */
   async rePublish(videoTrack) {
     try {
@@ -805,8 +798,8 @@ const _ = {
           logger('ice state change', state)
         })
         tempPublisher.on('streamCreated', () => {
-          logger('room', 'publish success')
-          debug('publisher stream :: ', tempPublisher.stream)
+          logger('room', 'republish success')
+          debug('republisher stream :: ', tempPublisher.stream)
           const mediaStream = tempPublisher.stream.mediaStream
 
           const participantInfo = {
@@ -879,8 +872,7 @@ const _ = {
         _.publisher = tempPublisher
         _.session.publish(_.publisher)
       } else {
-        //이 경우는 리퍼블리시 하려고 하는데 비디오, 마이크가 없는경우임
-        //즉 고려하지 않아도 되는 경우이며 삭제해야함
+        //republish 과정에서 비디오, 마이크가 없는경우
         if (_.publisher) {
           await _.session.unpublish(_.publisher)
           _.publisher = null
@@ -892,14 +884,7 @@ const _ = {
           Store.commit('clearMainView', _.connectionId)
         }
 
-        Store.commit('updateParticipant', {
-          connectionId: _.connectionId,
-          cameraStatus: CAMERA_STATUS.CAMERA_NONE,
-          hasVideo: false,
-          hasAudio: false,
-          video: false,
-          audio: false,
-        })
+        updateParticipantEmpty(_.connectionId)
       }
 
       return true
@@ -908,6 +893,21 @@ const _ = {
       throw err
     }
   },
+}
+
+/**
+ * 특정 participant정보를 false 및 CAMERA_STATUS.NONE 으로 업데이트
+ * @param {String} connectionId 커넥션 id
+ */
+const updateParticipantEmpty = connectionId => {
+  Store.commit('updateParticipant', {
+    connectionId: connectionId,
+    cameraStatus: CAMERA_STATUS.CAMERA_NONE,
+    hasVideo: false,
+    hasAudio: false,
+    video: false,
+    audio: false,
+  })
 }
 
 export const addSubscriber = subscriber => {
