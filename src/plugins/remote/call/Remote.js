@@ -474,9 +474,6 @@ const _ = {
     target = null,
     publish = true,
   ) => {
-    console.log('sendCamera')
-    console.log('sendCameraStatus', status)
-    console.trace()
     if (!_.publisher) return
     // if (!_.publisher.stream.hasVideo) return
     if (
