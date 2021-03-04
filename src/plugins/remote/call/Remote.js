@@ -591,9 +591,9 @@ const _ = {
     })
   },
   /**
+   * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
    * @BROADCATE
    * @TARGET
-   * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
    * @param {Object} info 제어정보(yaw, pitch)
    */
   sendLinkFlowControl: info => {
