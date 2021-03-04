@@ -9,6 +9,7 @@ import {
   ROLE,
   VIDEO,
   FILE,
+  LINKFLOW,
 } from 'configs/remote.config'
 import {
   FLASH as FLASH_STATUS,
@@ -423,6 +424,33 @@ export const addSessionEventListener = session => {
       })
     }
   })
+  /** LinkFlow 제어 관련 */
+  session.on(SIGNAL.LINKFLOW, event => {
+    //여러개의 링크 플로 디바이스가 붙을 수 있다고 가정할 것
+    const connectionId = event.from.connectionId
+    const participants = Store.getters['participants']
+    const idx = participants.findIndex(
+      user => user.connectionId === connectionId,
+    )
+    if (idx < 0) return
+    let data = JSON.parse(event.data)
+    if (data.type === LINKFLOW.STREAM_MODE) {
+      Store.commit('updateParticipant', {
+        connectionId: connectionId,
+        streamMode: data.mode,
+      })
+    } else if (data.type === LINKFLOW.ROTATION) {
+      //회전 정보 각 360 스트림 뷰어에 전달
+      //이때 conId를 함께 전달
+      const info = {
+        connectionId: connectionId,
+        yaw: data.yaw,
+        pitch: data.pitch,
+      }
+
+      window.vue.$eventBus.$emit('linkflow:rotation', info)
+    }
+  })
 }
 
 const setUserObject = event => {
@@ -460,6 +488,7 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
+    streamMode: false, //360 스트림 모드
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {

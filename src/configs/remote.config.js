@@ -16,6 +16,7 @@ export const SIGNAL = {
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
   SYSTEM: 'signal:system',
+  LINKFLOW: 'signal:linkflow',
 }
 
 export const FILE = {
@@ -120,4 +121,12 @@ export const ROLE = {
   WORKER: 'WORKER',
   UNKNOWN: 'UNKNOWN',
   SECESSION: 'SECESSION',
+}
+
+export const LINKFLOW = {
+  STREAM_MODE: 'streamMode',
+  STITCHING: 'stitching',
+  SIDE_BY_SIDE: 'sidebyside',
+  SINGLE: 'single',
+  ROTATION: 'rotation',
 }

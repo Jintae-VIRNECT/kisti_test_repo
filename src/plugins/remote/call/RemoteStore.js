@@ -25,6 +25,7 @@ const getDefaultState = () => {
       // zoomMax: 5, // zoom 최대 레벨
       // cameraStatus: 'default', // 'default': 초기세팅
       // flash: 'default', // flash 제어
+      // streamMode:false // 'stitching', 'sidebyside', 'single' 360 스트림 모드. 기본값 false
     ],
     chatList: [
       // {

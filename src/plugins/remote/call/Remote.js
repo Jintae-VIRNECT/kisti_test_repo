@@ -10,6 +10,7 @@ import {
   AR_FEATURE,
   FILE,
   CONTROL,
+  LINKFLOW,
 } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import {
@@ -587,6 +588,25 @@ const _ = {
       data: JSON.stringify(params),
       to: target,
       type: SIGNAL.CAMERA,
+    })
+  },
+  /**
+   * @BROADCATE
+   * @TARGET
+   * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
+   * @param {Object} info 제어정보(yaw, pitch)
+   */
+  sendLinkFlowControl: info => {
+    const params = {
+      type: LINKFLOW.ROTATION,
+      yaw: info.yaw,
+      pitch: info.pitch,
+      //fov:fov.pitch - 차후 fov 필요하면 전달
+    }
+    _.session.signal({
+      data: JSON.stringify(params),
+      to: null,
+      type: SIGNAL.LINKFLOW,
     })
   },
   /**
