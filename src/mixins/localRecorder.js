@@ -321,11 +321,13 @@ export default {
         const conId = participant.connectionId
 
         if (participant.stream && !this.audioSourceMap.has(conId)) {
-          let audioSource = this.audioContext.createMediaStreamSource(
-            participant.stream,
-          )
-          audioSource.connect(this.audioContextDes)
-          this.audioSourceMap.set(conId, audioSource)
+          if (participant.stream.getAudioTracks().length > 0) {
+            let audioSource = this.audioContext.createMediaStreamSource(
+              participant.stream,
+            )
+            audioSource.connect(this.audioContextDes)
+            this.audioSourceMap.set(conId, audioSource)
+          }
         }
       })
     },
@@ -362,11 +364,13 @@ export default {
       })
 
       if (target.stream) {
-        let audioSource = this.audioContext.createMediaStreamSource(
-          target.stream,
-        )
-        audioSource.connect(this.audioContextDes)
-        this.audioSourceMap.set(conId, audioSource)
+        if (target.stream.getAudioTracks().length > 0) {
+          let audioSource = this.audioContext.createMediaStreamSource(
+            target.stream,
+          )
+          audioSource.connect(this.audioContextDes)
+          this.audioSourceMap.set(conId, audioSource)
+        }
       }
     },
 
