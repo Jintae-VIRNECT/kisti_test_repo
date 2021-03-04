@@ -95,8 +95,10 @@ export default {
           this.panoViewer.setTouchDirection(PanoViewer.TOUCH_DIRECTION.ALL)
         }
 
-        //@To-do:전체 공유 체크
+        //@TODO:전체 공유 체크
         const updateFunc = e => {
+          if (this.type === 'sub') return
+
           this.$call.sendLinkFlowControl({
             yaw: e.yaw.toFixed(2),
             pitch: e.pitch.toFixed(2),
@@ -109,18 +111,46 @@ export default {
         }
 
         this.panoViewer.on('viewChange', _.debounce(updateFunc, 50))
+        this.panoViewer.on('ready', () => {
+          if (this.mainView.rotationPos && this.type === 'sub') {
+            const yaw = Number.parseFloat(this.mainView.rotationPos.yaw)
+            const pitch = Number.parseFloat(this.mainView.rotationPos.pitch)
+            this.panoViewer.lookAt({
+              yaw: yaw,
+              pitch: pitch,
+              fov: this.defaultFov,
+            })
+          }
+        })
+
+        window.addEventListener('resize', function() {
+          // this.panoViewer.updateViewportDimensions()
+        })
+      }
+    },
+    toggle(flag) {
+      if (this.panoViewer && this.type === 'main') {
+        if (flag) {
+          console.log('active pano main viewer')
+          this.panoViewer.setTouchDirection(PanoViewer.TOUCH_DIRECTION.ALL)
+        } else {
+          console.log('active pano fuck viewer')
+          this.panoViewer.setTouchDirection(PanoViewer.TOUCH_DIRECTION.NONE)
+        }
       }
     },
   },
   mounted() {
     console.log('this.targetRef::', this.targetRef)
     console.log('this.$parent::', this.$parent)
-    this.$eventBus.$on('linkflow:rotation', this.rotate)
+    this.$eventBus.$on('panoview:rotation', this.rotate)
+    this.$eventBus.$on('panoview:toggle', this.toggle)
 
     this.initPano()
   },
   beforeDestroy() {
-    this.$eventBus.$off('linkflow:rotation', this.rotate)
+    this.$eventBus.$off('panoview:rotation', this.rotate)
+    this.$eventBus.$off('panoview:toggle', this.toggle)
   },
 }
 </script>
