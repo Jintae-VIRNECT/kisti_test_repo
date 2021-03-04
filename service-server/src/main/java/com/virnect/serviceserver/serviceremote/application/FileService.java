@@ -188,7 +188,7 @@ public class FileService {
 		ApiResponse<RoomProfileUpdateResponse> responseData;
 		RoomProfileUpdateResponse roomProfileUpdateResponse = new RoomProfileUpdateResponse();
 		String profileUrl = IFileManagementService.DEFAULT_ROOM_PROFILE;
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (room != null) {
 			if (room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
 				if (roomProfileUpdateRequest.getProfile() != null) {
@@ -248,7 +248,7 @@ public class FileService {
 		ApiResponse<ResultResponse> responseData;
 		ResultResponse resultResponse = new ResultResponse();
 
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (room != null) {
 			try {
 

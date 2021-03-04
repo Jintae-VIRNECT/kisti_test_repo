@@ -95,7 +95,7 @@ public class SessionTransactionalService {
 
 	public Optional<Room> getRoom(String workspaceId, String sessionId) {
 		//return  this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		return this.roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId);
+		return this.roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId);
 	}
 
 	public Room getRoom(String sessionId) {

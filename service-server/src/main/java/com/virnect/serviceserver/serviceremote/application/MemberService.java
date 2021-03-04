@@ -118,7 +118,7 @@ public class MemberService {
 		MemberInfoListResponse responseData = null;
 
 		//Room room = sessionService.getRoom(workspaceId, sessionId);
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (ObjectUtils.isEmpty(room)) {
 			// insert return custom error
 		} else {

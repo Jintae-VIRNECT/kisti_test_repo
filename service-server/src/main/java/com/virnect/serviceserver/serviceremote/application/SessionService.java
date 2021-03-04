@@ -1073,7 +1073,8 @@ public class SessionService {
 		List<MemberInfoResponse> memberInfoList;
 
 		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_FOUND));
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElseThrow(()
+			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
 
 		LogMessage.formedInfo(
@@ -1280,7 +1281,7 @@ public class SessionService {
 
 		ApiResponse<RoomDetailInfoResponse> responseData;
 
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		List<MemberInfoResponse> memberInfoList;
 
 		LogMessage.formedInfo(
@@ -1343,7 +1344,7 @@ public class SessionService {
 
 		ApiResponse<RoomDeleteResponse> responseData;
 
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 
 		if (room == null) {
 			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);

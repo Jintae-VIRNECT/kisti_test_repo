@@ -300,7 +300,8 @@ public class DashboardHistoryService {
 
 		RoomDetailInfoResponse roomDetailInfoResponse = new RoomDetailInfoResponse();
 
-		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElseThrow(() -> new RestServiceException(ErrorCode.ERR_ROOM_FOUND));
+		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElseThrow(()
+			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
 		try {
 			roomDetailInfoResponse = modelMapper.map(ongoingRoom, RoomDetailInfoResponse.class);
