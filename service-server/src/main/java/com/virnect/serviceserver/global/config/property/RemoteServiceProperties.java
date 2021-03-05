@@ -56,13 +56,11 @@ public class RemoteServiceProperties extends PropertyService {
 
 	// Config properties
 	private String servicePolicyLocation;
-	private boolean isDotenvEnabled;
 	private String dotenvPath;
 	private String domainOrPublicIp;
 	private String remoteServicePublicUrl;
 	private String remoteWebsocketUrl;
 	private Integer httpsPort;
-	private String certificateType;
 
 	public String getServicePolicyLocation() {
 		return this.servicePolicyLocation;
@@ -73,6 +71,7 @@ public class RemoteServiceProperties extends PropertyService {
 	}
 
 	public boolean isDotenvEnabled() {
+		boolean isDotenvEnabled;
 		return isDotenvEnabled = asBoolean("service.dotenv");
 	}
 
@@ -265,7 +264,7 @@ public class RemoteServiceProperties extends PropertyService {
 
 	private void checkCertificateType() {
 		String property = "service.certificate_type";
-		certificateType = asNonEmptyString(property);
+		String certificateType = asNonEmptyString(property);
 
 		if (certificateType != null && !certificateType.isEmpty()) {
 			List<String> validValues = Arrays.asList("selfsigned", "owncert", "letsencrypt");
@@ -362,7 +361,6 @@ public class RemoteServiceProperties extends PropertyService {
 			this.httpsPort = httpsPortNumber;
 		} else {
 			addError(property, "Is not a valid port. Valid port range exceeded with value " + httpsPortNumber);
-			return;
 		}
 	}
 

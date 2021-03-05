@@ -18,6 +18,8 @@
 package com.virnect.serviceserver.infra.resources;
 
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
@@ -38,7 +40,7 @@ public class RecordingCustomLayoutsResourceHandler implements WebMvcConfigurer {
 	RemoteServiceConfig remoteServiceConfig;
 
 	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	public void addResourceHandlers(@NotNull ResourceHandlerRegistry registry) {
 		/*String customLayoutsPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingCustomLayout();
 		registry.addResourceHandler("/layouts/custom/**").addResourceLocations("file:" + customLayoutsPath);*/
 	}

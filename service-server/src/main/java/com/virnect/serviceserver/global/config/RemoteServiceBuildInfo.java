@@ -17,15 +17,16 @@
 
 package com.virnect.serviceserver.global.config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Component;
 
+import lombok.RequiredArgsConstructor;
+
 @Component
+@RequiredArgsConstructor
 public class RemoteServiceBuildInfo {
 
-	@Autowired
-	private BuildProperties buildProperties;
+	private final BuildProperties buildProperties;
 
 	public String getRemoteServiceServerVersion() {
 		String v = this.buildProperties.get("version.remoteservice.server");

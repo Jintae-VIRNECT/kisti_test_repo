@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ import com.virnect.serviceserver.global.config.RemoteServiceConfig;
  *
  */
 public abstract class PropertyService {
-	private List<RemoteServiceConfig.Error> propertiesErrors = new ArrayList<>();
+	private final List<RemoteServiceConfig.Error> propertiesErrors = new ArrayList<>();
 	public Map<String, String> configProps = new HashMap<>();
 	public Map<String, ?> propertiesSource;
 
@@ -136,7 +137,7 @@ public abstract class PropertyService {
 			return list;
 		} catch (JsonSyntaxException e) {
 			addError(property, "Is not a valid strings array in JSON format. " + e.getMessage());
-			return Arrays.asList();
+			return Collections.emptyList();
 		}
 	}
 

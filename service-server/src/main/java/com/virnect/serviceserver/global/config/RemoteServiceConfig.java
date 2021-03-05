@@ -32,11 +32,12 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+
+import lombok.RequiredArgsConstructor;
 
 import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
@@ -51,12 +52,13 @@ import com.virnect.serviceserver.infra.utils.Dotenv.DotenvFormatException;
 @ComponentScan(basePackages = {
 	"com.virnect.mediaserver.config"
 })
+@RequiredArgsConstructor
 public class RemoteServiceConfig {
 
 	public static class Error {
-		private String property;
-		private String value;
-		private String message;
+		private final String property;
+		private final String value;
+		private final String message;
 
 		public Error(String property, String value, String message) {
 			super();
@@ -89,8 +91,7 @@ public class RemoteServiceConfig {
 
 	private List<String> userConfigProps;
 
-	@Autowired
-	public RemoteServiceProperties remoteServiceProperties;
+	public final RemoteServiceProperties remoteServiceProperties;
 
 	/*@Autowired
 	public RemoteStorageProperties remoteStorageProperties;*/
@@ -139,10 +140,8 @@ public class RemoteServiceConfig {
 	}
 
 	public Map<String, String> getConfigProps() {
-		Map<String, String> configMap = new HashMap<>();
-		configMap.putAll(this.remoteServiceProperties.configProps);
 		//configMap.putAll(this.remoteStorageProperties.configProps);
-		return configMap;
+		return new HashMap<>(this.remoteServiceProperties.configProps);
 		//return this.remoteServiceProperties.configProps;
 	}
 
@@ -239,7 +238,7 @@ public class RemoteServiceConfig {
 			if (file.exists()) {
 				return file;
 			} else {
-				log.error(".env file not found at {}", file.getAbsolutePath().toString());
+				log.error(".env file not found at {}", file.getAbsolutePath());
 			}
 
 		} else {

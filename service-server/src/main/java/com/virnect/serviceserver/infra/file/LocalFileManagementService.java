@@ -1,37 +1,5 @@
 package com.virnect.serviceserver.infra.file;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Files;
-import com.google.gson.JsonObject;
-import com.virnect.data.domain.file.FileType;
-import com.virnect.data.infra.file.IFileManagementService;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.data.dto.UploadResult;
-import com.virnect.data.infra.utils.JsonUtil;
-import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
-
-import io.minio.*;
-import io.minio.errors.MinioException;
-import io.minio.messages.DeleteError;
-import io.minio.messages.DeleteObject;
-import lombok.RequiredArgsConstructor;
-import okhttp3.OkHttpClient;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.PostConstruct;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -42,10 +10,53 @@ import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import javax.annotation.PostConstruct;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Files;
+import com.google.gson.JsonObject;
+
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
+import io.minio.RemoveObjectArgs;
+import io.minio.RemoveObjectsArgs;
+import io.minio.Result;
+import io.minio.errors.MinioException;
+import io.minio.messages.DeleteError;
+import io.minio.messages.DeleteObject;
+import lombok.RequiredArgsConstructor;
+import okhttp3.OkHttpClient;
+
+import com.virnect.data.domain.file.FileType;
+import com.virnect.data.dto.UploadResult;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.infra.file.IFileManagementService;
+import com.virnect.data.infra.utils.JsonUtil;
+import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 
 
 @Profile({"local", "onpremise", "develop"})
@@ -62,11 +73,8 @@ public class LocalFileManagementService implements IFileManagementService {
     private String profileBucketName;
     private String recordBucketName;
 
-    private boolean policyEnabled;
     private boolean policyLifeCycleEnabled;
-    private String policyLocation;
 
-    private JsonUtil jsonUtil;
     //private final RemoteServiceConfig remoteServiceConfig;
 
     private final RemoteStorageProperties remoteStorageProperties;
@@ -86,12 +94,12 @@ public class LocalFileManagementService implements IFileManagementService {
         // Create a trust manager that does not validate certificate chains
         TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
             @Override
-            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+            public void checkClientTrusted(X509Certificate[] x509Certificates, String s) {
 
             }
 
             @Override
-            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
+            public void checkServerTrusted(X509Certificate[] x509Certificates, String s) {
 
             }
 
@@ -187,28 +195,29 @@ public class LocalFileManagementService implements IFileManagementService {
         return fileAllowExtensionList;
     }
 
-    private InputStream getFileFromResourceAsStream(String fileName) {
-        return getClass().getClassLoader().getResourceAsStream(fileName);
+    private InputStream getFileFromResourceAsStream() {
+        return getClass().getClassLoader().getResourceAsStream("policy/storagePolicy.json");
     }
 
     @Override
     public void loadStoragePolicy() {
         try {
-            this.policyEnabled = remoteStorageProperties.isPolicyEnabled();
+            boolean policyEnabled = remoteStorageProperties.isPolicyEnabled();
             this.policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
             if (policyEnabled) {
-                this.policyLocation = remoteStorageProperties.getPolicyLocation();
-                if (this.policyLocation == null || this.policyLocation.isEmpty()) {
+                String policyLocation = remoteStorageProperties.getPolicyLocation();
+                JsonUtil jsonUtil;
+                if (policyLocation == null || policyLocation.isEmpty()) {
                     LogMessage.formedInfo(
                             TAG,
                             "initialise local file service",
                             "init",
                             "storage policy file can not find, check file or directory path. " +
                                     "try to load policy file from resources directory",
-                            policyLocation
+                        policyLocation
                     );
 
-                    InputStream inputStream = getFileFromResourceAsStream("policy/storagePolicy.json");
+                    InputStream inputStream = getFileFromResourceAsStream();
                     if (inputStream == null) {
                         LogMessage.formedInfo(
                                 TAG,
@@ -220,13 +229,13 @@ public class LocalFileManagementService implements IFileManagementService {
                         fileAllowExtensionList = setDefaultFileAllowExtensionList();
                     } else {
                         jsonUtil = new JsonUtil();
-                        JsonObject jsonObject = null;
+                        JsonObject jsonObject;
                         jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
                         fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
                         inputStream.close();
                     }
                 } else {
-                    Path path = getPolicyFilePath(this.policyLocation);
+                    Path path = getPolicyFilePath(policyLocation);
                     jsonUtil = new JsonUtil();
                     JsonObject jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
                     LogMessage.formedInfo(
@@ -263,7 +272,7 @@ public class LocalFileManagementService implements IFileManagementService {
         }
     }*/
 
-    private void setBucketLifeCycle(String bucketName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    private void setBucketLifeCycle(String bucketName) {
         // set bucket lifecycle
         /*String lifeCycle =
                 "<LifecycleConfiguration>" +
@@ -761,9 +770,8 @@ public class LocalFileManagementService implements IFileManagementService {
             FileOutputStream fos = new FileOutputStream(convertImage);
             fos.write(image);
             // 4. 파일 경로 추출
-            String filePath = String.format("%s", convertImage.getPath()).replace("\\", "/");
             //log.info("SAVE FILE_URL: {}", filePath);
-            return filePath;
+            return String.format("%s", convertImage.getPath()).replace("\\", "/");
         } catch (Exception e) {
             e.printStackTrace();
         }

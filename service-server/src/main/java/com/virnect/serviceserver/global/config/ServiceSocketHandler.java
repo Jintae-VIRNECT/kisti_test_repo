@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -30,7 +31,7 @@ public class ServiceSocketHandler extends TextWebSocketHandler {
 	}
 
 	@Override
-	public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+	public void afterConnectionEstablished(@NotNull WebSocketSession session) {
 		log.info("Service websocket stablished...");
 		this.sessions.put(session.getId(), session);
 	}
@@ -43,8 +44,7 @@ public class ServiceSocketHandler extends TextWebSocketHandler {
 	}
 
 	@Override
-	protected void handleTextMessage(WebSocketSession session, TextMessage message)
-		throws Exception {
+	protected void handleTextMessage(@NotNull WebSocketSession session, TextMessage message) {
 		log.info("Service Message received: " + message.getPayload());
 	}
 }

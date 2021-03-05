@@ -21,6 +21,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.server.ServerHttpRequest;
@@ -35,9 +36,9 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 
 	@Override
 	public boolean beforeHandshake(
-		ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
-		Map<String, Object> attributes
-	) throws Exception {
+		@NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response, @NotNull WebSocketHandler wsHandler,
+		@NotNull Map<String, Object> attributes
+	) {
 		if (request instanceof ServletServerHttpRequest) {
 			HttpSession session = ((ServletServerHttpRequest)request).getServletRequest().getSession();
 			session.setMaxInactiveInterval(1800); // HttpSession will expire in 30 minutes
@@ -49,7 +50,7 @@ public class HttpHandshakeInterceptor implements HandshakeInterceptor {
 
 	@Override
 	public void afterHandshake(
-		ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
+		@NotNull ServerHttpRequest request, @NotNull ServerHttpResponse response, @NotNull WebSocketHandler wsHandler,
 		Exception ex
 	) {
 	}

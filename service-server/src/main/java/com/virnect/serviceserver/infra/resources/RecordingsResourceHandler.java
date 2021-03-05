@@ -18,6 +18,8 @@
 package com.virnect.serviceserver.infra.resources;
 
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -36,7 +38,7 @@ public class RecordingsResourceHandler implements WebMvcConfigurer {
 	RemoteServiceConfig remoteServiceConfig;
 
 	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+	public void addResourceHandlers(@NotNull ResourceHandlerRegistry registry) {
 		/*String recordingsPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath();
 		registry.addResourceHandler("/recordings/**").addResourceLocations("file:" + recordingsPath);*/
 	}

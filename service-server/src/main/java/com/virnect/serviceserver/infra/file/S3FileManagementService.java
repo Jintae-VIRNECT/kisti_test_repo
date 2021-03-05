@@ -1,27 +1,5 @@
 package com.virnect.serviceserver.infra.file;
 
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.*;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.io.Files;
-import com.google.gson.JsonObject;
-import com.virnect.data.domain.file.FileType;
-import com.virnect.data.dto.UploadResult;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
-import com.virnect.serviceserver.infra.utils.JsonUtil;
-import com.virnect.serviceserver.infra.utils.LogMessage;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,6 +14,36 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
+import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.DeleteObjectsResult;
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.io.Files;
+import com.google.gson.JsonObject;
+
+import lombok.RequiredArgsConstructor;
+
+import com.virnect.data.domain.file.FileType;
+import com.virnect.data.dto.UploadResult;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
+import com.virnect.serviceserver.infra.utils.JsonUtil;
+import com.virnect.serviceserver.infra.utils.LogMessage;
+
 @Profile({"staging", "production"})
 @Component
 @RequiredArgsConstructor
@@ -49,7 +57,6 @@ public class S3FileManagementService implements IFileManagementService {
 
     private final AmazonS3 amazonS3Client;
 
-    private JsonUtil jsonUtil;
     private final RemoteStorageProperties remoteStorageProperties;
     //private final RemoteServiceConfig remoteServiceConfig;
 
@@ -126,8 +133,8 @@ public class S3FileManagementService implements IFileManagementService {
         return fileAllowExtensionList;
     }
 
-    private InputStream getFileFromResourceAsStream(String fileName) {
-        return getClass().getClassLoader().getResourceAsStream(fileName);
+    private InputStream getFileFromResourceAsStream() {
+        return getClass().getClassLoader().getResourceAsStream("policy/storagePolicy.json");
     }
 
     @Override
@@ -137,6 +144,7 @@ public class S3FileManagementService implements IFileManagementService {
             boolean policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
             if (policyEnabled) {
                 String policyLocation = remoteStorageProperties.getPolicyLocation();
+                JsonUtil jsonUtil;
                 if (policyLocation == null || policyLocation.isEmpty()) {
                     LogMessage.formedInfo(
                             TAG,
@@ -147,7 +155,7 @@ public class S3FileManagementService implements IFileManagementService {
                             policyLocation
                     );
 
-                    InputStream inputStream = getFileFromResourceAsStream("policy/storagePolicy.json");
+                    InputStream inputStream = getFileFromResourceAsStream();
                     if (inputStream == null) {
                         LogMessage.formedInfo(
                                 TAG,
@@ -159,7 +167,7 @@ public class S3FileManagementService implements IFileManagementService {
                         fileAllowExtensionList = setDefaultFileAllowExtensionList();
                     } else {
                         jsonUtil = new JsonUtil();
-                        JsonObject jsonObject = null;
+                        JsonObject jsonObject;
                         jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
                         fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
                         inputStream.close();
@@ -311,8 +319,7 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public UploadResult uploadProfile(MultipartFile file, String dirPath)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public UploadResult uploadProfile(MultipartFile file, String dirPath) {
         // check file is dummy
         if (file.getSize() == 0) {
             LogMessage.formedError(
@@ -394,14 +401,13 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public boolean removeObject(String objectPathToName)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public boolean removeObject(String objectPathToName) {
         amazonS3Client.deleteObject(bucketName, objectPathToName);
         return true;
     }
 
     @Override
-    public void deleteProfile(String objectPathToName) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public void deleteProfile(String objectPathToName) {
         if (DEFAULT_ROOM_PROFILE.equals(objectPathToName)) {
             LogMessage.formedInfo(
                     TAG,
@@ -424,7 +430,7 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public void removeBucket(String bucketName, String dirPath, List<String> objects, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public void removeBucket(String bucketName, String dirPath, List<String> objects, FileType fileType) {
 
         boolean policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
 
@@ -456,7 +462,7 @@ public class S3FileManagementService implements IFileManagementService {
                         targetBucket + "::" + targetDir + "::" + dirPath + targetDir
                 );
 
-                ArrayList<DeleteObjectsRequest.KeyVersion> keyVersions = new ArrayList<DeleteObjectsRequest.KeyVersion>();
+                ArrayList<DeleteObjectsRequest.KeyVersion> keyVersions = new ArrayList<>();
                 for (String objectName : objects) {
                     keyVersions.add(new DeleteObjectsRequest.KeyVersion(dirPath + targetDir + "/" + objectName));
                 }
@@ -509,8 +515,7 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String filePreSignedUrl(String dirPath, String objectName, int expiry, String fileName, FileType fileType)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String filePreSignedUrl(String dirPath, String objectName, int expiry, String fileName, FileType fileType) {
         StringBuilder objectPath = new StringBuilder();
         String url = null;
         switch (fileType) {
@@ -544,8 +549,7 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
-    public String filePreSignedUrl(String bucketFolderName, String objectName, int expiry)
-            throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+    public String filePreSignedUrl(String bucketFolderName, String objectName, int expiry) {
         String url = amazonS3Client.getUrl(bucketName, bucketFolderName + "/" + objectName).toString();
         LogMessage.formedInfo(
                 TAG,
@@ -563,11 +567,8 @@ public class S3FileManagementService implements IFileManagementService {
      */
     @Deprecated
     private void removeNewFile(File targetFile) {
-        if (targetFile.delete()) {
-            //log.info("파일이 삭제되었습니다.");
-        } else {
-            //log.info("파일이 삭제되지 못했습니다.");
-        }
+        targetFile.delete();//log.info("파일이 삭제되었습니다.");
+        //log.info("파일이 삭제되지 못했습니다.");
     }
 
     /**
