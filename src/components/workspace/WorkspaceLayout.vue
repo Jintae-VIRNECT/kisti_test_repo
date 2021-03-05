@@ -180,6 +180,9 @@ export default {
       } else {
         this.tabFix = false
       }
+      if (this.$el.querySelector('.tab-view__search input')) {
+        this.$el.querySelector('.tab-view__search input').blur()
+      }
     },
     scrollTop() {
       this.$refs['wrapperScroller'].scrollToY(0)
