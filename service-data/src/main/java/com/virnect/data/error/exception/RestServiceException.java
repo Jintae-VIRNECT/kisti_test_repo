@@ -3,7 +3,7 @@ package com.virnect.data.error.exception;
 import com.virnect.data.error.ErrorCode;
 
 public class RestServiceException extends BusinessException {
-    private ErrorCode error;
+    private final ErrorCode error;
 
     public RestServiceException(ErrorCode error) {
         super(error);
