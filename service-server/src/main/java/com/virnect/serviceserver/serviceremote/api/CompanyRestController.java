@@ -126,9 +126,7 @@ public class CompanyRestController {
         //log.info("COMPANY INFO :: USER INFO :: {}", userInfo.getData().getDescription());
 
         String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
-        //ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId, policyLocation);
-        //ApiResponse<CompanyInfoResponse> responseData = validationService.getCompanyInfo(workspaceId, userId);
-        ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfoByCompanyCode(workspaceId, userId, 1, policyLocation);
+        ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfo(workspaceId, userId, policyLocation);
         return ResponseEntity.ok(responseData);
     }
 
