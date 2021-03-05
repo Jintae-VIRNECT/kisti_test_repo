@@ -247,7 +247,6 @@ public class DashboardFileService {
 			fileDataRequest.getSessionId(),
 			fileDataRequest.getObjectName()
 		).orElse(null);
-		;
 
 		if (recordFile != null) {
 
@@ -317,26 +316,30 @@ public class DashboardFileService {
 			fileDataRequest.getObjectName()
 		).orElse(null);
 
-		fileRepository.delete(file);
+		if (file != null) {
+			fileRepository.delete(file);
 
-		boolean result = false;
-		try {
-			StringBuilder stringBuilder;
-			stringBuilder = new StringBuilder();
-			stringBuilder.append(fileDataRequest.getWorkspaceId()).append("/")
-				.append(fileDataRequest.getSessionId()).append("/")
-				.append("file").append("/")
-				.append(file.getObjectName());
-			result = fileManagementService.removeObject(stringBuilder.toString());
-		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-			exception.printStackTrace();
-		}
-		if (result) {
-			fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
-			fileDeleteResponse.setSessionId(file.getSessionId());
-			fileDeleteResponse.setFileName(file.getName());
+			boolean result = false;
+			try {
+				StringBuilder stringBuilder;
+				stringBuilder = new StringBuilder();
+				stringBuilder.append(fileDataRequest.getWorkspaceId()).append("/")
+					.append(fileDataRequest.getSessionId()).append("/")
+					.append("file").append("/")
+					.append(file.getObjectName());
+				result = fileManagementService.removeObject(stringBuilder.toString());
+			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+				exception.printStackTrace();
+			}
+			if (result) {
+				fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
+				fileDeleteResponse.setSessionId(file.getSessionId());
+				fileDeleteResponse.setFileName(file.getName());
+			} else {
+				throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
+			}
 		} else {
-			throw new RestServiceException(ErrorCode.ERR_FILE_DELETE_FAILED);
+			throw new RestServiceException(ErrorCode.ERR_FILE_NOT_FOUND);
 		}
 
 		return fileDeleteResponse;

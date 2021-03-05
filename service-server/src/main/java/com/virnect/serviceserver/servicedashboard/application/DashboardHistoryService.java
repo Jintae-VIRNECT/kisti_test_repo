@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,23 +21,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.serviceserver.servicedashboard.dto.PageMetadataResponse;
-import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryDetailRequest;
-import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryListRequest;
-import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryStatsRequest;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.FileUserInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.MemberInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.RoomDetailInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryDetailInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoResponse;
 import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
 import com.virnect.data.dao.file.FileRepository;
 import com.virnect.data.dao.file.RecordFileRepository;
-import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
 import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
@@ -52,8 +39,6 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.roomhistory.RoomHistorySortType;
 import com.virnect.data.dto.rest.RecordServerFileInfoResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoListResponse;
-import com.virnect.serviceserver.servicedashboard.dto.response.HistoryCountResponse;
 import com.virnect.data.dto.rest.UserInfoListResponse;
 import com.virnect.data.dto.rest.UserInfoResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
@@ -61,6 +46,19 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.global.util.ListUtils;
+import com.virnect.serviceserver.servicedashboard.dto.PageMetadataResponse;
+import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryDetailRequest;
+import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryListRequest;
+import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryStatsRequest;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.FileUserInfoResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.HistoryCountResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.MemberInfoResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.RoomDetailInfoResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryDetailInfoResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoListResponse;
+import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoResponse;
 
 @Slf4j
 @Service
@@ -76,7 +74,6 @@ public class DashboardHistoryService {
 
 	private final RoomRepository roomRepository;
 	private final RoomHistoryRepository roomHistoryRepository;
-	private final MemberRepository memberRepository;
 	private final MemberHistoryRepository memberHistoryRepository;
 
 	private final FileRepository fileRepository;
@@ -285,20 +282,13 @@ public class DashboardHistoryService {
 
 	/**
 	 * 진행중인 협업 상세정보 요청 처리
-	 *
-	 * @param request - 협업 요청 데이터
-	 * @return - 진행중입 협업 상세 정보
-	 */
-
-	/**
-	 * 진행중인 협업 상세정보 요청 처리
 	 * @param workspaceId - 협업이 진행중인 워크스페이스 고유 식별자
 	 * @param sessionId - 진행중인 협업의 세션 식별자
 	 * @return - 협업 상세 정보
 	 */
 	public RoomDetailInfoResponse getOngoingRoomDetail(String workspaceId, String sessionId) {
 
-		RoomDetailInfoResponse roomDetailInfoResponse = new RoomDetailInfoResponse();
+		RoomDetailInfoResponse roomDetailInfoResponse;
 
 		Room ongoingRoom = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElseThrow(()
 			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
@@ -350,7 +340,7 @@ public class DashboardHistoryService {
 	 */
 	public RoomHistoryDetailInfoResponse getEndRoomDetail(RoomHistoryDetailRequest request) {
 
-		RoomHistoryDetailInfoResponse roomHistoryDetailInfoResponse = new RoomHistoryDetailInfoResponse();
+		RoomHistoryDetailInfoResponse roomHistoryDetailInfoResponse;
 
 		RoomHistory endRoom = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(
 			request.getWorkspaceId(),
@@ -578,13 +568,12 @@ public class DashboardHistoryService {
 				}
 
 				if (request.getSearchWord() != null) {
-					List<RoomHistoryInfoResponse> searchResult = roomHistories.stream()
+					roomHistories = roomHistories.stream()
 						.filter(roomInfo -> roomInfo.getTitle().contains(request.getSearchWord())
 							|| roomInfo.getMemberList().stream()
 							.anyMatch(memberInfo -> memberInfo.getNickName().contains(request.getSearchWord()))
 						)
 						.collect(Collectors.toList());
-					roomHistories = searchResult;
 				}
 
 				// 리스트 정렬 및 글 넘버 Setting
@@ -712,12 +701,6 @@ public class DashboardHistoryService {
 		return roomHistoryResponse;
 	}*/
 
-	/**
-	 * 로컬 첨부파일 목록 요청 처리
-	 * @param workspaceId - 대상 Workspace Id
-	 * @param deleted - 삭제 유무
-	 * @return - 로컬 첨부파일 목록
-	 */
 	/*public List<FileInfoResponse> getAttached1FileList(
 		String workspaceId,
 		boolean deleted
@@ -825,13 +808,6 @@ public class DashboardHistoryService {
 		return fileDetailInfoResponses;
 	}
 
-	/**
-	 * 로컬 녹화파일 목록 요청 처리
-	 * @param workspaceId - 대상 Workspace Id
-	 * @param sessionId - 대상 Session Id
-	 * @param deleted - 삭제 유무
-	 * @return - 로컬 녹화파일 목록
-	 */
 	/*public List<FileDetailInfoResponse> getLocalRecordFileList(
 		String workspaceId,
 		String sessionId,
@@ -910,17 +886,13 @@ public class DashboardHistoryService {
 				LocalDateTime date1 = room1.getActiveDate();
 				LocalDateTime date2 = room2.getActiveDate();
 				if (sortOrder == OrderType.ASC) {
-					if (date1 == date2) {
-						result = 0;
-					} else if (date1.isAfter(date2)) {
+					if (date1.isAfter(date2)) {
 						result = 1;
 					} else {
 						result = -1;
 					}
 				} else if (sortOrder == OrderType.DESC) {
-					if (date1 == date2) {
-						result = 0;
-					} else if (date1.isBefore(date2)) {
+					if (date1.isBefore(date2)) {
 						result = 1;
 					} else {
 						result = -1;
@@ -966,11 +938,11 @@ public class DashboardHistoryService {
 				}
 
 				int extractInt(String name1, String name2) {
-					int result = 0;
+					int result;
 					String removeString1;
 					String removeString2;
-					int remoteStringToInt1 = 0;
-					int remoteStringToInt2 = 0;
+					int remoteStringToInt1;
+					int remoteStringToInt2;
 
 					name1 = name1 == null || name1.isEmpty() ? "" : name1;
 					name2 = name2 == null || name2.isEmpty() ? "" : name2;
@@ -1027,9 +999,7 @@ public class DashboardHistoryService {
 				int result = 0;
 
 				if (sortOrder == OrderType.ASC) {
-					if (status1 == status2) {
-						result = 0;
-					} else {
+					if (status1 != status2) {
 						int booleanResult = Boolean.compare(status1, status2);
 
 						if (booleanResult == 1) {
@@ -1039,9 +1009,7 @@ public class DashboardHistoryService {
 						}
 					}
 				} else if (sortOrder == OrderType.DESC) {
-					if (status1 == status2) {
-						result = 0;
-					} else {
+					if (status1 != status2) {
 						int booleanResult = Boolean.compare(status1, status2);
 
 						if (booleanResult != 1) {
@@ -1052,14 +1020,6 @@ public class DashboardHistoryService {
 					}
 				}
 				return result;
-			});
-		} else if (sortProperties == RoomHistorySortType.NO) {
-			roomHistoryInfoList.sort((room1, room2) -> {
-				int result = 0;
-				Long count1 = Long.valueOf(room1.getNo());
-				Long count2 = Long.valueOf(room2.getNo());
-
-				return getCountOrderResult(sortOrder, result, count1, count2);
 			});
 		}
 
@@ -1095,14 +1055,14 @@ public class DashboardHistoryService {
 		Long count2
 	) {
 		if (sortOrder == OrderType.ASC) {
-			if (count1 == count2)
+			if (count1.equals(count2))
 				result = 0;
 			else if (count1 > count2)
 				result = 1;
 			else
 				result = -1;
 		} else if (sortOrder == OrderType.DESC) {
-			if (count1 == count2)
+			if (count1.equals(count2))
 				result = 0;
 			else if (count1 < count2)
 				result = 1;
@@ -1130,7 +1090,7 @@ public class DashboardHistoryService {
 			userId
 		);
 
-		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = myRoomHistory.stream()
+		return myRoomHistory.stream()
 			.map(room -> {
 				RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(room, RoomHistoryInfoResponse.class);
 				roomHistoryInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
@@ -1143,8 +1103,6 @@ public class DashboardHistoryService {
 				roomHistoryInfoResponse.setMemberList(memberInfoResponses);
 				return roomHistoryInfoResponse;
 			}).collect(Collectors.toList());
-
-		return roomHistoryInfoResponses;
 	}
 
 	/**
@@ -1162,7 +1120,7 @@ public class DashboardHistoryService {
 			option.getSearchStartDate(), option.getSearchEndDate(), workspaceId, userId
 		);
 
-		List<RoomHistoryInfoResponse> endRoomHistoryInfoResponses = roomHistories.stream()
+		return roomHistories.stream()
 			.map(roomHistory -> {
 				RoomHistoryInfoResponse endRoomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
 				endRoomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
@@ -1176,7 +1134,6 @@ public class DashboardHistoryService {
 				endRoomHistoryInfoResponse.setMemberList(memberInfoResponses);
 				return endRoomHistoryInfoResponse;
 		}).collect(Collectors.toList());
-		return endRoomHistoryInfoResponses;
 	}
 
 	/**
@@ -1185,7 +1142,7 @@ public class DashboardHistoryService {
 	 * @return - Leader가 1번째로 변경된 멤버 목록
 	 */
 	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
-		Collections.sort(members, (t1, t2) -> {
+		members.sort((t1, t2) -> {
 			if (t1.getMemberType().equals(MemberType.LEADER)) {
 				return 1;
 			}
