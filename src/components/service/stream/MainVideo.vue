@@ -19,11 +19,11 @@
         loop
       ></video>
       <!-- 테스트용 -->
-      <pano-video
+      <!-- <pano-video
         targetRef="mainVideo"
         :connectionId="mainView.connectionId"
         type="main"
-      ></pano-video>
+      ></pano-video> -->
       <!-- 실사용 -->
       <!-- <pano-video
         v-if="mainView.streamMode"
@@ -68,10 +68,15 @@
         ></pointing>
         <!-- 화면 이동 -->
         <moving
-          v-if="isLeader && viewForce"
+          v-if="viewForce"
           class="main-video__moving"
+          :class="{ upper: activeMovingControl }"
         ></moving>
         <!-- 디바이스 컨트롤 뷰 -->
+
+        <!-- 표시용 뷰. 컨트롤 X -->
+        <moving-viewer class="main-video__moving-viewer"></moving-viewer>
+
         <template v-if="allowTools">
           <transition name="opacity">
             <video-tools v-if="hoverTools"></video-tools>
@@ -149,10 +154,10 @@ import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW, ACTION } from 'configs/view.config'
 import { CAMERA, FLASH } from 'configs/device.config'
-import PanoVideo from 'PanoVideo'
 
 import Pointing from './StreamPointing'
 import Moving from './StreamMoving'
+import MovingViewer from './StreamMovingViewer'
 import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
@@ -164,9 +169,9 @@ export default {
   components: {
     Pointing,
     Moving,
+    MovingViewer,
     VideoTools,
     Fullscreen,
-    PanoVideo,
   },
   data() {
     return {
@@ -186,7 +191,7 @@ export default {
       serverStart: 0,
       hideFullBtn: false,
 
-      usePano: true,
+      activeMovingControl: false,
     }
   },
   computed: {
@@ -448,6 +453,9 @@ export default {
         this.optimizeVideoSize()
       }, 500)
     },
+    toggleMovingControl(ctl) {
+      this.activeMovingControl = ctl
+    },
   },
 
   /* Lifecycles */
@@ -455,12 +463,14 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('showServerTimer', this.showServerTimer)
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
+    this.$eventBus.$off('panoview:toggle', this.toggleMovingControl)
     window.removeEventListener('resize', this.nextOptimize)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('showServerTimer', this.showServerTimer)
     this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
+    this.$eventBus.$on('panoview:toggle', this.toggleMovingControl)
     window.addEventListener('resize', this.nextOptimize)
   },
 }

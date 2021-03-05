@@ -21,6 +21,12 @@
           :connectionId="participant.connectionId"
           type="sub"
         ></pano-video>
+        <!-- <pano-video
+          v-if="participant.streamMode"
+          targetRef="participant-video"
+          :connectionId="participant.connectionId"
+          type="sub"
+        ></pano-video> -->
       </div>
       <div class="participant-video__profile" v-else>
         <img

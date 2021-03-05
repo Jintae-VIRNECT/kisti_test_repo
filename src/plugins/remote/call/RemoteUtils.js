@@ -448,7 +448,8 @@ export const addSessionEventListener = session => {
         pitch: data.pitch,
       }
 
-      window.vue.$eventBus.$emit('linkflow:rotation', info)
+      // window.vue.$eventBus.$emit('linkflow:rotation', info)
+      window.vue.$eventBus.$emit('panoview:rotation', info)
     }
   })
 }
@@ -489,6 +490,7 @@ const setUserObject = event => {
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
     streamMode: false, //360 스트림 모드
+    rotationPos: null, //main pano view의 회전 좌표
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {

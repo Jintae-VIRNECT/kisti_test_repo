@@ -1,19 +1,35 @@
 <template>
   <div
-    :class="{ grab: cursorGrab, grabbing: cursorGrabbing }"
+    :class="{
+      grab: cursorGrab && viewForce,
+      grabbing: cursorGrabbing && viewForce,
+    }"
     @mousedown="mousedown"
     @mouseup="mouseup"
     @mouseleave="mouseup"
   >
-    <canvas></canvas>
+    <pano-video
+      videoElementId="main-video"
+      targetRef="mainVideo"
+      :connectionId="mainView.connectionId"
+      type="control"
+    ></pano-video>
   </div>
 </template>
 
 <script>
+import PanoVideo from 'PanoVideo'
+
 import { mapGetters } from 'vuex'
 import { ACTION } from 'configs/view.config'
+
+import { ROLE } from 'configs/remote.config'
 export default {
   name: 'Moving',
+  components: {
+    PanoVideo,
+  },
+
   data() {
     return {
       cursorGrabbing: false,
@@ -21,9 +37,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['viewAction']),
+    ...mapGetters(['mainView', 'viewAction', 'viewForce']),
     viewMoving() {
       return this.viewAction === ACTION.STREAM_MOVING
+    },
+    viewPointing() {
+      return this.viewAction === ACTION.STREAM_POINTING
     },
     cursorGrab() {
       if (this.viewMoving) {
@@ -34,15 +53,44 @@ export default {
       }
       return false
     },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
+  },
+  watch: {
+    viewForce() {
+      if (!this.viewForce) {
+        this.$eventBus.$emit('panoview:toggle', false)
+      }
+    },
+    viewAction() {
+      if (this.viewMoving && this.viewForce && this.isLeader) {
+        this.$eventBus.$emit('panoview:toggle', true)
+      } else {
+        this.$eventBus.$emit('panoview:toggle', false)
+      }
+    },
+
+    shift() {
+      if (this.viewPointing) {
+        if (this.shift && this.viewPointing) {
+          this.$eventBus.$emit('panoview:toggle', true)
+        } else {
+          this.$eventBus.$emit('panoview:toggle', false)
+        }
+      }
+    },
   },
   methods: {
     mousedown() {
       if (!this.cursorGrabbing) {
         this.cursorGrabbing = true
+        //무빙 활성화
       }
     },
     mouseup() {
       this.cursorGrabbing = false
+      //무빙 종료
     },
 
     keyEventHandler(e) {
@@ -83,6 +131,11 @@ export default {
   max-width: 100%;
   height: 100%;
   max-height: 100%;
+  opacity: 0;
+
+  &.upper {
+    z-index: 1;
+  }
 }
 .grab {
   border: solid 1px #fff;

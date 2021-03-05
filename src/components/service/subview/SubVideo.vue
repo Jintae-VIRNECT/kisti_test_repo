@@ -1,6 +1,11 @@
 <template>
   <div class="sub-video">
-    <transition-group name="opacity">
+    <transition-group
+      tag="div"
+      class="sub-video__wrapper"
+      :class="{ 'no-stream': stream === null }"
+      name="opacity"
+    >
       <video
         v-if="stream !== null"
         class="sub-video--screen"
@@ -14,12 +19,18 @@
       ></video>
       <div v-else class="sub-video--no-stream" key="sub-video-no-stream"></div>
       <pano-video
-        v-if="inited"
         targetRef="subVideo"
         :connectionId="mainView.connectionId"
         key="sub-video-pano"
         type="sub"
       ></pano-video>
+      <!-- <pano-video
+        v-if="activePanoVideo"
+        targetRef="subVideo"
+        :connectionId="mainView.connectionId"
+        key="sub-video-pano"
+        type="sub"
+      ></pano-video> -->
     </transition-group>
   </div>
 </template>
@@ -62,10 +73,11 @@ export default {
         return null
       }
     },
+    activePanoVideo() {
+      return this.inited && this.stream !== null && this.mainView.streamMode
+    },
   },
   mounted() {
-    console.log(this.$refs['subVideo'])
-    console.log('님 왜 호출안됨??')
     this.$nextTick(() => {
       this.inited = true
     })
