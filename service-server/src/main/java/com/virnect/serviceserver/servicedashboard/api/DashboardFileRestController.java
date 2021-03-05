@@ -178,10 +178,10 @@ public class DashboardFileRestController {
 	 */
 	@ApiOperation(value = "[Remote web]에서 업로드된 로컬 녹화 파일 삭제")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", defaultValue = "", required = true),
-		@ApiImplicitParam(name = "sessionId", value = "session ID", defaultValue = "", required = true),
-		@ApiImplicitParam(name = "userId", value = "user ID", paramType = "query", defaultValue = "", required = true),
-		@ApiImplicitParam(name = "objectName", value = "object name", paramType = "query", defaultValue = "", required = true)
+		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", required = true),
+		@ApiImplicitParam(name = "sessionId", value = "session ID", required = true),
+		@ApiImplicitParam(name = "userId", value = "user ID", paramType = "query", required = true),
+		@ApiImplicitParam(name = "objectName", value = "object name", paramType = "query", required = true)
 	})
 	@DeleteMapping(value = "record-file/{workspaceId}/{sessionId}")
 	ResponseEntity<ApiResponse<FileDeleteResponse>> deleteLocalRecordFileRequestHandler(
@@ -211,10 +211,10 @@ public class DashboardFileRestController {
 	 */
 	@ApiOperation(value = "협업 중 첨부된 파일 삭제")
 	@ApiImplicitParams({
-		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", defaultValue = "", required = true),
-		@ApiImplicitParam(name = "sessionId", value = "session ID", defaultValue = "", required = true),
-		@ApiImplicitParam(name = "objectName", value = "object name", paramType = "query", defaultValue = "", required = true),
-		@ApiImplicitParam(name = "userId", value = "user ID", paramType = "query", defaultValue = "", required = true),
+		@ApiImplicitParam(name = "workspaceId", value = "workspaceId", required = true),
+		@ApiImplicitParam(name = "sessionId", value = "session ID", required = true),
+		@ApiImplicitParam(name = "objectName", value = "object name", paramType = "query", required = true),
+		@ApiImplicitParam(name = "userId", value = "user ID", paramType = "query", required = true),
 	})
 	@DeleteMapping(value = "{workspaceId}/{sessionId}")
 	ResponseEntity<ApiResponse<FileDeleteResponse>> deleteAttachedFileRequestHandler(
