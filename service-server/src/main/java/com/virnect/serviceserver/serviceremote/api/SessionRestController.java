@@ -435,8 +435,8 @@ public class SessionRestController {
 
     @ApiOperation(value = "Exit Specific Room", notes = "특정 원격협업 방을 나가는 API 입니다.")
     @ApiImplicitParams({
-        @ApiImplicitParam(name = "sessionId", value = "원격협업 방 Session ID", dataType = "string", defaultValue = "", paramType = "path", required = true),
-        @ApiImplicitParam(name = "userId", value = "사용자 uuid", dataType = "string", defaultValue = "", paramType = "query", required = true),
+        @ApiImplicitParam(name = "sessionId", value = "원격협업 방 Session ID", dataType = "string", paramType = "path", required = true),
+        @ApiImplicitParam(name = "userId", value = "사용자 uuid", dataType = "string", paramType = "query", required = true),
     })
     @DeleteMapping(value = "room/{workspaceId}/{sessionId}/exit")
     public ResponseEntity<ApiResponse<ResultResponse>> exitRoomByWorkspaceIdAndSessionId(
@@ -454,7 +454,7 @@ public class SessionRestController {
             "exitRoomByWorkspaceIdAndSessionId"
         );
 
-        if (sessionId.isEmpty() || userId.isEmpty()) {
+        if (Objects.requireNonNull(sessionId).isEmpty() || Objects.requireNonNull(userId).isEmpty()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 

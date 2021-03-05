@@ -27,14 +27,14 @@ public class Dotenv {
 		}
 	}
 
-	private static Logger log = LoggerFactory.getLogger(Dotenv.class);
+	private static final Logger log = LoggerFactory.getLogger(Dotenv.class);
 
 	private List<String> lines;
 	private Map<String, String> properties;
 
 	private Path envFile;
 
-	private List<String> additionalProperties = new ArrayList<>();
+	private final List<String> additionalProperties = new ArrayList<>();
 
 	public void read() throws IOException, DotenvFormatException {
 		read(Paths.get(".env"));
