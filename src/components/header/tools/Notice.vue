@@ -178,12 +178,15 @@ export default {
       'clearWorkspace',
     ]),
     loadeddata() {
+      this.$refs['noticeAudio'].muted = true
       window.addEventListener('touchstart', this.loadAudio)
     },
     loadAudio() {
       window.removeEventListener('touchstart', this.loadAudio)
       this.$refs['noticeAudio'].play()
       this.$refs['noticeAudio'].pause()
+
+      this.$refs['noticeAudio'].muted = false
     },
     setVisible(value) {
       this.visible = value
@@ -362,6 +365,7 @@ export default {
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)
+    window.removeEventListener('touchstart', this.loadAudio)
   },
 }
 </script>

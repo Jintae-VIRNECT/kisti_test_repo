@@ -47,17 +47,21 @@ export default {
     loadTtsAudio() {
       this.$refs['ttsAudio'].play()
       this.$refs['ttsAudio'].pause()
+      this.$refs['ttsAudio'].muted = false
       window.removeEventListener('touchstart', this.loadTtsAudio)
+      this.$refs['ttsAudio'].onloadeddata = () => {}
     },
   },
   mounted() {
     const audio = this.$refs['ttsAudio']
+    audio.muted = true
     audio.onloadeddata = () => {
       window.addEventListener('touchstart', this.loadTtsAudio)
     }
     audio.load()
   },
   beforeDestroy() {
+    this.$refs['ttsAudio'].onloadeddata = () => {}
     window.removeEventListener('touchstart', this.loadTtsAudio)
   },
 }
