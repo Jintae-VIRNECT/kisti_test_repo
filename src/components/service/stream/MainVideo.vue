@@ -165,6 +165,7 @@ export default {
       serverTime: 0,
       serverStart: 0,
       hideFullBtn: false,
+      backInterval: null,
     }
   },
   computed: {
@@ -323,7 +324,22 @@ export default {
         this.optimizeVideoSize()
         this.loaded = true
         this.$eventBus.$emit('video:loaded', true)
+        if (this.isSafari && this.isTablet) {
+          this.checkBackgroundStream()
+        }
       })
+    },
+    checkBackgroundStream() {
+      if (this.backInterval) clearInterval(this.backInterval)
+      let lastFired = new Date().getTime()
+      let now = 0
+      this.backInterval = setInterval(() => {
+        now = new Date().getTime()
+        if (now - lastFired > 1000) {
+          this.$refs['mainVideo'].play()
+        }
+        lastFired = now
+      }, 500)
     },
     nextOptimize() {
       setTimeout(() => {
@@ -440,6 +456,7 @@ export default {
     this.$eventBus.$off('showServerTimer', this.showServerTimer)
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
     window.removeEventListener('resize', this.nextOptimize)
+    if (this.backInterval) clearInterval(this.backInterval)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)

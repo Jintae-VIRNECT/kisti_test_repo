@@ -14,6 +14,7 @@
           playsinline
           loop
           :muted="isMuted"
+          @play="mediaPlay"
         ></video>
       </div>
       <div class="participant-video__profile" v-else>
@@ -153,6 +154,7 @@ export default {
       btnActive: false,
       statusHover: {},
       touched: null,
+      backInterval: null,
     }
   },
   props: {
@@ -245,6 +247,25 @@ export default {
   },
   methods: {
     ...mapActions(['setMainView', 'addChat']),
+    mediaPlay() {
+      this.$nextTick(() => {
+        if (this.isSafari && this.isTablet) {
+          this.checkBackgroundStream()
+        }
+      })
+    },
+    checkBackgroundStream() {
+      if (this.backInterval) clearInterval(this.backInterval)
+      let lastFired = new Date().getTime()
+      let now = 0
+      this.backInterval = setInterval(() => {
+        now = new Date().getTime()
+        if (now - lastFired > 1000) {
+          this.$el.querySelector('video').play()
+        }
+        lastFired = now
+      }, 500)
+    },
     participantInited(name, oldName) {
       if (this.participant.me || this.initing === true) return
       if (name !== oldName && name.length > 0 && this.inited === false) {
@@ -412,6 +433,7 @@ export default {
     },
   },
   beforeDestroy() {
+    if (this.backInterval) clearInterval(this.backInterval)
     if (!this.initing && !this.participant.me && this.$call.session) {
       this.toastDefault(
         this.$t('service.chat_leave', { name: this.participant.nickname }),

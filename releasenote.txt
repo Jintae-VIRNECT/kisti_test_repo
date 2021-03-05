@@ -1,4 +1,4 @@
-RELEASE v2.2.12
+RELEASE v2.3.0
 
 ### New Features
 ### Bug Fixes
@@ -26,5 +26,6 @@ Bug Fixes
 * [DPLA-1501] 네트워크 재연결 시 불필요한 알림 표출 제거
 * [DPLA-1223,DPLA-1395] 아이패드 사파리: TTS 재생 불가 이슈 해결
 * [DPLA-1492] 아이패드 사파리: 협업보드 이미지 저장하기 후 보기 클릭 시 미동작 이슈 해결
+* [DPLA-1427] 아이패드 사파리: 화면 잠금 후 영상이 뜨지 않는 이슈 해결
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
