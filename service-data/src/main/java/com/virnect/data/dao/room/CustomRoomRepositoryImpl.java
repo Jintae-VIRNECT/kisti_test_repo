@@ -207,7 +207,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		String workspaceId, String userId, Pageable pageable
 	) {
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
-			.leftJoin(room.members, member).fetchJoin()
+			.innerJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
@@ -230,7 +230,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	) {
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
 			.innerJoin(room.members, member).fetchJoin()
-			//.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.members.any().uuid.eq(userId)
@@ -252,7 +252,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	) {
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
 			.innerJoin(room.members, member).fetchJoin()
-			//.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.members.any().uuid.eq(userId),

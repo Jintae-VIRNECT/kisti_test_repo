@@ -143,7 +143,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 	) {
 		JPQLQuery<RoomHistory> queryResult =query.selectFrom(roomHistory)
 			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
-			//.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
 				roomHistory.workspaceId.eq(workspaceId),
 				roomHistory.memberHistories.any().uuid.eq(userId).and(roomHistory.memberHistories.any().uuid.contains(userId)),
