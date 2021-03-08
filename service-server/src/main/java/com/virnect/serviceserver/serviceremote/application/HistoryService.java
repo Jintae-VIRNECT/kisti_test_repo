@@ -1,7 +1,5 @@
 package com.virnect.serviceserver.serviceremote.application;
 
-import static com.virnect.data.dao.HistorySpecifications.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

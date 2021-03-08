@@ -1,7 +1,5 @@
 package com.virnect.serviceserver.serviceremote.application;
 
-import static com.virnect.data.dao.RoomSpecifications.*;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,10 +19,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.dao.company.CompanyRepository;
-import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
 import com.virnect.data.dao.member.MemberRepository;
-import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
+import com.virnect.data.dao.memberhistory.MemberHistoryRepository;
 import com.virnect.data.dao.room.RoomRepository;
+import com.virnect.data.dao.roomhistory.RoomHistoryRepository;
 import com.virnect.data.domain.Company;
 import com.virnect.data.domain.DeviceType;
 import com.virnect.data.domain.member.Member;
@@ -32,18 +30,18 @@ import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
-import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.room.RoomStatus;
+import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.session.SessionProperty;
 import com.virnect.data.domain.session.SessionPropertyHistory;
 import com.virnect.data.domain.session.SessionType;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
 import com.virnect.serviceserver.serviceremote.dto.request.room.InviteRoomRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.JoinRoomRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.ModifyRoomInfoRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.rpc.ClientMetaData;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @Service

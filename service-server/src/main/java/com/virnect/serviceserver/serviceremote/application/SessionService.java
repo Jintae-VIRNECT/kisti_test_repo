@@ -1,7 +1,5 @@
 package com.virnect.serviceserver.serviceremote.application;
 
-import static com.virnect.data.dao.RoomSpecifications.*;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
