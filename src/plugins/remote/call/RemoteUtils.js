@@ -489,7 +489,9 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
-    streamMode: false, //360 스트림 모드
+    // streamMode: false, //360 스트림 모드
+    //@TODO:개발완료후 false
+    streamMode: uuid === '40247ff4cbe04a1e8ae3203298996f4c' ? true : false,
     rotationPos: null, //main pano view의 회전 좌표
   }
   const account = Store.getters['account']
