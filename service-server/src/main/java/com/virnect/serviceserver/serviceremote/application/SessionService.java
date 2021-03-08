@@ -1128,8 +1128,10 @@ public class SessionService {
 		boolean paging,
 		Pageable pageable
 	) {
+		//Page<Room> roomPage = roomRepository.findAll(joinMember(workspaceId, userId), pageable);
 
-		Page<Room> roomPage = roomRepository.findAll(joinMember(workspaceId, userId), pageable);
+		Page<Room> roomPage = roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, pageable);
+
 		PageMetadataResponse pageMeta;
 
 		for (Room room : roomPage.getContent()) {
@@ -1220,14 +1222,17 @@ public class SessionService {
 				userIds.add(memberInfo.getUuid());
 			}
 		}
-		if (userIds.isEmpty()) {
+
+		roomPage = roomRepository.findRoomBySearch(workspaceId, userId, userIds, search, pageable);
+
+		/*if (userIds.isEmpty()) {
 			log.info(
 				"loadFromDatabase::searchRoomPageList::memberInfoList is empty can not find, search with room title");
 			roomPage = roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
 		} else {
 			log.info("loadFromDatabase::searchRoomPageList::memberInfoList is not empty");
 			roomPage = roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
-		}
+		}*/
 
 		// Page Metadata
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()

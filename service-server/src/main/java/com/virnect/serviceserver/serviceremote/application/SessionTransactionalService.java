@@ -138,15 +138,18 @@ public class SessionTransactionalService {
 	}
 
 	public Page<Room> getRoomPageList(String workspaceId, String userId, Pageable pageable) {
-		return this.roomRepository.findAll(joinMember(workspaceId, userId), pageable);
+		//return this.roomRepository.findAll(joinMember(workspaceId, userId), pageable);
+		return this.roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, pageable);
 	}
 
 	public Page<Room> getRoomPageList(String workspaceId, String userId, String search, Pageable pageable) {
-		return this.roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
+		//return this.roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
+		return this.roomRepository.findRoomBySearch(workspaceId, userId, search, pageable);
 	}
 
 	public Page<Room> getRoomPageList(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable) {
-		return this.roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
+		//return this.roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
+		return this.roomRepository.findRoomBySearch(workspaceId, userId, userIds, search, pageable);
 	}
 
 	public List<Room> getRoomList() {

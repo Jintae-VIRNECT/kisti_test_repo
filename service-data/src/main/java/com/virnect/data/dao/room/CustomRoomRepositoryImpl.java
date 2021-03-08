@@ -2,6 +2,7 @@ package com.virnect.data.dao.room;
 
 import static com.virnect.data.domain.member.QMember.*;
 import static com.virnect.data.domain.room.QRoom.*;
+import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
 import static com.virnect.data.domain.session.QSessionProperty.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.room.RoomStatus;
 
@@ -171,13 +173,13 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	public Page<Room> findRoomByWorkspaceId(
 		String workspaceId, Pageable pageable
 	) {
-		JPQLQuery<Room> queryResult =query.selectFrom(room)
+		JPQLQuery<Room> queryResult = query.selectFrom(room)
 			.innerJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.roomStatus.eq(RoomStatus.ACTIVE)
-			);
+			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<Room> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(result, pageable, totalCount);
@@ -200,4 +202,76 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.fetch();
 	}
 
+	@Override
+	public Page<Room> findRoomByWorkspaceIdAndUserId(
+		String workspaceId, String userId, Pageable pageable
+	) {
+		JPQLQuery<Room> queryResult = query.selectFrom(room)
+			.leftJoin(room.members, member).fetchJoin()
+			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
+			.where(
+				room.workspaceId.eq(workspaceId),
+				room.members.any().uuid.eq(userId),
+				room.roomStatus.eq(RoomStatus.ACTIVE),
+				room.members.any().memberStatus.notIn(MemberStatus.EVICTED)
+			).distinct();
+		long totalCount = queryResult.fetchCount();
+		List<Room> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		return new PageImpl<>(result, pageable, totalCount);
+	}
+
+	@Override
+	public Page<Room> findRoomBySearch(
+		String workspaceId,
+		String userId,
+		List<String> userIds,
+		String search,
+		Pageable pageable
+	) {
+		JPQLQuery<Room> queryResult = query.selectFrom(room)
+			.innerJoin(room.members, member).fetchJoin()
+			//.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				room.workspaceId.eq(workspaceId),
+				room.members.any().uuid.eq(userId)
+					.and(room.members.any().uuid.in(userIds)),
+				room.isNotNull(),
+				includeTitleSearch(search)
+			).distinct();
+		long totalCount = queryResult.fetchCount();
+		List<Room> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		return new PageImpl<>(result, pageable, totalCount);
+	}
+
+	@Override
+	public Page<Room> findRoomBySearch(
+		String workspaceId,
+		String userId,
+		String search,
+		Pageable pageable
+	) {
+		JPQLQuery<Room> queryResult = query.selectFrom(room)
+			.innerJoin(room.members, member).fetchJoin()
+			//.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				room.workspaceId.eq(workspaceId),
+				room.members.any().uuid.eq(userId),
+				room.isNotNull(),
+				includeTitleSearch(search)
+			).distinct();
+		long totalCount = queryResult.fetchCount();
+		List<Room> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		return new PageImpl<>(result, pageable, totalCount);
+	}
+	/**
+	 * 사용자 정보 조회 다이나믹 쿼리
+	 * @param search - 조회될 사용자 정보 식별자
+	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
+	 */
+	private BooleanExpression includeTitleSearch(String search){
+		if (search == null || search.isEmpty()) {
+			return roomHistory.title.like("");
+		}
+		return roomHistory.title.like(search);
+	}
 }

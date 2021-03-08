@@ -7,6 +7,7 @@ import java.util.Optional;
 import javax.persistence.LockModeType;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 
@@ -29,6 +30,11 @@ public interface CustomRoomRepository {
 
 	List<Room> findByWorkspaceId(final String workspaceId);
 
+	Page<Room> findRoomByWorkspaceIdAndUserId(final String workspaceId, final String userId, Pageable pageable);
+
+	Page<Room> findRoomBySearch(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable);
+
+	Page<Room> findRoomBySearch(String workspaceId, String userId, String search, Pageable pageable);
 }
 
  

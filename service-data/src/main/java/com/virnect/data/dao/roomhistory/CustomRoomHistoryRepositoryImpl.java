@@ -6,13 +6,18 @@ import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.virnect.data.domain.roomhistory.RoomHistory;
@@ -126,5 +131,41 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.fetch();
 
 		return roomHistory.id.in(roomHistoryIdList);
+	}
+
+	@Override
+	public Page<RoomHistory> findRoomBySearch(
+		String workspaceId,
+		String userId,
+		List<String> userIds,
+		String search,
+		Pageable pageable
+	) {
+		JPQLQuery<RoomHistory> queryResult =query.selectFrom(roomHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			//.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				roomHistory.workspaceId.eq(workspaceId),
+				roomHistory.memberHistories.any().uuid.eq(userId).and(roomHistory.memberHistories.any().uuid.contains(userId)),
+				roomHistory.memberHistories.any().uuid.eq(userId),
+				roomHistory.memberHistories.any().historyDeleted.eq(false),
+				roomHistory.isNotNull(),
+				includeTitleSearch(search)
+			).distinct();
+		long totalCount = queryResult.fetchCount();
+		List<RoomHistory> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		return new PageImpl<>(result, pageable, totalCount);
+	}
+
+	/**
+	 * 사용자 정보 조회 다이나믹 쿼리
+	 * @param search - 조회될 사용자 정보 식별자
+	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
+	 */
+	private BooleanExpression includeTitleSearch(String search){
+		if (search == null || search.isEmpty()) {
+			return roomHistory.title.like("");
+		}
+		return roomHistory.title.like(search);
 	}
 }

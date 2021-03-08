@@ -58,8 +58,7 @@ public class HistoryService {
 		List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
 		for (MemberHistory memberHistory : roomHistories.getContent()) {
 			RoomHistory roomHistory = memberHistory.getRoomHistory();
-			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(
-				roomHistory, RoomHistoryInfoResponse.class);
+			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
 			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
@@ -151,14 +150,16 @@ public class HistoryService {
 			}
 		}
 
-		if (userIds.isEmpty()) {
+		roomHistories = roomHistoryRepository.findRoomBySearch(workspaceId, userId, userIds, search, pageable);
+
+		/*if (userIds.isEmpty()) {
 			log.info(
 				"loadFromDatabase::searchRoomHistoryPageList::memberInfoList is empty can not find, search with room title");
 			roomHistories = roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, search), pageable);
 		} else {
 			log.info("loadFromDatabase::searchRoomHistoryPageList::memberInfoList is not empty");
 			roomHistories = roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, userIds, search), pageable);
-		}
+		}*/
 
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())
