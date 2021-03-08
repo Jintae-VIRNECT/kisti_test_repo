@@ -41,6 +41,7 @@ export default {
       'localRecordStatus',
       'roomInfo',
       'initing',
+      'mainPanoCanvas',
     ]),
     /**
      * get resolution of main view
@@ -99,6 +100,27 @@ export default {
             )
             this.changeCanvasOrientation(orientation, current.stream)
           }
+        }
+      },
+    },
+    mainPanoCanvas: {
+      handler() {
+        if (
+          this.mainPanoCanvas &&
+          this.localRecordTarget === RECORD_TARGET.WORKER &&
+          this.recorder !== null
+        ) {
+          const canvasStream = this.mainPanoCanvas.captureStream(24)
+
+          this.changeVideoStream(
+            canvasStream,
+            getWH(
+              this.localRecord.resolution,
+              this.resolution.width,
+              this.resolution.height,
+            ),
+          )
+          this.changeCanvasOrientation(null, canvasStream)
         }
       },
     },
@@ -255,10 +277,21 @@ export default {
 
       if (this.localRecordTarget === RECORD_TARGET.WORKER) {
         const mainStream = this.mainView.stream
+        const is360Stream = this.mainView.streamMode
+
         if (mainStream && mainStream.getVideoTracks().length > 0) {
-          const videoStream = new MediaStream()
-          videoStream.addTrack(mainStream.getVideoTracks()[0])
-          streams.push(videoStream)
+          if (is360Stream && this.mainPanoCanvas) {
+            console.log('this.mainPanoCanvas::', this.mainPanoCanvas)
+            const canvasStream = this.mainPanoCanvas.captureStream(24)
+
+            const videoStream = new MediaStream()
+            videoStream.addTrack(canvasStream.getVideoTracks()[0])
+            streams.push(videoStream)
+          } else {
+            const videoStream = new MediaStream()
+            videoStream.addTrack(mainStream.getVideoTracks()[0])
+            streams.push(videoStream)
+          }
         }
       } else {
         await this.setScreenCapture()
