@@ -18,19 +18,6 @@
         playsinline
         loop
       ></video>
-      <!-- 테스트용 -->
-      <!-- <pano-video
-        targetRef="mainVideo"
-        :connectionId="mainView.connectionId"
-        type="main"
-      ></pano-video> -->
-      <!-- 실사용 -->
-      <!-- <pano-video
-        v-if="mainView.streamMode"
-        targetRef="mainVideo"
-        :connectionId="mainView.connectionId"
-        type="main"
-      ></pano-video> -->
       <template v-if="loaded">
         <!-- 전체공유 표출 -->
         <transition name="opacity">
@@ -66,17 +53,21 @@
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
-        <!-- 화면 이동 -->
+
+        <!-- 360 화면 컨트롤 only -->
         <moving
-          v-if="viewForce"
+          v-if="mainView.streamMode"
           class="main-video__moving"
           :class="{ upper: activeMovingControl }"
         ></moving>
+
+        <!-- 360 화면 뷰 only -->
+        <moving-viewer
+          v-if="mainView.streamMode"
+          class="main-video__moving-viewer"
+        ></moving-viewer>
+
         <!-- 디바이스 컨트롤 뷰 -->
-
-        <!-- 표시용 뷰. 컨트롤 X -->
-        <moving-viewer class="main-video__moving-viewer"></moving-viewer>
-
         <template v-if="allowTools">
           <transition name="opacity">
             <video-tools v-if="hoverTools"></video-tools>
