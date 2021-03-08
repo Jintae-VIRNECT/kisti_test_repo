@@ -19,18 +19,12 @@
       ></video>
       <div v-else class="sub-video--no-stream" key="sub-video-no-stream"></div>
       <pano-video
-        targetRef="subVideo"
-        :connectionId="mainView.connectionId"
-        key="sub-video-pano"
-        type="sub"
-      ></pano-video>
-      <!-- <pano-video
         v-if="activePanoVideo"
         targetRef="subVideo"
         :connectionId="mainView.connectionId"
         key="sub-video-pano"
         type="sub"
-      ></pano-video> -->
+      ></pano-video>
     </transition-group>
   </div>
 </template>
