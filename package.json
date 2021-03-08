@@ -33,6 +33,7 @@
     "@virnect/eslint-config": "^1.0.0",
     "@virnect/stylelint-config": "^1.0.1",
     "@vue/component-compiler-utils": "^3.1.0",
+    "@vue/composition-api": "^1.0.0-rc.3",
     "@vue/eslint-config-airbnb": "^4.0.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^8.0.6",
@@ -40,6 +41,7 @@
     "sass": "^1.23.7",
     "sass-loader": "^8.0.0",
     "style-loader": "^1.0.2",
+    "vue-demi": "^0.7.1",
     "vue-loader": "^15.8.3",
     "vue-style-loader": "^4.1.2"
   }

@@ -20,6 +20,7 @@
       <div class="the-sidebar__upper">
         <the-sidebar-menu-list
           :menus="menus"
+          :isWide="showWide"
           @openCollapse="openCollapse"
           @closeCollapse="closeCollapse"
         />
@@ -28,6 +29,7 @@
       <div class="the-sidebar__lower" v-if="!hideWorkspaceSetting">
         <the-sidebar-menu-list
           :menus="bottomMenus"
+          :isWide="showWide"
           @openCollapse="openCollapse"
           @closeCollapse="closeCollapse"
         />
@@ -151,7 +153,6 @@ $the-sidebar-border: solid 1px #0d1d39;
   &:hover {
     background: rgba(65, 81, 109, 0.7);
     & > a {
-      background-image: url('~assets/images/icon/ic-menu-fold.svg');
       opacity: 0.9;
     }
   }
@@ -161,9 +162,6 @@ $the-sidebar-border: solid 1px #0d1d39;
   & > a {
     background-image: url('~assets/images/icon/ic-menu-fold.svg');
     opacity: 0.9;
-    &:hover {
-      background-image: url('~assets/images/icon/ic-menu-unfold.svg');
-    }
   }
 }
 .the-sidebar__inner {

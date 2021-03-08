@@ -3,16 +3,12 @@
     <header>
       <the-header :logoImg="logoImg" :showSection="showSection" :auth="auth">
         <template slot="subTitle">
-          <el-divider direction="vertical" />
-          <div class="avatar">
-            <div
-              class="image"
-              :style="
-                `background-image: url(${activeWorkspace.profile}), url(${$defaultWorkspaceProfile})`
-              "
-            />
-          </div>
-          <span>{{ activeWorkspace.name }}</span>
+          <workspace-select
+            :activeWorkspace="activeWorkspace"
+            :workspaceList="myWorkspaces"
+            @onChange="changeActiveWorkspace"
+            @click.native.prevent
+          />
         </template>
       </the-header>
     </header>
@@ -28,6 +24,7 @@
 <script>
 import TheSidebar from '@/components/layout/TheSidebar'
 import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
+import WorkspaceSelect from '@/components/workspace/WorkspaceSelect'
 
 import { sideMenus, sideBottomMenus } from '@/models/layout'
 import { mapGetters } from 'vuex'
@@ -37,6 +34,7 @@ export default {
   components: {
     TheSidebar,
     TheHeader,
+    WorkspaceSelect,
   },
   head() {
     return {
@@ -66,6 +64,7 @@ export default {
   computed: {
     ...mapGetters({
       auth: 'auth/auth',
+      myWorkspaces: 'auth/myWorkspaces',
       activeWorkspace: 'auth/activeWorkspace',
       title: 'layout/title',
       logo: 'layout/logo',
@@ -77,6 +76,11 @@ export default {
         x2: this.logo,
         x3: this.logo,
       }
+    },
+  },
+  methods: {
+    changeActiveWorkspace(workspace) {
+      this.$store.commit('auth/SET_ACTIVE_WORKSPACE', workspace.uuid)
     },
   },
   mounted() {
@@ -117,25 +121,6 @@ export default {
         .querySelectorAll('.el-table__body')
         .forEach(table => (table.style.tableLayout = 'fixed'))
     }, 10)
-
-    // 제니퍼 프론트 테스트
-    if (this.$config.VIRNECT_ENV === 'staging') {
-      ;(function(j, en, ni, fer) {
-        j['dmndata'] = []
-        j['jenniferFront'] = function(args) {
-          window.dmndata.push(args)
-        }
-        j['dmnaid'] = fer
-        j['dmnatime'] = new Date()
-        j['dmnanocookie'] = false
-        j['dmnajennifer'] = 'JENNIFER_FRONT@INTG'
-        var b = Math.floor(new Date().getTime() / 60000) * 60000
-        var a = en.createElement(ni)
-        a.src = 'https://d-collect.jennifersoft.com/' + fer + '/demian.js?' + b
-        a.async = true
-        en.getElementsByTagName(ni)[0].parentNode.appendChild(a)
-      })(window, document, 'script', 'a49fb716')
-    }
   },
 }
 </script>

@@ -8,6 +8,7 @@
         effect="dark"
         :content="$t(menu.label)"
         placement="right"
+        :disabled="isWide"
       >
         <!-- 컴포넌트 -->
         <nuxt-link
@@ -37,6 +38,7 @@
 export default {
   props: {
     menus: Array,
+    isWide: Boolean,
   },
   methods: {
     openCollapse(component) {
@@ -89,7 +91,8 @@ export default {
     &.nuxt-link-active:not([href='/']),
     &.nuxt-link-exact-active {
       background: #465875;
-      & > img {
+      & > img,
+      & > span {
         opacity: 1;
       }
     }
