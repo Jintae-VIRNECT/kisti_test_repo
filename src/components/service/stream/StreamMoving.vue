@@ -20,7 +20,7 @@
 <script>
 import PanoVideo from 'PanoVideo'
 
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
 
 import { ROLE } from 'configs/remote.config'
@@ -82,6 +82,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['setAction']),
     mousedown() {
       if (!this.cursorGrabbing) {
         this.cursorGrabbing = true
@@ -119,6 +120,9 @@ export default {
     window.removeEventListener('keydown', this.keyEventHandler)
     window.removeEventListener('keyup', this.keyUpEventHandler)
     window.removeEventListener('blur', this.focusOut)
+    if (this.viewAction === ACTION.STREAM_MOVING) {
+      this.setAction('default')
+    }
   },
 }
 </script>
