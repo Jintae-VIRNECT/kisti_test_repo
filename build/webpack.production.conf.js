@@ -4,6 +4,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const baseWebpackConfig = require('./webpack.base.conf')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const CompressionPlugin = require('compression-webpack-plugin')
 
 const mode = process.env.NODE_ENV === 'develop' ? 'development' : 'production'
 
@@ -32,6 +33,13 @@ const productionWebpackConfig = merge(baseWebpackConfig(mode), {
     }),
     new MiniCssExtractPlugin({
       filename: './assets/style/[name].[hash:5].css',
+    }),
+    new CompressionPlugin({
+      asset: '[path].gz[query]',
+      algorithm: 'gzip',
+      test: /\.(js|html)$/,
+      threshold: 10240, // 10kb
+      minRatio: 0.8,
     }),
   ],
   optimization: {},

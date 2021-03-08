@@ -17,6 +17,7 @@ const config = mode => {
       filename: 'assets/scripts/[name].js',
       path: resolve(__dirname, '../dist'),
       publicPath: '/',
+      chunkFilename: 'assets/scripts/chunks/[name].js',
     },
     resolve: {
       extensions: ['.js', '.vue', '.json'],
@@ -46,7 +47,12 @@ const config = mode => {
         },
         {
           test: /\.js$/,
-          use: 'babel-loader',
+          use: {
+            loader: 'babel-loader',
+            options: {
+              presets: [['@babel/preset-env', { targets: 'defaults' }]],
+            },
+          },
           exclude: /node_modules/,
         },
         {
