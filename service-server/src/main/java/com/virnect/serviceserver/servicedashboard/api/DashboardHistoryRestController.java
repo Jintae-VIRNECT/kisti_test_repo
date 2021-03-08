@@ -15,6 +15,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardHistoryService;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryDetailRequest;
 import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryListRequest;
@@ -22,15 +26,15 @@ import com.virnect.serviceserver.servicedashboard.dto.request.RoomHistoryStatsRe
 import com.virnect.serviceserver.servicedashboard.dto.response.HistoryCountResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryDetailInfoResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.RoomHistoryInfoListResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/remote/dashboard/")
+@RequestMapping("/remote/dashboard")
 public class DashboardHistoryRestController {
+
+	private static final String TAG = DashboardHistoryRestController.class.getSimpleName();
+	private static final String REST_PATH = "/remote/dashboard";
 
 	private final DashboardHistoryService historyService;
 	/*
@@ -64,9 +68,26 @@ public class DashboardHistoryRestController {
 	ResponseEntity<ApiResponse<RoomHistoryInfoListResponse>> getRoomHistoryRequestHandler(
 		@PathVariable(name = "workspaceId") String workspaceId,
 		@ApiIgnore RoomHistoryListRequest option,
-		BindingResult bindingResult
+		BindingResult result
 	) {
-		if (bindingResult.hasErrors() || workspaceId.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (option.toString() != null ? option.toString() : "{}"),
+			"getRoomHistoryRequestHandler"
+		);
+		if (result.hasErrors()) {
+			result.getAllErrors().forEach(message ->
+				LogMessage.formedError(
+					TAG,
+					"REST API: POST " + REST_PATH,
+					"getRoomHistoryRequestHandler",
+					LogMessage.PARAMETER_ERROR,
+					message.toString()
+				)
+			);
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -92,9 +113,21 @@ public class DashboardHistoryRestController {
 		@RequestParam(name = "selectedDate") String selectedDate,
 		@RequestParam(name = "timeDifference") int timeDifference
 	) {
-		if (workspaceId.isEmpty() || userId.isEmpty() || selectedDate.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (userId != null ? userId : "{}"),
+			"getRoomHistoryWithInDateRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (selectedDate != null && selectedDate.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
+
 		RoomHistoryStatsRequest option = RoomHistoryStatsRequest.builder()
 			.workspaceId(workspaceId)
 			.userId(userId)
@@ -124,7 +157,18 @@ public class DashboardHistoryRestController {
 		@RequestParam(name = "selectedMonth") String selectedMonth,
 		@RequestParam(name = "timeDifference") int timeDifference
 	) {
-		if (workspaceId.isEmpty() || userId.isEmpty() || selectedMonth.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (userId != null ? userId : "{}"),
+			"getRoomHistoryWithInMonthRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (selectedMonth != null && selectedMonth.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -167,7 +211,17 @@ public class DashboardHistoryRestController {
 		@ApiIgnore RoomHistoryListRequest option,
 		BindingResult bindingResult
 	) {
-		if (workspaceId.isEmpty() || userId.isEmpty() || bindingResult.hasErrors()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (userId != null ? userId : "{}"),
+			"getRoomHistoryMineRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -187,7 +241,17 @@ public class DashboardHistoryRestController {
 		@PathVariable("workspaceId") String workspaceId,
 		@PathVariable("sessionId") String sessionId
 	) {
-		if (sessionId.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (sessionId != null ? sessionId : "{}"),
+			"getRoomHistoryDetailRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 

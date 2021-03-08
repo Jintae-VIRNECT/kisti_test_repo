@@ -14,22 +14,26 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardFileService;
 import com.virnect.serviceserver.servicedashboard.dto.request.FileDataRequest;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDeleteResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileDetailInfoListResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FileInfoListResponse;
 import com.virnect.serviceserver.servicedashboard.dto.response.FilePreSignedResponse;
-import com.virnect.data.dto.rest.RecordServerFileInfoListResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.global.common.ApiResponse;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/remote/dashboard/file")
 public class DashboardFileRestController {
+
+	private static final String TAG = DashboardFileRestController.class.getSimpleName();
+	private static final String REST_PATH = "/remote/dashboard/file";
 
 	private final DashboardFileService fileService;
 	/*
@@ -61,7 +65,18 @@ public class DashboardFileRestController {
 		@RequestParam(value = "userId") String userId,
 		@RequestParam(value = "deleted") boolean deleted
 	) {
-		if (workspaceId.isEmpty() || userId.isEmpty() || sessionId.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (sessionId != null ? sessionId : "{}"),
+			"getAttachedFileListRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -94,7 +109,18 @@ public class DashboardFileRestController {
 		@RequestParam(name = "userId") String userId,
 		@RequestParam(name = "deleted") boolean deleted
 	) {
-		if (workspaceId.isEmpty() || userId.isEmpty() || sessionId.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (sessionId != null ? sessionId : "{}"),
+			"getLocalRecordFileListRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -127,7 +153,18 @@ public class DashboardFileRestController {
 		@RequestParam(name = "sessionId") String sessionId,
 		@RequestParam(name = "order") String order
 	) {
-		if (workspaceId.isEmpty() || userId.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (userId != null ? userId : "{}"),
+			"getServerRecordFileListRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -158,7 +195,16 @@ public class DashboardFileRestController {
 		@RequestParam(name = "userId") String userId,
 		@RequestParam(name = "id") String id
 	) {
-		if (workspaceId.isEmpty() || userId.isEmpty() || id.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: DELETE "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}"),
+			"deleteServerRecordFileRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -190,7 +236,19 @@ public class DashboardFileRestController {
 		@RequestParam(name = "userId") String userId,
 		@RequestParam(name = "objectName") String objectName
 	) {
-		if (workspaceId.isEmpty() || sessionId.isEmpty() || userId.isEmpty() || objectName.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: DELETE "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}")
+				+ (sessionId != null ? sessionId : "{}"),
+			"deleteLocalRecordFileRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (objectName != null && objectName.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -223,9 +281,22 @@ public class DashboardFileRestController {
 		@RequestParam(name = "userId") String userId,
 		@RequestParam(name = "objectName") String objectName
 	) {
-		if (workspaceId.isEmpty() || sessionId.isEmpty() || userId.isEmpty() || objectName.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: DELETE "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}")
+				+ (sessionId != null ? sessionId : "{}"),
+			"deleteAttachedFileRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (objectName != null && objectName.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
+
 
 		FileDataRequest option = FileDataRequest.builder()
 				.workspaceId(workspaceId)
@@ -256,7 +327,19 @@ public class DashboardFileRestController {
 		@RequestParam(name = "userId") String userId,
 		@RequestParam(name = "objectName") String objectName
 	) {
-		if (userId == null && objectName == null) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}")
+				+ (sessionId != null ? sessionId : "{}"),
+			"getFileDownloadUrlRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (objectName != null && objectName.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
@@ -287,6 +370,20 @@ public class DashboardFileRestController {
 		@PathVariable(name = "userId") String userId,
 		@PathVariable(name = "id") String id
 	) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}")
+				+ (userId != null ? userId : "{}")
+				+ (id != null ? id : "{}"),
+			"getServerRecordFileDownloadUrlRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+		) {
+			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+		}
 
 		FileDataRequest option = FileDataRequest.builder()
 				.workspaceId(workspaceId)
@@ -316,7 +413,19 @@ public class DashboardFileRestController {
 		@RequestParam(name = "userId") String userId,
 		@RequestParam(name = "objectName") String objectName
 	) {
-		if (userId == null && objectName == null) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}")
+				+ (sessionId != null ? sessionId : "{}"),
+			"getLocalRecordFileDownloadUrlRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+			|| (userId != null && userId.isEmpty())
+			|| (objectName != null && objectName.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 

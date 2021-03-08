@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.servicedashboard.application.DashboardHistoryService;
 import com.virnect.serviceserver.servicedashboard.dto.response.RoomDetailInfoResponse;
 import com.virnect.data.error.ErrorCode;
@@ -19,8 +20,11 @@ import com.virnect.data.global.common.ApiResponse;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/remote/dashboard/")
+@RequestMapping("/remote/dashboard")
 public class DashboardSessionRestController {
+
+	private static final String TAG = DashboardSessionRestController.class.getSimpleName();
+	private static final String REST_PATH = "/remote/dashboard";
 
 	private final DashboardHistoryService historyService;
 
@@ -33,7 +37,17 @@ public class DashboardSessionRestController {
 		@PathVariable("workspaceId") String workspaceId,
 		@PathVariable("sessionId") String sessionId
 	) {
-		if (workspaceId.isEmpty() || sessionId.isEmpty()) {
+		LogMessage.formedInfo(
+			TAG,
+			"REST API: GET "
+				+ REST_PATH + "/"
+				+ (workspaceId != null ? workspaceId : "{}") + "::"
+				+ (sessionId != null ? sessionId : "{}"),
+			"getRoomDetailInfoRequestHandler"
+		);
+		if ((workspaceId != null && workspaceId.isEmpty())
+			|| (sessionId != null && sessionId.isEmpty())
+		) {
 			throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 
