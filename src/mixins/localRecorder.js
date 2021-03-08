@@ -281,7 +281,6 @@ export default {
 
         if (mainStream && mainStream.getVideoTracks().length > 0) {
           if (is360Stream && this.mainPanoCanvas) {
-            console.log('this.mainPanoCanvas::', this.mainPanoCanvas)
             const canvasStream = this.mainPanoCanvas.captureStream(24)
 
             const videoStream = new MediaStream()
