@@ -107,9 +107,9 @@ public class HistoryService {
 				.currentPage(0)
 				.currentSize(0)
 				.numberOfElements(roomHistories.getNumberOfElements())
-				.totalPage(roomHistories.getTotalPages())
+				.totalPage(1)
 				.totalElements(roomHistories.getTotalElements())
-				.last(roomHistories.isLast())
+				.last(true)
 				.build();
 		}
 		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -44,10 +45,13 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 		boolean paging,
 		Pageable pageable
 	) {
-
-		List<MemberHistory> result;
-
-		JPQLQuery<MemberHistory> queryResult = query
+		long offSet = pageable.getOffset();
+		int pageSize = pageable.getPageSize();
+		if (!paging) {
+			offSet = 0;
+			pageSize = Integer.MAX_VALUE;
+		}
+		QueryResults<MemberHistory> queryResult = query
 			.selectFrom(memberHistory)
 			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
@@ -55,14 +59,11 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 				memberHistory.uuid.eq(userId),
 				memberHistory.roomHistory.isNotNull(),
 				memberHistory.historyDeleted.isFalse()
-			).distinct();
-		long totalCount = queryResult.fetchCount();
-		if (paging) {
-			result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
-		} else {
-			result = queryResult.fetch();
-		}
-		return new PageImpl<>(result, pageable, totalCount);
+			)
+			.offset(offSet)
+			.limit(pageSize)
+			.distinct().fetchResults();
+		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());
 	}
 
 	/**

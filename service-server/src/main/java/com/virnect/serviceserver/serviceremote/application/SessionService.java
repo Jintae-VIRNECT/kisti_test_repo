@@ -3,6 +3,8 @@ package com.virnect.serviceserver.serviceremote.application;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -1194,9 +1196,9 @@ public class SessionService {
 				.currentPage(0)
 				.currentSize(0)
 				.numberOfElements(roomPage.getNumberOfElements())
-				.totalPage(roomPage.getTotalPages())
+				.totalPage(1)
 				.totalElements(roomPage.getTotalElements())
-				.last(roomPage.isLast())
+				.last(true)
 				.build();
 		}
 
