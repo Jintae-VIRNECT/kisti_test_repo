@@ -80,7 +80,8 @@ public class ContentFallbackService implements FallbackFactory<ContentRestServic
 			public ApiResponse<DownloadLogAddResponse> contentDownloadLogForUUIDHandler(
 				DownloadLogAddRequest downloadLogAddRequest
 			) {
-				return null;
+				DownloadLogAddResponse downloadLogAddResponse = new DownloadLogAddResponse(false);
+				return new ApiResponse<>(downloadLogAddResponse);
 			}
 		};
 	}

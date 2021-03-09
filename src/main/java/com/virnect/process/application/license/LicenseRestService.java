@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.virnect.process.dto.rest.response.license.LicenseInfoResponse;
 import com.virnect.process.dto.rest.response.license.MyLicenseInfoListResponse;
 import com.virnect.process.global.common.ApiResponse;
+import com.virnect.process.global.config.FeignConfiguration;
 
 /**
  * Project: PF-ProcessManagement
@@ -15,7 +16,7 @@ import com.virnect.process.global.common.ApiResponse;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@FeignClient(name = "license-server")
+@FeignClient(name = "license-server", configuration = FeignConfiguration.class, fallbackFactory = LicenseFallbackService.class)
 public interface LicenseRestService {
 
 	@GetMapping("/licenses/{workspaceId}/plan")

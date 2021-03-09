@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ import com.virnect.process.dto.rest.response.license.LicenseInfoResponse;
 import com.virnect.process.dto.rest.response.license.MyLicenseInfoListResponse;
 import com.virnect.process.dto.rest.response.license.MyLicenseInfoResponse;
 import com.virnect.process.exception.ProcessServiceException;
+import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.infra.file.FileDownloadService;
 
@@ -103,9 +105,10 @@ public class DownloadService {
 	}
 
 	private void licenseValidCheck(String memberUUID, String workspaceUUID) {
-		MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
-			memberUUID, workspaceUUID).getData();
-		if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+		ApiResponse<MyLicenseInfoListResponse> response = licenseRestService.getMyLicenseInfoRequestHandler(
+			memberUUID, workspaceUUID);
+		MyLicenseInfoListResponse myLicenseInfoListResponse = response.getData();
+		if (response.getCode() != 200 || CollectionUtils.isEmpty(myLicenseInfoListResponse.getLicenseInfoList())) {
 			log.error(
 				"[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is empty. user uuid : [{}], workspace uuid : [{}]",
 				memberUUID, workspaceUUID
