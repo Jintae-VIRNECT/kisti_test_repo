@@ -97,14 +97,18 @@ export default {
 
         this.panoViewer.on('viewChange', e => {
           if (this.type === 'control') {
-            this.$call.sendLinkFlowControl({
-              yaw: e.yaw.toFixed(2),
-              pitch: e.pitch.toFixed(2),
+            console.log('그냥 yaw', e.yaw)
+            console.log('그냥 pitch', e.pitch)
+
+            this.$call.sendPanoRotation({
+              yaw: e.yaw,
+              pitch: e.pitch,
+              origin: this.mainView.connectionId,
             })
 
             this.updateParticipant({
               connectionId: this.mainView.connectionId,
-              rotationPos: { yaw: e.yaw.toFixed(2), pitch: e.pitch.toFixed(2) },
+              rotationPos: { yaw: e.yaw, pitch: e.pitch },
             })
           }
         })
