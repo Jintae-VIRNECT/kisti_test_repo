@@ -1,12 +1,9 @@
 package com.virnect.message.api;
 
-import com.virnect.message.application.DefaultMessageService;
 import com.virnect.message.application.MessageService;
 import com.virnect.message.domain.MessageType;
-import com.virnect.message.dto.request.AttachmentMailRequest;
-import com.virnect.message.dto.request.EmailSendRequest;
-import com.virnect.message.dto.request.MailSendRequest;
-import com.virnect.message.dto.request.PushSendRequest;
+import com.virnect.message.dto.request.*;
+import com.virnect.message.dto.response.EventSendResponse;
 import com.virnect.message.dto.response.PushResponse;
 import com.virnect.message.exception.MessageException;
 import com.virnect.message.global.common.ApiResponse;
@@ -18,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -26,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.mail.MessagingException;
 import javax.validation.Valid;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -69,7 +64,7 @@ public class MessageController {
     }
 
     @ApiOperation(
-            value = "푸시 메세지 발행",
+            value = "워크스페이스 푸시 메세지 발행",
             notes = "전송 타입 : Topics \n exchange name : topic \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8)"
     )
     @PostMapping("/push")
@@ -112,17 +107,19 @@ public class MessageController {
         return ResponseEntity.ok(apiResponse);
     }
 
-    /*@ApiOperation(
-            value = "이미지 조회"
+    @ApiOperation(
+            value = "event 메세지 발행",
+            notes = "전송 타입 : Topics \n exchange name : topic \n routing key : event.{eventName}.{eventUUID} (예시 routing key : event.session_flush.4d6eab0860969a50acbfa4599fbb5ae8)"
     )
-    @ApiImplicitParam(name = "fileName", value = "파일 이름", dataType = "string", type = "path", defaultValue = "1.PNG", required = true)
-    @GetMapping("/upload/{fileName}")
-    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) throws IOException {
-
-        Resource resource = this.messageService.downloadFile(fileName);
-        return ResponseEntity.ok()
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
-                .body(resource);
-    }*/
+    @PostMapping("/event")
+    public ResponseEntity<ApiResponse<EventSendResponse>> sendPush(@RequestBody @Valid EventSendRequest eventSendRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        String exchange = "amq.topic";
+        String routingKey = "event" + "." + eventSendRequest.getEventName() + "." + eventSendRequest.getEventUUID();
+        rabbitTemplate.convertAndSend(exchange, routingKey, eventSendRequest);
+        EventSendResponse eventSendResponse = new EventSendResponse(eventSendRequest.getService(), eventSendRequest.getEventName(), eventSendRequest.getEventUUID(), true, LocalDateTime.now());
+        return ResponseEntity.ok(new ApiResponse<>(eventSendResponse));
+    }
 }

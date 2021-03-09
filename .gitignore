@@ -34,3 +34,4 @@ out/
 
 bin/
 releasenote.txt
+/src/main/resources/application-local.yml
