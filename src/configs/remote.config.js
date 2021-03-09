@@ -124,6 +124,7 @@ export const ROLE = {
 }
 
 export const LINKFLOW = {
+  INFO: 'info',
   STREAM_MODE: 'streamMode',
   STITCHING: 'stitching',
   SIDE_BY_SIDE: 'sidebyside',
