@@ -147,7 +147,6 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
 				roomHistory.workspaceId.eq(workspaceId),
-				roomHistory.sessionPropertyHistory.sessionType.eq(SessionType.OPEN),
 				roomHistory.memberHistories.any().uuid.eq(userId)
 					.and(roomHistory.memberHistories.any().uuid.in(userIds)),
 				roomHistory.memberHistories.any().historyDeleted.eq(false),

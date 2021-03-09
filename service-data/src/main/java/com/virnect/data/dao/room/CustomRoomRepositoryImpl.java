@@ -205,15 +205,17 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 
 	@Override
 	public Page<Room> findRoomByWorkspaceIdAndUserId(
-		String workspaceId, String userId, Pageable pageable
+		String workspaceId,
+		String userId,
+		Pageable pageable
 	) {
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId),
-				room.sessionProperty.sessionType.eq(SessionType.OPEN),
+				room.members.any().uuid.eq(userId)
+					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
 				room.roomStatus.eq(RoomStatus.ACTIVE),
 				room.members.any().memberStatus.notIn(MemberStatus.EVICTED)
 			).distinct();
@@ -235,10 +237,10 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId)
-					.and(room.members.any().uuid.in(userIds)),
-				room.sessionProperty.sessionType.eq(SessionType.OPEN),
-				room.isNotNull(),
+				room.members.any().uuid.eq(userId).and(room.members.any().uuid.in(userIds))
+					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
+				room.roomStatus.eq(RoomStatus.ACTIVE),
+				room.members.any().memberStatus.notIn(MemberStatus.EVICTED),
 				includeTitleSearch(search)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
@@ -258,9 +260,10 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
-				room.sessionProperty.sessionType.eq(SessionType.OPEN),
-				room.members.any().uuid.eq(userId),
-				room.isNotNull(),
+				room.members.any().uuid.eq(userId)
+					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
+				room.roomStatus.eq(RoomStatus.ACTIVE),
+				room.members.any().memberStatus.notIn(MemberStatus.EVICTED),
 				includeTitleSearch(search)
 			).distinct();
 		long totalCount = queryResult.fetchCount();

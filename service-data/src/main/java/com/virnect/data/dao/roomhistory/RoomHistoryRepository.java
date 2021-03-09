@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long>, JpaSpecificationExecutor<RoomHistory>, CustomRoomHistoryRepository {
+public interface RoomHistoryRepository extends JpaRepository<RoomHistory, Long>, CustomRoomHistoryRepository {
     //Optional<RoomHistory> findBySessionId(final String sessionId);
 
     //Optional<RoomHistory> findRoomHistoryByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);

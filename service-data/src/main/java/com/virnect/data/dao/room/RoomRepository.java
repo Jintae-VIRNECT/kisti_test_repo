@@ -15,7 +15,7 @@ import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.room.RoomStatus;
 
 @Repository
-public interface RoomRepository extends JpaRepository<Room, Long>, JpaSpecificationExecutor<Room>, CustomRoomRepository {
+public interface RoomRepository extends JpaRepository<Room, Long>, CustomRoomRepository {
 
     //Optional<Room> findBySessionId(final String sessionId);
 
