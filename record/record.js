@@ -6,6 +6,11 @@ let options = url.searchParams.get('options')
 var OV = new OpenVidu()
 OV.enableProdMode()
 
+//나갔을때는 제거해주셈
+//key = 커넥션 id
+//value는 panoViewer 객체
+const panoViewerMap = new Map()
+
 var session = OV.initSession()
 
 options = JSON.parse(options)
@@ -80,3 +85,38 @@ const layoutSelector = streamCount => {
     videoContainer.classList.add('six')
   }
 }
+
+session.on('signal:linkflow', event => {
+  const connectionId = event.from.connectionId
+  console.log('signal:linkflow')
+  console.log(connectionId)
+
+  let data = JSON.parse(event.data)
+  if (data.type === 'streamMode') {
+    // const targetVideoEl = document.querySelector(
+    //   `[id*='${event.stream.connection.connectionId}']`,
+    // )
+    // console.log('targetVideoEl::', targetVideoEl)
+    const targetVideoEl = document.querySelector(`[id*='${connectionId}']`)
+    console.log('targetVideoEl::', targetVideoEl)
+    const newDiv = document.createElement('div')
+    //근데..video tag
+    //div도 display none으로 만들어서 준비해놓고 해야할듯..
+  } else if (data.type === 'rotation') {
+    //회전 정보 처리
+    //커넥션 id를 파노 뷰어 맵에서 찾아서 해당 파노 뷰어를 컨트롤 합니다.
+  }
+  //이벤트를 받아서 처리해야하는것
+
+  //1. 대상 커넥션 id를 찾아 video tag를 찾아 pano viewer 적용
+  //2. 대상 커넥션 id를 찾아 pano viewer 컨트롤
+
+  //파노 뷰어 목록..?
+
+  // console.log(params)
+  // panoViewer.lookAt({
+  //   yaw: params.panoSync.yaw,
+  //   pitch: params.panoSync.pitch,
+  //   fov: params.panoSync.fov,
+  // })
+})

@@ -68,6 +68,9 @@ export default {
         })
         this.recordingId = result.recordingId
 
+        //@TODO: 서버녹화 시작시 360디바이스정보를 함께 시그널에 태워서 보내주어야함.
+        //그래야 레이아웃 페이지에서 파노 뷰어를 준비할 수 있음.
+
         this.setServerRecordStatus('START')
         this.$eventBus.$emit('showServerTimer')
 
