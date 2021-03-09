@@ -127,11 +127,16 @@ export class MyStorage {
     this.init()
   }
   init() {
+    const id = localStorage.getItem('account')
+    if (this.uuid !== id) {
+      originLocalStorage.removeItem(id)
+    }
     if (originLocalStorage.getItem(this.uuid)) {
       this.storage = parsingItem(originLocalStorage.getItem(this.uuid))
     } else {
       originLocalStorage.setItem(this.uuid, stringifyItem({}))
     }
+    localStorage.setItem('account', this.uuid)
   }
   getItem(keyname) {
     if (this.storage) {
