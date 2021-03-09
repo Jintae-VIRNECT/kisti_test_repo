@@ -184,3 +184,7 @@ video {
 .container.six {
   grid-template-columns: repeat(3, 1fr);
 }
+
+.pano-container {
+  position: absolute;
+}

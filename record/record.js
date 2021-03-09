@@ -3,15 +3,16 @@ const token = url.searchParams.get('token')
 let metaData = url.searchParams.get('metaData')
 let options = url.searchParams.get('options')
 
-var OV = new OpenVidu()
+const OV = new OpenVidu()
 OV.enableProdMode()
 
-//나갔을때는 제거해주셈
-//key = 커넥션 id
-//value는 panoViewer 객체
+//파노 뷰어 객체 저장
 const panoViewerMap = new Map()
 
-var session = OV.initSession()
+//파노 뷰어의 컨테이너 element 저장
+const panoContainerMap = new Map()
+
+const session = OV.initSession()
 
 options = JSON.parse(options)
 metaData = JSON.parse(metaData)
@@ -21,22 +22,26 @@ let streamCount = 0
 let subscriber
 session.on('streamCreated', event => {
   console.log('event streamCreated::', event)
-  if (event.stream.videoActive == true) {
-    subscriber = session.subscribe(event.stream, 'videos')
-    subscriber.on('videoElementCreated', event => {
-      console.log('videoElementCreated')
-      document.querySelector('video').muted = false
-      document.querySelector('video').play()
-    })
+  console.log(
+    'event stream connection id',
+    event.stream.connection.connectionId,
+  )
 
-    console.log('streamCount::', streamCount)
+  subscriber = session.subscribe(event.stream, 'videos')
 
-    streamCount++
-    layoutSelector(streamCount)
-  }
+  subscriber.on('videoElementCreated', event => {
+    console.log('videoElementCreated', event)
+  })
+
+  console.log('streamCount::', streamCount)
+
+  streamCount++
+  layoutSelector(streamCount)
+  rePositionPanoViewer()
 })
 
 session.on('streamDestroyed', event => {
+  const connectionId = event.stream.connection.connectionId
   console.log('event streamDestroyed::', event)
   streamCount--
   console.log('streamCount::', streamCount)
@@ -45,6 +50,9 @@ session.on('streamDestroyed', event => {
     console.log('session::disconnect')
     session.disconnect()
   }
+
+  deletePanoViewer(connectionId)
+  rePositionPanoViewer()
 })
 
 session
@@ -56,6 +64,11 @@ session
     console.error(error)
   })
 
+/**
+ * video element 갯수에 따라 레이아웃을 변경
+ *
+ * @param {Number} streamCount 현재 video element 갯수
+ */
 const layoutSelector = streamCount => {
   const videoContainer = document.getElementById('videos')
 
@@ -93,30 +106,114 @@ session.on('signal:linkflow', event => {
 
   let data = JSON.parse(event.data)
   if (data.type === 'streamMode') {
-    // const targetVideoEl = document.querySelector(
-    //   `[id*='${event.stream.connection.connectionId}']`,
-    // )
-    // console.log('targetVideoEl::', targetVideoEl)
-    const targetVideoEl = document.querySelector(`[id*='${connectionId}']`)
-    console.log('targetVideoEl::', targetVideoEl)
-    const newDiv = document.createElement('div')
-    //근데..video tag
-    //div도 display none으로 만들어서 준비해놓고 해야할듯..
+    createPanoViewer(connectionId)
+    rePositionPanoViewer()
   } else if (data.type === 'rotation') {
-    //회전 정보 처리
-    //커넥션 id를 파노 뷰어 맵에서 찾아서 해당 파노 뷰어를 컨트롤 합니다.
+    let panoViewer
+    if (data.origin) {
+      panoViewer = panoViewerMap.get(data.origin)
+    } else {
+      panoViewer = panoViewerMap.get(connectionId)
+    }
+
+    if (panoViewer) {
+      panoViewer.lookAt({
+        yaw: data.yaw,
+        pitch: data.pitch,
+        fov: 85, //default
+      })
+    }
+  } else if (data.type === 'info') {
+    createPanoViewer(data.info.connectionId)
+    rePositionPanoViewer()
+
+    const panoViewer = panoViewerMap.get(data.info.connectionId)
+    console.log('data.info::', data.info)
+    const posObj = { yaw: 0, pitch: 0, fov: 85 }
+    if (data.info.rotation) {
+      posObj.yaw = data.info.rotation.yaw
+      posObj.pitch = data.info.rotation.pitch
+    }
+    panoViewer.lookAt(posObj)
   }
-  //이벤트를 받아서 처리해야하는것
-
-  //1. 대상 커넥션 id를 찾아 video tag를 찾아 pano viewer 적용
-  //2. 대상 커넥션 id를 찾아 pano viewer 컨트롤
-
-  //파노 뷰어 목록..?
-
-  // console.log(params)
-  // panoViewer.lookAt({
-  //   yaw: params.panoSync.yaw,
-  //   pitch: params.panoSync.pitch,
-  //   fov: params.panoSync.fov,
-  // })
 })
+
+/**
+ * pano viewer 생성
+ * @param {String} connectionId 커넥션 id
+ */
+const createPanoViewer = connectionId => {
+  if (panoContainerMap.has(connectionId)) return
+
+  const targetVideoEl = document.querySelector(`video[id*='${connectionId}']`)
+  console.log('targetVideoEl::', targetVideoEl)
+  const panoContainer = document.createElement('div')
+  const videos = document.getElementById('videos')
+  videos.appendChild(panoContainer)
+
+  panoContainer.id = connectionId
+  panoContainer.className = 'pano-container'
+  panoContainer.style.left = targetVideoEl.offsetLeft + 'px'
+  panoContainer.style.top = targetVideoEl.offsetTop + 'px'
+  panoContainer.style.height = targetVideoEl.offsetHeight + 'px'
+  panoContainer.style.width = targetVideoEl.offsetWidth + 'px'
+  // newDiv.style.display = 'none'
+  const PanoViewer = eg.view360.PanoViewer
+  const panoViewer = new PanoViewer(panoContainer, {
+    video: targetVideoEl,
+  })
+
+  // targetVideoEl.style.display = 'hidden'
+
+  panoContainerMap.set(connectionId, panoContainer)
+  panoViewerMap.set(connectionId, panoViewer)
+}
+
+/**
+ * 호출 타이밍
+ * - 스트림 추가 or 삭제
+ * - 새로운 스트림이 들어와서 파노뷰어를 만들기 전
+ * - 이전 스트림이 나가서 파노 뷰어를 삭제하고 재배치
+ */
+const rePositionPanoViewer = () => {
+  console.log('rePositionPanoViewer called')
+  const videos = document.querySelectorAll('video')
+  console.log(videos)
+  console.log(panoContainerMap)
+  for (let [connectionId, panoContainer] of panoContainerMap) {
+    for (let i = 0; i < videos.length; i++) {
+      console.log('videos[i].className::', videos[i].className)
+      console.log('connectionId::', connectionId)
+      if (videos[i].id.includes(connectionId)) {
+        console.log('resize called')
+        panoContainer.style.left = videos[i].offsetLeft + 'px'
+        panoContainer.style.top = videos[i].offsetTop + 'px'
+        panoContainer.style.height = videos[i].offsetHeight + 'px'
+        panoContainer.style.width = videos[i].offsetWidth + 'px'
+      }
+    }
+  }
+
+  for (let [connectionId, panoViewer] of panoViewerMap) {
+    if (panoViewer) {
+      panoViewer.updateViewportDimensions()
+    }
+  }
+}
+
+const deletePanoViewer = connectionId => {
+  if (panoContainerMap.has(connectionId)) {
+    panoContainerMap.get(connectionId).remove()
+  }
+  if (panoViewerMap.has(connectionId)) {
+    panoViewerMap.get(connectionId).remove()
+  }
+}
+
+// rePositionPanoViewer()
+// for (let [connectionId, panoViewer] of panoViewerMap) {
+//   console.log('resize panoViewer::', panoViewer)
+//   if (panoViewer) {
+//     panoViewer.updateViewportDimensions()
+//   }
+// }
