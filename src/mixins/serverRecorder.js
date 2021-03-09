@@ -27,6 +27,24 @@ export default {
       'participants',
     ]),
   },
+  watch: {
+    participants: {
+      handler() {
+        if (this.serverRecordStatus === 'START') {
+          this.participants.forEach(participant => {
+            if (participant.streamMode) {
+              this.$call.sendPanoStatus({
+                connectionId: participant.connectionId,
+                streamMode: participant.streamMode,
+                rotation: participant.rotationPos,
+              })
+            }
+          })
+        }
+      },
+      deep: true,
+    },
+  },
   methods: {
     ...mapActions(['setServerRecordStatus']),
     async startServerRecord() {

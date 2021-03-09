@@ -106,6 +106,7 @@ session.on('signal:linkflow', event => {
 
   let data = JSON.parse(event.data)
   if (data.type === 'streamMode') {
+    console.log('아니')
     createPanoViewer(connectionId)
     rePositionPanoViewer()
   } else if (data.type === 'rotation') {
@@ -206,7 +207,7 @@ const deletePanoViewer = connectionId => {
     panoContainerMap.get(connectionId).remove()
   }
   if (panoViewerMap.has(connectionId)) {
-    panoViewerMap.get(connectionId).remove()
+    panoViewerMap.get(connectionId).destroy()
   }
 }
 
