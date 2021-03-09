@@ -1,8 +1,8 @@
-import SecureStorage from 'secure-web-storage'
-import CryptoJS from 'crypto-js'
-import { V, R } from './authsuger'
+// import SecureStorage from 'secure-web-storage'
+// import CryptoJS from 'crypto-js'
+// import { V, R } from './authsuger'
 
-const secKey = V + 'klSTk' + V + R
+// const secKey = V + 'klSTk' + V + R
 const originLocalStorage = window.localStorage
 
 //스토리지 데이터 추출 파싱 함수
@@ -35,22 +35,22 @@ function stringifyItem(value) {
 }
 
 //세션 스토리지...
-export const sessionStorage = new SecureStorage(window.sessionStorage, {
-  hash: key => {
-    key = CryptoJS.SHA256(key, atob(secKey + '=='))
-    return key.toString()
-  },
-  encrypt: data => {
-    data = CryptoJS.AES.encrypt(data, atob(secKey + '=='))
-    data = data.toString()
-    return data
-  },
-  decrypt: data => {
-    data = CryptoJS.AES.decrypt(data, atob(secKey + '=='))
-    data = data.toString(CryptoJS.enc.Utf8)
-    return data
-  },
-})
+// export const sessionStorage = new SecureStorage(window.sessionStorage, {
+//   hash: key => {
+//     key = CryptoJS.SHA256(key, atob(secKey + '=='))
+//     return key.toString()
+//   },
+//   encrypt: data => {
+//     data = CryptoJS.AES.encrypt(data, atob(secKey + '=='))
+//     data = data.toString()
+//     return data
+//   },
+//   decrypt: data => {
+//     data = CryptoJS.AES.decrypt(data, atob(secKey + '=='))
+//     data = data.toString(CryptoJS.enc.Utf8)
+//     return data
+//   },
+// })
 
 const setDevice = (d, i, v) => {
   let deviceInfo = parsingItem(originLocalStorage.getItem('deviceInfo'))
@@ -153,4 +153,4 @@ export class MyStorage {
   }
 }
 
-export default sessionStorage
+// export default sessionStorage
