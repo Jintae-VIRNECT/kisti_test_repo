@@ -30,7 +30,7 @@ const state = {
     pointing: true,
     localRecord: true,
   },
-  useScreenStrict: true,
+  useScreenStrict: false,
 
   videoDevice: null,
   language: null,

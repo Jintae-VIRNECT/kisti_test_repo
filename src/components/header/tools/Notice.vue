@@ -158,9 +158,9 @@ export default {
   watch: {
     onPush(push) {
       if (push) {
-        this.$localStorage.setItem('push', 'true')
+        localStorage.setItem('push', 'true')
       } else {
-        this.$localStorage.setItem('push', 'false')
+        localStorage.setItem('push', 'false')
       }
     },
     workspace(val, oldVal) {
@@ -339,7 +339,7 @@ export default {
     },
     async pushInit() {
       if (!this.hasLicense) return
-      // const push = this.$localStorage.getItem('push')
+      // const push = localStorage.getItem('push')
       this.key = this.$route.name
       // if (push === 'true') {
       //   this.onPush = true
@@ -357,8 +357,8 @@ export default {
     this.$nextTick(() => {
       this.pushInit()
       let push = true
-      if (this.$localStorage.getItem('push')) {
-        push = this.$localStorage.getItem('push') === 'true'
+      if (localStorage.getItem('push')) {
+        push = localStorage.getItem('push') === 'true'
       }
       this.onPush = push
     })

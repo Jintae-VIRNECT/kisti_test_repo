@@ -119,18 +119,18 @@ export const localStorage = {
 
 //사용자 별 로컬 스토리지
 export class MyStorage {
-  constructor(sId) {
-    this.sId = sId.slice(0, 16) //보안강화
+  constructor(uuid) {
+    this.uuid = uuid.slice(0, 16) //보안강화
     this.storage = {}
     this.key = Object.keys(this.storage)
     this.length = this.key.length
     this.init()
   }
   init() {
-    if (originLocalStorage.getItem(this.sId)) {
-      this.storage = parsingItem(originLocalStorage.getItem(this.sId))
+    if (originLocalStorage.getItem(this.uuid)) {
+      this.storage = parsingItem(originLocalStorage.getItem(this.uuid))
     } else {
-      originLocalStorage.setItem(this.sId, stringifyItem({}))
+      originLocalStorage.setItem(this.uuid, stringifyItem({}))
     }
   }
   getItem(keyname) {
@@ -140,15 +140,36 @@ export class MyStorage {
   }
   setItem(keyname, value) {
     this.storage[keyname] = value
-    originLocalStorage.setItem(this.sId, stringifyItem(this.storage))
+    originLocalStorage.setItem(this.uuid, stringifyItem(this.storage))
+  }
+  setDevice(d, i, v) {
+    let deviceInfo = parsingItem(this.storage['deviceInfo'])
+    if (!deviceInfo) {
+      deviceInfo = {}
+    }
+    if (!deviceInfo[d]) {
+      deviceInfo[d] = {}
+    }
+    deviceInfo[d][i] = v
+    this.storage['deviceInfo'] = deviceInfo
+    originLocalStorage.setItem(this.uuid, stringifyItem(this.storage))
+  }
+  setItemPiece(k, i, v) {
+    let info = parsingItem(this.storage[k])
+    if (!info) {
+      info = {}
+    }
+    info[i] = v
+    this.storage[k] = info
+    originLocalStorage.setItem(this.uuid, stringifyItem(this.storage))
   }
   removeItem(keyname) {
     delete this.storage[keyname]
-    originLocalStorage.setItem(this.sId, stringifyItem(this.storage))
+    originLocalStorage.setItem(this.uuid, stringifyItem(this.storage))
   }
   clear() {
     if (this.storage) {
-      originLocalStorage.removeItem(this.sId)
+      originLocalStorage.removeItem(this.uuid)
     }
   }
 }

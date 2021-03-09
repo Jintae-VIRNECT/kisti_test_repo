@@ -49,7 +49,7 @@ export default {
         },
       })
       this.$call.sendMic(mic)
-      this.$localStorage.setDevice('mic', 'isOn', mic)
+      window.myStorage.setDevice('mic', 'isOn', mic)
     },
   },
 }

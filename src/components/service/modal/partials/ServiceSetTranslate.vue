@@ -137,12 +137,12 @@ export default {
       const param = {}
       param[item] = setting
       this.setTranslate(param)
-      this.$localStorage.setTranslate(item, setting)
+      window.myStorage.setItemPiece('translate', item, setting)
       // this.showToast()
     },
     setTranslateCode(code) {
       this.setTranslate({ code })
-      this.$localStorage.setTranslate('code', code)
+      window.myStorage.setItemPiece('translate', 'code', code)
     },
     disableTranslate() {
       this.toastDefault(this.$t('workspace.setting_translate_disable_message'))
@@ -151,19 +151,19 @@ export default {
       this.setTranslate({
         flag,
       })
-      this.$localStorage.setTranslate('flag', flag)
+      window.myStorage.setItemPiece('translate', 'flag', flag)
     },
     setTranslateMultiple(multiple) {
       this.setTranslate({ multiple })
-      this.$localStorage.setTranslate('multiple', multiple)
+      window.myStorage.setItemPiece('translate', 'multiple', multiple)
     },
     setSttSync(sttSync) {
       this.setTranslate({ sttSync })
-      this.$localStorage.setTranslate('sttSync', sttSync)
+      window.myStorage.setItemPiece('translate', 'sttSync', sttSync)
     },
     setTtsAllow(ttsAllow) {
       this.setTranslate({ ttsAllow })
-      this.$localStorage.setTranslate('ttsAllow', ttsAllow)
+      window.myStorage.setItemPiece('translate', 'ttsAllow', ttsAllow)
     },
     init() {
       this.useTranslate = this.translate.flag

@@ -57,6 +57,7 @@ export default {
   watch: {
     useScreenControl(flag) {
       this.setScreenStrict(flag)
+      window.myStorage.setItem('screenStrict', flag)
     },
   },
   methods: {
