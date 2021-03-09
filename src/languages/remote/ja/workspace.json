@@ -94,11 +94,17 @@
     "setting_translate_disable_message": "翻訳使用をオンにしてください。",
     "access_deny": "カメラとマイクの接近が遮断されました。",
     "access_deny_description": "ブラウザのアドレスウィンドウの<span class='device-denied__content--emphasize'>アイコン</span>を<br />クリックしてアクセスを許可後、リロードしでください。",
+    "setting_function": "Function setting",
+    "setting_camera_control": "Video share control",
+    "setting_camera_restrict": "Video Restriction Mode",
+    "setting_camera_restrict_enable": "Enable Video Restriction Mode",
+    "setting_camera_restrict_info": "This mode allows you to contol the participant's camera.",
 
     "remote_name": "協業名",
     "remote_description": "協業説明",
     "remote_name_valid1": "協業名は２字以上入力してください。",
     "remote_name_valid2": "特殊文字は協業名から除外してください。",
+
     "create_remote": "リモート協業スタート",
     "create_remote_profile_regist": "協業プロフィール登録",
     "create_remote_name_input": "グループ名を入力してください。",
@@ -111,7 +117,9 @@
     "create_select_empty_description": "協力に招待するメンバーを追加してください。",
     "create_max_member": "選択可能メンバー数を超えました。",
     "create_remote_fail": "協業作成を失敗しました。",
+  
     "create_open": "オープンルームを作成する",
+  
     "info_remote_detail": "リモート協業詳細",
     "info_remote": "協力情報",
     "info_remote_member": "参加者情報",
@@ -124,6 +132,7 @@
     "info_mode": "モード",
     "info_mode_open": "オープンルーム",
     "info_mode_collabo": "リモート協業",
+
     "record_file": "ローカル録画ファイル",
     "record_file_title": "ローカル録画ファイルリスト",
     "record_filename": "ファイル名",
@@ -139,6 +148,7 @@
     "record_upload": "選択アップロード",
     "record_uploading": "ファイルをアップロード中",
     "record_upload_error": "アップロード中エラーが発生しました。",
+
     "license_expire_title": "VIRNECT Remote2.0をご利用可能<br>プランが終了しました。",
     "license_expire_description": "Remote2.0を使用する場合は、ワークステーションで<br>プランを追加更新してご利用ください。",
     "license_no_title": "VIRNECT Remote2.0を利用可能<br>プランがございません。",
@@ -146,11 +156,14 @@
     "license_expire_title_onpremise": "Remote2.0をご利用可能<br>プランが終了しました。",
     "license_no_title_onpremise": "Remote2.0を利用可能<br>プランがございません。",
     "license_no_description_onpremise": "Remote2.0を利用可能ワークスペースがございません。 <br>ワークスペースマスターにRemoteプランを要請してください。",
+
     "error_no_connected_device": "接続されているマイクデバイスが見つかりませんでした。 マイクを確認してください。",
     "error_no_device": "デバイスを見つかりません。",
+
     "plan_exceeded": "プラン超過使用のご案内",
     "plan_exceeded_desctiption": "保有するプラン数よりユーザが多い、利用が制限されました。マスターにプラン管理を要請してください。",
     "go_workspace_member": "ワークスペースメンバーリスト移動",
+
     "cookie": "VIRNECT はVIRNECT のサービスを運営し、改善のためクッキーおよび利用統計を使用しています。 詳細を調べるには、<br> 当社の <a href='https://virnect.com/policy#10' target='_blank'>取扱方針</a>をご確認ください。 「確認」をクリック、サイトの使用を継続することはクッキーおよび利用統計収集に同意することになります。"    
   }
 }
