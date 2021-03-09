@@ -37,7 +37,9 @@ const config = mode => {
         api: join(__dirname, '../src/api'),
         utils: join(__dirname, '../src/utils'),
         static: join(__dirname, '../static'),
+        process: 'process/browser',
       },
+      fallback: { path: require.resolve('path-browserify') },
     },
     module: {
       rules: [

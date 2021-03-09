@@ -11,7 +11,8 @@ const configService = require('../server/config')
 const translate = require('../translate/translate')
 const stt = require('../translate/stt')
 const tts = require('../translate/tts')
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+//   .BundleAnalyzerPlugin
 
 const mode = 'development'
 
@@ -156,9 +157,9 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     }),
 
     // new BundleAnalyzerPlugin({
-    //     analyzerHost: '127.0.0.1',
-    //     analyzerPort: 8887
-    // })
+    //   analyzerHost: '127.0.0.1',
+    //   analyzerPort: 8887,
+    // }),
   ],
 })
 
