@@ -24,6 +24,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.domain.room.RoomStatus;
+import com.virnect.data.domain.session.SessionType;
 
 @Repository
 public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implements CustomRoomRepository {
@@ -207,11 +208,12 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		String workspaceId, String userId, Pageable pageable
 	) {
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
+			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.members.any().uuid.eq(userId),
+				room.sessionProperty.sessionType.eq(SessionType.OPEN),
 				room.roomStatus.eq(RoomStatus.ACTIVE),
 				room.members.any().memberStatus.notIn(MemberStatus.EVICTED)
 			).distinct();
