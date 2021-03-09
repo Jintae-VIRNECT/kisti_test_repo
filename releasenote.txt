@@ -1,12 +1,12 @@
 RELEASE
 
 New Features
-- 컨텐츠 목록조회에 타겟타입 필터링 기능 추가
+- 파일 다운로드
 
 Bug Fixes
-- 컨텐츠 다운로드 관련 권한 체크 추가
+- 파일 다운로드 stream close 누락 부분 개선
 
 Limitation
-- 컨텐츠 삭제 응답 데이터 변경
+- 컨텐츠 다운로드 에러 응답코드 추가
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved

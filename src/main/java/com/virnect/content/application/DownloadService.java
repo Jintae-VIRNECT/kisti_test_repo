@@ -5,6 +5,8 @@ import com.virnect.content.application.workspace.WorkspaceRestService;
 import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.domain.Content;
 import com.virnect.content.domain.YesOrNo;
+import com.virnect.content.dto.request.DownloadLogAddRequest;
+import com.virnect.content.dto.response.DownloadLogAddResponse;
 import com.virnect.content.dto.rest.LicenseInfoResponse;
 import com.virnect.content.dto.rest.MemberListResponse;
 import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
@@ -18,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Project: PF-ContentManagement
@@ -79,6 +82,10 @@ public class DownloadService {
             throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);
         }
         MemberListResponse memberListResponse = workspaceRestService.getSimpleWorkspaceUserList(workspaceUUID).getData();
+        if (CollectionUtils.isEmpty(memberListResponse.getMemberInfoList())) {
+            log.error("[CONTENT DOWNLOAD][WORKSPACE CHECK] workspace member list is empty");
+            throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);
+        }
         boolean containUser = memberListResponse.getMemberInfoList().stream().anyMatch(memberInfoDTO -> memberInfoDTO.getUuid().equals(memberUUID));
         if (!containUser) {
             log.error("[CONTENT DOWNLOAD][WORKSPACE CHECK] content workspace haven't request user. content workspace uuid : [{}], request user uuid : [{}], containUser : [{}]", contentWorkspaceUUID, memberUUID, containUser);
@@ -88,21 +95,21 @@ public class DownloadService {
 
     private void licenseValidCheck(String memberUUID, String workspaceUUID) {
         MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(memberUUID, workspaceUUID).getData();
-        if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+        if (CollectionUtils.isEmpty(myLicenseInfoListResponse.getLicenseInfoList())) {
             log.error("[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is empty. user uuid : [{}], workspace uuid : [{}]", memberUUID, workspaceUUID);
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
         }
         boolean containViewLicense = myLicenseInfoListResponse.getLicenseInfoList().stream().map(MyLicenseInfoResponse::getProductName).anyMatch(productName -> productName.equals("VIEW"));
         if (!containViewLicense) {
             log.error("[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is not contain view plan. user uuid : [{}], workspace uuid : [{}], contain view license : [{}]", memberUUID, workspaceUUID, containViewLicense);
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
         }
     }
 
     private void contentShardCheck(String memberUUID, Content content) {
         if (content.getShared().equals(YesOrNo.NO) && !content.getUserUUID().equals(memberUUID)) {
             log.error("[CONTENT DOWNLOAD][SHARED CHECK] content shared : [{}], user uuid : [{}], content owner user uuid : [{}]", content.getShared(), memberUUID, content.getUserUUID());
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_SHARED);
         }
     }
 
@@ -116,9 +123,14 @@ public class DownloadService {
 
         if (maxDownload < sumDownload + 1) {
             log.error("[CONTENT DOWNLOAD][LICENSE CHECK] content download count is over workspace max download count. max download count : [{}], content download count(include current request) : [{}]", maxDownload, sumDownload + 1);
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_LICENSE);
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
         }
     }
 
-
+    public DownloadLogAddResponse contentDownloadLogForUUIDHandler(DownloadLogAddRequest downloadLogAddRequest) {
+        Content content = this.contentRepository.findByUuid(downloadLogAddRequest.getContentUUID())
+                .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
+        eventPublisher.publishEvent(new ContentDownloadHitEvent(content, downloadLogAddRequest.getMemberUUID()));
+        return new DownloadLogAddResponse(true);
+    }
 }

@@ -695,7 +695,7 @@ public class ContentService {
         JsonParser jsonParse = new JsonParser();
         JsonObject metaData = (JsonObject) jsonParse.parse(content.getMetadata());
         JsonObject contents = metaData.getAsJsonObject("contents");
-        Float targetSize = 10f;
+        float targetSize = 10f;
         if (contents.get("targetSize") != null) {
             targetSize = contents.get("targetSize").getAsFloat();
         }

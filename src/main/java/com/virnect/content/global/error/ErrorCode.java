@@ -33,12 +33,14 @@ public enum ErrorCode {
 	ERROR_WORKSPACE(4016, "An error occurred in the request. Because Workspace is different."),
 	ERR_CONTENT_DOWNLOAD(4017, "Content Download fail."),
 	ERR_CONTENT_UPLOAD_LICENSE(4018, "Content upload fail. Because provided capacity exceeded."),
-	ERR_CONTENT_DOWNLOAD_LICENSE(4019, "Content Download fail. Because the number of offers exceeded."),
+	ERR_CONTENT_DOWNLOAD_INVALID_LICENSE(4019, "Content Download fail.  Invalid download request license info."),
 	ERR_CONTENT_DELETE_SHARED(4020, "Content deletion failed. Because it is managed. Check this content is shared."),
 	ERR_CONTENT_UPLOAD_LICENSE_PRODUCT_NOT_FOUND(4021, "Content upload fail. Because user haven't make product plan"),
 	ERR_CONTENT_UPLOAD_LICENSE_NOT_FOUND(4022, "Content upload fail. Because workspace haven't license plan"),
+    ERR_CONTENT_DOWNLOAD_INVALID_SHARED(4023, "Content upload fail. Contents is not shared."),
 
-	// 타겟 관련
+
+    // 타겟 관련
 	ERR_TARGET_DATA_ALREADY_EXIST(4101, "Target insert fail. Because this target data already exist."),
 
 	// 공통 에러

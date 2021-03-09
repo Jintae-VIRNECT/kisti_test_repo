@@ -1,8 +1,10 @@
 package com.virnect.content.api;
 
-import com.netflix.discovery.util.StringUtil;
 import com.virnect.content.application.DownloadService;
+import com.virnect.content.dto.request.DownloadLogAddRequest;
+import com.virnect.content.dto.response.DownloadLogAddResponse;
 import com.virnect.content.exception.ContentServiceException;
+import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.error.ErrorCode;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -12,12 +14,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import sun.swing.StringUIClientPropertyKey;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.io.IOException;
 
 /**
@@ -80,5 +80,15 @@ public class DownloadController {
         //                .contentLength(resource.getFile().length())
         //                .contentType(MediaType.APPLICATION_OCTET_STREAM)
         //                .body(resource);
+    }
+
+    @ApiOperation(value = "콘텐츠 다운로드 이벤트", tags = "process server only")
+    @PostMapping("/download/log")
+    public ResponseEntity<ApiResponse<DownloadLogAddResponse>> contentDownloadLogForUUIDHandler(@RequestBody @Valid DownloadLogAddRequest downloadLogAddRequest, BindingResult bindingResult ){
+        if (bindingResult.hasErrors()) {
+            throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        DownloadLogAddResponse downloadLogAddResponse = downloadService.contentDownloadLogForUUIDHandler(downloadLogAddRequest);
+        return ResponseEntity.ok(new ApiResponse<>(downloadLogAddResponse));
     }
 }
