@@ -26,7 +26,7 @@ const getDefaultState = () => {
       // cameraStatus: 'default', // 'default': 초기세팅
       // flash: 'default', // flash 제어
       // streamMode:false // 'stitching', 'sidebyside', 'single' 360 스트림 모드. 기본값 false
-      // rotationPos : {yaw, pitch} //메인 PanoViewer의 마지막 좌표
+      // rotationPos : {yaw, pitch} //PanoViewer의 좌표
     ],
     chatList: [
       // {
