@@ -62,7 +62,7 @@ public class RoomService {
 		int companyCode
 	) {
 
-		companyCode = checkCompanyCode(companyCode);
+		//companyCode = checkCompanyCode(companyCode);
 
 		ApiResponse<RoomResponse> responseData;
 
@@ -125,7 +125,7 @@ public class RoomService {
 	) {
 		ApiResponse<RoomResponse> responseData;
 
-		companyCode = checkCompanyCode(companyCode);
+		//companyCode = checkCompanyCode(companyCode);
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
@@ -190,7 +190,7 @@ public class RoomService {
 		int companyCode
 	) {
 
-		companyCode = checkCompanyCode(companyCode);
+		//companyCode = checkCompanyCode(companyCode);
 
 		ApiResponse<RoomResponse> responseData;
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
@@ -263,7 +263,7 @@ public class RoomService {
 		int companyCode
 	) {
 
-		companyCode = checkCompanyCode(companyCode);
+		//companyCode = checkCompanyCode(companyCode);
 
 		ApiResponse<RoomResponse> responseData;
 

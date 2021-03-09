@@ -61,10 +61,10 @@ public class CompanyInfoResponse {
     private boolean restrictedMode = false;*/
 
 	@ApiModelProperty(value = "Enable Text to Video restricted Mode", position = 11, example = "false")
-	private boolean videoRestrictedMode = false;
+	private boolean videoRestrictedMode = true;
 
 	@ApiModelProperty(value = "Enable Text to Audio restricted Mode", position = 12, example = "false")
-	private boolean audioRestrictedMode = false;
+	private boolean audioRestrictedMode = true;
 
 	@ApiModelProperty(value = "Local Recording", position = 13, example = "true")
 	private boolean localRecording = true;

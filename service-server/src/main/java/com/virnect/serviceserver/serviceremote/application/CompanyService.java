@@ -185,11 +185,11 @@ public class CompanyService {
 
 		CompanyInfoResponse companyInfoResponse = null;
 
-		if (remoteServiceConfig.getProfile().equals("local")
+		/*if (remoteServiceConfig.getProfile().equals("local")
 			|| remoteServiceConfig.getProfile().equals("develop")
 		) {
 			companyCode = 0;
-		}
+		}*/
 
 		if (companyCode != CompanyConstants.COMPANY_VIRNECT) {
 			//Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
