@@ -159,8 +159,8 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 	}
 
 	/**
-	 * 사용자 정보 조회 다이나믹 쿼리
-	 * @param search - 조회될 사용자 정보 식별자
+	 * 협업 기록 제목 검색 동적 쿼리
+	 * @param search - 검색 키워드
 	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
 	 */
 	private BooleanExpression includeTitleSearch(String search){

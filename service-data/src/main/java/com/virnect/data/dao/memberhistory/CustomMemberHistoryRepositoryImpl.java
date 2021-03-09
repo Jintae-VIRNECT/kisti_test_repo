@@ -39,8 +39,14 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 	 */
 	@Override
 	public Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
-		String workspaceId, String userId, Pageable pageable
+		String workspaceId,
+		String userId,
+		boolean paging,
+		Pageable pageable
 	) {
+
+		List<MemberHistory> result;
+
 		JPQLQuery<MemberHistory> queryResult = query
 			.selectFrom(memberHistory)
 			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
@@ -51,7 +57,11 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 				memberHistory.historyDeleted.isFalse()
 			).distinct();
 		long totalCount = queryResult.fetchCount();
-		List<MemberHistory> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		if (paging) {
+			result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		} else {
+			result = queryResult.fetch();
+		}
 		return new PageImpl<>(result, pageable, totalCount);
 	}
 

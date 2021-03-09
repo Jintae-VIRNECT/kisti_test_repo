@@ -207,8 +207,11 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	public Page<Room> findRoomByWorkspaceIdAndUserId(
 		String workspaceId,
 		String userId,
+		boolean paging,
 		Pageable pageable
 	) {
+		List<Room> result;
+
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
@@ -220,7 +223,11 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 				room.members.any().memberStatus.notIn(MemberStatus.EVICTED)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
-		List<Room> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		if (paging) {
+			result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		} else {
+			result = queryResult.fetch();
+		}
 		return new PageImpl<>(result, pageable, totalCount);
 	}
 

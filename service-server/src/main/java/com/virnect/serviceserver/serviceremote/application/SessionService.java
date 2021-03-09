@@ -1074,7 +1074,6 @@ public class SessionService {
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElseThrow(()
 			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 
-
 		LogMessage.formedInfo(
 			TAG,
 			"invokeDataProcess",
@@ -1113,6 +1112,13 @@ public class SessionService {
 				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
 
+			memberInfoList.sort((t1, t2) -> {
+				if (t1.getMemberType().equals(MemberType.LEADER)) {
+					return 1;
+				}
+				return 0;
+			});
+
 			// Set Member List to Room Detail Information Response
 			roomDetailInfoResponse.setMemberList(memberInfoList);
 			responseData = new ApiResponse<>(roomDetailInfoResponse);
@@ -1128,7 +1134,7 @@ public class SessionService {
 	) {
 		//Page<Room> roomPage = roomRepository.findAll(joinMember(workspaceId, userId), pageable);
 
-		Page<Room> roomPage = roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, pageable);
+		Page<Room> roomPage = roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, paging, pageable);
 
 		PageMetadataResponse pageMeta;
 
@@ -1162,8 +1168,15 @@ public class SessionService {
 				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
 				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
-			roomInfoResponse.setMemberList(memberInfoList);
 
+			memberInfoList.sort((t1, t2) -> {
+				if (t1.getMemberType().equals(MemberType.LEADER)) {
+					return 1;
+				}
+				return 0;
+			});
+
+			roomInfoResponse.setMemberList(memberInfoList);
 			roomInfoList.add(roomInfoResponse);
 		}
 
@@ -1269,8 +1282,15 @@ public class SessionService {
 				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
 				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
-			roomInfoResponse.setMemberList(memberInfos);
 
+			memberInfoList.sort((t1, t2) -> {
+				if (t1.getMemberType().equals(MemberType.LEADER)) {
+					return 1;
+				}
+				return 0;
+			});
+
+			roomInfoResponse.setMemberList(memberInfos);
 			roomInfoList.add(roomInfoResponse);
 		}
 		return new RoomInfoListResponse(roomInfoList, pageMeta);

@@ -137,7 +137,7 @@ public class SessionTransactionalService {
 
 	public Page<Room> getRoomPageList(String workspaceId, String userId, Pageable pageable) {
 		//return this.roomRepository.findAll(joinMember(workspaceId, userId), pageable);
-		return this.roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, pageable);
+		return this.roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, true, pageable);
 	}
 
 	public Page<Room> getRoomPageList(String workspaceId, String userId, String search, Pageable pageable) {

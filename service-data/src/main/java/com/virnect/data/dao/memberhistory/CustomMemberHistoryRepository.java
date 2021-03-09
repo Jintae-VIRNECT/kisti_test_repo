@@ -11,7 +11,7 @@ import com.virnect.data.domain.member.MemberHistory;
 
 public interface CustomMemberHistoryRepository {
 
-	Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(final String workspaceId, final String userId, Pageable pageable);
+	Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(final String workspaceId, final String userId, boolean paging, Pageable pageable);
 
 	List<MemberHistory> findAllBySessionId(final String sessionId);
 

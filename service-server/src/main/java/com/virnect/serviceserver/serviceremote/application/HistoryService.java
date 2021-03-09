@@ -51,7 +51,8 @@ public class HistoryService {
 		Page<MemberHistory> roomHistories;
 		PageMetadataResponse pageMeta;
 
-		roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(workspaceId, userId, pageable);
+		roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
+			workspaceId, userId, paging, pageable);
 
 		List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
 		for (MemberHistory memberHistory : roomHistories.getContent()) {

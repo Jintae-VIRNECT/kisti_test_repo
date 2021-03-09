@@ -30,7 +30,7 @@ public interface CustomRoomRepository {
 
 	List<Room> findByWorkspaceId(final String workspaceId);
 
-	Page<Room> findRoomByWorkspaceIdAndUserId(final String workspaceId, final String userId, Pageable pageable);
+	Page<Room> findRoomByWorkspaceIdAndUserId(final String workspaceId, final String userId, boolean paging, Pageable pageable);
 
 	Page<Room> findRoomBySearch(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable);
 
