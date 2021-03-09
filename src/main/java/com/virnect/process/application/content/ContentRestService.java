@@ -9,15 +9,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.virnect.process.domain.YesOrNo;
 import com.virnect.process.dto.rest.request.content.ContentDeleteRequest;
+import com.virnect.process.dto.rest.request.content.DownloadLogAddRequest;
 import com.virnect.process.dto.rest.response.content.ContentCountResponse;
 import com.virnect.process.dto.rest.response.content.ContentDeleteListResponse;
 import com.virnect.process.dto.rest.response.content.ContentInfoResponse;
 import com.virnect.process.dto.rest.response.content.ContentRestDto;
 import com.virnect.process.dto.rest.response.content.ContentUploadResponse;
+import com.virnect.process.dto.rest.response.content.DownloadLogAddResponse;
 import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.config.FeignConfiguration;
 
@@ -59,5 +62,10 @@ public interface ContentRestService {
 	ResponseEntity<byte[]> contentDownloadRequestForTargetHandler(
 		@RequestParam(value = "targetData") String targetData, @RequestParam("memberUUID") String memberUUID,
 		@RequestParam(value = "workspaceUUID") String workspaceUUID
+	);
+
+	@PostMapping("/contents/download/log")
+	ApiResponse<DownloadLogAddResponse> contentDownloadLogForUUIDHandler(
+		@RequestBody DownloadLogAddRequest downloadLogAddRequest
 	);
 }

@@ -25,7 +25,7 @@ public interface ProcessCustomRepository {
 	 * @param state
 	 * @return
 	 */
-	Optional<Process> findByContentUUIDAndStatus(String contentUUID, State state, String memberUUID);
+	Optional<Process> findByContentUUIDAndStatus(String contentUUID, State state);
 
 	/**
 	 *
