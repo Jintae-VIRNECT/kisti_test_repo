@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Project: PF-ContentManagement
@@ -81,6 +82,10 @@ public class DownloadService {
             throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);
         }
         MemberListResponse memberListResponse = workspaceRestService.getSimpleWorkspaceUserList(workspaceUUID).getData();
+        if (CollectionUtils.isEmpty(memberListResponse.getMemberInfoList())) {
+            log.error("[CONTENT DOWNLOAD][WORKSPACE CHECK] workspace member list is empty");
+            throw new ContentServiceException(ErrorCode.ERROR_WORKSPACE);
+        }
         boolean containUser = memberListResponse.getMemberInfoList().stream().anyMatch(memberInfoDTO -> memberInfoDTO.getUuid().equals(memberUUID));
         if (!containUser) {
             log.error("[CONTENT DOWNLOAD][WORKSPACE CHECK] content workspace haven't request user. content workspace uuid : [{}], request user uuid : [{}], containUser : [{}]", contentWorkspaceUUID, memberUUID, containUser);
@@ -90,7 +95,7 @@ public class DownloadService {
 
     private void licenseValidCheck(String memberUUID, String workspaceUUID) {
         MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(memberUUID, workspaceUUID).getData();
-        if (myLicenseInfoListResponse.getLicenseInfoList().isEmpty()) {
+        if (CollectionUtils.isEmpty(myLicenseInfoListResponse.getLicenseInfoList())) {
             log.error("[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is empty. user uuid : [{}], workspace uuid : [{}]", memberUUID, workspaceUUID);
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_INVALID_LICENSE);
         }
