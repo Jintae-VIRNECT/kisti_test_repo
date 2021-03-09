@@ -32,7 +32,6 @@ import com.virnect.process.dto.rest.response.license.LicenseInfoResponse;
 import com.virnect.process.dto.rest.response.license.MyLicenseInfoListResponse;
 import com.virnect.process.dto.rest.response.license.MyLicenseInfoResponse;
 import com.virnect.process.exception.ProcessServiceException;
-import com.virnect.process.global.common.ApiResponse;
 import com.virnect.process.global.error.ErrorCode;
 import com.virnect.process.infra.file.FileDownloadService;
 
@@ -105,10 +104,9 @@ public class DownloadService {
 	}
 
 	private void licenseValidCheck(String memberUUID, String workspaceUUID) {
-		ApiResponse<MyLicenseInfoListResponse> response = licenseRestService.getMyLicenseInfoRequestHandler(
-			memberUUID, workspaceUUID);
-		MyLicenseInfoListResponse myLicenseInfoListResponse = response.getData();
-		if (response.getCode() != 200 || CollectionUtils.isEmpty(myLicenseInfoListResponse.getLicenseInfoList())) {
+		MyLicenseInfoListResponse myLicenseInfoListResponse = licenseRestService.getMyLicenseInfoRequestHandler(
+			memberUUID, workspaceUUID).getData();
+		if (CollectionUtils.isEmpty(myLicenseInfoListResponse.getLicenseInfoList())) {
 			log.error(
 				"[CONTENT DOWNLOAD][LICENSE CHECK] my license info list is empty. user uuid : [{}], workspace uuid : [{}]",
 				memberUUID, workspaceUUID
