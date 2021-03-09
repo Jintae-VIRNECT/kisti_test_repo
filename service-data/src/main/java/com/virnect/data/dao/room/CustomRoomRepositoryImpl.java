@@ -231,12 +231,13 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		Pageable pageable
 	) {
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
+			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.members.any().uuid.eq(userId)
 					.and(room.members.any().uuid.in(userIds)),
+				room.sessionProperty.sessionType.eq(SessionType.OPEN),
 				room.isNotNull(),
 				includeTitleSearch(search)
 			).distinct();
@@ -253,10 +254,11 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		Pageable pageable
 	) {
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
+			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
+				room.sessionProperty.sessionType.eq(SessionType.OPEN),
 				room.members.any().uuid.eq(userId),
 				room.isNotNull(),
 				includeTitleSearch(search)

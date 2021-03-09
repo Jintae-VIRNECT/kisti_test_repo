@@ -21,6 +21,7 @@ import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.virnect.data.domain.roomhistory.RoomHistory;
+import com.virnect.data.domain.session.SessionType;
 
 @Repository
 public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport implements CustomRoomHistoryRepository {
@@ -142,12 +143,13 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 		Pageable pageable
 	) {
 		JPQLQuery<RoomHistory> queryResult =query.selectFrom(roomHistory)
-			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.leftJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
 				roomHistory.workspaceId.eq(workspaceId),
-				roomHistory.memberHistories.any().uuid.eq(userId).and(roomHistory.memberHistories.any().uuid.contains(userId)),
-				roomHistory.memberHistories.any().uuid.eq(userId),
+				roomHistory.sessionPropertyHistory.sessionType.eq(SessionType.OPEN),
+				roomHistory.memberHistories.any().uuid.eq(userId)
+					.and(roomHistory.memberHistories.any().uuid.in(userIds)),
 				roomHistory.memberHistories.any().historyDeleted.eq(false),
 				roomHistory.isNotNull(),
 				includeTitleSearch(search)
