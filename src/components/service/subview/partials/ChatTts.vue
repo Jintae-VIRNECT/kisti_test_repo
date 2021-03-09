@@ -18,6 +18,7 @@ export default {
   methods: {
     async doTts(message) {
       if (!this.speaker.isOn) return
+      if (!this.translate.flag) return
       if (!this.translate.ttsAllow) return
       if (!message || message.length === 0) return
       let ttsText = message
