@@ -11,13 +11,14 @@ const configService = require('../server/config')
 const translate = require('../translate/translate')
 const stt = require('../translate/stt')
 const tts = require('../translate/tts')
-// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+//   .BundleAnalyzerPlugin
 
 const mode = 'development'
 
 const localWebpackConfig = merge(baseWebpackConfig(mode), {
   mode,
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-cheap-module-source-map',
   devServer: {
     https: {
       key: fs.readFileSync(path.join(__dirname, '../ssl/virnect.key')),
@@ -156,9 +157,9 @@ const localWebpackConfig = merge(baseWebpackConfig(mode), {
     }),
 
     // new BundleAnalyzerPlugin({
-    //     analyzerHost: '127.0.0.1',
-    //     analyzerPort: 8887
-    // })
+    //   analyzerHost: '127.0.0.1',
+    //   analyzerPort: 8887,
+    // }),
   ],
 })
 

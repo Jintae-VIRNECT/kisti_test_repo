@@ -1,7 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-const ServiceComponent = () => import('components/service/ServiceLayout')
-const WorkspaceComponent = () => import('components/workspace/WorkspaceLayout')
+const ServiceComponent = () =>
+  import(/* webpackChunkName: "service" */ 'components/service/ServiceLayout')
+const WorkspaceComponent = () =>
+  import(
+    /* webpackChunkName: "workspace" */ 'components/workspace/WorkspaceLayout'
+  )
 
 Vue.use(VueRouter)
 

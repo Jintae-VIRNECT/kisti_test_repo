@@ -196,7 +196,7 @@ export default {
     localRecording(flag) {
       if (this.initing === false) return
       this.$call.sendControl(CONTROL.LOCAL_RECORD, !!flag)
-      // this.$localStorage.setAllow('localRecord', !!flag)
+      // window.myStorage.setAllow('localRecord', !!flag)
     },
     recordTarget(target) {
       if (this.initing === false) return
@@ -230,7 +230,7 @@ export default {
       const param = {}
       param[item] = setting
       this.setRecord(param)
-      this.$localStorage.setRecord(item, setting)
+      window.myStorage.setItemPiece('recordInfo', item, setting)
       // this.showToast()
     },
     showToast() {

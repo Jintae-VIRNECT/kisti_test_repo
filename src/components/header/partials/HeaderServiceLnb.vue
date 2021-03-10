@@ -67,6 +67,8 @@ export default {
       'view',
       'shareFile',
       'viewForce',
+      'settingInfo',
+      'myInfo',
     ]),
     hasLeader() {
       const idx = this.participants.findIndex(
@@ -122,6 +124,7 @@ export default {
 
       // leader
       if (this.account.roleType === ROLE.LEADER) {
+        //현재 view가 AR일때 다른 view를 선택하면 정말 이동할건지 확인 메시지
         if (this.view === VIEW.AR) {
           this.serviceConfirmTitle(
             this.$t('service.ar_exit'),
@@ -156,6 +159,7 @@ export default {
             return
           }
         }
+
         this.goTabConfirm(type)
       } // other user
       else {
@@ -163,9 +167,11 @@ export default {
           this.toastDefault(this.$t('service.toast_cannot_leave_ar'))
           return
         }
+
         if (type === VIEW.STREAM) {
           this.setView(VIEW.STREAM)
         }
+
         if (type === 'drawing') {
           if (this.shareFile && this.shareFile.id) {
             // this.drawingNotice = false
@@ -321,8 +327,12 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$call.addListener(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
-    this.$call.addListener(SIGNAL.AR_FEATURE, this.checkArFeature)
+    this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
+    this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)
   },
 }
 </script>

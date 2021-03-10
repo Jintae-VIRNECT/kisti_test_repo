@@ -157,7 +157,10 @@ export default {
     },
   },
   created() {
-    this.$call.addListener(SIGNAL.AR_DRAWING, this.receiveSignal)
+    this.$eventBus.$on(SIGNAL.AR_DRAWING, this.receiveSignal)
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.AR_DRAWING, this.receiveSignal)
   },
 }
 </script>

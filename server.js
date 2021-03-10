@@ -3,9 +3,12 @@ const route = require('./route')
 const app = express()
 const server = require('./server/module')
 const path = require('path')
+const compression = require('compression')
 
 var bodyParser = require('body-parser')
+
 app.use(bodyParser.json({ limit: '50mb' }))
+app.use(compression())
 
 app.use((req, res, next) => {
   res.header('X-Frame-Options', 'deny')

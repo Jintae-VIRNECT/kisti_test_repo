@@ -1,4 +1,5 @@
 export const SIGNAL = {
+  SYSTEM: 'signal:system',
   VIDEO: 'signal:video',
   CHAT: 'signal:chat',
   RESOLUTION: 'signal:resolution',
@@ -26,6 +27,7 @@ export const FILE = {
 export const VIDEO = {
   NORMAL: 'normal',
   SHARE: 'share',
+  SCREEN_SHARE: 'screenShare',
 }
 
 export const CAMERA = {

@@ -79,12 +79,13 @@ export default {
 
   /* Lifecycling */
   created() {
-    this.$call.addListener(SIGNAL.AR_POINTING, this.receivePointing)
+    this.$eventBus.$on(SIGNAL.AR_POINTING, this.receivePointing)
     this.$eventBus.$on(`control:${ACTION.AR_POINTING}:undo`, this.stackUndo)
     this.$eventBus.$on(`control:${ACTION.AR_POINTING}:redo`, this.stackRedo)
     this.$eventBus.$on(`control:${ACTION.AR_POINTING}:clear`, this.drawingClear)
   },
   beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.AR_POINTING, this.receivePointing)
     this.$eventBus.$off(`control:${ACTION.AR_POINTING}:undo`, this.stackUndo)
     this.$eventBus.$off(`control:${ACTION.AR_POINTING}:redo`, this.stackRedo)
     this.$eventBus.$off(

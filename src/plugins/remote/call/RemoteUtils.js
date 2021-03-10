@@ -18,6 +18,7 @@ import {
 
 import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
+import { checkInput } from 'utils/deviceCheck'
 
 export const addSessionEventListener = session => {
   let loading = false
@@ -62,13 +63,28 @@ export const addSessionEventListener = session => {
           ])
         }
       }
-      if (_.publisher.stream.hasVideo) {
-        _.sendCamera(
-          Store.getters['video'].isOn
-            ? CAMERA_STATUS.CAMERA_ON
-            : CAMERA_STATUS.CAMERA_OFF,
-          [event.connection.connectionId],
-        )
+      if (Store.getters['myInfo'].screenShare) {
+        _.sendScreenSharing(true, [event.connection.connectionId])
+      }
+
+      if (_.publisher) {
+        checkInput({ video: true, audio: false }).then(info => {
+          const hasVideo = info.hasVideo
+          if (hasVideo) {
+            if (_.publisher.stream.hasVideo) {
+              _.sendCamera(
+                Store.getters['video'].isOn
+                  ? CAMERA_STATUS.CAMERA_ON
+                  : CAMERA_STATUS.CAMERA_OFF,
+                [event.connection.connectionId],
+              )
+            }
+          } else {
+            _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [
+              event.connection.connectionId,
+            ])
+          }
+        })
       } else {
         _.sendCamera(CAMERA_STATUS.CAMERA_NONE, [event.connection.connectionId])
       }
@@ -177,6 +193,7 @@ export const addSessionEventListener = session => {
 
   /** 메인뷰 변경 */
   session.on(SIGNAL.VIDEO, event => {
+    window.vue.$eventBus.$emit(SIGNAL.VIDEO, event)
     // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type === VIDEO.SHARE) {
@@ -236,6 +253,54 @@ export const addSessionEventListener = session => {
         }
         Store.dispatch('setMainView', { id: data.id, force: true })
       }
+    } else if (data.type === VIDEO.SCREEN_SHARE) {
+      const isLeader = _.account.roleType === ROLE.LEADER
+      const participants = Store.getters['participants']
+      const idx = participants.findIndex(
+        user => user.connectionId === event.from.connectionId,
+      )
+      if (idx < 0) return
+
+      const noCamera = !participants[idx].hasCamera
+      const disabled = !data.enable
+      const forcedView = Store.getters['viewForce'] === true
+      const isSame =
+        event.from.connectionId === Store.getters['mainView'].connectionId
+
+      Store.commit('updateParticipant', {
+        connectionId: event.from.connectionId,
+        screenShare: data.enable,
+      })
+
+      if (!disabled) {
+        Store.commit('updateParticipant', {
+          connectionId: event.from.connectionId,
+          hasVideo: data.enable,
+        })
+      }
+
+      const releaseForcedView = [
+        isLeader,
+        disabled,
+        forcedView,
+        noCamera,
+        isSame,
+      ].every(condition => condition)
+
+      if (releaseForcedView) {
+        debug('screen share::', 'release forced view')
+        _.sendVideo(Store.getters['mainView'].id, false)
+      }
+
+      //상대방이 더이상 보낼 스트림(카메라, PC 공유)이 없음.
+      const noStream = [disabled, isSame, noCamera].every(
+        condition => condition,
+      )
+      if (noStream) {
+        Store.commit('clearMainView', event.from.connectionId)
+      }
+
+      //end of screen share
     } else {
       if (!Store.getters['allowCameraControl']) {
         Store.dispatch('setMainView', {
@@ -249,6 +314,7 @@ export const addSessionEventListener = session => {
   })
   /** 상대방 마이크 활성 정보 수신 */
   session.on(SIGNAL.MIC, event => {
+    window.vue.$eventBus.$emit(SIGNAL.MIC, event)
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     Store.commit('updateParticipant', {
@@ -258,6 +324,7 @@ export const addSessionEventListener = session => {
   })
   /** 상대방 스피커 활성 정보 수신 */
   session.on(SIGNAL.SPEAKER, event => {
+    window.vue.$eventBus.$emit(SIGNAL.SPEAKER, event)
     if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     Store.commit('updateParticipant', {
@@ -267,6 +334,7 @@ export const addSessionEventListener = session => {
   })
   /** 플래시 컨트롤 */
   session.on(SIGNAL.FLASH, event => {
+    window.vue.$eventBus.$emit(SIGNAL.FLASH, event)
     // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type !== FLASH.STATUS) return
@@ -277,6 +345,7 @@ export const addSessionEventListener = session => {
   })
   /** 카메라 컨트롤(zoom) */
   session.on(SIGNAL.CAMERA, event => {
+    window.vue.$eventBus.$emit(SIGNAL.CAMERA, event)
     const data = JSON.parse(event.data)
     if (data.type === CAMERA.ZOOM) {
       const track = _.publisher.stream.mediaStream.getVideoTracks()[0]
@@ -316,11 +385,16 @@ export const addSessionEventListener = session => {
       if (data.status === CAMERA_STATUS.CAMERA_ON) {
         params.hasVideo = true
       }
+      if (data.status === CAMERA_STATUS.CAMERA_NONE) {
+        params.hasCamera = false
+        params.hasVideo = false
+      }
       Store.commit('updateParticipant', params)
     }
   })
   /** 화면 해상도 설정 */
   session.on(SIGNAL.RESOLUTION, event => {
+    window.vue.$eventBus.$emit(SIGNAL.RESOLUTION, event)
     if (session.connection.connectionId === event.from.connectionId) return
     Store.commit('updateResolution', {
       ...JSON.parse(event.data),
@@ -329,6 +403,7 @@ export const addSessionEventListener = session => {
   })
   /** 리더 컨트롤(pointing, local record) */
   session.on(SIGNAL.CONTROL, event => {
+    window.vue.$eventBus.$emit(SIGNAL.CONTROL, event)
     // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type === CONTROL.POINTING) {
@@ -368,19 +443,10 @@ export const addSessionEventListener = session => {
       })
     }
   })
-  /** screen capture permission 수신 */
-  // session.on(SIGNAL.CAPTURE_PERMISSION, event => {
-  //   const data = JSON.parse(event.data)
-  //   if (data.type === CAPTURE_PERMISSION.RESPONSE) {
-  //     Store.commit('updateParticipant', {
-  //       connectionId: event.from.connectionId,
-  //       permission: data.isAllowed,
-  //     })
-  //   }
-  // })
 
   /** 채팅 수신 */
   session.on(SIGNAL.CHAT, event => {
+    window.vue.$eventBus.$emit(SIGNAL.CHAT, event)
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
@@ -404,6 +470,7 @@ export const addSessionEventListener = session => {
 
   /** 채팅 파일 수신 */
   session.on(SIGNAL.FILE, event => {
+    window.vue.$eventBus.$emit(SIGNAL.FILE, event)
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
@@ -461,6 +528,32 @@ export const addSessionEventListener = session => {
       window.vue.$eventBus.$emit('panoview:rotation', info)
     }
   })
+
+  /** Pointing */
+  session.on(SIGNAL.POINTING, event => {
+    window.vue.$eventBus.$emit(SIGNAL.POINTING, event)
+  })
+  /** Drawing */
+  session.on(SIGNAL.DRAWING, event => {
+    window.vue.$eventBus.$emit(SIGNAL.DRAWING, event)
+  })
+
+  /** screen capture permission 수신 */
+  session.on(SIGNAL.CAPTURE_PERMISSION, event => {
+    window.vue.$eventBus.$emit(SIGNAL.CAPTURE_PERMISSION, event)
+  })
+  /** AR feature */
+  session.on(SIGNAL.AR_FEATURE, event => {
+    window.vue.$eventBus.$emit(SIGNAL.AR_FEATURE, event)
+  })
+  /** AR Pointing */
+  session.on(SIGNAL.AR_POINTING, event => {
+    window.vue.$eventBus.$emit(SIGNAL.AR_POINTING, event)
+  })
+  /** AR Drawing */
+  session.on(SIGNAL.AR_DRAWING, event => {
+    window.vue.$eventBus.$emit(SIGNAL.AR_DRAWING, event)
+  })
 }
 
 const setUserObject = event => {
@@ -502,6 +595,7 @@ const setUserObject = event => {
     //@TODO:개발완료후 false
     // streamMode: uuid === '40247ff4cbe04a1e8ae3203298996f4c' ? true : false,
     rotationPos: null, //pano view의 회전 좌표
+    screenShare: false,
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {

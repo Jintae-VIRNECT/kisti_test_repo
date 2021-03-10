@@ -87,7 +87,7 @@ export default {
       const param = {}
       param[item] = setting
       this.setServerRecord(param)
-      this.$localStorage.setServerRecord(item, setting)
+      window.myStorage.setItemPiece('serverRecordInfo', item, setting)
       // this.showToast()
     },
     init() {

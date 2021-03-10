@@ -14,6 +14,7 @@
         loop
         muted
         playsinline
+        @play="mediaPlay"
         :srcObject.prop="stream"
         key="sub-video"
       ></video>
@@ -44,9 +45,9 @@ export default {
   data() {
     return {
       inited: false,
+      backInterval: null,
     }
   },
-  props: {},
   computed: {
     ...mapGetters(['mainView', 'view', 'viewAction']),
     stream() {
@@ -75,6 +76,30 @@ export default {
     this.$nextTick(() => {
       this.inited = true
     })
+  },
+  methods: {
+    mediaPlay() {
+      this.$nextTick(() => {
+        if (this.isSafari && this.isTablet) {
+          this.checkBackgroundStream()
+        }
+      })
+    },
+    checkBackgroundStream() {
+      if (this.backInterval) clearInterval(this.backInterval)
+      let lastFired = new Date().getTime()
+      let now = 0
+      this.backInterval = setInterval(() => {
+        now = new Date().getTime()
+        if (now - lastFired > 1000) {
+          this.$refs['subVideo'].play()
+        }
+        lastFired = now
+      }, 500)
+    },
+  },
+  beforeDestroy() {
+    if (this.backInterval) clearInterval(this.backInterval)
   },
 }
 </script>

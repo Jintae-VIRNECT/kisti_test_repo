@@ -46,7 +46,6 @@ export default {
         return
       }
       let video = !this.video.isOn
-
       this.setDevices({
         video: {
           isOn: video,
@@ -55,7 +54,7 @@ export default {
       this.$call.sendCamera(
         video ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
       )
-      this.$localStorage.setDevice('video', 'isOn', video)
+      window.myStorage.setDevice('video', 'isOn', video)
     },
   },
 

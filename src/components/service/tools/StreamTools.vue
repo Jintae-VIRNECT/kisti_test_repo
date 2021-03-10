@@ -3,13 +3,17 @@
     <moving v-if="isLeader && mainView.streamMode"></moving>
     <pointing></pointing>
     <color></color>
+    <template v-if="!isTablet && !isSafari">
+      <div class="division"></div>
+      <screen-share></screen-share>
+    </template>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { Moving, Pointing, Color } from './partials'
 import { ROLE } from 'configs/remote.config'
+import { Pointing, Color, ScreenShare, Moving } from './partials'
 
 export default {
   name: 'StreamTools',
@@ -17,6 +21,7 @@ export default {
     Moving,
     Pointing,
     Color,
+    ScreenShare,
   },
   computed: {
     ...mapGetters(['mainView']),

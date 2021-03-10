@@ -78,7 +78,9 @@ export default {
         const history = this.historyList.find(
           history => history.id === this.selected[0],
         )
-        FileSaver.saveAs(history.img, history.fileName)
+        const dataType = 'application/octet-stream'
+        const file = await base64ToBlob(history.img, dataType, history.fileName)
+        FileSaver.saveAs(file)
         this.selected = []
         return
       }

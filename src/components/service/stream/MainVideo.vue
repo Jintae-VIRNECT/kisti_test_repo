@@ -4,7 +4,10 @@
       class="main-video__box"
       @mouseenter="hoverTools = true"
       @mouseleave="hoverTools = false"
-      :class="{ shutter: showShutter, hidden: !loaded || emptyStream }"
+      :class="{
+        shutter: showShutter,
+        hidden: !loaded || emptyStream,
+      }"
     >
       <!-- 메인 비디오 뷰 -->
       <video
@@ -76,7 +79,7 @@
         <transition name="opacity">
           <fullscreen
             :hide.sync="hideFullBtn"
-            v-show="!hideFullBtn"
+            v-show="!hideFullBtn && !mainView.screenShare"
           ></fullscreen>
         </transition>
       </template>
@@ -183,6 +186,7 @@ export default {
       hideFullBtn: false,
 
       activeMovingControl: false,
+      backInterval: null,
     }
   },
   computed: {
@@ -194,6 +198,7 @@ export default {
       viewForce: 'viewForce',
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
+      view: 'view',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -235,6 +240,9 @@ export default {
       }
     },
     allowTools() {
+      if (this.mainView.screenShare) {
+        return false
+      }
       if (
         this.viewForce === true &&
         this.account.roleType === ROLE.LEADER &&
@@ -253,10 +261,12 @@ export default {
       }
     },
     emptyStream() {
+      const validCameraStatus = this.cameraStatus !== -1
+      const cameraOff = this.cameraStatus.state === 'off'
+      const cameraBackground = this.cameraStatus.state === 'background'
+
       return (
-        this.cameraStatus !== -1 &&
-        ((this.loaded && this.cameraStatus.state === 'off') ||
-          this.cameraStatus.state === 'background')
+        validCameraStatus && ((this.loaded && cameraOff) || cameraBackground)
       )
     },
   },
@@ -335,7 +345,22 @@ export default {
         this.optimizeVideoSize()
         this.loaded = true
         this.$eventBus.$emit('video:loaded', true)
+        if (this.isSafari && this.isTablet) {
+          this.checkBackgroundStream()
+        }
       })
+    },
+    checkBackgroundStream() {
+      if (this.backInterval) clearInterval(this.backInterval)
+      let lastFired = new Date().getTime()
+      let now = 0
+      this.backInterval = setInterval(() => {
+        now = new Date().getTime()
+        if (now - lastFired > 1000) {
+          this.$refs['mainVideo'].play()
+        }
+        lastFired = now
+      }, 500)
     },
     nextOptimize() {
       setTimeout(() => {
@@ -456,6 +481,7 @@ export default {
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
     this.$eventBus.$off('panoview:toggle', this.toggleMovingControl)
     window.removeEventListener('resize', this.nextOptimize)
+    if (this.backInterval) clearInterval(this.backInterval)
   },
   created() {
     this.$eventBus.$on('capture', this.doCapture)

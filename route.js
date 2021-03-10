@@ -3,6 +3,39 @@ const router = express.Router()
 const path = require('path')
 const config = require('./server/config')
 const url = require('url')
+const fs = require('fs')
+const { metaHEAD } = require('./server/metadata')
+
+const acceptLang = req => {
+  const lang = req.acceptsLanguages('ko', 'en')
+  if (lang) {
+    return lang
+  } else {
+    return 'en'
+  }
+}
+
+const extraHtml = fs.readFileSync('./dist/extra/index.html', 'utf8')
+const remoteHtml = fs.readFileSync('./dist/remote/index.html', 'utf8')
+let extra = {
+  en: extraHtml,
+  ko: extraHtml,
+}
+let remote = {
+  en: remoteHtml,
+  ko: remoteHtml,
+}
+
+if (config.getEnv() !== 'onpremise') {
+  extra = {
+    en: metaHEAD(extraHtml, 'en'),
+    ko: metaHEAD(extraHtml, 'ko'),
+  }
+  remote = {
+    en: metaHEAD(remoteHtml, 'en'),
+    ko: metaHEAD(remoteHtml, 'ko'),
+  }
+}
 
 function IsAllowBrowser(req) {
   const userAgent = req.headers['user-agent'] || ''
@@ -18,7 +51,6 @@ function IsAllowBrowser(req) {
 }
 
 function IsMobileBrowser(req) {
-  return false
   const userAgent = req.headers['user-agent'] || ''
   const isChromeMobile =
     userAgent.includes('Mobile') ||
@@ -38,7 +70,9 @@ router.get('/home', function(req, res) {
     if (IsMobileBrowser(req)) {
       res.redirect('/support')
     } else {
-      res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
+      const lang = acceptLang(req)
+      res.send(remote[lang])
+      // res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
     }
   } else {
     res.redirect('/support')
@@ -51,7 +85,9 @@ router.get('/service', function(req, res) {
     if (IsMobileBrowser(req)) {
       res.redirect('/support')
     } else {
-      res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
+      // res.sendFile(path.join(__dirname, '/dist/remote/index.html'))
+      const lang = acceptLang(req)
+      res.send(remote[lang])
     }
   } else {
     res.redirect('/support')
@@ -60,12 +96,15 @@ router.get('/service', function(req, res) {
 })
 
 router.get('/support', function(req, res) {
-  res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+  // res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+  const lang = acceptLang(req)
+  res.send(extra[lang])
 })
 
 if (config.getEnv() !== 'onpremise') {
   router.get('/policy/*', function(req, res) {
-    res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+    const lang = acceptLang(req)
+    res.send(extra[lang])
   })
 
   router.get('/policy', function(req, res) {
@@ -73,11 +112,13 @@ if (config.getEnv() !== 'onpremise') {
   })
 
   router.get('/OSS/*', function(req, res) {
-    res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+    const lang = acceptLang(req)
+    res.send(extra[lang])
   })
 
   router.get('/OSS', function(req, res) {
-    res.sendFile(path.join(__dirname, '/dist/extra/index.html'))
+    const lang = acceptLang(req)
+    res.send(extra[lang])
   })
 }
 
