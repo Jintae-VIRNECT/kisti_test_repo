@@ -1,8 +1,7 @@
 package com.virnect.serviceserver.infra.file;
 
-import com.virnect.file.FileType;
-import com.virnect.serviceserver.model.UploadResult;
-import io.minio.messages.DeleteObject;
+import com.virnect.data.domain.file.FileType;
+import com.virnect.data.dto.UploadResult;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -15,8 +14,8 @@ public interface IFileManagementService {
     String DEFAULT_ROOM_PROFILE = "default";
 
     int EXPIRE_DAY = 7; // 7 days expire time
-    final long MAX_USER_PROFILE_IMAGE_SIZE = 1048576 * 5; // 5MB in binary
-    final long MAX_FILE_SIZE = 1048576 * 20; // 20MB in binary
+    long MAX_USER_PROFILE_IMAGE_SIZE = 1048576 * 5; // 5MB in binary
+    long MAX_FILE_SIZE = 1048576 * 20; // 20MB in binary
 
     //default file extension list
     List<String> FILE_PROFILE_ALLOW_EXTENSION = Arrays.asList("jpg", "jpeg", "png", "gif", "JPG", "JPEG", "PNG", "GIF");
@@ -32,7 +31,6 @@ public interface IFileManagementService {
      * @param file - 업로드 요청 파일
      * @param dirPath - 파일 저장경로
      * @return - 업로드된 파일 url
-     * @throws IOException
      */
     UploadResult upload(MultipartFile file, String dirPath, FileType fileType) throws IOException, NoSuchAlgorithmException, InvalidKeyException;
 
