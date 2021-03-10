@@ -31,7 +31,7 @@ export const exportExcel = (raws, i18n, fileOptions) => {
     keys.push(['serverRecord'])
   }
 
-  if (fileOptions.userLocalRecord) {
+  if (fileOptions.useLocalRecord) {
     header.push(i18n.$t('excel.file_local_record'))
     keys.push(['localRecord'])
   }

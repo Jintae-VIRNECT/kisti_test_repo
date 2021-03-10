@@ -73,7 +73,7 @@ export default {
     ...mapGetters([
       'searchFilter',
       'useServerRecord',
-      'userLocalRecord',
+      'useLocalRecord',
       'useStorage',
     ]),
     excelBtnClass() {
@@ -188,7 +188,7 @@ export default {
 
         exportExcel(historys, this, {
           useServerRecord: this.useServerRecord,
-          userLocalRecord: this.userLocalRecord,
+          useLocalRecord: this.useLocalRecord,
           useStorage: this.useStorage,
         })
 

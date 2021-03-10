@@ -49,7 +49,7 @@
           >{{ $t('list.room_server_record') }}</span
         >
       </div>
-      <div v-if="userLocalRecord" class="history__header--text count">
+      <div v-if="useLocalRecord" class="history__header--text count">
         <span
           @click="setSort('LOCAL_RECORD_FILE_COUNT')"
           :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
@@ -112,7 +112,7 @@
               :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
-          <div v-if="userLocalRecord" class="history__text count">
+          <div v-if="useLocalRecord" class="history__text count">
             <count-button
               :count="history.localRecord"
               :images="{
@@ -255,12 +255,12 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['useServerRecord', 'userLocalRecord', 'useStorage']),
+    ...mapGetters(['useServerRecord', 'useLocalRecord', 'useStorage']),
     listExists() {
       return this.historys.length > 0
     },
     allowFileInfo() {
-      return this.useServerRecord && this.userLocalRecord && this.useStorage
+      return this.useServerRecord && this.useLocalRecord && this.useStorage
     },
   },
   methods: {

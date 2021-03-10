@@ -106,7 +106,7 @@ const getters = {
   targetCompany: state => state.companyInfo.companyCode,
 
   useServerRecord: state => state.companyInfo.recording,
-  userLocalRecord: state => state.companyInfo.localRecording,
+  useLocalRecord: state => state.companyInfo.localRecording,
   useStorage: state => state.companyInfo.storage,
 }
 
