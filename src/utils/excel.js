@@ -26,17 +26,17 @@ export const exportExcel = (raws, i18n, fileOptions) => {
     ['durationSec'],
   ]
 
-  if (fileOptions.allowServerRecordFileInfo) {
+  if (fileOptions.useServerRecord) {
     header.push(i18n.$t('excel.file_server_record'))
     keys.push(['serverRecord'])
   }
 
-  if (fileOptions.allowLocalRecordFileInfo) {
+  if (fileOptions.userLocalRecord) {
     header.push(i18n.$t('excel.file_local_record'))
     keys.push(['localRecord'])
   }
 
-  if (fileOptions.allowAttachFileInfo) {
+  if (fileOptions.useStorage) {
     header.push(i18n.$t('excel.file_attach_file'))
     keys.push(['attach'])
   }

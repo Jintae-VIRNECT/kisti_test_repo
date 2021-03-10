@@ -70,7 +70,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['searchFilter']),
+    ...mapGetters([
+      'searchFilter',
+      'useServerRecord',
+      'userLocalRecord',
+      'useStorage',
+    ]),
     excelBtnClass() {
       return [
         { 'excel-loading': this.excelLoading },
@@ -182,9 +187,9 @@ export default {
         })
 
         exportExcel(historys, this, {
-          allowServerRecordFileInfo: this.allowServerRecordFileInfo,
-          allowLocalRecordFileInfo: this.allowLocalRecordFileInfo,
-          allowAttachFileInfo: this.allowAttachFileInfo,
+          useServerRecord: this.useServerRecord,
+          userLocalRecord: this.userLocalRecord,
+          useStorage: this.useStorage,
         })
 
         this.excelLoading = false

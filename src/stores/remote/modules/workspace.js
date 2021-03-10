@@ -2,6 +2,7 @@ import {
   INIT_WORKSPACE,
   CHANGE_WORKSPACE,
   CLEAR_WORKSPACE,
+  SET_COMPANY_INFO,
 } from '../mutation-types'
 import { PLAN_STATUS } from 'configs/status.config'
 
@@ -21,8 +22,25 @@ const setWorkspaceObj = info => {
   }
 }
 
+const companyInfo = {
+  companyCode: 0, // 회사 코드
+  translation: false, // 번역기능
+  tts: false, // TTS
+  sttSync: false, // STT 동기
+  sttStreaming: false, // STT 스트리밍
+  recording: false, // 서버녹화
+  storage: false, // 파일 업/다운로드
+  sessionType: 'PRIVATE', // 오픈방 유무 (PRIVATE, OPEN, PUBLIC)
+  licenseName: '',
+  languageCodes: [],
+  localRecording: false,
+  audioRestrictedMode: false,
+  videoRestrictedMode: false,
+}
+
 const state = {
   current: {},
+  companyInfo: companyInfo,
   workPlan: [],
   workspaceList: [
     // {
@@ -71,6 +89,11 @@ const mutations = {
   [CLEAR_WORKSPACE](state) {
     state.current = {}
   },
+  [SET_COMPANY_INFO](state, payload) {
+    for (let key in payload) {
+      state.companyInfo[key] = payload[key]
+    }
+  },
 }
 
 const getters = {
@@ -80,6 +103,11 @@ const getters = {
   },
   workspace: state => state.current,
   workspaceList: state => state.workspaceList,
+  targetCompany: state => state.companyInfo.companyCode,
+
+  useServerRecord: state => state.companyInfo.recording,
+  userLocalRecord: state => state.companyInfo.localRecording,
+  useStorage: state => state.companyInfo.storage,
 }
 
 export default {

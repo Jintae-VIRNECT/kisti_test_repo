@@ -42,21 +42,21 @@
         >
       </div>
 
-      <div v-if="allowServerRecordFileInfo" class="history__header--text count">
+      <div v-if="useServerRecord" class="history__header--text count">
         <span
           @click="setSort('SERVER_RECORD_FILE_COUNT')"
           :class="{ active: sort.column === 'SERVER_RECORD_FILE_COUNT' }"
           >{{ $t('list.room_server_record') }}</span
         >
       </div>
-      <div v-if="allowLocalRecordFileInfo" class="history__header--text count">
+      <div v-if="userLocalRecord" class="history__header--text count">
         <span
           @click="setSort('LOCAL_RECORD_FILE_COUNT')"
           :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
           >{{ $t('list.room_local_record') }}</span
         >
       </div>
-      <div v-if="allowAttachFileInfo" class="history__header--text count">
+      <div v-if="useStorage" class="history__header--text count">
         <span
           @click="setSort('ATTACHED_FILE_COUNT')"
           :class="{ active: sort.column === 'ATTACHED_FILE_COUNT' }"
@@ -100,7 +100,7 @@
             <collabo-status :status="history.status"> </collabo-status>
           </div>
 
-          <div v-if="allowServerRecordFileInfo" class="history__text count">
+          <div v-if="useServerRecord" class="history__text count">
             <count-button
               :count="history.serverRecord"
               :images="{
@@ -112,7 +112,7 @@
               :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
-          <div v-if="allowLocalRecordFileInfo" class="history__text count">
+          <div v-if="userLocalRecord" class="history__text count">
             <count-button
               :count="history.localRecord"
               :images="{
@@ -124,7 +124,7 @@
               :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
-          <div v-if="allowAttachFileInfo" class="history__text count">
+          <div v-if="useStorage" class="history__text count">
             <count-button
               :count="history.attach"
               :images="{
@@ -199,7 +199,7 @@ import {
   getLocalRecordFiles,
 } from 'api/http/file'
 
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 
 import { ROLE } from 'configs/remote.config'
@@ -255,15 +255,12 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['useServerRecord', 'userLocalRecord', 'useStorage']),
     listExists() {
       return this.historys.length > 0
     },
     allowFileInfo() {
-      return (
-        this.allowServerRecordFileInfo &&
-        this.allowLocalRecordFileInfo &&
-        this.allowAttachFileInfo
-      )
+      return this.useServerRecord && this.userLocalRecord && this.useStorage
     },
   },
   methods: {
