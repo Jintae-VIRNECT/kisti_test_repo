@@ -212,7 +212,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		boolean paging,
 		Pageable pageable
 	) {
-		long offSet = pageable.getOffset();
+		/*long offSet = pageable.getOffset();
 		int pageSize = pageable.getPageSize();
 		if (!paging) {
 			offSet = 0;
@@ -232,7 +232,31 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.limit(pageSize)
 			.orderBy(room.createdDate.desc())
 			.distinct().fetchResults();
-		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());
+		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
+
+		JPQLQuery<Room> queryResult = query.selectFrom(room)
+			.leftJoin(room.members, member).fetchJoin()
+			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
+			.where(
+				room.workspaceId.eq(workspaceId),
+				room.members.any().uuid.eq(userId)
+					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
+				room.roomStatus.eq(RoomStatus.ACTIVE),
+				room.members.any().memberStatus.notIn(MemberStatus.EVICTED)
+			).distinct();
+
+		long totalCount = queryResult.fetchCount();
+
+		List<Room> results;
+
+		if (paging) {
+			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		} else {
+			results = Objects.requireNonNull(queryResult.fetch());
+		}
+
+		return new PageImpl<>(results, pageable, totalCount);
+
 	}
 
 	@Override

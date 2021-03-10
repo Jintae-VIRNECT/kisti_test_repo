@@ -142,13 +142,13 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 		String search,
 		Pageable pageable
 	) {
-		JPQLQuery<RoomHistory> queryResult =query.selectFrom(roomHistory)
+		JPQLQuery<RoomHistory> queryResult = query.selectFrom(roomHistory)
 			.leftJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
 				roomHistory.workspaceId.eq(workspaceId),
 				roomHistory.memberHistories.any().uuid.eq(userId)
-					.and(roomHistory.memberHistories.any().uuid.in(userIds)),
+					.and(roomHistory.memberHistories.any().uuid.in(userId)),
 				roomHistory.memberHistories.any().historyDeleted.eq(false),
 				roomHistory.isNotNull(),
 				includeTitleSearch(search)
@@ -167,8 +167,8 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 	 */
 	private BooleanExpression includeTitleSearch(String search){
 		if (search == null || search.isEmpty()) {
-			return roomHistory.title.like("");
+			return null;
 		}
-		return roomHistory.title.like(search);
+		return roomHistory.title.contains(search);
 	}
 }
