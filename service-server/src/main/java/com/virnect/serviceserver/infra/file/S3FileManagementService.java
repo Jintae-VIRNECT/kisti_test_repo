@@ -40,6 +40,7 @@ import lombok.RequiredArgsConstructor;
 import com.virnect.data.domain.file.FileType;
 import com.virnect.data.dto.UploadResult;
 import com.virnect.data.error.ErrorCode;
+import com.virnect.data.infra.file.IFileManagementService;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 import com.virnect.serviceserver.infra.utils.JsonUtil;
 import com.virnect.serviceserver.infra.utils.LogMessage;
