@@ -88,6 +88,7 @@ public class HistoryService {
 				}
 				return 0;
 			});
+
 			// Set Member List to Room Information Response
 			roomHistoryInfoResponse.setMemberList(memberInfoList);
 			roomHistoryInfoList.add(roomHistoryInfoResponse);

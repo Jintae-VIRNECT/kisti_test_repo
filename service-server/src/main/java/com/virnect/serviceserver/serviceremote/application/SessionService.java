@@ -1152,7 +1152,7 @@ public class SessionService {
 
 			// Mapping Member List Data to Member Information List
 			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				//.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
 				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 				.collect(Collectors.toList());
 
@@ -1171,14 +1171,23 @@ public class SessionService {
 				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
 
-			memberInfoList.sort((t1, t2) -> {
-				if (t1.getMemberType().equals(MemberType.LEADER)) {
-					return 1;
-				}
-				return 0;
-			});
+			roomInfoResponse.setMemberList(
+				setLeader(memberInfoList)
+			);
 
-			roomInfoResponse.setMemberList(memberInfoList);
+			/*memberInfoList.stream().sorted(Comparator.comparing(MemberInfoResponse::getMemberType))
+			.collect(Collectors.toList());*/
+
+			/*memberInfoList.sort((t1, t2) -> {
+				if (t1.getMemberType().equals(MemberType.LEADER)) {
+					System.out.println(t1.getMemberType());
+					return 1;
+				} else {
+					return -1;
+				}
+			});*/
+
+			//roomInfoResponse.setMemberList(memberInfoList);
 			roomInfoList.add(roomInfoResponse);
 		}
 
@@ -1201,9 +1210,24 @@ public class SessionService {
 				.last(true)
 				.build();
 		}
-
 		return new RoomInfoListResponse(roomInfoList, pageMeta);
 	}
+
+	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
+		Collections.sort(members, (t1, t2) -> {
+			int index1 = t1.getMemberType().ordinal();
+			int index2 = t2.getMemberType().ordinal();
+			if (index1 > index2) {
+				return 1;
+			} else if (index1 == index2) {
+				return 0;
+			} else {
+				return -1;
+			}
+		});
+		return members;
+	}
+
 
 	public RoomInfoListResponse getRoomListStandardSearch(
 		String workspaceId,

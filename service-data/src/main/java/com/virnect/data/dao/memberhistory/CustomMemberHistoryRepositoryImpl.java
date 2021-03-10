@@ -64,8 +64,8 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 			.limit(pageSize)
 			.orderBy(memberHistory.createdDate.desc())
 			.orderBy()
-			.distinct().fetchResults();*/
-		//return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());
+			.distinct().fetchResults();
+		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
 
 		JPQLQuery<MemberHistory> queryResult = query
 			.selectFrom(memberHistory)
@@ -75,11 +75,11 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 				memberHistory.uuid.eq(userId),
 				memberHistory.roomHistory.isNotNull(),
 				memberHistory.historyDeleted.isFalse()
-			).distinct();
+			)
+			.orderBy(memberHistory.createdDate.desc())
+			.distinct();
 		long totalCount = queryResult.fetchCount();
-
 		List<MemberHistory> results;
-
 		if (paging) {
 			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		} else {

@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
+import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.session.SessionType;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoResponse;
 
@@ -34,4 +35,5 @@ public class RoomInfoResponse {
 
     @ApiModelProperty(value = "Remote Session Allocated Member Information List", position = 6)
     private List<MemberInfoResponse> memberList;
+
 }
