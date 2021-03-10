@@ -230,6 +230,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			)
 			.offset(offSet)
 			.limit(pageSize)
+			.orderBy(room.createdDate.desc())
 			.distinct().fetchResults();
 		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());
 	}
@@ -255,6 +256,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
+			.orderBy(room.createdDate.desc())
 			.distinct().fetchResults();
 		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());
 	}
@@ -279,6 +281,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
+			.orderBy(room.createdDate.desc())
 			.distinct().fetchResults();
 		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());
 	}

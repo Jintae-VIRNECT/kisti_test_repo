@@ -152,7 +152,9 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				roomHistory.memberHistories.any().historyDeleted.eq(false),
 				roomHistory.isNotNull(),
 				includeTitleSearch(search)
-			).distinct();
+			)
+			.orderBy(roomHistory.createdDate.desc())
+			.distinct();
 		long totalCount = queryResult.fetchCount();
 		List<RoomHistory> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(result, pageable, totalCount);

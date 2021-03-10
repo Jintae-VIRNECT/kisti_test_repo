@@ -62,6 +62,7 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 			)
 			.offset(offSet)
 			.limit(pageSize)
+			.orderBy(memberHistory.createdDate.desc())
 			.distinct().fetchResults();
 		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());
 	}
