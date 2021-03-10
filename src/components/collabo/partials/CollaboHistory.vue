@@ -23,7 +23,7 @@
       </div>
       <div
         class="history__header--text start-date"
-        :class="{ 'hide-tablet': allowFileInfo }"
+        :class="{ 'hide-tablet': showFileInfo }"
       >
         <span
           @click="setSort('ACTIVE_DATE')"
@@ -33,7 +33,7 @@
       </div>
       <div
         class="history__header--text state"
-        :class="{ 'hide-tablet': allowFileInfo }"
+        :class="{ 'hide-tablet': showFileInfo }"
       >
         <span
           @click="setSort('STATUS')"
@@ -42,21 +42,30 @@
         >
       </div>
 
-      <div v-if="useServerRecord" class="history__header--text count">
+      <div
+        v-if="useServerRecord && allowFileInfo"
+        class="history__header--text count"
+      >
         <span
           @click="setSort('SERVER_RECORD_FILE_COUNT')"
           :class="{ active: sort.column === 'SERVER_RECORD_FILE_COUNT' }"
           >{{ $t('list.room_server_record') }}</span
         >
       </div>
-      <div v-if="useLocalRecord" class="history__header--text count">
+      <div
+        v-if="useLocalRecord && allowFileInfo"
+        class="history__header--text count"
+      >
         <span
           @click="setSort('LOCAL_RECORD_FILE_COUNT')"
           :class="{ active: sort.column === 'LOCAL_RECORD_FILE_COUNT' }"
           >{{ $t('list.room_local_record') }}</span
         >
       </div>
-      <div v-if="useStorage" class="history__header--text count">
+      <div
+        v-if="useStorage && allowFileInfo"
+        class="history__header--text count"
+      >
         <span
           @click="setSort('ATTACHED_FILE_COUNT')"
           :class="{ active: sort.column === 'ATTACHED_FILE_COUNT' }"
@@ -89,18 +98,21 @@
           </div>
           <div
             class="history__text start-date"
-            :class="{ 'hide-tablet': allowFileInfo }"
+            :class="{ 'hide-tablet': showFileInfo }"
           >
             {{ date(history.activeDate) }}
           </div>
           <div
             class="history__text state"
-            :class="{ 'hide-tablet': allowFileInfo }"
+            :class="{ 'hide-tablet': showFileInfo }"
           >
             <collabo-status :status="history.status"> </collabo-status>
           </div>
 
-          <div v-if="useServerRecord" class="history__text count">
+          <div
+            v-if="useServerRecord && allowFileInfo"
+            class="history__text count"
+          >
             <count-button
               :count="history.serverRecord"
               :images="{
@@ -112,7 +124,10 @@
               :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
-          <div v-if="useLocalRecord" class="history__text count">
+          <div
+            v-if="useLocalRecord && allowFileInfo"
+            class="history__text count"
+          >
             <count-button
               :count="history.localRecord"
               :images="{
@@ -124,7 +139,7 @@
               :hover="hover && hoverIndex === index"
             ></count-button>
           </div>
-          <div v-if="useStorage" class="history__text count">
+          <div v-if="useStorage && allowFileInfo" class="history__text count">
             <count-button
               :count="history.attach"
               :images="{
@@ -259,8 +274,13 @@ export default {
     listExists() {
       return this.historys.length > 0
     },
-    allowFileInfo() {
-      return this.useServerRecord && this.useLocalRecord && this.useStorage
+    showFileInfo() {
+      return (
+        this.useServerRecord &&
+        this.useLocalRecord &&
+        this.useStorage &&
+        this.allowFileInfo
+      )
     },
   },
   methods: {

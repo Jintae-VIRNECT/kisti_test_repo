@@ -58,9 +58,8 @@ module.exports = {
   },
   getSettings() {
     // for test
-    // settingConfig['ALLOW_SERVER_RECORD_FILE_INFO'] = false
-    // settingConfig['ALLOW_LOCAL_RECORD_FILE_INFO'] = true
-    // settingConfig['ALLOW_ATTACH_FILE_INFO'] = true
+    // settingConfig['ALLOW_FILE_INFO'] = false
+
     return settingConfig
   },
   getConfigs() {

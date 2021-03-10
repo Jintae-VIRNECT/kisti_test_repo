@@ -187,9 +187,9 @@ export default {
         })
 
         exportExcel(historys, this, {
-          useServerRecord: this.useServerRecord,
-          useLocalRecord: this.useLocalRecord,
-          useStorage: this.useStorage,
+          useServerRecord: this.useServerRecord && this.allowFileInfo,
+          useLocalRecord: this.useLocalRecord && this.allowFileInfo,
+          useStorage: this.useStorage && this.allowFileInfo,
         })
 
         this.excelLoading = false

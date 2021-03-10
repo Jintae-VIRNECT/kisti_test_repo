@@ -1,6 +1,6 @@
 import { mapGetters } from 'vuex'
 import dayjs from 'dayjs'
-import { RUNTIME_ENV, RUNTIME } from 'configs/env.config'
+import { RUNTIME_ENV, RUNTIME, SETTINGS } from 'configs/env.config'
 
 export default {
   data() {
@@ -97,6 +97,14 @@ export default {
     },
     isOnpremise() {
       return RUNTIME_ENV === RUNTIME.ONPREMISE ? true : false
+    },
+    allowFileInfo() {
+      //default true
+      if (SETTINGS.ALLOW_FILE_INFO === undefined) {
+        return true
+      } else {
+        return SETTINGS.ALLOW_FILE_INFO
+      }
     },
   },
   methods: {
