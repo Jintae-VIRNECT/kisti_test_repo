@@ -64,9 +64,6 @@ export default {
       })
     },
     initPano() {
-      console.log('current pano viewer type::', this.type)
-      //동적으로 캔버스 크기 제어 필요함
-
       this.isPanoView = true
 
       const container = this.$refs['pano-video']
@@ -81,8 +78,8 @@ export default {
         this.videoElement = document.querySelector('#' + this.videoElementId)
       }
 
-      container.style.width = this.videoElement.offsetWidth + 'px'
-      container.style.height = this.videoElement.offsetHeight + 'px'
+      container.style.width = '100%'
+      container.style.height = '100%'
 
       this.videoElement.style.visibility = 'hidden'
 
@@ -97,9 +94,6 @@ export default {
 
         this.panoViewer.on('viewChange', e => {
           if (this.type === 'control') {
-            console.log('그냥 yaw', e.yaw)
-            console.log('그냥 pitch', e.pitch)
-
             this.$call.sendPanoRotation({
               yaw: e.yaw,
               pitch: e.pitch,
@@ -142,13 +136,16 @@ export default {
     },
     resize() {
       if (this.panoViewer) {
-        this.panoViewer.updateViewportDimensions()
+        setTimeout(() => {
+          this.panoViewer.updateViewportDimensions()
+        }, 1000)
       }
     },
   },
   mounted() {
     this.$eventBus.$on('panoview:rotation', this.rotate)
     this.$eventBus.$on('panoview:toggle', this.toggle)
+    this.$eventBus.$on('video:fullscreen', this.resize)
 
     this.initPano()
 
@@ -159,6 +156,7 @@ export default {
 
     this.$eventBus.$off('panoview:rotation', this.rotate)
     this.$eventBus.$off('panoview:toggle', this.toggle)
+    this.$eventBus.$off('video:fullscreen', this.resize)
 
     window.removeEventListener('resize', this.resize)
     this.videoElement.style.visibility = 'visible'
@@ -166,7 +164,7 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .pano-container {
   outline: none;
 }
