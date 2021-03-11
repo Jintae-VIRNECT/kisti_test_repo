@@ -13,7 +13,6 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.Logger;
 import reactor.util.Loggers;
@@ -37,17 +36,18 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
 
 	@Override
 	public Mono<Void> handle(ServerWebExchange exchange, Throwable ex) {
-		logger.error("[GATEWAY EXCEPTION HANDLER] : {}", ex.getMessage(), ex);
-
 		String message = "";
+
 		// Gateway Security Related Exception Handling
 		if (ex.getClass() == GatewaySecurityException.class) {
+			logger.error("[GATEWAY EXCEPTION HANDLER][SECURITY] : {}", ex.getMessage(), ex);
+
 			message = errorMessage(((GatewaySecurityException)ex).getErrorCode());
 			ServerHttpResponse response = exchange.getResponse();
 			response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 			response.getHeaders().set("encrypt", "false");
 			DataBuffer dataBuffer = response.bufferFactory().wrap(message.getBytes(StandardCharsets.UTF_8));
-			return response.writeWith(Flux.just(dataBuffer));
+			return response.writeWith(Mono.just(dataBuffer));
 		}
 
 		// Jwt Related Exception Handling
@@ -62,6 +62,7 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler {
 		ServerHttpResponse response = exchange.getResponse();
 		response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
 		DataBuffer dataBuffer = response.bufferFactory().wrap(message.getBytes(StandardCharsets.UTF_8));
-		return response.writeWith(Flux.just(dataBuffer));
+		logger.error("[GATEWAY EXCEPTION HANDLER][TOKEN_SECURITY] : {}", ex.getMessage());
+		return response.writeWith(Mono.just(dataBuffer));
 	}
 }
