@@ -66,6 +66,7 @@
 
         <!-- 360 화면 뷰 only -->
         <moving-viewer
+          ref="movingViewer"
           v-if="mainView.streamMode"
           class="main-video__moving-viewer"
         ></moving-viewer>
@@ -199,6 +200,7 @@ export default {
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
       view: 'view',
+      mainPanoCanvas: 'mainPanoCanvas',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -414,9 +416,7 @@ export default {
 
       const tmpCtx = tmpCanvas.getContext('2d')
 
-      tmpCtx.drawImage(videoEl, 0, 0, width, height)
-
-      tmpCanvas.toBlob(blob => {
+      const canvasToBlob = blob => {
         const imgId = parseInt(
           Date.now()
             .toString()
@@ -431,7 +431,41 @@ export default {
           width,
           height,
         })
-      }, 'image/png')
+      }
+
+      if (this.mainView.streamMode) {
+        //pano canvas -> dummy video element -> capture canvas
+        const panoCanvas = this.$refs['movingViewer'].$el.querySelector(
+          'canvas',
+        )
+
+        const videoElement = document.createElement('video')
+        const canvasStream = panoCanvas.captureStream(24)
+
+        videoElement.srcObject = canvasStream
+
+        videoElement.muted = true
+        videoElement.id = 'screen-capture-video'
+
+        videoElement.style.width = width
+        videoElement.style.height = height
+        videoElement.style.opacity = '0'
+        videoElement.style.position = 'absolute'
+        videoElement.style.zIndex = '-999999'
+
+        document.body.appendChild(videoElement)
+
+        videoElement.onloadeddata = async event => {
+          tmpCtx.drawImage(videoElement, 0, 0, width, height)
+          tmpCanvas.toBlob(canvasToBlob, 'image/png')
+          videoElement.remove()
+        }
+
+        videoElement.play()
+      } else {
+        tmpCtx.drawImage(videoEl, 0, 0, width, height)
+        tmpCanvas.toBlob(canvasToBlob, 'image/png')
+      }
     },
     toggleLocalTimer(status) {
       if (status === 'START') {
