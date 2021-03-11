@@ -804,6 +804,11 @@ const _ = {
           }
 
           Store.commit('updateParticipant', participantInfo)
+          _.sendCamera(
+            tempPublisher.stream.hasVideo
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_NONE,
+          )
           if (tempPublisher.stream.hasVideo) {
             const track = mediaStream.getVideoTracks()[0]
             const settings = track.getSettings()
