@@ -61,6 +61,8 @@ export default {
     viewForce() {
       if (!this.viewForce) {
         this.$eventBus.$emit('panoview:toggle', false)
+      } else if (this.viewMoving && this.viewForce && this.isLeader) {
+        this.$eventBus.$emit('panoview:toggle', true)
       }
     },
     viewAction() {
@@ -86,12 +88,10 @@ export default {
     mousedown() {
       if (!this.cursorGrabbing) {
         this.cursorGrabbing = true
-        //무빙 활성화
       }
     },
     mouseup() {
       this.cursorGrabbing = false
-      //무빙 종료
     },
 
     keyEventHandler(e) {
@@ -120,7 +120,9 @@ export default {
     window.removeEventListener('keydown', this.keyEventHandler)
     window.removeEventListener('keyup', this.keyUpEventHandler)
     window.removeEventListener('blur', this.focusOut)
+
     if (this.viewAction === ACTION.STREAM_MOVING) {
+      console.log('set to default')
       this.setAction('default')
     }
   },
