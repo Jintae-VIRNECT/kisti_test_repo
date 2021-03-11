@@ -18,18 +18,18 @@
     <chat-tts ref="chatTts"></chat-tts>
     <div>
       <transition name="hide-back">
-        <chat-input v-if="!speech" :speech.sync="speech"></chat-input>
+        <chat-input v-if="!usingStt" :speech="usingStt"></chat-input>
       </transition>
       <transition name="hide-bottom">
         <chat-speech
-          v-if="speech && translate.sttSync"
-          @hidespeech="speech = false"
+          v-if="usingStt && translate.sttSync"
+          @hidespeech="useStt(false)"
         ></chat-speech>
       </transition>
       <transition name="hide-bottom">
         <chat-speech-streaming
-          v-if="speech && !translate.sttSync"
-          @hidespeech="speech = false"
+          v-if="usingStt && !translate.sttSync"
+          @hidespeech="useStt(false)"
         ></chat-speech-streaming>
       </transition>
     </div>
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import ChatItem from './ChatItem'
 import ChatInput from './ChatInput'
 import ChatSpeech from './ChatSpeech'
@@ -52,13 +52,8 @@ export default {
     ChatSpeechStreaming,
     ChatTts,
   },
-  data() {
-    return {
-      speech: false,
-    }
-  },
   computed: {
-    ...mapGetters(['chatList', 'view', 'translate']),
+    ...mapGetters(['chatList', 'view', 'translate', 'usingStt']),
   },
   watch: {
     chatList: {
@@ -78,7 +73,7 @@ export default {
         }
       }, 300)
     },
-    speech() {
+    usingStt() {
       setTimeout(() => {
         if (this.$refs['chatListScrollbar']) {
           this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
@@ -87,6 +82,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions(['useStt']),
     doTts(info) {
       this.$refs['chatTts'].doTts(info)
     },
