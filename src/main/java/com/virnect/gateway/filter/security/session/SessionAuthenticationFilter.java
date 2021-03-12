@@ -68,6 +68,7 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 			if (isSessionCookieExist(exchange.getRequest())) {
 				return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
 			}
+			return chain.filter(exchange);
 		}
 
 		if (!isAuthorizationHeaderEmpty(exchange.getRequest()) || !isSessionCookieExist(exchange.getRequest())) {
