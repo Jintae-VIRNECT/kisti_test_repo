@@ -38,7 +38,7 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 	@Value("${jwt.secret}")
 	private String secretKey;
 
-	@Value("${spring.profile.active}")
+	@Value("${spring.profiles.active}")
 	private String activeProfile;
 
 

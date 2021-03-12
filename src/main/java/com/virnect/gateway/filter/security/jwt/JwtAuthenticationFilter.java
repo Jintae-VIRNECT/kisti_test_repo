@@ -44,7 +44,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 	private final SessionCookieProperty sessionCookieProperty;
 	@Value("${jwt.secret}")
 	private String secretKey;
-	@Value("${spring.profile.active}")
+	@Value("${spring.profiles.active}")
 	private String activeProfile;
 
 	@PostConstruct
