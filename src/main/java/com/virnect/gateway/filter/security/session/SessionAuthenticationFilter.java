@@ -38,6 +38,10 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 	@Value("${jwt.secret}")
 	private String secretKey;
 
+	@Value("${spring.profile.active}")
+	private String activeProfile;
+
+
 	@PostConstruct
 	public void init() {
 		log.info("Session Authentication Filter - Active.");
@@ -50,37 +54,42 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 		ServerWebExchange exchange,
 		GatewayFilterChain chain
 	) {
-		//
-		// String requestUrlPath = exchange.getRequest().getURI().getPath();
-		// boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auths") ||
-		// 	requestUrlPath.startsWith("/v1/auth") ||
-		// 	requestUrlPath.startsWith("/admin") ||
-		// 	requestUrlPath.startsWith("/users/find") ||
-		// 	requestUrlPath.startsWith("/licenses/allocate/check") ||
-		// 	requestUrlPath.startsWith("/licenses/allocate") ||
-		// 	requestUrlPath.startsWith("/licenses/deallocate") ||
-		// 	requestUrlPath.contains("/licenses/deallocate") ||
-		// 	requestUrlPath.contains("/licenses/sdk/authentication") ||
-		// 	requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
-		// 	requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
-		//
-		// if (isAuthenticateSkipUrl) {
-		// 	if (isSessionCookieExist(exchange.getRequest())) {
-		// 		return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
-		// 	}
-		// 	return chain.filter(exchange);
-		// }
-		//
-		// if (!isAuthorizationHeaderEmpty(exchange.getRequest()) || !isSessionCookieExist(exchange.getRequest())) {
-		// 	throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
-		// }
-		//
-		// return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
+
 		String requestUrlPath = exchange.getRequest().getURI().getPath();
-		if (isSessionCookieExist(exchange.getRequest())) {
-			return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
+		boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auths") ||
+			requestUrlPath.startsWith("/v1/auth") ||
+			requestUrlPath.startsWith("/admin") ||
+			requestUrlPath.startsWith("/users/find") ||
+			requestUrlPath.startsWith("/licenses/allocate/check") ||
+			requestUrlPath.startsWith("/licenses/allocate") ||
+			requestUrlPath.startsWith("/licenses/deallocate") ||
+			requestUrlPath.contains("/licenses/deallocate") ||
+			requestUrlPath.contains("/licenses/sdk/authentication") ||
+			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
+			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
+
+		if (isAuthenticateSkipUrl) {
+			if (isSessionCookieExist(exchange.getRequest())) {
+				return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
+			}
+			return chain.filter(exchange);
 		}
-		return chain.filter(exchange);
+
+		// if develop environment
+		if ((activeProfile.equals("develop") || activeProfile.equals("onpremise")) && requestUrlPath.contains("/api-docs")) {
+			return chain.filter(exchange);
+		}
+
+		if (isAuthorizationHeaderEmpty(exchange.getRequest()) || !isSessionCookieExist(exchange.getRequest())) {
+			throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
+		}
+
+		return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
+		// String requestUrlPath = exchange.getRequest().getURI().getPath();
+		// if (isSessionCookieExist(exchange.getRequest())) {
+		// 	return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
+		// }
+		// return chain.filter(exchange);
 	}
 
 	private Mono<Void> showUserSessionInfoAndDoFilter(
@@ -108,7 +117,7 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 	}
 
 	private boolean isAuthorizationHeaderEmpty(ServerHttpRequest request) {
-		return !request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION);
+		return request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION);
 	}
 
 	private boolean isSessionCookieExist(ServerHttpRequest request) {

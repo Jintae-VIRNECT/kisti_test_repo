@@ -8,7 +8,6 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -39,13 +38,14 @@ import com.virnect.gateway.filter.security.session.SessionCookieProperty;
 @Component
 @RequiredArgsConstructor
 @Order(11)
-@Profile(value = {"staging", "production"})
 public class JwtAuthenticationFilter implements GlobalFilter {
 	private final static Logger logger = Loggers.getLogger(
 		"com.virnect.gateway.filter.security.jwt.JwtAuthenticationFilter");
 	private final SessionCookieProperty sessionCookieProperty;
 	@Value("${jwt.secret}")
 	private String secretKey;
+	@Value("${spring.profile.active}")
+	private String activeProfile;
 
 	@PostConstruct
 	protected void init() {
@@ -70,6 +70,11 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
 
 		if (isAuthenticateSkipUrl) {
+			return chain.filter(exchange);
+		}
+
+		// if develop environment
+		if ((activeProfile.equals("develop") || activeProfile.equals("onpremise")) && requestUrlPath.contains("/api-docs")) {
 			return chain.filter(exchange);
 		}
 
