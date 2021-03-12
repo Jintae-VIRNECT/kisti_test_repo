@@ -50,32 +50,37 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 		ServerWebExchange exchange,
 		GatewayFilterChain chain
 	) {
-
+		//
+		// String requestUrlPath = exchange.getRequest().getURI().getPath();
+		// boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auths") ||
+		// 	requestUrlPath.startsWith("/v1/auth") ||
+		// 	requestUrlPath.startsWith("/admin") ||
+		// 	requestUrlPath.startsWith("/users/find") ||
+		// 	requestUrlPath.startsWith("/licenses/allocate/check") ||
+		// 	requestUrlPath.startsWith("/licenses/allocate") ||
+		// 	requestUrlPath.startsWith("/licenses/deallocate") ||
+		// 	requestUrlPath.contains("/licenses/deallocate") ||
+		// 	requestUrlPath.contains("/licenses/sdk/authentication") ||
+		// 	requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
+		// 	requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
+		//
+		// if (isAuthenticateSkipUrl) {
+		// 	if (isSessionCookieExist(exchange.getRequest())) {
+		// 		return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
+		// 	}
+		// 	return chain.filter(exchange);
+		// }
+		//
+		// if (!isAuthorizationHeaderEmpty(exchange.getRequest()) || !isSessionCookieExist(exchange.getRequest())) {
+		// 	throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
+		// }
+		//
+		// return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
 		String requestUrlPath = exchange.getRequest().getURI().getPath();
-		boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auths") ||
-			requestUrlPath.startsWith("/v1/auth") ||
-			requestUrlPath.startsWith("/admin") ||
-			requestUrlPath.startsWith("/users/find") ||
-			requestUrlPath.startsWith("/licenses/allocate/check") ||
-			requestUrlPath.startsWith("/licenses/allocate") ||
-			requestUrlPath.startsWith("/licenses/deallocate") ||
-			requestUrlPath.contains("/licenses/deallocate") ||
-			requestUrlPath.contains("/licenses/sdk/authentication") ||
-			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
-			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
-
-		if (isAuthenticateSkipUrl) {
-			if (isSessionCookieExist(exchange.getRequest())) {
-				return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
-			}
-			return chain.filter(exchange);
+		if (isSessionCookieExist(exchange.getRequest())) {
+			return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
 		}
-
-		if (!isAuthorizationHeaderEmpty(exchange.getRequest()) || !isSessionCookieExist(exchange.getRequest())) {
-			throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
-		}
-
-		return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
+		return chain.filter(exchange);
 	}
 
 	private Mono<Void> showUserSessionInfoAndDoFilter(
@@ -93,12 +98,12 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 						.getPrincipal();
 					log.info("Security Context Principal Use Details: {}", userDetails);
 				}
-				log.info("WebSession --  ID: {}", webSession.getId());
-				log.info("WebSession --  uuid: {}", webSession.getAttributeOrDefault("uuid", "None"));
-				log.info("WebSession --  email: {}", webSession.getAttributeOrDefault("userEmail", "None"));
-				log.info("WebSession --  name: {}", webSession.getAttributeOrDefault("userName", "None"));
-				log.info("WebSession --  country: {}", webSession.getAttributeOrDefault("country", "None"));
-				log.info("WebSession --  ip: {}", webSession.getAttributeOrDefault("ip", "None"));
+				log.info("WebSession --  ID: [{}]", webSession.getId());
+				log.info("WebSession --  uuid: [{}]", webSession.getAttributeOrDefault("uuid", "None"));
+				log.info("WebSession --  email: [{}]", webSession.getAttributeOrDefault("userEmail", "None"));
+				log.info("WebSession --  name: [{}]", webSession.getAttributeOrDefault("userName", "None"));
+				log.info("WebSession --  country: [{}]", webSession.getAttributeOrDefault("country", "None"));
+				log.info("WebSession --  ip: [{}]", webSession.getAttributeOrDefault("ip", "None"));
 			}).then(chain.filter(exchange));
 	}
 
