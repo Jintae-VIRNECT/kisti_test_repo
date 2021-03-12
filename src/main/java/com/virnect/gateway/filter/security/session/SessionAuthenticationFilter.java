@@ -99,7 +99,7 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 					log.info("Security Context Principal Use Details: {}", userDetails);
 				}
 				log.info("WebSession --  ID: [{}]", webSession.getId());
-				log.info("WebSession --  uuid: [{}]", webSession.getAttributeOrDefault("uuid", "None"));
+				log.info("WebSession --  uuid: [{}]", webSession.getAttributeOrDefault("userUUID", "None"));
 				log.info("WebSession --  email: [{}]", webSession.getAttributeOrDefault("userEmail", "None"));
 				log.info("WebSession --  name: [{}]", webSession.getAttributeOrDefault("userName", "None"));
 				log.info("WebSession --  country: [{}]", webSession.getAttributeOrDefault("country", "None"));
