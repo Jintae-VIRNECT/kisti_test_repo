@@ -84,6 +84,12 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 			throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
 		}
 
+		if(!isSessionCookieExist(exchange.getRequest())){
+			log.info("SessionAuthenticationFilter - Skip session authentication of jwt authentication request");
+			return chain.filter(exchange);
+
+		}
+
 		return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
 	}
 
