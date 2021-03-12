@@ -80,7 +80,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 		// Check Request Authentication Type
 		if (isSessionCookieRequest(exchange.getRequest())) {
 			log.info("JwtAuthenticationFilter - Skip jwt authentication filter for Session Request it will be check session authentication filter ...");
-			chain.filter(exchange);
+			return chain.filter(exchange);
 		}
 
 		logger.info("JwtAuthenticationFilter - JWT Authentication Filter Start");
@@ -89,7 +89,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 		if (!jwtInfo.isPresent()) {
 			log.info("JwtAuthenticationFilter - No Jwt Token");
 			log.info("JwtAuthenticationFilter - Do Next Session Cookie Authentication Filter.....");
-			chain.filter(exchange);
+			return chain.filter(exchange);
 		}
 
 		String jwt = jwtInfo.get();
