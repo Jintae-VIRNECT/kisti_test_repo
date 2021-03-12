@@ -56,7 +56,7 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 	) {
 
 		String requestUrlPath = exchange.getRequest().getURI().getPath();
-		boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auths") ||
+		boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auth") ||
 			requestUrlPath.startsWith("/v1/auth") ||
 			requestUrlPath.startsWith("/admin") ||
 			requestUrlPath.startsWith("/users/find") ||
