@@ -21,8 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @EnableRedisRepositories
 @RequiredArgsConstructor
 public class RedisConfiguration {
-	private final ObjectMapper objectMapper;
-
 	@Value("${spring.redis.host}")
 	private String host;
 
