@@ -37,7 +37,7 @@ import com.virnect.gateway.filter.security.session.SessionCookieProperty;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Order(11)
+@Order(10)
 public class JwtAuthenticationFilter implements GlobalFilter {
 	private final static Logger logger = Loggers.getLogger(
 		"com.virnect.gateway.filter.security.jwt.JwtAuthenticationFilter");

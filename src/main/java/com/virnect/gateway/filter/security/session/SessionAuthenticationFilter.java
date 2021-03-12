@@ -28,7 +28,7 @@ import com.virnect.security.UserDetailsImpl;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Order(10)
+@Order(11)
 public class SessionAuthenticationFilter implements GlobalFilter {
 	private final SessionCookieProperty sessionCookieProperty;
 
