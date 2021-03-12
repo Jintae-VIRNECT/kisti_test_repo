@@ -6,4 +6,5 @@ public enum DeviceType {
     MOBILE, //(Tablet)
     SMART_GLASSES,
     HOLOLENS,
+    FITT360
 }
