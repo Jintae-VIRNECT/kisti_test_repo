@@ -30,9 +30,6 @@ import com.virnect.security.UserDetailsImpl;
 @RequiredArgsConstructor
 @Order(10)
 public class SessionAuthenticationFilter implements GlobalFilter {
-	private final static String SESSION_NOT_FOUND = "Session Authentication - Session Cookie Not Found. Current Session Cookie Key Name is [{}] and request will be reject.";
-	private final static Logger logger = Loggers.getLogger(
-		"com.virnect.gateway.filter.security.session.SessionAuthenticationFilter");
 	private final SessionCookieProperty sessionCookieProperty;
 
 	@Value("${jwt.secret}")
@@ -77,19 +74,17 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 
 		// if develop environment
 		if ((activeProfile.equals("develop") || activeProfile.equals("onpremise")) && requestUrlPath.contains("/api-docs")) {
+			log.info("SessionAuthenticationFilter - Skip swagger json request like [/v2/api-docs] ");
 			return chain.filter(exchange);
 		}
 
-		if (isAuthorizationHeaderEmpty(exchange.getRequest()) || !isSessionCookieExist(exchange.getRequest())) {
+		if (!isAuthorizationHeaderEmpty(exchange.getRequest()) && !isSessionCookieExist(exchange.getRequest())) {
+			log.info("SessionAuthenticationFilter - isAuthorizationHeaderEmpty = {}", !isAuthorizationHeaderEmpty(exchange.getRequest()));
+			log.info("SessionAuthenticationFilter - isSessionCookieExist = {}", !isSessionCookieExist(exchange.getRequest()));
 			throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
 		}
 
 		return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
-		// String requestUrlPath = exchange.getRequest().getURI().getPath();
-		// if (isSessionCookieExist(exchange.getRequest())) {
-		// 	return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
-		// }
-		// return chain.filter(exchange);
 	}
 
 	private Mono<Void> showUserSessionInfoAndDoFilter(
@@ -97,7 +92,7 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 	) {
 		return exchange.getSession()
 			.doOnError(e -> {
-				log.info("세션을 찾지 못했소...");
+				log.info("SessionAuthenticationFilter - Can't not resolve WebSession From Request");
 				throw new SessionNotFoundException(requestUrlPath);
 			})
 			.doOnNext(webSession -> {
@@ -105,14 +100,14 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 				if (securityContext != null) {
 					UserDetailsImpl userDetails = (UserDetailsImpl)securityContext.getAuthentication()
 						.getPrincipal();
-					log.info("Security Context Principal Use Details: {}", userDetails);
+					log.info("SessionAuthenticationFilter - Security Context Principal Use Details: {}", userDetails);
 				}
-				log.info("WebSession --  ID: [{}]", webSession.getId());
-				log.info("WebSession --  uuid: [{}]", webSession.getAttributeOrDefault("userUUID", "None"));
-				log.info("WebSession --  email: [{}]", webSession.getAttributeOrDefault("userEmail", "None"));
-				log.info("WebSession --  name: [{}]", webSession.getAttributeOrDefault("userName", "None"));
-				log.info("WebSession --  country: [{}]", webSession.getAttributeOrDefault("country", "None"));
-				log.info("WebSession --  ip: [{}]", webSession.getAttributeOrDefault("ip", "None"));
+				log.info("SessionAuthenticationFilter - WebSession :: ID: [{}]", webSession.getId());
+				log.info("SessionAuthenticationFilter - WebSession :: uuid: [{}]", webSession.getAttributeOrDefault("userUUID", "None"));
+				log.info("SessionAuthenticationFilter - WebSession :: email: [{}]", webSession.getAttributeOrDefault("userEmail", "None"));
+				log.info("SessionAuthenticationFilter - WebSession :: name: [{}]", webSession.getAttributeOrDefault("userName", "None"));
+				log.info("SessionAuthenticationFilter - WebSession :: country: [{}]", webSession.getAttributeOrDefault("country", "None"));
+				log.info("SessionAuthenticationFilter - WebSession :: ip: [{}]", webSession.getAttributeOrDefault("ip", "None"));
 			}).then(chain.filter(exchange));
 	}
 

@@ -55,7 +55,6 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-
 		String requestUrlPath = exchange.getRequest().getURI().getPath();
 		boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auth") ||
 			requestUrlPath.startsWith("/v1/auth") ||
@@ -80,15 +79,16 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
 		// Check Request Authentication Type
 		if (isSessionCookieRequest(exchange.getRequest())) {
+			log.info("JwtAuthenticationFilter - Skip jwt authentication filter for Session Request it will be check session authentication filter ...");
 			chain.filter(exchange);
 		}
 
-		logger.info("JWT Authentication Filter Start");
+		logger.info("JwtAuthenticationFilter - JWT Authentication Filter Start");
 		Optional<String> jwtInfo = Optional.ofNullable(getJwtTokenFromRequest(exchange.getRequest()));
 
 		if (!jwtInfo.isPresent()) {
-			log.info("Skip Jwt Authentication Filter.....");
-			log.info("Do Next Session Cookie Authentication Filter.....");
+			log.info("JwtAuthenticationFilter - No Jwt Token");
+			log.info("JwtAuthenticationFilter - Do Next Session Cookie Authentication Filter.....");
 			chain.filter(exchange);
 		}
 
@@ -96,7 +96,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 		Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwt);
 		Claims body = claims.getBody();
 
-		logger.info("[AUTHENTICATION TOKEN]: {}", body.toString());
+		logger.info("JwtAuthenticationFilter - [AUTHENTICATION TOKEN]: {}", body.toString());
 
 		ServerHttpRequest authenticateRequest = exchange.getRequest().mutate()
 			.header("X-jwt-uuid", body.get("uuid", String.class))
@@ -109,7 +109,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 			.build();
 
 		return chain.filter(exchange.mutate().request(authenticateRequest).build())
-			.then(Mono.fromRunnable(() -> logger.info("JWT Authentication Filter end")));
+			.then(Mono.fromRunnable(() -> logger.info("JwtAuthenticationFilter - JWT Authentication Filter end")));
 	}
 
 	private String getJwtTokenFromRequest(ServerHttpRequest request) {
