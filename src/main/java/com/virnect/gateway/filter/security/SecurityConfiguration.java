@@ -18,7 +18,9 @@ public class SecurityConfiguration {
 		http.logout().disable();
 		http.formLogin().disable();
 		http.csrf().disable();
+		http.headers().frameOptions().disable();
 		http.authorizeExchange().anyExchange().permitAll();
+
 		return http.build();
 	}
 }
