@@ -113,23 +113,20 @@ public class SwaggerConfiguration {
 			.paths(PathSelectors.any())
 			.build()
 			.apiInfo(apiInfo)
-			.securityContexts(Arrays.asList(securityContext()))
-			.securitySchemes(Arrays.asList(apiKey()));
+			.securityContexts(Collections.singletonList(securityContext()))
+			.securitySchemes(Collections.singletonList(apiKey()));
 	}
 
 
 	private ApiKey apiKey() {
-		return new ApiKey("JWT", HttpHeaders.AUTHORIZATION, In.HEADER.name());
+		return new ApiKey("Bearer", HttpHeaders.AUTHORIZATION, In.HEADER.name());
 	}
 
 	private SecurityContext securityContext() {
-		return springfox
-			.documentation
-			.spi.service
-			.contexts
-			.SecurityContext
-			.builder()
-			.securityReferences(defaultAuth()).forPaths(PathSelectors.any()).build();
+		return SecurityContext.builder()
+			.securityReferences(defaultAuth())
+			.forPaths(PathSelectors.any())
+			.build();
 	}
 
 	List<SecurityReference> defaultAuth() {
