@@ -1,8 +1,8 @@
 package com.virnect.gateway.docs;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -13,8 +13,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import io.swagger.models.auth.In;
 import lombok.RequiredArgsConstructor;
 import reactor.util.Logger;
 import reactor.util.Loggers;
@@ -23,9 +25,13 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ResponseMessageBuilder;
 import springfox.documentation.service.ApiInfo;
+import springfox.documentation.service.ApiKey;
+import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.Contact;
 import springfox.documentation.service.ResponseMessage;
+import springfox.documentation.service.SecurityReference;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.json.JacksonModuleRegistrar;
 import springfox.documentation.spring.web.json.JsonSerializer;
 import springfox.documentation.spring.web.plugins.Docket;
@@ -59,7 +65,6 @@ public class SwaggerConfiguration {
 			.filter(route -> !route.getId().contains("websocket"))
 			.filter(route -> !route.getId().contains("payletter"))
 			.map(route -> createResource(route.getId(), getRouteLocation(route), "2.0"))
-			.filter(Objects::nonNull)
 			.collect(Collectors.toList());
 	}
 
@@ -94,7 +99,7 @@ public class SwaggerConfiguration {
 			.license("VIRNECT INC All rights reserved.")
 			.build();
 
-		List<ResponseMessage> responseMessages = Arrays.asList(
+		List<ResponseMessage> responseMessages = Collections.singletonList(
 			new ResponseMessageBuilder().code(400).message("요청에러").build());
 
 		return new Docket(DocumentationType.SWAGGER_2)
@@ -107,6 +112,30 @@ public class SwaggerConfiguration {
 			.apis(RequestHandlerSelectors.any())
 			.paths(PathSelectors.any())
 			.build()
-			.apiInfo(apiInfo);
+			.apiInfo(apiInfo)
+			.securityContexts(Arrays.asList(securityContext()))
+			.securitySchemes(Arrays.asList(apiKey()));
+	}
+
+
+	private ApiKey apiKey() {
+		return new ApiKey("JWT", HttpHeaders.AUTHORIZATION, In.HEADER.name());
+	}
+
+	private SecurityContext securityContext() {
+		return springfox
+			.documentation
+			.spi.service
+			.contexts
+			.SecurityContext
+			.builder()
+			.securityReferences(defaultAuth()).forPaths(PathSelectors.any()).build();
+	}
+
+	List<SecurityReference> defaultAuth() {
+		AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
+		AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
+		authorizationScopes[0] = authorizationScope;
+		return Collections.singletonList(new SecurityReference("JWT", authorizationScopes));
 	}
 }
