@@ -8,6 +8,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -38,6 +39,7 @@ import com.virnect.gateway.filter.security.session.SessionCookieProperty;
 @Component
 @RequiredArgsConstructor
 @Order(10)
+@Profile({"!develop","!onpremise"})
 public class JwtAuthenticationFilter implements GlobalFilter {
 	private final static Logger logger = Loggers.getLogger(
 		"com.virnect.gateway.filter.security.jwt.JwtAuthenticationFilter");
