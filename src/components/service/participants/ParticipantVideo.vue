@@ -17,12 +17,6 @@
           ref="participant-video"
           @play="mediaPlay"
         ></video>
-        <pano-video
-          v-if="participant.streamMode"
-          targetRef="participant-video"
-          :connectionId="participant.connectionId"
-          type="sub"
-        ></pano-video>
       </div>
       <div class="participant-video__profile" v-else>
         <img
@@ -144,8 +138,6 @@ import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import touchMixin from 'mixins/touch'
 
-import PanoVideo from 'PanoVideo'
-
 import Profile from 'Profile'
 import Popover from 'Popover'
 
@@ -155,7 +147,6 @@ export default {
   components: {
     Profile,
     Popover,
-    PanoVideo,
   },
   data() {
     return {
