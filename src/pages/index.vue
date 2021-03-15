@@ -23,11 +23,7 @@
           </span>
           <span class="version">{{ app.version }}</span>
           <el-button type="primary" @click="link('app', app)">
-            {{
-              activeTab === 'track'
-                ? $t('home.fileDownload')
-                : $t('home.installFileDownload')
-            }}
+            {{ downloadText(app) }}
           </el-button>
           <el-button
             type="text"
@@ -70,6 +66,13 @@ export default {
   },
   filters,
   methods: {
+    downloadText(app) {
+      let str = this.$t('home.installFileDownload')
+      if (this.activeTab === 'track') str = this.$t('home.fileDownload')
+      if (/(play\.google|apps\.apple)\.com/.test(app.appUrl))
+        str = this.$t('home.downloadLink')
+      return str
+    },
     async download(type, app) {
       let uri, downloadUrl
       if (type === 'app') {

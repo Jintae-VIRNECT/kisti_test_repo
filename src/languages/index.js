@@ -15,7 +15,7 @@ function loader(foldername) {
     .map(file => {
       return {
         key: file.replace('.json', ''),
-        val: fs.readFileSync(`${dirname}/${file}`, 'utf8'),
+        val: require(`${dirname}/${file}`),
       }
     })
   const json = {}
@@ -23,7 +23,7 @@ function loader(foldername) {
     if (/\.md$/.test(file.key)) {
       json[file.key] = file.val
     } else {
-      Object.assign(json, JSON.parse(file.val))
+      Object.assign(json, file.val)
     }
   })
 
