@@ -84,8 +84,6 @@ public class SessionService {
 		String session,
 		String sessionToken
 	) {
-		//return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.CREATE) {
-
 		SessionResponse sessionResponse = null;
 		SessionTokenResponse sessionTokenResponse = null;
 
