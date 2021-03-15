@@ -18,6 +18,14 @@
     </button>
     <div>
       <div
+        v-for="(lang, index) in langs"
+        :key="index"
+        class="popover-language__button"
+        :class="{ selected: isSelected(lang.key) }"
+      >
+        <button @click="changeLang(lang.key)">{{ lang.text }}</button>
+      </div>
+      <!-- <div
         class="popover-language__button"
         :class="{ selected: isSelected('ko') }"
       >
@@ -28,7 +36,7 @@
         :class="{ selected: isSelected('en') }"
       >
         <button @click="changeLang('en')">ENG</button>
-      </div>
+      </div> -->
     </div>
   </popover>
 </template>
@@ -55,6 +63,11 @@ export default {
     return {
       defaultLanguage: null,
       menuVisible: false,
+      langs: [
+        { text: 'KOR', key: 'ko' },
+        { text: 'ENG', key: 'en' },
+        { text: 'JPN', key: 'ja' },
+      ],
     }
   },
   methods: {
@@ -97,7 +110,7 @@ export default {
 
 .popover-language {
   min-width: 5.1429rem;
-  height: 6.5714rem;
+  height: 9.2857rem;
   background: $color_bg_sub;
   border: 1px solid $color_bg_sub_border;
   box-shadow: 0px 4px 12px 0px rgba(0, 0, 0, 0.2);

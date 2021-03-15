@@ -1,0 +1,68 @@
+{
+  "room":{
+    "room_info":"協業詳細内容",
+    "title":"協業名",
+    "leader":"リーダー",
+    "description":"協業説明",
+    "member_list":"参加メンバー",
+    "active_date":"スタート時間",
+    "unactive_date":"終了時間",
+    "duration_sec":"進行時間"
+  },
+
+  "status":{
+    "all":"すべて",
+    "progress":"進行中",
+    "finished":"終了",
+    "unknown":"不明"
+  },
+
+  "search":{
+    "collabo_status":"協業状態",
+    "text":"検索語",
+    "placeholder":"協業名／メンバーを入力してください。",
+    "use_date_search":"期間検索使用",
+    "execute":"検索",
+    "over_period":"3ヶ月以上照会することができません。",
+    "invalid_period":"無効期間です。",
+    "invalid_date":"正しい日付を指定してください。",
+    "select_period":"期間選択",
+    "enable_search":"検索使用"
+  },
+
+  "list":{
+    "title":"協業内訳リスト",
+    "title_description":"最近の協業記録を示します。",
+    "no_data":"検索結果がありません。",
+    "room_title":"協業名",
+    "room_leader":"リーダー",
+    "room_active_date":"協業開始日",
+    "room_status":"状態",
+    "room_server_record":"サーバー録画",
+    "room_local_record":"ローカル録画",
+    "room_attach_file":"添付ファイル",
+    "count":"{count}件"
+  },
+  "file":{
+    "name":"ファイル名",
+    "record_time":"録画時間",
+    "size": "ファイル容量",
+    "server_record":"サーバー録画ファイル",
+    "local_record":"ローカル録画ファイル",
+    "record_member":"録画メンバー",
+    "attach_file":"添付ファイル",
+    "expired":"期間終了",
+    "download_period":"ダウンロード期間",
+    "upload_member":"アップロードメンバー",
+    "play":"録画再生"
+  },
+  "date": {
+    "lastday": "［昨日］A",
+    "nextday": "［明日］A",
+    "timeHour": "h時間 m分",
+    "time": "m分 s秒",
+    "hour": "時間",
+    "minute": "分",
+    "second": "秒"
+  }
+}
