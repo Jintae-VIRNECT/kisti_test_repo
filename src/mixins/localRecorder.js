@@ -93,21 +93,34 @@ export default {
       deep: true,
     },
     mainView: {
-      handler(current) {
+      handler(current, before) {
         if (this.recorder !== null) {
           const orientation = this.resolution.orientation
 
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-            console.log('메인 뷰 변경 호출출')
-            this.changeVideoStream(
-              current.stream,
-              getWH(
-                this.localRecord.resolution,
-                this.resolution.width,
-                this.resolution.height,
-              ),
-            )
-            this.changeCanvasOrientation(orientation, current.stream)
+            if (this.mainView.streamMode) {
+              if (current.connectionId === before.connectionId) return
+              const panoStream = this.mainPanoCanvas.captureStream(24)
+              this.changeVideoStream(
+                panoStream,
+                getWH(
+                  this.localRecord.resolution,
+                  this.resolution.width,
+                  this.resolution.height,
+                ),
+              )
+              this.changeCanvasOrientation(orientation, current.stream)
+            } else {
+              this.changeVideoStream(
+                current.stream,
+                getWH(
+                  this.localRecord.resolution,
+                  this.resolution.width,
+                  this.resolution.height,
+                ),
+              )
+              this.changeCanvasOrientation(orientation, current.stream)
+            }
           }
         }
       },
