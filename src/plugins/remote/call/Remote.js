@@ -20,7 +20,6 @@ import {
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
-import { checkInput } from 'utils/deviceCheck'
 
 let OV
 
@@ -34,7 +33,6 @@ const _ = {
   resolution: null,
   currentZoomLevel: 1,
   maxZoomLevel: 1,
-  openRoom: false,
 
   configs: null,
   options: null,
@@ -47,7 +45,6 @@ const _ = {
   connect: async (configs, role, options, open = false) => {
     try {
       _.account = Store.getters['account']
-      _.openRoom = open
 
       Store.commit('callClear')
       OV = new OpenVidu()
@@ -111,8 +108,8 @@ const _ = {
 
       await _.session.connect(
         configs.token,
-        JSON.stringify(metaData),
         connectOption,
+        JSON.stringify(metaData),
       )
 
       Store.dispatch('updateAccount', {
@@ -214,25 +211,6 @@ const _ = {
               width: settings.width,
               height: settings.height,
               orientation: '',
-            })
-          } else if (_.openRoom) {
-            checkInput({ video: true, audio: false }).then(hasCamera => {
-              const params = {
-                connectionId: _.publisher.stream.connection.connectionId,
-                hasAudio: true,
-              }
-              if (!hasCamera) {
-                params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
-                params.hasCamera = false
-                // _.changeProperty(true)
-              } else {
-                params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
-                params.hasCamera = true
-              }
-              Store.commit('updateParticipant', params)
-              // _.sendCamera(
-              //   !hasCamera ? CAMERA_STATUS.CAMERA_NONE : CAMERA_STATUS.CAMERA_OFF,
-              // )
             })
           }
         })
@@ -510,7 +488,6 @@ const _ = {
    * @param {Boolean} active
    */
   sendMic: (active, target = null) => {
-    // if (_.openRoom) return
     if (_.publisher) {
       _.publisher.publishAudio(active)
     }
@@ -869,25 +846,6 @@ const _ = {
               width: settings.width,
               height: settings.height,
               orientation: '',
-            })
-          } else if (_.openRoom) {
-            checkInput({ video: true, audio: false }).then(hasCamera => {
-              const params = {
-                connectionId: tempPublisher.stream.connection.connectionId,
-                hasAudio: true,
-              }
-              if (!hasCamera) {
-                params.cameraStatus = CAMERA_STATUS.CAMERA_NONE
-                params.hasCamera = false
-                // _.changeProperty(true)
-              } else {
-                params.cameraStatus = CAMERA_STATUS.CAMERA_OFF
-                params.hasCamera = true
-              }
-              Store.commit('updateParticipant', params)
-              // _.sendCamera(
-              //   !hasCamera ? CAMERA_STATUS.CAMERA_NONE : CAMERA_STATUS.CAMERA_OFF,
-              // )
             })
           }
         })

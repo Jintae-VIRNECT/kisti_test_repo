@@ -29,6 +29,7 @@ const state = {
 
   settingModal: false,
   recordModal: false,
+  usingStt: false,
 }
 
 const mutations = {
@@ -37,6 +38,9 @@ const mutations = {
   },
   ['RECORD_MODAL'](state, flag) {
     state.recordModal = flag
+  },
+  ['USE_STT'](state, flag) {
+    state.usingStt = flag
   },
 
   [CALL_RESET](state) {
@@ -81,10 +85,14 @@ const actions = {
   showModalRecord({ commit }, flag) {
     commit('RECORD_MODAL', flag)
   },
+  useStt({ commit }, flag) {
+    commit('USE_STT', flag)
+  },
 }
 const getters = {
   modalSetting: state => state.settingModal,
   modalRecord: state => state.recordModal,
+  usingStt: state => state.usingStt,
 }
 
 export default {

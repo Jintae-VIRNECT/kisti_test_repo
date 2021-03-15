@@ -39,7 +39,7 @@
           class="chat-input__form-speech"
           @click="doStt"
         >
-          {{ $t('service.translate') }}
+          Speech To Text
         </button>
         <button
           v-if="useStorage"
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { uploadFile } from 'api/http/file'
 import toastMixin from 'mixins/toast'
 export default {
@@ -125,6 +125,7 @@ export default {
     // 'inputText.length': 'checkLength', // safari issue
   },
   methods: {
+    ...mapActions(['useStt']),
     checkLength() {
       if (!this.useTranslate) return
       if (this.inputText.length > 200) {
@@ -139,7 +140,7 @@ export default {
         this.toastDefault(this.$t('service.stt_mic_off'))
         return
       }
-      this.$emit('update:speech', true)
+      this.useStt(true)
     },
     doTranslate() {
       // if (!this.mic.isOn) {

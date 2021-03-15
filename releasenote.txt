@@ -29,4 +29,8 @@ Bug Fixes
 * [DPLA-1427] 아이패드 사파리: 화면 잠금 후 영상이 뜨지 않는 이슈 해결
 * [DPLA-1406] 아이패드 사파리: 키보드 오픈하고 스크롤 시 이상동작하는 이슈 해결
 
+Limitation
+* STT 기능 사용 중에는 번역 설정에서 번역 사용 허용, 번역 언어, 음성 인식 방식 사용 불가
+* 로그인 계정 변경 시 쿠키에 저장된 설정값 Clear
+
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved

@@ -7,10 +7,11 @@
       <p class="service-setting__text">
         {{ $t('service.setting_translate_use') }}
       </p>
-      <r-check
+      <check
         :text="$t('service.setting_translate_use_allow')"
         :value.sync="useTranslate"
-      ></r-check>
+        :disabled="usingStt"
+      ></check>
     </div>
     <div class="service-setting__row">
       <div
@@ -36,7 +37,7 @@
         :options="languageCodes"
         value="code"
         text="text"
-        :disabled="!useTranslate"
+        :disabled="usingStt || !useTranslate"
         :selectedValue.sync="transCode"
         :targetElement="'.modal'"
       >
@@ -62,7 +63,7 @@
         :first="$t('workspace.setting_stt_sync')"
         :second="$t('workspace.setting_stt_streaming')"
         :isFirst.sync="sttSync"
-        :disabled="!useTranslate"
+        :disabled="usingStt || !useTranslate"
         @slider:disable="disableTranslate"
       ></slider>
     </div>
@@ -85,7 +86,6 @@ import RSelect from 'RemoteSelect'
 import Check from 'Check'
 import Tooltip from 'Tooltip'
 import Slider from 'Slider'
-import RCheck from 'RemoteCheckBox'
 
 import toastMixin from 'mixins/toast'
 
@@ -96,7 +96,6 @@ export default {
   mixins: [toastMixin],
   components: {
     RSelect,
-    RCheck,
     Check,
     Tooltip,
     Slider,
@@ -112,7 +111,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['translate', 'languageCodes']),
+    ...mapGetters(['translate', 'languageCodes', 'usingStt']),
   },
   watch: {
     transCode(language) {
