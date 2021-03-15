@@ -41,13 +41,16 @@ const _ = {
    * @param {Object} configs {coturn, wss, token}
    * @param {String} role remote.config.ROLE
    */
-  connect: async (configs, role, options, open = false) => {
+  connect: async (configs, role, options) => {
     try {
       _.account = Store.getters['account']
 
       Store.commit('callClear')
       OV = new OpenVidu()
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        !(window.env && window.env === 'develop')
+      ) {
         OV.enableProdMode()
       }
       if (!_.session) {
