@@ -467,6 +467,16 @@ export const addSessionEventListener = session => {
 
       // window.vue.$eventBus.$emit('linkflow:rotation', info)
       window.vue.$eventBus.$emit('panoview:rotation', info)
+    } else if (data.type === LINKFLOW.CURRENT_POSITION) {
+      const info = {
+        connectionId: connectionId,
+        yaw: data.yaw,
+        pitch: data.pitch,
+        roll: data.roll, //TBD
+      }
+      console.log('LINKFLOW.CURRENT_POSITION rev', info)
+
+      // window.vue.$eventBus.$emit('panoview:rotation', info)
     }
   })
 
