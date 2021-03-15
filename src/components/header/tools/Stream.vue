@@ -31,9 +31,10 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['video', 'roomInfo', 'allowCameraControl']),
+    ...mapGetters(['video', 'roomInfo', 'allowCameraControl', 'myInfo']),
     disable() {
       if (this.$route.name !== 'service') return false
+      if (this.myInfo.screenShare === true) return true
       if (!this.roomInfo.videoRestrictedMode) return false
       if (this.account.roleType === ROLE.LEADER) return false
       return !this.allowCameraControl

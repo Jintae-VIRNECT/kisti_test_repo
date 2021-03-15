@@ -742,60 +742,45 @@ const _ = {
    * @param {MediaStreamTrack} track 교체할 비디오 트랙
    * @param {MediaStream} originStream 보존할 원래 스트림
    */
-  replaceTrack(track, originStream) {
-    if (originStream) {
-      Store.commit('setMyTempStream', originStream.clone())
-    }
+  replaceTrack(track) {
+    // if (originStream) {
+    //   Store.commit('setMyTempStream', originStream.clone())
+    // }
     _.publisher.replaceTrack(track)
-  },
-
-  /**
-   * 내 스트림을 보존되어 있는 스트림으로 변경
-   * @param {Boolean} play 보존 되어있는 스트림의 재생 처리 여부
-   */
-  restoreMyStream(play) {
-    const myTempStream = Store.getters['myTempStream']
-
-    if (myTempStream) {
-      const videoTrack = myTempStream.getVideoTracks()[0]
-      if (play) {
-        videoTrack.enabled = true
-      }
-      _.replaceTrack(videoTrack)
-    } else {
-      _.replaceTrack(_.getDummyVideTrack())
+    const settings = track.getSettings()
+    const capability = track.getCapabilities()
+    logger('call', `resolution::${settings.width}X${settings.height}`)
+    debug('call::setting::', settings)
+    debug('call::capability::', capability)
+    if ('zoom' in capability) {
+      track.applyConstraints({
+        advanced: [{ zoom: capability['zoom'].min }],
+      })
+      _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
+      _.minZoomLevel = parseInt(capability.zoom.min)
     }
-
-    Store.commit('setMyTempStream', null)
-  },
-
-  getDummyVideTrack() {
-    let canvas = Object.assign(document.createElement('canvas'), {
-      width: 640,
-      height: 480,
+    // _.sendCamera(
+    //   options.videoSource !== false
+    //     ? settingInfo.videoOn
+    //       ? CAMERA_STATUS.CAMERA_ON
+    //       : CAMERA_STATUS.CAMERA_OFF
+    //     : CAMERA_STATUS.CAMERA_NONE,
+    // )
+    _.sendResolution({
+      width: settings.width,
+      height: settings.height,
+      orientation: '',
     })
-    canvas.getContext('2d').fillStyle = 'BLUE'
-    canvas.getContext('2d').fillRect(0, 0, 640, 480)
-    let stream = canvas.captureStream()
-    return Object.assign(stream.getVideoTracks()[0], { enabled: false })
   },
+
   /**
    * 주어진 비디오 트랙으로 기존 publisher를 초기화하고 다시
    * initPublisher를 실행.
    *
    * @param {MediaStreamTrack} videoTrack 교체할 비디오 트랙
    */
-  async rePublish(videoTrack) {
+  async rePublish({ videoSource = false, audioSource }) {
     try {
-      let videoSource = false
-
-      if (videoTrack) {
-        videoSource = videoTrack
-      } else {
-        videoSource = _.options ? _.options.videoSource : false
-      }
-
-      const audioSource = _.options ? _.options.audioSource : false
       const settingInfo = Store.getters['settingInfo']
 
       if (videoSource || audioSource) {
@@ -805,7 +790,7 @@ const _ = {
           publishAudio: _.configs.audioRestrictedMode
             ? false
             : settingInfo.micOn,
-          publishVideo: videoTrack ? true : false,
+          publishVideo: videoSource ? true : false,
           resolution: settingInfo.quality,
           // resolution: '1920x1080', // FHD
           // resolution: '3840x2160', // 4K
@@ -858,6 +843,11 @@ const _ = {
           }
 
           Store.commit('updateParticipant', participantInfo)
+          _.sendCamera(
+            tempPublisher.stream.hasVideo
+              ? CAMERA_STATUS.CAMERA_ON
+              : CAMERA_STATUS.CAMERA_NONE,
+          )
           if (tempPublisher.stream.hasVideo) {
             const track = mediaStream.getVideoTracks()[0]
             const settings = track.getSettings()

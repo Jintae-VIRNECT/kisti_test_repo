@@ -80,7 +80,7 @@
         <transition name="opacity">
           <fullscreen
             :hide.sync="hideFullBtn"
-            v-show="!hideFullBtn && !mainView.screenShare"
+            v-show="!hideFullBtn"
           ></fullscreen>
         </transition>
       </template>
@@ -266,9 +266,12 @@ export default {
       const validCameraStatus = this.cameraStatus !== -1
       const cameraOff = this.cameraStatus.state === 'off'
       const cameraBackground = this.cameraStatus.state === 'background'
+      const screenSharing = this.mainView.screenShare
 
       return (
-        validCameraStatus && ((this.loaded && cameraOff) || cameraBackground)
+        validCameraStatus &&
+        ((this.loaded && cameraOff) || cameraBackground) &&
+        !screenSharing
       )
     },
   },

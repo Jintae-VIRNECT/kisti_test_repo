@@ -1,8 +1,8 @@
 <template>
   <tool-button
     :text="$t('service.tool_screen_share')"
-    :active="share"
-    :isActive="share"
+    :active="isScreenSharing"
+    :isActive="isScreenSharing"
     :disabled="false"
     :src="require('assets/image/call/ic_sharing_on.svg')"
     :activeSrc="require('assets/image/call/ic_sharing_off.svg')"
@@ -13,39 +13,31 @@
 <script>
 import toolMixin from './toolMixin'
 import toastMixin from 'mixins/toast'
-import { ACTION } from 'configs/view.config'
 import { CAMERA as CAMERA_STATUS } from 'configs/device.config'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   name: 'ToolScreenShare',
   mixins: [toolMixin, toastMixin],
   data() {
     return {
-      STREAM_POINTING: ACTION.STREAM_POINTING,
-      share: false,
+      isScreenSharing: false,
     }
   },
   computed: {
-    ...mapGetters([
-      'allowPointing',
-      'viewForce',
-      'myInfo',
-      'myTempStream',
-      'settingInfo',
-      'mainView',
-    ]),
+    ...mapGetters(['myInfo', 'myTempStream', 'settingInfo', 'video']),
   },
   methods: {
+    ...mapActions(['setMyTempStream']),
     async toggleShare() {
       try {
-        if (this.share) {
+        if (this.isScreenSharing) {
           this.stopScreenSharing()
         } else {
           await this.startScreenShare()
         }
       } catch (e) {
         console.error(e)
-        this.share = false
+        this.isScreenSharing = false
       }
     },
     async startScreenShare() {
@@ -53,12 +45,14 @@ export default {
 
       if (displayStream && displayStream.getVideoTracks().length > 0) {
         if (this.myInfo.cameraStatus !== CAMERA_STATUS.CAMERA_NONE) {
-          this.$call.replaceTrack(
-            displayStream.getVideoTracks()[0],
-            this.mainView.stream,
-          )
+          this.setMyTempStream(this.myInfo.stream.clone())
+          this.$call.replaceTrack(displayStream.getVideoTracks()[0])
+          this.$call.sendCamera(CAMERA_STATUS.CAMERA_ON)
         } else {
-          this.$call.rePublish(displayStream.getVideoTracks()[0])
+          this.$call.rePublish({
+            videoSource: displayStream.getVideoTracks()[0],
+            audioSource: this.myInfo.stream.getAudioTracks()[0].clone(),
+          })
           this.$eventBus.$emit('streamctl:hide', true)
 
           //모바일에서 대응할 수 있는 시간을 주기위한 딜레이
@@ -66,7 +60,7 @@ export default {
         }
 
         this.$call.sendScreenSharing(true)
-        this.share = true
+        this.isScreenSharing = true
       }
     },
 
@@ -97,15 +91,21 @@ export default {
     stopScreenSharing() {
       //종료 체크
       if (this.myTempStream) {
-        this.$call.restoreMyStream(this.myInfo.video)
+        this.$call.replaceTrack(this.myTempStream.getVideoTracks()[0])
+        this.$call.sendCamera(
+          this.video.isOn ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
+        )
+        this.setMyTempStream(null)
       } else {
+        this.$call.rePublish({
+          audioSource: this.myInfo.stream.getAudioTracks()[0].clone(),
+        })
         this.$call.sendCamera(CAMERA_STATUS.CAMERA_NONE)
-        this.$call.rePublish()
       }
 
       this.$call.sendScreenSharing(false)
       this.$eventBus.$emit('streamctl:hide', false)
-      this.share = false
+      this.isScreenSharing = false
     },
   },
 }
