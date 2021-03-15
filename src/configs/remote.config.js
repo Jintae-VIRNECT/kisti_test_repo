@@ -16,7 +16,6 @@ export const SIGNAL = {
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
-  SYSTEM: 'signal:system',
   LINKFLOW: 'signal:linkflow',
 }
 
@@ -132,4 +131,5 @@ export const LINKFLOW = {
   SIDE_BY_SIDE: 'sidebyside',
   SINGLE: 'single',
   ROTATION: 'rotation',
+  CURRENT_POSITION: 'currentPosition',
 }
