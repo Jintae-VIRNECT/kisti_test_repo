@@ -442,12 +442,7 @@ export const addSessionEventListener = session => {
     )
     if (idx < 0) return
     let data = JSON.parse(event.data)
-    if (data.type === LINKFLOW.STREAM_MODE) {
-      Store.commit('updateParticipant', {
-        connectionId: connectionId,
-        streamMode: data.mode,
-      })
-    } else if (data.type === LINKFLOW.ROTATION) {
+    if (data.type === LINKFLOW.ROTATION) {
       //회전 정보 각 360 스트림 뷰어에 전달
       //이때 conId를 함께 전달
       const info = {
@@ -467,16 +462,6 @@ export const addSessionEventListener = session => {
 
       // window.vue.$eventBus.$emit('linkflow:rotation', info)
       window.vue.$eventBus.$emit('panoview:rotation', info)
-    } else if (data.type === LINKFLOW.CURRENT_POSITION) {
-      const info = {
-        connectionId: connectionId,
-        yaw: data.yaw,
-        pitch: data.pitch,
-        roll: data.roll, //TBD
-      }
-      console.log('LINKFLOW.CURRENT_POSITION rev', info)
-
-      // window.vue.$eventBus.$emit('panoview:rotation', info)
     }
   })
 
@@ -542,9 +527,8 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
-    streamMode: false, //360 스트림 모드
+    // streamMode: false, //360 스트림 모드
     //@TODO:개발완료후 false
-    // streamMode: uuid === '40247ff4cbe04a1e8ae3203298996f4c' ? true : false,
     rotationPos: null, //pano view의 회전 좌표
     screenShare: false,
   }

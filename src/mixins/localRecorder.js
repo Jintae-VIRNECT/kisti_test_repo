@@ -7,6 +7,8 @@ import { getWH, RECORD_TARGET } from 'utils/recordOptions'
 import IDBHelper from 'utils/idbHelper'
 import { v4 as uuidv4 } from 'uuid'
 
+import { DEVICE } from 'configs/device.config'
+
 const logType = 'LocalRecorder'
 
 export default {
@@ -59,6 +61,9 @@ export default {
       }
       return this.resolutions[idx]
     },
+    isFITT360() {
+      return this.mainView.deviceType === DEVICE.FITT360
+    },
   },
   watch: {
     initing(flag, bFlag) {
@@ -77,7 +82,7 @@ export default {
         if (this.recorder !== null) {
           const orientation = this.resolution.orientation
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-            if (this.mainView.streamMode) {
+            if (this.isFITT360) {
               this.changeCanvasOrientation(
                 orientation,
                 this.mainPanoCanvas.captureStream(24),
@@ -98,7 +103,7 @@ export default {
           const orientation = this.resolution.orientation
 
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-            if (this.mainView.streamMode) {
+            if (this.isFITT360) {
               if (current.connectionId === before.connectionId) return
               const panoStream = this.mainPanoCanvas.captureStream(24)
               this.changeVideoStream(
@@ -303,7 +308,7 @@ export default {
 
       if (this.localRecordTarget === RECORD_TARGET.WORKER) {
         const mainStream = this.mainView.stream
-        const is360Stream = this.mainView.streamMode
+        const is360Stream = this.isFITT360
 
         if (mainStream && mainStream.getVideoTracks().length > 0) {
           if (is360Stream && this.mainPanoCanvas) {

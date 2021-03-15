@@ -28,22 +28,22 @@ export default {
     ]),
   },
   watch: {
-    participants: {
-      handler() {
-        if (this.serverRecordStatus === 'START') {
-          this.participants.forEach(participant => {
-            if (participant.streamMode) {
-              this.$call.sendPanoStatus({
-                connectionId: participant.connectionId,
-                streamMode: participant.streamMode,
-                rotation: participant.rotationPos,
-              })
-            }
-          })
-        }
-      },
-      deep: true,
-    },
+    // participants: {
+    //   handler() {
+    //     if (this.serverRecordStatus === 'START') {
+    //       this.participants.forEach(participant => {
+    //         if (participant.streamMode) {
+    //           this.$call.sendPanoStatus({
+    //             connectionId: participant.connectionId,
+    //             streamMode: participant.streamMode,
+    //             rotation: participant.rotationPos,
+    //           })
+    //         }
+    //       })
+    //     }
+    //   },
+    //   deep: true,
+    // },
   },
   methods: {
     ...mapActions(['setServerRecordStatus']),
@@ -96,15 +96,15 @@ export default {
           this.stopServerRecord()
         }, timeout)
 
-        this.participants.forEach(participant => {
-          if (participant.streamMode) {
-            this.$call.sendPanoStatus({
-              connectionId: participant.connectionId,
-              streamMode: participant.streamMode,
-              rotation: participant.rotationPos,
-            })
-          }
-        })
+        // this.participants.forEach(participant => {
+        //   if (participant.streamMode) {
+        //     this.$call.sendPanoStatus({
+        //       connectionId: participant.connectionId,
+        //       streamMode: participant.streamMode,
+        //       rotation: participant.rotationPos,
+        //     })
+        //   }
+        // })
 
         this.toastDefault(this.$t('service.record_server_start_message'))
       } catch (e) {

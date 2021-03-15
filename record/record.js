@@ -27,17 +27,26 @@ session.on('streamCreated', event => {
     event.stream.connection.connectionId,
   )
 
+  const connectionId = event.stream.connection.connectionId
+  const metaData = JSON.parse(event.stream.connection.data.split('%/%')[0])
+
+  const deviceType = metaData.deviceType
+  console.log('streamCreated :: deviceType::', deviceType)
+
   subscriber = session.subscribe(event.stream, 'videos')
 
   subscriber.on('videoElementCreated', event => {
     console.log('videoElementCreated', event)
+    if (deviceType === 'FITT360') {
+      createPanoViewer(connectionId)
+    }
+    rePositionPanoViewer()
+    streamCount++
+    console.log('streamCount::', streamCount)
+    layoutSelector(streamCount)
   })
 
-  console.log('streamCount::', streamCount)
-
-  streamCount++
-  layoutSelector(streamCount)
-  rePositionPanoViewer()
+  // rePositionPanoViewer()
 })
 
 session.on('streamDestroyed', event => {
@@ -105,11 +114,8 @@ session.on('signal:linkflow', event => {
   console.log(connectionId)
 
   let data = JSON.parse(event.data)
-  if (data.type === 'streamMode') {
-    console.log('아니')
-    createPanoViewer(connectionId)
-    rePositionPanoViewer()
-  } else if (data.type === 'rotation') {
+  //panoViewer는 stream 연결후에 초기화 되어있어야 합니다.
+  if (data.type === 'rotation') {
     let panoViewer
     if (data.origin) {
       panoViewer = panoViewerMap.get(data.origin)
@@ -124,18 +130,6 @@ session.on('signal:linkflow', event => {
         fov: 85, //default
       })
     }
-  } else if (data.type === 'info') {
-    createPanoViewer(data.info.connectionId)
-    rePositionPanoViewer()
-
-    const panoViewer = panoViewerMap.get(data.info.connectionId)
-    console.log('data.info::', data.info)
-    const posObj = { yaw: 0, pitch: 0, fov: 85 }
-    if (data.info.rotation) {
-      posObj.yaw = data.info.rotation.yaw
-      posObj.pitch = data.info.rotation.pitch
-    }
-    panoViewer.lookAt(posObj)
   }
 })
 

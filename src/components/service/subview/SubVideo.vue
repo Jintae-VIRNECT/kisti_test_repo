@@ -32,7 +32,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { CAMERA } from 'configs/device.config'
+import { CAMERA, DEVICE } from 'configs/device.config'
 import { VIEW, ACTION } from 'configs/view.config'
 
 import PanoVideo from 'PanoVideo'
@@ -69,7 +69,10 @@ export default {
       }
     },
     activePanoVideo() {
-      return this.inited && this.stream !== null && this.mainView.streamMode
+      return this.inited && this.stream !== null && this.isFITT360
+    },
+    isFITT360() {
+      return this.mainView.deviceType === DEVICE.FITT360
     },
   },
   mounted() {

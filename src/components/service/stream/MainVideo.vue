@@ -59,7 +59,7 @@
 
         <!-- 360 화면 컨트롤 only -->
         <moving
-          v-if="mainView.streamMode"
+          v-if="isLeader && isFITT360 && viewForce"
           class="main-video__moving"
           :class="{ upper: activeMovingControl }"
         ></moving>
@@ -67,7 +67,7 @@
         <!-- 360 화면 뷰 only -->
         <moving-viewer
           ref="movingViewer"
-          v-if="mainView.streamMode"
+          v-if="isFITT360"
           class="main-video__moving-viewer"
         ></moving-viewer>
 
@@ -148,7 +148,7 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW, ACTION } from 'configs/view.config'
-import { CAMERA, FLASH } from 'configs/device.config'
+import { CAMERA, FLASH, DEVICE } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import Moving from './StreamMoving'
@@ -204,6 +204,9 @@ export default {
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isFITT360() {
+      return this.mainView.deviceType === DEVICE.FITT360
     },
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -436,7 +439,7 @@ export default {
         })
       }
 
-      if (this.mainView.streamMode) {
+      if (this.isFITT360) {
         //pano canvas -> dummy video element -> capture canvas
         const panoCanvas = this.$refs['movingViewer'].$el.querySelector(
           'canvas',
