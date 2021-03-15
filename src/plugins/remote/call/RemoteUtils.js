@@ -114,27 +114,15 @@ export const addSessionEventListener = session => {
       logger('room', 'participant subscribe successed')
       debug('room::', 'participant::', subscriber)
       addSubscriber(subscriber)
-      if (_.openRoom) {
-        Store.commit('updateParticipant', {
-          connectionId: event.stream.connection.connectionId,
-          stream: event.stream.mediaStream,
-          hasAudio: event.stream.hasAudio,
-          // hasVideo: event.stream.hasVideo,
-          // video: event.stream.hasVideo
-          //   ? event.stream.videoActive
-          //   : event.stream.hasVideo,
-        })
-      } else {
-        Store.commit('updateParticipant', {
-          connectionId: event.stream.connection.connectionId,
-          stream: event.stream.mediaStream,
-          hasVideo: event.stream.hasVideo,
-          hasAudio: event.stream.hasAudio,
-          video: event.stream.hasVideo
-            ? event.stream.videoActive
-            : event.stream.hasVideo,
-        })
-      }
+      Store.commit('updateParticipant', {
+        connectionId: event.stream.connection.connectionId,
+        stream: event.stream.mediaStream,
+        hasVideo: event.stream.hasVideo,
+        hasAudio: event.stream.hasAudio,
+        video: event.stream.hasVideo
+          ? event.stream.videoActive
+          : event.stream.hasVideo,
+      })
     })
   })
   /** session closed */
@@ -196,62 +184,15 @@ export const addSessionEventListener = session => {
     // if (session.connection.connectionId === event.from.connectionId) return
     const data = JSON.parse(event.data)
     if (data.type === VIDEO.SHARE) {
-      if (
-        _.openRoom &&
-        Store.getters['myInfo'].hasCamera === true &&
-        Store.getters['myInfo'].hasVideo === false &&
-        data.id === _.account.uuid
-      ) {
-        if (loading === true) return
-        loading = true
-        _.publisher.stream.videoActive = true
-        _.publisher.stream.initWebRtcPeerSend('initVideo', () => {
-          loading = false
-          const mediaStream = _.publisher.stream.mediaStream
-          const track = mediaStream.getVideoTracks()[0]
-          const settings = track.getSettings()
-          const capability = track.getCapabilities()
-          logger('call', `resolution::${settings.width}X${settings.height}`)
-          debug('call::setting::', settings)
-          debug('call::capability::', capability)
-          if ('zoom' in capability) {
-            track.applyConstraints({
-              advanced: [{ zoom: capability['zoom'].min }],
-            })
-            _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
-            _.minZoomLevel = parseInt(capability.zoom.min)
-          }
-          _.sendResolution({
-            width: settings.width,
-            height: settings.height,
-            orientation: '',
-          })
-          _.sendCamera(
-            Store.getters['video'].isOn
-              ? CAMERA_STATUS.CAMERA_ON
-              : CAMERA_STATUS.CAMERA_OFF,
-          )
-          _.sendMic(Store.getters['mic'].isOn)
-          _.sendSpeaker(Store.getters['speaker'].isOn)
-          Store.commit('updateParticipant', {
-            connectionId: session.connection.connectionId,
-            stream: _.publisher.stream.mediaStream,
-            hasVideo: true,
-            video: Store.getters['video'].isOn,
-          })
-          Store.dispatch('setMainView', { id: data.id, force: true })
+      if (data.id === _.account.uuid && Store.getters['restrictedRoom']) {
+        _.sendCamera(CAMERA_STATUS.CAMERA_ON)
+        Store.dispatch('setDevices', {
+          video: {
+            isOn: true,
+          },
         })
-      } else {
-        if (data.id === _.account.uuid && Store.getters['restrictedRoom']) {
-          _.sendCamera(CAMERA_STATUS.CAMERA_ON)
-          Store.dispatch('setDevices', {
-            video: {
-              isOn: true,
-            },
-          })
-        }
-        Store.dispatch('setMainView', { id: data.id, force: true })
       }
+      Store.dispatch('setMainView', { id: data.id, force: true })
     } else if (data.type === VIDEO.SCREEN_SHARE) {
       const isLeader = _.account.roleType === ROLE.LEADER
       const participants = Store.getters['participants']
