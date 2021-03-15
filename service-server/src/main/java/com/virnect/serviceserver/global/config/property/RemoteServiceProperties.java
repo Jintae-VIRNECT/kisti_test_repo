@@ -10,8 +10,10 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
@@ -411,14 +413,16 @@ public class RemoteServiceProperties extends PropertyService {
 			return Arrays.asList();
 		}
 
-		CoturnUris = CoturnUris.replaceAll("\\s", ""); // Remove all white spaces
+		CoturnUris = CoturnUris.replaceAll("\"", ""); // Remove previous escapes
+
+		/*CoturnUris = CoturnUris.replaceAll("\\s", ""); // Remove all white spaces
 		CoturnUris = CoturnUris.replaceAll("\\\\", ""); // Remove previous escapes
 		CoturnUris = CoturnUris.replaceAll("\"", ""); // Remove previous double quotes
 		CoturnUris = CoturnUris.replaceFirst("^\\[", "[\\\""); // Escape first char
 		CoturnUris = CoturnUris.replaceFirst("\\]$", "\\\"]"); // Escape last char
-		CoturnUris = CoturnUris.replaceAll(",", "\\\",\\\""); // Escape middle uris
-
+		CoturnUris = CoturnUris.replaceAll(",", "\\\",\\\""); // Escape middle uris*/
 		List<String> coturnUrisArray = asJsonStringsArray(property);
+
 		return coturnUrisArray;
 	}
 
