@@ -77,7 +77,14 @@ export default {
         if (this.recorder !== null) {
           const orientation = this.resolution.orientation
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
-            this.changeCanvasOrientation(orientation, this.mainView.stream)
+            if (this.mainView.streamMode) {
+              this.changeCanvasOrientation(
+                orientation,
+                this.mainPanoCanvas.captureStream(24),
+              )
+            } else {
+              this.changeCanvasOrientation(orientation, this.mainView.stream)
+            }
           } else {
             this.changeCanvasOrientation(null, this.screenStream)
           }
@@ -91,6 +98,7 @@ export default {
           const orientation = this.resolution.orientation
 
           if (this.localRecordTarget === RECORD_TARGET.WORKER) {
+            console.log('메인 뷰 변경 호출출')
             this.changeVideoStream(
               current.stream,
               getWH(
@@ -286,7 +294,7 @@ export default {
 
         if (mainStream && mainStream.getVideoTracks().length > 0) {
           if (is360Stream && this.mainPanoCanvas) {
-            const canvasStream = this.mainPanoCanvas.captureStream(24)
+            const canvasStream = this.mainPanoCanvas.captureStream(30)
 
             const videoStream = new MediaStream()
             videoStream.addTrack(canvasStream.getVideoTracks()[0])

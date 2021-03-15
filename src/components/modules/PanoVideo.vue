@@ -1,5 +1,5 @@
 <template>
-  <div ref="pano-video" class="pano-container"></div>
+  <div ref="pano-video" class="pano-container" :data-type="type"></div>
 </template>
 
 <script>
@@ -99,7 +99,11 @@ export default {
               pitch: e.pitch,
               origin: this.mainView.connectionId,
             })
+          }
+        })
 
+        this.panoViewer.on('animationEnd', e => {
+          if (this.type === 'control') {
             this.updateParticipant({
               connectionId: this.mainView.connectionId,
               rotationPos: { yaw: e.yaw, pitch: e.pitch },
