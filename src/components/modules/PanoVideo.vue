@@ -99,11 +99,6 @@ export default {
               pitch: e.pitch,
               origin: this.mainView.connectionId,
             })
-          }
-        })
-
-        this.panoViewer.on('animationEnd', e => {
-          if (this.type === 'control') {
             this.updateParticipant({
               connectionId: this.mainView.connectionId,
               rotationPos: { yaw: e.yaw, pitch: e.pitch },
