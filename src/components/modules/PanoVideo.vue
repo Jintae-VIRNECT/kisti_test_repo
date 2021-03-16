@@ -46,17 +46,10 @@ export default {
     ...mapMutations(['updateParticipant']),
     ...mapActions(['setMainPanoCanvas']),
     rotate(info) {
-      // console.log('panovideo::', info)
-      // connectionId: connectionId,
-      // yaw: data.yaw,
-      // pitch: data.pitch,
-
-      //내가 컨트롤 하고있는 메인뷰의 pano view는 돌면 안됨
       if (this.type === 'control') {
         return
       }
 
-      //도세요
       this.panoViewer.lookAt({
         yaw: info.yaw,
         pitch: info.pitch,
@@ -81,7 +74,9 @@ export default {
       container.style.width = '100%'
       container.style.height = '100%'
 
-      this.videoElement.style.visibility = 'hidden'
+      if (this.type !== 'control') {
+        this.videoElement.style.visibility = 'hidden'
+      }
 
       if (!this.panoViewer) {
         this.panoViewer = new PanoViewer(container, {
@@ -125,10 +120,8 @@ export default {
     toggle(flag) {
       if (this.panoViewer && this.type === 'control') {
         if (flag) {
-          console.log('active pano main viewer')
           this.panoViewer.setTouchDirection(PanoViewer.TOUCH_DIRECTION.ALL)
         } else {
-          console.log('deactive pano main viewer')
           this.panoViewer.setTouchDirection(PanoViewer.TOUCH_DIRECTION.NONE)
         }
       }
@@ -151,14 +144,18 @@ export default {
     window.addEventListener('resize', this.resize)
   },
   beforeDestroy() {
-    this.setMainPanoCanvas(null)
+    if (this.type === 'viewer') {
+      this.setMainPanoCanvas(null)
+    }
 
     this.$eventBus.$off('panoview:rotation', this.rotate)
     this.$eventBus.$off('panoview:toggle', this.toggle)
     this.$eventBus.$off('video:fullscreen', this.resize)
 
     window.removeEventListener('resize', this.resize)
-    this.videoElement.style.visibility = 'visible'
+    if (this.type !== 'control') {
+      this.videoElement.style.visibility = 'visible'
+    }
   },
 }
 </script>
