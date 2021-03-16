@@ -1,6 +1,6 @@
 {
   "service": {
-    "stream": "リアルタイムライブ共有",
+    "stream": "ライブビデオ",
     "drawing": "協業ボード",
     "ar": "AR機能",
     
@@ -78,7 +78,7 @@
     "capture_share": "キャプチャー後共有",
     "capture_message": "映像がキャプチャーされました。",
     "capture_recapture": "もう一度取る",
-    "capture_image_save": "イメージダウンロード",
+    "capture_image_save": "イメージ保存",
     "capture_image_share": "キャプチャーイメージ共有",
 
     "tool_flash": "フラッシュオン／オフ",
