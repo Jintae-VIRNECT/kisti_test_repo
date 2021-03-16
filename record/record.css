@@ -127,8 +127,9 @@ table {
 
 video {
   width: 100%;
+  min-width: 0;
   height: 100%;
-  text-align: center;
+  min-height: 0;
   background: #101012;
 }
 
@@ -187,4 +188,9 @@ video {
 
 .pano-container {
   position: absolute;
+}
+
+div,
+canvas {
+  outline: none;
 }
