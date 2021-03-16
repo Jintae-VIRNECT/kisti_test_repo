@@ -133,7 +133,7 @@ export default {
     },
   },
   mounted() {
-    this.sendPanoPosition()
+    this.sendPanoRotation()
     window.addEventListener('keydown', this.keyEventHandler)
     window.addEventListener('keyup', this.keyUpEventHandler)
     window.addEventListener('blur', this.focusOut)
