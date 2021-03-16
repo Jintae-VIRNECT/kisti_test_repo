@@ -98,6 +98,7 @@
     "tool_pointing_block": "리더가 포인팅을 막았습니다.",
     "tool_enlarge_reduce": "확대 / 축소",
     "tool_screen_share": "화면 공유",
+    "tool_screen_moving": "화면 이동",
 
     "setting": "설정",
     "setting_service": "환경 설정",
