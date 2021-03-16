@@ -27,24 +27,6 @@ export default {
       'participants',
     ]),
   },
-  watch: {
-    // participants: {
-    //   handler() {
-    //     if (this.serverRecordStatus === 'START') {
-    //       this.participants.forEach(participant => {
-    //         if (participant.streamMode) {
-    //           this.$call.sendPanoStatus({
-    //             connectionId: participant.connectionId,
-    //             streamMode: participant.streamMode,
-    //             rotation: participant.rotationPos,
-    //           })
-    //         }
-    //       })
-    //     }
-    //   },
-    //   deep: true,
-    // },
-  },
   methods: {
     ...mapActions(['setServerRecordStatus']),
     async startServerRecord() {
@@ -96,15 +78,18 @@ export default {
           this.stopServerRecord()
         }, timeout)
 
-        // this.participants.forEach(participant => {
-        //   if (participant.streamMode) {
-        //     this.$call.sendPanoStatus({
-        //       connectionId: participant.connectionId,
-        //       streamMode: participant.streamMode,
-        //       rotation: participant.rotationPos,
-        //     })
-        //   }
-        // })
+        this.participants.forEach(participant => {
+          if (
+            participant.rotationPos &&
+            participant.deviceType === DEVICE.FITT360
+          ) {
+            this.$call.sendPanoRotation({
+              yaw: participant.rotationPos.yaw,
+              pitch: participant.rotationPos.pitch,
+              origin: participant.connectionId,
+            })
+          }
+        })
 
         this.toastDefault(this.$t('service.record_server_start_message'))
       } catch (e) {

@@ -22,10 +22,6 @@ let streamCount = 0
 let subscriber
 session.on('streamCreated', event => {
   console.log('event streamCreated::', event)
-  console.log(
-    'event stream connection id',
-    event.stream.connection.connectionId,
-  )
 
   const connectionId = event.stream.connection.connectionId
   const metaData = JSON.parse(event.stream.connection.data.split('%/%')[0])
@@ -36,17 +32,22 @@ session.on('streamCreated', event => {
   subscriber = session.subscribe(event.stream, 'videos')
 
   subscriber.on('videoElementCreated', event => {
-    console.log('videoElementCreated', event)
-    if (deviceType === 'FITT360') {
-      createPanoViewer(connectionId)
-    }
-    rePositionPanoViewer()
-    streamCount++
-    console.log('streamCount::', streamCount)
-    layoutSelector(streamCount)
+    event.element.addEventListener('loadeddata', () => {
+      setTimeout(() => {
+        rePositionPanoViewer()
+      }, 100)
+    })
   })
 
-  // rePositionPanoViewer()
+  if (deviceType === 'FITT360') {
+    createPanoViewer(connectionId)
+  }
+
+  streamCount++
+  layoutSelector(streamCount)
+  console.log('streamCount::', streamCount)
+
+  rePositionPanoViewer()
 })
 
 session.on('streamDestroyed', event => {
@@ -110,8 +111,6 @@ const layoutSelector = streamCount => {
 
 session.on('signal:linkflow', event => {
   const connectionId = event.from.connectionId
-  console.log('signal:linkflow')
-  console.log(connectionId)
 
   let data = JSON.parse(event.data)
   //panoViewer는 stream 연결후에 초기화 되어있어야 합니다.
@@ -141,10 +140,10 @@ const createPanoViewer = connectionId => {
   if (panoContainerMap.has(connectionId)) return
 
   const targetVideoEl = document.querySelector(`video[id*='${connectionId}']`)
-  console.log('targetVideoEl::', targetVideoEl)
+
   const panoContainer = document.createElement('div')
-  const videos = document.getElementById('videos')
-  videos.appendChild(panoContainer)
+
+  document.body.appendChild(panoContainer)
 
   panoContainer.id = connectionId
   panoContainer.className = 'pano-container'
@@ -152,13 +151,11 @@ const createPanoViewer = connectionId => {
   panoContainer.style.top = targetVideoEl.offsetTop + 'px'
   panoContainer.style.height = targetVideoEl.offsetHeight + 'px'
   panoContainer.style.width = targetVideoEl.offsetWidth + 'px'
-  // newDiv.style.display = 'none'
+
   const PanoViewer = eg.view360.PanoViewer
   const panoViewer = new PanoViewer(panoContainer, {
     video: targetVideoEl,
   })
-
-  // targetVideoEl.style.display = 'hidden'
 
   panoContainerMap.set(connectionId, panoContainer)
   panoViewerMap.set(connectionId, panoViewer)
@@ -172,9 +169,9 @@ const createPanoViewer = connectionId => {
  */
 const rePositionPanoViewer = () => {
   console.log('rePositionPanoViewer called')
+
   const videos = document.querySelectorAll('video')
-  console.log(videos)
-  console.log(panoContainerMap)
+
   for (let [connectionId, panoContainer] of panoContainerMap) {
     for (let i = 0; i < videos.length; i++) {
       console.log('videos[i].className::', videos[i].className)
@@ -204,11 +201,3 @@ const deletePanoViewer = connectionId => {
     panoViewerMap.get(connectionId).destroy()
   }
 }
-
-// rePositionPanoViewer()
-// for (let [connectionId, panoViewer] of panoViewerMap) {
-//   console.log('resize panoViewer::', panoViewer)
-//   if (panoViewer) {
-//     panoViewer.updateViewportDimensions()
-//   }
-// }
