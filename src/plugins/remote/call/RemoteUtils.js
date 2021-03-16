@@ -443,10 +443,9 @@ export const addSessionEventListener = session => {
     if (idx < 0) return
     let data = JSON.parse(event.data)
     if (data.type === LINKFLOW.ROTATION) {
-      //회전 정보 각 360 스트림 뷰어에 전달
-      //이때 conId를 함께 전달
+      const originConId = data.origin
       const info = {
-        connectionId: connectionId,
+        connectionId: originConId,
         yaw: data.yaw,
         pitch: data.pitch,
       }
@@ -455,12 +454,11 @@ export const addSessionEventListener = session => {
 
       if (isNotMe) {
         Store.commit('updateParticipant', {
-          connectionId: connectionId,
+          connectionId: originConId,
           rotationPos: { yaw: data.yaw, pitch: data.pitch },
         })
       }
 
-      // window.vue.$eventBus.$emit('linkflow:rotation', info)
       window.vue.$eventBus.$emit('panoview:rotation', info)
     }
   })

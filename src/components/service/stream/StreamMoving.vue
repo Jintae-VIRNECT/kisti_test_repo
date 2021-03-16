@@ -24,6 +24,8 @@ import { mapGetters, mapActions } from 'vuex'
 import { ACTION } from 'configs/view.config'
 
 import { ROLE } from 'configs/remote.config'
+import { DEVICE } from 'configs/device.config'
+
 export default {
   name: 'Moving',
   components: {
@@ -37,7 +39,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['mainView', 'viewAction', 'viewForce']),
+    ...mapGetters(['mainView', 'viewAction', 'viewForce', 'participants']),
     viewMoving() {
       return this.viewAction === ACTION.STREAM_MOVING
     },
@@ -56,6 +58,9 @@ export default {
     isLeader() {
       return this.account.roleType === ROLE.LEADER
     },
+    isFITT360() {
+      return this.mainView.deviceType === DEVICE.FITT360
+    },
   },
   watch: {
     viewForce() {
@@ -63,6 +68,8 @@ export default {
         this.$eventBus.$emit('panoview:toggle', false)
       } else if (this.viewMoving && this.viewForce && this.isLeader) {
         this.$eventBus.$emit('panoview:toggle', true)
+      } else {
+        this.sendPanoRotation()
       }
     },
     viewAction() {
@@ -81,6 +88,11 @@ export default {
           this.$eventBus.$emit('panoview:toggle', false)
         }
       }
+    },
+    'participants.length': {
+      handler() {
+        this.sendPanoRotation()
+      },
     },
   },
   methods: {
@@ -110,8 +122,18 @@ export default {
     focusOut() {
       this.shift = false
     },
+    sendPanoRotation() {
+      if (this.mainView.rotationPos) {
+        this.$call.sendPanoRotation({
+          yaw: this.mainView.rotationPos.yaw,
+          pitch: this.mainView.rotationPos.pitch,
+          origin: this.mainView.connectionId,
+        })
+      }
+    },
   },
   mounted() {
+    this.sendPanoPosition()
     window.addEventListener('keydown', this.keyEventHandler)
     window.addEventListener('keyup', this.keyUpEventHandler)
     window.addEventListener('blur', this.focusOut)
@@ -122,7 +144,6 @@ export default {
     window.removeEventListener('blur', this.focusOut)
 
     if (this.viewAction === ACTION.STREAM_MOVING) {
-      console.log('set to default')
       this.setAction('default')
     }
   },
