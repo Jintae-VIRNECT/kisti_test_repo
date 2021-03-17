@@ -1,4 +1,4 @@
-// stream: default, pointing
+// stream: default, pointing, moving
 // drawing: line, text
 // ar: arPointing, arArea, arDrawing
 

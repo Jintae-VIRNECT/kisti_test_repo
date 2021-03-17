@@ -434,13 +434,13 @@ export const addSessionEventListener = session => {
   })
   /** LinkFlow 제어 관련 */
   session.on(SIGNAL.LINKFLOW, event => {
-    //여러개의 링크 플로 디바이스가 붙을 수 있다고 가정할 것
     const connectionId = event.from.connectionId
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
       user => user.connectionId === connectionId,
     )
     if (idx < 0) return
+
     let data = JSON.parse(event.data)
     if (data.type === LINKFLOW.ROTATION) {
       const originConId = data.origin
