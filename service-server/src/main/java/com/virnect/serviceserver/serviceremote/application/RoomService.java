@@ -539,7 +539,8 @@ public class RoomService {
 				for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
 					coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
 					coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
-					coturnResponse.setUrl(coturnUrl.replaceAll("\"", ""));
+					//coturnResponse.setUrl(coturnUrl.replaceAll("\"", ""));
+					coturnResponse.setUrl(coturnUrl);
 				}
 			}
 			break;

@@ -22,6 +22,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.mediaserver.cdr.CDREventName;
@@ -415,14 +418,13 @@ public class RemoteServiceProperties extends PropertyService {
 
 		CoturnUris = CoturnUris.replaceAll("\"", ""); // Remove previous escapes
 
-		/*CoturnUris = CoturnUris.replaceAll("\\s", ""); // Remove all white spaces
+		CoturnUris = CoturnUris.replaceAll("\\s", ""); // Remove all white spaces
 		CoturnUris = CoturnUris.replaceAll("\\\\", ""); // Remove previous escapes
 		CoturnUris = CoturnUris.replaceAll("\"", ""); // Remove previous double quotes
 		CoturnUris = CoturnUris.replaceFirst("^\\[", "[\\\""); // Escape first char
 		CoturnUris = CoturnUris.replaceFirst("\\]$", "\\\"]"); // Escape last char
 		CoturnUris = CoturnUris.replaceAll(",", "\\\",\\\""); // Escape middle uris*/
 		List<String> coturnUrisArray = asJsonStringsArray(property);
-
 		return coturnUrisArray;
 	}
 
@@ -454,12 +456,26 @@ public class RemoteServiceProperties extends PropertyService {
 		return kmsUrisArray;
 	}
 
+	public URI checkCoturnUri(String uri) throws Exception {
+		try {
+			if (!uri.startsWith("turn:")) {
+				throw new Exception("Coturn uri not found");
+			}
+			String parsedUri = uri.replaceAll("^turn:", "http://");
+			return new URL(parsedUri).toURI();
+		} catch (Exception e) {
+			throw new RuntimeException(
+				"URI '" + uri + "' has not a valid Coturn not format: " + e.getMessage());
+		}
+	}
+
 	public URI checkWebsocketUri(String uri) throws Exception {
 		try {
 			if (!uri.startsWith("ws://") || uri.startsWith("wss://")) {
 				throw new Exception("WebSocket protocol not found");
 			}
 			String parsedUri = uri.replaceAll("^ws://", "http://").replaceAll("^wss://", "https://");
+			//String parsedUri = uri.replaceAll("ws://", "http://").replaceAll("wss://", "https://");
 			return new URL(parsedUri).toURI();
 		} catch (Exception e) {
 			throw new RuntimeException(

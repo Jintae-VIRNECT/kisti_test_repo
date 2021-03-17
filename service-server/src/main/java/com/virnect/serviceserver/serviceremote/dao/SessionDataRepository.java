@@ -1336,7 +1336,6 @@ public class SessionDataRepository {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
-
                     } else {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                     }

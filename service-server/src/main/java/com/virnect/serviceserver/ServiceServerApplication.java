@@ -24,6 +24,13 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
+
+import lombok.var;
 
 import com.virnect.mediaserver.cdr.CDRLogger;
 import com.virnect.mediaserver.cdr.CDRLoggerFile;
@@ -145,6 +152,14 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public SessionService sessionService() {
         return new SessionService();
     }*/
+
+    @Bean
+    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(ObjectMapper objectMapper) {
+        var mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(objectMapper);
+        mappingJackson2HttpMessageConverter.setPrefixJson(false);
+        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Lists.newArrayList(MediaType.APPLICATION_JSON_UTF8));
+        return mappingJackson2HttpMessageConverter;
+    }
 
     @Bean
     @ConditionalOnMissingBean

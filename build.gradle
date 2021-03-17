@@ -88,6 +88,7 @@ project(":service-data") {
     dependencies {
         // Lombok and Annotation Configuration Dependencies
         compileOnly 'org.projectlombok:lombok'
+        implementation 'org.springframework.boot:spring-boot-starter'
         annotationProcessor 'org.projectlombok:lombok'
         annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 

@@ -1,23 +1,33 @@
 package com.virnect.serviceserver.global.config.property;
 
 import java.io.File;
+import java.lang.reflect.Type;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.kurento.jsonrpc.JsonUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.core.env.Environment;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonParser;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
+import com.virnect.serviceserver.infra.utils.JsonUtil;
 
 /**
  *
@@ -129,6 +139,9 @@ public abstract class PropertyService {
 	protected List<String> asJsonStringsArray(String property) {
 		try {
 			Gson gson = new Gson();
+
+			System.out.println("GET VALUE : " + getValue(property));
+
 			JsonArray jsonArray = gson.fromJson(getValue(property), JsonArray.class);
 			List<String> list = JsonUtils.toStringList(jsonArray);
 			if (list.size() == 1 && list.get(0).isEmpty()) {
@@ -137,7 +150,7 @@ public abstract class PropertyService {
 			return list;
 		} catch (JsonSyntaxException e) {
 			addError(property, "Is not a valid strings array in JSON format. " + e.getMessage());
-			return Collections.emptyList();
+			return Arrays.asList();
 		}
 	}
 
