@@ -53,7 +53,7 @@ if ('remote.virnect.com' === location.host) {
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-Vue.prototype.$version = version
+Vue.prototype.$version = version.replace('-', '.')
 
 const app = new Vue({
   el: '#container',
