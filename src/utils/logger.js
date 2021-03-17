@@ -40,6 +40,7 @@ export const debug = (...value) => {
   if (process.env.NODE_ENV === 'production') {
     if ((window.env && window.env === 'develop') || isDev) {
       console.log(...value)
+      window.env = 'develop'
     }
   } else {
     console.logger(...value)

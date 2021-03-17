@@ -1,6 +1,6 @@
 {
   "service": {
-    "stream": "リアルタイムライブ共有",
+    "stream": "ライブビデオ",
     "drawing": "協業ボード",
     "ar": "AR機能",
     
@@ -32,7 +32,7 @@
     "toast_ar_start": "<em>{name}</em>様のAR共有を始めました。",
     "toast_ar_exit": "リーダーがAR共有を終了しました。",
     "toast_no_sharing": "すべて共有中の映像はありません。",
-    "toast_video_restrict_mode": "This is the video restriction mode.<br>Participants all connect with the camera turned off.​",
+    "toast_video_restrict_mode": "映像制限モードです。<br>参加者全員がカメラをオフにして接続します。​",
 
     "participant_mute": "ミュート",
     "participant_mute_cancel": "ミュート解除",
@@ -78,7 +78,7 @@
     "capture_share": "キャプチャー後共有",
     "capture_message": "映像がキャプチャーされました。",
     "capture_recapture": "もう一度取る",
-    "capture_image_save": "イメージダウンロード",
+    "capture_image_save": "イメージ保存",
     "capture_image_share": "キャプチャーイメージ共有",
 
     "tool_flash": "フラッシュオン／オフ",
@@ -172,8 +172,8 @@
     "chat_record_allow": "参加者ローカル録画が許可されました。",
     "chat_record_not_allow": "参加者ローカル録画がキャンセルされました。",
     "chat_send_cancel": "<em>{name}</em>様が転送をキャンセルしました。",
-    "chat_camera_control_on": "Camera <em>On/Off</em> control function allowed.​",
-    "chat_camera_control_off": "Camera <em>On/Off</em> control function is limited.",
+    "chat_camera_control_on": "カメラ<em>OnOff</em>制御機能が許可されました。​​",
+    "chat_camera_control_off": "カメラ<em>OnOff</em>制御機能が制限されました。​",
     "chat_text_exceed": "200 文字まで入力できます。​",
 
     "file": "ファイル",
@@ -207,10 +207,10 @@
     "record_fail_memory": "PCの容量が不足して録画を中止します。進行中録画ファイルは保存されません。​",
     "record_end_message": "ローカル録画が完了しました。録画ファイルメニューからファイルをご確認ください。",
     "record_end_no_stream_message": "映像がございません。ローカル録画を中止します。",
-    "record_local_browser_not_allow_screen_sharing":"This browser does not allow screen sharing.",
-    "record_local_browser_not_allow_local_record":"This browser does not support local recording.",
-    "record_local_blocked_screen_sharing":"Screen sharing access is blocked.",
-    "record_local_start_failed":"Local recording failed.",
+    "record_local_browser_not_allow_screen_sharing":"画面共有が不可能なブラウザです。",
+    "record_local_browser_not_allow_local_record":"ローカル録画をサポートしていないブラウザです。",
+    "record_local_blocked_screen_sharing":"画面の共有アクセスが遮断されました。",
+    "record_local_start_failed":"ローカル録画に失敗しました。",
 
     "record_server_start_message": "サーバー録画を開始します。",
     "record_server_start_failed": "サーバーの記録を開始できませんでした。 もう一度やり直してください。",
@@ -223,9 +223,9 @@
     "reconnect_disconnected": "ネットワーク/サーバーの問題により、接続が終了しました。<br>再接続しますか？",
     "reconnect_reconnect_cancel": "協業再連結がキャンセルされました。",
 
-    "camera_control": "Camera Control",
-    "camera_control_allow": "Allow camera control",
-    "camera_control_every_on": "Turn on all cameras",
-    "camera_control_every_off": "Turn off all cameras"
+    "camera_control": "カメラ制御",
+    "camera_control_allow": "カメラ制御許容",
+    "camera_control_every_on": "全体カメラオン",
+    "camera_control_every_off": "全体カメラオフ"
   }
 }
