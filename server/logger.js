@@ -1,3 +1,4 @@
+'use strict'
 const log4js = require('log4js')
 const chalk = require('chalk')
 
@@ -35,11 +36,11 @@ log4js.configure({
 })
 
 module.exports = {
-  log: function(message, context) {
+  log: function (message, context) {
     const logger = log4js.getLogger(context)
     logger.info(message)
   },
-  error: function(message, context) {
+  error: function (message, context) {
     const logger = log4js.getLogger(context)
     logger.error(message)
   },

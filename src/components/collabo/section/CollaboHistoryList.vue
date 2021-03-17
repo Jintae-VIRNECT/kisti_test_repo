@@ -70,7 +70,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['searchFilter']),
+    ...mapGetters([
+      'searchFilter',
+      'useServerRecord',
+      'useLocalRecord',
+      'useStorage',
+    ]),
     excelBtnClass() {
       return [
         { 'excel-loading': this.excelLoading },
@@ -94,15 +99,6 @@ export default {
 
     async init(page = 0) {
       this.loading = true
-
-      const memberInfo = await getMemberInfo({
-        userId: this.account.uuid,
-        workspaceId: this.workspace.uuid,
-      })
-
-      if (memberInfo.role === WORKSPACE_ROLE.MASTER) {
-        this.isMaster = true
-      }
 
       const paging = true
       const updatePageMeta = true
@@ -190,7 +186,11 @@ export default {
           }
         })
 
-        exportExcel(historys, this, this.allowFileInfo)
+        exportExcel(historys, this, {
+          useServerRecord: this.useServerRecord && this.allowFileInfo,
+          useLocalRecord: this.useLocalRecord && this.allowFileInfo,
+          useStorage: this.useStorage && this.allowFileInfo,
+        })
 
         this.excelLoading = false
       } catch (err) {
@@ -204,12 +204,25 @@ export default {
         ? await getAllHistoryList(params)
         : await getHistoryList(params)
     },
+
+    async checkMaster() {
+      const memberInfo = await getMemberInfo({
+        userId: this.account.uuid,
+        workspaceId: this.workspace.uuid,
+      })
+
+      if (memberInfo.role === WORKSPACE_ROLE.MASTER) {
+        this.isMaster = true
+      }
+    },
   },
 
-  mounted() {
+  async mounted() {
     this.$eventBus.$on('reload::list', this.init)
+
     if (this.workspace.uuid) {
-      this.init()
+      await this.checkMaster()
+      await this.init()
     }
   },
   beforeDestroy() {

@@ -22,7 +22,7 @@ import DashBoardHeader from 'components/header/Header'
 import DashBoardFooter from 'components/footer/Footer'
 import DashBoardTab from 'components/dashboard/section/DashBoardTab'
 import { mapActions } from 'vuex'
-import { getLicense } from 'api/http/account'
+import { getLicense, getCompanyInfo } from 'api/http/account'
 import langMixin from 'mixins/language'
 import auth from 'utils/auth'
 
@@ -70,6 +70,14 @@ export default {
     }
   },
 
+  watch: {
+    workspace(val, oldVal) {
+      if (val.uuid && val.uuid !== oldVal.uuid) {
+        this.checkCompany(val.uuid)
+      }
+    },
+  },
+
   methods: {
     ...mapActions([
       'updateAccount',
@@ -78,6 +86,7 @@ export default {
       'setDevices',
       'setRecord',
       'setAllow',
+      'setCompanyInfo',
     ]),
 
     init(authInfo, workspaces) {
@@ -104,6 +113,29 @@ export default {
     },
     scrollTop() {
       this.$refs['dashboardScroller'].scrollToY(0)
+    },
+    async checkCompany(workspaceId) {
+      const res = await getCompanyInfo({
+        userId: this.account.uuid,
+        workspaceId,
+      })
+
+      const languageCodes = res.languageCodes || []
+
+      this.setCompanyInfo({
+        companyCode: res.companyCode,
+        translation: res.translation,
+        tts: res.tts,
+        sttSync: res.sttSync,
+        sttStreaming: res.sttStreaming,
+        recording: res.recording,
+        localRecording: res.localRecording,
+        storage: res.storage,
+        sessionType: res.sessionType,
+        languageCodes,
+        audioRestrictedMode: false, //res.audioRestrictedMode,
+        videoRestrictedMode: res.videoRestrictedMode,
+      })
     },
   },
   mounted() {

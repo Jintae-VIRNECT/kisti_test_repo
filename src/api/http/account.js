@@ -49,3 +49,16 @@ export const getSettingInfo = async function () {
   const returnVal = await http('SETTING_INFO')
   return returnVal
 }
+
+/**
+ * 회사 정보
+ * @param {String} userId
+ * @param {String} workspaceId
+ */
+export const getCompanyInfo = async function ({ userId, workspaceId }) {
+  const returnVal = await http('COMPANY_INFO', {
+    userId,
+    workspaceId,
+  })
+  return returnVal
+}

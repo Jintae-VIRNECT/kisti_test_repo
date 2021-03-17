@@ -17,7 +17,9 @@ export default {
   clearWorkspace({ commit }) {
     commit(types.CLEAR_WORKSPACE)
   },
-
+  setCompanyInfo({ commit }, info) {
+    commit(types.SET_COMPANY_INFO, info)
+  },
   //calendar
   setCalendar({ commit }, calendar) {
     commit(types.CALENDAR_SET, calendar)
