@@ -1,6 +1,6 @@
 <template>
   <tool-button
-    :text="$t('화면 이동')"
+    :text="$t('service.tool_screen_moving')"
     :active="viewAction === STREAM_MOVING"
     :disabled="!canMoving"
     :src="require('assets/image/call/ic_move.svg')"
