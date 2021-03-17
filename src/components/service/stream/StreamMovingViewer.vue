@@ -14,7 +14,7 @@ import PanoVideo from 'PanoVideo'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'Moving',
+  name: 'MovingViewer',
   components: {
     PanoVideo,
   },
