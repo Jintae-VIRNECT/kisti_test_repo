@@ -169,7 +169,7 @@ public class DefaultMessageService implements MessageService {
 
         return new ApiResponse<>(true);
     }
-
+/*
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue,
             exchange = @Exchange(value = "amq.topic", type = ExchangeTypes.TOPIC),
@@ -177,6 +177,6 @@ public class DefaultMessageService implements MessageService {
     ), containerFactory = "rabbitListenerContainerFactory")
     public void getEventMessage(Message message) {
         log.info(message.toString());
-    }
+    }*/
 }
 
