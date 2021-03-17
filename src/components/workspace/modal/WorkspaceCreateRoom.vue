@@ -80,14 +80,14 @@ export default {
     },
   },
   watch: {
-    visible(flag) {
+    async visible(flag) {
       if (flag) {
         this.selection = []
         this.selectHistory = []
-        this.inviteRefresh()
         if (this.sessionId && this.sessionId.length > 0) {
-          this.getInfo()
+          await this.getInfo()
         }
+        this.inviteRefresh()
       }
       this.visibleFlag = flag
     },
@@ -100,11 +100,9 @@ export default {
           workspaceId: this.workspace.uuid,
           sessionId: this.sessionId,
         })
-        for (let member of this.roomInfo.memberList) {
-          if (member.uuid !== this.account.uuid) {
-            this.selectHistory.push(member)
-          }
-        }
+        this.selectHistory = this.roomInfo.memberList.filter(
+          member => member.uuid !== this.account.uuid,
+        )
       } catch (err) {
         console.error(err)
       }
@@ -147,12 +145,11 @@ export default {
           return 0
         }
       })
-      for (let select of this.selectHistory) {
-        const idx = this.users.findIndex(user => user.uuid === select.uuid)
-        if (idx > -1) {
-          this.selection.push(select)
-        }
-      }
+      this.selection = this.users.filter(
+        user =>
+          this.selectHistory.findIndex(history => history.uuid === user.uuid) >
+          -1,
+      )
       this.loading = false
     },
     async startRemote(info) {
