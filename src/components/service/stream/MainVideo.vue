@@ -56,6 +56,22 @@
           :videoSize="videoSize"
           class="main-video__pointing"
         ></pointing>
+
+        <!-- 360 화면 컨트롤 only -->
+        <moving
+          v-if="isLeader && isFITT360 && viewForce"
+          class="main-video__moving"
+          :class="{ upper: activeMovingControl }"
+          @panoctl="flag => (activeMovingControl = flag)"
+        ></moving>
+
+        <!-- 360 화면 뷰 only -->
+        <moving-viewer
+          ref="movingViewer"
+          v-if="isFITT360"
+          class="main-video__moving-viewer"
+        ></moving-viewer>
+
         <!-- 디바이스 컨트롤 뷰 -->
         <template v-if="allowTools">
           <transition name="opacity">
@@ -133,18 +149,21 @@
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
 import { VIEW, ACTION } from 'configs/view.config'
-import { CAMERA, FLASH } from 'configs/device.config'
+import { CAMERA, FLASH, DEVICE } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
 import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
 import toastMixin from 'mixins/toast'
+
 export default {
   name: 'MainVideo',
   mixins: [shutterMixin, toastMixin],
   components: {
     Pointing,
+    Moving: () => import('./StreamMoving'),
+    MovingViewer: () => import('./StreamMovingViewer'),
     VideoTools,
     Fullscreen,
   },
@@ -165,6 +184,8 @@ export default {
       serverTime: 0,
       serverStart: 0,
       hideFullBtn: false,
+
+      activeMovingControl: false,
       backInterval: null,
     }
   },
@@ -178,9 +199,13 @@ export default {
       localRecordStatus: 'localRecordStatus',
       serverRecordStatus: 'serverRecordStatus',
       view: 'view',
+      mainPanoCanvas: 'mainPanoCanvas',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+    isFITT360() {
+      return this.mainView.deviceType === DEVICE.FITT360
     },
     resolution() {
       const idx = this.resolutions.findIndex(
@@ -396,9 +421,7 @@ export default {
 
       const tmpCtx = tmpCanvas.getContext('2d')
 
-      tmpCtx.drawImage(videoEl, 0, 0, width, height)
-
-      tmpCanvas.toBlob(blob => {
+      const canvasToBlob = blob => {
         const imgId = parseInt(
           Date.now()
             .toString()
@@ -413,7 +436,41 @@ export default {
           width,
           height,
         })
-      }, 'image/png')
+      }
+
+      if (this.isFITT360) {
+        //pano canvas -> dummy video element -> capture canvas
+        const panoCanvas = this.$refs['movingViewer'].$el.querySelector(
+          'canvas',
+        )
+
+        const videoElement = document.createElement('video')
+        const canvasStream = panoCanvas.captureStream(24)
+
+        videoElement.srcObject = canvasStream
+
+        videoElement.muted = true
+        videoElement.id = 'screen-capture-video'
+
+        videoElement.style.width = width
+        videoElement.style.height = height
+        videoElement.style.opacity = '0'
+        videoElement.style.position = 'absolute'
+        videoElement.style.zIndex = '-999999'
+
+        document.body.appendChild(videoElement)
+
+        videoElement.onloadeddata = event => {
+          tmpCtx.drawImage(videoElement, 0, 0, width, height)
+          tmpCanvas.toBlob(canvasToBlob, 'image/png')
+          videoElement.remove()
+        }
+
+        videoElement.play()
+      } else {
+        tmpCtx.drawImage(videoEl, 0, 0, width, height)
+        tmpCanvas.toBlob(canvasToBlob, 'image/png')
+      }
     },
     toggleLocalTimer(status) {
       if (status === 'START') {

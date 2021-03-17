@@ -16,6 +16,7 @@ export const SIGNAL = {
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
+  LINKFLOW: 'signal:linkflow',
 }
 
 export const FILE = {
@@ -121,4 +122,12 @@ export const ROLE = {
   WORKER: 'WORKER',
   UNKNOWN: 'UNKNOWN',
   SECESSION: 'SECESSION',
+}
+
+export const LINKFLOW = {
+  INFO: 'info',
+  STITCHING: 'stitching',
+  SIDE_BY_SIDE: 'sidebyside',
+  SINGLE: 'single',
+  ROTATION: 'rotation',
 }

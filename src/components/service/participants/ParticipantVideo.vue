@@ -14,6 +14,7 @@
           playsinline
           loop
           :muted="isMuted"
+          ref="participant-video"
           @play="mediaPlay"
         ></video>
       </div>

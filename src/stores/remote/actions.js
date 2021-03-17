@@ -181,4 +181,11 @@ export default {
   setServerRecordStatus({ commit }, status) {
     commit(types.SETTINGS.SET_SERVER_RECORD_STATUS, status)
   },
+
+  /**
+   * set main pano canvas
+   */
+  setMainPanoCanvas({ commit }, status) {
+    commit(types.MAIN_PANO_CANVAS, status)
+  },
 }

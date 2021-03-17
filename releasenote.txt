@@ -12,6 +12,7 @@ New Features
 * 로컬 녹화 사용 여부 company info에 추가
 * 동적 og, metadata 설정
 * PC 화면 공유 기능 추가
+* fitt 360 연동 기능 추가
 
 Bug Fixes
 * [DPLA-1490] 아이패드 사파리: 파일 업로드 시 모든 파일을 선택할 수 없는 이슈 해결

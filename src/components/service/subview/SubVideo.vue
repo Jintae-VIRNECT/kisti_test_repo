@@ -1,9 +1,14 @@
 <template>
   <div class="sub-video">
-    <transition name="opacity">
+    <transition-group
+      tag="div"
+      class="sub-video__wrapper"
+      :class="{ 'no-stream': stream === null }"
+      name="opacity"
+    >
       <video
-        class="sub-video--screen"
         v-if="stream !== null"
+        class="sub-video--screen"
         ref="subVideo"
         autoplay
         loop
@@ -11,20 +16,35 @@
         playsinline
         @play="mediaPlay"
         :srcObject.prop="stream"
+        key="sub-video"
       ></video>
-      <div v-else class="sub-video--no-stream"></div>
-    </transition>
+      <div v-else class="sub-video--no-stream" key="sub-video-no-stream"></div>
+      <pano-video
+        v-if="activePanoVideo"
+        targetRef="subVideo"
+        :connectionId="mainView.connectionId"
+        key="sub-video-pano"
+        type="sub"
+      ></pano-video>
+    </transition-group>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { CAMERA } from 'configs/device.config'
+import { CAMERA, DEVICE } from 'configs/device.config'
 import { VIEW, ACTION } from 'configs/view.config'
+
+import PanoVideo from 'PanoVideo'
+
 export default {
   name: 'SubVideo',
+  components: {
+    PanoVideo,
+  },
   data() {
     return {
+      inited: false,
       backInterval: null,
     }
   },
@@ -48,6 +68,17 @@ export default {
         return null
       }
     },
+    activePanoVideo() {
+      return this.inited && this.stream !== null && this.isFITT360
+    },
+    isFITT360() {
+      return this.mainView.deviceType === DEVICE.FITT360
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.inited = true
+    })
   },
   methods: {
     mediaPlay() {

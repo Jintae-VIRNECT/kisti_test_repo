@@ -96,6 +96,7 @@ body {
   font-size: 14px;
   font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
   line-height: 1.6;
+  overscroll-behavior-y: contain;
   // &:lang(en) {
   //   font-family: $font_family2, $font_family, $font_family3,
   //     verdana, sans-serif;
