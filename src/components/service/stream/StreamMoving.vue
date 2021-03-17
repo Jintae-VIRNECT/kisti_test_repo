@@ -13,6 +13,7 @@
       targetRef="mainVideo"
       :connectionId="mainView.connectionId"
       type="control"
+      :activePano.sync="activePano"
     ></pano-video>
   </div>
 </template>
@@ -36,6 +37,7 @@ export default {
     return {
       cursorGrabbing: false,
       shift: false,
+      activePano: false,
     }
   },
   computed: {
@@ -65,27 +67,27 @@ export default {
   watch: {
     viewForce() {
       if (!this.viewForce) {
-        this.$eventBus.$emit('panoview:toggle', false)
+        this.activePano = false
       } else if (this.viewMoving && this.viewForce && this.isLeader) {
-        this.$eventBus.$emit('panoview:toggle', true)
+        this.activePano = true
       } else {
         this.sendPanoRotation()
       }
     },
     viewAction() {
       if (this.viewMoving && this.viewForce && this.isLeader) {
-        this.$eventBus.$emit('panoview:toggle', true)
+        this.activePano = true
       } else {
-        this.$eventBus.$emit('panoview:toggle', false)
+        this.activePano = false
       }
     },
 
     shift() {
       if (this.viewPointing) {
         if (this.shift && this.viewPointing) {
-          this.$eventBus.$emit('panoview:toggle', true)
+          this.activePano = true
         } else {
-          this.$eventBus.$emit('panoview:toggle', false)
+          this.activePano = false
         }
       }
     },
@@ -93,6 +95,12 @@ export default {
       handler() {
         this.sendPanoRotation()
       },
+    },
+    activePano: {
+      handler(flag) {
+        this.$emit('panoctl', flag)
+      },
+      immediate: true,
     },
   },
   methods: {

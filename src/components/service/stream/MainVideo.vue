@@ -62,6 +62,7 @@
           v-if="isLeader && isFITT360 && viewForce"
           class="main-video__moving"
           :class="{ upper: activeMovingControl }"
+          @panoctl="flag => (activeMovingControl = flag)"
         ></moving>
 
         <!-- 360 화면 뷰 only -->
@@ -151,8 +152,6 @@ import { VIEW, ACTION } from 'configs/view.config'
 import { CAMERA, FLASH, DEVICE } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
-import Moving from './StreamMoving'
-import MovingViewer from './StreamMovingViewer'
 import VideoTools from './MainVideoTools'
 import Fullscreen from './tools/Fullscreen'
 import shutterMixin from 'mixins/shutter'
@@ -163,8 +162,8 @@ export default {
   mixins: [shutterMixin, toastMixin],
   components: {
     Pointing,
-    Moving,
-    MovingViewer,
+    Moving: () => import('./StreamMoving'),
+    MovingViewer: () => import('./StreamMovingViewer'),
     VideoTools,
     Fullscreen,
   },
@@ -461,7 +460,7 @@ export default {
 
         document.body.appendChild(videoElement)
 
-        videoElement.onloadeddata = async event => {
+        videoElement.onloadeddata = event => {
           tmpCtx.drawImage(videoElement, 0, 0, width, height)
           tmpCanvas.toBlob(canvasToBlob, 'image/png')
           videoElement.remove()
@@ -509,9 +508,6 @@ export default {
         this.optimizeVideoSize()
       }, 500)
     },
-    toggleMovingControl(ctl) {
-      this.activeMovingControl = ctl
-    },
   },
 
   /* Lifecycles */
@@ -519,7 +515,6 @@ export default {
     this.$eventBus.$off('capture', this.doCapture)
     this.$eventBus.$off('showServerTimer', this.showServerTimer)
     this.$eventBus.$off('video:fullscreen', this.changeFullScreen)
-    this.$eventBus.$off('panoview:toggle', this.toggleMovingControl)
     window.removeEventListener('resize', this.nextOptimize)
     if (this.backInterval) clearInterval(this.backInterval)
   },
@@ -527,7 +522,6 @@ export default {
     this.$eventBus.$on('capture', this.doCapture)
     this.$eventBus.$on('showServerTimer', this.showServerTimer)
     this.$eventBus.$on('video:fullscreen', this.changeFullScreen)
-    this.$eventBus.$on('panoview:toggle', this.toggleMovingControl)
     window.addEventListener('resize', this.nextOptimize)
   },
 }

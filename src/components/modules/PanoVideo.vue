@@ -28,6 +28,10 @@ export default {
         return ['sub', 'control', 'viewer'].indexOf(type) !== -1
       },
     },
+    activePano: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -37,9 +41,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['myInfo', 'mainView']),
+    ...mapGetters(['myInfo', 'mainView', 'viewForce']),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
+    },
+  },
+  watch: {
+    activePano: {
+      handler(flag) {
+        this.toggle(flag)
+      },
+      immediate: true,
     },
   },
   methods: {
@@ -49,12 +61,13 @@ export default {
       if (this.type === 'control') {
         return
       }
-
-      this.panoViewer.lookAt({
-        yaw: info.yaw,
-        pitch: info.pitch,
-        fov: this.defaultFov,
-      })
+      if (this.viewForce) {
+        this.panoViewer.lookAt({
+          yaw: info.yaw,
+          pitch: info.pitch,
+          fov: this.defaultFov,
+        })
+      }
     },
     initPano() {
       this.isPanoView = true
@@ -114,6 +127,7 @@ export default {
               fov: this.defaultFov,
             })
           }
+          this.toggle(this.activePano)
         })
       }
     },
@@ -136,7 +150,6 @@ export default {
   },
   mounted() {
     this.$eventBus.$on('panoview:rotation', this.rotate)
-    this.$eventBus.$on('panoview:toggle', this.toggle)
     this.$eventBus.$on('video:fullscreen', this.resize)
 
     this.initPano()
@@ -149,7 +162,6 @@ export default {
     }
 
     this.$eventBus.$off('panoview:rotation', this.rotate)
-    this.$eventBus.$off('panoview:toggle', this.toggle)
     this.$eventBus.$off('video:fullscreen', this.resize)
 
     window.removeEventListener('resize', this.resize)
