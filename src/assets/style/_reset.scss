@@ -84,8 +84,8 @@ button {
 }
 
 * {
-  -ms-touch-action: manipulation;
-  touch-action: manipulation;
+  -ms-touch-action: pinch-zoom;
+  touch-action: pinch-zoom;
 }
 
 html,
@@ -96,9 +96,15 @@ body {
   font-size: 14px;
   font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
   line-height: 1.6;
+  overscroll-behavior-y: contain;
+  // &:lang(en) {
+  //   font-family: $font_family2, $font_family, $font_family3,
+  //     verdana, sans-serif;
+  // }
 }
 html {
   overflow: hidden;
+  overscroll-behavior: none;
 }
 
 button {

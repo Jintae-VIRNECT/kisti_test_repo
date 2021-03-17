@@ -94,6 +94,11 @@
     "setting_translate_disable_message": "Please turn on the use of translation.​",
     "access_deny": "Camera and mic. access denied.",
     "access_deny_description": "Click <span class='device-denied__content--emphasize'>icon</span> on browser address field <br />to allow access and refresh the page.",
+    "setting_function": "Function setting",
+    "setting_camera_control": "Video share control",
+    "setting_camera_restrict": "Video Restriction Mode",
+    "setting_camera_restrict_enable": "Enable Video Restriction Mode",
+    "setting_camera_restrict_info": "This mode allows you to contol the participant's camera.",
 
     "remote_name": "Collabo name",
     "remote_description": "Collabo description",

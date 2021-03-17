@@ -29,11 +29,8 @@
           {{ $t('common.dashboard') }}
         </button>
       </div>
-      <div class="popover-profile__link" v-if="!isSafari">
+      <div class="popover-profile__link" v-if="useLocalRecording && !isSafari">
         <button @click="fileList">{{ $t('common.local_record_file') }}</button>
-      </div>
-      <div class="popover-profile__link">
-        <button @click="downloadManual">{{ $t('button.manual') }}</button>
       </div>
       <div class="popover-profile__link">
         <button @click="logout">{{ $t('button.logout') }}</button>
@@ -49,7 +46,6 @@ import Popover from 'Popover'
 import Profile from 'Profile'
 import auth from 'utils/auth'
 import { URLS, RUNTIME, RUNTIME_ENV } from 'configs/env.config'
-import axios from 'api/axios'
 export default {
   name: 'HeaderProfile',
   components: {
@@ -57,15 +53,15 @@ export default {
     Profile,
   },
   computed: {
-    ...mapGetters(['account', 'useStorage']),
+    ...mapGetters(['account', 'useStorage', 'useLocalRecording']),
     urlLink() {
       return URLS['workstation']
     },
     dashboardLink() {
-      if (!this.useStorage) {
-        return false
-      } else {
+      if (URLS['dashboard']) {
         return URLS['dashboard']
+      } else {
+        return false
       }
     },
     onpremise() {
@@ -96,10 +92,7 @@ export default {
       if (!this.onpremise) {
         window.open('https://file.virnect.com/Guide/remote_web_user_guide.pdf')
       } else {
-        const res = await axios.get(
-          `${window.urls.api}/remote/file/guide/?objectName=virnect_remote_mobile_gs.pdf`,
-        )
-        window.open(res.data.data)
+        window.open(`${window.urls.minio}/guide/remote_web_user_guide.pdf`)
       }
     },
   },

@@ -185,11 +185,12 @@ export default {
   /* Lifecycles */
   created() {
     if (this.account.roleType !== ROLE.LEADER) {
-      this.$call.addListener(SIGNAL.DRAWING, this.getImage)
+      this.$eventBus.$on(SIGNAL.DRAWING, this.getImage)
     }
     this.$eventBus.$on('participantChange', this.participantChange)
   },
   beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.DRAWING, this.getImage)
     this.$eventBus.$off('participantChange', this.participantChange)
   },
 }

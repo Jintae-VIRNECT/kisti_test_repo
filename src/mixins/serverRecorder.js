@@ -19,7 +19,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['roomInfo', 'serverRecord', 'serverRecordStatus']),
+    ...mapGetters([
+      'roomInfo',
+      'serverRecord',
+      'serverRecordStatus',
+      'useRecording',
+      'participants',
+    ]),
   },
   methods: {
     ...mapActions(['setServerRecordStatus']),
@@ -71,6 +77,19 @@ export default {
         this.recordTimeout = setTimeout(() => {
           this.stopServerRecord()
         }, timeout)
+
+        this.participants.forEach(participant => {
+          if (
+            participant.rotationPos &&
+            participant.deviceType === DEVICE.FITT360
+          ) {
+            this.$call.sendPanoRotation({
+              yaw: participant.rotationPos.yaw,
+              pitch: participant.rotationPos.pitch,
+              origin: participant.connectionId,
+            })
+          }
+        })
 
         this.toastDefault(this.$t('service.record_server_start_message'))
       } catch (e) {
@@ -172,6 +191,7 @@ export default {
   },
 
   mounted() {
+    if (!this.useRecording) return
     this.setServerRecordStatus('STOP')
     if (!this.account.roleType === ROLE.LEADER) return
 
@@ -179,6 +199,7 @@ export default {
     this.checkServerRecordings()
   },
   beforeDestroy() {
+    if (!this.useRecording) return
     clearTimeout(this.serverRecordRetryTimeout)
     this.serverRecordRetryTimeout = null
 

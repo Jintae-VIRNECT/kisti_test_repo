@@ -40,6 +40,7 @@ import shutterMixin from 'mixins/shutter'
 import confirmMixin from 'mixins/confirm'
 import FileSaver from 'file-saver'
 import { VIEW } from 'configs/view.config'
+import { base64ToBlob } from 'utils/file'
 export default {
   name: 'CaptureModal',
   mixins: [shutterMixin, confirmMixin],
@@ -82,8 +83,14 @@ export default {
     recapture() {
       this.$eventBus.$emit('capture')
     },
-    save() {
-      FileSaver.saveAs(this.imageData, this.file.fileName)
+    async save() {
+      const dataType = 'application/octet-stream'
+      const file = await base64ToBlob(
+        this.imageData,
+        dataType,
+        this.file.fileName,
+      )
+      FileSaver.saveAs(file)
     },
     share() {
       if (this.imageData && this.imageData.length > 0) {

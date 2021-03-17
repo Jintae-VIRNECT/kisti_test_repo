@@ -32,6 +32,7 @@
     "toast_ar_start": "<em>{name}</em> 님의 AR 공유를 시작했습니다.",
     "toast_ar_exit": "리더가 AR 공유를 종료했습니다.",
     "toast_no_sharing": "전체 공유 중인 영상이 없습니다.",
+    "toast_video_restrict_mode": "영상 제한 모드입니다.<br> 참가자 모두 카메라가 꺼진 상태로 접속합니다.",
 
     "participant_mute": "음소거",
     "participant_mute_cancel": "음소거 해제",
@@ -96,8 +97,11 @@
     "tool_pointing": "포인팅",
     "tool_pointing_block": "리더가 포인팅을 막았습니다.",
     "tool_enlarge_reduce": "확대 / 축소",
+    "tool_screen_share": "화면 공유",
+    "tool_screen_moving": "화면 이동",
 
     "setting": "설정",
+    "setting_service": "환경 설정",
     "setting_pointing": "포인팅 설정",
     "setting_pointing_participant": "참가자 포인팅",
     "setting_pointing_allow": "참가자 포인팅 허용",
@@ -168,7 +172,10 @@
     "chat_record_allow": "참가자 로컬 녹화가 허용되었습니다.",
     "chat_record_not_allow": "참가자 로컬 녹화가 취소되었습니다.",
     "chat_send_cancel": "<em>{name}</em> 님이 전송을 취소했습니다.",
+    "chat_camera_control_on": "카메라 <em>On/Off</em> 제어 기능이 허용되었습니다.​​",
+    "chat_camera_control_off": "카메라 <em>On/Off</em> 제어 기능이 제한되었습니다.​",
     "chat_text_exceed": "200자를 초과하여 입력할 수 없습니다.",
+
     "file": "파일",
     "file_validdatae": "유효기간  ",
     "file_choice_num": "{number} 개 선택",
@@ -200,6 +207,10 @@
     "record_fail_memory": "PC의 용량이 부족하여 녹화를 중지합니다.​ 진행 중이던 녹화파일은 저장되지 않습니다.​",
     "record_end_message": "로컬 녹화가 완료되었습니다. 녹화파일 메뉴에서 파일을 확인해 주세요.",
     "record_end_no_stream_message": "영상이 없어서 로컬 녹화를 중지합니다.",
+    "record_local_browser_not_allow_screen_sharing":"화면 공유가 불가능한 브라우저 입니다.",
+    "record_local_browser_not_allow_local_record":"로컬 녹화를 지원하지 않는 브라우저 입니다.",
+    "record_local_blocked_screen_sharing":"화면 공유 접근이 차단되었습니다.",
+    "record_local_start_failed":"로컬 녹화에 실패하였습니다.",
 
     "record_server_start_message":"서버 녹화를 시작합니다.",
     "record_server_start_failed":"서버 녹화를 시작할 수 없습니다. 다시 시도해 주세요.​",
@@ -210,6 +221,11 @@
     "reconnect_network_connecting": "네트워크 연결 중…",
     "reconnect_room_connecting": "협업 재연결 중…",
     "reconnect_disconnected": "네트워크/서버 문제로 연결이 종료되었습니다. <br>재입장을 하시겠습니까?​",
-    "reconnect_reconnect_cancel": "협업 재연결이 취소 되었습니다."
+    "reconnect_reconnect_cancel": "협업 재연결이 취소 되었습니다.",
+
+    "camera_control": "카메라 제어",
+    "camera_control_allow": "카메라 제어 허용",
+    "camera_control_every_on": "카메라 전체 켜기",
+    "camera_control_every_off": "카메라 전체 끄기"
   }
 }

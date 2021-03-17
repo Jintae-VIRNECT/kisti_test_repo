@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="36px" height="36px" viewBox="0 0 36 36" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>39DAE92B-EFE7-472E-9252-C8C248197F1C@1x</title>
+    <defs>
+        <path d="M5,19 L17,19 L11,13 L5,19 Z M20,0 L2,0 C0.9,0 0,0.9 0,2 L0,14 C0,15.1 0.9,16 2,16 L6,16 L6,14 L2,14 L2,2 L20,2 L20,14 L16,14 L16,16 L20,16 C21.1,16 22,15.1 22,14 L22,2 C22,0.9 21.1,0 20,0 Z" id="path-1"></path>
+    </defs>
+    <g id="symbol" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="gnb*_remote_air" transform="translate(-601.000000, -10.000000)">
+            <g id="btn_airplay" transform="translate(596.000000, 10.000000)">
+                <g id="airplay" transform="translate(5.000000, 0.000000)">
+                    <rect id="tr36" opacity="0.189871652" x="0" y="0" width="36" height="36"></rect>
+                    <g id="icon/av/airplay_24px-2" transform="translate(7.000000, 9.000000)">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <use id="icon/av/airplay_24px" fill="#FFFFFF" fill-rule="nonzero" xlink:href="#path-1"></use>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

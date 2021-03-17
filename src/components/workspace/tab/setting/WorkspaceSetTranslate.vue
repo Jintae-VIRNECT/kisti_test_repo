@@ -145,23 +145,23 @@ export default {
       this.setTranslate({
         flag,
       })
-      this.$localStorage.setTranslate('flag', flag)
+      window.myStorage.setItemPiece('translate', 'flag', flag)
     },
     setTranslateCode(code) {
       this.setTranslate({ code })
-      this.$localStorage.setTranslate('code', code)
+      window.myStorage.setItemPiece('translate', 'code', code)
     },
     setTranslateMultiple(multiple) {
       this.setTranslate({ multiple })
-      this.$localStorage.setTranslate('multiple', multiple)
+      window.myStorage.setItemPiece('translate', 'multiple', multiple)
     },
     setSttSync(sttSync) {
       this.setTranslate({ sttSync })
-      this.$localStorage.setTranslate('sttSync', sttSync)
+      window.myStorage.setItemPiece('translate', 'sttSync', sttSync)
     },
     setTtsAllow(ttsAllow) {
       this.setTranslate({ ttsAllow })
-      this.$localStorage.setTranslate('ttsAllow', ttsAllow)
+      window.myStorage.setItemPiece('translate', 'ttsAllow', ttsAllow)
     },
   },
   created() {

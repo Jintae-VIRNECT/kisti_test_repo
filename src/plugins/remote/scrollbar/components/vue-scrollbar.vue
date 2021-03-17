@@ -166,8 +166,9 @@ export default {
 
     onDrag(e) {
       if (this.dragging) {
-        e.preventDefault()
-        e.stopPropagation()
+        // safari browser 확대 이슈로 hide (touch-action: pinch-zoom)
+        // e.preventDefault()
+        // e.stopPropagation()
 
         // Prevent Click Event When it dragging
         if (this.touchEvent) {

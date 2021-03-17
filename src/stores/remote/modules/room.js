@@ -19,6 +19,8 @@ function getDefaultRoomInfo() {
     maxUserCount: 0,
     memberList: [],
     open: false,
+    videoRestrictedMode: false,
+    audioRestrictedMode: false,
   }
 }
 const state = getDefaultRoomInfo()
@@ -33,6 +35,8 @@ const mutations = {
     state.maxUserCount = payload.maxUserCount
     state.memberList = payload.memberList
     state.open = !!payload.open
+    state.videoRestrictedMode = !!payload.videoRestrictedMode
+    state.audioRestrictedMode = !!payload.audioRestrictedMode
   },
 
   [ADD_ROOM_MEMBER](state, payload) {
@@ -102,6 +106,8 @@ const actions = {
 const getters = {
   roomInfo: state => state,
   openRoom: state => state.open,
+  restrictedRoom: state =>
+    state.videoRestrictedMode || state.audioRestrictedMode,
 }
 
 export default {

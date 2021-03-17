@@ -10,7 +10,7 @@ var OpenViduLogger = /** @class */ (function() {
       this.logger.warn,
       this.logger.error,
     ]
-    this.isProdMode = process.env.NOVE_ENV === 'production'
+    this.isProdMode = process.env.NODE_ENV === 'production'
   }
   OpenViduLogger.getInstance = function() {
     if (!OpenViduLogger.instance) {

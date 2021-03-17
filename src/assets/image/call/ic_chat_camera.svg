@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="14px" height="14px" viewBox="0 0 14 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>AECDEA6C-1333-41A4-B73A-55E383AFDF07@1x</title>
+    <defs>
+        <path d="M11.2,5.25 L11.2,2.8 C11.2,2.415 10.885,2.1 10.5,2.1 L0.7,2.1 C0.315,2.1 0,2.415 0,2.8 L0,11.2 C0,11.585 0.315,11.9 0.7,11.9 L10.5,11.9 C10.885,11.9 11.2,11.585 11.2,11.2 L11.2,8.75 L14,11.55 L14,2.45 L11.2,5.25 Z M7.7,9.45 L7.7,7.7 L3.5,7.7 L3.5,9.45 L1.05,7 L3.5,4.55 L3.5,6.3 L7.7,6.3 L7.7,4.55 L10.15,7 L7.7,9.45 Z" id="path-1"></path>
+    </defs>
+    <g id="Remote_Cowork_Leader" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="OVE_0020-_영상-제한-모드_참가자-권한-_2" transform="translate(-1602.000000, -287.000000)">
+            <g id="message" transform="translate(1560.000000, 56.000000)">
+                <g id="Group-2" transform="translate(15.000000, 114.000000)">
+                    <g id="notifi02" transform="translate(27.000000, 113.000000)">
+                        <g id="icn" transform="translate(0.000000, 4.000000)">
+                            <mask id="mask-2" fill="white">
+                                <use xlink:href="#path-1"></use>
+                            </mask>
+                            <use id="icon/image/switch_video_24px" fill="#E0E0E0" fill-rule="nonzero" xlink:href="#path-1"></use>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -38,7 +38,7 @@ export default {
         },
       })
       this.$call.sendSpeaker(speaker)
-      this.$localStorage.setDevice('speaker', 'isOn', speaker)
+      window.myStorage.setDevice('speaker', 'isOn', speaker)
     },
   },
 }

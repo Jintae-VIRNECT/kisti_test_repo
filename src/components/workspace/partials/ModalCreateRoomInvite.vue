@@ -108,9 +108,6 @@ export default {
     },
   },
   methods: {
-    reset() {
-      this.selection = []
-    },
     refresh() {
       this.$emit('inviteRefresh')
     },

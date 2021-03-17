@@ -155,6 +155,9 @@ export default {
       commit(types.SETTINGS.SET_TTS_ALLOW, payload['ttsAllow'])
     }
   },
+  setScreenStrict({ commit }, payload) {
+    commit(types.SETTINGS.SET_SCREEN_STRICT, payload)
+  },
 
   /**
    * set local record target
@@ -177,5 +180,12 @@ export default {
    */
   setServerRecordStatus({ commit }, status) {
     commit(types.SETTINGS.SET_SERVER_RECORD_STATUS, status)
+  },
+
+  /**
+   * set main pano canvas
+   */
+  setMainPanoCanvas({ commit }, status) {
+    commit(types.MAIN_PANO_CANVAS, status)
   },
 }

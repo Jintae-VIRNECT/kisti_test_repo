@@ -1,4 +1,5 @@
 export const SIGNAL = {
+  SYSTEM: 'signal:system',
   VIDEO: 'signal:video',
   CHAT: 'signal:chat',
   RESOLUTION: 'signal:resolution',
@@ -15,7 +16,7 @@ export const SIGNAL = {
   AR_POINTING: 'signal:arPointing',
   CAPTURE_PERMISSION: 'signal:screenCapturePermission',
   FILE: 'signal:file',
-  SYSTEM: 'signal:system',
+  LINKFLOW: 'signal:linkflow',
 }
 
 export const FILE = {
@@ -25,6 +26,7 @@ export const FILE = {
 export const VIDEO = {
   NORMAL: 'normal',
   SHARE: 'share',
+  SCREEN_SHARE: 'screenShare',
 }
 
 export const CAMERA = {
@@ -40,6 +42,10 @@ export const FLASH = {
 export const CONTROL = {
   POINTING: 'pointing',
   LOCAL_RECORD: 'localRecord',
+  VIDEO: 'video',
+  AUDIO: 'audio',
+  AUDIO_VIDEO: 'audioVideo',
+  RESTRICTED_MODE: 'restrictedMode',
 }
 
 export const DRAWING = {
@@ -116,4 +122,12 @@ export const ROLE = {
   WORKER: 'WORKER',
   UNKNOWN: 'UNKNOWN',
   SECESSION: 'SECESSION',
+}
+
+export const LINKFLOW = {
+  INFO: 'info',
+  STITCHING: 'stitching',
+  SIDE_BY_SIDE: 'sidebyside',
+  SINGLE: 'single',
+  ROTATION: 'rotation',
 }

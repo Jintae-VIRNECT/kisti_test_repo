@@ -293,14 +293,16 @@
 
 .chat-item__body--text {
   position: relative;
-  margin-top: 0.643em;
-  padding-top: 0.643em;
   overflow: hidden;
   font-weight: 400;
   // line-height: 1.57;
   word-break: break-word;
-  border-top: dashed 1px #c7c7c7;
   transition: opacity 0.3s ease-in-out;
+  &.multiple {
+    margin-top: 0.643em;
+    padding-top: 0.643em;
+    border-top: dashed 1px #c7c7c7;
+  }
   &.inactive {
     height: 0;
     opacity: 0;
@@ -336,6 +338,12 @@
   }
   &.record::before {
     background-image: url(~assets/image/call/ic_chat_local_record.svg);
+  }
+  &.screen::before {
+    background-image: url(~assets/image/call/ic_chat_screen.svg);
+  }
+  &.camera::before {
+    background-image: url(~assets/image/call/ic_chat_camera.svg);
   }
 
   > em {

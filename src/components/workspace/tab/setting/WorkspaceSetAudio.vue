@@ -86,13 +86,13 @@ export default {
       this.setDevices({
         mic: { deviceId: deviceId },
       })
-      this.$localStorage.setDevice('mic', 'deviceId', deviceId)
+      window.myStorage.setDevice('mic', 'deviceId', deviceId)
     },
     setSpeaker(deviceId) {
       this.setDevices({
         speaker: { deviceId: deviceId },
       })
-      this.$localStorage.setDevice('speaker', 'deviceId', deviceId)
+      window.myStorage.setDevice('speaker', 'deviceId', deviceId)
     },
   },
   created() {

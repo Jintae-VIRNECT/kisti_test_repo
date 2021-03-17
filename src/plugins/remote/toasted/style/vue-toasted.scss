@@ -42,7 +42,9 @@
 .toasted .primary.info,
 .toasted.toasted-primary.remote-toast.info {
   padding: 0.714rem 2.143rem;
-  line-height: 1.429rem;
+  line-height: 2rem;
+  // line-height: 1.429rem;
+  text-align: center;
   // border: solid 1px #3d4147;
   background-color: rgba(#121517, 0.5);
   border-radius: 3px;

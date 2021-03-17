@@ -14,6 +14,8 @@
           playsinline
           loop
           :muted="isMuted"
+          ref="participant-video"
+          @play="mediaPlay"
         ></video>
       </div>
       <div class="participant-video__profile" v-else>
@@ -153,6 +155,7 @@ export default {
       btnActive: false,
       statusHover: {},
       touched: null,
+      backInterval: null,
     }
   },
   props: {
@@ -166,6 +169,7 @@ export default {
       'viewForce',
       'view',
       'initing',
+      'restrictedRoom',
     ]),
     profileUrl() {
       if (!this.participant.path) {
@@ -244,6 +248,25 @@ export default {
   },
   methods: {
     ...mapActions(['setMainView', 'addChat']),
+    mediaPlay() {
+      this.$nextTick(() => {
+        if (this.isSafari && this.isTablet) {
+          this.checkBackgroundStream()
+        }
+      })
+    },
+    checkBackgroundStream() {
+      if (this.backInterval) clearInterval(this.backInterval)
+      let lastFired = new Date().getTime()
+      let now = 0
+      this.backInterval = setInterval(() => {
+        now = new Date().getTime()
+        if (now - lastFired > 1000) {
+          this.$el.querySelector('video').play()
+        }
+        lastFired = now
+      }, 500)
+    },
     participantInited(name, oldName) {
       if (this.participant.me || this.initing === true) return
       if (name !== oldName && name.length > 0 && this.inited === false) {
@@ -286,7 +309,12 @@ export default {
       this.changeMain()
     },
     changeMain() {
-      if (!this.participant.hasCamera) {
+      if (this.restrictedRoom && this.account.roleType !== ROLE.LEADER) return
+      // if (!this.participant.hasCamera) {
+      //   this.toastDefault(this.$t('service.participant_no_stream'))
+      //   return
+      // }
+      if (!this.participant.hasVideo) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
@@ -394,7 +422,11 @@ export default {
       )
     },
     requestVideo() {
-      if (this.participant.cameraStatus === CAMERA.CAMREA_NONE) {
+      // if (this.participant.cameraStatus === CAMERA.CAMREA_NONE) {
+      //   this.toastDefault(this.$t('service.participant_no_stream'))
+      //   return
+      // }
+      if (!this.participant.hasVideo) {
         this.toastDefault(this.$t('service.participant_no_stream'))
         return
       }
@@ -402,7 +434,8 @@ export default {
     },
   },
   beforeDestroy() {
-    if (this.$call.session) {
+    if (this.backInterval) clearInterval(this.backInterval)
+    if (!this.initing && !this.participant.me && this.$call.session) {
       this.toastDefault(
         this.$t('service.chat_leave', { name: this.participant.nickname }),
       )

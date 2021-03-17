@@ -4,6 +4,7 @@ const getDefaultState = () => {
   return {
     initing: true,
     viewForce: false,
+    restrictedMode: false,
     mainView: {},
     participants: [
       // id: uuid,
@@ -24,6 +25,8 @@ const getDefaultState = () => {
       // zoomMax: 5, // zoom 최대 레벨
       // cameraStatus: 'default', // 'default': 초기세팅
       // flash: 'default', // flash 제어
+      // rotationPos : {yaw, pitch} //PanoViewer의 좌표
+      // screenShare: true, false //PC 화면공유 여부
     ],
     chatList: [
       // {
@@ -131,6 +134,8 @@ const getDefaultState = () => {
       //   height: 600
       // }
     ],
+    //화면 공유시 카메라 스트림을 보관하기 위함
+    myTempStream: null, //MediaStream
   }
 }
 
@@ -146,6 +151,40 @@ const mutations = {
   setMainViewForce(state, force) {
     // if (!state.mainView || !state.mainView.id) return
     state.viewForce = force
+  },
+
+  clearMainView(state, connectionId) {
+    const idx = state.participants.findIndex(
+      obj => obj.connectionId === connectionId,
+    )
+    if (idx >= 0) {
+      // 메인뷰를 보고있으면 메인뷰 변경
+      if (
+        state.participants[idx].connectionId === state.mainView.connectionId
+      ) {
+        const pIdx = state.participants.findIndex(
+          user =>
+            user.connectionId !== state.mainView.connectionId &&
+            user.video === true,
+        )
+        if (pIdx > -1) {
+          state.mainView = state.participants[pIdx]
+          state.viewForce = false
+        } else {
+          state.viewForce = false
+          //mainView 객체를 참조하는 동작을 위함
+          setTimeout(() => {
+            state.mainView = {}
+          })
+        }
+      }
+    }
+    // resolution 데이터 제거
+    const rIdx = state.resolutions.findIndex(
+      obj => obj.connectionId === connectionId,
+    )
+    if (rIdx < 0) return
+    state.resolutions.splice(rIdx, 1)
   },
   addStream(state, payload) {
     if (payload.me) {
@@ -240,10 +279,11 @@ const mutations = {
     if (state.participants[idx].me === true) {
       setTimeout(() => {
         state.initing = false
-        if (
-          param['hasVideo'] === true &&
-          (!state.mainView || !state.mainView.id)
-        ) {
+
+        const hasVideo = param['hasVideo'] === true
+        const noMainView = !state.mainView || !state.mainView.id
+
+        if (hasVideo && noMainView) {
           state.mainView = state.participants[idx]
         }
       }, 100)
@@ -258,6 +298,10 @@ const mutations = {
       return
     }
     Object.assign(state.resolutions[idx], payload)
+  },
+  // video, audio 제한모드 설정
+  setRestrictedMode(state, payload) {
+    state.restrictedMode = payload
   },
 
   // chat
@@ -298,6 +342,9 @@ const mutations = {
 
     return true
   },
+  setMyTempStream(state, payload) {
+    state.myTempStream = payload
+  },
 }
 
 const actions = {
@@ -317,11 +364,15 @@ const actions = {
       commit('setMainViewForce', false)
     }
   },
+  setMyTempStream({ commit }, payload) {
+    commit('setMyTempStream', payload)
+  },
 }
 
 const getters = {
   viewForce: state => state.viewForce,
   mainView: state => state.mainView,
+  allowCameraControl: state => !state.restrictedMode,
   participants: state => state.participants,
   myInfo: state => {
     if (state.participants.length > 0) {
@@ -333,6 +384,7 @@ const getters = {
   chatList: state => state.chatList,
   resolutions: state => state.resolutions,
   initing: state => state.initing,
+  myTempStream: state => state.myTempStream,
 }
 
 export default {

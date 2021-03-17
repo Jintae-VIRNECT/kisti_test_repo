@@ -24,7 +24,10 @@
         v-if="!onpremise && showCookie"
         :visible.sync="showCookie"
       ></cookie-policy>
-      <record-list :visible.sync="showList"></record-list>
+      <record-list
+        v-if="useLocalRecording"
+        :visible.sync="showList"
+      ></record-list>
       <device-denied :visible.sync="showDenied"></device-denied>
     </vue2-scrollbar>
     <plan-overflow :visible.sync="showPlanOverflow"></plan-overflow>
@@ -43,9 +46,10 @@ import langMixin from 'mixins/language'
 import toastMixin from 'mixins/toast'
 import DeviceDenied from './modal/WorkspaceDeviceDenied'
 import PlanOverflow from './modal/WorkspacePlanOverflow'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { PLAN_STATUS } from 'configs/status.config'
 import { RUNTIME, RUNTIME_ENV } from 'configs/env.config'
+import { MyStorage } from 'utils/storage'
 
 export default {
   name: 'WorkspaceLayout',
@@ -55,7 +59,9 @@ export default {
       auth.login()
     } else {
       await getSettings()
-      next()
+      next(vm => {
+        vm.$call.leave()
+      })
     }
   },
   mixins: [confirmMixin, langMixin, toastMixin],
@@ -91,6 +97,7 @@ export default {
     },
   },
   computed: {
+    ...mapGetters(['useLocalRecording']),
     onpremise() {
       return RUNTIME.ONPREMISE === RUNTIME_ENV
     },
@@ -106,6 +113,7 @@ export default {
       'setTranslate',
       'setCompanyInfo',
       'setServerRecord',
+      'setScreenStrict',
       'clearWorkspace',
     ]),
     async init() {
@@ -115,6 +123,7 @@ export default {
         auth.login()
         return
       } else {
+        this.savedStorageDatas(authInfo.account.uuid)
         const res = await getLicense({ userId: authInfo.account.uuid })
         const myPlans = res.myPlanInfoList.filter(
           plan => plan.planProduct === 'REMOTE',
@@ -174,6 +183,9 @@ export default {
       } else {
         this.tabFix = false
       }
+      if (this.$el.querySelector('.tab-view__search input')) {
+        this.$el.querySelector('.tab-view__search input').blur()
+      }
     },
     scrollTop() {
       this.$refs['wrapperScroller'].scrollToY(0)
@@ -185,12 +197,13 @@ export default {
     toggleList() {
       this.showList = true
     },
-    savedStorageDatas() {
-      const deviceInfo = this.$localStorage.getItem('deviceInfo')
+    savedStorageDatas(uuid) {
+      window.myStorage = new MyStorage(uuid)
+      const deviceInfo = window.myStorage.getItem('deviceInfo')
       if (deviceInfo) {
         this.setDevices(deviceInfo)
       }
-      const recordInfo = this.$localStorage.getItem('recordInfo')
+      const recordInfo = window.myStorage.getItem('recordInfo')
       if (recordInfo) {
         this.setRecord(recordInfo)
       }
@@ -198,13 +211,17 @@ export default {
       // if (allow) {
       //   this.setAllow(allow)
       // }
-      const translateInfo = this.$localStorage.getItem('translate')
+      const translateInfo = window.myStorage.getItem('translate')
       if (translateInfo) {
         this.setTranslate(translateInfo)
       }
-      const serverRecordInfo = this.$localStorage.getItem('serverRecordInfo')
+      const serverRecordInfo = window.myStorage.getItem('serverRecordInfo')
       if (serverRecordInfo) {
         this.setServerRecord(serverRecordInfo)
+      }
+      const screenStrict = window.myStorage.getItem('screenStrict')
+      if (screenStrict) {
+        this.setScreenStrict(screenStrict)
       }
     },
     showDeviceDenied() {
@@ -235,16 +252,18 @@ export default {
         sttSync: res.sttSync,
         sttStreaming: res.sttStreaming,
         recording: res.recording,
+        localRecording: res.localRecording,
         storage: res.storage,
         sessionType: res.sessionType,
         languageCodes,
+        audioRestrictedMode: false, //res.audioRestrictedMode,
+        videoRestrictedMode: res.videoRestrictedMode,
       })
     },
   },
 
   /* Lifecycles */
-  created() {
-    this.savedStorageDatas()
+  async created() {
     this.init()
     if (this.workspace && this.workspace.uuid) {
       this.checkLicense(this.workspace.uuid)

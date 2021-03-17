@@ -63,6 +63,7 @@ export default {
         case DEVICE.WEB:
           return require('assets/image/workspace/ic_monitor.svg')
         case DEVICE.MOBILE:
+        case DEVICE.FITT360:
           return require('assets/image/workspace/ic_mobile.svg')
         case DEVICE.GLASSES:
         case DEVICE.HOLOLENS:

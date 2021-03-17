@@ -57,6 +57,7 @@ export default {
   data() {
     return {
       selection: [],
+      selectHistory: [],
       visibleFlag: false,
       users: [],
       maxSelect: maxParticipants - 1,
@@ -66,7 +67,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['targetCompany']),
+    ...mapGetters(['targetCompany', 'restrictedMode', 'useScreenStrict']),
   },
   props: {
     visible: {
@@ -82,6 +83,7 @@ export default {
     visible(flag) {
       if (flag) {
         this.selection = []
+        this.selectHistory = []
         this.inviteRefresh()
         if (this.sessionId && this.sessionId.length > 0) {
           this.getInfo()
@@ -100,7 +102,7 @@ export default {
         })
         for (let member of this.roomInfo.memberList) {
           if (member.uuid !== this.account.uuid) {
-            this.selection.push(member)
+            this.selectHistory.push(member)
           }
         }
       } catch (err) {
@@ -109,6 +111,7 @@ export default {
     },
     reset() {
       this.selection = []
+      this.selectHistory = []
     },
     beforeClose() {
       this.$emit('update:visible', false)
@@ -144,6 +147,12 @@ export default {
           return 0
         }
       })
+      for (let select of this.selectHistory) {
+        const idx = this.users.findIndex(user => user.uuid === select.uuid)
+        if (idx > -1) {
+          this.selection.push(select)
+        }
+      }
       this.loading = false
     },
     async startRemote(info) {
@@ -184,6 +193,10 @@ export default {
             sessionId: this.sessionId,
             sessionType: ROOM_STATUS.PRIVATE,
             companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
           })
         } else {
           createdRes = await createRoom({
@@ -196,6 +209,10 @@ export default {
             workspaceId: this.workspace.uuid,
             sessionType: ROOM_STATUS.PRIVATE,
             companyCode: this.targetCompany,
+            videoRestrictedMode:
+              this.restrictedMode.video && this.useScreenStrict,
+            audioRestrictedMode:
+              this.restrictedMode.audio && this.useScreenStrict,
           })
         }
         if (info.imageFile) {
@@ -222,6 +239,8 @@ export default {
           ...roomInfo,
           leaderId: this.account.uuid,
           open: false,
+          videoRestrictedMode: createdRes.videoRestrictedMode,
+          audioRestrictedMode: createdRes.audioRestrictedMode,
         })
         if (connRes) {
           this.$eventBus.$emit('popover:close')

@@ -74,7 +74,7 @@ export default {
   },
   data() {
     return {
-      component: 'history',
+      component: 'remote',
     }
   },
   computed: {
@@ -85,12 +85,12 @@ export default {
     tabComponents() {
       return [
         {
-          name: 'history',
-          text: this.$t('workspace.history'),
-        },
-        {
           name: 'remote',
           text: this.$t('workspace.remote'),
+        },
+        {
+          name: 'history',
+          text: this.$t('workspace.history'),
         },
         {
           name: 'user',

@@ -311,6 +311,10 @@ export const getReceiveParams = function getReceiveParams(type, params, scale) {
 }
 
 export const calcPosition = function calcPosition(paths, width) {
+  if (paths.length === 2) {
+    paths[1][1]++
+    paths[1][2]++
+  }
   let left = -1
   let top = -1
   for (let i = 0; i < paths.length; i++) {

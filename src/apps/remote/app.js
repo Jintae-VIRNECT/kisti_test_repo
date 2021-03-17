@@ -1,5 +1,5 @@
 import 'es6-promise/auto'
-import 'babel-polyfill'
+import '@babel/polyfill'
 
 import Vue from 'vue'
 import Router from 'routers/remote'
@@ -20,8 +20,8 @@ import call from 'plugins/remote/call'
 
 import PUSH from 'plugins/remote/push'
 
-import { localStorage } from 'utils/storage'
 import { version } from '@/package.json'
+// const version = '2.0'
 
 import { logger, debug } from 'utils/logger'
 
@@ -35,7 +35,6 @@ Vue.use(Vue2Scrollbar)
 
 Vue.use(call, { Store })
 
-Vue.prototype.$localStorage = localStorage
 Vue.prototype.logger = logger
 Vue.prototype.debug = debug
 
