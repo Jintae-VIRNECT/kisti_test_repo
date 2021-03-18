@@ -452,11 +452,6 @@ export const addSessionEventListener = session => {
         pitch: data.pitch,
       }
 
-      if (participants[idx].deviceType === DEVICE.FITT360) {
-        const offsetYaw = 90
-        info.yaw = info.yaw + offsetYaw
-      }
-
       const isNotMe =
         session.connection.connectionId !== event.from.connectionId
 
