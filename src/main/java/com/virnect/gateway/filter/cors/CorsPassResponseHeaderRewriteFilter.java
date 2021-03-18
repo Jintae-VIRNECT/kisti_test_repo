@@ -39,7 +39,7 @@ public class CorsPassResponseHeaderRewriteFilter implements GlobalFilter {
 		responseHeaders.setAccessControlAllowHeaders(ALL);
 		responseHeaders.setAccessControlAllowMethods(Arrays.asList(HttpMethod.values()));
 		responseHeaders.setAccessControlAllowCredentials(true);
-		responseHeaders.computeIfPresent(HttpHeaders.SET_COOKIE, (k, v) -> rewriteCookieDomain(v, origin));
+		responseHeaders.computeIfPresent(HttpHeaders.SET_COOKIE, (k, v) -> rewriteCookieDomain(v, host));
 
 		log.info("responseHeader Rewrite : " + responseHeaders.values());
 	}
