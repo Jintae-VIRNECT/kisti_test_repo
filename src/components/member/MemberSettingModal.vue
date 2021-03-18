@@ -5,6 +5,7 @@
     :title="$t('members.setting.title')"
     width="628px"
     top="11vh"
+    :close-on-click-modal="false"
   >
     <div>
       <h6>{{ $t('members.setting.info') }}</h6>

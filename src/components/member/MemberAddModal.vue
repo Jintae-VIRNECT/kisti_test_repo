@@ -5,6 +5,7 @@
     :title="$t('members.add.title')"
     width="628px"
     top="11vh"
+    :close-on-click-modal="false"
   >
     <div>
       <p>{{ $t('members.add.desc') }}</p>

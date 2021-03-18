@@ -6,6 +6,7 @@
     :title="$t('task.detail.dropdown.subTaskEdit')"
     width="445px"
     top="11vh"
+    :close-on-click-modal="false"
   >
     <el-row>
       <!-- 작업 정보 -->
@@ -141,24 +142,12 @@ export default {
       }
       this.taskName = this.taskInfo.name
       this.taskSchedule = [
-        dayjs
-          .utc(this.taskInfo.startDate)
-          .local()
-          .toDate(),
-        dayjs
-          .utc(this.taskInfo.endDate)
-          .local()
-          .toDate(),
+        dayjs.utc(this.taskInfo.startDate).local().toDate(),
+        dayjs.utc(this.taskInfo.endDate).local().toDate(),
       ]
       this.form.schedule = [
-        dayjs
-          .utc(this.subTaskInfo.startDate)
-          .local()
-          .toDate(),
-        dayjs
-          .utc(this.subTaskInfo.endDate)
-          .local()
-          .toDate(),
+        dayjs.utc(this.subTaskInfo.startDate).local().toDate(),
+        dayjs.utc(this.subTaskInfo.endDate).local().toDate(),
       ]
       this.form.worker = this.subTaskInfo.workerUUID
       this.workerList = await workspaceService.allMembers()
