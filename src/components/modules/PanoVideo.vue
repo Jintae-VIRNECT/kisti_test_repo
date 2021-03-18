@@ -98,7 +98,10 @@ export default {
           stereoFormat: '',
           useZoom: false,
           touchDirection: PanoViewer.TOUCH_DIRECTION.NONE,
+          fov: this.defaultFov,
         })
+
+        this.panoViewer.setYawRange([-360, 0])
 
         this.panoViewer.on('viewChange', e => {
           if (this.type === 'control') {

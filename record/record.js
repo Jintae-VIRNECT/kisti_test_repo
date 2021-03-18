@@ -111,6 +111,10 @@ const layoutSelector = streamCount => {
 
 session.on('signal:linkflow', event => {
   const connectionId = event.from.connectionId
+  const metaData = JSON.parse(
+    event.from.session.connection.data.split('%/%')[0],
+  )
+  const deviceType = metaData.deviceType
 
   let data = JSON.parse(event.data)
   //panoViewer는 stream 연결후에 초기화 되어있어야 합니다.
@@ -122,12 +126,18 @@ session.on('signal:linkflow', event => {
       panoViewer = panoViewerMap.get(connectionId)
     }
 
+    const info = {
+      yaw: data.yaw,
+      pitch: data.pitch,
+      fov: 85, //default
+    }
+
+    if (deviceType === 'FITT360') {
+      info.yaw = info.yaw + 90
+    }
+
     if (panoViewer) {
-      panoViewer.lookAt({
-        yaw: data.yaw,
-        pitch: data.pitch,
-        fov: 85, //default
-      })
+      panoViewer.lookAt(info)
     }
   }
 })
@@ -156,6 +166,8 @@ const createPanoViewer = connectionId => {
   const panoViewer = new PanoViewer(panoContainer, {
     video: targetVideoEl,
   })
+
+  panoViewer.setYawRange([-360, 0])
 
   panoContainerMap.set(connectionId, panoContainer)
   panoViewerMap.set(connectionId, panoViewer)

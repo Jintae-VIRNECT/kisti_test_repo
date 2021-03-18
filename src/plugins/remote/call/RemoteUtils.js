@@ -19,6 +19,7 @@ import {
 import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
 import { checkInput } from 'utils/deviceCheck'
+import { DEVICE } from 'configs/device.config'
 
 export const addSessionEventListener = session => {
   let loading = false
@@ -444,11 +445,18 @@ export const addSessionEventListener = session => {
     let data = JSON.parse(event.data)
     if (data.type === LINKFLOW.ROTATION) {
       const originConId = data.origin
+
       const info = {
         connectionId: originConId,
         yaw: data.yaw,
         pitch: data.pitch,
       }
+
+      if (participants[idx].deviceType === DEVICE.FITT360) {
+        const offsetYaw = 90
+        info.yaw = info.yaw + offsetYaw
+      }
+
       const isNotMe =
         session.connection.connectionId !== event.from.connectionId
 
