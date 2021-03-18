@@ -17,7 +17,7 @@ const config = mode => {
       filename: 'assets/scripts/[name].js',
       path: resolve(__dirname, '../dist'),
       publicPath: '/',
-      chunkFilename: 'assets/scripts/chunks/[name].js',
+      chunkFilename: 'assets/scripts/chunks/[id].js',
     },
     resolve: {
       extensions: ['.js', '.vue', '.json'],

@@ -34,4 +34,14 @@ Limitation
 * STT 기능 사용 중에는 번역 설정에서 번역 사용 허용, 번역 언어, 음성 인식 방식 사용 불가
 * 로그인 계정 변경 시 쿠키에 저장된 설정값 Clear
 
+RELEASE v2.3.0.1
+
+Chore
+* Webpack5 production 빌드 이슈 해결
+
+RELEASE v2.3.0.2
+
+Bug Fixes
+* 협업 재시작 시 선택한 멤버 표출 버그
+
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved

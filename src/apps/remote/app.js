@@ -53,7 +53,7 @@ if ('remote.virnect.com' === location.host) {
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-Vue.prototype.$version = version
+Vue.prototype.$version = version.replace(/-\w/, '')
 
 const app = new Vue({
   el: '#container',
@@ -70,7 +70,7 @@ export default app
 setTimeout(
   console.log.bind(
     console,
-    `%cVIRNECT Remote v${version}`,
+    `%cVIRNECT Remote v${version.replace(/-/, '.')}`,
     'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
   ),
 )
