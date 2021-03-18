@@ -28,6 +28,7 @@ import com.virnect.mediaserver.coturn.TurnCredentials;
 import com.virnect.mediaserver.kurento.core.KurentoTokenOptions;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.global.config.UrlConstants;
+import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class TokenGeneratorDefault implements TokenGenerator {
 
 	@Override
 	public Token generateToken(String sessionId, RemoteServiceRole role, String serverMetadata, KurentoTokenOptions kurentoTokenOptions) throws Exception {
-		String token = UrlConstants.wsUrl;
+		String token = RemoteServiceProperties.wsUrl;
 		token += "?sessionId=" + sessionId;
 		token += "&token=" + IdentifierPrefixes.TOKEN_ID + RandomStringUtils.randomAlphabetic(1).toUpperCase()
 				+ RandomStringUtils.randomAlphanumeric(15);

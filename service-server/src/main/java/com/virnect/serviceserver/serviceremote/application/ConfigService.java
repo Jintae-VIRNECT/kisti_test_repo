@@ -89,7 +89,7 @@ public class ConfigService {
 		if (remoteServiceConfig.isWebhookEnabled()) {
 			json.addProperty(
 				"remote_service_webhook_endpoint",
-				remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookEndpoint()
+				remoteServiceConfig.remoteServiceProperties.getRemoteWebhookEndpoint()
 			);
 			JsonArray webhookHeaders = new JsonArray();
 			for (Header header : remoteServiceConfig.remoteServiceProperties.getRemoteServiceWebhookHeaders()) {

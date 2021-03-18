@@ -2,6 +2,9 @@ package com.virnect.serviceserver.global.config.property;
 
 import java.io.File;
 import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.core.env.Environment;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -37,12 +41,12 @@ public abstract class PropertyService {
 	public Map<String, String> configProps = new HashMap<>();
 	public Map<String, ?> propertiesSource;
 
+	private String remoteServicePublicUrl;
+	private String remoteWebsocketUrl;
+	public boolean turnadminAvailable;
+
 	@Autowired
 	protected Environment env;
-
-	public PropertyService() {
-
-	}
 
     /*public PropertyService(Map<String, ?> propertiesSource) {
         this.propertiesSource = propertiesSource;
@@ -83,8 +87,7 @@ public abstract class PropertyService {
 		return value;
 	}
 
-	protected String asNonEmptyString(String property) {
-		String stringValue = getValue(property);
+	protected String asNonEmptyString(String property, String stringValue) {
 		if (stringValue != null && !stringValue.isEmpty()) {
 			return stringValue;
 		} else {
@@ -97,27 +100,23 @@ public abstract class PropertyService {
 		return getValue(property);
 	}
 
-	protected Integer asNonNegativeInteger(String property) {
+	protected Integer asNonNegativeInteger(String property, int value) {
 		try {
-			int integerValue = Integer.parseInt(getValue(property));
-
-			if (integerValue < 0) {
+			if (value < 0) {
 				addError(property, "Is not a non negative integer");
 			}
-			return integerValue;
+			return value;
 		} catch (NumberFormatException e) {
 			addError(property, "Is not a non negative integer");
 			return 0;
 		}
 	}
 
-	protected boolean asBoolean(String property) {
-		String value = getValue(property);
+	protected boolean asBoolean(String property, String value) {
 		if (value == null) {
 			addError(property, "Cannot be empty");
 			return false;
 		}
-
 		if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) {
 			return Boolean.parseBoolean(value);
 		} else {
@@ -136,11 +135,29 @@ public abstract class PropertyService {
 		}
 	}
 
-	protected List<String> asJsonStringsArray(String property) {
+	/*protected List<String> asJsonStringsArray(String property) {
 		try {
 			Gson gson = new Gson();
 
 			System.out.println("GET VALUE : " + getValue(property));
+
+			ObjectMapper objectMapper = new ObjectMapper();
+			objectMapper.writerWithDefaultPrettyPrinter();
+			String text = getValue(property);
+			String mapperTest = objectMapper.writeValueAsString((text)).replaceAll("\"", "");
+
+			//List<String> list2 = Arrays.asList(mapperTest);
+			List<String> list2 = new ArrayList<>();
+			if (mapperTest != null && !mapperTest.isEmpty() && mapperTest.length() > 0){
+				list2.add(mapperTest);
+			} else {
+				list2 = new ArrayList<>();
+			}
+			if (list2.size() > 0) {
+				for(String item : list2) {
+					System.out.println("property : " + property + " object mappered text : " + item);
+				}
+			}
 
 			JsonArray jsonArray = gson.fromJson(getValue(property), JsonArray.class);
 			List<String> list = JsonUtils.toStringList(jsonArray);
@@ -148,15 +165,14 @@ public abstract class PropertyService {
 				list = new ArrayList<>();
 			}
 			return list;
-		} catch (JsonSyntaxException e) {
+		} catch (JsonSyntaxException | JsonProcessingException e) {
 			addError(property, "Is not a valid strings array in JSON format. " + e.getMessage());
 			return Arrays.asList();
 		}
-	}
+	}*/
 
-	protected String asWritableFileSystemPath(String property) {
+	protected String asWritableFileSystemPath(String stringPath) {
 		try {
-			String stringPath = this.asNonEmptyString(property);
 			Paths.get(stringPath);
 			File f = new File(stringPath);
 			// set all permission granted
@@ -179,14 +195,13 @@ public abstract class PropertyService {
 			stringPath = stringPath.endsWith("/") ? stringPath : (stringPath + "/");
 			return stringPath;
 		} catch (Exception e) {
-			addError(property, "Is not a valid writable file system path. " + e.getMessage());
+			addError(stringPath, "Is not a valid writable file system path. " + e.getMessage());
 			return null;
 		}
 	}
 
-	protected String asFileSystemPath(String property) {
+	protected String asFileSystemPath(String stringPath) {
 		try {
-			String stringPath = this.asNonEmptyString(property);
 			Paths.get(stringPath);
 			File f = new File(stringPath);
 			f.getCanonicalPath();
@@ -194,8 +209,45 @@ public abstract class PropertyService {
 			stringPath = stringPath.endsWith("/") ? stringPath : (stringPath + "/");
 			return stringPath;
 		} catch (Exception e) {
-			addError(property, "Is not a valid file system path. " + e.getMessage());
+			addError(stringPath, "Is not a valid file system path. " + e.getMessage());
 			return null;
+		}
+	}
+
+	public Path getDotenvFilePathFromDotenvPath(String dotenvPathProperty) {
+		if (dotenvPathProperty.endsWith(".env")) {
+			// Is file
+			return Paths.get(dotenvPathProperty);
+		} else if (dotenvPathProperty.endsWith("/")) {
+			// Is folder
+			return Paths.get(dotenvPathProperty + ".env");
+		} else {
+			// Is a folder not ending in "/"
+			return Paths.get(dotenvPathProperty + "/.env");
+		}
+	}
+
+	public List<String> asUriConference(List<String> urisConference) {
+		for (String uri : urisConference) {
+			try {
+				this.checkWebsocketUri(uri).toString();
+			} catch (Exception e) {
+				//addError(property, uri + " is not a valid WebSocket URL");
+			}
+		}
+		return urisConference;
+	}
+
+	public URI checkWebsocketUri(String uri) throws Exception {
+		try {
+			if (!uri.startsWith("ws://") || uri.startsWith("wss://")) {
+				throw new Exception("WebSocket protocol not found");
+			}
+			String parsedUri = uri.replaceAll("ws://", "http://").replaceAll("wss://", "https://");
+			return new URL(parsedUri).toURI();
+		} catch (Exception e) {
+			throw new RuntimeException(
+				"URI '" + uri + "' has not a valid WebSocket endpoint format: " + e.getMessage());
 		}
 	}
 }

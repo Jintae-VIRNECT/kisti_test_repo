@@ -116,20 +116,20 @@ public class RemoteServiceConfig {
 	}
 
 	public boolean isCdrEnabled() {
-		return this.remoteServiceProperties.isCdrEnabled();
+		return this.remoteServiceProperties.isRemoteCdr();
 	}
 
 	public boolean isWebhookEnabled() {
-		return this.remoteServiceProperties.isWebhookEnabled();
+		return this.remoteServiceProperties.isRemoteWebhook();
 	}
 
 	public boolean isTurnadminAvailable() {
-		return this.remoteServiceProperties.isTurnadminAvailable();
+		return this.remoteServiceProperties.mediaServerProperties.coturnProperty.isTurnadminAvailable();
 	}
 
-	public void setTurnadminAvailable(boolean available) {
+	/*public void setTurnadminAvailable(boolean available) {
 		this.remoteServiceProperties.setTurnadminAvailable(available);
-	}
+	}*/
 
 	public String getRemoteServiceFrontendDefaultPath() {
 		return "dashboard";
@@ -139,11 +139,11 @@ public class RemoteServiceConfig {
 		return this.remoteServiceProperties.getPropertiesErrors();
 	}
 
-	public Map<String, String> getConfigProps() {
+	/*public Map<String, String> getConfigProps() {
 		//configMap.putAll(this.remoteStorageProperties.configProps);
 		return new HashMap<>(this.remoteServiceProperties.configProps);
 		//return this.remoteServiceProperties.configProps;
-	}
+	}*/
 
 	public List<String> getUserProperties() {
 		return userConfigProps;
@@ -159,9 +159,9 @@ public class RemoteServiceConfig {
 
 	public void checkConfiguration(boolean loadDotenv) {
 		try {
-			this.remoteServiceProperties.setServicePolicyLocation();
+			//this.remoteServiceProperties.setServicePolicyLocation();
 			if (loadDotenv) {
-				this.remoteServiceProperties.setDotenvPath();
+				//this.remoteServiceProperties.setDotenvPath();
 				populatePropertySourceFromDotenv();
 			} else {
 				log.warn("Be sure checking .env file does not use.");
@@ -174,15 +174,15 @@ public class RemoteServiceConfig {
 				null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());
 		}
 		//userConfigProps = new ArrayList<>(this.remoteServiceProperties.configProps.keySet());
-		userConfigProps = new ArrayList<>();
-		userConfigProps.addAll(this.remoteServiceProperties.configProps.keySet());
+		//userConfigProps = new ArrayList<>();
+		//userConfigProps.addAll(this.remoteServiceProperties.configProps.keySet());
 		//userConfigProps.addAll(this.remoteStorageProperties.configProps.keySet());
-		userConfigProps.removeAll(getNonUserProperties());
+		//userConfigProps.removeAll(getNonUserProperties());
 	}
 
 	@PostConstruct
 	public void checkConfiguration() {
-		boolean isDotenvEnabled = this.remoteServiceProperties.isDotenvEnabled();
+		boolean isDotenvEnabled = this.remoteServiceProperties.isDotenv();
 		this.checkConfiguration(isDotenvEnabled);
 		this.remoteServiceProperties.mediaServerProperties.setSpringProfile(springProfile);
 	}

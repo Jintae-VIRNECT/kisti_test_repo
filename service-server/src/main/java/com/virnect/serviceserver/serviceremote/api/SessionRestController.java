@@ -172,7 +172,6 @@ public class SessionRestController {
             );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<RoomResponse> responseData = roomService.initRoomByClient(
             client,
             userId,

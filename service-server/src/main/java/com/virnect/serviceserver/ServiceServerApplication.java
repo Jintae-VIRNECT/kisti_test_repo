@@ -64,6 +64,8 @@ import com.virnect.mediaserver.webhook.CDRLoggerWebhook;
 import com.virnect.serviceserver.global.config.HttpHandshakeInterceptor;
 import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.global.config.UrlConstants;
+import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
+import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 import com.virnect.serviceserver.infra.token.TokenGeneratorDefault;
 
 @Import({ JsonRpcConfiguration.class })
@@ -152,14 +154,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     public SessionService sessionService() {
         return new SessionService();
     }*/
-
-    @Bean
-    public MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter(ObjectMapper objectMapper) {
-        var mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter(objectMapper);
-        mappingJackson2HttpMessageConverter.setPrefixJson(false);
-        mappingJackson2HttpMessageConverter.setSupportedMediaTypes(Lists.newArrayList(MediaType.APPLICATION_JSON_UTF8));
-        return mappingJackson2HttpMessageConverter;
-    }
 
     @Bean
     @ConditionalOnMissingBean
@@ -307,7 +301,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @Override
     public void registerJsonRpcHandlers(JsonRpcHandlerRegistry registry) {
         registry.addHandler(rpcHandler().withPingWatchdog(true).withInterceptors(new HttpHandshakeInterceptor()),
-            UrlConstants.WS_PATH
+            RemoteServiceProperties.WS_PATH
         );
     }
 
@@ -326,9 +320,20 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             System.setProperty("spring.profiles.active", profiles);
         }*/
 
-        Map<String, String> CONFIG_PROPS = checkConfigProperties(RemoteServiceConfig.class);
+        //Map<String, String> CONFIG_PROPS = checkConfigProperties(RemoteServiceConfig.class);
 
-        if (CONFIG_PROPS.get("SERVER_PORT") != null) {
+        ConfigurableApplicationContext app = SpringApplication.run(RemoteServiceConfig.class,
+            "--spring.main.web-application-type=none"
+        );
+
+        RemoteServiceProperties remoteServiceProperties = app.getBean(RemoteServiceProperties.class);
+        RemoteStorageProperties remoteStorageProperties = app.getBean(RemoteStorageProperties.class);
+        System.out.println(remoteServiceProperties.toString());
+        System.out.println(remoteStorageProperties.toString());
+
+        app.close();
+
+        /*if (CONFIG_PROPS.get("SERVER_PORT") != null) {
 
             // Configuration property SERVER_PORT has been explicitly defined.
             // Must initialize the application in that port on the host regardless of what
@@ -350,7 +355,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             // does get used in the public URL as well.
             System.setProperty("server.port", CONFIG_PROPS.get("service.https_port"));
 
-        }
+        }*/
 
         log.info("Using /dev/urandom for secure random generation");
         System.setProperty("java.security.egd", "file:/dev/./urandom");
@@ -359,11 +364,13 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     }
 
     public static <T> Map<String, String> checkConfigProperties(Class<T> configClass) throws InterruptedException {
-        ConfigurableApplicationContext app = SpringApplication.run(configClass,
+        /*ConfigurableApplicationContext app = SpringApplication.run(configClass,
             "--spring.main.web-application-type=none"
         );
         RemoteServiceConfig config = app.getBean(RemoteServiceConfig.class);
         List<com.virnect.serviceserver.global.config.RemoteServiceConfig.Error> errors = config.getConfigErrors();
+
+        RemoteServiceProperties remoteServiceProperties = app.getBean(RemoteServiceProperties.class);
 
         if (!errors.isEmpty()) {
             // @formatter:off
@@ -387,7 +394,9 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             new Semaphore(0).acquire();
         } else {
             StringBuilder msg = new StringBuilder(
-                "\n\n\n" + "   Configuration properties\n" + "   ------------------------\n" + "\n");
+                "\n\n\n" + "   \n" + "   ------------------------\n" + "\n");
+
+            String test = remoteServiceProperties.toString();
 
             final Map<String, String> configProps = config.getConfigProps();
             List<String> configPropNames = new ArrayList<>(config.getUserProperties());
@@ -405,8 +414,9 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
             log.info(msg.toString());
             // Close the auxiliary ApplicationContext
             app.close();
+            //return remoteServiceProperties.toString();
             return configProps;
-        }
+        }*/
         return null;
     }
 

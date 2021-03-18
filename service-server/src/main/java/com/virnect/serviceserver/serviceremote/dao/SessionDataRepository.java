@@ -49,6 +49,7 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.mediaserver.core.EndReason;
 import com.virnect.mediaserver.core.Participant;
+import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.serviceremote.application.HistoryService;
 import com.virnect.serviceserver.serviceremote.application.SessionTransactionalService;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
@@ -713,7 +714,7 @@ public class SessionDataRepository {
             //not set session create at property
             roomResponse.setSessionId(sessionResponse.getId());
             roomResponse.setToken(sessionTokenResponse.getToken());
-            roomResponse.setWss(UrlConstants.wssUrl);
+            roomResponse.setWss(RemoteServiceProperties.wssUrl);
             //roomResponse.setRestrictedMode(room.isRestrictedMode());
             roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
             roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
@@ -830,7 +831,7 @@ public class SessionDataRepository {
                 //not set session create at property
                 roomResponse.setSessionId(sessionResponse.getId());
                 roomResponse.setToken(sessionTokenResponse.getToken());
-                roomResponse.setWss(UrlConstants.wssUrl);
+                roomResponse.setWss(RemoteServiceProperties.wssUrl);
                 //roomResponse.setRestrictedMode(room.isRestrictedMode());
                 roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
                 roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
@@ -1421,7 +1422,7 @@ public class SessionDataRepository {
             //not set session create at property
             roomResponse.setSessionId(sessionId);
             roomResponse.setToken(sessionTokenResponse.getToken());
-            roomResponse.setWss(UrlConstants.wssUrl);
+            roomResponse.setWss(RemoteServiceProperties.wssUrl);
             //roomResponse.setRestrictedMode(room.isRestrictedMode());
             roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
             roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
