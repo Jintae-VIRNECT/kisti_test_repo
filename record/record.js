@@ -37,6 +37,7 @@ session.on('streamCreated', event => {
         rePositionPanoViewer()
       }, 100)
     })
+    event.element.muted = false
   })
 
   if (deviceType === 'FITT360') {
