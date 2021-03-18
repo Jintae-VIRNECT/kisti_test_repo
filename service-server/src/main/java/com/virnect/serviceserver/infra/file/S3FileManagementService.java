@@ -41,6 +41,7 @@ import com.virnect.data.domain.file.FileType;
 import com.virnect.data.dto.UploadResult;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.infra.file.IFileManagementService;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 import com.virnect.serviceserver.infra.utils.JsonUtil;
 import com.virnect.serviceserver.infra.utils.LogMessage;
@@ -58,8 +59,8 @@ public class S3FileManagementService implements IFileManagementService {
 
     private final AmazonS3 amazonS3Client;
 
-    private final RemoteStorageProperties remoteStorageProperties;
-    //private final RemoteServiceConfig remoteServiceConfig;
+    //private final RemoteStorageProperties remoteStorageProperties;
+    private final RemoteServiceConfig remoteServiceConfig;
 
     /*@Qualifier(value = "remoteServiceConfig")
     @Autowired
@@ -141,10 +142,10 @@ public class S3FileManagementService implements IFileManagementService {
     @Override
     public void loadStoragePolicy() {
         try {
-            boolean policyEnabled = remoteStorageProperties.isPolicyEnabled();
-            boolean policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
+            boolean policyEnabled = remoteServiceConfig.remoteStorageProperties.isPolicyEnabled();
+            boolean policyLifeCycleEnabled = remoteServiceConfig.remoteStorageProperties.getPolicyLifeCycle() > 0;
             if (policyEnabled) {
-                String policyLocation = remoteStorageProperties.getPolicyLocation();
+                String policyLocation = remoteServiceConfig.remoteStorageProperties.getPolicyLocation();
                 JsonUtil jsonUtil;
                 if (policyLocation == null || policyLocation.isEmpty()) {
                     LogMessage.formedInfo(
@@ -182,7 +183,7 @@ public class S3FileManagementService implements IFileManagementService {
                             "initialise aws storage service",
                             "init",
                             "storage service policy is enabled",
-                            String.valueOf(remoteStorageProperties.isEnabled())
+                            String.valueOf(remoteServiceConfig.remoteStorageProperties.isEnabled())
                     );
                     fileAllowExtensionList = setFileAllowExtensionList(jsonObject);
                 }
@@ -202,20 +203,20 @@ public class S3FileManagementService implements IFileManagementService {
 
     @PostConstruct
     public void init() {
-        if(remoteStorageProperties.isEnabled()) {
+        if(remoteServiceConfig.remoteStorageProperties.isEnabled()) {
             LogMessage.formedInfo(
                     TAG,
                     "initialise aws storage service",
                     "init",
                     "storage service is enabled",
-                    String.valueOf(remoteStorageProperties.isEnabled())
+                    String.valueOf(remoteServiceConfig.remoteStorageProperties.isEnabled())
             );
             loadStoragePolicy();
 
-            this.bucketName = remoteStorageProperties.getBucketName();
-            this.bucketFileName = remoteStorageProperties.getBucketFileName();
-            this.bucketProfileName = remoteStorageProperties.getBucketProfileName();
-            this.bucketRecordName = remoteStorageProperties.getBucketRecordName();
+            this.bucketName = remoteServiceConfig.remoteStorageProperties.getBucketName();
+            this.bucketFileName = remoteServiceConfig.remoteStorageProperties.getBucketFileName();
+            this.bucketProfileName = remoteServiceConfig.remoteStorageProperties.getBucketProfileName();
+            this.bucketRecordName = remoteServiceConfig.remoteStorageProperties.getBucketRecordName();
 
             LogMessage.formedInfo(
                     TAG,
@@ -433,7 +434,7 @@ public class S3FileManagementService implements IFileManagementService {
     @Override
     public void removeBucket(String bucketName, String dirPath, List<String> objects, FileType fileType) {
 
-        boolean policyLifeCycleEnabled = remoteStorageProperties.getPolicyLifeCycle() > 0;
+        boolean policyLifeCycleEnabled = remoteServiceConfig.remoteStorageProperties.getPolicyLifeCycle() > 0;
 
         if(policyLifeCycleEnabled) {
             LogMessage.formedInfo(

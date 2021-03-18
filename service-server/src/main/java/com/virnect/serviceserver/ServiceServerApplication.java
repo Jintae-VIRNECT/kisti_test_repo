@@ -217,7 +217,7 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
     public CoturnCredentialsService coturnCredentialsService(RemoteServiceConfig remoteServiceConfig) {
-        return new CoturnCredentialsServiceFactory().getCoturnCredentialsService(remoteServiceConfig.getSpringProfile());
+        return new CoturnCredentialsServiceFactory().getCoturnCredentialsService(remoteServiceConfig.remoteServiceProperties.getSpringProfile());
     }
 
     @Bean

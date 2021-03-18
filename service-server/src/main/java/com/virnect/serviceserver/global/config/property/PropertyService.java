@@ -37,7 +37,7 @@ import com.virnect.serviceserver.infra.utils.JsonUtil;
  *
  */
 public abstract class PropertyService {
-	private final List<RemoteServiceConfig.Error> propertiesErrors = new ArrayList<>();
+	/*//private final List<RemoteServiceConfig.Error> propertiesErrors = new ArrayList<>();
 	public Map<String, String> configProps = new HashMap<>();
 	public Map<String, ?> propertiesSource;
 
@@ -48,11 +48,16 @@ public abstract class PropertyService {
 	@Autowired
 	protected Environment env;
 
-    /*public PropertyService(Map<String, ?> propertiesSource) {
-        this.propertiesSource = propertiesSource;
-    }*/
+	public PropertyService(){
 
-	public void addError(String property, String msg) {
+	}
+
+
+    *//*public PropertyService(Map<String, ?> propertiesSource) {
+        this.propertiesSource = propertiesSource;
+    }*//*
+
+	*//*public void addError(String property, String msg) {
 		String value = null;
 
 		if (property != null) {
@@ -133,52 +138,16 @@ public abstract class PropertyService {
 			addError(property, "Must be one of " + Arrays.asList(enumType.getEnumConstants()));
 			return null;
 		}
-	}
-
-	/*protected List<String> asJsonStringsArray(String property) {
-		try {
-			Gson gson = new Gson();
-
-			System.out.println("GET VALUE : " + getValue(property));
-
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.writerWithDefaultPrettyPrinter();
-			String text = getValue(property);
-			String mapperTest = objectMapper.writeValueAsString((text)).replaceAll("\"", "");
-
-			//List<String> list2 = Arrays.asList(mapperTest);
-			List<String> list2 = new ArrayList<>();
-			if (mapperTest != null && !mapperTest.isEmpty() && mapperTest.length() > 0){
-				list2.add(mapperTest);
-			} else {
-				list2 = new ArrayList<>();
-			}
-			if (list2.size() > 0) {
-				for(String item : list2) {
-					System.out.println("property : " + property + " object mappered text : " + item);
-				}
-			}
-
-			JsonArray jsonArray = gson.fromJson(getValue(property), JsonArray.class);
-			List<String> list = JsonUtils.toStringList(jsonArray);
-			if (list.size() == 1 && list.get(0).isEmpty()) {
-				list = new ArrayList<>();
-			}
-			return list;
-		} catch (JsonSyntaxException | JsonProcessingException e) {
-			addError(property, "Is not a valid strings array in JSON format. " + e.getMessage());
-			return Arrays.asList();
-		}
-	}*/
+	}*//*
 
 	protected String asWritableFileSystemPath(String stringPath) {
 		try {
 			Paths.get(stringPath);
 			File f = new File(stringPath);
 			// set all permission granted
-            /*f.setReadable(true, false);
+            *//*f.setReadable(true, false);
             f.setWritable(true, false);
-            f.setExecutable(true, false);*/
+            f.setExecutable(true, false);*//*
 
 			f.getCanonicalPath();
 			f.toURI().toString();
@@ -195,7 +164,7 @@ public abstract class PropertyService {
 			stringPath = stringPath.endsWith("/") ? stringPath : (stringPath + "/");
 			return stringPath;
 		} catch (Exception e) {
-			addError(stringPath, "Is not a valid writable file system path. " + e.getMessage());
+			//addError(stringPath, "Is not a valid writable file system path. " + e.getMessage());
 			return null;
 		}
 	}
@@ -209,21 +178,8 @@ public abstract class PropertyService {
 			stringPath = stringPath.endsWith("/") ? stringPath : (stringPath + "/");
 			return stringPath;
 		} catch (Exception e) {
-			addError(stringPath, "Is not a valid file system path. " + e.getMessage());
+			//addError(stringPath, "Is not a valid file system path. " + e.getMessage());
 			return null;
-		}
-	}
-
-	public Path getDotenvFilePathFromDotenvPath(String dotenvPathProperty) {
-		if (dotenvPathProperty.endsWith(".env")) {
-			// Is file
-			return Paths.get(dotenvPathProperty);
-		} else if (dotenvPathProperty.endsWith("/")) {
-			// Is folder
-			return Paths.get(dotenvPathProperty + ".env");
-		} else {
-			// Is a folder not ending in "/"
-			return Paths.get(dotenvPathProperty + "/.env");
 		}
 	}
 
@@ -249,5 +205,5 @@ public abstract class PropertyService {
 			throw new RuntimeException(
 				"URI '" + uri + "' has not a valid WebSocket endpoint format: " + e.getMessage());
 		}
-	}
+	}*/
 }

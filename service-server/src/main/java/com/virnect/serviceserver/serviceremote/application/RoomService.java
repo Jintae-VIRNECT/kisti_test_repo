@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import com.google.gson.JsonObject;
@@ -61,7 +62,6 @@ public class RoomService {
 		String sessionId,
 		int companyCode
 	) {
-
 		//companyCode = checkCompanyCode(companyCode);
 
 		ApiResponse<RoomResponse> responseData;
@@ -521,13 +521,13 @@ public class RoomService {
 				List<String> urlList = config.remoteServiceProperties.getCoturnUrisStreaming();
 				if (urlList.isEmpty()) {
 					for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+						coturnResponse.setUsername(config.remoteServiceProperties.mediaServerProperties.coturnProperty.getCoturnUsername());
 						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
 						coturnResponse.setUrl(coturnUrl);
 					}
 				} else {
 					for (String coturnUrl : urlList) {
-						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+						coturnResponse.setUsername(config.remoteServiceProperties.mediaServerProperties.coturnProperty.getCoturnUsername());
 						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
 						coturnResponse.setUrl(coturnUrl);
 					}
@@ -537,7 +537,7 @@ public class RoomService {
 			case PUBLIC:
 			case PRIVATE: {
 				for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-					coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+					coturnResponse.setUsername(config.remoteServiceProperties.mediaServerProperties.coturnProperty.getCoturnUsername());
 					coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
 					//coturnResponse.setUrl(coturnUrl.replaceAll("\"", ""));
 					coturnResponse.setUrl(coturnUrl);
@@ -547,12 +547,4 @@ public class RoomService {
 		}
 		return coturnResponse;
 	}
-
-	private int checkCompanyCode(int companyCode) {
-		if (config.getProfile().equals("local") || config.getProfile().equals("develop")) {
-			companyCode = 0;
-		}
-		return companyCode;
-	}
-
 }

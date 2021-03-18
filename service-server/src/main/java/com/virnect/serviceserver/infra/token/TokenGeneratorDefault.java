@@ -53,10 +53,10 @@ public class TokenGeneratorDefault implements TokenGenerator {
 		token += "&role=" + role.name();
 		token += "&version=" + remoteServiceBuildInfo.getRemoteServiceServerVersion();
 		TurnCredentials turnCredentials = null;
-		if (this.remoteServiceConfig.isTurnadminAvailable()) {
+		if (this.remoteServiceConfig.remoteServiceProperties.mediaServerProperties.coturnProperty.isTurnadminAvailable()) {
 			turnCredentials = coturnCredentialsService.createUser();
 			if (turnCredentials != null) {
-				token += "&coturnIp=" + remoteServiceConfig.remoteServiceProperties.getCoturnIp();
+				token += "&coturnIp=" + remoteServiceConfig.remoteServiceProperties.mediaServerProperties.coturnProperty.getCoturnIp();
 				token += "&turnUsername=" + turnCredentials.getUsername();
 				token += "&turnCredential=" + turnCredentials.getCredential();
 			}

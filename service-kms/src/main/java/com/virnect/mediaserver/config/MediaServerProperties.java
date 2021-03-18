@@ -6,6 +6,7 @@ import com.virnect.mediaserver.config.property.CoturnProperty;
 import com.virnect.mediaserver.config.property.RecordingProperty;
 import com.virnect.mediaserver.config.property.ServerProperty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
