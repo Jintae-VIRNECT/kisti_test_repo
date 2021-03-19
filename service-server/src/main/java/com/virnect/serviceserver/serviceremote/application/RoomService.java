@@ -521,13 +521,13 @@ public class RoomService {
 				List<String> urlList = config.remoteServiceProperties.getCoturnUrisStreaming();
 				if (urlList.isEmpty()) {
 					for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-						coturnResponse.setUsername(config.remoteServiceProperties.mediaServerProperties.coturnProperty.getCoturnUsername());
+						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
 						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
 						coturnResponse.setUrl(coturnUrl);
 					}
 				} else {
 					for (String coturnUrl : urlList) {
-						coturnResponse.setUsername(config.remoteServiceProperties.mediaServerProperties.coturnProperty.getCoturnUsername());
+						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
 						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
 						coturnResponse.setUrl(coturnUrl);
 					}
@@ -537,7 +537,7 @@ public class RoomService {
 			case PUBLIC:
 			case PRIVATE: {
 				for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-					coturnResponse.setUsername(config.remoteServiceProperties.mediaServerProperties.coturnProperty.getCoturnUsername());
+					coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
 					coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
 					//coturnResponse.setUrl(coturnUrl.replaceAll("\"", ""));
 					coturnResponse.setUrl(coturnUrl);

@@ -1,43 +1,32 @@
 package com.virnect.serviceserver.global.config.property;
 
-import java.io.File;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
-import org.apache.http.Header;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.mediaserver.cdr.CDREventName;
 import com.virnect.mediaserver.config.MediaServerProperties;
 import com.virnect.serviceserver.infra.utils.ConfigValidation;
 
 @Slf4j
 @Getter
 @Setter
-@Component
 @Validated
 @ConfigurationProperties(prefix = "service", ignoreInvalidFields = true)
-//public class RemoteServiceProperties extends PropertyService {
-public class RemoteServiceProperties {
-
-	public final static String WS_PATH = "/remote/websocket";
+public class RemoteServiceProperties extends PropertyService {
+//public class RemoteServiceProperties {
 
 	public final MediaServerProperties mediaServerProperties;
 
@@ -53,7 +42,6 @@ public class RemoteServiceProperties {
 	private boolean dotenv;
 	private String dotenvPath;
 
-	private String certificateType;
 	private String coturnCredential;
 	private int coturnMysqlConnectTimeout;
 	private String coturnMysqlDbname;
@@ -128,104 +116,130 @@ public class RemoteServiceProperties {
 
 	protected Environment env;
 
-	public void setMediaServerProperties() {
-
-		mediaServerProperties.setSpringProfile(springProfile);
-
-		// set Media coturn property
-		mediaServerProperties.coturnProperty.setCoturnUsername(coturnName);
-		mediaServerProperties.coturnProperty.setCoturnCredential(coturnCredential);
-		mediaServerProperties.coturnProperty.setCoturnUrisConference(coturnUrisConference);
-		mediaServerProperties.coturnProperty.setCoturnUrisSteaming(coturnUrisStreaming);
-		mediaServerProperties.coturnProperty.setCoturnRedisDbname(coturnRedisDbname);
-		mediaServerProperties.coturnProperty.setCoturnRedisPassword(coturnRedisPassword);
-		mediaServerProperties.coturnProperty.setCoturnRedisConnectTimeout(coturnRedisConnectTimeout);
-
-		// set Media server property
-		mediaServerProperties.serverProperty.setSessionsGarbageInterval(remoteSessionsGarbageInterval);
-		mediaServerProperties.serverProperty.setSessionsGarbageThreshold(remoteSessionsGarbageThreshold);
-		mediaServerProperties.serverProperty.setKmsUrisConference(kmsUrisConference);
-		mediaServerProperties.serverProperty.setKmsUrisStreaming(kmsUrisStreaming);
-		mediaServerProperties.serverProperty.setServiceSecret(remoteSecret);
-		mediaServerProperties.serverProperty.setServiceCdr(remoteCdr);
-		mediaServerProperties.serverProperty.setServiceCdrPath(
-			remoteCdr ? ConfigValidation.asWritableFileSystemPath(remoteCdrPath) :
-				ConfigValidation.asFileSystemPath(remoteCdrPath)
-		);
-
-		// set Media recording property
-		mediaServerProperties.recordingProperty.setRecording(remoteRecording);
-		mediaServerProperties.recordingProperty.setRecordingDebug(remoteRecordingDebug);
-		mediaServerProperties.recordingProperty.setRecordingPath(
-			mediaServerProperties.recordingProperty.isRecording() ?
-				ConfigValidation.asWritableFileSystemPath(remoteRecordingPath) :
-				ConfigValidation.asFileSystemPath(remoteRecordingPath)
-		);
-		mediaServerProperties.recordingProperty.setRecordingPublicAccess(remoteRecordingPublicAccess);
-		mediaServerProperties.recordingProperty.setRecordingAutoStopTimeout(remoteRecordingAutostopTimeout);
-		mediaServerProperties.recordingProperty.setRecordingCustomLayout(remoteRecordingCustomLayout);
-		mediaServerProperties.recordingProperty.setRecordingVersion(remoteRecordingVersion);
-		mediaServerProperties.recordingProperty.setRecordingComposedUrl(remoteRecordingComposedUrl);
-
-		// set Bandwidth property
-		mediaServerProperties.bandwidthProperty.setStreamsVideoMaxRecvBandwidth(remoteStreamsVideoMaxRecvBandwidth);
-		mediaServerProperties.bandwidthProperty.setStreamsVideoMinRecvBandwidth(remoteStreamsVideoMinRecvBandwidth);
-		mediaServerProperties.bandwidthProperty.setStreamsVideoMaxSendBandwidth(remoteStreamsVideoMaxSendBandwidth);
-		mediaServerProperties.bandwidthProperty.setStreamsVideoMinSendBandwidth(remoteStreamsVideoMinSendBandwidth);
-	}
-
 	@Autowired
 	public RemoteServiceProperties(Environment env, MediaServerProperties mediaServerProperties) {
 		this.env = env;
 		this.mediaServerProperties = mediaServerProperties;
 	}
 
-	public void checkConfigurationProperties(boolean loadDotenv) {
-		checkDomainOrPublicIp();
+	public void setMediaServerProperties() {
+
+		mediaServerProperties.setSpringProfile(springProfile);
+
+		// set Media coturn property
+		mediaServerProperties.coturnProperty.setCoturnUsername(
+			getValue("service.coturn-name", coturnName).toString());
+		mediaServerProperties.coturnProperty.setCoturnCredential(
+			getValue("service.coturn-credential", coturnName).toString());
+		mediaServerProperties.coturnProperty.setCoturnUrisConference(
+			(List<String>)getValue("service.coturn-uris-conference", coturnUrisConference));
+		mediaServerProperties.coturnProperty.setCoturnUrisSteaming(
+			(List<String>)getValue("service.coturn-uris-streaming", coturnUrisStreaming));
+		mediaServerProperties.coturnProperty.setCoturnRedisDbname(
+			getValue("service.coturn-redis-dbname",coturnRedisDbname).toString());
+		mediaServerProperties.coturnProperty.setCoturnRedisPassword(
+			getValue("service.coturn-redis-password",coturnRedisPassword).toString());
+		mediaServerProperties.coturnProperty.setCoturnRedisConnectTimeout(
+			getValue("service.coturn-redis-connect-timeout",coturnRedisConnectTimeout).toString());
+
+		// set Media server property
+		mediaServerProperties.serverProperty.setSessionsGarbageInterval(
+			(Integer)getValue("service.remote_sessions_garbage_interval",remoteSessionsGarbageInterval));
+		mediaServerProperties.serverProperty.setSessionsGarbageThreshold(
+			(Integer)getValue("service.remote_sessions_garbage_threshold",remoteSessionsGarbageThreshold));
+		mediaServerProperties.serverProperty.setKmsUrisConference(
+			(List<String>)getValue("service.kms-uris-conference", kmsUrisConference));
+		mediaServerProperties.serverProperty.setKmsUrisStreaming(
+			(List<String>)getValue("service.kms-uris-streaming", kmsUrisStreaming));
+		mediaServerProperties.serverProperty.setServiceSecret(
+			getValue("service.remote_secret", remoteSecret).toString());
+		mediaServerProperties.serverProperty.setServiceCdr(
+			(Boolean)getValue("service.remote_cdr", remoteCdr));
+		mediaServerProperties.serverProperty.setServiceCdrPath(
+			(Boolean)getValue("service.remote_cdr", remoteCdr)
+				? ConfigValidation.asWritableFileSystemPath(getValue("service.remote_cdr_path",remoteCdrPath).toString())
+				: ConfigValidation.asFileSystemPath(getValue("service.remote_cdr_path",remoteCdrPath).toString())
+		);
+
+		// set Media recording property
+		mediaServerProperties.recordingProperty.setRecording(
+			(Boolean)getValue("service.remote_recording_debug",remoteRecording));
+		mediaServerProperties.recordingProperty.setRecordingDebug(
+			(Boolean)getValue("service.remote_recording_debug",remoteRecordingDebug));
+		mediaServerProperties.recordingProperty.setRecordingPath(
+			mediaServerProperties.recordingProperty.isRecording() ?
+				ConfigValidation.asWritableFileSystemPath(getValue("service.remote_cdr_path", remoteRecordingPath).toString()) :
+				ConfigValidation.asFileSystemPath(getValue("service.remote_cdr_path", remoteRecordingPath).toString())
+		);
+		mediaServerProperties.recordingProperty.setRecordingPublicAccess(
+			(Boolean)getValue("service.remote_recording_public_access", remoteRecordingPublicAccess));
+		mediaServerProperties.recordingProperty.setRecordingAutoStopTimeout(
+			(Integer)getValue("service.remote_recording_autostop_timeout", remoteRecordingAutostopTimeout));
+		mediaServerProperties.recordingProperty.setRecordingCustomLayout(
+			getValue("service.remote_recording_custom_layout", remoteRecordingCustomLayout).toString());
+		mediaServerProperties.recordingProperty.setRecordingVersion(
+			getValue("service.remote_recording_version", remoteRecordingVersion).toString());
+		mediaServerProperties.recordingProperty.setRecordingComposedUrl(
+			getValue("service.remote_recording_composed_url",remoteRecordingComposedUrl).toString());
+
+		// set Bandwidth property
+		mediaServerProperties.bandwidthProperty.setStreamsVideoMaxRecvBandwidth(
+			(Integer)getValue("service.remote_streams_video_max_recv_bandwidth", remoteStreamsVideoMaxRecvBandwidth));
+		mediaServerProperties.bandwidthProperty.setStreamsVideoMinRecvBandwidth(
+			(Integer)getValue("service.remote_streams_video_min_recv_bandwidth", remoteStreamsVideoMinRecvBandwidth));
+		mediaServerProperties.bandwidthProperty.setStreamsVideoMaxSendBandwidth(
+			(Integer)getValue("service.remote_streams_video_max_send_bandwidth", remoteStreamsVideoMaxSendBandwidth));
+		mediaServerProperties.bandwidthProperty.setStreamsVideoMinSendBandwidth(
+			(Integer)getValue("service.remote_streams_video_min_send_bandwidth", remoteStreamsVideoMinSendBandwidth));
 	}
 
-	private void checkDomainOrPublicIp() {
-		final String property = "service.domain_or_public_ip";
-		String domain = domainOrPublicIp;
+	public void checkProperties() {
+		checkDomainOrPublicIp(domainOrPublicIp);
+		checkPublicUrl(domainOrPublicIp);
+	}
 
-		// TODO: remove when possible deprecated OPENVIDU_DOMAIN_OR_PUBLIC_IP
-		if (domain == null || domain.isEmpty()) {
-			//this.configProps.put("service.domain_or_public_ip", domain);
-			//this.configProps.remove("service.domain_or_public_ip");
-		}
+	private void checkDomainOrPublicIp(String domain) {
 		if (domain != null && !domain.isEmpty()) {
-			this.domainOrPublicIp = domain;
-			this.remoteServicePublicUrl = "https://" + domain;
-			//this.remoteServicePublicwss = "wss://" + getValue("service.gateway");
+			this.remoteServicePublicUrl = "https://" + domainOrPublicIp;
 			this.remoteWebsocketUrl = wss;
 			if (this.httpsPort != null && this.httpsPort != 443) {
 				this.remoteServicePublicUrl += (":" + this.httpsPort);
 			}
-			calculatePublicUrl();
-		} else {
-			//addError(property, "Cannot be empty");
 		}
 	}
 
-	private void calculatePublicUrl() {
-		final String publicUrl = this.getRemoteServicePublicUrl();
-		if (publicUrl.startsWith("https://")) {
-			wsUrl = publicUrl.replace("https://", "wss://");
-		} else if (publicUrl.startsWith("http://")) {
-			wsUrl = publicUrl.replace("http://", "wss://");
-		}
-		if (wsUrl.endsWith("/")) {
-			wsUrl = wsUrl.substring(
-				0, wsUrl.length() - 1);
-		}
-		String finalUrl = wsUrl.replaceFirst("wss://", "https://")
-			.replaceFirst("ws://", "http://");
-		log.info("calculatePublicUrl : {}", finalUrl);
+	private void checkPublicUrl(String domain) {
+		if (domain != null && !domain.isEmpty()) {
+			final String publicUrl = this.getRemoteServicePublicUrl();
+			if (publicUrl.startsWith("https://")) {
+				wsUrl = publicUrl.replace("https://", "wss://");
+			} else if (publicUrl.startsWith("http://")) {
+				wsUrl = publicUrl.replace("http://", "wss://");
+			}
+			if (wsUrl.endsWith("/")) {
+				wsUrl = wsUrl.substring(
+					0, wsUrl.length() - 1);
+			}
+			String finalUrl =
+				wsUrl.replaceFirst("wss://", "https://")
+					.replaceFirst("ws://", "http://");
 
-		this.mediaServerProperties.setFinalUrl(finalUrl.endsWith("/") ? (finalUrl) : (finalUrl + "/"));
+			log.info("calculatePublicUrl : {}", finalUrl);
 
-		wssUrl = this.remoteWebsocketUrl + WS_PATH;
-		log.info("calculateWssUrl : {}", wssUrl);
+			this.mediaServerProperties.setFinalUrl(finalUrl.endsWith("/") ? (finalUrl) : (finalUrl + "/"));
+			wssUrl = this.remoteWebsocketUrl;
+			log.info("calculateWssUrl : {}", wssUrl);
+		}
+	}
+
+	public boolean isTurnadminAvailable() {
+		return this.mediaServerProperties.coturnProperty.isTurnadminAvailable();
+	}
+
+	public String getCoturnIp() {
+		String coturnIp = mediaServerProperties.coturnProperty.getCoturnIp();
+		log.info("getCoturnIp : {}", coturnIp);
+		return coturnIp;
 	}
 
 	@Override
@@ -234,38 +248,37 @@ public class RemoteServiceProperties {
 			"\n\t" +
 			" CONFIGURATION PROPERTIES" + "\n\t" +
 			" ------------------------\n" + "\n\t" +
-			"* SERVICE_CERTIFICATE_TYPE=" + certificateType + "\n\t" +
-			"* SERVICE_COTURN_CREDENTIAL=" + coturnCredential + "\n\t" +
-			"* SERVICE_COTURN_NAME=" + coturnName + "\n\t" +
-			"* SERVICE_COTURN_REDIS_CONNECT_TIMEOUT=" + coturnRedisConnectTimeout + "\n\t" +
-			"* SERVICE_COTURN_REDIS_DBNAME=" + coturnRedisDbname + "\n\t" +
-			"* SERVICE_COTURN_REDIS_PASSWORD=" + coturnRedisPassword + "\n\t" +
-			"* SERVICE_COTURN_URIS_CONFERENCE=" + coturnUrisConference + "\n\t" +
-			"* SERVICE_COTURN_URIS_STREAMING=" + coturnUrisStreaming+ "\n\t" +
-			"* SERVICE_DOMAIN_OR_PUBLIC_IP=" + domainOrPublicIp + "\n\t" +
-			"* SERVICE_DOTENV=" + dotenv + "\n\t" +
-			"* SERVICE_HTTPS_PORT=" + httpsPort + "\n\t" +
-			"* SERVICE_KMS_URIS_CONFERENCE=" + kmsUrisConference + "\n\t" +
-			"* SERVICE_KMS_URIS_STREAMING=" + kmsUrisStreaming + "\n\t" +
-			"* SERVICE_POLICY_LOCATION=" + policyLocation + "\n\t" +
-			"* SERVICE_REMOTE_CDR=" + remoteCdr +
-			"* SERVICE_REMOTE_CDR_PATH=" + remoteCdrPath + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING=" + remoteRecording + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_AUTOSTOP_TIMEOUT=" + remoteRecordingAutostopTimeout + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_COMPOSED_URL=" + remoteRecordingComposedUrl + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_CUSTOM_LAYOUT=" + remoteRecordingCustomLayout + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_DEBUG=" + remoteRecordingDebug + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_NOTIFICATION=" + remoteRecordingNotification + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_PATH=" + remoteRecordingPath + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_PUBLIC_ACCESS=" + remoteRecordingPublicAccess + "\n\t" +
-			"* SERVICE_REMOTE_RECORDING_VERSION=" + remoteRecordingVersion + "\n\t" +
-			"* SERVICE_REMOTE_SECRET=" + remoteSecret + "\n\t" +
-			"* SERVICE_REMOTE_SESSIONS_GARBAGE_INTERVAL=" + remoteSessionsGarbageInterval + "\n\t" +
-			"* SERVICE_REMOTE_SESSIONS_GARBAGE_THRESHOLD=" + remoteSessionsGarbageThreshold + "\n\t" +
-			"* SERVICE_REMOTE_STREAMS_VIDEO_MAX_RECV_BANDWIDTH=" + remoteStreamsVideoMaxRecvBandwidth + "\n\t" +
-			"* SERVICE_REMOTE_STREAMS_VIDEO_MAX_SEND_BANDWIDTH=" + remoteStreamsVideoMaxSendBandwidth + "\n\t" +
-			"* SERVICE_REMOTE_STREAMS_VIDEO_MIN_RECV_BANDWIDTH=" + remoteStreamsVideoMinRecvBandwidth + "\n\t" +
-			"* SERVICE_REMOTE_STREAMS_VIDEO_MIN_SEND_BANDWIDTH=" + remoteStreamsVideoMinSendBandwidth + "\n\t" +
-			"* SERVICE_WSS=" + wss + "\n";
+			"* SERVICE_COTURN_CREDENTIAL=" + this.coturnCredential + "\n\t" +
+			"* SERVICE_COTURN_NAME=" + this.coturnName + "\n\t" +
+			"* SERVICE_COTURN_REDIS_CONNECT_TIMEOUT=" + this.coturnRedisConnectTimeout + "\n\t" +
+			"* SERVICE_COTURN_REDIS_DBNAME=" + this.coturnRedisDbname + "\n\t" +
+			"* SERVICE_COTURN_REDIS_PASSWORD=" + this.coturnRedisPassword + "\n\t" +
+			"* SERVICE_COTURN_URIS_CONFERENCE=" + this.coturnUrisConference + "\n\t" +
+			"* SERVICE_COTURN_URIS_STREAMING=" + this.coturnUrisStreaming+ "\n\t" +
+			"* SERVICE_DOMAIN_OR_PUBLIC_IP=" + this.domainOrPublicIp + "\n\t" +
+			"* SERVICE_DOTENV=" + this.dotenv + "\n\t" +
+			"* SERVICE_HTTPS_PORT=" + this.httpsPort + "\n\t" +
+			"* SERVICE_KMS_URIS_CONFERENCE=" + this.kmsUrisConference + "\n\t" +
+			"* SERVICE_KMS_URIS_STREAMING=" + this.kmsUrisStreaming + "\n\t" +
+			"* SERVICE_POLICY_LOCATION=" + this.policyLocation + "\n\t" +
+			"* SERVICE_REMOTE_CDR=" + this.remoteCdr +
+			"* SERVICE_REMOTE_CDR_PATH=" + this.remoteCdrPath + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING=" + this.remoteRecording + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING_AUTOSTOP_TIMEOUT=" + this.remoteRecordingAutostopTimeout + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING_COMPOSED_URL=" + this.remoteRecordingComposedUrl + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING_CUSTOM_LAYOUT=" + this.remoteRecordingCustomLayout + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING_DEBUG=" + this.remoteRecordingDebug + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING_NOTIFICATION=" + this.remoteRecordingNotification + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING_PATH=" + this.remoteRecordingPath + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING_PUBLIC_ACCESS=" + this.remoteRecordingPublicAccess + "\n\t" +
+			"* SERVICE_REMOTE_RECORDING_VERSION=" + this.remoteRecordingVersion + "\n\t" +
+			"* SERVICE_REMOTE_SECRET=" + this.remoteSecret + "\n\t" +
+			"* SERVICE_REMOTE_SESSIONS_GARBAGE_INTERVAL=" + this.remoteSessionsGarbageInterval + "\n\t" +
+			"* SERVICE_REMOTE_SESSIONS_GARBAGE_THRESHOLD=" + this.remoteSessionsGarbageThreshold + "\n\t" +
+			"* SERVICE_REMOTE_STREAMS_VIDEO_MAX_RECV_BANDWIDTH=" + this.remoteStreamsVideoMaxRecvBandwidth + "\n\t" +
+			"* SERVICE_REMOTE_STREAMS_VIDEO_MAX_SEND_BANDWIDTH=" + this.remoteStreamsVideoMaxSendBandwidth + "\n\t" +
+			"* SERVICE_REMOTE_STREAMS_VIDEO_MIN_RECV_BANDWIDTH=" + this.remoteStreamsVideoMinRecvBandwidth + "\n\t" +
+			"* SERVICE_REMOTE_STREAMS_VIDEO_MIN_SEND_BANDWIDTH=" + this.remoteStreamsVideoMinSendBandwidth + "\n\t" +
+			"* SERVICE_WSS=" + this.wss + "\n";
 	}
 }

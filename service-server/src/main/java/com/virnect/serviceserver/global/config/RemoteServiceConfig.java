@@ -29,13 +29,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.BindingResult;
 
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
 import com.virnect.serviceserver.infra.utils.Dotenv;
@@ -64,10 +60,13 @@ public class RemoteServiceConfig {
 	}
 
 	@PostConstruct
-	public void checkConfiguration() {
-		boolean isDotenvEnabled = this.remoteServiceProperties.isDotenv();
-		this.checkConfiguration(isDotenvEnabled);
-		//this.remoteServiceProperties.mediaServerProperties.setSpringProfile(springProfile);
+	protected void setRemoteStorageProperties(){
+		this.remoteStorageProperties.setStorageProperties();
+	}
+
+	@PostConstruct
+	public void checkProperties() {
+		this.remoteServiceProperties.checkProperties();
 	}
 
 	@PostConstruct
@@ -79,7 +78,7 @@ public class RemoteServiceConfig {
 				if (dotenvFile.canRead()) {
 					try {
 						dotenv.read(dotenvFile.toPath());
-						//this.remoteServiceProperties.propertiesSource = dotenv.getAll();
+						this.remoteServiceProperties.propertiesSource = dotenv.getAll();
 						log.info("Configuration properties read from file {}", dotenvFile.getAbsolutePath());
 					} catch (IOException | DotenvFormatException e) {
 						log.error("Error reading properties from .env file: {}", e.getMessage());
@@ -105,9 +104,9 @@ public class RemoteServiceConfig {
 		return kmsUris;
 	}
 
-	public void checkConfiguration(boolean loadDotenv) {
+	public void checkProperty(boolean loadDotenv) {
 		try {
-			this.remoteServiceProperties.checkConfigurationProperties(loadDotenv);
+			//this.remoteServiceProperties.checkProperties(loadDotenv);
 		} catch (Exception e) {
 			log.error("Exception checking configuration", e);
 			//this.remoteServiceProperties.addError(null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());

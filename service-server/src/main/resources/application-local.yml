@@ -91,7 +91,6 @@ server:
         key-store-type: PKCS12
 
 service:
-    certificate_type: selfsigned
     coturn-credential: remote
     coturn-mysql-connect-timeout: 100
     coturn-mysql-dbname: coturn
@@ -106,7 +105,7 @@ service:
     kms-uris-conference: ["ws://192.168.6.3:8888/kurento"]
     kms-uris-streaming: []
     policy-location: policy/privateServicePolicy.json
-    wss: wss://192.168.13.36:8000
+    wss: wss://192.168.13.36:8000/remote/websocket
 
 storage:
     enabled: true
