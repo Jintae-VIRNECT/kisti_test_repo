@@ -339,6 +339,7 @@ export default {
 .tooltip.tooltip-guide {
   > .tooltiptext.blue {
     padding: 1.143rem 1.714rem;
+    box-shadow: 0 0 3px #000;
     > .arrow {
       border-width: 0.714rem;
       &:after {
