@@ -48,8 +48,10 @@
       "delete": "Delete",
       "submit": "Register",
       "message": {
-        "success": "Succesfully uploaded image",
-        "fail": "Failed to upload image file"
+        "success": "Successfully uploaded image",
+        "fail": "Failed to upload image file",
+        "notAllowFileExtension": "Unsupported file type",
+        "notAllowFileSize": "Unsupported file size"
       }
     },
     "nameChangeModal": {
