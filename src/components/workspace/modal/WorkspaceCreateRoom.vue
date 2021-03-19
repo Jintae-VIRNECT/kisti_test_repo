@@ -9,6 +9,7 @@
   >
     <div class="createroom">
       <create-room-info
+        :key="'roominfo_' + sessionId"
         :roomInfo="roomInfo"
         :selection="selection"
         :btnLoading="clicked"
