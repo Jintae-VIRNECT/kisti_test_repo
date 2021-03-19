@@ -51,7 +51,7 @@ export default {
   position: absolute;
   right: 1.143rem;
   bottom: 1.143rem;
-  z-index: 2;
+  z-index: 6;
   width: 2.714rem;
   height: 2.714rem;
   background: rgba(#000, 0.4);
