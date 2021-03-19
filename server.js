@@ -13,7 +13,15 @@ app.use(compression())
 
 app.use(
   helmet({
-    frameguard: { action: 'deny' },
+    frameguard: {
+      action: 'deny',
+    },
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'script-src': ["'self'", 'https:', 'blob:', "'192.168.6.3:9886'"],
+      },
+    },
   }),
 )
 
