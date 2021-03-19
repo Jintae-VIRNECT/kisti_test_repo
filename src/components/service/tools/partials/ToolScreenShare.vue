@@ -78,7 +78,7 @@ export default {
         }
 
         const displayStream = await navigator.mediaDevices.getDisplayMedia({
-          audio: true,
+          audio: false,
           video: video,
         })
 
