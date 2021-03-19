@@ -4,16 +4,18 @@ const app = express()
 const server = require('./server/module')
 const path = require('path')
 const compression = require('compression')
+const helmet = require('helmet')
 
 var bodyParser = require('body-parser')
 
 app.use(bodyParser.json({ limit: '50mb' }))
 app.use(compression())
 
-app.use((req, res, next) => {
-  res.header('X-Frame-Options', 'deny')
-  next()
-})
+app.use(
+  helmet({
+    frameguard: { action: 'deny' },
+  }),
+)
 
 app.use(express.static(path.join(__dirname, 'dist')))
 app.use(express.static(path.join(__dirname, 'record')))
