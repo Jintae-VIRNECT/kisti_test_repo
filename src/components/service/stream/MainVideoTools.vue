@@ -34,6 +34,7 @@ export default {
   position: absolute;
   bottom: -2px;
   left: -2px;
+  z-index: 5;
   display: flex;
   width: calc(100% + 4px);
   height: 80px;
