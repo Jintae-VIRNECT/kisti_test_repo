@@ -516,7 +516,9 @@ const _ = {
    */
   sendSpeaker: (active, target = null) => {
     for (let subscriber of _.subscribers) {
-      subscriber.subscribeToAudio(active)
+      if (subscriber.stream && subscriber.stream.mediaStream) {
+        subscriber.subscribeToAudio(active)
+      }
     }
     const params = {
       isOn: active,
