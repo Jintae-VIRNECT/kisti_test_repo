@@ -104,13 +104,4 @@ public class RemoteServiceConfig {
 		return kmsUris;
 	}
 
-	public void checkProperty(boolean loadDotenv) {
-		try {
-			//this.remoteServiceProperties.checkProperties(loadDotenv);
-		} catch (Exception e) {
-			log.error("Exception checking configuration", e);
-			//this.remoteServiceProperties.addError(null, "Exception checking configuration." + e.getClass().getName() + ":" + e.getMessage());
-		}
-	}
-
 }
