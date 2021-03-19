@@ -44,13 +44,13 @@ const metaHTML = lang => {
   </html>`
   return htmlText
 }
-const metaRegex = /charset=|name=(.*?)(description|viewpoint)|http-equiv=(.*?)X-UA-Compatible|property=(.*?)(og:title|og:description|og:image|og:site_name|og:url|og:type)/gi
+const metaRegex = /charset=|name=(.*?)(description|viewport)|http-equiv=(.*?)X-UA-Compatible|property=(.*?)(og:title|og:description|og:image|og:site_name|og:url|og:type)/gi
 const linkRegex = /rel=(.*?)icon/gi
 const metaHEAD = (html, lang) => {
-  const head = html.match(/<head>(.*?)<\/head>/i)[1]
+  const head = html.match(/<head>(.*?)<\/head>/gs)[0]
   let append = ''
   // const title = head.match(/<title>(.*?)<\/title>/i)[1]
-  const metas = head.match(/<meta .*?>/gi)
+  const metas = head.match(/<meta .*?>/gs)
   if (metas) {
     metas.forEach(meta => {
       if (!new RegExp(metaRegex).test(meta)) {
@@ -58,7 +58,7 @@ const metaHEAD = (html, lang) => {
       }
     })
   }
-  const links = head.match(/<link .*?>/gi)
+  const links = head.match(/<link .*?>/gs)
   if (links) {
     links.forEach(link => {
       if (!new RegExp(linkRegex).test(link)) {
@@ -66,7 +66,7 @@ const metaHEAD = (html, lang) => {
       }
     })
   }
-  const scripts = head.match(/<script (.*?)<\/script>/gi)
+  const scripts = head.match(/<script (.*?)<\/script>/gs)
   if (scripts) {
     scripts.forEach(script => {
       append += script
