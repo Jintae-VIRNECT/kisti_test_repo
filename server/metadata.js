@@ -44,7 +44,34 @@ const metaHTML = lang => {
   </html>`
   return htmlText
 }
+const metaRegex = /charset=|name=(.*?)(description|viewport)|http-equiv=(.*?)X-UA-Compatible|property=(.*?)(og:title|og:description|og:image|og:site_name|og:url|og:type)/gi
+const linkRegex = /rel=(.*?)icon/gi
 const metaHEAD = (html, lang) => {
+  const head = html.match(/<head>(.*?)<\/head>/gs)[0]
+  let append = ''
+  // const title = head.match(/<title>(.*?)<\/title>/i)[1]
+  const metas = head.match(/<meta .*?>/gs)
+  if (metas) {
+    metas.forEach(meta => {
+      if (!new RegExp(metaRegex).test(meta)) {
+        append += meta
+      }
+    })
+  }
+  const links = head.match(/<link .*?>/gs)
+  if (links) {
+    links.forEach(link => {
+      if (!new RegExp(linkRegex).test(link)) {
+        append += link
+      }
+    })
+  }
+  const scripts = head.match(/<script (.*?)<\/script>/gs)
+  if (scripts) {
+    scripts.forEach(script => {
+      append += script
+    })
+  }
   const htmlText = html.replace(
     /<head>.*?<\/head>/gs,
     `<head>
@@ -65,6 +92,7 @@ const metaHEAD = (html, lang) => {
     <meta property="og:url" content="${metaData[lang].og.url}">
     <meta property="og:type" content="${metaData[lang].og.type}">
     <link rel="shortcut icon" href="/favicon.ico">
+    ${append}
     </head>`,
   )
   return htmlText

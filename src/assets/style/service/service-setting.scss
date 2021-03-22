@@ -129,9 +129,11 @@
 .service-setting__text {
   z-index: 101;
   width: 14.857rem;
-  color: $color_text_main;
-  font-size: 0.9286rem;
-  opacity: 0.86;
+  > p {
+    color: $color_text_main;
+    font-size: 0.9286rem;
+    opacity: 0.86;
+  }
   &.custom {
     display: flex;
     align-items: center;
