@@ -127,32 +127,28 @@
 }
 
 .service-setting__text {
-  z-index: 101;
   width: 14.857rem;
-  > p {
-    color: $color_text_main;
-    font-size: 0.9286rem;
-    opacity: 0.86;
-  }
+  color: $color_text_main;
+  opacity: 0.86;
+  transition: all 0.3s;
   &.custom {
     display: flex;
     align-items: center;
+    opacity: 1;
+    > p {
+      margin-right: 0.286rem;
+      color: $color_text_main;
+      opacity: 0.86;
+    }
   }
 
   &.disable {
     opacity: 0.4;
     pointer-events: none;
   }
-
-  > p {
-    margin-right: 0.286rem;
-    color: $color_text_main;
-    font-size: 0.9286rem;
-  }
   > .popover--wrapper {
     display: flex;
   }
-  transition: all 0.3s;
 }
 
 .service-setting__selector {
