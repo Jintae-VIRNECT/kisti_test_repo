@@ -82,6 +82,19 @@ export default {
       }
     },
   },
+  watch: {
+    $route() {
+      // 사파리 테이블 버그
+      document
+        .querySelectorAll('.el-table__body')
+        .forEach(table => (table.style.tableLayout = 'auto'))
+      setTimeout(() => {
+        document
+          .querySelectorAll('.el-table__body')
+          .forEach(table => (table.style.tableLayout = 'fixed'))
+      }, 10)
+    },
+  },
   methods: {
     changeActiveWorkspace(workspace) {
       this.$store.commit('auth/SET_ACTIVE_WORKSPACE', workspace.uuid)
@@ -115,16 +128,6 @@ export default {
       })
       this.$router.replace(this.$route.path)
     }
-
-    // 사파리 테이블 버그
-    document
-      .querySelectorAll('.el-table__body')
-      .forEach(table => (table.style.tableLayout = 'auto'))
-    setTimeout(() => {
-      document
-        .querySelectorAll('.el-table__body')
-        .forEach(table => (table.style.tableLayout = 'fixed'))
-    }, 10)
   },
 }
 </script>
