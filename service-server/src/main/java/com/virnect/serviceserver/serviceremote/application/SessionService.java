@@ -1067,14 +1067,6 @@ public class SessionService {
 
 	public ApiResponse<RoomDetailInfoResponse> getRoomDetailBySessionId(String workspaceId, String sessionId) {
 
-		ApiResponse<RoomDetailInfoResponse> responseData;
-
-		List<MemberInfoResponse> memberInfoList;
-
-		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElseThrow(()
-			-> new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
 		LogMessage.formedInfo(
 			TAG,
 			"invokeDataProcess",
@@ -1082,47 +1074,57 @@ public class SessionService {
 			"room info retrieve by session id",
 			sessionId
 		);
-		if (room.getRoomStatus() != RoomStatus.ACTIVE) {
-			responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
+
+		ApiResponse<RoomDetailInfoResponse> responseData;
+
+		List<MemberInfoResponse> memberInfoList;
+
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+		if(room == null) {
+			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		} else {
-			// mapping data
-			RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
-				room, RoomDetailInfoResponse.class);
-			roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+			if (room.getRoomStatus() != RoomStatus.ACTIVE) {
+				responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
+			} else {
+				// mapping data
+				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
+					room, RoomDetailInfoResponse.class);
+				roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
-			// Get Member List by Room Session ID
-			// Mapping Member List Data to Member Information List
-			memberInfoList = memberRepository.findAllBySessionId(sessionId)
-				.stream()
-				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-				.collect(Collectors.toList());
+				// Get Member List by Room Session ID
+				// Mapping Member List Data to Member Information List
+				memberInfoList = memberRepository.findAllBySessionId(sessionId)
+					.stream()
+					.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+					.collect(Collectors.toList());
 
-			// find and get extra information from workspace-server using uuid
-			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-					workspaceId, memberInfoResponse.getUuid());
-				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-				//todo://user infomation does not have role and role id change to workspace member info
-				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-				memberInfoResponse.setRole(workspaceMemberData.getRole());
-				//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-				memberInfoResponse.setName(workspaceMemberData.getName());
-				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-			}
-
-			memberInfoList.sort((t1, t2) -> {
-				if (t1.getMemberType().equals(MemberType.LEADER)) {
-					return 1;
+				// find and get extra information from workspace-server using uuid
+				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+						workspaceId, memberInfoResponse.getUuid());
+					log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+					//todo://user infomation does not have role and role id change to workspace member info
+					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+					memberInfoResponse.setRole(workspaceMemberData.getRole());
+					//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+					memberInfoResponse.setName(workspaceMemberData.getName());
+					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 				}
-				return 0;
-			});
 
-			// Set Member List to Room Detail Information Response
-			roomDetailInfoResponse.setMemberList(memberInfoList);
-			responseData = new ApiResponse<>(roomDetailInfoResponse);
+				memberInfoList.sort((t1, t2) -> {
+					if (t1.getMemberType().equals(MemberType.LEADER)) {
+						return 1;
+					}
+					return 0;
+				});
+
+				// Set Member List to Room Detail Information Response
+				roomDetailInfoResponse.setMemberList(memberInfoList);
+				responseData = new ApiResponse<>(roomDetailInfoResponse);
+			}
 		}
 		return responseData;
 	}
