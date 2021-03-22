@@ -81,12 +81,13 @@ import RoomInfo from '../partials/ModalRoomInfo'
 import ParticipantsInfo from '../partials/ModalParticipantsInfo'
 import RoomDownload from '../partials/ModalRoomDownload'
 import Profile from 'Profile'
+import toastMixin from 'mixins/toast'
 import confirmMixin from 'mixins/confirm'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'WorkspaceRoomInfo',
-  mixins: [confirmMixin],
+  mixins: [toastMixin, confirmMixin],
   components: {
     Modal,
     Profile,
@@ -144,7 +145,10 @@ export default {
         this.image = this.room.profile
         this.tabview = 'group'
       } catch (err) {
-        console.error(err)
+        if (err.code === 4002) {
+          this.toastError(this.$t('workspace.remote_already_removed'))
+          this.$emit('update:visible', false)
+        }
       }
     },
     tabChange(view) {
@@ -184,8 +188,10 @@ export default {
           this.$emit('update:visible', false)
         }
       } catch (err) {
-        // 에러처리
-        console.error(err)
+        if (err.code === 4002) {
+          this.toastError(this.$t('workspace.remote_already_removed'))
+          this.$emit('update:visible', false)
+        }
       }
     },
     kickoutConfirm(id) {
@@ -219,7 +225,10 @@ export default {
           this.$emit('updatedInfo', {})
         }
       } catch (err) {
-        console.error(err)
+        if (err.code === 4002) {
+          this.toastError(this.$t('workspace.remote_already_removed'))
+          this.$emit('update:visible', false)
+        }
       }
     },
   },
