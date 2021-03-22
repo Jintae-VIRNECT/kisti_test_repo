@@ -27,7 +27,7 @@ export default {
   data() {
     return {
       show: false,
-      timeout: null
+      timeout: null,
     }
   },
   props: {
@@ -90,6 +90,11 @@ export default {
             clearTimeout(this.timeout)
             this.show = false
           }, 2000)
+        } else {
+          this.timeout = setTimeout(() => {
+            clearTimeout(this.timeout)
+            this.show = false
+          }, 5000)
         }
       } else {
         this.show = true
