@@ -41,7 +41,11 @@ export default {
       title: `${this.title} | ${this.$t('common.workstation')}`,
       htmlAttrs: {
         lang: this.$i18n.locale,
+        ontouchmove: '',
       },
+      meta: [
+        { name: 'viewport', content: 'width=device-width, user-scalable=no' },
+      ],
       link: [
         {
           rel: 'icon',

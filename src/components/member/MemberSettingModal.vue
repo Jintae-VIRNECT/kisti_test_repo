@@ -37,8 +37,8 @@
         :model="form"
         @submit.native.prevent="submit"
       >
-        <el-row>
-          <el-col :span="8">
+        <el-row :gutter="8">
+          <el-col :span="12" :sm="8">
             <el-form-item class="horizon">
               <template slot="label">
                 <span>{{ $t('members.setting.role') }}</span>
@@ -65,8 +65,8 @@
             <img src="~assets/images/icon/ic-error.svg" />
           </el-tooltip>
         </dt>
-        <el-row>
-          <el-col :span="8">
+        <el-row :gutter="8">
+          <el-col :span="12" :sm="8">
             <el-form-item class="horizon" :label="plans.remote.label">
               <member-plan-select
                 v-model="form.licenseRemote"
@@ -75,7 +75,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="12" :sm="8">
             <el-form-item class="horizon" :label="plans.make.label">
               <member-plan-select
                 v-model="form.licenseMake"
@@ -84,7 +84,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="8">
+          <el-col :span="12" :sm="8">
             <el-form-item class="horizon" :label="plans.view.label">
               <member-plan-select
                 v-model="form.licenseView"
@@ -250,9 +250,6 @@ export default {
     margin: 20px 0 0;
     .el-form-item {
       margin-bottom: 20px;
-    }
-    .el-input {
-      width: 180px;
     }
   }
   .el-dialog__footer {
