@@ -1332,11 +1332,14 @@ public class SessionDataRepository {
             case PUBLIC: {
                 if (member != null) {
                     MemberStatus memberStatus = member.getMemberStatus();
-                    if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED)) {
+                    if (memberStatus.equals(MemberStatus.UNLOAD)) {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
-
+                    } else if (memberStatus.equals(MemberStatus.EVICTED)) {
+                        errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
+                    } else if (memberStatus.equals(MemberStatus.LOAD)) {
+                        errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                     } else {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                     }
@@ -1348,10 +1351,14 @@ public class SessionDataRepository {
             case OPEN: {
                 if (member != null) {
                     MemberStatus memberStatus = member.getMemberStatus();
-                    if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED)) {
+                    if (memberStatus.equals(MemberStatus.UNLOAD)) {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
+                    } else if (memberStatus.equals(MemberStatus.EVICTED)) {
+                        errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
+                    } else if (memberStatus.equals(MemberStatus.LOAD)) {
+                        errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                     } else {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                     }
