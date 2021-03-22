@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -1172,21 +1173,18 @@ public class SessionService {
 			roomInfoResponse.setMemberList(
 				setLeader(memberInfoList)
 			);
-
-			/*memberInfoList.stream().sorted(Comparator.comparing(MemberInfoResponse::getMemberType))
-			.collect(Collectors.toList());*/
-
-			/*memberInfoList.sort((t1, t2) -> {
-				if (t1.getMemberType().equals(MemberType.LEADER)) {
-					System.out.println(t1.getMemberType());
-					return 1;
-				} else {
-					return -1;
-				}
-			});*/
-
-			//roomInfoResponse.setMemberList(memberInfoList);
 			roomInfoList.add(roomInfoResponse);
+		}
+
+		for (Iterator<RoomInfoResponse> roomInfoResponseIterator = roomInfoList.iterator(); roomInfoResponseIterator.hasNext();) {
+			boolean result = false;
+			List<MemberInfoResponse> memberInfoResponses = roomInfoResponseIterator.next().getMemberList();
+			for (MemberInfoResponse memberInfoResponse : memberInfoResponses) {
+				result = memberInfoResponse.getUuid().equals(userId) && memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED);
+			}
+			if (result) {
+				roomInfoResponseIterator.remove();
+			}
 		}
 
 		if (paging) {
@@ -1195,7 +1193,8 @@ public class SessionService {
 				.currentSize(pageable.getPageSize())
 				.numberOfElements(roomPage.getNumberOfElements())
 				.totalPage(roomPage.getTotalPages())
-				.totalElements(roomPage.getTotalElements())
+				//.totalElements(roomPage.getTotalElements())
+				.totalElements(roomInfoList.size())
 				.last(roomPage.isLast())
 				.build();
 		} else {
@@ -1204,7 +1203,8 @@ public class SessionService {
 				.currentSize(0)
 				.numberOfElements(roomPage.getNumberOfElements())
 				.totalPage(1)
-				.totalElements(roomPage.getTotalElements())
+				//.totalElements(roomPage.getTotalElements())
+				.totalElements(roomInfoList.size())
 				.last(true)
 				.build();
 		}

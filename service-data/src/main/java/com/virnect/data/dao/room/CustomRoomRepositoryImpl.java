@@ -254,9 +254,8 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.members.any().uuid.eq(userId)
-					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
-				room.roomStatus.eq(RoomStatus.ACTIVE),
-				room.members.any().memberStatus.notIn(MemberStatus.EVICTED)
+				.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
+				room.roomStatus.eq(RoomStatus.ACTIVE)
 			)
 			.orderBy(room.createdDate.desc())
 			.distinct();
