@@ -1315,7 +1315,7 @@ public class SessionDataRepository {
         //room = sessionService.getRoom(workspaceId, sessionId);
         room = sessionService.getRoomForWrite(workspaceId, sessionId);
         if (room == null) {
-            return new ApiResponse<>(false);
+            return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
         }
         SessionType sessionType = room.getSessionProperty().getSessionType();
 
