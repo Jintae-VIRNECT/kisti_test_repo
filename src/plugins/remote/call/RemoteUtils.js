@@ -444,11 +444,13 @@ export const addSessionEventListener = session => {
     let data = JSON.parse(event.data)
     if (data.type === LINKFLOW.ROTATION) {
       const originConId = data.origin
+
       const info = {
         connectionId: originConId,
         yaw: data.yaw,
         pitch: data.pitch,
       }
+
       const isNotMe =
         session.connection.connectionId !== event.from.connectionId
 
@@ -525,8 +527,6 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
-    // streamMode: false, //360 스트림 모드
-    //@TODO:개발완료후 false
     rotationPos: null, //pano view의 회전 좌표
     screenShare: false,
   }

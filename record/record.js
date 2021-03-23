@@ -37,6 +37,7 @@ session.on('streamCreated', event => {
         rePositionPanoViewer()
       }, 100)
     })
+    event.element.muted = false
   })
 
   if (deviceType === 'FITT360') {
@@ -122,12 +123,14 @@ session.on('signal:linkflow', event => {
       panoViewer = panoViewerMap.get(connectionId)
     }
 
+    const info = {
+      yaw: data.yaw,
+      pitch: data.pitch,
+      fov: 85, //default
+    }
+
     if (panoViewer) {
-      panoViewer.lookAt({
-        yaw: data.yaw,
-        pitch: data.pitch,
-        fov: 85, //default
-      })
+      panoViewer.lookAt(info)
     }
   }
 })
@@ -156,6 +159,8 @@ const createPanoViewer = connectionId => {
   const panoViewer = new PanoViewer(panoContainer, {
     video: targetVideoEl,
   })
+
+  panoViewer.setYawRange([-360, 0])
 
   panoContainerMap.set(connectionId, panoContainer)
   panoViewerMap.set(connectionId, panoViewer)

@@ -89,7 +89,6 @@ export default {
       }
     },
     stopScreenSharing() {
-      //종료 체크
       if (this.myTempStream) {
         this.$call.replaceTrack(this.myTempStream.getVideoTracks()[0])
         this.$call.sendCamera(

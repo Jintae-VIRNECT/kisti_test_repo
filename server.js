@@ -4,23 +4,17 @@ const app = express()
 const server = require('./server/module')
 const path = require('path')
 const compression = require('compression')
+const helmet = require('helmet')
+const config = require('./server/config')
 
 var bodyParser = require('body-parser')
-
-app.use(bodyParser.json({ limit: '50mb' }))
-app.use(compression())
-
-app.use((req, res, next) => {
-  res.header('X-Frame-Options', 'deny')
-  next()
-})
-
-app.use(express.static(path.join(__dirname, 'dist')))
-app.use(express.static(path.join(__dirname, 'record')))
 
 const translate = require('./translate/translate')
 const stt = require('./translate/stt')
 const tts = require('./translate/tts')
+
+app.use(bodyParser.json({ limit: '50mb' }))
+app.use(compression())
 
 /* FEATURE: STT */
 app.post('/translate', bodyParser.json(), function(req, res) {
@@ -52,11 +46,61 @@ app.post('/tts', bodyParser.json(), function(req, res) {
   })
 })
 
-app.use(route)
+const initHelmet = async () => {
+  await config.init()
 
-server
-  .start(app)
-  .then(function() {})
-  .catch(function(e) {
-    console.log(e)
-  })
+  const urls = config.getUrls()
+  const allows = []
+  const cntAllows = []
+
+  for (const property in urls) {
+    if (property.includes('minio')) {
+      allows.push(urls[property])
+    }
+
+    if (property.includes('csp.wss')) {
+      cntAllows.push(urls[property])
+    } else if (property.includes('csp.')) {
+      allows.push(urls[property])
+    }
+  }
+
+  cntAllows.push(...allows)
+
+  app.use(
+    helmet({
+      frameguard: {
+        action: 'deny',
+      },
+      contentSecurityPolicy: {
+        directives: {
+          ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+          'script-src': ["'self'", ...allows],
+          'style-src': [
+            "'self'",
+            'https:',
+            'blob:',
+            "'unsafe-inline'",
+            ...allows,
+          ],
+          'connect-src': ["'self'", 'data:', ...cntAllows],
+          'img-src': ["'self'", 'data:', ...allows],
+        },
+      },
+    }),
+  )
+}
+
+initHelmet().then(() => {
+  app.use(express.static(path.join(__dirname, 'dist')))
+  app.use(express.static(path.join(__dirname, 'record')))
+
+  app.use(route)
+
+  server
+    .start(app)
+    .then(function() {})
+    .catch(function(e) {
+      console.log(e)
+    })
+})
