@@ -46,13 +46,59 @@ app.use((req, res, next) => {
   }
 })
 
-app.use(express.static(path.join(__dirname, 'dist')))
+const initHelmet = async () => {
+  await config.init()
 
-app.use(route)
+  const urls = config.getUrls()
+  const allows = []
+  const cntAllows = []
 
-server
-  .start(app)
-  .then(function () {})
-  .catch(function (e) {
-    console.log(e)
-  })
+  for (const property in urls) {
+    if (property.includes('minio')) {
+      allows.push(urls[property])
+    }
+
+    if (property.includes('csp.wss')) {
+      cntAllows.push(urls[property])
+    } else if (property.includes('csp.')) {
+      allows.push(urls[property])
+    }
+  }
+
+  cntAllows.push(...allows)
+
+  app.use(
+    helmet({
+      frameguard: {
+        action: 'deny',
+      },
+      contentSecurityPolicy: {
+        directives: {
+          ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+          'script-src': ["'self'", ...allows],
+          'style-src': [
+            "'self'",
+            'https:',
+            'blob:',
+            "'unsafe-inline'",
+            ...allows,
+          ],
+          'connect-src': ["'self'", 'data:', ...cntAllows],
+          'img-src': ["'self'", 'data:', ...allows],
+        },
+      },
+    }),
+  )
+}
+
+initHelmet().then(() => {
+  app.use(express.static(path.join(__dirname, 'dist')))
+  app.use(route)
+
+  server
+    .start(app)
+    .then(function () {})
+    .catch(function (e) {
+      console.log(e)
+    })
+})
