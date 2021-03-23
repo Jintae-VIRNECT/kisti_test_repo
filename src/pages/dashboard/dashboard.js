@@ -29,7 +29,7 @@ Vue.config.productionTip = false
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-Vue.prototype.$version = version
+Vue.prototype.$version = version.replace(/-\w/, '')
 Vue.prototype.logger = logger
 Vue.prototype.debug = debug
 
