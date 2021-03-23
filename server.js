@@ -12,12 +12,6 @@ const isbot = require('isbot')
 
 var bodyParser = require('body-parser')
 
-app.use(
-  helmet.frameguard({
-    action: 'deny',
-  }),
-)
-
 app.use(bodyParser.json())
 
 app.use((req, res, next) => {
