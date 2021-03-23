@@ -105,7 +105,7 @@ service:
     https_port: 8000
     kms-uris-conference: '["ws://192.168.6.3:8888/kurento"]'
     kms-uris-streaming: '[]'
-    policy-location: '"policy/privateServicePolicy.json"'
+    : '"policy/privateServicePolicy.json"'
     wss: wss://192.168.13.36:8000
 
 storage:
