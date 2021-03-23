@@ -23,6 +23,7 @@ import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -169,8 +170,7 @@ public class DefaultMessageService implements MessageService {
 
         return new ApiResponse<>(true);
     }
-/*
-    @RabbitListener(bindings = @QueueBinding(
+    /*@RabbitListener(bindings = @QueueBinding(
             value = @Queue,
             exchange = @Exchange(value = "amq.topic", type = ExchangeTypes.TOPIC),
             key = "event.#"

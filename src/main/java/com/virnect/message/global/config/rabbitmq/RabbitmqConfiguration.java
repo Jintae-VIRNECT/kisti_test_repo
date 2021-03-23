@@ -1,6 +1,8 @@
-package com.virnect.message.global.config;
+package com.virnect.message.global.config.rabbitmq;
 
 import com.rabbitmq.client.ShutdownSignalException;
+import com.virnect.message.dao.RetryMessageRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.Connection;
@@ -19,6 +21,7 @@ import org.springframework.context.annotation.Configuration;
  * DESCRIPTION:
  */
 @Configuration
+@RequiredArgsConstructor
 public class RabbitmqConfiguration {
     @Value("${spring.rabbitmq.host}")
     private String host;
@@ -30,6 +33,7 @@ public class RabbitmqConfiguration {
     private Integer port;
 
     public boolean active = false;
+    private final RetryMessageRepository retryMessageRepository;
 
     @Bean
     public CachingConnectionFactory cachingConnectionFactory() {
@@ -38,6 +42,7 @@ public class RabbitmqConfiguration {
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
         connectionFactory.setHost(host);
+        connectionFactory.setPublisherReturns(true);
         connectionFactory.addConnectionListener(new ConnectionListener() {
             @Override
             public void onCreate(Connection connection) {
@@ -62,6 +67,8 @@ public class RabbitmqConfiguration {
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(cachingConnectionFactory());
         rabbitTemplate.setMessageConverter(messageConverter());
+        rabbitTemplate.setMandatory(true);
+        rabbitTemplate.setReturnCallback(new CustomReturnCallback(retryMessageRepository));
         return rabbitTemplate;
     }
 
@@ -73,7 +80,6 @@ public class RabbitmqConfiguration {
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory() {
         final SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
         factory.setConnectionFactory(cachingConnectionFactory());
-        factory.setDefaultRequeueRejected(false);
         factory.setMessageConverter(messageConverter());
         return factory;
     }

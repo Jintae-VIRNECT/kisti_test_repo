@@ -1,13 +1,10 @@
 package com.virnect.message.dto.request;
 
-import com.virnect.message.domain.MessageType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,5 +35,13 @@ public class EventSendRequest {
             "}", required = true, position = 5)
     private Map<Object, Object> contents;
 
-
+    @Override
+    public String toString() {
+        return "EventSendRequest{" +
+                "eventName='" + eventName + '\'' +
+                ", eventUUID='" + eventUUID + '\'' +
+                ", service='" + service + '\'' +
+                ", contents=" + contents +
+                '}';
+    }
 }

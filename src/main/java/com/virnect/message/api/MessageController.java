@@ -7,7 +7,7 @@ import com.virnect.message.dto.response.EventSendResponse;
 import com.virnect.message.dto.response.PushResponse;
 import com.virnect.message.exception.MessageException;
 import com.virnect.message.global.common.ApiResponse;
-import com.virnect.message.global.config.RabbitmqConfiguration;
+import com.virnect.message.global.config.rabbitmq.RabbitmqConfiguration;
 import com.virnect.message.global.error.ErrorCode;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -42,6 +42,7 @@ public class MessageController {
     private final MessageService messageService;
     private final RabbitTemplate rabbitTemplate;
     private final RabbitmqConfiguration rabbitmqConfiguration;
+    public static final String TOPIC_EXCHANGE_NAME = "amq.topic";
 
 
     @ApiOperation(
@@ -72,11 +73,8 @@ public class MessageController {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        //String exchange = MessageType.PUSH.getValue();
-        //String routingKey = exchange + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
-        String exchange = "amq.topic";
-        String routingKey = "push" + "." + pushSendRequest.getService() + "." + pushSendRequest.getWorkspaceId();
-        rabbitTemplate.convertAndSend(exchange, routingKey, pushSendRequest);
+        String routingKey = String.format("%s.%s.%s", MessageType.PUSH.getValue(), pushSendRequest.getService(), pushSendRequest.getWorkspaceId());
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE_NAME, routingKey, pushSendRequest);
         PushResponse pushResponse = new PushResponse(pushSendRequest.getService(), pushSendRequest.getEvent(), pushSendRequest.getWorkspaceId(), true, LocalDateTime.now());
         return ResponseEntity.ok(new ApiResponse<>(pushResponse));
     }
@@ -112,14 +110,14 @@ public class MessageController {
             notes = "전송 타입 : Topics \n exchange name : topic \n routing key : event.{eventName}.{eventUUID} (예시 routing key : event.session_flush.4d6eab0860969a50acbfa4599fbb5ae8)"
     )
     @PostMapping("/event")
-    public ResponseEntity<ApiResponse<EventSendResponse>> sendPush(@RequestBody @Valid EventSendRequest eventSendRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<EventSendResponse>> sendEvent(@RequestBody @Valid EventSendRequest eventSendRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        String exchange = "amq.topic";
-        String routingKey = "event" + "." + eventSendRequest.getEventName() + "." + eventSendRequest.getEventUUID();
-        rabbitTemplate.convertAndSend(exchange, routingKey, eventSendRequest);
+        String routingKey = String.format("%s.%s.%s", MessageType.EVENT.getValue(), eventSendRequest.getEventName(), eventSendRequest.getEventUUID());
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE_NAME, routingKey, eventSendRequest);
         EventSendResponse eventSendResponse = new EventSendResponse(eventSendRequest.getService(), eventSendRequest.getEventName(), eventSendRequest.getEventUUID(), true, LocalDateTime.now());
         return ResponseEntity.ok(new ApiResponse<>(eventSendResponse));
     }
+
 }

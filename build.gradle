@@ -75,6 +75,10 @@ dependencies {
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
+
+    // Redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 }
 
 test {
