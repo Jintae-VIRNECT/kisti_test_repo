@@ -412,8 +412,16 @@ export default {
     doCapture() {
       const videoEl = this.$refs['mainVideo']
 
-      const width = videoEl.offsetWidth
-      const height = videoEl.offsetHeight
+      let width = videoEl.offsetWidth
+      let height = videoEl.offsetHeight
+
+      if (this.mainView.screenShare) {
+        const mainViewStream = this.mainView.stream
+        if (mainViewStream && mainViewStream.getVideoTracks().length > 0) {
+          width = mainViewStream.getVideoTracks()[0].getSettings().width
+          height = mainViewStream.getVideoTracks()[0].getSettings().height
+        }
+      }
 
       const tmpCanvas = document.createElement('canvas')
       tmpCanvas.width = width
