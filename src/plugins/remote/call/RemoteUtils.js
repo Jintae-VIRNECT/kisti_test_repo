@@ -19,7 +19,6 @@ import {
 import { getUserInfo } from 'api/http/account'
 import { logger, debug } from 'utils/logger'
 import { checkInput } from 'utils/deviceCheck'
-import { DEVICE } from 'configs/device.config'
 
 export const addSessionEventListener = session => {
   let loading = false
@@ -528,8 +527,6 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
-    // streamMode: false, //360 스트림 모드
-    //@TODO:개발완료후 false
     rotationPos: null, //pano view의 회전 좌표
     screenShare: false,
   }
