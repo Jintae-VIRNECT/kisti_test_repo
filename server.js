@@ -54,6 +54,10 @@ const initHelmet = async () => {
   const cntAllows = []
 
   for (const property in urls) {
+    if (property.includes('minio')) {
+      allows.push(urls[property])
+    }
+
     if (property.includes('csp.wss')) {
       cntAllows.push(urls[property])
     } else if (property.includes('csp.')) {
