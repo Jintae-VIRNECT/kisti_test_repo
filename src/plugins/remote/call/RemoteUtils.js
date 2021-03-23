@@ -243,7 +243,7 @@ export const addSessionEventListener = session => {
 
       //end of screen share
     } else {
-      if (!Store.getters['allowCameraControl']) {
+      if (Store.getters['restrictedRoom']) {
         Store.dispatch('setMainView', {
           force: false,
           id: Store.getters['account'].uuid,
