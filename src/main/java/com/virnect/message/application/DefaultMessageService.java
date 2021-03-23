@@ -4,11 +4,11 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.virnect.message.application.mail.MailService;
 import com.virnect.message.dao.MailHistoryRepository;
 import com.virnect.message.domain.MailHistory;
 import com.virnect.message.domain.MailSender;
 import com.virnect.message.dto.request.AttachmentMailRequest;
-import com.virnect.message.dto.request.EmailSendRequest;
 import com.virnect.message.dto.request.MailSendRequest;
 import com.virnect.message.dto.request.PushSendRequest;
 import com.virnect.message.global.common.ApiResponse;
@@ -23,7 +23,6 @@ import org.springframework.amqp.rabbit.annotation.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -72,29 +71,6 @@ public class DefaultMessageService implements MessageService {
         return new ApiResponse<>(true);
     }
 
-    @RabbitListener(bindings = @QueueBinding(
-            value = @Queue,
-            exchange = @Exchange(value = "message.email", type = ExchangeTypes.TOPIC),
-            key = "email.*"
-    ), containerFactory = "rabbitListenerContainerFactory")
-    public void sendEmailMessage(EmailSendRequest emailSendRequest) {
-        for (String receiver : emailSendRequest.getReceivers()) {
-            MailHistory mailHistory = MailHistory.builder()
-                    .receiver(receiver)
-                    .sender(MailSender.MASTER.getSender())
-                    .contents(emailSendRequest.getHtml())
-                    .subject(emailSendRequest.getSubject())
-                    .resultCode(HttpStatus.OK.value())
-                    .build();
-            mailService.sendMail(
-                    receiver, MailSender.MASTER.getSender(), emailSendRequest.getSubject(), emailSendRequest.getHtml());
-
-            log.info("[메일 전송 완료] - 받는 사람 [" + receiver + "]");
-
-            this.mailHistoryRepository.save(mailHistory);
-        }
-
-    }
 
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(arguments = {@Argument(name = "x-dead-letter-exchange", value = "dlx"),
@@ -170,13 +146,6 @@ public class DefaultMessageService implements MessageService {
 
         return new ApiResponse<>(true);
     }
-    /*@RabbitListener(bindings = @QueueBinding(
-            value = @Queue,
-            exchange = @Exchange(value = "amq.topic", type = ExchangeTypes.TOPIC),
-            key = "event.#"
-    ), containerFactory = "rabbitListenerContainerFactory")
-    public void getEventMessage(Message message) {
-        log.info(message.toString());
-    }*/
+
 }
 

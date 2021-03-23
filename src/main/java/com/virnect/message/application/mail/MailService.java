@@ -1,4 +1,4 @@
-package com.virnect.message.application;
+package com.virnect.message.application.mail;
 
 import org.springframework.context.annotation.Profile;
 import org.thymeleaf.context.Context;

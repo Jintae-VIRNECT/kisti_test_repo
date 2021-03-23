@@ -3,12 +3,9 @@ package com.virnect.message.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.procedure.spi.ParameterRegistrationImplementor;
 import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
 
 import javax.persistence.Id;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Project: PF-Message
@@ -19,8 +16,8 @@ import java.util.concurrent.TimeUnit;
  */
 @Getter
 @Setter
-@RedisHash(value = "RetryMessage",timeToLive = 10000)
-public class RetryMessage{
+//@RedisHash(value = "RetryMessage", timeToLive = 10)
+public class RetryMessage {
     @Id
     private String id;
     private MessageType messageType;
@@ -31,7 +28,7 @@ public class RetryMessage{
 
     @Builder
     public RetryMessage(String id, MessageType messageType, String exchange, String routingKey, String message, Integer errorCode) {
-        this.id=id;
+        this.id = id;
         this.messageType = messageType;
         this.exchange = exchange;
         this.routingKey = routingKey;

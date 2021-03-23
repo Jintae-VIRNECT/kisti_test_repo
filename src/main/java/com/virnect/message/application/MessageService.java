@@ -23,5 +23,4 @@ public interface MessageService {
 
 	ApiResponse<Boolean> sendMail(MailSendRequest mailSendRequest);
 
-	void sendEmailMessage(EmailSendRequest emailSendRequest);
 }

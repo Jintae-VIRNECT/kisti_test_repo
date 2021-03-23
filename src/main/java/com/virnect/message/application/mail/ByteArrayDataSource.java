@@ -1,4 +1,4 @@
-package com.virnect.message.application;
+package com.virnect.message.application.mail;
 
 import javax.activation.DataSource;
 import java.io.*;

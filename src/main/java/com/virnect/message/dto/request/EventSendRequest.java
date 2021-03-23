@@ -26,7 +26,6 @@ public class EventSendRequest {
     private String eventUUID;
 
     @ApiModelProperty(value = "발송 서비스 명", example = "pf-workspace", required = true, position = 0)
-    //@NotBlank
     private String service;
 
     @ApiModelProperty(value = "메세지 내용", example = "{\n" +

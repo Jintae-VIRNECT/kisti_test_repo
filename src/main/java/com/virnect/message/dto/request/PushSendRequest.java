@@ -19,7 +19,6 @@ import java.util.Map;
  */
 @Getter
 @Setter
-@ToString
 public class PushSendRequest {
     @ApiModelProperty(value = "푸시 발송 서비스 명", example = "pf-workspace", required = true, position = 0)
     @NotBlank
@@ -47,4 +46,15 @@ public class PushSendRequest {
             "}", required = true, position = 5)
     private Map<Object, Object> contents;
 
+    @Override
+    public String toString() {
+        return "PushSendRequest{" +
+                "service='" + service + '\'' +
+                ", workspaceId='" + workspaceId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", targetUserIds=" + targetUserIds +
+                ", event='" + event + '\'' +
+                ", contents=" + contents +
+                '}';
+    }
 }

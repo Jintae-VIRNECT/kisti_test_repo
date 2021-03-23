@@ -41,48 +41,10 @@ import java.time.LocalDateTime;
 public class MessageController {
     private final MessageService messageService;
     private final RabbitTemplate rabbitTemplate;
-    private final RabbitmqConfiguration rabbitmqConfiguration;
     public static final String TOPIC_EXCHANGE_NAME = "amq.topic";
 
-
     @ApiOperation(
-            value = "메일 메세지 발행",
-            notes = "전송 타입 : Topics \n exchange name : email \n routing key : email.서비스명 (예시 routing key : email.pf-workspace)"
-    )
-    @PostMapping("/email")
-    public void sendEMail(@RequestBody @Valid EmailSendRequest emailSendRequest, BindingResult bindingResult) throws IOException {
-        if (bindingResult.hasErrors()) {
-            throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        if (rabbitmqConfiguration.active) {
-            String exchange = MessageType.EMAIL.getValue();
-            String routingKey = exchange + "." + emailSendRequest.getService();
-            rabbitTemplate.convertAndSend(exchange, routingKey, emailSendRequest);
-            return;
-        }
-        this.messageService.sendEmailMessage(emailSendRequest);
-
-    }
-
-    @ApiOperation(
-            value = "워크스페이스 푸시 메세지 발행",
-            notes = "전송 타입 : Topics \n exchange name : topic \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8)"
-    )
-    @PostMapping("/push")
-    public ResponseEntity<ApiResponse<PushResponse>> sendPush(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        String routingKey = String.format("%s.%s.%s", MessageType.PUSH.getValue(), pushSendRequest.getService(), pushSendRequest.getWorkspaceId());
-        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE_NAME, routingKey, pushSendRequest);
-        PushResponse pushResponse = new PushResponse(pushSendRequest.getService(), pushSendRequest.getEvent(), pushSendRequest.getWorkspaceId(), true, LocalDateTime.now());
-        return ResponseEntity.ok(new ApiResponse<>(pushResponse));
-    }
-
-    @ApiOperation(
-            value = "메일 전송",
-            notes = "메일 전송에 사용하던 api",
-            tags = "old message-controller"
+            value = "메일 전송"
     )
     @PostMapping("/mail")
     public ResponseEntity<ApiResponse<Boolean>> sendMail(@RequestBody @Valid MailSendRequest mailSendRequest, BindingResult bindingResult) {
@@ -106,16 +68,33 @@ public class MessageController {
     }
 
     @ApiOperation(
+            value = "워크스페이스 푸시 메세지 발행",
+            notes = "전송 타입 : Topics \n exchange name : topic \n routing key : push.서비스명.etc (예시 routing key : push.pf-workspace.4d6eab0860969a50acbfa4599fbb5ae8)"
+    )
+    @PostMapping("/push")
+    public ResponseEntity<ApiResponse<PushResponse>> pushMessageHandler(@RequestBody @Valid PushSendRequest pushSendRequest, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        String routingKey = String.format("%s.%s.%s", MessageType.PUSH.getValue(), pushSendRequest.getService(), pushSendRequest.getWorkspaceId());
+        rabbitTemplate.convertAndSend(TOPIC_EXCHANGE_NAME, routingKey, pushSendRequest);
+        log.info("[PUSH MESSAGE PUBLISH] exchange : [{}], routingKey : [{}], message : [{}]", TOPIC_EXCHANGE_NAME, routingKey, pushSendRequest.toString());
+        PushResponse pushResponse = new PushResponse(pushSendRequest.getService(), pushSendRequest.getEvent(), pushSendRequest.getWorkspaceId(), true, LocalDateTime.now());
+        return ResponseEntity.ok(new ApiResponse<>(pushResponse));
+    }
+
+    @ApiOperation(
             value = "event 메세지 발행",
             notes = "전송 타입 : Topics \n exchange name : topic \n routing key : event.{eventName}.{eventUUID} (예시 routing key : event.session_flush.4d6eab0860969a50acbfa4599fbb5ae8)"
     )
     @PostMapping("/event")
-    public ResponseEntity<ApiResponse<EventSendResponse>> sendEvent(@RequestBody @Valid EventSendRequest eventSendRequest, BindingResult bindingResult) {
+    public ResponseEntity<ApiResponse<EventSendResponse>> eventMessageHandler(@RequestBody @Valid EventSendRequest eventSendRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new MessageException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         String routingKey = String.format("%s.%s.%s", MessageType.EVENT.getValue(), eventSendRequest.getEventName(), eventSendRequest.getEventUUID());
         rabbitTemplate.convertAndSend(TOPIC_EXCHANGE_NAME, routingKey, eventSendRequest);
+        log.info("[EVENT MESSAGE PUBLISH] exchange : [{}], routingKey : [{}], message : [{}]", TOPIC_EXCHANGE_NAME, routingKey, eventSendRequest.toString());
         EventSendResponse eventSendResponse = new EventSendResponse(eventSendRequest.getService(), eventSendRequest.getEventName(), eventSendRequest.getEventUUID(), true, LocalDateTime.now());
         return ResponseEntity.ok(new ApiResponse<>(eventSendResponse));
     }

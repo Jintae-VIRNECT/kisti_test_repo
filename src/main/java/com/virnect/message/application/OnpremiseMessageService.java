@@ -32,8 +32,4 @@ public class OnpremiseMessageService implements MessageService{
 		return null;
 	}
 
-	@Override
-	public void sendEmailMessage(EmailSendRequest emailSendRequest) {
-
-	}
 }

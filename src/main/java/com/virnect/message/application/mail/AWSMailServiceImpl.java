@@ -1,4 +1,4 @@
-package com.virnect.message.application;
+package com.virnect.message.application.mail;
 
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceAsyncClient;
 import com.amazonaws.services.simpleemail.model.*;
@@ -40,7 +40,6 @@ import java.util.Properties;
 public class AWSMailServiceImpl implements MailService {
     private final AmazonSimpleEmailServiceAsyncClient amazonSimpleEmailServiceAsyncClient;
     private final SpringTemplateEngine springTemplateEngine;
-
 
     public void sendTemplateMail(String sender, List<String> receivers, String subject, String mailTemplate, Context context) {
         String html = this.springTemplateEngine.process(mailTemplate, context);
@@ -110,9 +109,6 @@ public class AWSMailServiceImpl implements MailService {
         msg.addBodyPart(bodyPart);
 
         try {
-            System.out.println("Attempting to send an email through Amazon SES "
-                    + "using the AWS SDK for Java...");
-
             PrintStream out = System.out;
             message.writeTo(out);
 
@@ -125,11 +121,8 @@ public class AWSMailServiceImpl implements MailService {
                     new SendRawEmailRequest(rawMessage);
 
             amazonSimpleEmailServiceAsyncClient.sendRawEmail(rawEmailRequest);
-            System.out.println("Email sent!");
 
         } catch (Exception ex) {
-            System.out.println("Email Failed");
-            System.err.println("Error message: " + ex.getMessage());
             ex.printStackTrace();
         }
         convertFile.delete();
