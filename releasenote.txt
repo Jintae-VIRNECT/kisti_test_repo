@@ -16,5 +16,5 @@ Bug Fixes
 * [DPLA-2269] 최근기록 메뉴 스크롤 시 숨김처리
 * [DPLA-2257] 협업 재시작 시 이미지, 이름, 설명이 연동되지 않는 이슈 해결
 * [DPLA-2239] zoom, 플래시 툴이 클릭 안되는 이슈 z-index 앞으로 이동으로 해결
-
+* [DPLA-2327] 영상 제한 모드에서 로컬 녹화 선택가능
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
