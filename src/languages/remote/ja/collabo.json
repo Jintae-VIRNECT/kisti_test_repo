@@ -54,7 +54,8 @@
     "expired":"期間終了",
     "download_period":"ダウンロード期間",
     "upload_member":"アップロードメンバー",
-    "play":"録画再生"
+    "play":"録画再生",
+    "server_record_description" : "サーバの仕様が低い場合、録画が正常に動作しない場合があります。"
   },
   "date": {
     "lastday": "［昨日］A",
