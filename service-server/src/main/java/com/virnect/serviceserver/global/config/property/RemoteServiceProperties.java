@@ -260,7 +260,7 @@ public class RemoteServiceProperties extends PropertyService {
 			"* SERVICE_KMS_URIS_CONFERENCE=" + this.kmsUrisConference + "\n\t" +
 			"* SERVICE_KMS_URIS_STREAMING=" + this.kmsUrisStreaming + "\n\t" +
 			"* SERVICE_POLICY_LOCATION=" + this.policyLocation + "\n\t" +
-			"* SERVICE_REMOTE_CDR=" + this.remoteCdr +
+			"* SERVICE_REMOTE_CDR=" + this.remoteCdr + "\n\t" +
 			"* SERVICE_REMOTE_CDR_PATH=" + this.remoteCdrPath + "\n\t" +
 			"* SERVICE_REMOTE_RECORDING=" + this.remoteRecording + "\n\t" +
 			"* SERVICE_REMOTE_RECORDING_AUTOSTOP_TIMEOUT=" + this.remoteRecordingAutostopTimeout + "\n\t" +

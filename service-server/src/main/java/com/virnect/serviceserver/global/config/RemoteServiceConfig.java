@@ -55,9 +55,7 @@ public class RemoteServiceConfig {
 	public final RemoteStorageProperties remoteStorageProperties;
 
 	@PostConstruct
-	protected void setMediaServerProperties(){
-		this.remoteServiceProperties.setMediaServerProperties();
-	}
+	protected void setMediaServerProperties(){ this.remoteServiceProperties.setMediaServerProperties(); }
 
 	@PostConstruct
 	protected void setRemoteStorageProperties(){
