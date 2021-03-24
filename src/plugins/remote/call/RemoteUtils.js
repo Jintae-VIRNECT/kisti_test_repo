@@ -91,7 +91,10 @@ export const addSessionEventListener = session => {
     }, 300)
   })
   session.on('streamCreated', event => {
+    const connectionId = _.session.connection.connectionId
     event.stream.onIceStateChanged = state => {
+      if (!_.session) return
+      if (connectionId !== _.session.connection.connectionId) return
       if (['failed', 'disconnected', 'closed'].includes(state)) {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
