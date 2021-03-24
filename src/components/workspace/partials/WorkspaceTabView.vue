@@ -5,12 +5,31 @@
       <span class="tab-view__count" v-if="!(listCount === null)">
         {{ listCount }}
       </span>
+      <div class="tab-view__tools" v-if="description.length === 0">
+        <search
+          v-if="placeholder.length > 0"
+          :placeholder="placeholder"
+          appendClass="tab-view__search"
+          @search="text => $emit('search', text)"
+        ></search>
+        <icon-button
+          v-if="showDeleteButton"
+          :imgSrc="require('assets/image/ic_delete.svg')"
+          :text="deleteButtonText ? deleteButtonText : $t('button.remove')"
+          @click="$emit('delete')"
+        ></icon-button>
+        <icon-button
+          v-if="showRefreshButton"
+          :imgSrc="require('assets/image/workspace/ic_renew.svg')"
+          animation="rotate360"
+          :text="$t('button.refresh')"
+          @click="$emit('refresh')"
+        ></icon-button>
+      </div>
     </div>
     <div class="tab-view__sub-header offsetwidth" v-if="!hideTitle">
-      <span class="tab-view__description" v-if="description.length > 0">{{
-        description
-      }}</span>
-      <div class="tab-view__tools">
+      <span class="tab-view__description">{{ description }}</span>
+      <div class="tab-view__tools" v-if="description.length > 0">
         <search
           v-if="placeholder.length > 0"
           :placeholder="placeholder"

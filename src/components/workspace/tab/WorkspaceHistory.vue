@@ -1,7 +1,6 @@
 <template>
   <tab-view
     :title="$t('workspace.history_title')"
-    :description="$t('workspace.history_description')"
     :placeholder="$t('workspace.search_room')"
     customClass="history"
     :emptyImage="require('assets/image/img_recent_empty.svg')"
