@@ -24,6 +24,7 @@
           :content="$t('service.setting_translate_language_tooltip')"
           :placement="isTablet ? 'bottom' : 'right'"
           effect="blue"
+          guide
         >
           <img
             slot="body"

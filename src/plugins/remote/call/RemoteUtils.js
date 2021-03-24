@@ -91,7 +91,10 @@ export const addSessionEventListener = session => {
     }, 300)
   })
   session.on('streamCreated', event => {
+    const connectionId = _.session.connection.connectionId
     event.stream.onIceStateChanged = state => {
+      if (!_.session) return
+      if (connectionId !== _.session.connection.connectionId) return
       if (['failed', 'disconnected', 'closed'].includes(state)) {
         Store.commit('updateParticipant', {
           connectionId: event.stream.connection.connectionId,
@@ -243,7 +246,7 @@ export const addSessionEventListener = session => {
 
       //end of screen share
     } else {
-      if (!Store.getters['allowCameraControl']) {
+      if (Store.getters['restrictedRoom']) {
         Store.dispatch('setMainView', {
           force: false,
           id: Store.getters['account'].uuid,
@@ -374,14 +377,22 @@ export const addSessionEventListener = session => {
       }
     }
     if (data.type === CONTROL.VIDEO) {
-      _.sendCamera(
-        data.enable ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
-      )
-      Store.dispatch('setDevices', {
-        video: {
-          isOn: data.enable,
-        },
-      })
+      const myInfo = Store.getters['myInfo']
+      if (
+        myInfo.cameraStatus !== CAMERA_STATUS.CAMERA_NONE &&
+        Store.getters['video'].isOn !== data.enable
+      ) {
+        if (!myInfo.screenShare) {
+          _.sendCamera(
+            data.enable ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
+          )
+        }
+        Store.dispatch('setDevices', {
+          video: {
+            isOn: data.enable,
+          },
+        })
+      }
     }
   })
 
@@ -444,11 +455,13 @@ export const addSessionEventListener = session => {
     let data = JSON.parse(event.data)
     if (data.type === LINKFLOW.ROTATION) {
       const originConId = data.origin
+
       const info = {
         connectionId: originConId,
         yaw: data.yaw,
         pitch: data.pitch,
       }
+
       const isNotMe =
         session.connection.connectionId !== event.from.connectionId
 
@@ -525,8 +538,6 @@ const setUserObject = event => {
     zoomLevel: 1, // zoom 레벨
     zoomMax: 1, // zoom 최대 레벨
     flash: 'default', // flash 제어
-    // streamMode: false, //360 스트림 모드
-    //@TODO:개발완료후 false
     rotationPos: null, //pano view의 회전 좌표
     screenShare: false,
   }

@@ -100,7 +100,7 @@ export const getConfigs = async () => {
   const ALLOW_NO_AUDIO = res.data.ALLOW_NO_AUDIO || false
   delete res.data.ALLOW_NO_AUDIO
 
-  const ALLOW_NO_DEVICE = res.data.ALLOW_NO_DEVICE || 5000
+  const ALLOW_NO_DEVICE = res.data.ALLOW_NO_DEVICE || false
   delete res.data.ALLOW_NO_DEVICE
 
   debug('URLS::', res.data)

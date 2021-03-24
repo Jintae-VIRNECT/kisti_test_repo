@@ -50,7 +50,7 @@
             :content="$t('service.setting_record_time_tooltip')"
             :placement="isTablet ? 'bottom' : 'right'"
             effect="blue"
-            :guide="true"
+            guide
           >
             <img
               slot="body"
@@ -80,7 +80,7 @@
             :content="$t('service.setting_record_resolution_tooltip')"
             :placement="isTablet ? 'bottom' : 'right'"
             effect="blue"
-            :guide="true"
+            guide
           >
             <img
               slot="body"

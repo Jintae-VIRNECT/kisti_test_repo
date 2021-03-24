@@ -36,7 +36,12 @@ export default {
           await this.startScreenShare()
         }
       } catch (e) {
-        console.error(e)
+        console.error(`${e.name || 'Error'}: ${e.message}`)
+        if (e.name === 'NotAllowedError') {
+          this.toastError(
+            this.$t('service.record_local_blocked_screen_sharing'),
+          )
+        }
         this.isScreenSharing = false
       }
     },
@@ -88,10 +93,12 @@ export default {
         return displayStream
       }
     },
-    stopScreenSharing() {
-      //종료 체크
+    async stopScreenSharing() {
       if (this.myTempStream) {
-        this.$call.replaceTrack(this.myTempStream.getVideoTracks()[0])
+        await this.$call.replaceTrack(this.myTempStream.getVideoTracks()[0])
+        this.myTempStream.getVideoTracks().forEach(track => {
+          track.enabled = this.video.isOn
+        })
         this.$call.sendCamera(
           this.video.isOn ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
         )

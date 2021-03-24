@@ -32,7 +32,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import { ROLE } from 'configs/remote.config'
+import { SIGNAL, VIDEO, ROLE } from 'configs/remote.config'
 import { kickoutMember } from 'api/http/member'
 import { maxParticipants } from 'utils/callOptions'
 
@@ -52,6 +52,7 @@ export default {
     return {
       selectview: false,
       invite: false,
+      force: null,
     }
   },
   computed: {
@@ -121,24 +122,12 @@ export default {
     },
     changeMainView(select, force) {
       this.selectview = false
-      if (this.account.roleType === ROLE.LEADER) {
-        if (select.id === this.mainView.id && this.viewForce === force) return
-        if (force) {
-          this.addChat({
-            name: select.nickname,
-            status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
-            type: 'system',
-          })
-        } else {
-          if (this.viewForce === true) {
-            this.addChat({
-              name: this.mainView.nickname,
-              status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
-              type: 'system',
-            })
-          }
-        }
-      }
+      if (
+        this.account.roleType === ROLE.LEADER &&
+        select.id === this.mainView.id &&
+        this.viewForce === force
+      )
+        return
       this.$call.sendVideo(select.id, force)
       this.setMainView({ id: select.id, force })
     },
@@ -158,6 +147,38 @@ export default {
       }
       // this.$call.disconnect(this.participant.connectionId)
     },
+    signalVideo(event) {
+      const data = JSON.parse(event.data)
+      if (data.type === VIDEO.SHARE) {
+        const participant = this.participants.find(user => user.id === data.id)
+        this.addChat({
+          name: participant.nickname,
+          status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
+          type: 'system',
+        })
+        this.force = data.id
+      } else if (data.type === VIDEO.NORMAL) {
+        if (this.force) {
+          const participant = this.participants.find(
+            user => user.id === this.force,
+          )
+          if (participant) {
+            this.addChat({
+              name: participant.nickname,
+              status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
+              type: 'system',
+            })
+          }
+        }
+        this.force = null
+      }
+    },
+  },
+  beforeDestroy() {
+    this.$eventBus.$off(SIGNAL.VIDEO, this.signalVideo)
+  },
+  created() {
+    this.$eventBus.$on(SIGNAL.VIDEO, this.signalVideo)
   },
 }
 </script>

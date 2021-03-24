@@ -16,11 +16,9 @@ export default {
     },
     targetRef: {
       type: String,
-      required: true,
     },
     connectionId: {
       type: String,
-      // required: true,
     },
     type: {
       type: String,
@@ -35,8 +33,9 @@ export default {
   },
   data() {
     return {
-      panoViewer: null,
       defaultFov: 85, //fix
+
+      panoViewer: null,
       videoElement: null,
     }
   },
@@ -98,7 +97,10 @@ export default {
           stereoFormat: '',
           useZoom: false,
           touchDirection: PanoViewer.TOUCH_DIRECTION.NONE,
+          fov: this.defaultFov,
         })
+
+        this.panoViewer.setYawRange([-360, 0])
 
         this.panoViewer.on('viewChange', e => {
           if (this.type === 'control') {
@@ -149,11 +151,10 @@ export default {
     },
   },
   mounted() {
-    this.$eventBus.$on('panoview:rotation', this.rotate)
-    this.$eventBus.$on('video:fullscreen', this.resize)
-
     this.initPano()
 
+    this.$eventBus.$on('panoview:rotation', this.rotate)
+    this.$eventBus.$on('video:fullscreen', this.resize)
     window.addEventListener('resize', this.resize)
   },
   beforeDestroy() {
@@ -161,13 +162,13 @@ export default {
       this.setMainPanoCanvas(null)
     }
 
-    this.$eventBus.$off('panoview:rotation', this.rotate)
-    this.$eventBus.$off('video:fullscreen', this.resize)
-
-    window.removeEventListener('resize', this.resize)
     if (this.type !== 'control') {
       this.videoElement.style.visibility = 'visible'
     }
+
+    this.$eventBus.$off('panoview:rotation', this.rotate)
+    this.$eventBus.$off('video:fullscreen', this.resize)
+    window.removeEventListener('resize', this.resize)
   },
 }
 </script>

@@ -19,6 +19,7 @@
             >
               <img
                 slot="body"
+                guide
                 class="setting__tooltip--icon"
                 src="~assets/image/ic_tool_tip.svg"
               />
