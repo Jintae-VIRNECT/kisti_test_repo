@@ -1,4 +1,4 @@
-RELEASE v2.3.0.5
+RELEASE v2.3.0.6
 
 ### New Features
 ### Bug Fixes
@@ -6,8 +6,5 @@ RELEASE v2.3.0.5
 ### UI
 ### Limitation
 ### Chore
-
-Chore
-* Helmet 미디어 추가 (TTS)
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
