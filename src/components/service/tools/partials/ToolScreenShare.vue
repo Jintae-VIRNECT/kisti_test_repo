@@ -36,7 +36,12 @@ export default {
           await this.startScreenShare()
         }
       } catch (e) {
-        console.error(e)
+        console.error(`${e.name || 'Error'}: ${e.message}`)
+        if (e.name === 'NotAllowedError') {
+          this.toastError(
+            this.$t('service.record_local_blocked_screen_sharing'),
+          )
+        }
         this.isScreenSharing = false
       }
     },
