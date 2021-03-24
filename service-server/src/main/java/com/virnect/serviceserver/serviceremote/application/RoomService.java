@@ -734,13 +734,28 @@ public class RoomService {
 			roomInfoList.add(roomInfoResponse);
 		}
 
+		// Evicted and Unload check
 		for (Iterator<RoomInfoResponse> roomInfoResponseIterator = roomInfoList.iterator(); roomInfoResponseIterator.hasNext();) {
-			boolean result = false;
+
 			List<MemberInfoResponse> memberInfoResponses = roomInfoResponseIterator.next().getMemberList();
-			for (MemberInfoResponse memberInfoResponse : memberInfoResponses) {
-				result = memberInfoResponse.getUuid().equals(userId) && memberInfoResponse.getMemberStatus().equals(MemberStatus.EVICTED);
+
+			boolean evictedCheck = false;
+			boolean[] unloadCheck = new boolean[memberInfoResponses.size()];
+			boolean unloadCheckResult = true;
+
+			for (int i = 0 ; i < memberInfoResponses.size() ; i++) {
+				evictedCheck = memberInfoResponses.get(i).getUuid().equals(userId) && memberInfoResponses.get(i).getMemberStatus().equals(MemberStatus.EVICTED);
+				if (memberInfoResponses.get(i).getMemberStatus().equals(MemberStatus.UNLOAD)) {
+					unloadCheck[i] = true;
+				} else {
+					unloadCheck[i] = false;
+				}
 			}
-			if (result) {
+
+			for (boolean unload : unloadCheck)	{
+				unloadCheckResult = unloadCheckResult && unload;
+			}
+			if (evictedCheck || unloadCheckResult) {
 				roomInfoResponseIterator.remove();
 			}
 		}

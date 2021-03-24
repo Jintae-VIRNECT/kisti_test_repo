@@ -226,28 +226,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		boolean paging,
 		Pageable pageable
 	) {
-		/*long offSet = pageable.getOffset();
-		int pageSize = pageable.getPageSize();
-		if (!paging) {
-			offSet = 0;
-			pageSize = Integer.MAX_VALUE;
-		}
-		QueryResults<Room> queryResult = query.selectFrom(room)
-			.leftJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId)
-					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
-				room.roomStatus.eq(RoomStatus.ACTIVE),
-				room.members.any().memberStatus.notIn(MemberStatus.EVICTED)
-			)
-			.offset(offSet)
-			.limit(pageSize)
-			.orderBy(room.createdDate.desc())
-			.distinct().fetchResults();
-		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
-
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
