@@ -813,8 +813,7 @@ public class RoomService {
 			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
 			.collect(Collectors.toList());
 
-		Page<Room> roomPage;
-		List<String> userIds = new ArrayList<>();
+		/*List<String> userIds = new ArrayList<>();
 		for (MemberInfoResponse memberInfo : memberInfoList) {
 			if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
 				//if memberInfo is empty
@@ -822,9 +821,9 @@ public class RoomService {
 			} else {
 				userIds.add(memberInfo.getUuid());
 			}
-		}
+		}*/
 
-		roomPage = roomRepository.findRoomBySearch(workspaceId, userId, userIds, search, pageable);
+		Page<Room> roomPage = roomRepository.findRoomBySearch(workspaceId, userId, search, pageable);
 
 		/*if (userIds.isEmpty()) {
 			log.info(
@@ -834,17 +833,6 @@ public class RoomService {
 			log.info("loadFromDatabase::searchRoomPageList::memberInfoList is not empty");
 			roomPage = roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
 		}*/
-
-		// Page Metadata
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-			.currentPage(pageable.getPageNumber())
-			.currentSize(pageable.getPageSize())
-			.numberOfElements(roomPage.getNumberOfElements())
-			.totalPage(roomPage.getTotalPages())
-			.totalElements(roomPage.getTotalElements())
-			.last(roomPage.isLast())
-			.build();
-
 		for (Room room : roomPage.getContent()) {
 			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
 		}
@@ -873,16 +861,46 @@ public class RoomService {
 				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
 
-			memberInfoList.sort((t1, t2) -> {
-				if (t1.getMemberType().equals(MemberType.LEADER)) {
-					return 1;
-				}
-				return 0;
-			});
-
-			roomInfoResponse.setMemberList(memberInfos);
+			roomInfoResponse.setMemberList(setLeader(memberInfos));
 			roomInfoList.add(roomInfoResponse);
 		}
+
+		// Evicted and Unload check
+		for (Iterator<RoomInfoResponse> roomInfoResponseIterator = roomInfoList.iterator(); roomInfoResponseIterator.hasNext();) {
+
+			List<MemberInfoResponse> memberInfoResponses = roomInfoResponseIterator.next().getMemberList();
+
+			boolean evictedCheck = false;
+			boolean[] unloadCheck = new boolean[memberInfoResponses.size()];
+			boolean unloadCheckResult = true;
+
+			for (int i = 0 ; i < memberInfoResponses.size() ; i++) {
+				evictedCheck = memberInfoResponses.get(i).getUuid().equals(userId) && memberInfoResponses.get(i).getMemberStatus().equals(MemberStatus.EVICTED);
+				if (memberInfoResponses.get(i).getMemberStatus().equals(MemberStatus.UNLOAD)) {
+					unloadCheck[i] = true;
+				} else {
+					unloadCheck[i] = false;
+				}
+			}
+
+			for (boolean unload : unloadCheck)	{
+				unloadCheckResult = unloadCheckResult && unload;
+			}
+			if (evictedCheck || unloadCheckResult) {
+				roomInfoResponseIterator.remove();
+			}
+		}
+
+		// Page Metadata
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(pageable.getPageNumber())
+			.currentSize(pageable.getPageSize())
+			.numberOfElements(roomPage.getNumberOfElements())
+			.totalPage(roomPage.getTotalPages())
+			.totalElements(roomInfoList.size())
+			.last(roomPage.isLast())
+			.build();
+
 		return new RoomInfoListResponse(roomInfoList, pageMeta);
 	}
 
