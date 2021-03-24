@@ -85,6 +85,7 @@ const initHelmet = async () => {
           ],
           'connect-src': ["'self'", 'data:', ...cntAllows],
           'img-src': ["'self'", 'data:', ...allows],
+          'media-src': ["'self'", 'data:', ...allows],
         },
       },
     }),
