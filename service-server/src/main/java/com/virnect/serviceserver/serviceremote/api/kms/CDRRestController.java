@@ -58,7 +58,7 @@ public class CDRRestController {
 
 		log.info("REST API: GET /cdr");
 
-		String cdrPath = remoteServiceConfig.remoteServiceProperties.getRemoteServiceCdrPath();
+		String cdrPath = remoteServiceConfig.remoteServiceProperties.getRemoteCdrPath();
 		JsonArray cdrFiles = new JsonArray();
 
 		try (Stream<Path> walk = Files.walk(Paths.get(cdrPath))) {

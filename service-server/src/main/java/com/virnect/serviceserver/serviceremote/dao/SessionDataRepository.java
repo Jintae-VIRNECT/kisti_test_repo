@@ -49,6 +49,7 @@ import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.mediaserver.core.EndReason;
 import com.virnect.mediaserver.core.Participant;
+import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.serviceremote.application.HistoryService;
 import com.virnect.serviceserver.serviceremote.application.SessionTransactionalService;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
@@ -713,7 +714,7 @@ public class SessionDataRepository {
             //not set session create at property
             roomResponse.setSessionId(sessionResponse.getId());
             roomResponse.setToken(sessionTokenResponse.getToken());
-            roomResponse.setWss(UrlConstants.wssUrl);
+            roomResponse.setWss(RemoteServiceProperties.wssUrl);
             //roomResponse.setRestrictedMode(room.isRestrictedMode());
             roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
             roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
@@ -830,7 +831,7 @@ public class SessionDataRepository {
                 //not set session create at property
                 roomResponse.setSessionId(sessionResponse.getId());
                 roomResponse.setToken(sessionTokenResponse.getToken());
-                roomResponse.setWss(UrlConstants.wssUrl);
+                roomResponse.setWss(RemoteServiceProperties.wssUrl);
                 //roomResponse.setRestrictedMode(room.isRestrictedMode());
                 roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
                 roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
@@ -1334,10 +1335,13 @@ public class SessionDataRepository {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
+<<<<<<< HEAD
                     } else if (memberStatus.equals(MemberStatus.EVICTED)) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
                     } else if (memberStatus.equals(MemberStatus.LOAD)) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
+=======
+>>>>>>> feature/rm-service-develop-test
                     } else {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                     }
@@ -1419,6 +1423,23 @@ public class SessionDataRepository {
                     }
                 }
             }
+<<<<<<< HEAD
+=======
+        }
+        
+        if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+            RoomResponse roomResponse = new RoomResponse();
+            //not set session create at property
+            roomResponse.setSessionId(sessionId);
+            roomResponse.setToken(sessionTokenResponse.getToken());
+            roomResponse.setWss(RemoteServiceProperties.wssUrl);
+            //roomResponse.setRestrictedMode(room.isRestrictedMode());
+            roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+            roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+
+            /*CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+            roomResponse.getCoturn().add(coturnResponse);*/
+>>>>>>> feature/rm-service-develop-test
 
             if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
                 RoomResponse roomResponse = new RoomResponse();

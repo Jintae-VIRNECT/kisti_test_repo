@@ -9,10 +9,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+<<<<<<< HEAD
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+=======
+import org.springframework.core.env.Environment;
+>>>>>>> feature/rm-service-develop-test
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -96,6 +100,11 @@ public class RoomService {
 		String sessionId,
 		int companyCode
 	) {
+<<<<<<< HEAD
+=======
+		//companyCode = checkCompanyCode(companyCode);
+
+>>>>>>> feature/rm-service-develop-test
 		ApiResponse<RoomResponse> responseData;
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
@@ -506,13 +515,13 @@ public class RoomService {
 				List<String> urlList = config.remoteServiceProperties.getCoturnUrisStreaming();
 				if (urlList.isEmpty()) {
 					for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
 						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
 						coturnResponse.setUrl(coturnUrl);
 					}
 				} else {
 					for (String coturnUrl : urlList) {
-						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+						coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
 						coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
 						coturnResponse.setUrl(coturnUrl);
 					}
@@ -522,8 +531,9 @@ public class RoomService {
 			case PUBLIC:
 			case PRIVATE: {
 				for (String coturnUrl : config.remoteServiceProperties.getCoturnUrisConference()) {
-					coturnResponse.setUsername(config.remoteServiceProperties.getCoturnUsername());
+					coturnResponse.setUsername(config.remoteServiceProperties.getCoturnName());
 					coturnResponse.setCredential(config.remoteServiceProperties.getCoturnCredential());
+					//coturnResponse.setUrl(coturnUrl.replaceAll("\"", ""));
 					coturnResponse.setUrl(coturnUrl);
 				}
 			}
@@ -531,6 +541,7 @@ public class RoomService {
 		}
 		return coturnResponse;
 	}
+<<<<<<< HEAD
 
 	private int checkCompanyCode(int companyCode) {
 		if (config.getProfile().equals("local") || config.getProfile().equals("develop")) {
@@ -1068,4 +1079,6 @@ public class RoomService {
 		return responseData;
 	}
 
+=======
+>>>>>>> feature/rm-service-develop-test
 }

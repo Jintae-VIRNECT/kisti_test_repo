@@ -125,7 +125,7 @@ public class CompanyRestController {
         //DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(userId);
         //log.info("COMPANY INFO :: USER INFO :: {}", userInfo.getData().getDescription());
 
-        String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
+        String policyLocation = config.remoteServiceProperties.getPolicyLocation();
         ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfo(workspaceId, userId, policyLocation);
         return ResponseEntity.ok(responseData);
     }
@@ -147,7 +147,7 @@ public class CompanyRestController {
             "getCompanyInfoRequestHandler"
         );
 
-        String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
+        String policyLocation = config.remoteServiceProperties.getPolicyLocation();
         ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfoByCompanyCode(workspaceId, userId, companyCode, policyLocation);
         return ResponseEntity.ok(responseData);
     }

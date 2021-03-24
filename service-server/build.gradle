@@ -12,7 +12,7 @@
 // This block encapsulates custom properties and makes them available to
 // all modules in the project.
 ext {
-    set("springCloudVersion", "Hoxton.SR1")
+    set("springCloudVersion", "Hoxton.SR9")
 }
 
 configurations {
@@ -49,7 +49,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-websocket")
 
     implementation("org.springframework.data:spring-data-envers")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    //implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     //implementation("org.jetbrains:annotations:20.1.0")
 
@@ -98,6 +98,13 @@ dependencies {
     // Swagger
     implementation("io.springfox:springfox-swagger2:2.9.2")
     implementation("io.springfox:springfox-swagger-ui:2.9.2")
+
+
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.11.0'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.11.0'
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 //—————————————————————————————————————————————————————————————————————————————————————————————————
