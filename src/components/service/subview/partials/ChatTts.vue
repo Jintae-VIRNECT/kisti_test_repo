@@ -36,6 +36,7 @@ export default {
         this.logger('TTS', 'DURING TIME: ', ttsTime)
         this.audioSrc = 'data:audio/wav;base64,' + res
         const audio = this.$refs['ttsAudio']
+        this.$refs['ttsAudio'].muted = false
         audio.onended = () => {
           resolve(true)
         }
@@ -48,9 +49,9 @@ export default {
     loadTtsAudio() {
       this.$refs['ttsAudio'].play()
       this.$refs['ttsAudio'].pause()
-      this.$refs['ttsAudio'].muted = false
       window.removeEventListener('touchstart', this.loadTtsAudio)
       this.$refs['ttsAudio'].onloadeddata = () => {}
+      this.$refs['ttsAudio'].muted = false
     },
   },
   mounted() {
