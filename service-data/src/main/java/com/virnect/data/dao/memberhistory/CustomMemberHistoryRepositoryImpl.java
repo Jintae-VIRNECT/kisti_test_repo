@@ -2,6 +2,7 @@ package com.virnect.data.dao.memberhistory;
 
 import static com.virnect.data.domain.member.QMemberHistory.*;
 import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
+import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.virnect.data.domain.member.MemberHistory;
 public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport implements CustomMemberHistoryRepository{
 
 	private final JPAQueryFactory query;
+	private final long EXPIRATION_DATE = 30;
 
 	public CustomMemberHistoryRepositoryImpl(JPAQueryFactory query) {
 		super(MemberHistory.class);
@@ -74,7 +76,8 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 				memberHistory.workspaceId.eq(workspaceId),
 				memberHistory.uuid.eq(userId),
 				memberHistory.roomHistory.isNotNull(),
-				memberHistory.historyDeleted.isFalse()
+				memberHistory.historyDeleted.isFalse(),
+				memberHistory.roomHistory.createdDate.between(LocalDateTime.now().minusDays(EXPIRATION_DATE), LocalDateTime.now())
 			)
 			.orderBy(memberHistory.createdDate.desc())
 			.distinct();
@@ -85,7 +88,6 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 		} else {
 			results = Objects.requireNonNull(queryResult.fetch());
 		}
-
 		return new PageImpl<>(results, pageable, totalCount);
 	}
 

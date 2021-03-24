@@ -770,20 +770,13 @@ public class RoomService {
 	}
 
 	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
-		Collections.sort(members, (t1, t2) -> {
+		members.sort((t1, t2) -> {
 			int index1 = t1.getMemberType().ordinal();
 			int index2 = t2.getMemberType().ordinal();
-			if (index1 > index2) {
-				return 1;
-			} else if (index1 == index2) {
-				return 0;
-			} else {
-				return -1;
-			}
+			return Integer.compare(index1, index2);
 		});
 		return members;
 	}
-
 
 	public RoomInfoListResponse getRoomListStandardSearch(
 		String workspaceId,

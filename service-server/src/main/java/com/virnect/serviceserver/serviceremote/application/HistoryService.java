@@ -1,6 +1,7 @@
 package com.virnect.serviceserver.serviceremote.application;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,15 @@ public class HistoryService {
 	private final MemberHistoryRepository memberHistoryRepository;
 	private final ModelMapper modelMapper;
 
+	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
+		members.sort((t1, t2) -> {
+			int index1 = t1.getMemberType().ordinal();
+			int index2 = t2.getMemberType().ordinal();
+			return Integer.compare(index1, index2);
+		});
+		return members;
+	}
+
 	public RoomHistoryInfoListResponse getRoomHistoryCurrent(
 		String workspaceId,
 		String userId,
@@ -51,10 +61,72 @@ public class HistoryService {
 		Page<MemberHistory> roomHistories;
 		PageMetadataResponse pageMeta;
 
-		roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
-			workspaceId, userId, paging, pageable);
+		/*roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
+			workspaceId, userId, paging, pageable);*/
 
-		List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
+		Page<RoomHistory> currentRoomHistories = roomHistoryRepository.findRoomByWorkspaceIdAndUserIdCurrent(workspaceId, userId, paging, pageable);
+
+		List<RoomHistoryInfoResponse> currentRoomHistoryList =
+			currentRoomHistories.stream().map(roomHistory -> {
+
+				RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+				roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+
+				List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
+					.filter(member -> !member.getMemberType().equals(MemberType.SECESSION))
+					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+					.collect(Collectors.toList());
+
+				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+					if (memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
+						ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+							workspaceId, memberInfoResponse.getUuid());
+						//log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+
+						WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+						memberInfoResponse.setRole(workspaceMemberData.getRole());
+						//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+						memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+						memberInfoResponse.setName(workspaceMemberData.getName());
+						memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+						memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+					}
+				}
+
+				/*memberInfoList.sort((t1, t2) -> {
+					if (t1.getMemberType().equals(MemberType.LEADER)) {
+						return 1;
+					}
+					return 0;
+				});*/
+
+				roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
+
+				return roomHistoryInfoResponse;
+			}).collect(Collectors.toList());
+
+		if (paging) {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(pageable.getPageNumber())
+				.currentSize(pageable.getPageSize())
+				.numberOfElements(currentRoomHistories.getNumberOfElements())
+				.totalPage(currentRoomHistories.getTotalPages())
+				.totalElements(currentRoomHistories.getTotalElements())
+				.last(currentRoomHistories.isLast())
+				.build();
+		} else {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(0)
+				.currentSize(0)
+				.numberOfElements(currentRoomHistories.getNumberOfElements())
+				.totalPage(1)
+				.totalElements(currentRoomHistories.getTotalElements())
+				.last(true)
+				.build();
+		}
+
+
+		/*List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
 		for (MemberHistory memberHistory : roomHistories.getContent()) {
 			RoomHistory roomHistory = memberHistory.getRoomHistory();
 			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
@@ -112,8 +184,8 @@ public class HistoryService {
 				.totalElements(roomHistories.getTotalElements())
 				.last(true)
 				.build();
-		}
-		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);
+		}*/
+		return new RoomHistoryInfoListResponse(currentRoomHistoryList, pageMeta);
 	}
 
 	public RoomHistoryInfoListResponse getHistoryListStandardSearch(
@@ -139,7 +211,6 @@ public class HistoryService {
 			log.info("fetchFromRepository::searchRoomHistoryPageList:: {}", memberInfoResponse.toString());
 		}
 
-		Page<RoomHistory> roomHistories;
 		List<String> userIds = new ArrayList<>();
 		for (MemberInfoResponse memberInfo : memberInfoList) {
 			if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
@@ -150,7 +221,7 @@ public class HistoryService {
 			}
 		}
 
-		roomHistories = roomHistoryRepository.findRoomBySearch(workspaceId, userId, userIds, search, pageable);
+		Page<RoomHistory> roomHistories = roomHistoryRepository.findRoomBySearch(workspaceId, userId, userIds, search, pageable);
 
 		/*if (userIds.isEmpty()) {
 			log.info(
@@ -172,8 +243,7 @@ public class HistoryService {
 
 		List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
 		for (RoomHistory roomHistory : roomHistories.getContent()) {
-			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(
-				roomHistory, RoomHistoryInfoResponse.class);
+			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
 			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 			memberInfoList = roomHistory.getMemberHistories().stream()
@@ -196,15 +266,14 @@ public class HistoryService {
 				}
 			}
 
-			memberInfoList.sort((t1, t2) -> {
+			/*memberInfoList.sort((t1, t2) -> {
 				if (t1.getMemberType().equals(MemberType.LEADER)) {
 					return 1;
 				}
 				return 0;
-			});
+			});*/
 			// Set Member List to Room Information Response
-			roomHistoryInfoResponse.setMemberList(memberInfoList);
-
+			roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
 			roomHistoryInfoList.add(roomHistoryInfoResponse);
 		}
 		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);

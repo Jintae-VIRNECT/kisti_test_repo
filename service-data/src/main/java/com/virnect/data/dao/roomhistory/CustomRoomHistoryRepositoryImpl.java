@@ -20,6 +20,7 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
+import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.session.SessionType;
 
@@ -27,6 +28,7 @@ import com.virnect.data.domain.session.SessionType;
 public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport implements CustomRoomHistoryRepository {
 
 	private final JPAQueryFactory query;
+	private final long EXPIRATION_DATE = 30;
 
 	public CustomRoomHistoryRepositoryImpl(JPAQueryFactory query) {
 		super(RoomHistory.class);
@@ -134,6 +136,15 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 		return roomHistory.id.in(roomHistoryIdList);
 	}
 
+	/**
+	 * 검색 기준 협업 히스토리 조회
+	 * @param workspaceId 해당 워크스페이스
+	 * @param userId 사용자 식별 id
+	 * @param userIds 참여 멤버 리스트
+ 	 * @param search 검색어
+	 * @param pageable 페이징 정보
+	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
+	 */
 	@Override
 	public Page<RoomHistory> findRoomBySearch(
 		String workspaceId,
@@ -142,14 +153,15 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 		String search,
 		Pageable pageable
 	) {
-		JPQLQuery<RoomHistory> queryResult = query.selectFrom(roomHistory)
+		JPQLQuery<RoomHistory> queryResult = query
+			.selectFrom(roomHistory)
 			.leftJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
 				roomHistory.workspaceId.eq(workspaceId),
 				roomHistory.memberHistories.any().uuid.eq(userId)
 					.and(roomHistory.memberHistories.any().uuid.in(userId)),
-				roomHistory.memberHistories.any().historyDeleted.eq(false),
+				roomHistory.memberHistories.any().historyDeleted.isFalse(),
 				roomHistory.isNotNull(),
 				includeTitleSearch(search)
 			)
@@ -159,6 +171,36 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 		List<RoomHistory> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(result, pageable, totalCount);
 	}
+
+	@Override
+	public Page<RoomHistory> findRoomByWorkspaceIdAndUserIdCurrent(
+		String workspaceId,
+		String userId,
+		boolean paging,
+		Pageable pageable
+	) {
+		JPQLQuery<RoomHistory> queryResult = query
+			.selectFrom(roomHistory)
+			.leftJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				roomHistory.workspaceId.eq(workspaceId),
+				roomHistory.memberHistories.any().uuid.eq(userId),
+				roomHistory.isNotNull(),
+				roomHistory.memberHistories.any().historyDeleted.isFalse()
+			)
+			.orderBy(roomHistory.createdDate.desc())
+			.distinct();
+		long totalCount = queryResult.fetchCount();
+		List<RoomHistory> results;
+		if (paging) {
+			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		} else {
+			results = Objects.requireNonNull(queryResult.fetch());
+		}
+		return new PageImpl<>(results, pageable, totalCount);
+	}
+
 
 	/**
 	 * 협업 기록 제목 검색 동적 쿼리

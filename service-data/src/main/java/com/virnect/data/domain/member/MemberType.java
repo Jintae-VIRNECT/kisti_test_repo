@@ -6,5 +6,4 @@ public enum MemberType {
     EXPERT,
     WORKER,
     SECESSION // 서비스 탈퇴 멤버
-    ;
 }
