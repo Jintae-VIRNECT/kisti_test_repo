@@ -724,11 +724,11 @@ const _ = {
    * @param {MediaStreamTrack} track 교체할 비디오 트랙
    * @param {MediaStream} originStream 보존할 원래 스트림
    */
-  replaceTrack(track) {
+  async replaceTrack(track) {
     // if (originStream) {
     //   Store.commit('setMyTempStream', originStream.clone())
     // }
-    _.publisher.replaceTrack(track)
+    await _.publisher.replaceTrack(track)
     const settings = track.getSettings()
     const capability = track.getCapabilities()
     logger('call', `resolution::${settings.width}X${settings.height}`)

@@ -374,14 +374,22 @@ export const addSessionEventListener = session => {
       }
     }
     if (data.type === CONTROL.VIDEO) {
-      _.sendCamera(
-        data.enable ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
-      )
-      Store.dispatch('setDevices', {
-        video: {
-          isOn: data.enable,
-        },
-      })
+      const myInfo = Store.getters['myInfo']
+      if (
+        myInfo.cameraStatus !== CAMERA_STATUS.CAMERA_NONE &&
+        Store.getters['video'].isOn !== data.enable
+      ) {
+        if (!myInfo.screenShare) {
+          _.sendCamera(
+            data.enable ? CAMERA_STATUS.CAMERA_ON : CAMERA_STATUS.CAMERA_OFF,
+          )
+        }
+        Store.dispatch('setDevices', {
+          video: {
+            isOn: data.enable,
+          },
+        })
+      }
     }
   })
 
