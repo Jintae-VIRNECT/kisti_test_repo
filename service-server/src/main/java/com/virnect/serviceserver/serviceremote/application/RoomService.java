@@ -9,14 +9,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-<<<<<<< HEAD
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-=======
-import org.springframework.core.env.Environment;
->>>>>>> feature/rm-service-develop-test
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -100,11 +96,6 @@ public class RoomService {
 		String sessionId,
 		int companyCode
 	) {
-<<<<<<< HEAD
-=======
-		//companyCode = checkCompanyCode(companyCode);
-
->>>>>>> feature/rm-service-develop-test
 		ApiResponse<RoomResponse> responseData;
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
@@ -540,14 +531,6 @@ public class RoomService {
 			break;
 		}
 		return coturnResponse;
-	}
-<<<<<<< HEAD
-
-	private int checkCompanyCode(int companyCode) {
-		if (config.getProfile().equals("local") || config.getProfile().equals("develop")) {
-			companyCode = 0;
-		}
-		return companyCode;
 	}
 
 	/**
@@ -1078,7 +1061,4 @@ public class RoomService {
 		}
 		return responseData;
 	}
-
-=======
->>>>>>> feature/rm-service-develop-test
 }

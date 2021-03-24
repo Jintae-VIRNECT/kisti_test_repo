@@ -1335,13 +1335,10 @@ public class SessionDataRepository {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
-<<<<<<< HEAD
                     } else if (memberStatus.equals(MemberStatus.EVICTED)) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
                     } else if (memberStatus.equals(MemberStatus.LOAD)) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-=======
->>>>>>> feature/rm-service-develop-test
                     } else {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                     }
@@ -1423,10 +1420,8 @@ public class SessionDataRepository {
                     }
                 }
             }
-<<<<<<< HEAD
-=======
-        }
-        
+
+
         if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
             RoomResponse roomResponse = new RoomResponse();
             //not set session create at property
@@ -1436,22 +1431,9 @@ public class SessionDataRepository {
             //roomResponse.setRestrictedMode(room.isRestrictedMode());
             roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
             roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+            roomResponse.setSessionType(room.getSessionProperty().getSessionType());
 
-            /*CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
-            roomResponse.getCoturn().add(coturnResponse);*/
->>>>>>> feature/rm-service-develop-test
-
-            if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
-                RoomResponse roomResponse = new RoomResponse();
-                //not set session create at property
-                roomResponse.setSessionId(sessionId);
-                roomResponse.setToken(sessionTokenResponse.getToken());
-                roomResponse.setWss(UrlConstants.wssUrl);
-                roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
-                roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
-                roomResponse.setSessionType(room.getSessionProperty().getSessionType());
-
-                joinRoomResponse = new ApiResponse<>(roomResponse);
+            joinRoomResponse = new ApiResponse<>(roomResponse);
             } else {
                 joinRoomResponse = new ApiResponse<>(new RoomResponse(), errorCode);
             }
