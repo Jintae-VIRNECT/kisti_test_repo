@@ -7,4 +7,7 @@ RELEASE v2.3.0.6
 ### Limitation
 ### Chore
 
+Bug Fixes
+* [DPLA-2327] 영상 제한 모드에서 로컬 녹화 선택가능
+* 음성 번역 기능 사용시 에러 발생 처리(내부)
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved

@@ -178,7 +178,7 @@ export default {
       if (this.localRecordStatus === 'START') {
         if (this.participants.length === 0) return
         const anyStreamAlive = this.participants.some(participant => {
-          return participant.video === true
+          return participant.hasVideo === true
         })
 
         if (!anyStreamAlive) {
