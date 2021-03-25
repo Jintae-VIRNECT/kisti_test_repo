@@ -1,5 +1,6 @@
 <template>
   <el-select
+    ref="roleSelect"
     class="member-role-select"
     :class="[val[0], disabled ? 'disabled' : null]"
     v-model="val"
@@ -42,6 +43,7 @@ export default {
     changed(v) {
       this.val = v.length ? [v[v.length - 1]] : [this.value]
       this.$emit('input', this.val[0])
+      this.$refs.roleSelect.blur()
     },
   },
 }

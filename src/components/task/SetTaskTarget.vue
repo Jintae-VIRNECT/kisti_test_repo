@@ -5,6 +5,7 @@
     :title="$t(type === 'new' ? 'task.new.title' : 'task.manage.taskAdd')"
     width="580px"
     top="11vh"
+    :close-on-click-modal="false"
   >
     <p>{{ $t(`${targetI18n}.targetSetting`) }}</p>
     <!-- 복제 -->

@@ -1,43 +1,37 @@
 <template>
   <nav class="the-sidebar">
-    <div class="the-sidebar__inner">
+    <div
+      class="the-sidebar__inner"
+      :class="{ 'the-sidebar__inner--wide': showWide }"
+    >
       <!-- onpremise -->
       <div v-if="$isOnpremise" class="the-sidebar__logo">
         <a
           @click="$router.push('/')"
-          :style="
-            `background-image: url(${cdn(
-              activeWorkspace.profile,
-            )}), url(${$defaultWorkspaceProfile})`
-          "
+          :style="`background-image: url(${cdn(
+            activeWorkspace.profile,
+          )}), url(${$defaultWorkspaceProfile})`"
         />
       </div>
       <!-- 일반 -->
       <div v-else class="the-sidebar__logo">
-        <el-tooltip
-          popper-class="the-sidebar__tooltip"
-          effect="dark"
-          :content="$t('menu.collapse.workspace.title')"
-          placement="right"
-        >
-          <a
-            @click.stop="openCollapse(logoCollapse)"
-            :style="
-              `background-image: url(${cdn(
-                activeWorkspace.profile,
-              )}), url(${$defaultWorkspaceProfile})`
-            "
-          />
-        </el-tooltip>
+        <a @click.stop="toggleWide" />
       </div>
       <div class="the-sidebar__upper">
-        <the-sidebar-menu-list :menus="menus" @openCollapse="openCollapse" />
+        <the-sidebar-menu-list
+          :menus="menus"
+          :isWide="showWide"
+          @openCollapse="openCollapse"
+          @closeCollapse="closeCollapse"
+        />
       </div>
       <!-- 워크스페이스 설정 -->
       <div class="the-sidebar__lower" v-if="!hideWorkspaceSetting">
         <the-sidebar-menu-list
           :menus="bottomMenus"
+          :isWide="showWide"
           @openCollapse="openCollapse"
+          @closeCollapse="closeCollapse"
         />
       </div>
     </div>
@@ -76,6 +70,7 @@ export default {
   data() {
     return {
       showCollapse: false,
+      showWide: false,
       collapseComponent: null,
       logoCollapse: 'collapseWorkspace',
     }
@@ -89,7 +84,11 @@ export default {
     },
   },
   methods: {
+    toggleWide() {
+      this.showWide = !this.showWide
+    },
     openCollapse(component) {
+      this.showWide = false
       if (this.showCollapse && this.collapseComponent === component) {
         this.showCollapse = false
       } else {
@@ -98,6 +97,7 @@ export default {
       }
     },
     closeCollapse() {
+      this.showWide = false
       this.showCollapse = false
     },
   },
@@ -109,6 +109,7 @@ export default {
 
 <style lang="scss">
 $the-sidebar-background: #172b4d;
+$the-sidebar-background-collapse: #1d3153;
 $the-sidebar-border: solid 1px #0d1d39;
 
 .the-sidebar {
@@ -142,17 +143,40 @@ $the-sidebar-border: solid 1px #0d1d39;
     display: block;
     width: 100%;
     height: 100%;
+    background: url('~assets/images/icon/ic-menu-unfold.svg');
+    background-repeat: no-repeat;
     background-position: center;
-    background-size: cover;
+    background-size: 24px;
+    opacity: 0.65;
+  }
+
+  &:hover {
+    background: rgba(65, 81, 109, 0.7);
+    & > a {
+      opacity: 0.9;
+    }
+  }
+}
+.the-sidebar__inner--wide .the-sidebar__logo {
+  background: rgba(65, 81, 109, 1);
+  & > a {
+    background-image: url('~assets/images/icon/ic-menu-fold.svg');
+    opacity: 0.9;
   }
 }
 .the-sidebar__inner {
   position: relative;
   z-index: 2002;
+  width: $the-sidebar-width;
   height: 100%;
   padding-top: 12px;
   background-color: $the-sidebar-background;
   border-right: $the-sidebar-border;
+  transition: width 0.3s;
+
+  &--wide {
+    width: 280px;
+  }
 }
 .the-sidebar__upper {
   margin-top: 24px;
@@ -168,10 +192,10 @@ $the-sidebar-border: solid 1px #0d1d39;
   top: 0;
   left: $the-sidebar-width;
   z-index: 2001;
-  min-width: 240px;
+  min-width: 220px;
   height: 100%;
   color: #fff;
-  background: $the-sidebar-background;
+  background: $the-sidebar-background-collapse;
 
   &__header {
     padding: 21px 20px;

@@ -6,6 +6,7 @@
     :title="$t(title)"
     width="860px"
     top="11vh"
+    :close-on-click-modal="false"
   >
     <el-row type="flex">
       <el-col :span="12">
@@ -289,14 +290,8 @@ export default {
         this.contentName = taskInfo.name
         this.mainForm = {
           schedule: [
-            dayjs
-              .utc(taskInfo.startDate)
-              .local()
-              .toDate(),
-            dayjs
-              .utc(taskInfo.endDate)
-              .local()
-              .toDate(),
+            dayjs.utc(taskInfo.startDate).local().toDate(),
+            dayjs.utc(taskInfo.endDate).local().toDate(),
           ],
           worker: '',
           position: taskInfo.position,
@@ -306,14 +301,8 @@ export default {
           name: subTask.subTaskName,
           priority: subTask.priority,
           schedule: [
-            dayjs
-              .utc(subTask.startDate)
-              .local()
-              .toDate(),
-            dayjs
-              .utc(subTask.endDate)
-              .local()
-              .toDate(),
+            dayjs.utc(subTask.startDate).local().toDate(),
+            dayjs.utc(subTask.endDate).local().toDate(),
           ],
           worker: subTask.workerUUID,
         }))

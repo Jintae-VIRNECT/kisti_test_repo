@@ -6,6 +6,7 @@
     :title="$t('task.new.contentsInfo')"
     width="860px"
     top="11vh"
+    :close-on-click-modal="false"
   >
     <el-row type="flex" v-if="content">
       <el-col :span="9">
@@ -21,9 +22,9 @@
             <div class="avatar">
               <div
                 class="image"
-                :style="
-                  `background-image: url(${cdn(content.uploaderProfile)})`
-                "
+                :style="`background-image: url(${cdn(
+                  content.uploaderProfile,
+                )})`"
               />
             </div>
             <span>{{ content.uploaderName }}</span>

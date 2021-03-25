@@ -8,6 +8,7 @@
         effect="dark"
         :content="$t(menu.label)"
         placement="right"
+        :disabled="isWide"
       >
         <!-- 컴포넌트 -->
         <nuxt-link
@@ -17,10 +18,16 @@
           @click.native.stop="openCollapse(menu.collapse)"
         >
           <img :src="menu.image" :alt="$t(menu.label)" />
+          <span>{{ $t(menu.label) }}</span>
         </nuxt-link>
         <!-- 링크 -->
-        <nuxt-link v-else :to="menu.path">
+        <nuxt-link
+          v-else
+          :to="menu.path"
+          @click.native="$emit('closeCollapse')"
+        >
           <img :src="menu.image" :alt="$t(menu.label)" />
+          <span>{{ $t(menu.label) }}</span>
         </nuxt-link>
       </el-tooltip>
     </li>
@@ -31,6 +38,7 @@
 export default {
   props: {
     menus: Array,
+    isWide: Boolean,
   },
   methods: {
     openCollapse(component) {
@@ -47,37 +55,51 @@ export default {
   padding: 0 12px;
 
   & > a {
+    position: relative;
     display: block;
     width: 100%;
     padding: 7px;
     line-height: 0;
     background-repeat: no-repeat;
     background-size: 100%;
+    border-radius: 4px;
     mask: url('~assets/images/icon/ic-bg.svg');
     mask-size: 100%;
+    mask-position: center;
 
     & > img {
-      width: 100%;
+      width: 21px;
       opacity: 0.65;
+    }
+    & > span {
+      position: absolute;
+      width: 200px;
+      margin: auto 18px;
+      overflow: hidden;
+      color: #fff;
+      line-height: 22px;
+      opacity: 0.75;
     }
 
     &:hover {
       background: rgba(65, 81, 109, 0.7);
-      & > img {
+      & > img,
+      & > span {
         opacity: 0.9;
       }
     }
     &.nuxt-link-active:not([href='/']),
     &.nuxt-link-exact-active {
       background: #465875;
-      & > img {
+      & > img,
+      & > span {
         opacity: 1;
       }
     }
   }
 
   .el-divider {
-    width: 30px;
+    width: 100%;
     margin: 0 auto;
     background: rgba(255, 255, 255, 0.2);
   }
@@ -85,5 +107,11 @@ export default {
 
 .the-sidebar__tooltip {
   transform: translateX(8px);
+}
+
+.the-sidebar__inner--wide .the-sidebar__menus__item {
+  & > a {
+    mask-size: cover;
+  }
 }
 </style>

@@ -26,6 +26,10 @@ body {
     height: 100vh;
     overflow-y: scroll;
   }
+  // safari double tab issue
+  .el-scrollbar__bar {
+    opacity: 1 !important;
+  }
 }
 
 #__nuxt {

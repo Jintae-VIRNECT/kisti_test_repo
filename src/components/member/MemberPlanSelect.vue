@@ -81,5 +81,11 @@ body .member-plan-select__dropdown {
       filter: grayscale(1);
     }
   }
+
+  @media screen and (max-width: $mobile) {
+    .el-select-dropdown__item {
+      padding-right: 4px;
+    }
+  }
 }
 </style>
