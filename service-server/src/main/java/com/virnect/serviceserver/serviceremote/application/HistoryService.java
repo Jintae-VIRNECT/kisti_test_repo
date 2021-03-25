@@ -64,11 +64,10 @@ public class HistoryService {
 		/*roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
 			workspaceId, userId, paging, pageable);*/
 
-		Page<RoomHistory> currentRoomHistories = roomHistoryRepository.findRoomByWorkspaceIdAndUserIdCurrent(workspaceId, userId, paging, pageable);
+		/*Page<RoomHistory> currentRoomHistories = roomHistoryRepository.findRoomByWorkspaceIdAndUserIdCurrent(workspaceId, userId, paging, pageable);
 
 		List<RoomHistoryInfoResponse> currentRoomHistoryList =
 			currentRoomHistories.stream().map(roomHistory -> {
-
 				RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
 				roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
@@ -93,12 +92,12 @@ public class HistoryService {
 					}
 				}
 
-				/*memberInfoList.sort((t1, t2) -> {
+				*//*memberInfoList.sort((t1, t2) -> {
 					if (t1.getMemberType().equals(MemberType.LEADER)) {
 						return 1;
 					}
 					return 0;
-				});*/
+				});*//*
 
 				roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
 
@@ -123,10 +122,12 @@ public class HistoryService {
 				.totalElements(currentRoomHistories.getTotalElements())
 				.last(true)
 				.build();
-		}
+		}*/
 
+		roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
+			workspaceId, userId, paging, pageable);
 
-		/*List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
+		List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
 		for (MemberHistory memberHistory : roomHistories.getContent()) {
 			RoomHistory roomHistory = memberHistory.getRoomHistory();
 			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
@@ -184,8 +185,8 @@ public class HistoryService {
 				.totalElements(roomHistories.getTotalElements())
 				.last(true)
 				.build();
-		}*/
-		return new RoomHistoryInfoListResponse(currentRoomHistoryList, pageMeta);
+		}
+		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);
 	}
 
 	public RoomHistoryInfoListResponse getHistoryListStandardSearch(

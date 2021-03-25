@@ -47,13 +47,7 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 		boolean paging,
 		Pageable pageable
 	) {
-		/*long offSet = pageable.getOffset();
-		int pageSize = pageable.getPageSize();
-		if (!paging) {
-			offSet = 0;
-			pageSize = Integer.MAX_VALUE;
-		}
-		QueryResults<MemberHistory> queryResult = query
+		JPQLQuery<MemberHistory> queryResult = query
 			.selectFrom(memberHistory)
 			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
 			.where(
@@ -62,24 +56,6 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 				memberHistory.roomHistory.isNotNull(),
 				memberHistory.historyDeleted.isFalse()
 			)
-			.offset(offSet)
-			.limit(pageSize)
-			.orderBy(memberHistory.createdDate.desc())
-			.orderBy()
-			.distinct().fetchResults();
-		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
-
-		JPQLQuery<MemberHistory> queryResult = query
-			.selectFrom(memberHistory)
-			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
-			.where(
-				memberHistory.workspaceId.eq(workspaceId),
-				memberHistory.uuid.eq(userId),
-				memberHistory.roomHistory.isNotNull(),
-				memberHistory.historyDeleted.isFalse(),
-				memberHistory.roomHistory.createdDate.between(LocalDateTime.now().minusDays(EXPIRATION_DATE), LocalDateTime.now())
-			)
-			.orderBy(memberHistory.createdDate.desc())
 			.distinct();
 		long totalCount = queryResult.fetchCount();
 		List<MemberHistory> results;

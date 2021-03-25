@@ -185,9 +185,11 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
 				roomHistory.workspaceId.eq(workspaceId),
-				roomHistory.memberHistories.any().uuid.eq(userId),
-				roomHistory.isNotNull(),
-				roomHistory.memberHistories.any().historyDeleted.isFalse()
+				(
+					roomHistory.memberHistories.any().uuid.eq(userId)
+					//.and(memberHistory.historyDeleted.isFalse())
+				),
+				roomHistory.isNotNull()
 			)
 			.orderBy(roomHistory.createdDate.desc())
 			.distinct();
@@ -213,4 +215,5 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 		}
 		return roomHistory.title.contains(search);
 	}
+
 }

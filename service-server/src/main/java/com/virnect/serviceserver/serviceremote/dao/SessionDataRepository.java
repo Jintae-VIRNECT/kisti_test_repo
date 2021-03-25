@@ -869,28 +869,6 @@ public class SessionDataRepository {
             log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
         }
 
-                /*Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
-                        .filter(room -> {
-                            if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-                                return true;
-                            } else {
-                                for (Member member : room.getMembers()) {
-                                    if (member.getUuid().equals(userId) && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }
-                        })
-                        .collect(Collectors.toMap(room -> room, Room::getMembers));
-
-                for (Room room : roomListMap.keySet()) {
-                    log.info("mapping key invokeDataProcess: {}", room.getSessionId());
-                    for (Member member : roomListMap.get(room)) {
-                        log.info("mapping value invokeDataProcess: {}", member.getUuid());
-                    }
-                }*/
-
         List<RoomInfoResponse> roomInfoList = new ArrayList<>();
         //for (Room room: roomListMap.keySet()) {
         for (Room room : roomPage.getContent()) {
