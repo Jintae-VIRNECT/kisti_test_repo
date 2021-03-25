@@ -1,44 +1,49 @@
-#headerSection {
-  position: fixed;
-  @media screen and (max-width: $tiny) {
-    .sub-title {
-      display: none;
+#__nuxt {
+  #headerSection {
+    position: fixed;
+    .hover-box {
+      z-index: 1;
+    }
+    @media screen and (max-width: $tiny) {
+      .sub-title {
+        display: none;
+      }
     }
   }
-}
 
-.el-button {
-  &--primary {
-    background-color: $color-primary;
-    border: none;
-    &:hover,
-    &:focus {
-      background-color: $color-primary-hover;
+  .el-button {
+    &--primary {
+      background-color: $color-primary;
+      border: none;
+      &:hover,
+      &:focus {
+        background-color: $color-primary-hover;
+      }
+      &:active {
+        background-color: $color-primary-active;
+      }
     }
-    &:active {
-      background-color: $color-primary-active;
+    &--text:not([disabled]) {
+      color: #0b1e42;
+      &:hover,
+      &:focus {
+        color: $color-primary-hover;
+      }
+      &:active {
+        color: $color-primary-active;
+      }
     }
   }
-  &--text {
-    color: #0b1e42;
-    &:hover,
-    &:focus {
-      color: $color-primary-hover;
-    }
-    &:active {
-      color: $color-primary-active;
-    }
-  }
-}
 
-.el-tabs [role="tab"] {
-  color: #979fae;
+  .el-tabs [role="tab"] {
+    color: #979fae;
 
-  &.is-active,
-  &:hover:not(.is-disabled) {
-    color: #1655bf;
+    &.is-active,
+    &:hover:not(.is-disabled) {
+      color: #1655bf;
+    }
   }
-}
-.el-tabs__active-bar {
-  background-color: #1655bf;
+  .el-tabs__active-bar {
+    background-color: #1655bf;
+  }
 }
