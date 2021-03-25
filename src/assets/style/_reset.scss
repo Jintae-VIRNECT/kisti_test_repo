@@ -102,9 +102,9 @@ body {
   //     verdana, sans-serif;
   // }
 }
-html {
-  overflow: hidden;
-}
+// html {
+//   overflow: hidden;
+// }
 
 button {
   -webkit-tap-highlight-color: transparent;
@@ -149,6 +149,7 @@ section {
 
 body {
   overflow: auto;
+  // height: 100%;
   color: #fff;
   &:lang(en) {
     // font-family: $roboto, $noto, sans-serif;
