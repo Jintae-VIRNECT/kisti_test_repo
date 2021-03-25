@@ -27,7 +27,7 @@
     "jwt-decode": "^3.0.0",
     "nuxt": "^2.14.5",
     "nuxt-helmet": "^2.0.0",
-    "nuxt-i18n": "^6.6.1"
+    "nuxt-i18n": "6.21.1"
   },
   "devDependencies": {
     "@virnect/eslint-config": "^1.0.3",
