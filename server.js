@@ -83,7 +83,7 @@ const initHelmet = async () => {
             "'unsafe-inline'",
             ...allows,
           ],
-          'connect-src': ["'self'", 'data:', ...cntAllows],
+          'connect-src': ["'self'", 'blob:', 'data:', ...cntAllows],
           'img-src': ["'self'", 'data:', ...allows],
           'media-src': ["'self'", 'data:', ...allows],
           'worker-src': ["'self'", 'blob:', ...allows],
