@@ -1,5 +1,10 @@
 @charset "utf-8";
 
+* {
+  -ms-touch-action: pinch-zoom;
+  touch-action: pinch-zoom;
+}
+
 @import "common";
 @import "font";
 @import "reset";

@@ -104,13 +104,7 @@
         <span>{{ $t('alarm.saved_duration') }}</span>
       </div> -->
     </div>
-    <audio
-      preload="auto"
-      ref="noticeAudio"
-      playsinline
-      autoplay
-      @loadeddata="loadeddata"
-    >
+    <audio preload="auto" ref="noticeAudio" playsinline muted="muted">
       <source src="~assets/media/end.mp3" />
     </audio>
   </popover>
@@ -149,6 +143,7 @@ export default {
       key: '',
       active: false,
       visible: false,
+      muted: true,
       // alarmList: [],
     }
   },
@@ -178,10 +173,13 @@ export default {
       'clearWorkspace',
     ]),
     loadeddata() {
-      this.$refs['noticeAudio'].muted = true
-      window.addEventListener('touchstart', this.loadAudio)
+      this.$refs['noticeAudio'].onloadeddata = () => {}
+      if (this.isSafari) {
+        window.addEventListener('touchstart', this.loadAudio)
+      }
     },
     loadAudio() {
+      this.$refs['noticeAudio'].muted = true
       window.removeEventListener('touchstart', this.loadAudio)
       this.$refs['noticeAudio'].play()
       this.$refs['noticeAudio'].pause()
@@ -195,6 +193,7 @@ export default {
       this.active = false
     },
     playSound() {
+      this.$refs['noticeAudio'].muted = false
       this.$refs['noticeAudio'].play()
     },
     async alarmListener(listen) {
@@ -333,8 +332,9 @@ export default {
         if (err.code === 4002) {
           this.toastError(this.$t('workspace.remote_already_removed'))
           return
+        } else {
+          this.toastError(this.$t('workspace.remote_invite_impossible'))
         }
-        this.toastError(this.$t('workspace.remote_invite_impossible'))
       }
     },
     async pushInit() {
@@ -354,6 +354,10 @@ export default {
 
   /* Lifecycles */
   mounted() {
+    if (this.isSafari) {
+      this.$refs['noticeAudio'].onloadeddata = this.loadeddata
+      this.$refs['noticeAudio'].autoplay = true
+    }
     this.$nextTick(() => {
       this.pushInit()
       let push = true
@@ -365,7 +369,9 @@ export default {
   },
   beforeDestroy() {
     this.$push.removeListener(this.key)
-    window.removeEventListener('touchstart', this.loadAudio)
+    if (this.isSafari) {
+      window.removeEventListener('touchstart', this.loadAudio)
+    }
   },
 }
 </script>

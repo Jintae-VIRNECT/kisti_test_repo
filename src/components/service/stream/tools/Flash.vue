@@ -44,7 +44,9 @@ export default {
   },
   watch: {
     flashStatus(status) {
-      this.flashListener(status)
+      if (status !== -1) {
+        this.flashListener(status)
+      }
     },
   },
   methods: {

@@ -148,7 +148,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { ROLE } from 'configs/remote.config'
-import { VIEW, ACTION } from 'configs/view.config'
+import { ACTION } from 'configs/view.config'
 import { CAMERA, FLASH, DEVICE } from 'configs/device.config'
 
 import Pointing from './StreamPointing'
@@ -286,13 +286,22 @@ export default {
     },
     mainView: {
       deep: true,
-      handler(view) {
+      handler(view, oldView) {
         if (!view.id) {
           this.loaded = false
           this.$eventBus.$emit('video:loaded', false)
           const videoBox = this.$el.querySelector('.main-video__box')
           videoBox.style.height = '100%'
           videoBox.style.width = '100%'
+        } else {
+          // main view 변경
+          if (
+            view.id !== oldView.id &&
+            this.viewForce &&
+            view.flash === FLASH.FLASH_NONE
+          ) {
+            this.toastDefault(this.$t('service.flash_none'))
+          }
         }
       },
     },
@@ -307,26 +316,6 @@ export default {
         this.$eventBus.$emit('video:loaded', status.state === 'on')
       },
     },
-    viewForce(flag, oldFlag) {
-      if (!this.isLeader) {
-        if (flag === false && oldFlag === true) {
-          this.addChat({
-            name: this.mainView.nickname,
-            status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
-            type: 'system',
-          })
-        }
-        if (flag === true && oldFlag === false) {
-          this.$nextTick(() => {
-            this.addChat({
-              name: this.mainView.nickname,
-              status: this.isLeader ? 'sharing-start-leader' : 'sharing-start',
-              type: 'system',
-            })
-          })
-        }
-      }
-    },
     localRecordStatus(status) {
       this.toggleLocalTimer(status)
     },
@@ -339,11 +328,6 @@ export default {
   methods: {
     ...mapActions(['updateAccount', 'setCapture', 'addChat', 'setMainView']),
     cancelSharing() {
-      this.addChat({
-        name: this.mainView.nickname,
-        status: this.isLeader ? 'sharing-stop-leader' : 'sharing-stop',
-        type: 'system',
-      })
       this.setMainView({ force: false })
       this.$call.sendVideo(this.mainView.id, false)
     },
