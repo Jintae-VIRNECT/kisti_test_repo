@@ -56,6 +56,7 @@ export async function api(name, option = {}) {
     console.error(`URL: ${uri}`)
     // timeout
     if (e.code === 'ECONNABORTED') {
+      e.type = 'network'
       e.statusCode = 504
       context.error(e)
     }
@@ -65,7 +66,7 @@ export async function api(name, option = {}) {
   }
 }
 
-export default function({ $config, $axios }, inject) {
+export default function ({ $config, $axios }, inject) {
   // Create a custom axios instance
   axios = $axios.create({
     baseURL: $config.API_GATEWAY_URL,

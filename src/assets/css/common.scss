@@ -1,7 +1,11 @@
-$font-color-content: #0b1e42;
-$color-primary: #1468e2;
-$color-primary-hover: #2c82ff;
-$color-primary-active: #0a51b7;
+#headerSection {
+  position: fixed;
+  @media screen and (max-width: $tiny) {
+    .sub-title {
+      display: none;
+    }
+  }
+}
 
 .el-button {
   &--primary {

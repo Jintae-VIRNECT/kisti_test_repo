@@ -1,5 +1,5 @@
 import { context } from '@/plugins/context'
-import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
+import auth from '@virnect/platform-auth'
 
 export default {
   state: () => ({
@@ -17,6 +17,10 @@ export default {
   mutations: {
     SET_AUTH(state, obj) {
       state.auth = obj
+    },
+    LOGOUT() {
+      auth.logout()
+      location.reload()
     },
   },
   actions: {
