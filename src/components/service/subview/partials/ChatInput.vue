@@ -50,8 +50,9 @@
         </button>
         <textarea
           class="chat-input__form-write"
-          v-model="inputText"
+          @input="updateInput"
           @keyup="checkLength"
+          :value="inputText"
           :placeholder="$t('service.chat_input')"
           @keydown.enter.exact="doSend($event)"
         />
@@ -319,6 +320,9 @@ export default {
       } else {
         this.loadFile(file)
       }
+    },
+    updateInput(e) {
+      this.inputText = e.target.value
     },
   },
 
