@@ -29,7 +29,11 @@ export default {
       title: `${this.title} | ${this.$t('menu.account')}`,
       htmlAttrs: {
         lang: this.$i18n.locale,
+        ontouchmove: '',
       },
+      meta: [
+        { name: 'viewport', content: 'width=device-width, user-scalable=no' },
+      ],
       link: [
         {
           rel: 'icon',
@@ -82,16 +86,6 @@ export default {
       this.$store.dispatch('CHANGE_LANG', lang)
       this.$i18n.locale = lang
     }
-
-    // 사파리 테이블 버그
-    document
-      .querySelectorAll('.el-table__body')
-      .forEach(table => (table.style.tableLayout = 'auto'))
-    setTimeout(() => {
-      document
-        .querySelectorAll('.el-table__body')
-        .forEach(table => (table.style.tableLayout = 'fixed'))
-    }, 10)
   },
 }
 </script>

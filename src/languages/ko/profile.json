@@ -49,7 +49,9 @@
       "submit": "이미지 등록",
       "message": {
         "success": "이미지 업로드가 성공하였습니다.",
-        "fail": "이미지 업로드에 실패하였습니다. 잠시 후 다시 시도해 주세요."
+        "fail": "이미지 업로드에 실패하였습니다. 잠시 후 다시 시도해 주세요.",
+        "notAllowFileExtension": "지원하지 않는 파일 형식입니다.",
+        "notAllowFileSize": "지원하지 않는 파일 크기입니다."
       }
     },
     "nameChangeModal": {

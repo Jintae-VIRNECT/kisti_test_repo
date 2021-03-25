@@ -107,9 +107,17 @@ export default {
         })
         this.$emit('changedImage', this.file)
       } catch (e) {
+        let message =
+          this.$t('profile.imageChangeModal.message.fail') + `\n(${e})`
+        if (/^Error: 4005/.test(e))
+          message = this.$t(
+            'profile.imageChangeModal.message.notAllowFileExtension',
+          )
+        if (/^Error: 4006/.test(e))
+          message = this.$t('profile.imageChangeModal.message.notAllowFileSize')
+
         this.$notify.error({
-          message:
-            this.$t('profile.imageChangeModal.message.fail') + `\n(${e})`,
+          message,
           position: 'bottom-left',
           duration: 2000,
         })
