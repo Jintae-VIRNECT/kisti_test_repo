@@ -1,27 +1,22 @@
 <template>
   <div>
-    <the-header :showSection="showSection" :auth="auth">
-      <template slot="subTitle">
-        {{ $t('home.title') }}
-      </template>
-    </the-header>
+    <VirnectHeader
+      :subTitle="$t('home.title')"
+      :showStatus="showSection"
+      :userInfo="auth.myInfo"
+      :urls="$url"
+      @logout="$store.commit('auth/LOGOUT')"
+    />
     <main>
       <nuxt />
     </main>
-    <the-footer />
+    <VirnectFooter />
   </div>
 </template>
 
 <script>
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
-import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
-
 export default {
   middleware: ['default'],
-  components: {
-    TheHeader,
-    TheFooter,
-  },
   head() {
     return {
       title: `VIRNECT | ${this.$t('home.title')}`,
@@ -43,6 +38,9 @@ export default {
       return this.$store.getters['auth/auth']
     },
   },
+  beforeMount() {
+    this.$store.dispatch('auth/getAuth')
+  },
   mounted() {
     // 콘솔 표시
     console.log(
@@ -58,8 +56,6 @@ export default {
       this.$store.dispatch('CHANGE_LANG', lang)
       this.$i18n.locale = lang
     }
-
-    this.$store.dispatch('auth/getAuth')
   },
 }
 </script>

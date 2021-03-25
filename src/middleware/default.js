@@ -24,9 +24,10 @@ export default async function ({ req, redirect, error }) {
           )}`,
         )
       } else if (e.code === 'ECONNABORTED') {
+        e.type = 'network'
         e.statusCode = 504
       }
-      error({ statusCode: e.statusCode, message: e.message })
+      error(e)
     }
   }
 }

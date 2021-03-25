@@ -7,7 +7,7 @@
       <h3 v-html="$t('home.visual.title')" />
       <p v-html="$t('home.visual.desc')" />
     </div>
-    <el-tabs v-model="activeTab">
+    <el-tabs v-model="activeTab" @tab-click="tabClick">
       <el-tab-pane
         v-for="(product, name) in products"
         :label="$t(`home.${name}`)"
@@ -44,6 +44,7 @@ export default {
   data() {
     return {
       activeTab: null,
+      isMobile: false,
       snbTop: 0,
       didScroll: 0,
       products: {
@@ -106,10 +107,19 @@ export default {
       const scrollY = window.pageYOffset
       const tab = document.querySelector('.el-tabs')
       this.snbTop = tab.offsetTop
+      this.isMobile = document.body.clientWidth < 1200
+      if (this.isMobile) {
+        this.snbTop -= 64
+      }
       if (scrollY > this.snbTop) {
         tab.classList.add('sticky')
       } else {
         tab.classList.remove('sticky')
+      }
+    },
+    tabClick() {
+      if (window.pageYOffset > this.snbTop) {
+        window.scrollTo(0, this.snbTop)
       }
     },
   },
