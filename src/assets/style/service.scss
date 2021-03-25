@@ -5,6 +5,13 @@
   touch-action: pinch-zoom;
 }
 
+html {
+  overscroll-behavior: none;
+}
+body {
+  overscroll-behavior-y: contain;
+}
+
 @import "common";
 @import "transition";
 @import "./plugin/material-icons";
