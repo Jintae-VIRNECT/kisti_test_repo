@@ -96,16 +96,15 @@ body {
   font-size: 14px;
   font-family: $font_family, $font_family2, $font_family3, verdana, sans-serif;
   line-height: 1.6;
-  overscroll-behavior-y: contain;
+  // overscroll-behavior-y: contain;
   // &:lang(en) {
   //   font-family: $font_family2, $font_family, $font_family3,
   //     verdana, sans-serif;
   // }
 }
-html {
-  overflow: hidden;
-  overscroll-behavior: none;
-}
+// html {
+//   overflow: hidden;
+// }
 
 button {
   -webkit-tap-highlight-color: transparent;
@@ -150,6 +149,7 @@ section {
 
 body {
   overflow: auto;
+  // height: 100%;
   color: #fff;
   &:lang(en) {
     // font-family: $roboto, $noto, sans-serif;
