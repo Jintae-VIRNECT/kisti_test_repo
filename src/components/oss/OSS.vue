@@ -792,7 +792,7 @@ export default {
 @import '~assets/style/vars';
 @import '~assets/style/font';
 @import '~assets/style/mixin';
-@import '~assets/style/reset';
+@import '~assets/style/reset_webview';
 
 .oss {
   color: #888;
