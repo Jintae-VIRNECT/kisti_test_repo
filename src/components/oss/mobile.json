@@ -44,6 +44,6 @@
   {"libName": "junit:junit","link":"https://github.com/junit-team/junit4/blob/main/LICENSE-junit.txt","licenseName":"Eclipse Public License 1.0"},
   {"libName": "androidx.test:runner","link":"https://developer.android.com/license","licenseName":"Apache 2.0"},
   {"libName": "androidx.test.espresso:espresso-core","link":"https://developer.android.com/license","licenseName":"Apache 2.0"},
-  {"libName": "com.neovisionaries:nv-websocket-client","link":"https://github.com/TakahikoKawasaki/nv-websocket-client/blob/master/LICENSE","licenseName":"Apache 2.0"}  
-  {"libName": "org.videolan.vlc","link":"https://code.videolan.org/videolan/vlc-android/-/blob/master/libvlc/COPYING.LIB","licenseName":"LGPL 2.1"}  
+  {"libName": "com.neovisionaries:nv-websocket-client","link":"https://github.com/TakahikoKawasaki/nv-websocket-client/blob/master/LICENSE","licenseName":"Apache 2.0"},
+  {"libName": "org.videolan.vlc","link":"https://code.videolan.org/videolan/vlc-android/-/blob/master/libvlc/COPYING.LIB","licenseName":"LGPL 2.1"}
 ]
