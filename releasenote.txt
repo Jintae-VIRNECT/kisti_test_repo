@@ -4,6 +4,8 @@ RELEASE v2.3.0.6
 ### Bug Fixes
 ### Improvement
 ### UI
+* 영상 공유 모드 툴팁 문구 수정
+* 영상 공유 제어 아이콘 수정
 ### Limitation
 ### Chore
 

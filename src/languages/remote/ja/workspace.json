@@ -98,7 +98,7 @@
     "setting_camera_control": "映像共有制御",
     "setting_camera_restrict": "映像制限モード",
     "setting_camera_restrict_enable": "映像制限モード使用",
-    "setting_camera_restrict_info": "参加者のカメラを制御できるモードです。",
+    "setting_camera_restrict_info": "リーダーが参加者のカメラを制御できるモードです。",
 
     "remote_name": "協業名",
     "remote_description": "協業説明",
