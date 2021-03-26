@@ -83,8 +83,8 @@ export default {
   position: relative;
   width: 38px;
   height: 38px;
-  background: url('~assets/image/call/ic_plus.svg') center/24px no-repeat
-    #3c3c3c;
+  background: url('~assets/image/call/ic_camera_control.svg') center/24px
+    no-repeat #3c3c3c;
   border: solid 1px #5c5c5c;
   border-radius: 2px;
   @include ir();
