@@ -2,7 +2,7 @@ import { api } from '@/plugins/axios'
 import { context } from '@/plugins/context'
 import Profile from '@/models/profile/Profile'
 import Workspace from '@/models/workspace/Workspace'
-import auth from 'WC-Modules/javascript/api/virnectPlatform/virnectPlatformAuth'
+import auth from '@virnect/platform-auth'
 
 export default {
   state: () => ({

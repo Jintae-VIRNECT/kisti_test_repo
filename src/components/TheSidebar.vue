@@ -1,6 +1,6 @@
 <template>
   <nav class="the-sidebar">
-    <el-menu :default-active="now" :router="true" :collapse="isCollapse">
+    <el-menu :default-active="now" :router="true">
       <el-menu-item
         v-for="(menu, index) in menus"
         :key="menu.path"
@@ -25,7 +25,6 @@ export default {
   data() {
     return {
       now: '0',
-      isCollapse: false,
     }
   },
   watch: {
@@ -61,13 +60,10 @@ $the-sidebar-item-height: 40px;
   }
 }
 .the-sidebar .el-menu {
+  width: $the-sidebar-width;
   height: 100%;
   padding: 12px;
   border-right: none;
-
-  &:not(.el-menu--collapse) {
-    width: $the-sidebar-width;
-  }
 
   .el-menu-item {
     height: $the-sidebar-item-height;
@@ -93,6 +89,22 @@ $the-sidebar-item-height: 40px;
     background: #dfedff;
     .icon {
       background: #0f75f5;
+    }
+  }
+}
+
+@media screen and (max-width: 840px) {
+  .the-sidebar {
+    $width-mobile: 70px;
+    .el-menu {
+      width: $width-mobile;
+      overflow: hidden;
+    }
+    .el-menu-item > span {
+      display: none;
+    }
+    & + main {
+      margin-left: $width-mobile;
     }
   }
 }

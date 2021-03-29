@@ -128,7 +128,7 @@ export default {
 #__nuxt .secession-modal .el-dialog__body {
   .caution {
     margin-top: 4px;
-    color: $danger;
+    color: $color-danger;
     font-size: 11px;
   }
   .secession-form {

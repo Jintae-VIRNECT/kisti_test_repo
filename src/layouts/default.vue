@@ -1,10 +1,12 @@
 <template>
   <div>
-    <header>
-      <the-header :logoImg="logoImg" :showSection="showSection" :auth="auth">
-        <template slot="subTitle">{{ $t('menu.account') }}</template>
-      </the-header>
-    </header>
+    <VirnectHeader
+      :subTitle="$t('menu.account')"
+      :showStatus="showSection"
+      :userInfo="auth.myInfo"
+      :urls="$url"
+      @logout="$store.commit('auth/LOGOUT')"
+    />
     <the-sidebar :menus="sideMenus" />
     <main>
       <nuxt />
@@ -13,7 +15,6 @@
 </template>
 
 <script>
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import TheSidebar from '@/components/TheSidebar'
 import { sideMenus, sideMenus_op } from '@/models/layout'
 import { mapGetters } from 'vuex'
@@ -21,7 +22,6 @@ import { mapGetters } from 'vuex'
 export default {
   middleware: 'default',
   components: {
-    TheHeader,
     TheSidebar,
   },
   head() {
