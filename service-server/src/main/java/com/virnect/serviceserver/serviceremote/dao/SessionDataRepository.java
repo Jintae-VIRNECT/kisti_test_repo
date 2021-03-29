@@ -869,28 +869,6 @@ public class SessionDataRepository {
             log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
         }
 
-                /*Map<Room, List<Member>> roomListMap = roomPage.getContent().stream()
-                        .filter(room -> {
-                            if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-                                return true;
-                            } else {
-                                for (Member member : room.getMembers()) {
-                                    if (member.getUuid().equals(userId) && !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-                                        return true;
-                                    }
-                                }
-                                return false;
-                            }
-                        })
-                        .collect(Collectors.toMap(room -> room, Room::getMembers));
-
-                for (Room room : roomListMap.keySet()) {
-                    log.info("mapping key invokeDataProcess: {}", room.getSessionId());
-                    for (Member member : roomListMap.get(room)) {
-                        log.info("mapping value invokeDataProcess: {}", member.getUuid());
-                    }
-                }*/
-
         List<RoomInfoResponse> roomInfoList = new ArrayList<>();
         //for (Room room: roomListMap.keySet()) {
         for (Room room : roomPage.getContent()) {
@@ -1310,14 +1288,10 @@ public class SessionDataRepository {
      */
     public ApiResponse<Boolean> prepareJoinRoom(String workspaceId, String sessionId, String userId) {
             
-        Room room;
-
-        //room = sessionService.getRoom(workspaceId, sessionId);
-        room = sessionService.getRoomForWrite(workspaceId, sessionId);
+        Room room = sessionService.getRoomForWrite(workspaceId, sessionId);
         if (room == null) {
             return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
         }
-        SessionType sessionType = room.getSessionProperty().getSessionType();
 
         Member member = null;
         for (Member m : room.getMembers()) {
@@ -1325,9 +1299,11 @@ public class SessionDataRepository {
                 member = m;
             }
         }
+
         boolean result = false;
         ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
-        switch (sessionType) {
+
+        switch (room.getSessionProperty().getSessionType()) {
             case PRIVATE:
             case PUBLIC: {
                 if (member != null) {
@@ -1388,61 +1364,56 @@ public class SessionDataRepository {
     public ApiResponse<RoomResponse> joinRoom(
         String workspaceId, String sessionId, String sessionToken, JoinRoomRequest joinRoomRequest
     ) {
-        //return new RepoDecoder<Room, RoomResponse>(RepoDecoderType.READ) {
+        ApiResponse<RoomResponse> joinRoomResponse;
+
         SessionTokenResponse sessionTokenResponse = null;
 
         Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
 
         if (room == null) {
-            return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
-        }
+            joinRoomResponse = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+        } else {
+            // Pre data process
+            try {
+                sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
 
-        //sessionType = room.getSessionProperty().getSessionType();
-
-        // Pre data process
-        try {
-            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        ErrorCode errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
-        for (Member member : room.getMembers()) {
-            if (member.getUuid().equals(joinRoomRequest.getUuid())) {
-                MemberStatus memberStatus = member.getMemberStatus();
-                switch (memberStatus) {
-                    case LOADING:
-                        errorCode = ErrorCode.ERR_SUCCESS;
-                        break;
-                    case LOAD:
-                        errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-                        break;
-                    case EVICTED:
-                        errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
-                        break;
+            ErrorCode errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
+            for (Member member : room.getMembers()) {
+                if (member.getUuid().equals(joinRoomRequest.getUuid())) {
+                    MemberStatus memberStatus = member.getMemberStatus();
+                    switch (memberStatus) {
+                        case LOADING:
+                            errorCode = ErrorCode.ERR_SUCCESS;
+                            break;
+                        case LOAD:
+                            errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
+                            break;
+                        case EVICTED:
+                            errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+                            break;
+                    }
                 }
             }
+
+            if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+                RoomResponse roomResponse = new RoomResponse();
+                //not set session create at property
+                roomResponse.setSessionId(sessionId);
+                roomResponse.setToken(sessionTokenResponse.getToken());
+                roomResponse.setWss(UrlConstants.wssUrl);
+                roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+                roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+                roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+                joinRoomResponse = new ApiResponse<>(roomResponse);
+            } else {
+                joinRoomResponse = new ApiResponse<>(new RoomResponse(), errorCode);
+            }
         }
-        
-        if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
-            RoomResponse roomResponse = new RoomResponse();
-            //not set session create at property
-            roomResponse.setSessionId(sessionId);
-            roomResponse.setToken(sessionTokenResponse.getToken());
-            roomResponse.setWss(UrlConstants.wssUrl);
-            //roomResponse.setRestrictedMode(room.isRestrictedMode());
-            roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
-            roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
-
-            /*CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
-            roomResponse.getCoturn().add(coturnResponse);*/
-
-            roomResponse.setSessionType(room.getSessionProperty().getSessionType());
-
-            return new ApiResponse<>(roomResponse);
-        } else {
-            return new ApiResponse<>(new RoomResponse(), errorCode);
-        }
+        return joinRoomResponse;
     }
 
     public ApiResponse<ResultResponse> exitRoom(String workspaceId, String sessionId, String userId) {

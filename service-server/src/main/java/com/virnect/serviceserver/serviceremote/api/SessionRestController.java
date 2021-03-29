@@ -27,11 +27,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
-import com.virnect.serviceserver.serviceremote.application.FileService;
-import com.virnect.serviceserver.serviceremote.application.SessionService;
-import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
-import com.virnect.serviceserver.serviceremote.application.RoomService;
 import com.virnect.data.dto.PushSendRequest;
+import com.virnect.data.dto.rest.PushResponse;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.infra.utils.LogMessage;
+import com.virnect.serviceserver.serviceremote.application.FileService;
+import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
+import com.virnect.serviceserver.serviceremote.application.RoomService;
+import com.virnect.serviceserver.serviceremote.application.ServiceSessionManager;
+import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.serviceremote.dto.push.SendSignalRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.InviteRoomRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.JoinRoomRequest;
@@ -44,13 +50,6 @@ import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDeleteRespo
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomDetailInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomInfoListResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.room.RoomResponse;
-import com.virnect.data.dto.rest.PushResponse;
-import com.virnect.data.error.ErrorCode;
-import com.virnect.data.error.exception.RestServiceException;
-import com.virnect.data.global.common.ApiResponse;
-import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.serviceserver.serviceremote.application.ServiceSessionManager;
-import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 
 @Slf4j
 @RestController
@@ -61,10 +60,9 @@ public class SessionRestController {
     private static final String TAG = SessionRestController.class.getSimpleName();
 
     private static final String REST_PATH = "/remote/room";
-    private final PushMessageClient pushMessageClient;
-    private final SessionService sessionService;
-    private final RoomService roomService;
 
+    private final PushMessageClient pushMessageClient;
+    private final RoomService roomService;
     private final ServiceSessionManager serviceSessionManager;
     private final FileService fileService;
 
@@ -250,7 +248,7 @@ public class SessionRestController {
             "getRoomList"
         );
 
-        RoomInfoListResponse responseData = sessionService.getRoomList(
+        RoomInfoListResponse responseData = roomService.getRoomList(
             workspaceId, userId, paging, pageRequest.ofSortBy());
 
         return ResponseEntity.ok(new ApiResponse<>(responseData));
@@ -279,7 +277,7 @@ public class SessionRestController {
             "getRoomListBySearch"
         );
 
-        RoomInfoListResponse responseData = sessionService.getRoomListStandardSearch(
+        RoomInfoListResponse responseData = roomService.getRoomListStandardSearch(
             workspaceId,
             userId,
             search,
@@ -308,7 +306,7 @@ public class SessionRestController {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<RoomDetailInfoResponse> responseData = sessionService.getRoomDetailBySessionId(
+        ApiResponse<RoomDetailInfoResponse> responseData = roomService.getRoomDetailBySessionId(
             workspaceId, sessionId);
 
         return ResponseEntity.ok(responseData);
@@ -336,28 +334,8 @@ public class SessionRestController {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<RoomDeleteResponse> responseData = sessionService.deleteRoomById(
+        ApiResponse<RoomDeleteResponse> responseData = roomService.deleteRoomById(
             workspaceId, sessionId, userId);
-
-        if (responseData.getData().result) {
-            if (this.serviceSessionManager.closeActiveSession(sessionId)) {
-                LogMessage.formedInfo(
-                    TAG,
-                    "serviceSessionManager",
-                    "closeActiveSession"
-                );
-                fileService.removeFiles(workspaceId, sessionId);
-            }
-
-            if (this.serviceSessionManager.closeNotActiveSession(sessionId)) {
-                LogMessage.formedInfo(
-                    TAG,
-                    "serviceSessionManager",
-                    "closeNotActiveSession"
-                );
-                fileService.removeFiles(workspaceId, sessionId);
-            }
-        }
 
         return ResponseEntity.ok(responseData);
     }
@@ -392,7 +370,7 @@ public class SessionRestController {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<RoomDetailInfoResponse> responseData = sessionService.updateRoom(
+        ApiResponse<RoomDetailInfoResponse> responseData = roomService.updateRoom(
             workspaceId, sessionId, modifyRoomInfoRequest);
         return ResponseEntity.ok(responseData);
     }
@@ -563,9 +541,6 @@ public class SessionRestController {
             );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
-        //Assert.assertTrue(jsonObject.get("name").getAsString().equals("remote"));
-        //Assert.assertTrue(jsonObject.get("java").getAsBoolean() == true);
 
         ApiResponse<ResultResponse> responseData = roomService.sendSignal(
             workspaceId, sendSignalRequest);

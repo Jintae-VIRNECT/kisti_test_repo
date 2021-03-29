@@ -2,6 +2,7 @@ package com.virnect.data.dao.memberhistory;
 
 import static com.virnect.data.domain.member.QMemberHistory.*;
 import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
+import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,6 +26,7 @@ import com.virnect.data.domain.member.MemberHistory;
 public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport implements CustomMemberHistoryRepository{
 
 	private final JPAQueryFactory query;
+	private final long EXPIRATION_DATE = 30;
 
 	public CustomMemberHistoryRepositoryImpl(JPAQueryFactory query) {
 		super(MemberHistory.class);
@@ -45,28 +47,6 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 		boolean paging,
 		Pageable pageable
 	) {
-		/*long offSet = pageable.getOffset();
-		int pageSize = pageable.getPageSize();
-		if (!paging) {
-			offSet = 0;
-			pageSize = Integer.MAX_VALUE;
-		}
-		QueryResults<MemberHistory> queryResult = query
-			.selectFrom(memberHistory)
-			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
-			.where(
-				memberHistory.workspaceId.eq(workspaceId),
-				memberHistory.uuid.eq(userId),
-				memberHistory.roomHistory.isNotNull(),
-				memberHistory.historyDeleted.isFalse()
-			)
-			.offset(offSet)
-			.limit(pageSize)
-			.orderBy(memberHistory.createdDate.desc())
-			.orderBy()
-			.distinct().fetchResults();
-		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
-
 		JPQLQuery<MemberHistory> queryResult = query
 			.selectFrom(memberHistory)
 			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
@@ -76,7 +56,6 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 				memberHistory.roomHistory.isNotNull(),
 				memberHistory.historyDeleted.isFalse()
 			)
-			.orderBy(memberHistory.createdDate.desc())
 			.distinct();
 		long totalCount = queryResult.fetchCount();
 		List<MemberHistory> results;
@@ -85,7 +64,6 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 		} else {
 			results = Objects.requireNonNull(queryResult.fetch());
 		}
-
 		return new PageImpl<>(results, pageable, totalCount);
 	}
 
