@@ -1,6 +1,5 @@
 package com.virnect.workspace.dto.response;
 
-import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -53,7 +52,7 @@ public class WorkspaceInfoListResponse {
         private String masterNickName;
         @ApiModelProperty(value = "해당 워크스페이스에서의 역할(MASTER,MANAGER,MEMBER) 번호", position = 12)
         private Long roleId;
-        private List<MemberInfoDTO> memberList;//추가
+        private List<WorkspaceUserInfoResponse> memberList;//추가
         @Override
         public String toString() {
             return "UserWorkspaceInfo{" +

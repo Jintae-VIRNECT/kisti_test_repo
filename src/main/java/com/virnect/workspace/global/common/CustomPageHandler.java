@@ -24,7 +24,7 @@ public class CustomPageHandler<T> {
      * @param beforePagingList - 페이징 처리하기 전의 리스트
      * @return - 페이징 처리 후의 리스트
      */
-    public CustomPageResponse paging(int page, int pageSize, List<T> beforePagingList) {
+    public CustomPageResponse<T> paging(int page, int pageSize, List<T> beforePagingList) {
         int totalElements = beforePagingList.size();
         int size = pageSize;
         if (totalElements <= size) {

@@ -6,7 +6,7 @@ import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.dao.redis.UserInviteRepository;
 import com.virnect.workspace.domain.*;
-import com.virnect.workspace.dto.UserInfoDTO;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
@@ -200,11 +200,11 @@ public class WorkspaceService {
 
         //user 정보 set
         List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findByWorkspaceUser_Workspace(workspace);
-        List<UserInfoDTO> userInfoList = workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
+        List<WorkspaceUserInfoResponse> userInfoList = workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
             UserInfoRestResponse userInfoRestResponse = userRestService.getUserInfoByUserId(workspaceUserPermission.getWorkspaceUser().getUserId()).getData();
-            UserInfoDTO userInfoDTO = modelMapper.map(userInfoRestResponse, UserInfoDTO.class);
-            userInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-            return userInfoDTO;
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(userInfoRestResponse, WorkspaceUserInfoResponse.class);
+            workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+            return workspaceUserInfoResponse;
         }).collect(Collectors.toList());
 
 

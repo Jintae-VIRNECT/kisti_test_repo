@@ -1,12 +1,12 @@
 package com.virnect.workspace.api;
 
 import com.virnect.workspace.application.MemberService;
-import com.virnect.workspace.dto.UserInfoDTO;
-import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.response.MemberListResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoListResponse;
+import com.virnect.workspace.dto.response.WorkspaceNewMemberInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -57,7 +57,7 @@ public class MemberController {
             @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(role, joinDate, email, nickname)", paramType = "query", defaultValue = "role,desc"),
     })
     @GetMapping("/{workspaceId}/members")
-    public ResponseEntity<ApiResponse<MemberListResponse>> getMembers(
+    public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getMembers(
             @PathVariable("workspaceId") String workspaceId,
             @RequestParam(value = "search", required = false) String search,
             @RequestParam(value = "filter", required = false) String filter, @ApiIgnore PageRequest pageable
@@ -65,7 +65,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        ApiResponse<MemberListResponse> apiResponse = memberService.getMembers(
+        ApiResponse<WorkspaceUserInfoListResponse> apiResponse = memberService.getMembers(
                 workspaceId, search, filter, pageable);
         return ResponseEntity.ok(apiResponse);
     }
@@ -75,13 +75,13 @@ public class MemberController {
             notes = "워크스페이스 홈에서 워크스페이스의 신규 참여 멤버 정보를 조회합니다."
     )
     @GetMapping("/home/{workspaceId}/members")
-    public ResponseEntity<ApiResponse<List<WorkspaceNewMemberInfoDTO>>> getWorkspaceNewUserInfo(
+    public ResponseEntity<ApiResponse<List<WorkspaceNewMemberInfoResponse>>> getWorkspaceNewUserInfo(
             @PathVariable("workspaceId") String workspaceId
     ) {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        List<WorkspaceNewMemberInfoDTO> response = memberService.getWorkspaceNewUserInfo(
+        List<WorkspaceNewMemberInfoResponse> response = memberService.getWorkspaceNewUserInfo(
                 workspaceId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
@@ -115,13 +115,13 @@ public class MemberController {
             @ApiImplicitParam(name = "userId", value = "유저 uuid", dataType = "string", defaultValue = "498b1839dc29ed7bb2ee90ad6985c608", paramType = "query", required = true)
     })
     @GetMapping("/{workspaceId}/members/info")
-    public ResponseEntity<ApiResponse<UserInfoDTO>> getMemberInfo(
+    public ResponseEntity<ApiResponse<WorkspaceUserInfoResponse>> getMemberInfo(
             @PathVariable("workspaceId") String workspaceId, @RequestParam("userId") String userId
     ) {
         if (!StringUtils.hasText(workspaceId) || !StringUtils.hasText(userId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        UserInfoDTO response = memberService.getMemberInfo(workspaceId, userId);
+        WorkspaceUserInfoResponse response = memberService.getMemberInfo(workspaceId, userId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
@@ -233,13 +233,13 @@ public class MemberController {
             @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 uuid", dataType = "string", defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8", paramType = "path", required = true),
     })
     @GetMapping("/{workspaceId}/members/simple")
-    public ResponseEntity<ApiResponse<MemberListResponse>> getSimpleWorkspaceUserList(
+    public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getSimpleWorkspaceUserList(
             @PathVariable("workspaceId") String workspaceId
     ) {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        MemberListResponse response = memberService.getSimpleWorkspaceUserList(workspaceId);
+        WorkspaceUserInfoListResponse response = memberService.getSimpleWorkspaceUserList(workspaceId);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 
@@ -260,7 +260,7 @@ public class MemberController {
         if (!StringUtils.hasText(workspaceId)) {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        WorkspaceUserLicenseListResponse response = memberService.getLicenseWorkspaceUserList(workspaceId, pageRequest.of());
+        WorkspaceUserLicenseListResponse response = memberService.getLicenseWorkspaceUserList(workspaceId, pageRequest);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 

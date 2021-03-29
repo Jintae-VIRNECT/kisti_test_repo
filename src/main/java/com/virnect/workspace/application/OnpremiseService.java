@@ -4,7 +4,7 @@ import com.virnect.workspace.application.license.LicenseRestService;
 import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.domain.*;
-import com.virnect.workspace.dto.MemberInfoDTO;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.onpremise.*;
 import com.virnect.workspace.dto.request.MemberAccountDeleteRequest;
 import com.virnect.workspace.dto.request.WorkspaceMemberPasswordChangeRequest;
@@ -64,7 +64,7 @@ public class OnpremiseService {
                 workspaceId, memberAccountCreateRequest.getUserId(), new String[]{"MASTER", "MANAGER"});
 
         List<String> responseLicense = new ArrayList<>();
-        List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
+        List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
 
         for (MemberAccountCreateInfo memberAccountCreateInfo : memberAccountCreateRequest.getMemberAccountCreateRequest()) {
             //1-1. 사용자에게 최소 1개 이상의 라이선스를 부여했는지 체크
@@ -181,15 +181,15 @@ public class OnpremiseService {
             );
 
             //5. response
-            MemberInfoDTO memberInfoResponse = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
+            WorkspaceUserInfoResponse memberInfoResponse = modelMapper.map(userInfoRestResponse, WorkspaceUserInfoResponse.class);
             memberInfoResponse.setRole(newWorkspaceUserPermission.getWorkspaceRole().getRole());
             memberInfoResponse.setRoleId(newWorkspaceUserPermission.getWorkspaceRole().getId());
             memberInfoResponse.setJoinDate(newWorkspaceUser.getCreatedDate());
             memberInfoResponse.setLicenseProducts(responseLicense.toArray(new String[0]));
-            memberInfoDTOList.add(memberInfoResponse);
+            workspaceUserInfoResponseList.add(memberInfoResponse);
         }
 
-        return new WorkspaceMemberInfoListResponse(memberInfoDTOList);
+        return new WorkspaceMemberInfoListResponse(workspaceUserInfoResponseList);
     }
 
     @Transactional

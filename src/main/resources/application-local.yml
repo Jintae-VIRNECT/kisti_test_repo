@@ -3,8 +3,8 @@ spring:
     name: workspace-server
   datasource:
     url: jdbc:mysql://192.168.6.3:4336/workspace?serverTimezone=UTC
-    username: virnect-workspace
-    password: virnect1234!
+    username: virnect-read
+    password: virnect1234
   jpa:
     hibernate:
       ddl-auto: update
@@ -28,8 +28,12 @@ spring:
     encoding: UTF-8
     basename: classpath:/messages
   zipkin:
-    enabled: true
+    enabled: false
     base-url: http://localhost:9411
+  cloud:
+    loadbalancer:
+      ribbon:
+        enabled: true
 
 logging:
   level:
@@ -51,7 +55,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
-    enabled: true
+    enabled: false
 
 ## Mail send redirect Url
 redirect:
@@ -108,3 +112,10 @@ minio:
   bucket: "virnect-platform"
   resource: "workspace/profile"
   extension: "gif,jpg,jpeg,png"
+
+user-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8081
+license-server:
+  ribbon:
+    listOfServers: http://192.168.6.3:8632

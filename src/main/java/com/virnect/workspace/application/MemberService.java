@@ -8,15 +8,10 @@ import com.virnect.workspace.dao.redis.UserInviteRepository;
 import com.virnect.workspace.domain.*;
 import com.virnect.workspace.domain.redis.UserInvite;
 import com.virnect.workspace.domain.rest.LicenseStatus;
-import com.virnect.workspace.dto.MemberInfoDTO;
-import com.virnect.workspace.dto.UserInfoDTO;
-import com.virnect.workspace.dto.WorkspaceNewMemberInfoDTO;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.response.MemberListResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserLicenseInfoResponse;
-import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
+import com.virnect.workspace.dto.response.*;
 import com.virnect.workspace.dto.rest.*;
 import com.virnect.workspace.exception.WorkspaceException;
 import com.virnect.workspace.global.common.ApiResponse;
@@ -47,6 +42,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -88,7 +84,7 @@ public class MemberService {
      * @param pageRequest - 페이징 정보
      * @return - 워크스페이스 소속 멤버 목록
      */
-    public ApiResponse<MemberListResponse> getMembers(
+    public ApiResponse<WorkspaceUserInfoListResponse> getMembers(
             String workspaceId, String search, String filter, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
         //workspace 서버에서 sort 처리할 수 있는 것들만 한다.
@@ -99,7 +95,7 @@ public class MemberService {
         }
 
         //search를 제일 먼저 한다.
-        UserInfoListRestResponse userInfoListRestResponse = getSearchedUserList(search, workspaceId);
+        UserInfoListRestResponse userInfoListRestResponse = getSearchedUserInfoList(search, workspaceId);
         List<String> searchedUserIds = userInfoListRestResponse.getUserInfoList().stream().map(UserInfoRestResponse::getUuid).collect(Collectors.toList());
 
         //search만 한 결과.
@@ -111,13 +107,12 @@ public class MemberService {
         }
 
 
-
         if (StringUtils.hasText(filter)) {
             String[] filters = StringUtils.split(filter.toUpperCase(), ",") == null ? new String[]{filter} : StringUtils.split(filter.toUpperCase(), ",");
             //권한으로 필터를 건 경우
             if (filters[0].matches(ALL_WORKSAPCE_ROLE)) {
                 workspaceUserPermissionPage = workspaceUserPermissionRepository.getRoleFilteredUserList(workspaceUserPermissionPage.toList(), Arrays.asList(filters), newPageable, workspaceId);
-                String[] userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
+                List<String> userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).collect(Collectors.toList());
                 userInfoListRestResponse = userRestService.getUserInfoList(search, userIds).getData();//필터링 된 유저목록을 다시 검색한다.
             }
 
@@ -125,7 +120,7 @@ public class MemberService {
             if (filters[0].matches(ALL_LICENSE_PRODUCT)) {
                 List<String> userIdList = getLicenseFilterdUserList(searchedUserIds, filter, workspaceId);
                 workspaceUserPermissionPage = workspaceUserPermissionRepository.getContainedUserIdList(userIdList, newPageable, workspaceId);
-                String[] userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).toArray(String[]::new);
+                List<String> userIds = workspaceUserPermissionPage.stream().map(workspaceUserPermission -> workspaceUserPermission.getWorkspaceUser().getUserId()).collect(Collectors.toList());
                 userInfoListRestResponse = userRestService.getUserInfoList(search, userIds).getData();//필터링 된 유저목록을 다시 검색한다.
             }
         }
@@ -135,20 +130,20 @@ public class MemberService {
             PageMetadataRestResponse pageMetadataResponse = new PageMetadataRestResponse();
             pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
             pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
-            return new ApiResponse<>(new MemberListResponse(new ArrayList<>(), pageMetadataResponse));
+            return new ApiResponse<>(new WorkspaceUserInfoListResponse(new ArrayList<>(), pageMetadataResponse));
         }
 
-        List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
+        List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
         for (UserInfoRestResponse userInfoRestResponse : userInfoListRestResponse.getUserInfoList()) {
             for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
                 if (userInfoRestResponse.getUuid().equalsIgnoreCase(workspaceUserPermission.getWorkspaceUser().getUserId())) {
-                    MemberInfoDTO memberInfoDTO = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
-                    memberInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-                    memberInfoDTO.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
-                    memberInfoDTO.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
+                    WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(userInfoRestResponse, WorkspaceUserInfoResponse.class);
+                    workspaceUserInfoResponse.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
+                    workspaceUserInfoResponse.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
+                    workspaceUserInfoResponse.setRoleId(workspaceUserPermission.getWorkspaceRole().getId());
                     String[] userLicenseProducts = getUserLicenseProductList(workspaceId, workspaceUserPermission.getWorkspaceUser().getUserId());
-                    memberInfoDTO.setLicenseProducts(userLicenseProducts);
-                    memberInfoDTOList.add(memberInfoDTO);
+                    workspaceUserInfoResponse.setLicenseProducts(userLicenseProducts);
+                    workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
                 }
             }
         }
@@ -159,8 +154,8 @@ public class MemberService {
         pageMetadataResponse.setCurrentPage(pageRequest.of().getPageNumber() + 1);
         pageMetadataResponse.setCurrentSize(pageRequest.of().getPageSize());
 
-        List<MemberInfoDTO> resultMemberListResponse = getSortedMemberList(pageRequest, memberInfoDTOList);
-        return new ApiResponse<>(new MemberListResponse(resultMemberListResponse, pageMetadataResponse));
+        List<WorkspaceUserInfoResponse> resultMemberListResponse = getSortedMemberList(pageRequest, workspaceUserInfoResponseList);
+        return new ApiResponse<>(new WorkspaceUserInfoListResponse(resultMemberListResponse, pageMetadataResponse));
     }
 
     private List<String> getLicenseFilterdUserList(List<String> searchedUserIds, String filter, String workspaceId) {
@@ -193,88 +188,87 @@ public class MemberService {
         return userIdList;
     }
 
-    private UserInfoListRestResponse getSearchedUserList(String search, String workspaceId) {
-        List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
-        String[] allUserIds = workspaceUserList.stream().map(WorkspaceUser::getUserId).toArray(String[]::new);
-        return userRestService.getUserInfoList(search, allUserIds).getData();
+    private UserInfoListRestResponse getSearchedUserInfoList(String search, String workspaceId) {
+        List<String> workspaceUserIdList = workspaceUserRepository.getWorkspaceUserIdList(workspaceId);
+        return userRestService.getUserInfoList(search, workspaceUserIdList).getData();
     }
 
     /**
      * 워크스페이스 멤버 정렬
      *
-     * @param pageRequest       - 정렬 정보
-     * @param memberInfoDTOList - 정렬할 대상 리스트
+     * @param pageRequest                   - 정렬 정보
+     * @param workspaceUserInfoResponseList - 정렬할 대상 리스트
      * @return - 정렬된 멤버 리스트
      */
-    public List<MemberInfoDTO> getSortedMemberList(
+    public List<WorkspaceUserInfoResponse> getSortedMemberList(
             com.virnect.workspace.global.common.PageRequest
-                    pageRequest, List<MemberInfoDTO> memberInfoDTOList
+                    pageRequest, List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList
     ) {
         String sortName = pageRequest.of().getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
         String sortDirection = pageRequest.of().getSort().toString().split(":")[1].trim();//sort의 방향 : 내림차순 or 오름차순
         if (sortName.equalsIgnoreCase("workspaceRole") && sortDirection.equalsIgnoreCase("asc")) {
-            return memberInfoDTOList.stream()
+            return workspaceUserInfoResponseList.stream()
                     .sorted(
-                            Comparator.comparing(MemberInfoDTO::getRoleId, Comparator.nullsFirst(Comparator.naturalOrder())))
+                            Comparator.comparing(WorkspaceUserInfoResponse::getRoleId, Comparator.nullsFirst(Comparator.naturalOrder())))
                     .collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("workspaceRole") && sortDirection.equalsIgnoreCase("desc")) {
-            return memberInfoDTOList.stream()
+            return workspaceUserInfoResponseList.stream()
                     .sorted(
-                            Comparator.comparing(MemberInfoDTO::getRoleId, Comparator.nullsFirst(Comparator.reverseOrder())))
+                            Comparator.comparing(WorkspaceUserInfoResponse::getRoleId, Comparator.nullsFirst(Comparator.reverseOrder())))
                     .collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("email") && sortDirection.equalsIgnoreCase("asc")) {
-            return memberInfoDTOList.stream()
-                    .sorted(Comparator.comparing(MemberInfoDTO::getEmail, Comparator.nullsFirst(Comparator.naturalOrder())))
+            return workspaceUserInfoResponseList.stream()
+                    .sorted(Comparator.comparing(WorkspaceUserInfoResponse::getEmail, Comparator.nullsFirst(Comparator.naturalOrder())))
                     .collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("email") && sortDirection.equalsIgnoreCase("desc")) {
-            return memberInfoDTOList.stream()
-                    .sorted(Comparator.comparing(MemberInfoDTO::getEmail, Comparator.nullsFirst(Comparator.reverseOrder())))
+            return workspaceUserInfoResponseList.stream()
+                    .sorted(Comparator.comparing(WorkspaceUserInfoResponse::getEmail, Comparator.nullsFirst(Comparator.reverseOrder())))
                     .collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("workspaceUser.createdDate") && sortDirection.equalsIgnoreCase("asc")) {
-            return memberInfoDTOList.stream()
+            return workspaceUserInfoResponseList.stream()
                     .sorted(
-                            Comparator.comparing(MemberInfoDTO::getJoinDate, Comparator.nullsFirst(Comparator.naturalOrder())))
+                            Comparator.comparing(WorkspaceUserInfoResponse::getJoinDate, Comparator.nullsFirst(Comparator.naturalOrder())))
                     .collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("workspaceUser.createdDate") && sortDirection.equalsIgnoreCase("desc")) {
-            return memberInfoDTOList.stream()
+            return workspaceUserInfoResponseList.stream()
                     .sorted(
-                            Comparator.comparing(MemberInfoDTO::getJoinDate, Comparator.nullsFirst(Comparator.reverseOrder())))
+                            Comparator.comparing(WorkspaceUserInfoResponse::getJoinDate, Comparator.nullsFirst(Comparator.reverseOrder())))
                     .collect(Collectors.toList());
         }
         if (sortName.equalsIgnoreCase("nickname") && sortDirection.equalsIgnoreCase("asc")) {
-            List<MemberInfoDTO> koList = memberInfoDTOList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[가-힣\\s]"))
-                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName)).collect(Collectors.toList());
-            List<MemberInfoDTO> enList = memberInfoDTOList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[a-zA-Z\\s]"))
-                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName)).collect(Collectors.toList());
-            List<MemberInfoDTO> etcList = memberInfoDTOList.stream().filter(memberInfoDTO -> !koList.contains(memberInfoDTO)).filter(memberInfoDTO -> !enList.contains(memberInfoDTO))
-                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName)).collect(Collectors.toList());
-            List<MemberInfoDTO> nullList = memberInfoDTOList.stream().filter(memberInfoDTO -> !StringUtils.hasText(memberInfoDTO.getNickName())).collect(Collectors.toList());
+            List<WorkspaceUserInfoResponse> koList = workspaceUserInfoResponseList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[가-힣\\s]"))
+                    .sorted(Comparator.comparing(WorkspaceUserInfoResponse::getNickName)).collect(Collectors.toList());
+            List<WorkspaceUserInfoResponse> enList = workspaceUserInfoResponseList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[a-zA-Z\\s]"))
+                    .sorted(Comparator.comparing(WorkspaceUserInfoResponse::getNickName)).collect(Collectors.toList());
+            List<WorkspaceUserInfoResponse> etcList = workspaceUserInfoResponseList.stream().filter(memberInfoDTO -> !koList.contains(memberInfoDTO)).filter(memberInfoDTO -> !enList.contains(memberInfoDTO))
+                    .sorted(Comparator.comparing(WorkspaceUserInfoResponse::getNickName)).collect(Collectors.toList());
+            List<WorkspaceUserInfoResponse> nullList = workspaceUserInfoResponseList.stream().filter(memberInfoDTO -> !StringUtils.hasText(memberInfoDTO.getNickName())).collect(Collectors.toList());
             enList.addAll(etcList);
             koList.addAll(enList);
             nullList.addAll(koList);
             return nullList;
         }
         if (sortName.equalsIgnoreCase("nickname") && sortDirection.equalsIgnoreCase("desc")) {
-            List<MemberInfoDTO> koList = memberInfoDTOList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[가-힣\\s]"))
-                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName).reversed()).collect(Collectors.toList());
-            List<MemberInfoDTO> enList = memberInfoDTOList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[a-zA-Z\\s]"))
-                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName).reversed()).collect(Collectors.toList());
-            List<MemberInfoDTO> etcList = memberInfoDTOList.stream().filter(memberInfoDTO -> !koList.contains(memberInfoDTO)).filter(memberInfoDTO -> !enList.contains(memberInfoDTO))
-                    .sorted(Comparator.comparing(MemberInfoDTO::getNickName).reversed()).collect(Collectors.toList());
-            List<MemberInfoDTO> nullList = memberInfoDTOList.stream().filter(memberInfoDTO -> !StringUtils.hasText(memberInfoDTO.getNickName())).collect(Collectors.toList());
+            List<WorkspaceUserInfoResponse> koList = workspaceUserInfoResponseList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[가-힣\\s]"))
+                    .sorted(Comparator.comparing(WorkspaceUserInfoResponse::getNickName).reversed()).collect(Collectors.toList());
+            List<WorkspaceUserInfoResponse> enList = workspaceUserInfoResponseList.stream().filter(memberInfoDTO -> org.apache.commons.lang.StringUtils.left(memberInfoDTO.getNickName(), 1).matches("[a-zA-Z\\s]"))
+                    .sorted(Comparator.comparing(WorkspaceUserInfoResponse::getNickName).reversed()).collect(Collectors.toList());
+            List<WorkspaceUserInfoResponse> etcList = workspaceUserInfoResponseList.stream().filter(memberInfoDTO -> !koList.contains(memberInfoDTO)).filter(memberInfoDTO -> !enList.contains(memberInfoDTO))
+                    .sorted(Comparator.comparing(WorkspaceUserInfoResponse::getNickName).reversed()).collect(Collectors.toList());
+            List<WorkspaceUserInfoResponse> nullList = workspaceUserInfoResponseList.stream().filter(memberInfoDTO -> !StringUtils.hasText(memberInfoDTO.getNickName())).collect(Collectors.toList());
             enList.addAll(etcList);
             koList.addAll(enList);
             nullList.addAll(koList);
             return nullList;
         } else {
-            return memberInfoDTOList.stream()
+            return workspaceUserInfoResponseList.stream()
                     .sorted(Comparator.comparing(
-                            MemberInfoDTO::getUpdatedDate,
+                            WorkspaceUserInfoResponse::getUpdatedDate,
                             Comparator.nullsFirst(Comparator.reverseOrder())
                     ))
                     .collect(Collectors.toList());
@@ -302,17 +296,15 @@ public class MemberService {
         return licenseProducts;
     }
 
-    public List<WorkspaceNewMemberInfoDTO> getWorkspaceNewUserInfo(String workspaceId) {
+    public List<WorkspaceNewMemberInfoResponse> getWorkspaceNewUserInfo(String workspaceId) {
         List<WorkspaceUserPermission> workspaceUserPermissionList = workspaceUserPermissionRepository.findRecentWorkspaceUserList(4, workspaceId);
-        List<WorkspaceNewMemberInfoDTO> workspaceNewMemberInfoList = new ArrayList<>();
-        for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionList) {
-            UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceUserPermission.getWorkspaceUser().getUserId());
-            WorkspaceNewMemberInfoDTO newMemberInfo = modelMapper.map(userInfoRestResponse, WorkspaceNewMemberInfoDTO.class);
+
+        return workspaceUserPermissionList.stream().map(workspaceUserPermission -> {
+            WorkspaceNewMemberInfoResponse newMemberInfo = modelMapper.map(getUserInfo(workspaceUserPermission.getWorkspaceUser().getUserId()), WorkspaceNewMemberInfoResponse.class);
             newMemberInfo.setJoinDate(workspaceUserPermission.getWorkspaceUser().getCreatedDate());
             newMemberInfo.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-            workspaceNewMemberInfoList.add(newMemberInfo);
-        }
-        return workspaceNewMemberInfoList;
+            return newMemberInfo;
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -573,17 +565,16 @@ public class MemberService {
         return workspace;
     }
 
-    public UserInfoDTO getMemberInfo(String workspaceId, String userId) {
-        WorkspaceUserPermission workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId).orElse(null);
-        if (workspaceUserPermission == null) {
-            UserInfoDTO userInfoDTO = new UserInfoDTO();
-            return userInfoDTO;
+    public WorkspaceUserInfoResponse getMemberInfo(String workspaceId, String userId) {
+        Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId);
+        if (workspaceUserPermission.isPresent()) {
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(getUserInfo(userId), WorkspaceUserInfoResponse.class);
+            workspaceUserInfoResponse.setRole(workspaceUserPermission.get().getWorkspaceRole().getRole());
+            workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userId));
+            return workspaceUserInfoResponse;
+        } else {
+            return new WorkspaceUserInfoResponse();
         }
-        UserInfoRestResponse userInfoRestResponse = getUserInfo(userId);
-        UserInfoDTO userInfoDTO = modelMapper.map(userInfoRestResponse, UserInfoDTO.class);
-        userInfoDTO.setRole(workspaceUserPermission.getWorkspaceRole().getRole());
-        userInfoDTO.setLicenseProducts(getUserLicenseProductList(workspaceId, userId));
-        return userInfoDTO;
     }
 
     @CacheEvict(value = "userWorkspaces", key = "#memberKickOutRequest.kickedUserId")
@@ -1269,22 +1260,15 @@ public class MemberService {
         return new ApiResponse<>(true);
     }
 
-    public MemberListResponse getSimpleWorkspaceUserList(String workspaceId) {
-        List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(workspaceId);
-        String[] workspaceUserIdList = workspaceUserList.stream()
-                .map(WorkspaceUser::getUserId)
-                .toArray(String[]::new);
-        List<MemberInfoDTO> memberInfoDTOList = new ArrayList<>();
+    public WorkspaceUserInfoListResponse getSimpleWorkspaceUserList(String workspaceId) {
+        UserInfoListRestResponse userInfoListRestResponse = getSearchedUserInfoList("", workspaceId);
+        List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = userInfoListRestResponse.getUserInfoList().stream().map(userInfoRestResponse -> {
+            WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(userInfoRestResponse, WorkspaceUserInfoResponse.class);
+            workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userInfoRestResponse.getUuid()));
+            return workspaceUserInfoResponse;
+        }).collect(Collectors.toList());
 
-        UserInfoListRestResponse userInfoListRestResponse = userRestService.getUserInfoList(
-                "", workspaceUserIdList).getData();
-        userInfoListRestResponse.getUserInfoList().forEach(userInfoRestResponse -> {
-            MemberInfoDTO memberInfoDTO = modelMapper.map(userInfoRestResponse, MemberInfoDTO.class);
-            memberInfoDTO.setLicenseProducts(getUserLicenseProductList(workspaceId, userInfoRestResponse.getUuid()));
-            memberInfoDTOList.add(memberInfoDTO);
-        });
-
-        return new MemberListResponse(memberInfoDTOList, null);
+        return new WorkspaceUserInfoListResponse(workspaceUserInfoResponseList, null);
     }
 
     /**
@@ -1295,12 +1279,10 @@ public class MemberService {
      * @return - 멤버 플랜 리스트
      */
     public WorkspaceUserLicenseListResponse getLicenseWorkspaceUserList(
-            String workspaceId, Pageable pageable
+            String workspaceId, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
-        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = licenseRestService.getWorkspaceLicenses(
-                workspaceId).getData();
-        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null
-                || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
+        WorkspaceLicensePlanInfoResponse workspaceLicensePlanInfoResponse = licenseRestService.getWorkspaceLicenses(workspaceId).getData();
+        if (workspaceLicensePlanInfoResponse.getLicenseProductInfoList() == null || workspaceLicensePlanInfoResponse.getLicenseProductInfoList().isEmpty()) {
             throw new WorkspaceException(ErrorCode.ERR_NOT_FOUND_WORKSPACE_LICENSE_PLAN);
         }
 
@@ -1320,53 +1302,41 @@ public class MemberService {
                 });
         if (workspaceUserLicenseInfoList.isEmpty()) {
             PageMetadataRestResponse pageMetadataRestResponse = new PageMetadataRestResponse();
-            pageMetadataRestResponse.setCurrentPage(pageable.getPageNumber());
-            pageMetadataRestResponse.setCurrentSize(pageable.getPageSize());
+            pageMetadataRestResponse.setCurrentPage(pageRequest.of().getPageNumber());
+            pageMetadataRestResponse.setCurrentSize(pageRequest.of().getPageSize());
             pageMetadataRestResponse.setTotalElements(0);
             pageMetadataRestResponse.setTotalPage(0);
             return new WorkspaceUserLicenseListResponse(workspaceUserLicenseInfoList, new PageMetadataRestResponse());
         }
-        List<WorkspaceUserLicenseInfoResponse> beforeWorkspaceUserLicenseList = new ArrayList<>();
 
-        //sort
-        String sortName = pageable.getSort().toString().split(":")[0].trim();//sort의 기준이 될 열
-        String sortDirection = pageable.getSort().toString().split(":")[1].trim();//sort의 방향 : 내림차순 or 오름차순
+        List<WorkspaceUserLicenseInfoResponse> sortedWorkspaceUserLicenseList
+                = workspaceUserLicenseInfoList.stream()
+                .sorted(Comparator.comparing(getSortKey(pageRequest.getSortName()), getSortDirection(pageRequest.getSortDirection())))
+                .collect(Collectors.toList());
 
-        if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("asc")) {
-            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-                    .sorted(Comparator.comparing(
-                            WorkspaceUserLicenseInfoResponse::getProductName,
-                            Comparator.nullsFirst(Comparator.naturalOrder())
-                    ))
-                    .collect(Collectors.toList());
-        }
-        if (sortName.equalsIgnoreCase("plan") && sortDirection.equalsIgnoreCase("desc")) {
-            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-                    .sorted(Comparator.comparing(
-                            WorkspaceUserLicenseInfoResponse::getProductName,
-                            Comparator.nullsFirst(Comparator.reverseOrder())
-                    ))
-                    .collect(Collectors.toList());
-        }
-        if (sortName.equalsIgnoreCase("nickName") && sortDirection.equalsIgnoreCase("asc")) {
-            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-                    .sorted(Comparator.comparing(
-                            WorkspaceUserLicenseInfoResponse::getNickName,
-                            Comparator.nullsFirst(Comparator.naturalOrder())
-                    ))
-                    .collect(Collectors.toList());
-        }
-        if (sortName.equalsIgnoreCase("nickName") && sortDirection.equalsIgnoreCase("desc")) {
-            beforeWorkspaceUserLicenseList = workspaceUserLicenseInfoList.stream()
-                    .sorted(Comparator.comparing(
-                            WorkspaceUserLicenseInfoResponse::getNickName,
-                            Comparator.nullsFirst(Comparator.reverseOrder())
-                    ))
-                    .collect(Collectors.toList());
-        }
-        //WorkspaceUserLicenseListResponse workspaceUserLicenseListResponse = paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList);
-        CustomPageHandler<WorkspaceUserLicenseInfoResponse> customPageHandler = new CustomPageHandler<>();
-        CustomPageResponse customPageResponse = customPageHandler.paging(pageable.getPageNumber(), pageable.getPageSize(), beforeWorkspaceUserLicenseList);
+        CustomPageResponse<WorkspaceUserLicenseInfoResponse> customPageResponse
+                = new CustomPageHandler<WorkspaceUserLicenseInfoResponse>().paging(pageRequest.of().getPageNumber(), pageRequest.of().getPageSize(), sortedWorkspaceUserLicenseList);
         return new WorkspaceUserLicenseListResponse(customPageResponse.getAfterPagingList(), customPageResponse.getPageMetadataResponse());
     }
+
+    private Function<WorkspaceUserLicenseInfoResponse, String> getSortKey(String sortName) {
+        if (sortName.equalsIgnoreCase("plan")) {
+            return WorkspaceUserLicenseInfoResponse::getProductName;
+        }
+        if (sortName.equalsIgnoreCase("nickName")) {
+            return WorkspaceUserLicenseInfoResponse::getNickName;
+        }
+        return WorkspaceUserLicenseInfoResponse::getProductName;
+    }
+
+    private Comparator<String> getSortDirection(String sortDirection) {
+        if (sortDirection.equalsIgnoreCase("asc")) {
+            return Comparator.nullsFirst(Comparator.naturalOrder());
+        }
+        if (sortDirection.equalsIgnoreCase("desc")) {
+            return Comparator.nullsFirst(Comparator.reverseOrder());
+        }
+        return Comparator.nullsFirst(Comparator.naturalOrder());
+    }
+
 }
