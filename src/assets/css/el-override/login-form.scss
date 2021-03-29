@@ -19,7 +19,7 @@
   &.must-check {
     &:after {
       padding-left: 2px;
-      color: $danger;
+      color: $color-danger;
       content: "*";
     }
   }
@@ -37,7 +37,7 @@
 .el-input {
   &.input-danger {
     .el-input__inner {
-      border-bottom-color: $danger;
+      border-bottom-color: $color-danger;
     }
   }
   .el-input__clear {
@@ -55,7 +55,7 @@
 .el-input__inner {
   height: 48px;
   padding: 0;
-  color: $baseColor;
+  color: $font-color-content;
   font-weight: 500;
   font-size: 16px;
   border: 0;
@@ -93,7 +93,7 @@
   .el-checkbox__label {
     &:after {
       padding-left: 2px;
-      color: $danger;
+      color: $color-danger;
       content: "*";
     }
   }

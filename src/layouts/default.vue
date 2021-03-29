@@ -1,17 +1,20 @@
 <template>
   <div>
-    <header>
-      <the-header :logoImg="logoImg" :showSection="showSection" :auth="auth">
-        <template slot="subTitle">
-          <workspace-select
-            :activeWorkspace="activeWorkspace"
-            :workspaceList="myWorkspaces"
-            @onChange="changeActiveWorkspace"
-            @click.native.prevent
-          />
-        </template>
-      </the-header>
-    </header>
+    <VirnectHeader
+      :showStatus="showSection"
+      :userInfo="auth.myInfo"
+      :urls="$url"
+      @logout="$store.commit('auth/LOGOUT')"
+    >
+      <template slot="subTitle">
+        <VirnectWorkspaceSelect
+          :activeWorkspace="activeWorkspace"
+          :workspaceList="myWorkspaces"
+          @onChange="changeActiveWorkspace"
+          @click.native.prevent
+        />
+      </template>
+    </VirnectHeader>
     <div>
       <the-sidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
       <main>
@@ -23,8 +26,6 @@
 
 <script>
 import TheSidebar from '@/components/layout/TheSidebar'
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
-import WorkspaceSelect from '@/components/workspace/WorkspaceSelect'
 
 import { sideMenus, sideBottomMenus } from '@/models/layout'
 import { mapGetters } from 'vuex'
@@ -33,8 +34,6 @@ export default {
   middleware: 'default',
   components: {
     TheSidebar,
-    TheHeader,
-    WorkspaceSelect,
   },
   head() {
     return {

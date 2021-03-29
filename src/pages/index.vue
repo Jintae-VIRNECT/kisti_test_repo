@@ -146,12 +146,12 @@ export default {
     & h6 {
       font-weight: 300;
       font-size: 20px;
-      font-family: $poppins, $noto;
+      font-family: $font-poppins, $font-noto;
     }
     & h5 {
       font-weight: bold;
       font-size: 28px;
-      font-family: $poppins, $noto;
+      font-family: $font-poppins, $font-noto;
     }
     & p {
       margin-top: 20px;

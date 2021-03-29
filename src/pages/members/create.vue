@@ -315,7 +315,7 @@ export default {
       padding: 32px;
     }
     label.required:after {
-      color: $danger;
+      color: $color-danger;
       content: '*';
     }
     .el-form-item {

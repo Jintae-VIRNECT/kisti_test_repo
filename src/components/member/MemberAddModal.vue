@@ -124,7 +124,6 @@ import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -227,7 +226,7 @@ export default {
             confirmButtonText: this.$t('common.paymentCenter'),
             customClass: 'no-title',
           }).then(() => {
-            window.open(`${urls.pay[this.$config.VIRNECT_ENV]}`)
+            window.open(`${this.$url.pay}`)
           })
         }
         // 일반에러

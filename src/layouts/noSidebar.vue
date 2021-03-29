@@ -1,8 +1,11 @@
 <template>
-  <div>
-    <header class="no-sidebar">
-      <the-header :showSection="showSection" :auth="auth" />
-    </header>
+  <div class="no-sidebar">
+    <VirnectHeader
+      :showStatus="showSection"
+      :userInfo="auth.myInfo"
+      :urls="$url"
+      @logout="$store.commit('auth/LOGOUT')"
+    />
     <div>
       <main>
         <nuxt />
@@ -12,14 +15,10 @@
 </template>
 
 <script>
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import { mapGetters } from 'vuex'
 
 export default {
   middleware: 'default',
-  components: {
-    TheHeader,
-  },
   head() {
     return {
       title: `VIRNECT | ${this.$t('common.workstation')}`,
@@ -51,3 +50,9 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.no-sidebar main {
+  min-width: 0;
+}
+</style>
