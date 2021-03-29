@@ -1,15 +1,23 @@
-RELEASE v2.3.0.6
+RELEASE v2.3.1.0
 
 ### New Features
 ### Bug Fixes
 ### Improvement
 ### UI
-* 영상 공유 모드 툴팁 문구 수정
-* 영상 공유 제어 아이콘 수정
 ### Limitation
 ### Chore
+
+Chore
+* 링크플로우 LGPL 라이브러리 추가
+
+UI
+* 영상 공유 모드 툴팁 문구 수정
+* 영상 공유 제어 아이콘 수정
+* 홈 화면 목록에서 통일성을 위해 문구 제거
 
 Bug Fixes
 * [DPLA-2327] 영상 제한 모드에서 로컬 녹화 선택가능
 * 음성 번역 기능 사용시 에러 발생 처리(내부)
+* 리얼웨어 웹뷰 스크롤 불가 버그 수정
+
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
