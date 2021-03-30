@@ -14,20 +14,20 @@
       <el-row class="searchbar">
         <el-col class="left">
           <span>{{ $t('searchbar.sort.title') }}:</span>
-          <searchbar-sort
+          <SearchbarSort
             ref="sort"
             :value.sync="memberSort.value"
             :options="memberSort.options"
           />
           <span>{{ $t('searchbar.filter.title') }}:</span>
-          <searchbar-filter
+          <SearchbarFilter
             ref="filter"
             :value.sync="memberFilter.value"
             :options="memberFilter.options"
           />
         </el-col>
         <el-col class="right">
-          <searchbar-keyword ref="keyword" :value.sync="memberSearch" />
+          <SearchbarKeyword ref="keyword" :value.sync="memberSearch" />
           <el-button type="primary" @click="addMember" v-if="canAddMember">
             {{ $t('members.allMembers.addMember') }}
           </el-button>
@@ -40,29 +40,24 @@
           v-for="member in membersList"
           :key="member.uuid"
         >
-          <member-profile-card
+          <MemberProfileCard
             :data="member"
             @refresh="searchMembers(searchParams)"
           />
         </el-col>
       </el-row>
-      <searchbar-page
+      <SearchbarPage
         ref="page"
         :value.sync="membersPage"
         :total="membersTotal"
       />
     </div>
-    <member-add-modal
-      :visible.sync="showAddModal"
-      :membersTotal="membersTotal"
-    />
+    <MemberAddModal :visible.sync="showAddModal" :membersTotal="membersTotal" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import MemberProfileCard from '@/components/member/MemberProfileCard'
-import MemberAddModal from '@/components/member/MemberAddModal'
 import workspaceService from '@/services/workspace'
 import searchMixin from '@/mixins/search'
 import {
@@ -72,10 +67,6 @@ import {
 
 export default {
   mixins: [searchMixin],
-  components: {
-    MemberProfileCard,
-    MemberAddModal,
-  },
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',

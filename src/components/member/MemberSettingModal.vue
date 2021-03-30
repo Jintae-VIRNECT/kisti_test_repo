@@ -44,7 +44,7 @@
                   <img src="~assets/images/icon/ic-error.svg" />
                 </el-tooltip>
               </template>
-              <member-role-select
+              <MemberRoleSelect
                 v-model="form.role"
                 :disabled="!canChangeRole"
               />
@@ -63,7 +63,7 @@
         <el-row :gutter="8">
           <el-col :span="12" :sm="8">
             <el-form-item class="horizon" :label="plans.remote.label">
-              <member-plan-select
+              <MemberPlanSelect
                 v-model="form.licenseRemote"
                 :label="plans.remote.label"
                 :amount="plansInfo.remote.unUsedAmount"
@@ -72,7 +72,7 @@
           </el-col>
           <el-col :span="12" :sm="8">
             <el-form-item class="horizon" :label="plans.make.label">
-              <member-plan-select
+              <MemberPlanSelect
                 v-model="form.licenseMake"
                 :label="plans.make.label"
                 :amount="plansInfo.make.unUsedAmount"
@@ -81,7 +81,7 @@
           </el-col>
           <el-col :span="12" :sm="8">
             <el-form-item class="horizon" :label="plans.view.label">
-              <member-plan-select
+              <MemberPlanSelect
                 v-model="form.licenseView"
                 :label="plans.view.label"
                 :amount="plansInfo.view.unUsedAmount"
@@ -105,8 +105,6 @@
 </template>
 
 <script>
-import MemberRoleSelect from '@/components/member/MemberRoleSelect'
-import MemberPlanSelect from '@/components/member/MemberPlanSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import workspaceService from '@/services/workspace'
@@ -116,10 +114,6 @@ import plans from '@/models/workspace/plans'
 import filterMixin from '@/mixins/filters'
 
 export default {
-  components: {
-    MemberRoleSelect,
-    MemberPlanSelect,
-  },
   mixins: [filterMixin, modalMixin],
   props: {
     data: Object,

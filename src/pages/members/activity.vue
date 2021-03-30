@@ -14,37 +14,37 @@
       <el-row class="btn-wrapper searchbar">
         <!-- <el-col class="left"> </el-col>
         <el-col class="right">
-          <searchbar-keyword ref="keyword" :value.sync="activitySearch" />
+          <SearchbarKeyword ref="keyword" :value.sync="activitySearch" />
         </el-col> -->
       </el-row>
 
       <el-row>
         <el-card class="el-card--table">
           <el-table ref="table" :data="activityList" v-loading="loading">
-            <column-user
+            <ColumnUser
               :label="$t('members.activity.column.member')"
               prop="workerName"
               nameProp="workerName"
               imageProp="workerProfile"
             />
-            <column-default
+            <ColumnDefault
               :label="$t('members.activity.column.contentsCount')"
               prop="countContent"
               :width="150"
             />
-            <column-done
+            <ColumnDone
               :label="$t('members.activity.column.subTasks')"
               :tooltip="$t('members.activity.column.subTasksTooltip')"
               prop="countProgressing"
               maxProp="countAssigned"
               :width="150"
             />
-            <column-progress
+            <ColumnProgress
               :label="$t('members.activity.column.progress')"
               prop="percent"
               :width="170"
             />
-            <column-date
+            <ColumnDate
               :label="$t('members.activity.column.reportedDate')"
               type="time"
               prop="lastestReportedTime"
@@ -67,9 +67,7 @@
                     <span>{{ $t('members.card.work') }}</span>
                   </router-link>
                   <router-link
-                    :to="
-                      `/tasks/results/papers?search=${scope.row.workerEmail}`
-                    "
+                    :to="`/tasks/results/papers?search=${scope.row.workerEmail}`"
                   >
                     <img src="~assets/images/icon/ic-report.svg" />
                     <span>{{ $t('members.card.paper') }}</span>
@@ -80,7 +78,7 @@
           </el-table>
         </el-card>
       </el-row>
-      <searchbar-page
+      <SearchbarPage
         ref="page"
         :value.sync="activityPage"
         :total="activityTotal"

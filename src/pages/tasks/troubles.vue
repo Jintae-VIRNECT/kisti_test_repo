@@ -14,10 +14,10 @@
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
-          <searchbar-mine ref="mine" :mineLabel="$t('troubles.list.myTm')" />
+          <SearchbarMine ref="mine" :mineLabel="$t('troubles.list.myTm')" />
         </el-col>
         <el-col class="right">
-          <searchbar-keyword ref="keyword" :value.sync="troubleSearch" />
+          <SearchbarKeyword ref="keyword" :value.sync="troubleSearch" />
         </el-col>
       </el-row>
 
@@ -33,11 +33,11 @@
             v-loading="loading"
             @row-click="rowClick"
           >
-            <column-default
+            <ColumnDefault
               :label="$t('troubles.list.column.content')"
               prop="caption"
             />
-            <column-user
+            <ColumnUser
               :label="$t('troubles.list.column.user')"
               prop="workerUUID"
               nameProp="workerName"
@@ -45,7 +45,7 @@
               sortable="custom"
               :width="140"
             />
-            <column-date
+            <ColumnDate
               :label="$t('troubles.list.column.reportedDate')"
               prop="reportedDate"
               type="time"
@@ -54,7 +54,7 @@
           </el-table>
         </el-card>
       </el-row>
-      <searchbar-page
+      <SearchbarPage
         ref="page"
         :value.sync="troublesPage"
         :total="troublesTotal"

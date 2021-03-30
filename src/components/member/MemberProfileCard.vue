@@ -43,26 +43,26 @@
         </router-link>
       </dd>
     </dl>
-    <member-setting-modal
+    <MemberSettingModal
       :data="myInfo"
       :visible.sync="showMemberSettingModal"
       @updated="updated"
       @kick="kick"
       @change-password="showMemberPasswordModal = true"
     />
-    <member-kick-modal
+    <MemberKickModal
       v-if="!$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberKickModal"
       @back="back"
       @kicked="kicked"
     />
-    <member-password-modal
+    <MemberPasswordModal
       v-if="$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberPasswordModal"
     />
-    <member-delete-modal
+    <MemberDeleteModal
       v-if="$isOnpremise"
       :data="myInfo"
       :visible.sync="showMemberDeleteModal"
@@ -72,22 +72,12 @@
 </template>
 
 <script>
-import MemberSettingModal from '@/components/member/MemberSettingModal'
-import MemberKickModal from '@/components/member/MemberKickModal'
-import MemberPasswordModal from '@/components/member/MemberPasswordModal'
-import MemberDeleteModal from '@/components/member/MemberDeleteModal'
 import { mapGetters } from 'vuex'
 import plans from '@/models/workspace/plans'
 import filterMixin from '@/mixins/filters'
 
 export default {
   mixins: [filterMixin],
-  components: {
-    MemberSettingModal,
-    MemberKickModal,
-    MemberPasswordModal,
-    MemberDeleteModal,
-  },
   props: {
     data: Object,
   },

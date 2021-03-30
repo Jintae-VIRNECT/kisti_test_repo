@@ -9,7 +9,7 @@
         <a @click.stop="toggleWide" />
       </div>
       <div class="the-sidebar__upper">
-        <the-sidebar-menu-list
+        <TheSidebarMenuList
           :menus="menus"
           :isWide="showWide"
           @openCollapse="openCollapse"
@@ -18,7 +18,7 @@
       </div>
       <!-- 워크스페이스 설정 -->
       <div class="the-sidebar__lower" v-if="!hideWorkspaceSetting">
-        <the-sidebar-menu-list
+        <TheSidebarMenuList
           :menus="bottomMenus"
           :isWide="showWide"
           @openCollapse="openCollapse"
@@ -40,14 +40,12 @@
 import collapseTask from '@/components/layout/collapses/TheSidebarCollapseTask'
 import collapseMember from '@/components/layout/collapses/TheSidebarCollapseMember'
 import collapseContents from '@/components/layout/collapses/TheSidebarCollapseContents'
-import TheSidebarMenuList from './TheSidebarMenuList.vue'
 import { mapGetters } from 'vuex'
 import filterMixin from '@/mixins/filters'
 
 export default {
   mixins: [filterMixin],
   components: {
-    TheSidebarMenuList,
     collapseTask,
     collapseMember,
     collapseContents,

@@ -16,7 +16,7 @@
       </template>
     </VirnectHeader>
     <div>
-      <the-sidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
+      <TheSidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
       <main>
         <nuxt />
       </main>
@@ -25,16 +25,11 @@
 </template>
 
 <script>
-import TheSidebar from '@/components/layout/TheSidebar'
-
 import { sideMenus, sideBottomMenus } from '@/models/layout'
 import { mapGetters } from 'vuex'
 
 export default {
   middleware: 'default',
-  components: {
-    TheSidebar,
-  },
   head() {
     return {
       title: `${this.title} | ${this.$t('common.workstation')}`,

@@ -6,30 +6,30 @@
     @row-click="rowClick"
     @sort-change="sortChange"
   >
-    <column-default
+    <ColumnDefault
       :label="$t('results.column.taskName')"
       prop="taskName"
       sortable="custom"
       :width="240"
     />
-    <column-default
+    <ColumnDefault
       :label="$t('results.column.subTaskName')"
       prop="subTaskName"
       sortable="custom"
       :width="240"
     />
-    <column-default
+    <ColumnDefault
       :label="$t('results.column.stepName')"
       prop="stepName"
       sortable="custom"
       :width="240"
     />
-    <column-default
+    <ColumnDefault
       :label="$t('results.column.issueTitle')"
       prop="caption"
       sortable="custom"
     />
-    <column-user
+    <ColumnUser
       :label="$t('results.column.reporter')"
       prop="workerUUID"
       nameProp="workerName"
@@ -37,7 +37,7 @@
       type="tooltip"
       :width="70"
     />
-    <column-date
+    <ColumnDate
       :label="$t('results.column.reportedDate')"
       type="time"
       prop="reportedDate"

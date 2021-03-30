@@ -21,17 +21,17 @@
       class="clickable"
       @row-click="moveToContent"
     >
-      <column-default
+      <ColumnDefault
         :label="$t('contents.allContents.column.name')"
         prop="contentName"
       />
-      <column-default
+      <ColumnDefault
         :label="$t('contents.allContents.column.targetType')"
         prop="targetType"
         customFilter="targetType2label"
         :width="90"
       />
-      <column-user
+      <ColumnUser
         :label="$t('contents.allContents.column.uploader')"
         type="tooltip"
         prop="uploaderUUID"
@@ -39,12 +39,12 @@
         imageProp="uploaderProfile"
         :width="90"
       />
-      <column-date
+      <ColumnDate
         :label="$t('contents.allContents.column.createdDate')"
         prop="createdDate"
         :width="100"
       />
-      <column-boolean
+      <ColumnBoolean
         :label="$t('contents.allContents.column.sharedStatus')"
         prop="shared"
         :trueText="$t('contents.sharedStatus.shared')"
@@ -63,39 +63,39 @@
       class="clickable"
       @row-click="moveToTask"
     >
-      <column-default :label="$t('task.list.column.name')" prop="name" />
-      <column-done
+      <ColumnDefault :label="$t('task.list.column.name')" prop="name" />
+      <ColumnDone
         :label="$t('task.list.column.endedSubTasks')"
         prop="doneCount"
         maxProp="subTaskTotal"
         :width="100"
       />
-      <column-date
+      <ColumnDate
         :label="$t('task.list.column.schedule')"
         type="time-narrow"
         prop="startDate"
         prop2="endDate"
         :width="140"
       />
-      <column-progress
+      <ColumnProgress
         :label="$t('task.list.column.progressRate')"
         prop="progressRate"
         :width="130"
       />
-      <column-status
+      <ColumnStatus
         :label="$t('task.list.column.status')"
         prop="conditions"
         :statusList="taskConditions"
         :width="120"
       />
-      <column-boolean
+      <ColumnBoolean
         :label="$t('task.list.column.issue')"
         prop="issuesTotal"
         :trueText="$t('task.list.hasIssue.yes')"
         :falseText="$t('task.list.hasIssue.no')"
         :width="70"
       />
-      <column-closed
+      <ColumnClosed
         :label="$t('task.list.column.endStatus')"
         prop="state"
         :width="90"

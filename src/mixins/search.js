@@ -1,20 +1,4 @@
-import SearchbarFilter from '@/components/common/searchbar/SearchbarFilter'
-import SearchbarSort from '@/components/common/searchbar/SearchbarSort'
-import SearchbarKeyword from '@/components/common/searchbar/SearchbarKeyword'
-import SearchbarPage from '@/components/common/searchbar/SearchbarPage'
-import SearchbarMine from '@/components/common/searchbar/SearchbarMine'
-
-/**
- *
- */
 export default {
-  components: {
-    SearchbarFilter,
-    SearchbarSort,
-    SearchbarKeyword,
-    SearchbarPage,
-    SearchbarMine,
-  },
   data() {
     return {
       searchParams: {},

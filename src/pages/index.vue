@@ -12,19 +12,19 @@
         <el-col class="container__left">
           <el-row>
             <el-card class="el-card--table">
-              <workspace-info />
+              <WorkspaceInfo />
             </el-card>
           </el-row>
           <el-row v-if="!$isOnpremise">
-            <plans-used
+            <PlansUsed
               i18nGroup="home.plansInfo.arStorage"
               :info="plansInfo.storage"
             />
-            <plans-used
+            <PlansUsed
               i18nGroup="home.plansInfo.arContent"
               :info="plansInfo.viewCount"
             />
-            <!-- <plans-used
+            <!-- <PlansUsed
               i18nGroup="home.plansInfo.call"
               :info="plansInfo.callTime"
             /> -->
@@ -42,15 +42,15 @@
               {{ $t('home.banner.desc') }}
             </p>
           </el-card>
-          <current-member-list v-if="!$isOnpremise" />
-          <current-contents-list />
-          <current-result-list />
+          <CurrentMemberList v-if="!$isOnpremise" />
+          <CurrentContentsList />
+          <CurrentResultList />
         </el-col>
         <!-- 오른쪽 -->
         <el-col class="container__right">
-          <user-profile-card />
-          <download-center v-if="!$isOnpremise" />
-          <guide-list v-if="!$isOnpremise" />
+          <UserProfileCard />
+          <DownloadCenter v-if="!$isOnpremise" />
+          <GuideList v-if="!$isOnpremise" />
           <a
             v-if="!$isOnpremise"
             :href="`${$url.www}/support/faq`"
@@ -68,40 +68,16 @@
       </el-row>
     </div>
 
-    <alert-storage-overflow :visible.sync="showAlertStorageOverflow" />
-    <alert-license-overflow :visible.sync="showAlertLicenseOverflow" />
+    <AlertStorageOverflow :visible.sync="showAlertStorageOverflow" />
+    <AlertLicenseOverflow :visible.sync="showAlertLicenseOverflow" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-
-import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import PlansUsed from '@/components/home/PlansUsed'
-import CurrentMemberList from '@/components/home/CurrentMemberList'
-import CurrentContentsList from '@/components/home/CurrentContentsList'
-import CurrentResultList from '@/components/home/CurrentResultList'
-import UserProfileCard from '@/components/home/UserProfileCard'
-import DownloadCenter from '@/components/home/DownloadCenter'
-import GuideList from '@/components/home/GuideList'
-import AlertStorageOverflow from '@/components/home/AlertStorageOverflow'
-import AlertLicenseOverflow from '@/components/home/AlertLicenseOverflow'
-
 import workspaceService from '@/services/workspace'
 
 export default {
-  components: {
-    WorkspaceInfo,
-    PlansUsed,
-    CurrentMemberList,
-    CurrentContentsList,
-    CurrentResultList,
-    UserProfileCard,
-    DownloadCenter,
-    GuideList,
-    AlertStorageOverflow,
-    AlertLicenseOverflow,
-  },
   data() {
     return {
       showAlertStorageOverflow: false,

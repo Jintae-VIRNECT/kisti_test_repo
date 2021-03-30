@@ -69,7 +69,7 @@
               </el-col>
               <el-col :span="15">
                 <label>{{ $t('members.setting.role') }}</label>
-                <member-role-select v-model="form.role" />
+                <MemberRoleSelect v-model="form.role" />
               </el-col>
             </el-row>
             <el-row>
@@ -92,7 +92,7 @@
                 </label>
                 <div class="plans">
                   <el-form-item :label="plans.remote.label">
-                    <member-plan-select
+                    <MemberPlanSelect
                       v-model="form.planRemote"
                       :label="plans.remote.label"
                       :amount="availablePlans.remote"
@@ -100,7 +100,7 @@
                     />
                   </el-form-item>
                   <el-form-item class="horizon" :label="plans.make.label">
-                    <member-plan-select
+                    <MemberPlanSelect
                       v-model="form.planMake"
                       :label="plans.make.label"
                       :amount="availablePlans.make"
@@ -108,7 +108,7 @@
                     />
                   </el-form-item>
                   <el-form-item class="horizon" :label="plans.view.label">
-                    <member-plan-select
+                    <MemberPlanSelect
                       v-model="form.planView"
                       :label="plans.view.label"
                       :amount="availablePlans.view"
@@ -135,18 +135,12 @@
 </template>
 
 <script>
-import MemberRoleSelect from '@/components/member/MemberRoleSelect'
-import MemberPlanSelect from '@/components/member/MemberPlanSelect'
 import CreateMember from '@/models/workspace/CreateMember'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
 import { mapGetters } from 'vuex'
 
 export default {
-  components: {
-    MemberRoleSelect,
-    MemberPlanSelect,
-  },
   middleware({ $config, error }) {
     if ($config.VIRNECT_ENV !== 'onpremise') {
       return error({ statusCode: 404 })

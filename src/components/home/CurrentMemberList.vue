@@ -6,23 +6,20 @@
       </h3>
     </div>
     <el-table :data="members" v-loading="loading">
-      <column-user
+      <ColumnUser
         :label="$t('home.memberList.column.nickname')"
         prop="uuid"
         nameProp="nickname"
         imageProp="profile"
         :width="170"
       />
-      <column-default
-        :label="$t('home.memberList.column.email')"
-        prop="email"
-      />
-      <column-role
+      <ColumnDefault :label="$t('home.memberList.column.email')" prop="email" />
+      <ColumnRole
         :label="$t('home.memberList.column.role')"
         prop="role"
         :width="124"
       />
-      <column-date
+      <ColumnDate
         :label="$t('home.memberList.column.joinDate')"
         prop="joinDate"
         :width="100"

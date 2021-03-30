@@ -16,7 +16,7 @@
         <!-- 왼쪽 -->
         <el-col class="container__left">
           <el-card class="el-card--table">
-            <workspace-info />
+            <WorkspaceInfo />
           </el-card>
         </el-col>
         <!-- 가운데 -->
@@ -125,13 +125,13 @@
             </div>
           </el-card>
         </el-col>
-        <workspace-onpremise-setting
+        <WorkspaceOnpremiseSetting
           v-if="$isOnpremise"
           class="container__right"
         />
       </el-row>
     </div>
-    <workspace-leave-modal
+    <WorkspaceLeaveModal
       :visible.sync="showLeaveModal"
       :activeWorkspace="activeWorkspace"
       :myProfile="myProfile"
@@ -141,19 +141,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import WorkspaceLeaveModal from '@/components/workspace/WorkspaceLeaveModal'
-import WorkspaceOnpremiseSetting from '@/components/workspace/onpremise/WorkspaceOnpremiseSetting'
 import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [filters],
-  components: {
-    WorkspaceInfo,
-    WorkspaceLeaveModal,
-    WorkspaceOnpremiseSetting,
-  },
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',
