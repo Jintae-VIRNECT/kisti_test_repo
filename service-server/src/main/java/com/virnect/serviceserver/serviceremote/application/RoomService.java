@@ -742,7 +742,7 @@ public class RoomService {
 		}
 
 		// Evicted and Unload check
-		CheckEvictedAndUnload(userId, roomInfoList);
+		CheckEvicted(userId, roomInfoList);
 
 		if (paging) {
 			pageMeta = PageMetadataResponse.builder()
@@ -768,14 +768,14 @@ public class RoomService {
 		return new RoomInfoListResponse(roomInfoList, pageMeta);
 	}
 
-	private void CheckEvictedAndUnload(String userId, @NotNull List<RoomInfoResponse> roomInfoList) {
+	private void CheckEvicted(String userId, @NotNull List<RoomInfoResponse> roomInfoList) {
 		for (Iterator<RoomInfoResponse> roomInfoResponseIterator = roomInfoList.iterator(); roomInfoResponseIterator.hasNext();) {
 
 			List<MemberInfoResponse> memberInfoResponses = roomInfoResponseIterator.next().getMemberList();
 
 			for (MemberInfoResponse memberInfoResponse : memberInfoResponses) {
 				if (memberInfoResponse.getUuid().equals(userId)) {
-					if (memberInfoResponse.getMemberStatus() == MemberStatus.EVICTED || memberInfoResponse.getMemberStatus() == MemberStatus.UNLOAD) {
+					if (memberInfoResponse.getMemberStatus() == MemberStatus.EVICTED) {
 						roomInfoResponseIterator.remove();
 					}
 				}
@@ -885,7 +885,7 @@ public class RoomService {
 		}
 
 		// Evicted and Unload check
-		CheckEvictedAndUnload(userId, roomInfoList);
+		CheckEvicted(userId, roomInfoList);
 
 		// Page Metadata
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
