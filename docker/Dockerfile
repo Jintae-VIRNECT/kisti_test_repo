@@ -5,8 +5,8 @@ COPY . .
 
 ARG NODE_ENV=production
 
-RUN yarn --production=false
-RUN yarn build \
+RUN npm --production=false install
+RUN npm run build \
 && rm -rf node_modules
 
 # Runtime Stage
@@ -27,7 +27,7 @@ COPY --from=builder .npmrc .
 COPY --from=builder dist dist
 COPY --from=builder translate translate
 
-RUN yarn --production
+RUN npm install --production
 
 EXPOSE 8886
 CMD ["npm", "run", "start"]
