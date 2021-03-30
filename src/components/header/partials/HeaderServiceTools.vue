@@ -44,12 +44,12 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['myInfo']),
+    ...mapGetters(['myInfo', 'screenSharing']),
     hasVideo() {
       if (this.$route.name === 'workspace') {
         return true
       }
-      return !!this.myInfo.hasVideo && !this.hideStream
+      return !!this.myInfo.hasCamera
     },
     hasAudio() {
       if (this.$route.name === 'workspace') {
@@ -82,11 +82,9 @@ export default {
   /* Lifecycles */
   created() {
     this.$eventBus.$on('call:logout', this.leave)
-    this.$eventBus.$on('streamctl:hide', this.toggleStream)
   },
   beforeDestroy() {
     this.$eventBus.$off('call:logout', this.leave)
-    this.$eventBus.$off('streamctl:hide', this.toggleStream)
   },
 }
 </script>

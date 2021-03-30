@@ -323,15 +323,11 @@ export const addSessionEventListener = session => {
       if (session.connection.connectionId === event.from.connectionId) {
         _.currentZoomLevel = parseFloat(data.currentZoomLevel)
       }
-      if (data.status !== CAMERA_STATUS.CAMERA_NONE) {
-        params.hasCamera = true
-      }
-      if (data.status === CAMERA_STATUS.CAMERA_ON) {
-        params.hasVideo = true
-      }
       if (data.status === CAMERA_STATUS.CAMERA_NONE) {
         params.hasCamera = false
         params.hasVideo = false
+      } else {
+        params.hasVideo = true
       }
       Store.commit('updateParticipant', params)
     }

@@ -136,6 +136,7 @@ const getDefaultState = () => {
     ],
     //화면 공유시 카메라 스트림을 보관하기 위함
     myTempStream: null, //MediaStream
+    screenSharing: false,
   }
 }
 
@@ -345,6 +346,9 @@ const mutations = {
   setMyTempStream(state, payload) {
     state.myTempStream = payload
   },
+  setScreenSharing(state, payload) {
+    state.screenSharing = payload
+  },
 }
 
 const actions = {
@@ -367,6 +371,9 @@ const actions = {
   setMyTempStream({ commit }, payload) {
     commit('setMyTempStream', payload)
   },
+  setScreenSharing({ commit }, payload) {
+    commit('setScreenSharing', payload)
+  },
 }
 
 const getters = {
@@ -385,6 +392,7 @@ const getters = {
   resolutions: state => state.resolutions,
   initing: state => state.initing,
   myTempStream: state => state.myTempStream,
+  screenSharing: state => state.screenSharing,
 }
 
 export default {

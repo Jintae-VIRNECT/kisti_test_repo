@@ -27,7 +27,7 @@ export default {
     ...mapGetters(['myInfo', 'myTempStream', 'settingInfo', 'video']),
   },
   methods: {
-    ...mapActions(['setMyTempStream']),
+    ...mapActions(['setMyTempStream', 'setScreenSharing']),
     async toggleShare() {
       try {
         if (this.isScreenSharing) {
@@ -58,7 +58,6 @@ export default {
             videoSource: displayStream.getVideoTracks()[0],
             audioSource: this.myInfo.stream.getAudioTracks()[0].clone(),
           })
-          this.$eventBus.$emit('streamctl:hide', true)
 
           //모바일에서 대응할 수 있는 시간을 주기위한 딜레이
           await new Promise(r => setTimeout(r, 500))
@@ -66,6 +65,7 @@ export default {
 
         this.$call.sendScreenSharing(true)
         this.isScreenSharing = true
+        this.setScreenSharing(true)
       }
     },
 
@@ -76,11 +76,7 @@ export default {
       ) {
         throw 'NotSupportDisplayError'
       } else {
-        const size = this.settingInfo.quality.split('X')
-        const video = {
-          width: parseInt(size[0], 10),
-          height: parseInt(size[1], 10),
-        }
+        const video = true
 
         const displayStream = await navigator.mediaDevices.getDisplayMedia({
           audio: false,
@@ -111,7 +107,7 @@ export default {
       }
 
       this.$call.sendScreenSharing(false)
-      this.$eventBus.$emit('streamctl:hide', false)
+      this.setScreenSharing(false)
       this.isScreenSharing = false
     },
   },

@@ -200,6 +200,7 @@ export default {
       serverRecordStatus: 'serverRecordStatus',
       view: 'view',
       mainPanoCanvas: 'mainPanoCanvas',
+      screenSharing: 'screenSharing',
     }),
     isLeader() {
       return this.account.roleType === ROLE.LEADER
@@ -304,6 +305,31 @@ export default {
           }
         }
       },
+    },
+    screenSharing(flag, oldFlag) {
+      if (!this.mainView.id) return
+      if (flag !== oldFlag) {
+        if (flag) {
+          this.$refs['mainVideo'].onresize = e => {
+            const track = this.mainView.stream.getVideoTracks()[0]
+            const settings = track.getSettings()
+            const capability = track.getCapabilities()
+            this.logger(
+              'call',
+              `resolution::${settings.width}X${settings.height}`,
+            )
+            this.debug('call::setting::', settings)
+            this.debug('call::capability::', capability)
+            this.$call.sendResolution({
+              width: settings.width,
+              height: settings.height,
+              orientation: '',
+            })
+          }
+        } else {
+          this.$refs['mainVideo'].onresize = () => {}
+        }
+      }
     },
     cameraStatus: {
       deep: true,
