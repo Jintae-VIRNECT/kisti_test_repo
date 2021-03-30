@@ -1,14 +1,16 @@
 package com.virnect.serviceserver.serviceremote.application;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.util.TextUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -61,9 +63,6 @@ public class HistoryService {
 		Page<MemberHistory> roomHistories;
 		PageMetadataResponse pageMeta;
 
-		/*roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
-			workspaceId, userId, paging, pageable);*/
-
 		/*Page<RoomHistory> currentRoomHistories = roomHistoryRepository.findRoomByWorkspaceIdAndUserIdCurrent(workspaceId, userId, paging, pageable);
 
 		List<RoomHistoryInfoResponse> currentRoomHistoryList =
@@ -92,13 +91,6 @@ public class HistoryService {
 					}
 				}
 
-				*//*memberInfoList.sort((t1, t2) -> {
-					if (t1.getMemberType().equals(MemberType.LEADER)) {
-						return 1;
-					}
-					return 0;
-				});*//*
-
 				roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
 
 				return roomHistoryInfoResponse;
@@ -122,7 +114,9 @@ public class HistoryService {
 				.totalElements(currentRoomHistories.getTotalElements())
 				.last(true)
 				.build();
-		}*/
+		}
+
+		return new RoomHistoryInfoListResponse(currentRoomHistoryList, pageMeta);*/
 
 		roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
 			workspaceId, userId, paging, pageable);
@@ -189,6 +183,10 @@ public class HistoryService {
 		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);
 	}
 
+	private boolean uuidContainList(List<WorkspaceMemberInfoResponse> members, String uuid) {
+		return members.stream().anyMatch(workspaceMemberInfoResponse -> workspaceMemberInfoResponse.getUuid().contains(uuid));
+	}
+
 	public RoomHistoryInfoListResponse getHistoryListStandardSearch(
 		String workspaceId,
 		String userId,
@@ -196,7 +194,80 @@ public class HistoryService {
 		Pageable pageable
 	) {
 
-		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = workspaceRestService.getWorkspaceMemberInfoList(
+		// Response Data
+		List<RoomHistoryInfoResponse> roomHistoryInfoList = new ArrayList<>();
+		PageMetadataResponse pageMeta;
+
+		Page<MemberHistory> myHistory;
+
+		List<String> userIds;
+		if (!(search == null || search.length() == 0)) {
+			List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
+				workspaceId,
+				"remote",
+				search,
+				99
+			).getData().getMemberInfoList();
+
+			userIds = new ArrayList<>();
+			for (WorkspaceMemberInfoResponse memberInfo : members) {
+				if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
+					//if memberInfo is empty
+					log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
+				} else {
+					userIds.add(memberInfo.getUuid());
+				}
+			}
+			// 자신이 협업한 히스토리
+			myHistory = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalseBySearch(workspaceId, userId, userIds, search, pageable);
+		} else {
+			myHistory = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
+				workspaceId, userId, true, pageable);
+		}
+
+		for (MemberHistory memberHistory : myHistory) {
+			RoomHistory roomHistory = memberHistory.getRoomHistory();
+			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+
+			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
+				.filter(member -> !member.getMemberType().equals(MemberType.SECESSION))
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			// find and get extra information from use-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				if (memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
+					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+						workspaceId, memberInfoResponse.getUuid());
+					//log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+
+					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+					memberInfoResponse.setRole(workspaceMemberData.getRole());
+					//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+					memberInfoResponse.setName(workspaceMemberData.getName());
+					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+				}
+			}
+			// Set Member List to Room Information Response
+			roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
+			roomHistoryInfoList.add(roomHistoryInfoResponse);
+		}
+
+		pageMeta = PageMetadataResponse.builder()
+			.currentPage(pageable.getPageNumber())
+			.currentSize(pageable.getPageSize())
+			.numberOfElements(myHistory.getNumberOfElements())
+			.totalPage(myHistory.getTotalPages())
+			.totalElements(myHistory.getTotalElements())
+			.last(myHistory.isLast())
+			.build();
+
+		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);
+
+		/*List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = workspaceRestService.getWorkspaceMemberInfoList(
 			workspaceId,
 			"remote",
 			search,
@@ -218,20 +289,12 @@ public class HistoryService {
 				//if memberInfo is empty
 				log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
 			} else {
+				System.out.println(memberInfo.getUuid());
 				userIds.add(memberInfo.getUuid());
 			}
 		}
 
 		Page<RoomHistory> roomHistories = roomHistoryRepository.findRoomBySearch(workspaceId, userId, userIds, search, pageable);
-
-		/*if (userIds.isEmpty()) {
-			log.info(
-				"loadFromDatabase::searchRoomHistoryPageList::memberInfoList is empty can not find, search with room title");
-			roomHistories = roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, search), pageable);
-		} else {
-			log.info("loadFromDatabase::searchRoomHistoryPageList::memberInfoList is not empty");
-			roomHistories = roomHistoryRepository.findAll(joinMemberHistory(workspaceId, userId, userIds, search), pageable);
-		}*/
 
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())
@@ -267,17 +330,17 @@ public class HistoryService {
 				}
 			}
 
-			/*memberInfoList.sort((t1, t2) -> {
+			*//*memberInfoList.sort((t1, t2) -> {
 				if (t1.getMemberType().equals(MemberType.LEADER)) {
 					return 1;
 				}
 				return 0;
-			});*/
+			});*//*
 			// Set Member List to Room Information Response
 			roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
 			roomHistoryInfoList.add(roomHistoryInfoResponse);
 		}
-		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);
+		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);*/
 	}
 
 	public ApiResponse<RoomHistoryDetailInfoResponse> getHistoryBySessionId(

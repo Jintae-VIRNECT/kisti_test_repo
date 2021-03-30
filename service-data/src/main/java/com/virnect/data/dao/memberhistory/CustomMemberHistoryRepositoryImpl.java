@@ -153,6 +153,30 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 			.fetch();
 	}
 
+	@Override
+	public Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalseBySearch(
+		String workspaceId,
+		String userId,
+		List<String> userIds,
+		String search,
+		Pageable pageable
+	) {
+		JPQLQuery<MemberHistory> queryResult = query
+			.selectFrom(memberHistory)
+			.innerJoin(memberHistory.roomHistory, roomHistory).fetchJoin()
+			.where(
+				memberHistory.workspaceId.eq(workspaceId),
+				(
+					memberHistory.uuid.eq(userId).and(memberHistory.historyDeleted.isFalse())
+						.or(memberHistory.uuid.eq(userId).and(memberHistory.uuid.in(userIds)).and(memberHistory.historyDeleted.isFalse()))
+				),
+				memberHistory.roomHistory.isNotNull(),
+				includeRoomTitleSearch(search)
+			).distinct();
+		long totalCount = queryResult.fetchCount();
+		List<MemberHistory> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		return new PageImpl<>(results, pageable, totalCount);
+	}
 	/**
 	 * 기간 검색 다이나믹 쿼리
 	 * @param startDate - 검색 시작 일자
@@ -166,5 +190,16 @@ public class CustomMemberHistoryRepositoryImpl extends QuerydslRepositorySupport
 		return roomHistory.unactiveDate.between(startDate, endDate.plusDays(1).minusSeconds(1));
 	}
 
+	/**
+	 * 협업 기록 제목 검색 동적 쿼리
+	 * @param search - 검색 키워드
+	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
+	 */
+	private BooleanExpression includeRoomTitleSearch(String search){
+		if (search == null || search.isEmpty()) {
+			return null;
+		}
+		return memberHistory.roomHistory.title.contains(search);
+	}
 
 }

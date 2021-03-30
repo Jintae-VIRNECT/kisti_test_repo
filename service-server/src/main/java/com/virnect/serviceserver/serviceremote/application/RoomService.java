@@ -352,6 +352,13 @@ public class RoomService {
 			responseData.setMessage(dataProcess.getMessage());*/
 		}
 
+		/*
+		 * 1. UNLOAD 상태 체크
+		 * 2. 발행한 토큰 파기, LEAVE ROOM  (자동 처리 확인)
+		 * 3. DB DATA UPDATE
+		 * 4. RESPONSE ERROR MESSAGE
+		 */
+
 		return responseData;
 	}
 
