@@ -19,5 +19,7 @@ Bug Fixes
 * [DPLA-2327] 영상 제한 모드에서 로컬 녹화 선택가능
 * 음성 번역 기능 사용시 에러 발생 처리(내부)
 * 리얼웨어 웹뷰 스크롤 불가 버그 수정
+* [DPLA-2278] 화면공유 화면이 작을 경우 포인팅 오류 수정
+* [DPLA-2396] 테블릿 화면 회전 시 팝업 close 처리
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
