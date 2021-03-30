@@ -37,16 +37,19 @@ public class WebSocketProxyTraceHandler implements WebSocketHandler {
 		return client.execute(url, this.headers, new WebSocketHandler() {
 			@Override
 			public Mono<Void> handle(WebSocketSession proxySession) {
+				String hostInfo = session.getHandshakeInfo().getRemoteAddress().getHostString();
 				// Use retain() for Reactor Netty
 				Mono<Void> proxySessionSend = proxySession
 					.send(session.receive()
-						.doOnNext(message -> log.info(REQUEST_LGO_FORMAT, session.getId(), message.retain().getPayloadAsText()))
+						.doOnNext(
+							message -> log.info(REQUEST_LGO_FORMAT, hostInfo, message.retain().getPayloadAsText()))
 						.doOnNext(WebSocketMessage::retain)
 					);
 
 				Mono<Void> serverSessionSend = session.send(
 					proxySession.receive()
-						.doOnNext(message -> log.info(RESPONSE_LGO_FORMAT, session.getId(),message.retain().getPayloadAsText()))
+						.doOnNext(
+							message -> log.info(RESPONSE_LGO_FORMAT, hostInfo, message.retain().getPayloadAsText()))
 						.doOnNext(WebSocketMessage::retain)
 				);
 				return Mono.zip(proxySessionSend, serverSessionSend).then();
