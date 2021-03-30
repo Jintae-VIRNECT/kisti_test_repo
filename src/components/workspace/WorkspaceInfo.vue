@@ -1,13 +1,10 @@
 <template>
   <div class="workspace-info">
-    <div class="avatar">
-      <div
-        class="image"
-        :style="
-          `background-image: url('${workspace.profile}'), url(${$defaultWorkspaceProfile})`
-        "
-      />
-    </div>
+    <VirnectThumbnail
+      :size="72"
+      :image="workspace.profile"
+      :defaultImage="$defaultWorkspaceProfile"
+    />
     <dl>
       <dt>{{ $t('home.workspace.name') }}</dt>
       <dd class="workspace-name">{{ workspace.name }}</dd>
@@ -17,14 +14,7 @@
       </dd>
       <dt>{{ $t('home.workspace.master') }}</dt>
       <dd class="column-user">
-        <div class="avatar">
-          <div
-            class="image"
-            :style="
-              `background-image: url('${workspace.masterProfile}'), url(${$defaultUserProfile})`
-            "
-          />
-        </div>
+        <VirnectThumbnail :image="workspace.masterProfile" />
         <span>{{ workspace.masterNickName }}</span>
       </dd>
       <a :href="`${$url.workstation}/workspace/${workspace.uuid}`">
@@ -53,11 +43,6 @@ export default {
 
 <style lang="scss">
 .workspace-info {
-  .avatar {
-    width: 72px;
-    height: 72px;
-    margin: 0;
-  }
   dt {
     margin-top: 20px;
     color: $font-color-desc;

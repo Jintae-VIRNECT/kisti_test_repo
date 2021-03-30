@@ -24,14 +24,7 @@
               </span>
             </div>
             <div class="avatar" @click="visible.imageChangeModal = true">
-              <div
-                class="image"
-                :style="
-                  `background-image: url('${cdn(
-                    profileImg,
-                  )}'), url(${$defaultUserProfile})`
-                "
-              />
+              <VirnectThumbnail :size="120" :image="cdn(profileImg)" />
               <i>
                 <img src="~assets/images/icon/ic-camera-alt.svg" />
               </i>
@@ -216,6 +209,7 @@ export default {
     }
   }
   .avatar {
+    position: relative;
     top: -56px;
     width: 120px;
     height: 120px;

@@ -22,13 +22,7 @@
         :show-file-list="false"
         drag
       >
-        <div class="avatar">
-          <div
-            class="image"
-            v-if="file"
-            :style="`background-image: url('${file}')`"
-          />
-        </div>
+        <VirnectThumbnail :size="160" :image="file" />
         <div class="el-upload__tip" slot="tip">
           {{ $t('profile.imageChangeModal.caution') }}
         </div>
@@ -138,9 +132,7 @@ export default {
     height: inherit;
     border: none;
   }
-  .avatar {
-    width: 160px;
-    height: 160px;
+  .thumbnail {
     margin: 16px auto;
   }
   .el-upload__tip {

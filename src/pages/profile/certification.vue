@@ -9,17 +9,7 @@
               : $t('certification.desc')
           "
         />
-        <div class="avatar">
-          <div
-            class="image"
-            v-if="me.image"
-            :style="
-              `background-image: url('${cdn(
-                me.image,
-              )}'), url(${$defaultUserProfile})`
-            "
-          />
-        </div>
+        <VirnectThumbnail :size="100" :image="cdn(me.image)" />
         <span class="name">{{ me.nickname }}</span>
         <span class="email">{{ me.email }}</span>
         <el-form ref="form" :model="form" @submit.native.prevent="submit">
@@ -115,7 +105,7 @@ export default {
       color: $font-color-desc;
     }
   }
-  .avatar {
+  .thumbnail {
     margin: 28px auto 20px;
   }
   .el-form {

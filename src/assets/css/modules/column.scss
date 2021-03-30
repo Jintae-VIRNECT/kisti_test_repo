@@ -1,8 +1,8 @@
 .column-user {
-  .avatar {
-    display: inline-block;
-    width: 28px;
-    height: 28px;
+  .thumbnail {
+    display: inline-block !important;
+    width: 28px !important;
+    height: 28px !important;
     vertical-align: middle;
   }
   span {

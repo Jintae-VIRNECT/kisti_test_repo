@@ -4,14 +4,7 @@
     <div class="container">
       <el-row>
         <section class="page-description">
-          <div class="avatar">
-            <div
-              class="image"
-              :style="
-                `background-image: url(${me.image}), url(${$defaultUserProfile})`
-              "
-            />
-          </div>
+          <VirnectThumbnail :size="100" :image="me.image" />
           <h2>{{ $t('home.title.welcome', { username: me.nickname }) }}</h2>
           <p v-html="$t('home.title.description')"></p>
         </section>
@@ -122,6 +115,9 @@ export default {
   color: #fff;
   text-align: center;
 
+  .thumbnail {
+    margin: 0 auto;
+  }
   & > h2 {
     margin: 12px;
     overflow: hidden;

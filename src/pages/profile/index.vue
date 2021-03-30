@@ -26,12 +26,7 @@
               </span>
             </div>
             <div class="avatar" @click="visible.imageChangeModal = true">
-              <div
-                class="image"
-                :style="
-                  `background-image: url('${profileImg}'), url(${$defaultUserProfile})`
-                "
-              />
+              <VirnectThumbnail :size="120" :image="profileImg" />
               <i>
                 <img src="~assets/images/icon/ic-camera-alt.svg" />
               </i>
@@ -153,7 +148,7 @@
               <span class="value">
                 {{
                   me.recoveryEmail ||
-                    $t('profile.additional.recoveryEmailEmpty')
+                  $t('profile.additional.recoveryEmailEmpty')
                 }}
               </span>
             </div>
@@ -355,6 +350,7 @@ export default {
     }
   }
   .avatar {
+    position: relative;
     top: -56px;
     width: 120px;
     height: 120px;
