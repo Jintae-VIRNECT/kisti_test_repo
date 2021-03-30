@@ -15,8 +15,8 @@ import reactor.core.publisher.Mono;
 
 public class WebSocketProxyTraceHandler implements WebSocketHandler {
 	private final Logger log = LoggerFactory.getLogger(WebSocketProxyTraceHandler.class);
-	private final String REQUEST_LGO_FORMAT = "[WebSocket][Request] - [{}]";
-	private final String RESPONSE_LGO_FORMAT = "[WebSocket][Response] - [{}]";
+	private final String REQUEST_LGO_FORMAT = "[WebSocket][Request][{}] - [{}]";
+	private final String RESPONSE_LGO_FORMAT = "[WebSocket][Response][{}] - [{}]";
 	private final WebSocketClient client;
 	private final URI url;
 	private final HttpHeaders headers;
@@ -40,13 +40,13 @@ public class WebSocketProxyTraceHandler implements WebSocketHandler {
 				// Use retain() for Reactor Netty
 				Mono<Void> proxySessionSend = proxySession
 					.send(session.receive()
-						.doOnNext(message -> log.info(REQUEST_LGO_FORMAT, message.retain().getPayloadAsText()))
+						.doOnNext(message -> log.info(REQUEST_LGO_FORMAT, session.getId(), message.retain().getPayloadAsText()))
 						.doOnNext(WebSocketMessage::retain)
 					);
 
 				Mono<Void> serverSessionSend = session.send(
 					proxySession.receive()
-						.doOnNext(message -> log.info(RESPONSE_LGO_FORMAT,message.retain().getPayloadAsText()))
+						.doOnNext(message -> log.info(RESPONSE_LGO_FORMAT, session.getId(),message.retain().getPayloadAsText()))
 						.doOnNext(WebSocketMessage::retain)
 				);
 				return Mono.zip(proxySessionSend, serverSessionSend).then();
