@@ -6,8 +6,8 @@ name: config auto writer
 on:
   push:
     branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+  # pull_request:
+  #   branches: [ develop ]
 
 jobs:
   build:
