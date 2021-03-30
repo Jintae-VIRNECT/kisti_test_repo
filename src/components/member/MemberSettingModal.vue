@@ -12,12 +12,7 @@
       <dl>
         <dt>{{ $t('members.setting.nickname') }}</dt>
         <dd class="column-user">
-          <div class="avatar">
-            <div
-              class="image"
-              :style="`background-image: url(${cdn(data.profile)})`"
-            />
-          </div>
+          <VirnectThumbnail :size="28" :image="cdn(data.profile)" />
           <span>{{ data.nickname }}</span>
           <el-button
             v-if="$isOnpremise && canKick"
@@ -222,12 +217,6 @@ export default {
   .column-user {
     display: flex;
 
-    .avatar {
-      flex: none;
-      width: 28px;
-      height: 28px;
-      margin: 0;
-    }
     & > span {
       flex: auto;
       font-size: 18px;

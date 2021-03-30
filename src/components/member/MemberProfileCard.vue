@@ -12,12 +12,7 @@
         </span>
       </dt>
       <dd>
-        <div class="avatar">
-          <div
-            class="image"
-            :style="`background-image: url(${cdn(myInfo.profile)})`"
-          />
-        </div>
+        <VirnectThumbnail :size="70" :image="cdn(myInfo.profile)" />
         <div class="column-role">
           <el-tag :class="myInfo.role">{{ myInfo.role }}</el-tag>
         </div>
@@ -175,10 +170,8 @@ export default {
     float: right;
     cursor: pointer;
   }
-  .avatar {
+  .thumbnail {
     float: right;
-    width: 70px;
-    height: 70px;
     margin-left: 10px;
   }
   .name {

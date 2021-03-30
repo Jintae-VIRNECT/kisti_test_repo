@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div :class="{ onpremise: $isOnpremise }">
     <VirnectHeader
       :showStatus="showSection"
       :userInfo="auth.myInfo"
@@ -123,24 +123,15 @@ export default {
   left: $the-sidebar-width !important;
   width: calc(100% - #{$the-sidebar-width}) !important;
 }
-#__nuxt .sub-title {
-  font-size: 14px;
-  line-height: 32px;
-  .el-divider {
-    height: 24px;
-    margin-right: 16px;
-  }
-  .avatar {
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    margin-right: 4px;
-    vertical-align: middle;
-  }
-  span {
-    display: inline-block;
-    margin-bottom: 2px;
-    vertical-align: middle;
+// onpremise 환경에서 워크스테이션 선택기능 비활성화
+#__nuxt .onpremise .workspace-select {
+  pointer-events: none;
+  &__value {
+    background: none;
+    border: none;
+    &:after {
+      display: none;
+    }
   }
 }
 </style>

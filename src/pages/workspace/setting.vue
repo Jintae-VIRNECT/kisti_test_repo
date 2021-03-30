@@ -33,16 +33,9 @@
                     <dd>{{ activeWorkspace.createdDate | dateFormat }}</dd>
                     <dt>{{ $t('workspace.master') }}</dt>
                     <dd class="column-user">
-                      <div class="avatar">
-                        <div
-                          class="image"
-                          :style="
-                            `background-image: url(${cdn(
-                              activeWorkspace.masterProfile,
-                            )})`
-                          "
-                        />
-                      </div>
+                      <VirnectThumbnail
+                        :image="cdn(activeWorkspace.masterProfile)"
+                      />
                       <span>{{ activeWorkspace.masterName }}</span>
                     </dd>
                   </dl>
@@ -68,12 +61,10 @@
                         drag
                       >
                         <div class="avatar">
-                          <div
-                            class="image"
-                            :style="
-                              `background-image: url('${file ||
-                                $defaultWorkspaceProfile}')`
-                            "
+                          <VirnectThumbnail
+                            :size="100"
+                            :image="file"
+                            :defaultImage="$defaultWorkspaceProfile"
                           />
                           <i>
                             <img src="~assets/images/icon/ic-camera-alt.svg" />

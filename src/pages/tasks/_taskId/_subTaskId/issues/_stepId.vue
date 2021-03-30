@@ -29,12 +29,7 @@
         <dl>
           <dt>{{ $t('results.issueDetail.reporter') }}</dt>
           <dd class="column-user">
-            <div class="avatar">
-              <div
-                class="image"
-                :style="`background-image: url(${issue.workerProfile})`"
-              />
-            </div>
+            <VirnectThumbnail :image="cdn(issue.workerProfile)" />
             <span>{{ issue.workerName }}</span>
           </dd>
           <dt>{{ $t('results.issueDetail.reportedDate') }}</dt>
@@ -97,6 +92,9 @@ export default {
   }
   .image-container {
     padding-top: 0;
+    & > .el-icon-full-screen {
+      top: 0;
+    }
   }
   dl {
     padding-bottom: 0;

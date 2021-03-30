@@ -12,10 +12,7 @@
       <dt>{{ $t('home.profile.usingNickname') }}</dt>
       <dd>
         <div class="avatar">
-          <div
-            class="image"
-            :style="`background-image: url(${cdn(profile.profile)})`"
-          />
+          <VirnectThumbnail :size="40" :image="cdn(profile.profile)" />
         </div>
         <span class="name">{{ profile.nickname }}</span>
         <span class="email">{{ profile.email }}</span>
@@ -86,11 +83,9 @@ export default {
   }
   .avatar {
     float: left;
-    width: 40px;
-    height: 60px;
     margin-right: 12px;
 
-    .image {
+    .thumbnail {
       height: 67%;
     }
   }

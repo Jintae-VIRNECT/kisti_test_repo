@@ -28,15 +28,12 @@
           </span>
           <span class="sub-title">
             <el-divider direction="vertical" />
-            <div class="avatar">
-              <div
-                class="image"
-                :style="
-                  `background-image: url('${activeWorkspace.profile}'), url('${$defaultWorkspaceProfile}')`
-                "
-              />
-            </div>
-            {{ activeWorkspace.name }}
+            <VirnectThumbnail
+              :size="22"
+              :image="activeWorkspace.profile"
+              :defaultImage="$defaultWorkspaceProfile"
+            />
+            <span>{{ activeWorkspace.name }}</span>
           </span>
         </div>
         <div class="tooltip">
@@ -63,15 +60,12 @@
           </span>
           <span class="sub-title">
             <el-divider direction="vertical" />
-            <div class="avatar">
-              <div
-                class="image"
-                :style="
-                  `background-image: url('${activeWorkspace.profile}'), url('${$defaultWorkspaceProfile}')`
-                "
-              />
-            </div>
-            {{ activeWorkspace.name }}
+            <VirnectThumbnail
+              :size="22"
+              :image="activeWorkspace.profile"
+              :defaultImage="$defaultWorkspaceProfile"
+            />
+            <span>{{ activeWorkspace.name }}</span>
           </span>
         </div>
         <div class="tooltip">
@@ -235,6 +229,11 @@ export default {
         height: 100%;
       }
     }
+    .sub-title .thumbnail {
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
   }
   .preview.dark {
     background: #242427;
@@ -246,9 +245,6 @@ export default {
     }
     .el-divider {
       opacity: 0.5;
-    }
-    .avatar {
-      background: none;
     }
     .sub-title {
       color: #f1f1f1;

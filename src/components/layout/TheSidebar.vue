@@ -4,17 +4,8 @@
       class="the-sidebar__inner"
       :class="{ 'the-sidebar__inner--wide': showWide }"
     >
-      <!-- onpremise -->
-      <div v-if="$isOnpremise" class="the-sidebar__logo">
-        <a
-          @click="$router.push('/')"
-          :style="`background-image: url(${cdn(
-            activeWorkspace.profile,
-          )}), url(${$defaultWorkspaceProfile})`"
-        />
-      </div>
       <!-- 일반 -->
-      <div v-else class="the-sidebar__logo">
+      <div class="the-sidebar__logo">
         <a @click.stop="toggleWide" />
       </div>
       <div class="the-sidebar__upper">
@@ -46,7 +37,6 @@
 </template>
 
 <script>
-import collapseWorkspace from '@/components/layout/collapses/TheSidebarCollapseWorkspace'
 import collapseTask from '@/components/layout/collapses/TheSidebarCollapseTask'
 import collapseMember from '@/components/layout/collapses/TheSidebarCollapseMember'
 import collapseContents from '@/components/layout/collapses/TheSidebarCollapseContents'
@@ -58,7 +48,6 @@ export default {
   mixins: [filterMixin],
   components: {
     TheSidebarMenuList,
-    collapseWorkspace,
     collapseTask,
     collapseMember,
     collapseContents,

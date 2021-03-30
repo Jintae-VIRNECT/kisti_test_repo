@@ -133,6 +133,7 @@ export default {
     padding: 2px 10px 2px 7px;
   }
   .image-container > .el-icon-full-screen {
+    top: 0;
     right: 0;
   }
 }
