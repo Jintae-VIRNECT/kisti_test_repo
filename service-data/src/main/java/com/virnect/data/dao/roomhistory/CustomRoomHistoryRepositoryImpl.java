@@ -159,9 +159,15 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
 				roomHistory.workspaceId.eq(workspaceId),
-				roomHistory.memberHistories.any().uuid.eq(userId)
-					.and(roomHistory.memberHistories.any().uuid.in(userId)),
+				(
+					(roomHistory.memberHistories.any().uuid.eq(userId)
+						.and(roomHistory.memberHistories.any().historyDeleted.isFalse()))
+					.or((roomHistory.memberHistories.any().uuid.in(userIds))
+						.and(roomHistory.memberHistories.any().historyDeleted.isFalse()))
+				),
+				/*.and(roomHistory.memberHistories.any().uuid.in(userId)),
 				roomHistory.memberHistories.any().historyDeleted.isFalse(),
+				memberHistory.historyDeleted.isFalse(),*/
 				roomHistory.isNotNull(),
 				includeTitleSearch(search)
 			)
@@ -191,15 +197,23 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				),
 				roomHistory.isNotNull()
 			)
-			.orderBy(roomHistory.createdDate.desc())
 			.distinct();
 		long totalCount = queryResult.fetchCount();
 		List<RoomHistory> results;
+
+		System.out.println(1);
+		/*
+
+		 */
 		if (paging) {
 			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+			System.out.println(2);
 		} else {
 			results = Objects.requireNonNull(queryResult.fetch());
 		}
+
+
+
 		return new PageImpl<>(results, pageable, totalCount);
 	}
 

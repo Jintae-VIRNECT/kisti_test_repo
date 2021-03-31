@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -351,6 +352,13 @@ public class RoomService {
 			/*responseData.setCode(dataProcess.getCode());
 			responseData.setMessage(dataProcess.getMessage());*/
 		}
+
+		/*
+		 * 1. UNLOAD 상태 체크
+		 * 2. 발행한 토큰 파기, LEAVE ROOM  (자동 처리 확인)
+		 * 3. DB DATA UPDATE
+		 * 4. RESPONSE ERROR MESSAGE
+		 */
 
 		return responseData;
 	}
@@ -727,7 +735,6 @@ public class RoomService {
 				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
 				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
 			}
-
 			roomInfoResponse.setMemberList(
 				setLeader(memberInfoList)
 			);
@@ -735,7 +742,7 @@ public class RoomService {
 		}
 
 		// Evicted and Unload check
-		CheckEvictedAndUnload(userId, roomInfoList);
+		CheckEvicted(userId, roomInfoList);
 
 		if (paging) {
 			pageMeta = PageMetadataResponse.builder()
@@ -761,18 +768,25 @@ public class RoomService {
 		return new RoomInfoListResponse(roomInfoList, pageMeta);
 	}
 
-	private void CheckEvictedAndUnload(String userId, List<RoomInfoResponse> roomInfoList) {
+	private void CheckEvicted(String userId, @NotNull List<RoomInfoResponse> roomInfoList) {
 		for (Iterator<RoomInfoResponse> roomInfoResponseIterator = roomInfoList.iterator(); roomInfoResponseIterator.hasNext();) {
 
 			List<MemberInfoResponse> memberInfoResponses = roomInfoResponseIterator.next().getMemberList();
 
-			boolean evictedCheck = false;
+			for (MemberInfoResponse memberInfoResponse : memberInfoResponses) {
+				if (memberInfoResponse.getUuid().equals(userId)) {
+					if (memberInfoResponse.getMemberStatus() == MemberStatus.EVICTED) {
+						roomInfoResponseIterator.remove();
+					}
+				}
+			}
+
+			/*boolean evictedCheck = false;
 			boolean[] unloadCheck = new boolean[memberInfoResponses.size()];
 			boolean unloadCheckResult = true;
 
 			for (int i = 0 ; i < memberInfoResponses.size() ; i++) {
-				evictedCheck = memberInfoResponses.get(i).getUuid().equals(userId) && memberInfoResponses.get(i).getMemberStatus().equals(
-					MemberStatus.EVICTED);
+				evictedCheck = memberInfoResponses.get(i).getUuid().equals(userId) && memberInfoResponses.get(i).getMemberStatus().equals(MemberStatus.EVICTED);
 				if (memberInfoResponses.get(i).getMemberStatus().equals(MemberStatus.UNLOAD)) {
 					unloadCheck[i] = true;
 				} else {
@@ -785,7 +799,7 @@ public class RoomService {
 			}
 			if (evictedCheck || unloadCheckResult) {
 				roomInfoResponseIterator.remove();
-			}
+			}*/
 		}
 	}
 
@@ -871,7 +885,7 @@ public class RoomService {
 		}
 
 		// Evicted and Unload check
-		CheckEvictedAndUnload(userId, roomInfoList);
+		CheckEvicted(userId, roomInfoList);
 
 		// Page Metadata
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()

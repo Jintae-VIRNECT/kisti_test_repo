@@ -25,4 +25,7 @@ public interface CustomMemberHistoryRepository {
 
 	List<MemberHistory> findByWorkspaceId(final String workspaceId);
 
+	Page<MemberHistory> findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalseBySearch(
+		String workspaceId, String userId, List<String> userIds, String search, Pageable pageable
+	);
 }
