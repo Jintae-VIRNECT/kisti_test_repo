@@ -39,7 +39,7 @@
             {{ $t('coupon.detailModal.targetDesc') }}
           </span>
           <el-table :data="items" :show-header="false">
-            <column-plan
+            <ColumnPlan
               :label="$t('payment.autoPaymentCancelModal.column.product')"
               :prop="$i18n.locale === 'ko' ? 'name' : 'nameEng'"
               productProp="product"

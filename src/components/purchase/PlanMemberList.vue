@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-table ref="table" :data="planMembers">
-      <column-plan
+      <ColumnPlan
         :label="$t('purchases.planMembersInfo.column.name')"
         prop="productName"
         productProp="productName"
         gradeProp="licenseType"
       />
-      <column-user
+      <ColumnUser
         :label="$t('purchases.planMembersInfo.column.user')"
         prop="uuid"
         nameProp="nickname"
@@ -15,7 +15,7 @@
         :width="180"
       />
     </el-table>
-    <searchbar-page
+    <SearchbarPage
       ref="page"
       :value.sync="planMembersPage"
       :pageSize="8"

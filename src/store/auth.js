@@ -30,6 +30,10 @@ export default {
     },
   },
   mutations: {
+    LOGOUT() {
+      auth.logout()
+      location.reload()
+    },
     SET_AUTH(state, obj) {
       state.auth = obj
     },

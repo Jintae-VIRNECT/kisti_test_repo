@@ -25,13 +25,13 @@
                 @click="showWorkspaceInfo = false"
               />
             </div>
-            <workspace-info v-if="showWorkspaceInfo" />
+            <WorkspaceInfo v-if="showWorkspaceInfo" />
           </el-card>
           <el-card>
             <div slot="header">
               <h3>{{ $t('purchases.info.title') }}</h3>
             </div>
-            <purchases-info :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
+            <PurchaseInfo :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
           </el-card>
         </el-col>
         <el-col class="container__right">
@@ -40,10 +40,10 @@
             <div slot="header">
               <h3>{{ $t('purchases.planMembersInfo.title') }}</h3>
             </div>
-            <purchases-plan-member-list />
+            <PurchasePlanMemberList />
           </el-card>
           <!-- 사용량 -->
-          <purchases-used :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
+          <PurchaseUsed :plansInfo="plansInfo" :paymentInfo="paymentInfo" />
         </el-col>
       </el-row>
     </div>
@@ -51,22 +51,12 @@
 </template>
 
 <script>
-import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import purchasesInfo from '@/components/purchases/PurchasesInfo'
-import PurchasesUsed from '@/components/purchases/PurchasesUsed'
-import PurchasesPlanMemberList from '@/components/purchases/PurchasesPlanMemberList'
 import purchaseService from '@/services/purchases'
 import paymentService from '@/services/payment'
 import columnMixin from '@/mixins/columns'
 
 export default {
   mixins: [columnMixin],
-  components: {
-    WorkspaceInfo,
-    purchasesInfo,
-    PurchasesUsed,
-    PurchasesPlanMemberList,
-  },
   async asyncData() {
     const [plansInfo, paymentInfo] = await Promise.all([
       purchaseService.getWorkspacePlansInfo(),

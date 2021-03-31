@@ -174,47 +174,47 @@
       </el-card>
     </div>
     <!-- 모달 -->
-    <image-change-modal
+    <ProfileImageModal
       :me="me"
       :visible.sync="visible.imageChangeModal"
       @changedImage="changedImage"
     />
-    <name-change-modal
+    <ProfileNameModal
       :me="me"
       :visible.sync="visible.nameChangeModal"
       @changedName="changedName"
     />
-    <nickname-change-modal
+    <ProfileNicknameModal
       :me="me"
       :visible.sync="visible.nicknameChangeModal"
       @changedNickname="changedNickname"
     />
-    <password-change-modal
+    <ProfilePasswordModal
       :me="me"
       :visible.sync="visible.passwordChangeModal"
       @changedPassword="changedPassword"
     />
-    <birth-change-modal
+    <ProfileBirthModal
       :me="me"
       :visible.sync="visible.birthChangeModal"
       @changedBirth="changedBirth"
     />
-    <contact-change-modal
+    <ProfileContactModal
       :me="me"
       :visible.sync="visible.contactChangeModal"
       @changedContact="changedContact"
     />
-    <recovery-email-change-modal
+    <ProfileRecoveryEmailModal
       :me="me"
       :visible.sync="visible.recoveryEmailChangeModal"
       @changedRecoveryEmail="changedRecoveryEmail"
     />
-    <market-info-receive-modal
+    <ProfileMarketInfoReceiveModal
       :me="me"
       :visible.sync="visible.MarketInfoReceiveModal"
       @changedMarketInfoReceive="changedMarketInfoReceive"
     />
-    <secession-modal
+    <ProfileSecessionModal
       :me="me"
       :visible.sync="visible.SecessionModal"
       @changedMarketInfoReceive="changedMarketInfoReceive"
@@ -226,29 +226,8 @@
 import { filters } from '@/plugins/dayjs'
 import profileService from '@/services/profile'
 
-import ImageChangeModal from '@/components/profile/ImageChangeModal'
-import NameChangeModal from '@/components/profile/NameChangeModal'
-import NicknameChangeModal from '@/components/profile/NicknameChangeModal'
-import PasswordChangeModal from '@/components/profile/PasswordChangeModal'
-import BirthChangeModal from '@/components/profile/BirthChangeModal'
-import ContactChangeModal from '@/components/profile/ContactChangeModal'
-import RecoveryEmailChangeModal from '@/components/profile/RecoveryEmailChangeModal'
-import MarketInfoReceiveModal from '@/components/profile/MarketInfoReceiveModal'
-import SecessionModal from '@/components/profile/SecessionModal'
-
 export default {
   middleware: ['default', 'profile'],
-  components: {
-    ImageChangeModal,
-    NameChangeModal,
-    NicknameChangeModal,
-    PasswordChangeModal,
-    BirthChangeModal,
-    ContactChangeModal,
-    RecoveryEmailChangeModal,
-    MarketInfoReceiveModal,
-    SecessionModal,
-  },
   filters: {
     ...filters,
   },

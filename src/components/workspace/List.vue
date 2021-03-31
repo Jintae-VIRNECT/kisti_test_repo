@@ -1,35 +1,41 @@
 <template>
   <div>
-    <el-table ref="table" :data="workspaces">
-      <column-user
+    <el-table
+      ref="table"
+      :data="workspaces"
+      class="clickable"
+      @row-click="goWorkstation"
+    >
+      <ColumnUser
         type="no-tooltip"
         :label="$t('workspace.list.column.name')"
         prop="name"
         nameProp="name"
         imageProp="profile"
+        :defaultImage="$defaultWorkspaceProfile"
         sortable
       />
-      <column-user
+      <ColumnUser
         :label="$t('workspace.list.column.master')"
         prop="masterNickName"
         nameProp="masterNickName"
         imageProp="masterProfile"
         :width="160"
       />
-      <column-date
+      <ColumnDate
         :label="$t('workspace.list.column.joinDate')"
         prop="joinDate"
         :width="100"
         sortable
       />
-      <column-role
+      <ColumnRole
         :label="$t('workspace.list.column.role')"
         prop="role"
         :width="150"
         sortable
       />
     </el-table>
-    <searchbar-page
+    <SearchbarPage
       v-if="!isHome"
       ref="page"
       :value.sync="workspacesPage"
@@ -66,6 +72,9 @@ export default {
       )
       this.workspaces = list
       this.workspacesTotal = total
+    },
+    goWorkstation(workspace) {
+      window.open(`${this.$url.workstation}/workspace/${workspace.uuid}`)
     },
   },
   beforeMount() {

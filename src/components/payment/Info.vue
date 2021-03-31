@@ -89,7 +89,7 @@
     </div>
 
     <!-- 모달 -->
-    <auto-payment-cancel-modal
+    <AutoPaymentCancelModal
       :autoPaymentId="autoPayments.id"
       :autoPaymentItems="autoPayments.items"
       :visible.sync="showAutoPaymentCancelModal"
@@ -100,15 +100,11 @@
 
 <script>
 import filterMixin from '@/mixins/filters'
-import AutoPaymentCancelModal from '@/components/payment/AutoPaymentCancelModal'
 import paymentService from '@/services/payment'
 import purchaseService from '@/services/purchases'
 
 export default {
   mixins: [filterMixin],
-  components: {
-    AutoPaymentCancelModal,
-  },
   data() {
     return {
       showAutoPaymentCancelModal: false,

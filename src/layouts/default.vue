@@ -7,7 +7,7 @@
       :urls="$url"
       @logout="$store.commit('auth/LOGOUT')"
     />
-    <the-sidebar :menus="sideMenus" />
+    <TheSidebar :menus="sideMenus" />
     <main>
       <nuxt />
     </main>
@@ -15,15 +15,11 @@
 </template>
 
 <script>
-import TheSidebar from '@/components/TheSidebar'
 import { sideMenus, sideMenus_op } from '@/models/layout'
 import { mapGetters } from 'vuex'
 
 export default {
   middleware: 'default',
-  components: {
-    TheSidebar,
-  },
   head() {
     return {
       title: `${this.title} | ${this.$t('menu.account')}`,

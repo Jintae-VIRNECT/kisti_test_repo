@@ -78,12 +78,8 @@
                 <img src="~assets/images/icon/ic-error.svg" />
               </el-tooltip>
             </div>
-            <coupon-list
-              ref="table"
-              :coupons="coupons"
-              @select="couponSelect"
-            />
-            <searchbar-page
+            <CouponList ref="table" :coupons="coupons" @select="couponSelect" />
+            <SearchbarPage
               ref="page"
               :value.sync="coponsPage"
               :total="couponsTotal"
@@ -92,7 +88,7 @@
         </el-col>
       </el-row>
     </div>
-    <coupon-detail-modal
+    <CouponDetailModal
       :visible.sync="showCouponDetailModal"
       :coupon="activeCoupon"
       :allTickets="allTickets"
@@ -103,16 +99,10 @@
 <script>
 import couponService from '@/services/coupon'
 import paymentService from '@/services/payment'
-import CouponList from '@/components/coupon/CouponList'
-import CouponDetailModal from '@/components/coupon/CouponDetailModal'
 import searchMixin from '@/mixins/search'
 
 export default {
   mixins: [searchMixin],
-  components: {
-    CouponList,
-    CouponDetailModal,
-  },
   data() {
     return {
       allTickets: [],
