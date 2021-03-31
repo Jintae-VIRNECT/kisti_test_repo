@@ -153,8 +153,8 @@ export default {
       if (this.clicked) return
       this.clicked = true
       if (e) {
-        e.preventDefault()
         if (e.keyCode === 229) return
+        e.preventDefault()
       }
 
       if (this.fileList.length > 0) {
