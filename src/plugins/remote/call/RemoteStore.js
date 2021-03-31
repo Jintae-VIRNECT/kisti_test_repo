@@ -208,17 +208,22 @@ const mutations = {
       if (
         state.participants[idx].connectionId === state.mainView.connectionId
       ) {
-        const pIdx = state.participants.findIndex(
-          user =>
-            user.connectionId !== state.mainView.connectionId &&
-            user.video === true,
-        )
-        if (pIdx > -1) {
-          state.mainView = state.participants[pIdx]
+        if (state.participants[0].hasVideo) {
+          state.mainView = state.participants[0]
           state.viewForce = false
         } else {
-          state.mainView = {}
-          state.viewForce = false
+          const pIdx = state.participants.findIndex(
+            user =>
+              user.connectionId !== state.mainView.connectionId &&
+              user.video === true,
+          )
+          if (pIdx > -1) {
+            state.mainView = state.participants[pIdx]
+            state.viewForce = false
+          } else {
+            state.mainView = {}
+            state.viewForce = false
+          }
         }
       }
       let participant = state.participants.splice(idx, 1)
