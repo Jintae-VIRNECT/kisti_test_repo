@@ -208,7 +208,7 @@ export default {
     position: absolute;
     top: 0;
     right: 0;
-    bottom: -10px;
+    // bottom: -10px;
     left: 0;
     touch-action: pan-y;
     overscroll-behavior-y: none;
