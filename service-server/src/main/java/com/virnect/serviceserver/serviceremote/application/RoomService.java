@@ -103,8 +103,8 @@ public class RoomService {
 		if (licenseItem == null) {
 			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		} else {
-			if (roomRequest.getSessionType().equals(SessionType.PRIVATE)
-				|| roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
+			if (roomRequest.getSessionType() == SessionType.PRIVATE
+				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
 				assert licenseItem != null;
 				if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
@@ -126,7 +126,7 @@ public class RoomService {
 					tokenResult.toString()
 				);
 
-			} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
+			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
 				//open session is not need to check member count.
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -162,8 +162,8 @@ public class RoomService {
 		if (licenseItem == null) {
 			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		} else {
-			if (roomRequest.getSessionType().equals(SessionType.PRIVATE)
-				|| roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
+			if (roomRequest.getSessionType() == SessionType.PRIVATE
+				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
 				if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
 					new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
@@ -181,7 +181,7 @@ public class RoomService {
 					sessionJson.toString(),
 					tokenResult.toString()
 				);
-			} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
+			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
 				//open session is not need to check member count.
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -219,8 +219,8 @@ public class RoomService {
 			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		}
 		else {
-			if (roomRequest.getSessionType().equals(SessionType.PRIVATE)
-				|| roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
+			if (roomRequest.getSessionType() == SessionType.PRIVATE
+				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
 				if (IsValidUserCapacity(roomRequest, licenseItem)) {
 					// generate session id and token
@@ -239,7 +239,7 @@ public class RoomService {
 				} else {
 					responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 				}
-			} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
+			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
 				//open session is not need to check member count.
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -271,8 +271,8 @@ public class RoomService {
 		if (licenseItem == null) {
 			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		} else {
-			if (roomRequest.getSessionType().equals(SessionType.PRIVATE)
-				|| roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
+			if (roomRequest.getSessionType() == SessionType.PRIVATE
+				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
 				if (IsValidUserCapacity(roomRequest, licenseItem)) {
 					// generate session id and token
@@ -290,7 +290,7 @@ public class RoomService {
 				} else {
 					responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
 				}
-			} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
+			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
 				// open session is not need to check member count.
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -387,15 +387,15 @@ public class RoomService {
 			} else {
 				ErrorCode errorCode;
 
-				if (member.getMemberType().equals(MemberType.LEADER)) {
+				if (member.getMemberType() == MemberType.LEADER) {
 					errorCode = ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
-				} else if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+				} else if (member.getMemberStatus() == MemberStatus.LOAD) {
 					errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
 				} else {
 					errorCode = ErrorCode.ERR_SUCCESS;
 				}
 
-				if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+				if (errorCode == ErrorCode.ERR_SUCCESS) {
 
 					room.getMembers().remove(member);
 					roomRepository.save(room);
@@ -659,7 +659,7 @@ public class RoomService {
 				// Mapping Member List Data to Member Information List
 				memberInfoList = memberRepository.findAllBySessionId(sessionId)
 					.stream()
-					.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+					.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
 					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 					.collect(Collectors.toList());
 
@@ -679,7 +679,7 @@ public class RoomService {
 				}
 
 				memberInfoList.sort((t1, t2) -> {
-					if (t1.getMemberType().equals(MemberType.LEADER)) {
+					if (t1.getMemberType() == MemberType.LEADER) {
 						return 1;
 					}
 					return 0;
@@ -863,7 +863,7 @@ public class RoomService {
 
 			// Mapping Member List Data to Member Information List
 			List<MemberInfoResponse> memberInfos = room.getMembers().stream()
-				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
 				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 				.collect(Collectors.toList());
 
@@ -933,7 +933,7 @@ public class RoomService {
 				// Mapping Member List Data to Member Information List
 				memberInfoList = memberRepository.findAllBySessionId(sessionId)
 					.stream()
-					.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+					.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
 					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 					.collect(Collectors.toList());
 
@@ -978,8 +978,7 @@ public class RoomService {
 			}
 
 			for (Member member : room.getMembers()) {
-				if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus()
-					.equals(MemberStatus.LOAD)) {
+				if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus() == MemberStatus.LOAD) {
 					return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
 				}
 			}

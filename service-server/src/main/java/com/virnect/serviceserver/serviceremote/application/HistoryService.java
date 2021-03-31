@@ -63,61 +63,6 @@ public class HistoryService {
 		Page<MemberHistory> roomHistories;
 		PageMetadataResponse pageMeta;
 
-		/*Page<RoomHistory> currentRoomHistories = roomHistoryRepository.findRoomByWorkspaceIdAndUserIdCurrent(workspaceId, userId, paging, pageable);
-
-		List<RoomHistoryInfoResponse> currentRoomHistoryList =
-			currentRoomHistories.stream().map(roomHistory -> {
-				RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
-				roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
-
-				List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-					.filter(member -> !member.getMemberType().equals(MemberType.SECESSION))
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-					.collect(Collectors.toList());
-
-				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-					if (memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
-						ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-							workspaceId, memberInfoResponse.getUuid());
-						//log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-
-						WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-						memberInfoResponse.setRole(workspaceMemberData.getRole());
-						//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-						memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-						memberInfoResponse.setName(workspaceMemberData.getName());
-						memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-						memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-					}
-				}
-
-				roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
-
-				return roomHistoryInfoResponse;
-			}).collect(Collectors.toList());
-
-		if (paging) {
-			pageMeta = PageMetadataResponse.builder()
-				.currentPage(pageable.getPageNumber())
-				.currentSize(pageable.getPageSize())
-				.numberOfElements(currentRoomHistories.getNumberOfElements())
-				.totalPage(currentRoomHistories.getTotalPages())
-				.totalElements(currentRoomHistories.getTotalElements())
-				.last(currentRoomHistories.isLast())
-				.build();
-		} else {
-			pageMeta = PageMetadataResponse.builder()
-				.currentPage(0)
-				.currentSize(0)
-				.numberOfElements(currentRoomHistories.getNumberOfElements())
-				.totalPage(1)
-				.totalElements(currentRoomHistories.getTotalElements())
-				.last(true)
-				.build();
-		}
-
-		return new RoomHistoryInfoListResponse(currentRoomHistoryList, pageMeta);*/
-
 		roomHistories = memberHistoryRepository.findByWorkspaceIdAndUuidAndRoomHistoryIsNotNullAndHistoryDeletedFalse(
 			workspaceId, userId, paging, pageable);
 
@@ -128,13 +73,13 @@ public class HistoryService {
 			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-				.filter(member -> !member.getMemberType().equals(MemberType.SECESSION))
+				.filter(member -> !(member.getMemberType() == MemberType.SECESSION))
 				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 				.collect(Collectors.toList());
 
 			// find and get extra information from use-server using uuid
 			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				if (memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
+				if (memberInfoResponse.getMemberType() == MemberType.LEADER) {
 					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
 						workspaceId, memberInfoResponse.getUuid());
 					//log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
@@ -231,13 +176,13 @@ public class HistoryService {
 			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
 
 			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
-				.filter(member -> !member.getMemberType().equals(MemberType.SECESSION))
+				.filter(member -> !(member.getMemberType() == MemberType.SECESSION))
 				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 				.collect(Collectors.toList());
 
 			// find and get extra information from use-server using uuid
 			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				if (memberInfoResponse.getMemberType().equals(MemberType.LEADER)) {
+				if (memberInfoResponse.getMemberType() == MemberType.LEADER) {
 					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
 						workspaceId, memberInfoResponse.getUuid());
 					//log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
@@ -377,8 +322,7 @@ public class HistoryService {
 				.collect(Collectors.toList());
 
 			// remove members who is evicted
-			memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus().equals(
-				MemberStatus.EVICTED));
+			memberInfoList.removeIf(memberInfoResponse -> memberInfoResponse.getMemberStatus() == MemberStatus.EVICTED);
 
 			// find and get extra information from use-server using uuid
 			if (!memberInfoList.isEmpty()) {
