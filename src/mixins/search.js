@@ -12,8 +12,9 @@ export default {
           this.searchParams = {
             ...this.searchParams,
             search: keyword && keyword.value,
-            sort: (customParams && customParams.sort) || (sort && sort.value),
+            sort: sort && sort.value,
             page: page && page.value,
+            ...customParams,
           }
           // null 삭제
           Object.keys(this.searchParams).forEach(key => {
