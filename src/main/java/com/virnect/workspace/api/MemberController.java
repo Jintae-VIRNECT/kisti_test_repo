@@ -4,8 +4,8 @@ import com.virnect.workspace.application.MemberService;
 import com.virnect.workspace.dto.request.MemberKickOutRequest;
 import com.virnect.workspace.dto.request.MemberUpdateRequest;
 import com.virnect.workspace.dto.request.WorkspaceInviteRequest;
-import com.virnect.workspace.dto.response.WorkspaceUserInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceNewMemberInfoResponse;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoListResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.response.WorkspaceUserLicenseListResponse;
 import com.virnect.workspace.exception.WorkspaceException;
@@ -122,6 +122,20 @@ public class MemberController {
             throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
         WorkspaceUserInfoResponse response = memberService.getMemberInfo(workspaceId, userId);
+        return ResponseEntity.ok(new ApiResponse<>(response));
+    }
+    @ApiOperation(
+            value = "사용자 식별자 배열로 워크스페이스 멤버 정보 조회",
+            notes = "워크스페이스 내에서 해당 멤버의 정보를 조회합니다."
+    )
+    @GetMapping("/{workspaceId}/members/infoList")
+    public ResponseEntity<ApiResponse<WorkspaceUserInfoListResponse>> getMemberInfoList(
+            @PathVariable("workspaceId") String workspaceId, @RequestParam(value = "userIds") List<String> userIds
+    ) {
+        if (!StringUtils.hasText(workspaceId) || userIds==null || userIds.isEmpty()) {
+            throw new WorkspaceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+        WorkspaceUserInfoListResponse response = memberService.getMemberInfoList(workspaceId, userIds);
         return ResponseEntity.ok(new ApiResponse<>(response));
     }
 

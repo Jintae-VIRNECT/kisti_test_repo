@@ -193,6 +193,7 @@ public class MemberService {
         List<String> workspaceUserIdList = workspaceUserRepository.getWorkspaceUserIdList(workspaceId);
         return userRestService.getUserInfoList(search, workspaceUserIdList).getData();
     }
+
     public List<WorkspaceUserInfoResponse> getSortedMemberList(
             com.virnect.workspace.global.common.PageRequest
                     pageRequest, List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList
@@ -573,6 +574,20 @@ public class MemberService {
         } else {
             return new WorkspaceUserInfoResponse();
         }
+    }
+
+    public WorkspaceUserInfoListResponse getMemberInfoList(String workspaceId, List<String> userIds) {
+        List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = new ArrayList<>();
+        userIds.forEach(userId -> {
+            Optional<WorkspaceUserPermission> workspaceUserPermission = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userId);
+            if (workspaceUserPermission.isPresent()) {
+                WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(getUserInfo(userId), WorkspaceUserInfoResponse.class);
+                workspaceUserInfoResponse.setRole(workspaceUserPermission.get().getWorkspaceRole().getRole());
+                workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userId));
+                workspaceUserInfoResponseList.add(workspaceUserInfoResponse);
+            }
+        });
+        return new WorkspaceUserInfoListResponse(workspaceUserInfoResponseList, null);
     }
 
     //@CacheEvict(value = "userWorkspaces", key = "#memberKickOutRequest.kickedUserId")
