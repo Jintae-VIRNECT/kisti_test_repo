@@ -15,6 +15,7 @@ export default {
   methods: {
     viewPointSetting(e) {
       setTimeout(() => {
+        this.$eventBus.$emit('popover:close')
         document.documentElement.style.setProperty('overflow', 'auto')
         const metaViewport = document.querySelector('meta[name=viewport]')
         // console.log(e.currentTarget.innerHeight)

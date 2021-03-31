@@ -136,6 +136,7 @@ const getDefaultState = () => {
     ],
     //화면 공유시 카메라 스트림을 보관하기 위함
     myTempStream: null, //MediaStream
+    screenSharing: false,
   }
 }
 
@@ -207,17 +208,22 @@ const mutations = {
       if (
         state.participants[idx].connectionId === state.mainView.connectionId
       ) {
-        const pIdx = state.participants.findIndex(
-          user =>
-            user.connectionId !== state.mainView.connectionId &&
-            user.video === true,
-        )
-        if (pIdx > -1) {
-          state.mainView = state.participants[pIdx]
+        if (state.participants[0].hasVideo) {
+          state.mainView = state.participants[0]
           state.viewForce = false
         } else {
-          state.mainView = {}
-          state.viewForce = false
+          const pIdx = state.participants.findIndex(
+            user =>
+              user.connectionId !== state.mainView.connectionId &&
+              user.video === true,
+          )
+          if (pIdx > -1) {
+            state.mainView = state.participants[pIdx]
+            state.viewForce = false
+          } else {
+            state.mainView = {}
+            state.viewForce = false
+          }
         }
       }
       let participant = state.participants.splice(idx, 1)
@@ -345,6 +351,9 @@ const mutations = {
   setMyTempStream(state, payload) {
     state.myTempStream = payload
   },
+  setScreenSharing(state, payload) {
+    state.screenSharing = payload
+  },
 }
 
 const actions = {
@@ -367,6 +376,9 @@ const actions = {
   setMyTempStream({ commit }, payload) {
     commit('setMyTempStream', payload)
   },
+  setScreenSharing({ commit }, payload) {
+    commit('setScreenSharing', payload)
+  },
 }
 
 const getters = {
@@ -385,6 +397,7 @@ const getters = {
   resolutions: state => state.resolutions,
   initing: state => state.initing,
   myTempStream: state => state.myTempStream,
+  screenSharing: state => state.screenSharing,
 }
 
 export default {

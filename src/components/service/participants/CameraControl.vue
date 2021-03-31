@@ -5,8 +5,13 @@
       width="auto"
       trigger="click"
       popperClass="camera-control"
+      @visible="visible"
     >
-      <button slot="reference" class="camera-control__btn">
+      <button
+        slot="reference"
+        class="camera-control__btn"
+        :class="{ active: showControl }"
+      >
         {{ $t('service.camera_control') }}
       </button>
       <div class="camera-control__body">
@@ -46,6 +51,7 @@ export default {
   data() {
     return {
       allowCameraControl: false,
+      showControl: false,
     }
   },
   watch: {
@@ -56,6 +62,9 @@ export default {
   methods: {
     setCameraStatue(flag) {
       this.$call.sendControl(CONTROL.VIDEO, flag)
+    },
+    visible(val) {
+      this.showControl = val
     },
   },
 }
@@ -83,13 +92,14 @@ export default {
   position: relative;
   width: 38px;
   height: 38px;
-  background: url('~assets/image/call/ic_plus.svg') center/24px no-repeat
-    #3c3c3c;
+  background: url('~assets/image/call/ic_camera_control.svg') center/24px
+    no-repeat #3c3c3c;
   border: solid 1px #5c5c5c;
   border-radius: 2px;
   @include ir();
   &.active {
-    background-image: '~assets/image/call/ic_ex.svg';
+    background: url('~assets/image/call/ic_camera_control_active.svg')
+      center/24px no-repeat #626368;
   }
 }
 .camera-control__body {

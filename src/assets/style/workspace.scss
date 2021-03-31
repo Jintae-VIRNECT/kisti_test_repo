@@ -5,6 +5,15 @@
   touch-action: pinch-zoom;
 }
 
+html {
+  overscroll-behavior: none;
+  overflow: hidden;
+}
+body {
+  overscroll-behavior-y: contain;
+  height: 100%;
+}
+
 @import "common";
 @import "transition";
 

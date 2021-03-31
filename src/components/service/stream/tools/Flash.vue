@@ -43,9 +43,9 @@ export default {
     },
   },
   watch: {
-    flashStatus(status) {
+    flashStatus(status, bStatus) {
       if (status !== -1) {
-        this.flashListener(status)
+        this.flashListener(status, bStatus)
       }
     },
   },
@@ -64,7 +64,7 @@ export default {
       const toStatus = !this.status
       this.$call.sendFlash(toStatus, [this.mainView.connectionId])
     },
-    flashListener(status) {
+    flashListener(status, bStatus) {
       // 응답
       if (parseInt(status) === FLASH.CAMERA_ZOOMING) {
         this.toastNotice(this.$t('service.flash_controlling'))
@@ -73,13 +73,19 @@ export default {
       if (parseInt(status) === FLASH.NO_PERMISSION) {
         this.toastDefault(this.$t('service.flash_no_permission'))
       }
-      if (parseInt(status) === FLASH.FLASH_NONE) {
-        this.toastDefault(this.$t('service.flash_none'))
-      }
-      if (parseInt(status) === FLASH.FLASH_ON) {
+      // if (parseInt(status) === FLASH.FLASH_NONE) {
+      //   this.toastDefault(this.$t('service.flash_none'))
+      // }
+      if (
+        parseInt(status) === FLASH.FLASH_ON &&
+        parseInt(bStatus) === FLASH.FLASH_OFF
+      ) {
         this.toastDefault(this.$t('service.flash_on'))
       }
-      if (parseInt(status) === FLASH.FLASH_OFF) {
+      if (
+        parseInt(status) === FLASH.FLASH_OFF &&
+        parseInt(bStatus) === FLASH.FLASH_ON
+      ) {
         this.toastDefault(this.$t('service.flash_off'))
       }
       if (parseInt(status) === FLASH.APP_IS_BACKGROUND) {

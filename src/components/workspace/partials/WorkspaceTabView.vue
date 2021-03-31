@@ -5,7 +5,7 @@
       <span class="tab-view__count" v-if="!(listCount === null)">
         {{ listCount }}
       </span>
-      <div class="tab-view__tools" v-if="description.length === 0">
+      <div class="tab-view__tools">
         <search
           v-if="placeholder.length > 0"
           :placeholder="placeholder"
@@ -27,7 +27,7 @@
         ></icon-button>
       </div>
     </div>
-    <div class="tab-view__sub-header offsetwidth" v-if="!hideTitle">
+    <!-- <div class="tab-view__sub-header offsetwidth" v-if="!hideTitle">
       <span class="tab-view__description">{{ description }}</span>
       <div class="tab-view__tools" v-if="description.length > 0">
         <search
@@ -50,7 +50,7 @@
           @click="$emit('refresh')"
         ></icon-button>
       </div>
-    </div>
+    </div> -->
     <div class="tab-view__body offsetwidth">
       <slot v-if="!empty && !loading"></slot>
       <show-empty

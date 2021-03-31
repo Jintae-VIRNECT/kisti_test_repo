@@ -729,6 +729,7 @@ const _ = {
     //   Store.commit('setMyTempStream', originStream.clone())
     // }
     await _.publisher.replaceTrack(track)
+    await new Promise(resolve => setTimeout(resolve, 200))
     const settings = track.getSettings()
     const capability = track.getCapabilities()
     logger('call', `resolution::${settings.width}X${settings.height}`)
@@ -811,7 +812,7 @@ const _ = {
             connectionId: tempPublisher.stream.connection.connectionId,
             stream: mediaStream,
             hasVideo: tempPublisher.stream.hasVideo,
-            hasCamera: tempPublisher.stream.hasVideo,
+            // hasCamera: tempPublisher.stream.hasVideo,
             hasAudio: tempPublisher.stream.hasAudio,
             video: tempPublisher.stream.videoActive, // settingInfo.videoOn,
             audio: tempPublisher.stream.audioActive,

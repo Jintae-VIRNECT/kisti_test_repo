@@ -98,7 +98,7 @@
     "setting_camera_control": "Video share control",
     "setting_camera_restrict": "Video Restriction Mode",
     "setting_camera_restrict_enable": "Enable Video Restriction Mode",
-    "setting_camera_restrict_info": "This mode allows you to contol the participant's camera.",
+    "setting_camera_restrict_info": "This mode allows the leader to control the participant's camera.",
 
     "remote_name": "Collabo name",
     "remote_description": "Collabo description",

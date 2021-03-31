@@ -98,7 +98,7 @@
     "setting_camera_control": "영상 공유 제어",
     "setting_camera_restrict": "영상 제한 모드",
     "setting_camera_restrict_enable": "영상 제한 모드 사용",
-    "setting_camera_restrict_info": "참가자의 카메라를 제어할 수 있는 모드입니다.",
+    "setting_camera_restrict_info": "리더가 참가자의 카메라를 제어할 수 있는 모드입니다.",
     
     "remote_name": "협업 이름",
     "remote_description": "협업 설명",
