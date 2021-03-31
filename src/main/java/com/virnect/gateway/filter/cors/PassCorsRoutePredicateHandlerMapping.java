@@ -26,8 +26,7 @@ import reactor.core.publisher.Mono;
 public class PassCorsRoutePredicateHandlerMapping extends RoutePredicateHandlerMapping {
 	private static final WebHandler REQUEST_HANDLED_HANDLER = exchange -> Mono.empty();
 	private static final Logger logger = LoggerFactory.getLogger(PassCorsRoutePredicateHandlerMapping.class);
-	private final GlobalCorsProperties globalCorsProperties;
-	private CorsProcessor corsProcessor = new CorsCustomProcessor();
+	private final CorsProcessor corsProcessor = new CorsCustomProcessor();
 
 
 	public PassCorsRoutePredicateHandlerMapping(
@@ -37,7 +36,6 @@ public class PassCorsRoutePredicateHandlerMapping extends RoutePredicateHandlerM
 		Environment environment
 	) {
 		super(webHandler, routeLocator, globalCorsProperties, environment);
-		this.globalCorsProperties = globalCorsProperties;
 	}
 
 	@Override

@@ -7,14 +7,10 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
-import org.springframework.context.annotation.Profile;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
-
-import com.google.common.net.HttpHeaders;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +18,7 @@ import reactor.core.publisher.Mono;
 
 import com.virnect.gateway.error.ErrorCode;
 import com.virnect.gateway.filter.security.GatewayServerAuthenticationException;
+import com.virnect.gateway.filter.security.RequestValidationProcessor;
 import com.virnect.security.UserDetailsImpl;
 
 @Slf4j
@@ -39,8 +36,8 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 
 	@PostConstruct
 	public void init() {
-		log.info("Session Authentication Filter - Active.");
-		log.info("Session Authentication Filter - Session Cookie Properties :: [{}].", sessionCookieProperty);
+		log.info("[Session Authentication Filter] - Active.");
+		log.info("[Session Authentication Filter] - Session Cookie Properties :: [{}].", sessionCookieProperty);
 		this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
 	}
 
@@ -49,53 +46,35 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 		ServerWebExchange exchange,
 		GatewayFilterChain chain
 	) {
+		log.info("SessionAuthenticationFilter - doFilter");
 
-		String requestUrlPath = exchange.getRequest().getURI().getPath();
-		boolean isAuthenticateSkipUrl = requestUrlPath.startsWith("/auth") ||
-			requestUrlPath.startsWith("/v1/auth") ||
-			requestUrlPath.startsWith("/admin") ||
-			requestUrlPath.startsWith("/users/find") ||
-			requestUrlPath.startsWith("/licenses/allocate/check") ||
-			requestUrlPath.startsWith("/licenses/allocate") ||
-			requestUrlPath.startsWith("/licenses/deallocate") ||
-			requestUrlPath.contains("/licenses/deallocate") ||
-			requestUrlPath.contains("/licenses/sdk/authentication") ||
-			requestUrlPath.matches("^/workspaces/([a-zA-Z0-9]+)/invite/accept$") ||
-			requestUrlPath.matches("^/workspaces/invite/[a-zA-Z0-9]+/(accept|reject).*$");
-
-		if (isAuthenticateSkipUrl) {
-			if (isSessionCookieExist(exchange.getRequest())) {
-				return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
-			}
+		if (RequestValidationProcessor.isRequestAuthenticationProcessSkip(exchange.getRequest())) {
 			return chain.filter(exchange);
 		}
 
-		// if develop environment
-		if ((activeProfile.equals("develop") || activeProfile.equals("onpremise")) && requestUrlPath.contains(
-			"/api-docs")) {
-			log.info("SessionAuthenticationFilter - Skip swagger json request like [/v2/api-docs] ss");
+		// if develop and onpremise environment and request is swagger ui related.
+		if ((activeProfile.equals("develop") || activeProfile.equals("onpremise")) &&
+			RequestValidationProcessor.isSwaggerApiDocsUrl(exchange.getRequest())
+		) {
+			log.info("SessionAuthenticationFilter - Skip swagger json request like [/v2/api-docs] ");
 			return chain.filter(exchange);
 		}
 
-		// if (!isAuthorizationHeaderEmpty(exchange.getRequest()) && !isSessionCookieExist(exchange.getRequest())) {
-		// 	log.info(
-		// 		"SessionAuthenticationFilter - isAuthorizationHeaderEmpty = {}",
-		// 		!isAuthorizationHeaderEmpty(exchange.getRequest())
-		// 	);
-		// 	log.info(
-		// 		"SessionAuthenticationFilter - isSessionCookieExist = {}",
-		// 		!isSessionCookieExist(exchange.getRequest())
-		// 	);
-		// 	throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
-		// }
-
-		if ((activeProfile.equals("develop") || activeProfile.equals("onpremise")) && !isSessionCookieExist(exchange.getRequest())) {
-			log.info("SessionAuthenticationFilter - Skip session authentication none session cookie request. Only Develop Environment.");
+		// If request not contain session cookie but have authorization header.
+		// It is already authorized jwt authentication filter.
+		if (!RequestValidationProcessor.isSessionAuthenticationRequest(exchange.getRequest()) &&
+			RequestValidationProcessor.isJwtAuthenticationRequest(exchange.getRequest())) {
+			log.info("Already authorized request by JwtAuthenticationFilter");
 			return chain.filter(exchange);
-
 		}
 
-		return showUserSessionInfoAndDoFilter(exchange, chain, requestUrlPath);
+		// Check Request Authentication Type
+		if (!RequestValidationProcessor.isSessionAuthenticationRequest(exchange.getRequest())) {
+			log.error("SessionAuthenticationFilter - Can't find session cookie On Request.");
+			throw new GatewayServerAuthenticationException(ErrorCode.ERR_API_AUTHENTICATION);
+		}
+
+		return showUserSessionInfoAndDoFilter(exchange, chain, exchange.getRequest().getURI().getPath());
 	}
 
 	private Mono<Void> showUserSessionInfoAndDoFilter(
@@ -136,13 +115,4 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 				);
 			}).then(chain.filter(exchange));
 	}
-
-	private boolean isAuthorizationHeaderEmpty(ServerHttpRequest request) {
-		return request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION);
-	}
-
-	private boolean isSessionCookieExist(ServerHttpRequest request) {
-		return request.getCookies().containsKey(sessionCookieProperty.getName());
-	}
-
 }

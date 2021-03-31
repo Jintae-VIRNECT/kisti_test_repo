@@ -33,7 +33,7 @@ public class RequestTraceEnvironmentPostProcessor implements EnvironmentPostProc
 		} else {
 			map.put(
 				"logging.pattern.level",
-				"%5p [" + hostIP + "] [${spring.application.name:}},%X{traceId:-},%X{spanId:-}]"
+				"%5p [" + hostIP + "] [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
 			);
 		}
 		addOrReplace(environment.getPropertySources(), map);
