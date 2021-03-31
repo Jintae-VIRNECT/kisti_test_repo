@@ -150,10 +150,10 @@ export default {
       this.viewTrans = !this.viewTrans
     },
     async doSend(e) {
+      if (e && e.keyCode === 229) return
       if (this.clicked) return
       this.clicked = true
       if (e) {
-        if (e.keyCode === 229) return
         e.preventDefault()
       }
 
