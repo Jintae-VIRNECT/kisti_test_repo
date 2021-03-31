@@ -31,7 +31,7 @@
               </span>
             </div>
           </div>
-          <TasksList
+          <TaskList
             :data="[taskInfo]"
             @updated="taskUpdated"
             @deleted="$router.push('/tasks')"
@@ -105,7 +105,7 @@
           </div>
 
           <!-- 테이블 -->
-          <SubTasksList
+          <TaskSubTasksList
             v-if="!isGraph"
             ref="table"
             :data="subTaskList"
@@ -114,7 +114,7 @@
             @updated="searchSubTasks"
           />
           <!-- 차트 -->
-          <TasksListGraph v-else :data="subTaskList" type="subTask" />
+          <TaskListGraph v-else :data="subTaskList" type="subTask" />
         </el-card>
       </el-row>
       <SearchbarPage

@@ -95,18 +95,18 @@
       />
     </div>
     <!-- 생성 모달 -->
-    <SetTaskInfo
+    <TaskSetInfo
       :contentId="selectedContentId"
       :visible.sync="showNewTaskInfo"
       @next="taskInfoEnded"
     />
-    <SetTaskManage
+    <TaskManage
       type="new"
       :contentInfo="selectedContentInfo"
       :visible.sync="showNewTaskManage"
       @next="taskManageEnded"
     />
-    <SetTaskTarget
+    <TaskSetTarget
       type="new"
       :form="registerTaskForm"
       :visible.sync="showNewTaskTarget"

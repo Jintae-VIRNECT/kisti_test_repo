@@ -76,7 +76,7 @@
           </div>
 
           <!-- 테이블 -->
-          <TasksList
+          <TaskList
             v-if="!isGraph"
             ref="table"
             :data="taskList"

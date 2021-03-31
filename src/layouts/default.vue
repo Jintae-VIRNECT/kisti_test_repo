@@ -16,7 +16,7 @@
       </template>
     </VirnectHeader>
     <div>
-      <TheSidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
+      <LayoutTheSidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
       <main>
         <nuxt />
       </main>

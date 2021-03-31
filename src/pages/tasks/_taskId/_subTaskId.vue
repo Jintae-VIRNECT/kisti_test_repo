@@ -31,7 +31,7 @@
               <span>{{ $t('task.subTaskDetail.title') }}</span>
             </h3>
           </div>
-          <SubTasksList :data="[subTaskInfo]" @updated="subTaskUpdated" />
+          <TaskSubTasksList :data="[subTaskInfo]" @updated="subTaskUpdated" />
         </el-card>
       </el-row>
 
@@ -100,7 +100,7 @@
           </div>
 
           <!-- 차트 -->
-          <TasksListGraph v-if="isGraph" :data="stepsList" type="step" />
+          <TaskListGraph v-if="isGraph" :data="stepsList" type="step" />
           <!-- 테이블 -->
           <el-table
             v-if="!isGraph"

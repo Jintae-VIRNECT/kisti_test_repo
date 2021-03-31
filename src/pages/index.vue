@@ -16,15 +16,15 @@
             </el-card>
           </el-row>
           <el-row v-if="!$isOnpremise">
-            <PlansUsed
+            <HomePlansUsed
               i18nGroup="home.plansInfo.arStorage"
               :info="plansInfo.storage"
             />
-            <PlansUsed
+            <HomePlansUsed
               i18nGroup="home.plansInfo.arContent"
               :info="plansInfo.viewCount"
             />
-            <!-- <PlansUsed
+            <!-- <HomePlansUsed
               i18nGroup="home.plansInfo.call"
               :info="plansInfo.callTime"
             /> -->
@@ -42,15 +42,15 @@
               {{ $t('home.banner.desc') }}
             </p>
           </el-card>
-          <CurrentMemberList v-if="!$isOnpremise" />
-          <CurrentContentsList />
-          <CurrentResultList />
+          <HomeMemberList v-if="!$isOnpremise" />
+          <HomeContentsList />
+          <HomeResultList />
         </el-col>
         <!-- 오른쪽 -->
         <el-col class="container__right">
-          <UserProfileCard />
-          <DownloadCenter v-if="!$isOnpremise" />
-          <GuideList v-if="!$isOnpremise" />
+          <HomeUserProfileCard />
+          <HomeDownloadCenter v-if="!$isOnpremise" />
+          <HomeGuideList v-if="!$isOnpremise" />
           <a
             v-if="!$isOnpremise"
             :href="`${$url.www}/support/faq`"
@@ -68,8 +68,8 @@
       </el-row>
     </div>
 
-    <AlertStorageOverflow :visible.sync="showAlertStorageOverflow" />
-    <AlertLicenseOverflow :visible.sync="showAlertLicenseOverflow" />
+    <HomeAlertStorageOverflow :visible.sync="showAlertStorageOverflow" />
+    <HomeAlertLicenseOverflow :visible.sync="showAlertLicenseOverflow" />
   </div>
 </template>
 

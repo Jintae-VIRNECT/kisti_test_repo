@@ -9,7 +9,7 @@
         <a @click.stop="toggleWide" />
       </div>
       <div class="the-sidebar__upper">
-        <TheSidebarMenuList
+        <LayoutTheSidebarMenuList
           :menus="menus"
           :isWide="showWide"
           @openCollapse="openCollapse"
@@ -18,7 +18,7 @@
       </div>
       <!-- 워크스페이스 설정 -->
       <div class="the-sidebar__lower" v-if="!hideWorkspaceSetting">
-        <TheSidebarMenuList
+        <LayoutTheSidebarMenuList
           :menus="bottomMenus"
           :isWide="showWide"
           @openCollapse="openCollapse"

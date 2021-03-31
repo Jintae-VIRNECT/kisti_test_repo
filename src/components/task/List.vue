@@ -100,7 +100,7 @@
       :task="activeTask"
       :visible.sync="showTaskTargetInfoModal"
     />
-    <SetTaskManage
+    <TaskManage
       :type="taskManageModalType"
       :taskId="activeTask.id"
       :contentInfo="{ contentUUID: activeTask.contentUUID }"
@@ -108,7 +108,7 @@
       @updated="updated"
       @next="taskManageEnded"
     />
-    <SetTaskTarget
+    <TaskSetTarget
       type="add"
       :form="registerTaskForm"
       :visible.sync="showAddTaskTargetModal"
