@@ -73,7 +73,7 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 		// if develop environment
 		if ((activeProfile.equals("develop") || activeProfile.equals("onpremise")) && requestUrlPath.contains(
 			"/api-docs")) {
-			log.info("SessionAuthenticationFilter - Skip swagger json request like [/v2/api-docs] ");
+			log.info("SessionAuthenticationFilter - Skip swagger json request like [/v2/api-docs] ss");
 			return chain.filter(exchange);
 		}
 
