@@ -6,7 +6,6 @@ import com.virnect.workspace.application.user.UserRestService;
 import com.virnect.workspace.dao.*;
 import com.virnect.workspace.dao.redis.UserInviteRepository;
 import com.virnect.workspace.domain.*;
-import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 import com.virnect.workspace.dto.WorkspaceInfoDTO;
 import com.virnect.workspace.dto.request.WorkspaceCreateRequest;
 import com.virnect.workspace.dto.request.WorkspaceUpdateRequest;
@@ -25,12 +24,11 @@ import com.virnect.workspace.infra.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -67,7 +65,7 @@ public class WorkspaceService {
     private final LicenseRestService licenseRestService;
     private final WorkspaceSettingRepository workspaceSettingRepository;
     private final RedirectProperty redirectProperty;
-    private final CacheManager cacheManager;
+    private final RedisTemplate redisTemplate;
 
     /**
      * 워크스페이스 생성
@@ -75,7 +73,7 @@ public class WorkspaceService {
      * @param workspaceCreateRequest - 생성 할 워크스페이스 정보
      * @return - 생성 된 워크스페이스 정보
      */
-    @CacheEvict(value = "userWorkspaces", key = "#workspaceCreateRequest.userId")
+    //@CacheEvict(value = "userWorkspaces", key = "#workspaceCreateRequest.userId")
     @Transactional
     public WorkspaceInfoDTO createWorkspace(WorkspaceCreateRequest workspaceCreateRequest) {
         //필수 값 체크
@@ -143,6 +141,13 @@ public class WorkspaceService {
 
         WorkspaceInfoDTO workspaceInfoDTO = modelMapper.map(newWorkspace, WorkspaceInfoDTO.class);
         workspaceInfoDTO.setMasterUserId(newWorkspace.getUserId());
+
+        redisTemplate.keys("userWorkspaces::*").stream().forEach(object -> {
+            String key = (String) object;
+            if (key.startsWith("userWorkspaces::".concat(workspaceCreateRequest.getUserId()))) {
+                redisTemplate.delete(key);
+            }
+        });
         return workspaceInfoDTO;
     }
 
@@ -152,12 +157,14 @@ public class WorkspaceService {
      * @param userId - 사용자 uuid
      * @return - 소속된 워크스페이스 정보
      */
-    @Cacheable(value = "userWorkspaces", key = "#userId", unless = "#result.workspaceList.size()==0")
+    @Cacheable(value = "userWorkspaces", key = "{#userId" +
+            ".concat(',pageSize=').concat(#pageRequest.of().pageSize)" +
+            ".concat(',pageNumber=').concat(#pageRequest.of().pageNumber)" +
+            ".concat(',pageSort=').concat(#pageRequest.of().sort.toString()).replace(':',',')}", unless = "#result.workspaceList.size()==0")
     public WorkspaceInfoListResponse getUserWorkspaces(
             String userId, com.virnect.workspace.global.common.PageRequest pageRequest
     ) {
         Page<WorkspaceUserPermission> workspaceUserPermissionPage = workspaceUserPermissionRepository.findByWorkspaceUser_UserId(userId, pageRequest.of());
-
         List<WorkspaceInfoListResponse.WorkspaceInfo> workspaceList = new ArrayList<>();
 
         for (WorkspaceUserPermission workspaceUserPermission : workspaceUserPermissionPage) {
@@ -522,15 +529,6 @@ public class WorkspaceService {
     }*/
 
 
-
-
-
-
-
-
-
-
-
     /**
      * 워크스페이스 정보 변경
      *
@@ -563,6 +561,12 @@ public class WorkspaceService {
             List<WorkspaceUser> workspaceUserList = workspaceUserRepository.findByWorkspace_Uuid(
                     workspace.getUuid());
             workspaceUserList.forEach(workspaceUser -> {
+                redisTemplate.keys("userWorkspaces::*").forEach(object -> {
+                    String key = (String) object;
+                    if (key.startsWith("userWorkspaces::".concat(workspaceUser.getUserId()))) {
+                        redisTemplate.delete(key);
+                    }
+                });
                 UserInfoRestResponse userInfoRestResponse = getUserInfo(workspaceUser.getUserId());
                 receiverEmailList.add(userInfoRestResponse.getEmail());
                 if (userInfoRestResponse.getUuid().equals(workspace.getUserId())) {
@@ -617,7 +621,6 @@ public class WorkspaceService {
 
         return new ApiResponse<>(new WorkspaceHistoryListResponse(workspaceHistoryList, pageMetadataResponse));
     }
-
 
 
     public WorkspaceLicenseInfoResponse getWorkspaceLicenseInfo(String workspaceId) {

@@ -26,11 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -74,6 +74,7 @@ public class MemberService {
     private final CacheManager cacheManager;
     private static final String ALL_WORKSAPCE_ROLE = "MASTER|MANAGER|MEMBER";
     private static final String ALL_LICENSE_PRODUCT = "REMOTE|MAKE|VIEW";
+    private final RedisTemplate redisTemplate;
 
     /**
      * 멤버 조회
@@ -192,14 +193,6 @@ public class MemberService {
         List<String> workspaceUserIdList = workspaceUserRepository.getWorkspaceUserIdList(workspaceId);
         return userRestService.getUserInfoList(search, workspaceUserIdList).getData();
     }
-
-    /**
-     * 워크스페이스 멤버 정렬
-     *
-     * @param pageRequest                   - 정렬 정보
-     * @param workspaceUserInfoResponseList - 정렬할 대상 리스트
-     * @return - 정렬된 멤버 리스트
-     */
     public List<WorkspaceUserInfoResponse> getSortedMemberList(
             com.virnect.workspace.global.common.PageRequest
                     pageRequest, List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList
@@ -363,7 +356,7 @@ public class MemberService {
         return new ApiResponse<>(true);
     }
 
-    @CacheEvict(value = "userWorkspaces", key = "#requestUserId")
+    //@CacheEvict(value = "userWorkspaces", key = "#requestUserId")
     @Transactional
     public void updateUserPermission(
             Workspace workspace, String requestUserId, String responseUserId, WorkspaceRole workspaceRole,
@@ -420,7 +413,12 @@ public class MemberService {
                     "WORKSPACE_SET_MEMBER", new java.lang.String[]{masterUser.getNickname(), user.getNickname()}, locale);
         }
         saveHistotry(workspace, responseUserId, message);
-
+        redisTemplate.keys("userWorkspaces::*").stream().forEach(object -> {
+            String key = (String) object;
+            if (key.startsWith("userWorkspaces::".concat(responseUserId))) {
+                redisTemplate.delete(key);
+            }
+        });
     }
 
     private void saveHistotry(Workspace workspace, String userId, String message) {
@@ -577,7 +575,7 @@ public class MemberService {
         }
     }
 
-    @CacheEvict(value = "userWorkspaces", key = "#memberKickOutRequest.kickedUserId")
+    //@CacheEvict(value = "userWorkspaces", key = "#memberKickOutRequest.kickedUserId")
     @Transactional
     public ApiResponse<Boolean> kickOutMember(
             String workspaceId, MemberKickOutRequest memberKickOutRequest, Locale locale
@@ -674,7 +672,12 @@ public class MemberService {
                 .workspace(workspace)
                 .build();
         historyRepository.save(history);
-
+        redisTemplate.keys("userWorkspaces::*").stream().forEach(object -> {
+            String key = (String) object;
+            if (key.startsWith("userWorkspaces::".concat(memberKickOutRequest.getKickedUserId()))) {
+                redisTemplate.delete(key);
+            }
+        });
         return new ApiResponse<>(true);
     }
 
@@ -1218,7 +1221,7 @@ public class MemberService {
         return generatePlanList(remote, make, view).stream().map(Enum::toString).collect(Collectors.joining(","));
     }
 
-    @CacheEvict(value = "userWorkspaces", key = "#userId")
+    //@CacheEvict(value = "userWorkspaces", key = "#userId")
     public ApiResponse<Boolean> exitWorkspace(String workspaceId, String userId, Locale locale) {
         Workspace workspace = workspaceRepository.findByUuid(workspaceId)
                 .orElseThrow(() -> new WorkspaceException(ErrorCode.ERR_WORKSPACE_NOT_FOUND));
@@ -1257,6 +1260,12 @@ public class MemberService {
                 .build();
         historyRepository.save(history);
 
+        redisTemplate.keys("userWorkspaces::*").stream().forEach(object -> {
+            String key = (String) object;
+            if (key.startsWith("userWorkspaces::".concat(userId))) {
+                redisTemplate.delete(key);
+            }
+        });
         return new ApiResponse<>(true);
     }
 
@@ -1311,7 +1320,7 @@ public class MemberService {
 
         List<WorkspaceUserLicenseInfoResponse> sortedWorkspaceUserLicenseList
                 = workspaceUserLicenseInfoList.stream()
-                .sorted(Comparator.comparing(getSortKey(pageRequest.getSortName()), getSortDirection(pageRequest.getSortDirection())))
+                .sorted(Comparator.comparing(getWorkspaceUserLicenseInfoResponseSortKey(pageRequest.getSortName()), getSortDirection(pageRequest.getSortDirection())))
                 .collect(Collectors.toList());
 
         CustomPageResponse<WorkspaceUserLicenseInfoResponse> customPageResponse
@@ -1319,7 +1328,7 @@ public class MemberService {
         return new WorkspaceUserLicenseListResponse(customPageResponse.getAfterPagingList(), customPageResponse.getPageMetadataResponse());
     }
 
-    private Function<WorkspaceUserLicenseInfoResponse, String> getSortKey(String sortName) {
+    private Function<WorkspaceUserLicenseInfoResponse, String> getWorkspaceUserLicenseInfoResponseSortKey(String sortName) {
         if (sortName.equalsIgnoreCase("plan")) {
             return WorkspaceUserLicenseInfoResponse::getProductName;
         }
