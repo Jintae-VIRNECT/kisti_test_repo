@@ -37,23 +37,24 @@ public class RequestValidationProcessor {
 		if (clientIp == null) {
 			clientIp = Objects.requireNonNull(request.getRemoteAddress()).getAddress().getHostAddress();
 		}
-		logger.info("RequestValidationProcessing - ClientIPCheck :: Skip Url Check about [{}]", clientIp);
 
-		if (!clientIp.equals("121.162.3.204")) {
-			logger.info("RequestValidationProcessing - ClientIPCheck :: Not Allowed IP");
-			return false;
+		logger.info("RequestValidationProcessing - RemoteAddress Check -> [{}]", clientIp);
+
+		if (clientIp.equals("121.162.3.204")) {
+			logger.info("RequestValidationProcessing - RemoteAddress Check Success. : -> [{}]", clientIp);
+			return true;
 		}
 
-		// if (request.getHeaders().getHost() != null &&
-		// 	request.getHeaders().getHost().getHostName().equals("192.168.6.3:8073")) {
-		// 	logger.info(
-		// 		"RequestValidationProcessing - Client Host Check [{}]:: Allowed IP",
-		// 		request.getHeaders().getHost().getHostName()
-		// 	);
-		// 	return true;
-		// }
+		if (request.getHeaders().getHost() != null) {
+			String hostName = request.getHeaders().getHost().getHostName();
+			logger.info("RequestValidationProcessing - Request HostName Check -> [{}]", hostName);
+			if (hostName.equals("192.168.6.3:8073")) {
+				logger.info("RequestValidationProcessing - Request HostName Check Success. : -> [{}]", hostName);
+				return true;
+			}
+		}
 
-		return true;
+		return false;
 	}
 
 	public static boolean isSwaggerApiDocsUrl(ServerHttpRequest request) {
