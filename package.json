@@ -15,10 +15,10 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "^1.0.0",
+    "@virnect/components": "^1.0.1",
     "@virnect/logger": "^1.0.2",
     "@virnect/platform-auth": "^1.0.2",
-    "@virnect/ui-assets": "^1.0.92",
+    "@virnect/ui-assets": "^1.1.5",
     "@vue/composition-api": "^1.0.0-rc.3",
     "axios": "^0.19.2",
     "billboard.js": "^1.12.10",

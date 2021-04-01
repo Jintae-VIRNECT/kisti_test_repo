@@ -1,9 +1,11 @@
 <template>
   <div :class="{ onpremise: $isOnpremise }">
     <VirnectHeader
+      :env="$env"
       :showStatus="showSection"
       :userInfo="auth.myInfo"
       :urls="$url"
+      :logo="{ default: logo }"
       @logout="$store.commit('auth/LOGOUT')"
     >
       <template slot="subTitle">
@@ -68,13 +70,6 @@ export default {
       logo: 'layout/logo',
       favicon: 'layout/favicon',
     }),
-    logoImg() {
-      return {
-        default: this.logo,
-        x2: this.logo,
-        x3: this.logo,
-      }
-    },
   },
   methods: {
     changeActiveWorkspace(workspace) {

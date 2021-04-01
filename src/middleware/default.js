@@ -1,6 +1,6 @@
 import { url } from '@/plugins/context'
 
-export default async function({ req, res, store, redirect, error, $config }) {
+export default async function ({ req, res, store, redirect, error, $config }) {
   // nuxt undefined url bug
   if (req && req.url.split('/').find(_ => _.match(/undefined|null/)))
     redirect('/')

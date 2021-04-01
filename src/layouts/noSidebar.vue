@@ -1,9 +1,11 @@
 <template>
-  <div class="no-sidebar">
+  <div class="no-sidebar" :class="{ onpremise: $isOnpremise }">
     <VirnectHeader
+      :env="$env"
       :showStatus="showSection"
       :userInfo="auth.myInfo"
       :urls="$url"
+      :logo="{ default: logo }"
       @logout="$store.commit('auth/LOGOUT')"
     />
     <div>
@@ -35,9 +37,13 @@ export default {
   computed: {
     ...mapGetters({
       auth: 'auth/auth',
+      title: 'layout/title',
+      logo: 'layout/logo',
+      favicon: 'layout/favicon',
     }),
   },
   mounted() {
+    this.$store.dispatch('auth/getAuth')
     // 콘솔 표시
     console.log(
       `%cVirnect Workstation v${this.$config.VERSION}`,
@@ -45,8 +51,6 @@ export default {
     )
     console.log(`env: ${this.$config.VIRNECT_ENV}`)
     console.log(`timeout: ${this.$config.API_TIMEOUT}`)
-
-    this.$store.dispatch('auth/getAuth')
   },
 }
 </script>

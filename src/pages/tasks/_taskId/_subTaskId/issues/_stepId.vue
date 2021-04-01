@@ -61,7 +61,6 @@ export default {
       stepId: params.stepId,
       size: 50,
     })
-    console.log(list)
     return {
       issues: list,
       activeIssues: [list[0].issueId],
