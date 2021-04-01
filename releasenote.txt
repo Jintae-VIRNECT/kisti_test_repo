@@ -1,4 +1,4 @@
-RELEASE v2.3.1.1
+RELEASE v2.3.1.2
 
 ### New Features
 ### Bug Fixes
@@ -7,19 +7,8 @@ RELEASE v2.3.1.1
 ### Limitation
 ### Chore
 
-Chore
-* 링크플로우 LGPL 라이브러리 추가
-
-UI
-* 영상 공유 모드 툴팁 문구 수정
-* 영상 공유 제어 아이콘 수정
-* 홈 화면 목록에서 통일성을 위해 문구 제거
-
 Bug Fixes
-* [DPLA-2327] 영상 제한 모드에서 로컬 녹화 선택가능
-* 음성 번역 기능 사용시 에러 발생 처리(내부)
-* 리얼웨어 웹뷰 스크롤 불가 버그 수정
-* [DPLA-2278] 화면공유 화면이 작을 경우 포인팅 오류 수정
-* [DPLA-2396] 테블릿 화면 회전 시 팝업 close 처리
+* [DPLA-2442] 번역 사용 하용 중 특수문자 '<' 가 코드로 노출되는 이슈 해결
+* [DPLA-2437] 리더가 드로잉한 이미지를 다른 이미지로 변경 이후 이전 드로잉 노출되는 이슈 해결
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
