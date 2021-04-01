@@ -181,6 +181,7 @@ export default {
       if (this.canvas) {
         this.canvas.dispose()
         this.canvas = null
+        this.receivedList = []
       }
       this.editingMode = false
 
