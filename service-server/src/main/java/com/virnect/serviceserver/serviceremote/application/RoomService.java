@@ -699,17 +699,80 @@ public class RoomService {
 		boolean paging,
 		Pageable pageable
 	) {
-		//Page<Room> roomPage = roomRepository.findAll(joinMember(workspaceId, userId), pageable);
 
-		Page<Room> roomPage = roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, paging, pageable);
-
+		// Response Data (List, pageMeta)
+		List<RoomInfoResponse> roomInfoResponses = new ArrayList<>();
 		PageMetadataResponse pageMeta;
-
+		
+		// Receive Room list page from DB
+		Page<Room> roomPage = roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, paging, pageable);
+		
 		for (Room room : roomPage.getContent()) {
 			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
 		}
 
-		List<RoomInfoResponse> roomInfoList = new ArrayList<>();
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (Room room : roomPage) {
+			for (Member member : room.getMembers()) {
+				if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
+					userList.add(member.getUuid());
+				}
+			}
+		}
+		String[] userIds = userList.stream().distinct().toArray(String[]::new);
+
+		// Receive User list from Workspace
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
+		// Make Response data
+		for (Room room : roomPage.getContent()) {
+			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+			// Mapping Member List Data to Member Information List
+			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+						memberInfoResponse.setName(workspaceMemberInfo.getName());
+						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+					}
+				}
+			}
+			roomInfoResponse.setMemberList(setLeader(memberInfoList));
+			roomInfoResponses.add(roomInfoResponse);
+		}
+
+		if (paging) {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(pageable.getPageNumber())
+				.currentSize(pageable.getPageSize())
+				.numberOfElements(roomPage.getNumberOfElements())
+				.totalPage(roomPage.getTotalPages())
+				.totalElements(roomInfoResponses.size())
+				.last(roomPage.isLast())
+				.build();
+		} else {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(0)
+				.currentSize(0)
+				.numberOfElements(roomPage.getNumberOfElements())
+				.totalPage(1)
+				.totalElements(roomInfoResponses.size())
+				.last(true)
+				.build();
+		}
+
+		return new RoomInfoListResponse(roomInfoResponses, pageMeta);
+
+		/*List<RoomInfoResponse> roomInfoList = new ArrayList<>();
 		//for (Room room: roomListMap.keySet()) {
 		for (Room room : roomPage.getContent()) {
 			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
@@ -741,9 +804,6 @@ public class RoomService {
 			roomInfoList.add(roomInfoResponse);
 		}
 
-		// Evicted and Unload check
-		CheckEvicted(userId, roomInfoList);
-
 		if (paging) {
 			pageMeta = PageMetadataResponse.builder()
 				.currentPage(pageable.getPageNumber())
@@ -765,7 +825,7 @@ public class RoomService {
 				.last(true)
 				.build();
 		}
-		return new RoomInfoListResponse(roomInfoList, pageMeta);
+		return new RoomInfoListResponse(roomInfoList, pageMeta);*/
 	}
 
 	private void CheckEvicted(String userId, @NotNull List<RoomInfoResponse> roomInfoList) {

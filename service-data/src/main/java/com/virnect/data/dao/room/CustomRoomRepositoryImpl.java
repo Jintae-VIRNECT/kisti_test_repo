@@ -2,7 +2,6 @@ package com.virnect.data.dao.room;
 
 import static com.virnect.data.domain.member.QMember.*;
 import static com.virnect.data.domain.room.QRoom.*;
-import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
 import static com.virnect.data.domain.session.QSessionProperty.*;
 
 import java.time.LocalDateTime;
@@ -17,8 +16,9 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -231,17 +231,14 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId)
-				.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
+				room.id.in(includeNotEvicted(userId))
+					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
 				room.roomStatus.eq(RoomStatus.ACTIVE)
 			)
 			.orderBy(room.createdDate.desc())
 			.distinct();
-
 		long totalCount = queryResult.fetchCount();
-
 		List<Room> results;
-
 		if (paging) {
 			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		} else {
@@ -263,7 +260,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
-				room.workspaceId.eq(workspaceId),
+				room.workspaceId.eq(room.workspaceId),
 				(
 					(room.members.any().uuid.eq(userId).or(room.members.any().uuid.in(userIds)))
 					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN))
@@ -310,5 +307,14 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			return null;
 		}
 		return room.title.contains(search);
+	}
+
+	private SubQueryExpression includeNotEvicted(String userId) {
+		return JPAExpressions.select(member.room.id)
+			.from(member)
+			.where(room.id.eq(member.room.id),
+				member.uuid.eq(userId),
+				member.memberStatus.ne(MemberStatus.EVICTED)
+			);
 	}
 }
