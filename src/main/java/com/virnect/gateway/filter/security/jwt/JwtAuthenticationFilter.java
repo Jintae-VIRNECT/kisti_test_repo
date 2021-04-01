@@ -59,7 +59,6 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 		log.info("JwtAuthenticationFilter - doFilter");
 
 		if (RequestValidationProcessor.isRequestAuthenticationProcessSkip(exchange.getRequest())) {
-			log.info("JwtAuthenticationFilter - Skip swagger json request like [/v2/api-docs] ");
 			return chain.filter(exchange);
 		}
 

@@ -28,7 +28,7 @@ public class RequestValidationProcessor {
 	}
 
 	public static boolean isRequestAuthenticationProcessSkip(ServerHttpRequest request) {
-		return isSkipUrl(request) || isSessionAuthenticationRequest(request) || allowedRequest(request);
+		return isSkipUrl(request) || allowedRequest(request);
 	}
 
 	private static boolean allowedRequest(ServerHttpRequest request) {

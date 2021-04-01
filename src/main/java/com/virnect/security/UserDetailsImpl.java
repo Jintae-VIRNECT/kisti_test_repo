@@ -4,13 +4,17 @@ import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 
 @Getter
+@Setter
 @JsonSerialize
+@JsonDeserialize
 @EqualsAndHashCode(of = {"userId", "uuid", "email"}, callSuper = false)
 public class UserDetailsImpl{
 	private long userId;

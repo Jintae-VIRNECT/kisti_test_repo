@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 public class CorsCustomProcessor extends DefaultCorsProcessor {
 	@Override
 	protected String checkOrigin(CorsConfiguration config, String requestOrigin) {
-		log.info("오리진 무적권 패스");
+		log.info("CorsCustomProcessor - CORS Origin Check SKip.");
 		return requestOrigin;
 	}
 }

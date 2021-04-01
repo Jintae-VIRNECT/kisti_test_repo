@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.core.context.SecurityContextImpl;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -19,6 +19,7 @@ import reactor.core.publisher.Mono;
 import com.virnect.gateway.error.ErrorCode;
 import com.virnect.gateway.filter.security.GatewayServerAuthenticationException;
 import com.virnect.gateway.filter.security.RequestValidationProcessor;
+import com.virnect.security.UserAuthenticationDetails;
 import com.virnect.security.UserDetailsImpl;
 
 @Slf4j
@@ -86,11 +87,13 @@ public class SessionAuthenticationFilter implements GlobalFilter {
 				throw new SessionNotFoundException(requestUrlPath);
 			})
 			.doOnNext(webSession -> {
-				SecurityContextImpl securityContext = webSession.getAttribute("SPRING_SECURITY_CONTEXT");
+				SecurityContext securityContext = webSession.getAttribute("SPRING_SECURITY_CONTEXT");
 				if (securityContext != null) {
 					UserDetailsImpl userDetails = (UserDetailsImpl)securityContext.getAuthentication()
 						.getPrincipal();
-					log.info("SessionAuthenticationFilter - Security Context Principal Use Details: {}", userDetails);
+					UserAuthenticationDetails authenticationDetails = (UserAuthenticationDetails) securityContext.getAuthentication().getDetails();
+					log.info("SessionAuthenticationFilter - Security Context User Authentication  Details: {}", authenticationDetails);
+					log.info("SessionAuthenticationFilter - Security Context Principal User Details: {}", userDetails);
 				}
 				log.info("SessionAuthenticationFilter - WebSession :: ID: [{}]", webSession.getId());
 				log.info(

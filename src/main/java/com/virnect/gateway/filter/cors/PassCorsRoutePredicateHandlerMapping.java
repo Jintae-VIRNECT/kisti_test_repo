@@ -25,7 +25,6 @@ import reactor.core.publisher.Mono;
 
 public class PassCorsRoutePredicateHandlerMapping extends RoutePredicateHandlerMapping {
 	private static final WebHandler REQUEST_HANDLED_HANDLER = exchange -> Mono.empty();
-	private static final Logger logger = LoggerFactory.getLogger(PassCorsRoutePredicateHandlerMapping.class);
 	private final CorsProcessor corsProcessor = new CorsCustomProcessor();
 
 
@@ -40,9 +39,7 @@ public class PassCorsRoutePredicateHandlerMapping extends RoutePredicateHandlerM
 
 	@Override
 	public Mono<Object> getHandler(ServerWebExchange exchange) {
-		logger.info("[PassCorsRoutePredicateHandlerMapping] getHandler");
 		return getHandlerInternal(exchange).map(handler -> {
-			logger.info(exchange.getLogPrefix() + "Mapped to " + handler);
 			ServerHttpRequest request = exchange.getRequest();
 			String clientIp = request.getHeaders().getFirst("X-Forwarded-For");
 			if(clientIp == null){
