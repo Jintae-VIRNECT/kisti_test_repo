@@ -1,16 +1,13 @@
 package com.virnect.serviceserver.serviceremote.application;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.util.TextUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +20,7 @@ import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.dto.PageMetadataResponse;
+import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
@@ -59,7 +57,76 @@ public class HistoryService {
 		boolean paging,
 		Pageable pageable
 	) {
+		// Response data
+		List<RoomHistoryInfoResponse> roomHistoryInfoResponses = new ArrayList<>();
+		PageMetadataResponse pageMeta;
 
+		// Receive RoomHistory list page from DB
+		Page<RoomHistory> roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserId(workspaceId, userId, paging, pageable);
+
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (RoomHistory roomHistory : roomHistoryPage) {
+			for (MemberHistory memberHistory : roomHistory.getMemberHistories()) {
+				if (memberHistory.getMemberType() == MemberType.LEADER && !(memberHistory.getUuid() == null || memberHistory.getUuid().isEmpty())) {
+					userList.add(memberHistory.getUuid());
+				}
+			}
+		}
+		String[] userIds = userList.stream().distinct().toArray(String[]::new);
+
+		// Receive User list from Workspace
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
+		// Make Response data
+		for (RoomHistory roomHistory : roomHistoryPage.getContent()) {
+			RoomHistoryInfoResponse roomHistoryInfoResponse = modelMapper.map(roomHistory, RoomHistoryInfoResponse.class);
+			roomHistoryInfoResponse.setSessionType(roomHistory.getSessionPropertyHistory().getSessionType());
+
+			List<MemberInfoResponse> memberInfoList = roomHistory.getMemberHistories().stream()
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			// find and get extra information from use-server using uuid
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+						memberInfoResponse.setName(workspaceMemberInfo.getName());
+						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+					}
+				}
+			}
+
+			// Set Member List to Room Information Response
+			roomHistoryInfoResponse.setMemberList(setLeader(memberInfoList));
+			roomHistoryInfoResponses.add(roomHistoryInfoResponse);
+		}
+
+		if (paging) {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(pageable.getPageNumber())
+				.currentSize(pageable.getPageSize())
+				.numberOfElements(roomHistoryPage.getNumberOfElements())
+				.totalPage(roomHistoryPage.getTotalPages())
+				.totalElements(roomHistoryPage.getTotalElements())
+				.last(roomHistoryPage.isLast())
+				.build();
+		} else {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(0)
+				.currentSize(0)
+				.numberOfElements(roomHistoryPage.getNumberOfElements())
+				.totalPage(1)
+				.totalElements(roomHistoryPage.getTotalElements())
+				.last(true)
+				.build();
+		}
+		return new RoomHistoryInfoListResponse(roomHistoryInfoResponses, pageMeta);
+
+		/*long beforeTime = System.currentTimeMillis();
 		Page<MemberHistory> roomHistories;
 		PageMetadataResponse pageMeta;
 
@@ -125,7 +192,12 @@ public class HistoryService {
 				.last(true)
 				.build();
 		}
-		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);
+
+		long afterTime = System.currentTimeMillis(); // 코드 실행 후에 시간 받아오기
+		long secDiffTime = (afterTime - beforeTime); //두 시간에 차 계산
+		System.out.println("시간차이(m) : "+secDiffTime);
+
+		return new RoomHistoryInfoListResponse(roomHistoryInfoList, pageMeta);*/
 	}
 
 	private boolean uuidContainList(List<WorkspaceMemberInfoResponse> members, String uuid) {

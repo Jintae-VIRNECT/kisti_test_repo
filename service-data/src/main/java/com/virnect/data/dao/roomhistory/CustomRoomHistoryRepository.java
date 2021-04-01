@@ -23,4 +23,5 @@ public interface CustomRoomHistoryRepository {
 
 	Page<RoomHistory> findRoomByWorkspaceIdAndUserIdCurrent(final String workspaceId, final String userId, boolean paging, Pageable pageable);
 
+	Page<RoomHistory> findMyRoomHistorySpecificUserId(String workspaceId, String userId, boolean paging, Pageable pageable);
 }

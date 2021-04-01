@@ -705,7 +705,7 @@ public class RoomService {
 		PageMetadataResponse pageMeta;
 		
 		// Receive Room list page from DB
-		Page<Room> roomPage = roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, paging, pageable);
+		Page<Room> roomPage = roomRepository.findMyRoomSpecificUserId(workspaceId, userId, paging, pageable);
 		
 		for (Room room : roomPage.getContent()) {
 			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
@@ -756,7 +756,7 @@ public class RoomService {
 				.currentSize(pageable.getPageSize())
 				.numberOfElements(roomPage.getNumberOfElements())
 				.totalPage(roomPage.getTotalPages())
-				.totalElements(roomInfoResponses.size())
+				.totalElements(roomPage.getTotalElements())
 				.last(roomPage.isLast())
 				.build();
 		} else {

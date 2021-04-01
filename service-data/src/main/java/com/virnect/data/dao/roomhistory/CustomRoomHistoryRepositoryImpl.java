@@ -1,7 +1,10 @@
 package com.virnect.data.dao.roomhistory;
 
+import static com.virnect.data.domain.member.QMember.*;
 import static com.virnect.data.domain.member.QMemberHistory.*;
+import static com.virnect.data.domain.room.QRoom.*;
 import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
+import static com.virnect.data.domain.session.QSessionProperty.*;
 import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
 import java.time.LocalDateTime;
@@ -16,11 +19,17 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 import com.virnect.data.domain.member.MemberHistory;
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.domain.member.MemberType;
+import com.virnect.data.domain.room.Room;
+import com.virnect.data.domain.room.RoomStatus;
 import com.virnect.data.domain.roomhistory.RoomHistory;
 import com.virnect.data.domain.session.SessionType;
 
@@ -170,9 +179,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				memberHistory.historyDeleted.isFalse(),*/
 				roomHistory.isNotNull(),
 				includeTitleSearch(search)
-			)
-			.orderBy(roomHistory.createdDate.desc())
-			.distinct();
+			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<RoomHistory> result = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(result, pageable, totalCount);
@@ -210,6 +217,27 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 		return new PageImpl<>(results, pageable, totalCount);
 	}
 
+	@Override
+	public Page<RoomHistory> findMyRoomHistorySpecificUserId(
+		String workspaceId, String userId, boolean paging, Pageable pageable
+	) {
+		JPQLQuery<RoomHistory> queryResult = query.selectFrom(roomHistory)
+			.leftJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				roomHistory.workspaceId.eq(workspaceId),
+				roomHistory.id.in(includeNotEvicted(userId)),
+				roomHistory.isNotNull()
+			).distinct();
+		long totalCount = queryResult.fetchCount();
+		List<RoomHistory> results;
+		if (paging) {
+			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		} else {
+			results = Objects.requireNonNull(queryResult.fetch());
+		}
+		return new PageImpl<>(results, pageable, totalCount);
+	}
 
 	/**
 	 * 협업 기록 제목 검색 동적 쿼리
@@ -221,6 +249,20 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			return null;
 		}
 		return roomHistory.title.contains(search);
+	}
+
+	/**
+	 * 강퇴된 사용자 제외 서브 쿼리
+	 * @param userId - 조회될 사용자 정보 식별자
+	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
+	 */
+	private SubQueryExpression includeNotEvicted(String userId) {
+		return JPAExpressions.select(memberHistory.roomHistory.id)
+			.from(memberHistory)
+			.where(roomHistory.id.eq(memberHistory.roomHistory.id),
+				memberHistory.uuid.eq(userId),
+				memberHistory.historyDeleted.isFalse(),
+				memberHistory.memberType.ne(MemberType.SECESSION));
 	}
 
 }

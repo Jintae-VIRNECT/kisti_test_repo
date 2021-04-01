@@ -220,7 +220,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	}
 
 	@Override
-	public Page<Room> findRoomByWorkspaceIdAndUserId(
+	public Page<Room> findMyRoomSpecificUserId(
 		String workspaceId,
 		String userId,
 		boolean paging,
@@ -309,12 +309,16 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		return room.title.contains(search);
 	}
 
+	/**
+	 * 강퇴된 사용자 제외 서브 쿼리
+	 * @param userId - 조회될 사용자 정보 식별자
+	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
+	 */
 	private SubQueryExpression includeNotEvicted(String userId) {
 		return JPAExpressions.select(member.room.id)
 			.from(member)
 			.where(room.id.eq(member.room.id),
 				member.uuid.eq(userId),
-				member.memberStatus.ne(MemberStatus.EVICTED)
-			);
+				member.memberStatus.ne(MemberStatus.EVICTED));
 	}
 }
