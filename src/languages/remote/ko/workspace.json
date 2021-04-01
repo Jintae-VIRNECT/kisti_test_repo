@@ -4,7 +4,7 @@
     "search_member": "멤버 검색",
     "tab_empty_description": "원격 협업을 시작해보세요.",
     "create_room": "원격 협업 생성",
-    "create_open_room": "오픈 방 생성",
+    "create_open_room": "오픈 룸 생성",
     "expire_license": "플랜 만료",
     "welcome": "<em>{name}</em><span>&nbsp;님, 반갑습니다.</span>",
     "welcome_license": "<span>{name}&nbsp;님, <br> 할당된 플랜이 없습니다.</span>",
@@ -118,7 +118,7 @@
     "create_max_member": "선택 가능 멤버 수를 초과하였습니다.",
     "create_remote_fail": "협업 생성을 실패하였습니다.",
     
-    "create_open": "오픈 방 생성하기",
+    "create_open": "오픈 룸 생성하기",
 
     "info_remote_detail": "원격협업 상세 보기",
     "info_remote": "협업 정보",
@@ -130,7 +130,7 @@
     "info_name": "이름",
     "info_dutation": "기간",
     "info_mode": "모드",
-    "info_mode_open": "오픈 방",
+    "info_mode_open": "오픈 룸",
     "info_mode_collabo": "원격 협업",
     
     "record_file": "로컬 녹화 파일",
