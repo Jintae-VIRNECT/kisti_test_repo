@@ -1,10 +1,12 @@
 <template>
   <div>
     <VirnectHeader
+      :env="$env"
       :subTitle="$t('menu.account')"
       :showStatus="showSection"
       :userInfo="auth.myInfo"
       :urls="$url"
+      :logo="{ default: logo }"
       @logout="$store.commit('auth/LOGOUT')"
     />
     <TheSidebar :menus="sideMenus" />
@@ -57,13 +59,6 @@ export default {
       logo: 'layout/logo',
       favicon: 'layout/favicon',
     }),
-    logoImg() {
-      return {
-        default: this.logo,
-        x2: this.logo,
-        x3: this.logo,
-      }
-    },
   },
   mounted() {
     this.$store.dispatch('auth/getAuth')
