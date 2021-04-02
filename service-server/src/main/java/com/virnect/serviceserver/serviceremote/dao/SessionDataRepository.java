@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.logging.log4j.util.Strings;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -1308,13 +1309,13 @@ public class SessionDataRepository {
             case PUBLIC: {
                 if (member != null) {
                     MemberStatus memberStatus = member.getMemberStatus();
-                    if (memberStatus.equals(MemberStatus.UNLOAD)) {
+                    if (memberStatus == MemberStatus.UNLOAD) {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
-                    } else if (memberStatus.equals(MemberStatus.EVICTED)) {
+                    } else if (memberStatus == MemberStatus.EVICTED) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
-                    } else if (memberStatus.equals(MemberStatus.LOAD)) {
+                    } else if (memberStatus == MemberStatus.LOAD) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                     } else {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
@@ -1327,13 +1328,13 @@ public class SessionDataRepository {
             case OPEN: {
                 if (member != null) {
                     MemberStatus memberStatus = member.getMemberStatus();
-                    if (memberStatus.equals(MemberStatus.UNLOAD)) {
+                    if (memberStatus == MemberStatus.UNLOAD) {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
-                    } else if (memberStatus.equals(MemberStatus.EVICTED)) {
+                    } else if (memberStatus == MemberStatus.EVICTED) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
-                    } else if (memberStatus.equals(MemberStatus.LOAD)) {
+                    } else if (memberStatus == MemberStatus.LOAD) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
                     } else {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
@@ -1434,15 +1435,15 @@ public class SessionDataRepository {
 
                 ErrorCode errorCode;
 
-                if (member.getMemberType().equals(MemberType.LEADER)) {
+                if (member.getMemberType() == MemberType.LEADER) {
                     errorCode = ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
-                } else if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+                } else if (member.getMemberStatus() == MemberStatus.LOAD) {
                     errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                 } else {
                     errorCode = ErrorCode.ERR_SUCCESS;
                 }
 
-                if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+                if (errorCode == ErrorCode.ERR_SUCCESS) {
                     sessionService.removeMember(room, member);
                     ResultResponse resultResponse = new ResultResponse();
                     resultResponse.setUserId(userId);
@@ -1486,7 +1487,7 @@ public class SessionDataRepository {
                 kickRoomResponse.setParticipantId(kickRoomRequest.getParticipantId());
                 kickRoomResponse.setConnectionId(connectionId);
                 //if connection id cannot find, push message and just remove user
-                if (connectionId == null || connectionId.isEmpty()) {
+                if (Strings.isBlank(connectionId)) {
                     sessionService.updateMember(member, MemberStatus.EVICTED);
                 }
                 return new ApiResponse<>(kickRoomResponse);
