@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -787,7 +788,7 @@ public class RoomService {
 		PageMetadataResponse pageMeta;
 
 		Page<Room> roomPage;
-		if (!(search == null || search.length() == 0)) {
+		if (!(StringUtils.isBlank(search))) {
 			List<String> userIds = new ArrayList<>();
 			List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
 				workspaceId,

@@ -241,9 +241,9 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
 				roomHistory.workspaceId.eq(workspaceId),
-				roomHistory.id.in(includeUserIdOrUserIds(workspaceId, userId, userIds))
-					.or(includeTitleSearch(search)),
-				roomHistory.isNotNull()
+				roomHistory.id.in(includeUserIdOrUserIds(workspaceId, userId, userIds)),
+				roomHistory.isNotNull(),
+				includeTitleSearch(search)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<RoomHistory> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();

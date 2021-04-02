@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -140,7 +141,7 @@ public class HistoryService {
 		PageMetadataResponse pageMeta;
 
 		Page<RoomHistory> roomHistoryPage;
-		if (!(search == null || search.length() == 0)) {
+		if (!(StringUtils.isBlank(search))) {
 			List<String> userIds = new ArrayList<>();
 			List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
 				workspaceId,
