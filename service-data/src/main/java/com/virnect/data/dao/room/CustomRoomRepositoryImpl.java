@@ -265,8 +265,9 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.where(
 				room.workspaceId.eq(room.workspaceId),
 				room.id.in(includeUserIdOrUserIds(workspaceId,userId,userIds))
-				.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)).or(includeTitleSearch(search)),
-				room.roomStatus.eq(RoomStatus.ACTIVE)
+				.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
+				room.roomStatus.eq(RoomStatus.ACTIVE),
+				includeTitleSearch(search)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
