@@ -234,7 +234,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
-				room.id.in(includeNotEvicted(workspaceId, userId)),
+				room.id.in(includeNotEvicted(workspaceId, userId)).or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
 				room.roomStatus.eq(RoomStatus.ACTIVE)
 			)
 			.orderBy(room.createdDate.desc())
@@ -321,8 +321,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 				member.workspaceId.eq(workspaceId),
 				room.id.eq(member.room.id),
 				member.uuid.eq(userId).and(member.memberStatus.ne(MemberStatus.EVICTED))
-					.or(member.uuid.eq(userId).and(member.memberStatus.ne(MemberStatus.EVICTED)
-						.and(room.sessionProperty.sessionType.eq(SessionType.OPEN)))));
+			);
 	}
 
 	/**
