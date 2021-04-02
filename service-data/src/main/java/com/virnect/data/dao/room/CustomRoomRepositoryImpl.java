@@ -157,11 +157,12 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	) {
 		return Optional.ofNullable(
 			query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
+			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
-				room.sessionId.eq(sessionId)
+				room.sessionId.eq(sessionId),
+				member.memberStatus.ne(MemberStatus.EVICTED)
 			)
 			.distinct()
 			.fetchOne());

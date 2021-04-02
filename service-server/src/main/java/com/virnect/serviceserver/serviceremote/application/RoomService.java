@@ -113,7 +113,6 @@ public class RoomService {
 			if (roomRequest.getSessionType() == SessionType.PRIVATE
 				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
-				assert licenseItem != null;
 				if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
 					new ApiResponse<>(
 						new RoomResponse(),
@@ -646,54 +645,51 @@ public class RoomService {
 			sessionId
 		);
 
+		// Response data
 		ApiResponse<RoomDetailInfoResponse> responseData;
 
-		List<MemberInfoResponse> memberInfoList;
-
+		// Get Room info from DB
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+
 		if(room == null) {
 			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		} else {
 			if (room.getRoomStatus() != RoomStatus.ACTIVE) {
 				responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
 			} else {
+
+				// Make uuid array
+				List<String> userList = new ArrayList<>();
+				for (Member member : room.getMembers()) {
+					if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
+						userList.add(member.getUuid());
+					}
+				}
+				String[] userIds = userList.stream().distinct().toArray(String[]::new);
+
+				// Receive User list from Workspace
+				ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
 				// mapping data
-				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
-					room, RoomDetailInfoResponse.class);
+				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
 				roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
-				// Get Member List by Room Session ID
-				// Mapping Member List Data to Member Information List
-				memberInfoList = memberRepository.findAllBySessionId(sessionId)
-					.stream()
-					.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
+				List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
 					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 					.collect(Collectors.toList());
 
-				// find and get extra information from workspace-server using uuid
 				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-						workspaceId, memberInfoResponse.getUuid());
-					log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-					//todo://user infomation does not have role and role id change to workspace member info
-					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-					memberInfoResponse.setRole(workspaceMemberData.getRole());
-					//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-					memberInfoResponse.setName(workspaceMemberData.getName());
-					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-				}
-
-				memberInfoList.sort((t1, t2) -> {
-					if (t1.getMemberType() == MemberType.LEADER) {
-						return 1;
+					for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+						if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+							memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+							memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+							memberInfoResponse.setName(workspaceMemberInfo.getName());
+							memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+							memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+						}
 					}
-					return 0;
-				});
-
-				// Set Member List to Room Detail Information Response
-				roomDetailInfoResponse.setMemberList(memberInfoList);
+				}
+				roomDetailInfoResponse.setMemberList(setLeader(memberInfoList));
 				responseData = new ApiResponse<>(roomDetailInfoResponse);
 			}
 		}
