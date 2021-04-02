@@ -17,7 +17,6 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -159,7 +158,8 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
-				room.sessionId.eq(sessionId)
+				room.sessionId.eq(sessionId),
+				room.members.any().in()
 			)
 			.distinct()
 			.fetchOne());
@@ -274,23 +274,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		long totalCount = queryResult.fetchCount();
 		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
-
-		/*QueryResults<Room> queryResult = query.selectFrom(room)
-			.leftJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId).and(room.members.any().uuid.in(userIds))
-					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
-				room.roomStatus.eq(RoomStatus.ACTIVE),
-				room.members.any().memberStatus.notIn(MemberStatus.EVICTED),
-				includeTitleSearch(search)
-			)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.orderBy(room.createdDate.desc())
-			.distinct().fetchResults();
-		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
 	}
 
 	@Override
@@ -316,23 +299,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 		long totalCount = queryResult.fetchCount();
 		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
-
-		/*QueryResults<Room> queryResult = query.selectFrom(room)
-			.leftJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId)
-					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
-				room.roomStatus.eq(RoomStatus.ACTIVE),
-				room.members.any().memberStatus.notIn(MemberStatus.EVICTED),
-				includeTitleSearch(search)
-			)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.orderBy(room.createdDate.desc())
-			.distinct().fetchResults();
-		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
 	}
 	/**
 	 * 사용자 정보 조회 다이나믹 쿼리

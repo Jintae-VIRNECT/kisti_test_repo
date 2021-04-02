@@ -26,7 +26,8 @@ public class HealthCheckController {
             "REST API: POST " + REST_PATH,
             "healthCheck"
         );
-        
+
+
         return ResponseEntity.ok("WELCOME VIRNECT REMOTE SERVICE at " + LocalDateTime.now());
     }
 }
