@@ -291,17 +291,17 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				.where(
 					memberHistory.workspaceId.eq(workspaceId),
 					roomHistory.id.eq(memberHistory.roomHistory.id),
-					memberHistory.uuid.eq(userId)
-						.or(memberHistory.uuid.eq(userId).and(memberHistory.uuid.in(userIds))),
-					memberHistory.historyDeleted.isFalse());
+					memberHistory.uuid.eq(userId).and(memberHistory.historyDeleted.isFalse())
+						.or(memberHistory.uuid.eq(userId).and(memberHistory.uuid.in(userIds)).and(memberHistory.historyDeleted.isFalse()))
+				);
 		} else {
 			subQueryExpression = JPAExpressions.select(memberHistory.roomHistory.id)
 				.from(memberHistory)
 				.where(
 					memberHistory.workspaceId.eq(workspaceId),
-					roomHistory.id.eq(memberHistory.roomHistory.id),
-					memberHistory.uuid.eq(userId),
-					memberHistory.historyDeleted.isFalse());
+					roomHistory.id.eq(memberHistory.roomHistory.id).and(memberHistory.historyDeleted.isFalse()),
+					memberHistory.uuid.eq(userId)
+				);
 		}
 		return subQueryExpression;
 	}
