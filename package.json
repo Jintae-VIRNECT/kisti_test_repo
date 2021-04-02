@@ -17,7 +17,7 @@
     "@virnect/components": "^1.0.1",
     "@virnect/logger": "^1.0.2",
     "@virnect/platform-auth": "^1.0.2",
-    "@virnect/ui-assets": "^1.0.88",
+    "@virnect/ui-assets": "^1.1.5",
     "axios": "^0.19.2",
     "cross-env": "^7.0.2",
     "dayjs": "^1.8.28",
