@@ -327,6 +327,7 @@ export const addSessionEventListener = session => {
         params.hasCamera = false
         params.hasVideo = false
       } else {
+        params.hasCamera = true
         params.hasVideo = true
       }
       Store.commit('updateParticipant', params)
