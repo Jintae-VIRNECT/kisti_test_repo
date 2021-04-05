@@ -239,7 +239,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.leftJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
-				roomHistory.id.in(includeUserIdOrUserIds(workspaceId, userId, userIds, search)),
+				roomHistory.id.in(includeSearch(workspaceId, userId, userIds, search)),
 				roomHistory.isNotNull()
 				//includeTitleSearch(search)
 			).distinct();
@@ -278,10 +278,10 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 
 	/**
 	 * 사용자 히스토리 검색 서브 쿼리
-	 * @param userId - 조회될 사용자 정보 식별자
+	 * @param workspaceId - 해당 워크스페이스
 	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
 	 */
-	private SubQueryExpression<Long> includeUserIdOrUserIds(String workspaceId, String userId, List<String> userIds, String search) {
+	private SubQueryExpression<Long> includeSearch(String workspaceId, String userId, List<String> userIds, String search) {
 
 		SubQueryExpression<Long> includeUserIds = JPAExpressions
 			.select(memberHistory.roomHistory.id)
