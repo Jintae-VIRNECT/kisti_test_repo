@@ -2,7 +2,6 @@ package com.virnect.data.dao.memberhistory;
 
 import static com.virnect.data.domain.member.QMemberHistory.*;
 import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
-import static com.virnect.data.domain.session.QSessionPropertyHistory.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,7 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
