@@ -158,6 +158,7 @@ public class HistoryService {
 					userIds.add(memberInfo.getUuid());
 				}
 			}
+
 			roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
 		} else {
 			roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserId(workspaceId, userId, true, pageable);

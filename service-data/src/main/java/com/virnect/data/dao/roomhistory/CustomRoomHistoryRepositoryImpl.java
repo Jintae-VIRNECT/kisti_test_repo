@@ -217,7 +217,6 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.leftJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
-				roomHistory.workspaceId.eq(workspaceId),
 				roomHistory.id.in(includeNotEvicted(workspaceId, userId)),
 				roomHistory.isNotNull()
 				.or(roomHistory.sessionPropertyHistory.sessionType.eq(SessionType.OPEN))
@@ -240,10 +239,9 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.leftJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
 			.where(
-				roomHistory.workspaceId.eq(workspaceId),
-				roomHistory.id.in(includeUserIdOrUserIds(workspaceId, userId, userIds)),
-				roomHistory.isNotNull(),
-				includeTitleSearch(search)
+				roomHistory.id.in(includeUserIdOrUserIds(workspaceId, userId, userIds, search)),
+				roomHistory.isNotNull()
+				//includeTitleSearch(search)
 			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<RoomHistory> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
@@ -283,24 +281,41 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 	 * @param userId - 조회될 사용자 정보 식별자
 	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
 	 */
-	private SubQueryExpression<Long> includeUserIdOrUserIds(String workspaceId, String userId, List<String> userIds) {
+	private SubQueryExpression<Long> includeUserIdOrUserIds(String workspaceId, String userId, List<String> userIds, String search) {
+
+		SubQueryExpression<Long> includeUserIds = JPAExpressions
+			.select(memberHistory.roomHistory.id)
+			.from(memberHistory)
+			.where(
+				memberHistory.uuid.in(userIds)
+			);
+
+		SubQueryExpression<Long> includeTitle = JPAExpressions
+			.select(memberHistory.roomHistory.id)
+			.from(memberHistory)
+			.where(
+				memberHistory.uuid.eq(userId)
+					.and(memberHistory.roomHistory.title.contains(search))
+			);
+
 		SubQueryExpression<Long> subQueryExpression;
 		if (userIds.size() > 0) {
 			subQueryExpression = JPAExpressions.select(memberHistory.roomHistory.id)
 				.from(memberHistory)
 				.where(
 					memberHistory.workspaceId.eq(workspaceId),
-					roomHistory.id.eq(memberHistory.roomHistory.id),
-					memberHistory.uuid.eq(userId).and(memberHistory.historyDeleted.isFalse())
-						.or(memberHistory.uuid.eq(userId).and(memberHistory.uuid.in(userIds)).and(memberHistory.historyDeleted.isFalse()))
-				);
+					memberHistory.uuid.eq(userId),
+					memberHistory.historyDeleted.isFalse(),
+					memberHistory.roomHistory.id.in(includeUserIds)
+				).distinct();
 		} else {
 			subQueryExpression = JPAExpressions.select(memberHistory.roomHistory.id)
 				.from(memberHistory)
 				.where(
 					memberHistory.workspaceId.eq(workspaceId),
-					roomHistory.id.eq(memberHistory.roomHistory.id).and(memberHistory.historyDeleted.isFalse()),
-					memberHistory.uuid.eq(userId)
+					memberHistory.uuid.eq(userId),
+					memberHistory.historyDeleted.isFalse(),
+					memberHistory.roomHistory.id.in(includeTitle)
 				);
 		}
 		return subQueryExpression;
