@@ -263,11 +263,12 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(room.workspaceId),
-				room.id.in(includeUserIdOrUserIds(workspaceId,userId,userIds))
-				.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
 				room.roomStatus.eq(RoomStatus.ACTIVE),
-				includeTitleSearch(search)
-			).distinct();
+				room.id.in(includeSearch(workspaceId, userId, userIds, search))
+				.or(
+				room.sessionProperty.sessionType.eq(SessionType.OPEN).and(room.title.contains(search))
+				)
+			);
 		long totalCount = queryResult.fetchCount();
 		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
@@ -326,30 +327,50 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 
 	/**
 	 * 사용자 히스토리 검색 서브 쿼리
-	 * @param userId - 조회될 사용자 정보 식별자
+	 * @param workspaceId - 해당 워크스페이스
 	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
 	 */
-	private SubQueryExpression<Long> includeUserIdOrUserIds(String workspaceId, String userId, List<String> userIds) {
+	private SubQueryExpression<Long> includeSearch(String workspaceId, String userId, List<String> userIds, String search) {
+
+		SubQueryExpression<Long> includeUserIds = JPAExpressions
+			.select(member.room.id)
+			.from(member)
+			.where(
+				member.uuid.in(userIds)
+				.or(
+					member.uuid.in(userIds)
+						.and(member.room.title.contains(search))
+				)
+			);
+
+		SubQueryExpression<Long> includeUserId = JPAExpressions
+			.select(member.room.id)
+			.from(member)
+			.where(
+				member.uuid.eq(userId)
+					.and(member.room.title.contains(search))
+			);
+
 		SubQueryExpression<Long> subQueryExpression;
 		if (userIds.size() > 0) {
 			subQueryExpression = JPAExpressions.select(member.room.id)
 				.from(member)
 				.where(
 					member.workspaceId.eq(workspaceId),
-					room.id.eq(member.room.id),
-					member.uuid.eq(userId)
-						.or(member.uuid.eq(userId).and(member.uuid.in(userIds))));
-					member.memberStatus.ne(MemberStatus.EVICTED);
+					member.uuid.eq(userId),
+					member.room.id.in(includeUserIds),
+					member.memberStatus.ne(MemberStatus.EVICTED)
+				);
 		} else {
 			subQueryExpression = JPAExpressions.select(member.room.id)
 				.from(member)
 				.where(
 					member.workspaceId.eq(workspaceId),
-					room.id.eq(member.room.id),
 					member.uuid.eq(userId),
-					member.memberStatus.ne(MemberStatus.EVICTED));
+					member.room.id.in(includeUserId),
+					member.memberStatus.ne(MemberStatus.EVICTED)
+				);
 		}
 		return subQueryExpression;
 	}
-
 }

@@ -242,7 +242,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				roomHistory.id.in(includeSearch(workspaceId, userId, userIds, search)),
 				roomHistory.isNotNull()
 				//includeTitleSearch(search)
-			).distinct();
+			);
 		long totalCount = queryResult.fetchCount();
 		List<RoomHistory> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
@@ -288,6 +288,9 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.from(memberHistory)
 			.where(
 				memberHistory.uuid.in(userIds)
+				.or(memberHistory.uuid.in(userIds)
+					.and(memberHistory.roomHistory.title.contains(search))
+				)
 			);
 
 		SubQueryExpression<Long> includeTitle = JPAExpressions
