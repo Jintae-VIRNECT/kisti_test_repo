@@ -327,6 +327,7 @@ export const addSessionEventListener = session => {
         params.hasCamera = false
         params.hasVideo = false
       } else {
+        params.hasCamera = true
         params.hasVideo = true
       }
       Store.commit('updateParticipant', params)
@@ -411,7 +412,7 @@ export const addSessionEventListener = session => {
       profile: participants[idx].path,
       mute: participants[idx].mute,
       connectionId: event.from.connectionId,
-      text: data.text.replace(/\</g, '&lt;'),
+      text: data.text,
       languageCode: data.languageCode,
     })
   })

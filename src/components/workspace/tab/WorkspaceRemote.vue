@@ -6,7 +6,7 @@
     :emptyImage="require('assets/image/img_remote_empty.svg')"
     :emptyTitle="emptyTitle"
     :emptyDescription="emptyDescription"
-    :listCount="rooms.length"
+    :listCount="roomList.length"
     :empty="roomList.length === 0"
     :showRefreshButton="true"
     :loading="loading"
