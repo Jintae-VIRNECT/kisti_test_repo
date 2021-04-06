@@ -308,7 +308,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 					memberHistory.workspaceId.eq(workspaceId),
 					memberHistory.historyDeleted.isFalse(),
 					(memberHistory.roomHistory.id.in(myHistory).and(memberHistory.roomHistory.id.in(theirHistory)))
-							.or(memberHistory.roomHistory.id.in(titleHistory))
+							.and(memberHistory.roomHistory.id.in(titleHistory))
 				).distinct();
 		} else {
 			responseSubQuery = JPAExpressions.select(memberHistory.roomHistory.id)
@@ -318,8 +318,8 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 					memberHistory.uuid.eq(userId),
 					memberHistory.historyDeleted.isFalse(),
 					memberHistory.roomHistory.id.in(myHistory)
-						.or(memberHistory.roomHistory.id.in(titleHistory))
-				);
+						.and(memberHistory.roomHistory.id.in(titleHistory))
+				).distinct();
 		}
 
 		return responseSubQuery;
