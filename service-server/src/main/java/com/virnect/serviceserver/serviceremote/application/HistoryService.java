@@ -156,6 +156,7 @@ public class HistoryService {
 					log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
 				} else {
 					userIds.add(memberInfo.getUuid());
+					log.info("userIds : ", memberInfo.getUuid());
 				}
 			}
 			roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
