@@ -10,5 +10,8 @@ RELEASE v2.3.1.2
 Bug Fixes
 * [DPLA-2442] 번역 사용 하용 중 특수문자 '<' 가 코드로 노출되는 이슈 해결
 * [DPLA-2437] 리더가 드로잉한 이미지를 다른 이미지로 변경 이후 이전 드로잉 노출되는 이슈 해결
+* [DPLA-2443] 참가자 섬네일 z-index 이슈 해결
+* [DPLA-2448] 원격협업 목록 개수 검색한 수로 변경
+* [DPLA-2451] 화면공유 종료 시 메인뷰 해제 이슈 해결
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
