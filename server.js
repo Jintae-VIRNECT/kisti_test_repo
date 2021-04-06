@@ -49,6 +49,9 @@ app.post('/tts', bodyParser.json(), function(req, res) {
 const initHelmet = async () => {
   await config.init()
 
+  const isOnpremise = process.env.VIRNECT_ENV === 'onpremise'
+  if (isOnpremise) return
+
   const urls = config.getUrls()
   const allows = []
   const cntAllows = []
