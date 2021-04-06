@@ -608,21 +608,7 @@ const _ = {
       type: SIGNAL.LINKFLOW,
     })
   },
-  /**
-   * 현재 참가자 중 360 스트림을 가진 참가자 정보 전달 (서버 녹화용)
-   * @param {Object} info //stream mode
-   */
-  sendPanoStatus: info => {
-    const params = {
-      type: LINKFLOW.INFO,
-      info: info,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.LINKFLOW,
-    })
-  },
+
   /**
    * @BROADCATE
    * @TARGET
