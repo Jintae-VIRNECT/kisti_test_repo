@@ -109,7 +109,7 @@ public class MemberService {
 
 
         if (StringUtils.hasText(filter)) {
-            String[] filters = StringUtils.split(filter.toUpperCase(), ",") == null ? new String[]{filter} : StringUtils.split(filter.toUpperCase(), ",");
+            String[] filters = StringUtils.split(filter.toUpperCase(), ",") == null ? new String[]{filter.toUpperCase()} : StringUtils.split(filter.toUpperCase(), ",");
             //권한으로 필터를 건 경우
             if (filters[0].matches(ALL_WORKSAPCE_ROLE)) {
                 workspaceUserPermissionPage = workspaceUserPermissionRepository.getRoleFilteredUserList(workspaceUserPermissionPage.toList(), Arrays.asList(filters), newPageable, workspaceId);
