@@ -80,9 +80,13 @@ export default {
         }
 
         if (
-          ['image/jpeg', 'image/png', 'image/bmp', 'application/pdf'].includes(
-            file.type,
-          )
+          [
+            'image/jpeg',
+            'image/png',
+            'image/bmp',
+            'image/gif',
+            'application/pdf',
+          ].includes(file.type)
         ) {
           const docItem = {
             id: Date.now(),
