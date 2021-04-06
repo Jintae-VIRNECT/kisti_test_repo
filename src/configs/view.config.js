@@ -30,6 +30,6 @@ export const ACTION = {
 
   //AR 공유
   AR_POINTING: 'arPointing', //포인팅
-  AR_AREA: 'arArea', //포인팅
+  AR_AREA: 'arArea', //영역 설정
   AR_DRAWING: 'arDrawing', //드로잉
 }
