@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * Project: PF-Workspace
@@ -40,16 +41,15 @@ public class UserRestFallbackFactory implements FallbackFactory<UserRestService>
             public ApiResponse<InviteUserInfoResponse> getUserInfoByEmail(String email) {
                 return new ApiResponse<>(new InviteUserInfoResponse());
             }
-
             @Override
-			public ApiResponse<UserInfoListRestResponse> getUserInfoList(String search, String[] workspaceUserIdList) {
+			public ApiResponse<UserInfoListRestResponse> getUserInfoList(String search, List<String> workspaceUserIdList) {
 				UserInfoListRestResponse userInfoListRestResponse = new UserInfoListRestResponse();
 				userInfoListRestResponse.setUserInfoList(UserInfoListRestResponse.EMPTY);
 				userInfoListRestResponse.setPageMeta(null);
 				return new ApiResponse<>(userInfoListRestResponse);
 			}
 
-			@Override
+            @Override
 			public ApiResponse<UserInfoRestResponse> registerMemberRequest(
 				RegisterMemberRequest registerMemberRequest, String serviceID
 			) {

@@ -10,7 +10,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,19 +36,8 @@ public class WorkspaceUserPermissionRepositoryImpl extends QuerydslRepositorySup
     }
 
     @Override
-    public Page<WorkspaceUserPermission> getRoleFilteredUserList(List<WorkspaceUserPermission> workspaceUserPermissionList, String roleFilter, Pageable pageable, String workspaceId) {
+    public Page<WorkspaceUserPermission> getRoleFilteredUserList(List<WorkspaceUserPermission> workspaceUserPermissionList, List<String> roleList, Pageable pageable, String workspaceId) {
         QWorkspaceUserPermission qWorkspaceUserPermission = QWorkspaceUserPermission.workspaceUserPermission;
-        List<String> roleList = new ArrayList<>();
-        if (roleFilter.contains("MASTER")) {
-            roleList.add("MASTER");
-        }
-        if (roleFilter.contains("MANAGER")) {
-            roleList.add("MANAGER");
-        }
-        if (roleFilter.contains("MEMBER")) {
-            roleList.add("MEMBER");
-        }
-
         JPQLQuery<WorkspaceUserPermission> query = jpaQueryFactory
                 .select(qWorkspaceUserPermission)
                 .from(qWorkspaceUserPermission)

@@ -17,7 +17,7 @@ import java.util.Optional;
  */
 public interface WorkspaceUserPermissionRepositoryCustom {
     long deleteAllWorkspaceUserPermissionByWorkspaceUser(List<WorkspaceUser> workspaceUserList);
-    Page<WorkspaceUserPermission> getRoleFilteredUserList(List<WorkspaceUserPermission> workspaceUserPermissionList, String roleFilter, Pageable pageable, String workspaceId);
+    Page<WorkspaceUserPermission> getRoleFilteredUserList(List<WorkspaceUserPermission> workspaceUserPermissionList, List<String> roleList, Pageable pageable, String workspaceId);
     Page<WorkspaceUserPermission> getContainedUserIdList(List<String> userIdList, Pageable pageable, String workspaceId);
     Page<WorkspaceUserPermission> getWorkspaceUserList(Pageable pageable, String workspaceId);
     List<WorkspaceUserPermission> findRecentWorkspaceUserList(int size, String workspaceId);

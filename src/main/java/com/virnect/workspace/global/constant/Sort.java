@@ -1,6 +1,6 @@
 package com.virnect.workspace.global.constant;
 
-import com.virnect.workspace.dto.MemberInfoDTO;
+import com.virnect.workspace.dto.response.WorkspaceUserInfoResponse;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -54,13 +54,13 @@ public enum Sort {
     });
 
 
-    private Function<List<MemberInfoDTO>, List<MemberInfoDTO>> expression;
+    private Function<List<WorkspaceUserInfoResponse>, List<WorkspaceUserInfoResponse>> expression;
 
-    Sort(Function<List<MemberInfoDTO>, List<MemberInfoDTO>> expression) {
+    Sort(Function<List<WorkspaceUserInfoResponse>, List<WorkspaceUserInfoResponse>> expression) {
         this.expression = expression;
     }
 
-    public List<MemberInfoDTO> sorting(List<MemberInfoDTO> BeforeSortList) {
+    public List<WorkspaceUserInfoResponse> sorting(List<WorkspaceUserInfoResponse> BeforeSortList) {
         return expression.apply(BeforeSortList);
     }
 
@@ -70,10 +70,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareEmailDesc implements Comparator<MemberInfoDTO> {
+    static class CompareEmailDesc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o2.getEmail().compareTo(o1.getEmail());
         }
@@ -84,10 +84,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareEmailAsc implements Comparator<MemberInfoDTO> {
+    static class CompareEmailAsc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o1.getEmail().compareTo(o2.getEmail());
         }
@@ -98,10 +98,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareNickNameDesc implements Comparator<MemberInfoDTO> {
+    static class CompareNickNameDesc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o2.getNickName().compareTo(o1.getNickName());
         }
@@ -112,10 +112,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareNickNameAsc implements Comparator<MemberInfoDTO> {
+    static class CompareNickNameAsc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o1.getNickName().compareTo(o2.getNickName());
         }
@@ -125,10 +125,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareRoleDesc implements Comparator<MemberInfoDTO> {
+    static class CompareRoleDesc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o2.getRole().compareTo(o1.getRole());
         }
@@ -139,10 +139,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareRoleAsc implements Comparator<MemberInfoDTO> {
+    static class CompareRoleAsc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o1.getRole().compareTo(o2.getRole());
         }
@@ -152,10 +152,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareJoinDateDesc implements Comparator<MemberInfoDTO> {
+    static class CompareJoinDateDesc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o2.getJoinDate().compareTo(o1.getJoinDate());
         }
@@ -166,10 +166,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareJoinDateAsc implements Comparator<MemberInfoDTO> {
+    static class CompareJoinDateAsc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o1.getJoinDate().compareTo(o2.getJoinDate());
         }
@@ -179,10 +179,10 @@ public enum Sort {
      *
      * @author Administrator
      */
-    static class CompareUpdatedDateDesc implements Comparator<MemberInfoDTO> {
+    static class CompareUpdatedDateDesc implements Comparator<WorkspaceUserInfoResponse> {
 
         @Override
-        public int compare(MemberInfoDTO o1, MemberInfoDTO o2) {
+        public int compare(WorkspaceUserInfoResponse o1, WorkspaceUserInfoResponse o2) {
             // TODO Auto-generated method stub
             return o2.getUpdatedDate().compareTo(o1.getUpdatedDate());
         }

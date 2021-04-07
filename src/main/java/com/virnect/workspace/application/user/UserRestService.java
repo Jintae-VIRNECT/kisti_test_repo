@@ -7,6 +7,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Project: PF-Workspace
  * DATE: 2020-01-17
@@ -49,9 +51,8 @@ public interface UserRestService {
 
 	@PostMapping("/users/list")
 	ApiResponse<UserInfoListRestResponse> getUserInfoList(
-		@RequestParam("search") String search, @RequestBody String[] workspaceUserIdList
+		@RequestParam("search") String search, @RequestBody List<String> workspaceUserIdList
 	);
-
 	//멤버 등록
 	@PostMapping("/users/register/member")
 	ApiResponse<UserInfoRestResponse> registerMemberRequest(

@@ -1,6 +1,5 @@
 package com.virnect.workspace.dto.response;
 
-import com.virnect.workspace.dto.MemberInfoDTO;
 import com.virnect.workspace.dto.rest.PageMetadataRestResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,7 @@ import java.util.List;
  */
 @Getter
 @RequiredArgsConstructor
-public class MemberListResponse {
-    private final List<MemberInfoDTO> memberInfoList;
+public class WorkspaceUserInfoListResponse {
+    private final List<WorkspaceUserInfoResponse> memberInfoList;
     private final PageMetadataRestResponse pageMeta;
 }
