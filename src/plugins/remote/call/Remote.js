@@ -646,7 +646,6 @@ const _ = {
   },
   /**
    * 화면 공유 여부
-   * 현재는 false 만 보냄. 필요시 true 보낼 수 있음.
    * @param {Boolean} enable 화면 공유 기능 중단 여부 true, false
    * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
    */
