@@ -166,9 +166,6 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 					.or((roomHistory.memberHistories.any().uuid.in(userIds))
 						.and(roomHistory.memberHistories.any().historyDeleted.isFalse()))
 				),
-				/*.and(roomHistory.memberHistories.any().uuid.in(userId)),
-				roomHistory.memberHistories.any().historyDeleted.isFalse(),
-				memberHistory.historyDeleted.isFalse(),*/
 				roomHistory.isNotNull(),
 				includeTitleSearch(search)
 			).distinct();
@@ -195,11 +192,9 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 					//.and(memberHistory.historyDeleted.isFalse())
 				),
 				roomHistory.isNotNull()
-			)
-			.distinct();
+			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<RoomHistory> results;
-
 		if (paging) {
 			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		} else {
@@ -241,8 +236,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.where(
 				roomHistory.id.in(includeSearch(workspaceId, userId, userIds, search)),
 				roomHistory.isNotNull()
-				//includeTitleSearch(search)
-			);
+			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<RoomHistory> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
@@ -288,9 +282,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.from(memberHistory)
 			.where(
 				memberHistory.uuid.in(userIds)
-				.or(memberHistory.uuid.in(userIds)
-					.and(memberHistory.roomHistory.title.contains(search))
-				)
+					.or((memberHistory.uuid.eq(userId).and(memberHistory.roomHistory.title.contains(search))))
 			);
 
 		SubQueryExpression<Long> includeTitle = JPAExpressions

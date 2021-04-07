@@ -1,9 +1,7 @@
 package com.virnect.data.dao.room;
 
 import static com.virnect.data.domain.member.QMember.*;
-import static com.virnect.data.domain.member.QMemberHistory.*;
 import static com.virnect.data.domain.room.QRoom.*;
-import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
 import static com.virnect.data.domain.session.QSessionProperty.*;
 
 import java.time.LocalDateTime;
@@ -63,19 +61,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.distinct()
 			.fetch();
 	}
-
-	/*@Override
-	public Room findRoomHistoryByWorkspaceAndSessionId(String workspaceId, String sessionId) {
-		return query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.sessionId.eq(sessionId)
-			)
-			.distinct()
-			.fetchOne();
-	}*/
 
 	/**
 	 * 기간 검색 다이나믹 쿼리
@@ -178,18 +163,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	public Page<Room> findRoomByWorkspaceId(
 		String workspaceId, Pageable pageable
 	) {
-		/*QueryResults<Room> queryResult = query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.roomStatus.eq(RoomStatus.ACTIVE)
-			)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.distinct().fetchResults();
-		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
-
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
 			.innerJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
@@ -268,7 +241,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 				.or(
 				room.sessionProperty.sessionType.eq(SessionType.OPEN).and(room.title.contains(search))
 				)
-			);
+			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
