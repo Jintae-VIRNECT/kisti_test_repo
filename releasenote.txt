@@ -1,7 +1,6 @@
-RELEASE v2.3.0
+RELEASE v2.3.1.0
 
-### Improvement
-- 일본어 텍스트 적용
-- open graph 적용
+### Chore
+helmet 적용(보안성 향상)
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
