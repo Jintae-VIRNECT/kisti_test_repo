@@ -39,8 +39,8 @@
     "history_call_time": "Total talk minutes: {time}",
 
     "remote_title": "Remote Collabo in progress",
-    "remote_list_description": "Shows you the current waiting list of Collabo paticipation request.",
-    "remote_empty": "No remote collobo list to show.",
+    "remote_list_description": "Shows you the current waiting list of Collabo participation request.",
+    "remote_empty": "No remote collabo list to show.",
     "remote_group_info": "Group info",
     "remote_connected_member": "Connected members",
     "remote_connected_member_num": "Connected member",
@@ -66,7 +66,7 @@
     "setting_record_choice": "Local recording settings",
     "setting_record_maxtime": "Max. recording time",
     "setting_record_interval": "Recording interval",
-    "setting_record_interval_tooltip": "When you create local recording files for a long time, your PC may experience a heavy load. <br>We recommed you to set recording time intervals.",
+    "setting_record_interval_tooltip": "When you create local recording files for a long time, your PC may experience a heavy load. <br>We recommend you to set recording time intervals.",
     "setting_record_resolution": "Video recording resolution",
     "setting_record_resolution_tooltip": "When setting the resolution of 720p (HD) or higher, <br>please be aware that the service depends on the PC's performance.",
     "setting_record_setting_description":"The changes are applied at the start of recording.",
@@ -122,7 +122,7 @@
 
     "info_remote_detail": "Remote Collabo details",
     "info_remote": "Collabo details",
-    "info_remote_member": "Particpant details",
+    "info_remote_member": "Participant details",
     "info_remote_date": "Collabo start date",
     "info_remote_start": "Start time",
     "info_remote_start_end": "Start / end time",
