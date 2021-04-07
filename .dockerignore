@@ -4,3 +4,4 @@ Jenkinsfile
 releasenote.txt
 .git
 .gitignore
+cypress

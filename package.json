@@ -10,16 +10,17 @@
     "build:develop": "cross-env NODE_ENV=develop VIRNECT_ENV=local nuxt build --modern=server",
     "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
-    "generate": "nuxt generate"
+    "generate": "nuxt generate",
+    "e2e": "cypress run",
+    "e2e:open": "cypress open"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
     "@nuxtjs/style-resources": "^1.0.0",
-    "@virnect/components": "^1.0.1",
+    "@virnect/components": "1.0.1",
     "@virnect/logger": "^1.0.2",
     "@virnect/platform-auth": "^1.0.2",
     "@virnect/ui-assets": "^1.1.5",
-    "@vue/composition-api": "^1.0.0-rc.3",
     "axios": "^0.19.2",
     "billboard.js": "^1.12.10",
     "cross-env": "^7.0.2",
@@ -27,20 +28,15 @@
     "dotenv": "^8.2.0",
     "element-ui": "^2.13.0",
     "js-cookie": "^2.2.1",
-    "jwt-decode": "^3.0.0",
     "nuxt": "^2.0.0",
     "nuxt-helmet": "^2.0.0",
-    "nuxt-i18n": "6.21.1",
-    "vue-demi": "^0.7.1"
+    "nuxt-i18n": "6.21.1"
   },
   "devDependencies": {
     "@virnect/eslint-config": "^1.0.0",
     "@virnect/stylelint-config": "^1.0.1",
     "@vue/component-compiler-utils": "^3.1.0",
-    "@vue/eslint-config-airbnb": "^4.0.0",
-    "babel-core": "^6.26.3",
-    "babel-loader": "^8.0.6",
-    "babel-preset-env": "^1.7.0",
+    "cypress": "^7.0.0",
     "sass": "^1.23.7",
     "sass-loader": "^10.1.1",
     "style-loader": "^1.0.2",

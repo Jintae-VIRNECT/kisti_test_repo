@@ -3,6 +3,9 @@ node_modules
 .nuxt
 dist
 WC-Modules
+cypress/videos
+cypress/screenshots
+cypress/downloads
 
 # # local env files
 # .env.local
