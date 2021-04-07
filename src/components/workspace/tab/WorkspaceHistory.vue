@@ -163,6 +163,12 @@ export default {
           return room.sessionId === sessionId
         })
         this.historyList.splice(pos, 1)
+        if (this.searchText.length > 0) {
+          const posSearch = this.searchHistoryList.findIndex(room => {
+            return room.sessionId === sessionId
+          })
+          this.searchHistoryList.splice(posSearch, 1)
+        }
       })
 
       const result = await deleteHistorySingleItem({
