@@ -85,7 +85,7 @@ export default {
     float: left;
     margin-right: 12px;
 
-    .thumbnail {
+    .virnect-thumbnail {
       height: 67%;
     }
   }

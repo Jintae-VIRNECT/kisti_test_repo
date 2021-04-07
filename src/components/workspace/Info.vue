@@ -139,7 +139,7 @@ export default {
     margin: 0 6px 40px;
     text-align: center;
 
-    & > .thumbnail {
+    & > .virnect-thumbnail {
       margin: 40px auto 12px;
     }
     & > h5 {
@@ -169,7 +169,7 @@ export default {
     }
     .users {
       margin: 12px 0;
-      .thumbnail {
+      .virnect-thumbnail {
         display: inline-block;
         margin-right: 4px;
       }

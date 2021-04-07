@@ -3,7 +3,7 @@ describe('before login', () => {
     cy.visit('/healthcheck')
     cy.get('body').contains('200')
   })
-  it('로그인하지 않을 경우 리다이렉트', () => {
+  it('로그인하지 않았을 경우 리다이렉트', () => {
     cy.intercept('/').as('main')
     cy.visit('/')
     cy.wait('@main').its('response.statusCode').should('eq', 302)
@@ -67,5 +67,10 @@ describe('after login', () => {
     // workspace
     cy.get('.the-sidebar__menus__item > a[href="/workspace/setting"]').click()
     cy.get('#workspace-setting').should('be.visible')
+  })
+
+  it('에러페이지', () => {
+    cy.visit('/1234', { failOnStatusCode: false })
+    cy.get('.virnect-error-page').should('be.visible')
   })
 })

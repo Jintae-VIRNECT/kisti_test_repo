@@ -160,7 +160,7 @@ export default {
     float: right;
     cursor: pointer;
   }
-  .thumbnail {
+  .virnect-thumbnail {
     float: right;
     margin-left: 10px;
   }

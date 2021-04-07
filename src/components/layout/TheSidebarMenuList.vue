@@ -6,6 +6,7 @@
         v-else
         popper-class="the-sidebar__tooltip"
         effect="dark"
+        :hide-after="1000"
         :content="$t(menu.label)"
         placement="right"
         :disabled="isWide"

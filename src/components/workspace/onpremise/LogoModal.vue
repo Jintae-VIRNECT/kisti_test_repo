@@ -229,7 +229,7 @@ export default {
         height: 100%;
       }
     }
-    .sub-title .thumbnail {
+    .sub-title .virnect-thumbnail {
       display: inline-block;
       margin-right: 4px;
       vertical-align: middle;

@@ -113,8 +113,11 @@ export default {
   left: $the-sidebar-width !important;
   width: calc(100% - #{$the-sidebar-width}) !important;
 }
+#headerSection .virnect-workspace-select {
+  margin-left: 20px;
+}
 // onpremise 환경에서 워크스테이션 선택기능 비활성화
-#__nuxt .onpremise .workspace-select {
+#__nuxt .onpremise .virnect-workspace-select {
   pointer-events: none;
   &__value {
     background: none;
