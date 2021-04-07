@@ -10,6 +10,7 @@ import com.virnect.data.dto.rest.LicenseInfoListResponse;
 import com.virnect.data.dto.rest.LicenseInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.serviceserver.global.config.RemoteServiceConfig;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseConstants;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.serviceremote.dto.response.license.LicenseItemResponse;
@@ -20,6 +21,7 @@ import com.virnect.serviceserver.serviceremote.dto.response.license.LicenseItemR
 public class ValidationService {
 
 	private final LicenseRestService licenseRestService;
+	private final RemoteServiceConfig config;
 
 	public ApiResponse<LicenseItemResponse> getLicenseInfo(String workspaceId, String userId) {
 

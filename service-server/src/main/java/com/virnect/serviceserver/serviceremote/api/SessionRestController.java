@@ -88,13 +88,6 @@ public class SessionRestController {
     @Deprecated
     private LicenseItem IsValidCompanyCode(int companyCode) {
         return LicenseItem.getLicenseItem(companyCode);
-        /*if (licenseItem == null) {
-            ApiResponse<RoomResponse> apiResponse = new ApiResponse<>(
-                    new RoomResponse(),
-                    ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE
-            );
-            return ResponseEntity.ok(apiResponse);
-        }*/
     }
 
     @ApiOperation(value = "Service Push Message ", notes = "푸시 메시지를 발행 하는 API 입니다.")

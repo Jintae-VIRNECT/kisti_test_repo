@@ -5,10 +5,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -86,6 +86,15 @@ public class RoomService {
 
 	private final RemoteServiceConfig config;
 
+	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
+		members.sort((t1, t2) -> {
+			int index1 = t1.getMemberType().ordinal();
+			int index2 = t2.getMemberType().ordinal();
+			return Integer.compare(index1, index2);
+		});
+		return members;
+	}
+
 	private boolean IsValidUserCapacity(RoomRequest roomRequest, LicenseItem licenseItem) {
 		// check room request member count is over
 		return roomRequest.getParticipantIds().size() + 1 <= licenseItem.getUserCapacity();
@@ -102,10 +111,9 @@ public class RoomService {
 		if (licenseItem == null) {
 			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		} else {
-			if (roomRequest.getSessionType().equals(SessionType.PRIVATE)
-				|| roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
+			if (roomRequest.getSessionType() == SessionType.PRIVATE
+				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
-				assert licenseItem != null;
 				if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
 					new ApiResponse<>(
 						new RoomResponse(),
@@ -125,7 +133,7 @@ public class RoomService {
 					tokenResult.toString()
 				);
 
-			} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
+			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
 				//open session is not need to check member count.
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -161,8 +169,8 @@ public class RoomService {
 		if (licenseItem == null) {
 			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		} else {
-			if (roomRequest.getSessionType().equals(SessionType.PRIVATE)
-				|| roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
+			if (roomRequest.getSessionType() == SessionType.PRIVATE
+				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
 				if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
 					new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
@@ -180,7 +188,7 @@ public class RoomService {
 					sessionJson.toString(),
 					tokenResult.toString()
 				);
-			} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
+			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
 				//open session is not need to check member count.
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -218,8 +226,8 @@ public class RoomService {
 			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		}
 		else {
-			if (roomRequest.getSessionType().equals(SessionType.PRIVATE)
-				|| roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
+			if (roomRequest.getSessionType() == SessionType.PRIVATE
+				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
 				if (IsValidUserCapacity(roomRequest, licenseItem)) {
 					// generate session id and token
@@ -238,7 +246,7 @@ public class RoomService {
 				} else {
 					responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 				}
-			} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
+			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
 				//open session is not need to check member count.
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -270,8 +278,8 @@ public class RoomService {
 		if (licenseItem == null) {
 			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		} else {
-			if (roomRequest.getSessionType().equals(SessionType.PRIVATE)
-				|| roomRequest.getSessionType().equals(SessionType.PUBLIC)) {
+			if (roomRequest.getSessionType() == SessionType.PRIVATE
+				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
 				// check room request member count is over
 				if (IsValidUserCapacity(roomRequest, licenseItem)) {
 					// generate session id and token
@@ -289,7 +297,7 @@ public class RoomService {
 				} else {
 					responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
 				}
-			} else if (roomRequest.getSessionType().equals(SessionType.OPEN)) {
+			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
 				// open session is not need to check member count.
 				// generate session id and token
 				JsonObject sessionJson = serviceSessionManager.generateSession();
@@ -352,6 +360,13 @@ public class RoomService {
 			responseData.setMessage(dataProcess.getMessage());*/
 		}
 
+		/*
+		 * 1. UNLOAD 상태 체크
+		 * 2. 발행한 토큰 파기, LEAVE ROOM  (자동 처리 확인)
+		 * 3. DB DATA UPDATE
+		 * 4. RESPONSE ERROR MESSAGE
+		 */
+
 		return responseData;
 	}
 
@@ -379,15 +394,15 @@ public class RoomService {
 			} else {
 				ErrorCode errorCode;
 
-				if (member.getMemberType().equals(MemberType.LEADER)) {
+				if (member.getMemberType() == MemberType.LEADER) {
 					errorCode = ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
-				} else if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
+				} else if (member.getMemberStatus() == MemberStatus.LOAD) {
 					errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
 				} else {
 					errorCode = ErrorCode.ERR_SUCCESS;
 				}
 
-				if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+				if (errorCode == ErrorCode.ERR_SUCCESS) {
 
 					room.getMembers().remove(member);
 					roomRepository.save(room);
@@ -625,54 +640,51 @@ public class RoomService {
 			sessionId
 		);
 
+		// Response data
 		ApiResponse<RoomDetailInfoResponse> responseData;
 
-		List<MemberInfoResponse> memberInfoList;
-
+		// Get Room info from DB
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+
 		if(room == null) {
 			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		} else {
 			if (room.getRoomStatus() != RoomStatus.ACTIVE) {
 				responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
 			} else {
+
+				// Make uuid array
+				List<String> userList = new ArrayList<>();
+				for (Member member : room.getMembers()) {
+					if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
+						userList.add(member.getUuid());
+					}
+				}
+				String[] userIds = userList.stream().distinct().toArray(String[]::new);
+
+				// Receive User list from Workspace
+				ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
 				// mapping data
-				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(
-					room, RoomDetailInfoResponse.class);
+				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
 				roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
-				// Get Member List by Room Session ID
-				// Mapping Member List Data to Member Information List
-				memberInfoList = memberRepository.findAllBySessionId(sessionId)
-					.stream()
-					.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+				List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
 					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 					.collect(Collectors.toList());
 
-				// find and get extra information from workspace-server using uuid
 				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-						workspaceId, memberInfoResponse.getUuid());
-					log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-					//todo://user infomation does not have role and role id change to workspace member info
-					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-					memberInfoResponse.setRole(workspaceMemberData.getRole());
-					//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-					memberInfoResponse.setName(workspaceMemberData.getName());
-					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-				}
-
-				memberInfoList.sort((t1, t2) -> {
-					if (t1.getMemberType().equals(MemberType.LEADER)) {
-						return 1;
+					for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+						if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+							memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+							memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+							memberInfoResponse.setName(workspaceMemberInfo.getName());
+							memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+							memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+						}
 					}
-					return 0;
-				});
-
-				// Set Member List to Room Detail Information Response
-				roomDetailInfoResponse.setMemberList(memberInfoList);
+				}
+				roomDetailInfoResponse.setMemberList(setLeader(memberInfoList));
 				responseData = new ApiResponse<>(roomDetailInfoResponse);
 			}
 		}
@@ -685,73 +697,55 @@ public class RoomService {
 		boolean paging,
 		Pageable pageable
 	) {
-		//Page<Room> roomPage = roomRepository.findAll(joinMember(workspaceId, userId), pageable);
 
-		Page<Room> roomPage = roomRepository.findRoomByWorkspaceIdAndUserId(workspaceId, userId, paging, pageable);
-
+		// Response Data (List, pageMeta)
+		List<RoomInfoResponse> roomInfoResponses = new ArrayList<>();
 		PageMetadataResponse pageMeta;
-
+		
+		// Receive Room list page from DB
+		Page<Room> roomPage = roomRepository.findMyRoomSpecificUserId(workspaceId, userId, paging, pageable);
+		
 		for (Room room : roomPage.getContent()) {
 			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
 		}
 
-		List<RoomInfoResponse> roomInfoList = new ArrayList<>();
-		//for (Room room: roomListMap.keySet()) {
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (Room room : roomPage) {
+			for (Member member : room.getMembers()) {
+				if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
+					userList.add(member.getUuid());
+				}
+			}
+		}
+		String[] userIds = userList.stream().distinct().toArray(String[]::new);
+
+		// Receive User list from Workspace
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
+		// Make Response data
 		for (Room room : roomPage.getContent()) {
 			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
 			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
 
 			// Mapping Member List Data to Member Information List
 			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-				//.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
 				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 				.collect(Collectors.toList());
 
-			// find and get extra information from workspace-server using uuid
 			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-					workspaceId, memberInfoResponse.getUuid());
-				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-				//todo://user infomation does not have role and role id change to workspace member info
-				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-				memberInfoResponse.setRole(workspaceMemberData.getRole());
-				//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-				memberInfoResponse.setName(workspaceMemberData.getName());
-				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-			}
-
-			roomInfoResponse.setMemberList(
-				setLeader(memberInfoList)
-			);
-			roomInfoList.add(roomInfoResponse);
-		}
-
-		// Evicted and Unload check
-		for (Iterator<RoomInfoResponse> roomInfoResponseIterator = roomInfoList.iterator(); roomInfoResponseIterator.hasNext();) {
-
-			List<MemberInfoResponse> memberInfoResponses = roomInfoResponseIterator.next().getMemberList();
-
-			boolean evictedCheck = false;
-			boolean[] unloadCheck = new boolean[memberInfoResponses.size()];
-			boolean unloadCheckResult = true;
-
-			for (int i = 0 ; i < memberInfoResponses.size() ; i++) {
-				evictedCheck = memberInfoResponses.get(i).getUuid().equals(userId) && memberInfoResponses.get(i).getMemberStatus().equals(MemberStatus.EVICTED);
-				if (memberInfoResponses.get(i).getMemberStatus().equals(MemberStatus.UNLOAD)) {
-					unloadCheck[i] = true;
-				} else {
-					unloadCheck[i] = false;
+				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+						memberInfoResponse.setName(workspaceMemberInfo.getName());
+						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+					}
 				}
 			}
-
-			for (boolean unload : unloadCheck)	{
-				unloadCheckResult = unloadCheckResult && unload;
-			}
-			if (evictedCheck || unloadCheckResult) {
-				roomInfoResponseIterator.remove();
-			}
+			roomInfoResponse.setMemberList(setLeader(memberInfoList));
+			roomInfoResponses.add(roomInfoResponse);
 		}
 
 		if (paging) {
@@ -760,8 +754,7 @@ public class RoomService {
 				.currentSize(pageable.getPageSize())
 				.numberOfElements(roomPage.getNumberOfElements())
 				.totalPage(roomPage.getTotalPages())
-				//.totalElements(roomPage.getTotalElements())
-				.totalElements(roomInfoList.size())
+				.totalElements(roomPage.getTotalElements())
 				.last(roomPage.isLast())
 				.build();
 		} else {
@@ -770,21 +763,11 @@ public class RoomService {
 				.currentSize(0)
 				.numberOfElements(roomPage.getNumberOfElements())
 				.totalPage(1)
-				//.totalElements(roomPage.getTotalElements())
-				.totalElements(roomInfoList.size())
+				.totalElements(roomInfoResponses.size())
 				.last(true)
 				.build();
 		}
-		return new RoomInfoListResponse(roomInfoList, pageMeta);
-	}
-
-	private List<MemberInfoResponse> setLeader(List<MemberInfoResponse> members) {
-		members.sort((t1, t2) -> {
-			int index1 = t1.getMemberType().ordinal();
-			int index2 = t2.getMemberType().ordinal();
-			return Integer.compare(index1, index2);
-		});
-		return members;
+		return new RoomInfoListResponse(roomInfoResponses, pageMeta);
 	}
 
 	public RoomInfoListResponse getRoomListStandardSearch(
@@ -794,43 +777,77 @@ public class RoomService {
 		PageRequest pageable
 	) {
 
-		ApiResponse<WorkspaceMemberInfoListResponse> feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
-			workspaceId,
-			"remote",
-			search,
-			pageable.getPageNumber(),
-			pageable.getPageSize()
-		);
-
-		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse.getData().getMemberInfoList();
-		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
-			.collect(Collectors.toList());
+		// Response Data (List, pageMeta)
+		List<RoomInfoResponse> roomInfoResponses = new ArrayList<>();
+		PageMetadataResponse pageMeta;
 
 		Page<Room> roomPage;
-		List<String> userIds = new ArrayList<>();
-		for (MemberInfoResponse memberInfo : memberInfoList) {
-			if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
-				//if memberInfo is empty
-				log.info("loadFromDatabase::searchRoomPageList:: some member dose not have uuid");
-			} else {
-				userIds.add(memberInfo.getUuid());
+		if (!(StringUtils.isBlank(search))) {
+			List<String> userIds = new ArrayList<>();
+			List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
+				workspaceId,
+				"remote",
+				search,
+				Integer.MAX_VALUE
+			).getData().getMemberInfoList();
+
+			for (WorkspaceMemberInfoResponse memberInfo : members) {
+				if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
+					//if memberInfo is empty
+					log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
+				} else {
+					userIds.add(memberInfo.getUuid());
+				}
 			}
+			roomPage = roomRepository.findMyRoomSpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
+		} else {
+			roomPage = roomRepository.findMyRoomSpecificUserId(workspaceId, userId, true, pageable);
 		}
 
-		roomPage = roomRepository.findRoomBySearch(workspaceId, userId, userIds, search, pageable);
+		for (Room room : roomPage.getContent()) {
+			log.info("Search loadRoomPageList invokeDataProcess: {}", room.getSessionId());
+		}
 
-		/*if (userIds.isEmpty()) {
-			log.info(
-				"loadFromDatabase::searchRoomPageList::memberInfoList is empty can not find, search with room title");
-			roomPage = roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
-		} else {
-			log.info("loadFromDatabase::searchRoomPageList::memberInfoList is not empty");
-			roomPage = roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
-		}*/
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (Room room : roomPage) {
+			for (Member member : room.getMembers()) {
+				if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
+					userList.add(member.getUuid());
+				}
+			}
+		}
+		String[] userIds = userList.stream().distinct().toArray(String[]::new);
 
-		// Page Metadata
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+		// Receive User list from Workspace
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
+		// Make Response data
+		for (Room room : roomPage.getContent()) {
+			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
+			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+			// Mapping Member List Data to Member Information List
+			List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
+				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+				.collect(Collectors.toList());
+
+			for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+				for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+					if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+						memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+						memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+						memberInfoResponse.setName(workspaceMemberInfo.getName());
+						memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+						memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+					}
+				}
+			}
+			roomInfoResponse.setMemberList(setLeader(memberInfoList));
+			roomInfoResponses.add(roomInfoResponse);
+		}
+
+		pageMeta = PageMetadataResponse.builder()
 			.currentPage(pageable.getPageNumber())
 			.currentSize(pageable.getPageSize())
 			.numberOfElements(roomPage.getNumberOfElements())
@@ -839,45 +856,7 @@ public class RoomService {
 			.last(roomPage.isLast())
 			.build();
 
-		for (Room room : roomPage.getContent()) {
-			log.info("loadRoomPageList invokeDataProcess: {}", room.getSessionId());
-		}
-
-		List<RoomInfoResponse> roomInfoList = new ArrayList<>();
-		for (Room room : roomPage.getContent()) {
-			RoomInfoResponse roomInfoResponse = modelMapper.map(room, RoomInfoResponse.class);
-			roomInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
-
-			// Mapping Member List Data to Member Information List
-			List<MemberInfoResponse> memberInfos = room.getMembers().stream()
-				.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
-				.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-				.collect(Collectors.toList());
-
-			// find and get extra information from workspace-server using uuid
-			for (MemberInfoResponse memberInfoResponse : memberInfos) {
-				ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-					workspaceId, memberInfoResponse.getUuid());
-				log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-				WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-				memberInfoResponse.setRole(workspaceMemberData.getRole());
-				memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-				memberInfoResponse.setName(workspaceMemberData.getName());
-				memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-				memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-			}
-
-			memberInfoList.sort((t1, t2) -> {
-				if (t1.getMemberType().equals(MemberType.LEADER)) {
-					return 1;
-				}
-				return 0;
-			});
-
-			roomInfoResponse.setMemberList(memberInfos);
-			roomInfoList.add(roomInfoResponse);
-		}
-		return new RoomInfoListResponse(roomInfoList, pageMeta);
+		return new RoomInfoListResponse(roomInfoResponses, pageMeta);
 	}
 
 	public ApiResponse<RoomDetailInfoResponse> updateRoom(
@@ -913,7 +892,7 @@ public class RoomService {
 				// Mapping Member List Data to Member Information List
 				memberInfoList = memberRepository.findAllBySessionId(sessionId)
 					.stream()
-					.filter(member -> !member.getMemberStatus().equals(MemberStatus.EVICTED))
+					.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
 					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
 					.collect(Collectors.toList());
 
@@ -958,8 +937,7 @@ public class RoomService {
 			}
 
 			for (Member member : room.getMembers()) {
-				if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus()
-					.equals(MemberStatus.LOAD)) {
+				if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus() == MemberStatus.LOAD) {
 					return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
 				}
 			}

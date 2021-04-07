@@ -2,7 +2,6 @@ package com.virnect.data.dao.room;
 
 import static com.virnect.data.domain.member.QMember.*;
 import static com.virnect.data.domain.room.QRoom.*;
-import static com.virnect.data.domain.roomhistory.QRoomHistory.*;
 import static com.virnect.data.domain.session.QSessionProperty.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +16,12 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+<<<<<<< HEAD
+=======
+import com.querydsl.core.types.SubQueryExpression;
+>>>>>>> develop
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -60,19 +64,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.distinct()
 			.fetch();
 	}
-
-	/*@Override
-	public Room findRoomHistoryByWorkspaceAndSessionId(String workspaceId, String sessionId) {
-		return query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.sessionId.eq(sessionId)
-			)
-			.distinct()
-			.fetchOne();
-	}*/
 
 	/**
 	 * 기간 검색 다이나믹 쿼리
@@ -154,12 +145,16 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	) {
 		return Optional.ofNullable(
 			query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
+			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.sessionId.eq(sessionId),
+<<<<<<< HEAD
 				room.members.any().in()
+=======
+				member.memberStatus.ne(MemberStatus.EVICTED)
+>>>>>>> develop
 			)
 			.distinct()
 			.fetchOne());
@@ -175,18 +170,6 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	public Page<Room> findRoomByWorkspaceId(
 		String workspaceId, Pageable pageable
 	) {
-		/*QueryResults<Room> queryResult = query.selectFrom(room)
-			.innerJoin(room.members, member).fetchJoin()
-			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
-			.where(
-				room.workspaceId.eq(workspaceId),
-				room.roomStatus.eq(RoomStatus.ACTIVE)
-			)
-			.offset(pageable.getOffset())
-			.limit(pageable.getPageSize())
-			.distinct().fetchResults();
-		return new PageImpl<>(queryResult.getResults(), pageable, queryResult.getTotal());*/
-
 		JPQLQuery<Room> queryResult = query.selectFrom(room)
 			.innerJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
@@ -220,7 +203,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	}
 
 	@Override
-	public Page<Room> findRoomByWorkspaceIdAndUserId(
+	public Page<Room> findMyRoomSpecificUserId(
 		String workspaceId,
 		String userId,
 		boolean paging,
@@ -231,17 +214,13 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId)
-				.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
+				room.id.in(includeNotEvicted(workspaceId, userId)).or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
 				room.roomStatus.eq(RoomStatus.ACTIVE)
 			)
 			.orderBy(room.createdDate.desc())
 			.distinct();
-
 		long totalCount = queryResult.fetchCount();
-
 		List<Room> results;
-
 		if (paging) {
 			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		} else {
@@ -251,48 +230,47 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	}
 
 	@Override
-	public Page<Room> findRoomBySearch(
+	public Page<Room> findMyRoomSpecificUserIdBySearch(
 		String workspaceId,
 		String userId,
 		List<String> userIds,
 		String search,
 		Pageable pageable
 	) {
-		JPQLQuery<Room> queryResult = query.selectFrom(room)
+		JPQLQuery<Room> queryResult = query
+			.selectFrom(room)
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
-				room.workspaceId.eq(workspaceId),
-				room.members.any().uuid.eq(userId).and(room.members.any().uuid.in(userIds))
-					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
+				room.workspaceId.eq(room.workspaceId),
 				room.roomStatus.eq(RoomStatus.ACTIVE),
-				room.members.any().memberStatus.notIn(MemberStatus.EVICTED),
-				includeTitleSearch(search)
-			)
-			.orderBy(room.createdDate.desc())
-			.distinct();
+				room.id.in(includeSearch(workspaceId, userId, userIds, search))
+				.or(
+				room.sessionProperty.sessionType.eq(SessionType.OPEN).and(room.title.contains(search))
+				)
+			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<Room> results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
 		return new PageImpl<>(results, pageable, totalCount);
 	}
 
 	@Override
-	public Page<Room> findRoomBySearch(
+	public Page<Room> findMyRoomSpecificUserIdBySearch(
 		String workspaceId,
 		String userId,
 		String search,
 		Pageable pageable
 	) {
-		JPQLQuery<Room> queryResult = query.selectFrom(room)
+		JPQLQuery<Room> queryResult = query
+			.selectFrom(room)
 			.leftJoin(room.members, member).fetchJoin()
 			.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.members.any().uuid.eq(userId)
-					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN)),
-				room.roomStatus.eq(RoomStatus.ACTIVE),
-				room.members.any().memberStatus.notIn(MemberStatus.EVICTED),
-				includeTitleSearch(search)
+					.or(room.sessionProperty.sessionType.eq(SessionType.OPEN))
+					.or(includeTitleSearch(search)),
+				room.roomStatus.eq(RoomStatus.ACTIVE)
 			)
 			.orderBy(room.createdDate.desc())
 			.distinct();
@@ -307,8 +285,72 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	 */
 	private BooleanExpression includeTitleSearch(String search){
 		if (search == null || search.isEmpty()) {
-			return roomHistory.title.like("");
+			return null;
 		}
-		return roomHistory.title.like(search);
+		return room.title.contains(search);
+	}
+
+	/**
+	 * 강퇴된 사용자 제외 서브 쿼리
+	 * @param userId - 조회될 사용자 정보 식별자
+	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
+	 */
+	private SubQueryExpression includeNotEvicted(String workspaceId, String userId) {
+		return JPAExpressions.select(member.room.id)
+			.from(member)
+			.where(
+				member.workspaceId.eq(workspaceId),
+				room.id.eq(member.room.id),
+				member.uuid.eq(userId).and(member.memberStatus.ne(MemberStatus.EVICTED))
+			);
+	}
+
+	/**
+	 * 사용자 히스토리 검색 서브 쿼리
+	 * @param workspaceId - 해당 워크스페이스
+	 * @return - 해당 사용자가 참여한 roomHistory 검색 조건 쿼리
+	 */
+	private SubQueryExpression<Long> includeSearch(String workspaceId, String userId, List<String> userIds, String search) {
+
+		SubQueryExpression<Long> includeUserIds = JPAExpressions
+			.select(member.room.id)
+			.from(member)
+			.where(
+				member.uuid.in(userIds)
+				.or(
+					member.uuid.in(userIds)
+						.and(member.room.title.contains(search))
+				)
+			);
+
+		SubQueryExpression<Long> includeUserId = JPAExpressions
+			.select(member.room.id)
+			.from(member)
+			.where(
+				member.uuid.eq(userId)
+					.and(member.room.title.contains(search))
+			);
+
+		SubQueryExpression<Long> subQueryExpression;
+		if (userIds.size() > 0) {
+			subQueryExpression = JPAExpressions.select(member.room.id)
+				.from(member)
+				.where(
+					member.workspaceId.eq(workspaceId),
+					member.uuid.eq(userId),
+					member.room.id.in(includeUserIds),
+					member.memberStatus.ne(MemberStatus.EVICTED)
+				);
+		} else {
+			subQueryExpression = JPAExpressions.select(member.room.id)
+				.from(member)
+				.where(
+					member.workspaceId.eq(workspaceId),
+					member.uuid.eq(userId),
+					member.room.id.in(includeUserId),
+					member.memberStatus.ne(MemberStatus.EVICTED)
+				);
+		}
+		return subQueryExpression;
 	}
 }

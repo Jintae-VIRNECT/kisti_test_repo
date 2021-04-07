@@ -36,7 +36,7 @@ public interface MemberHistoryRepository extends JpaRepository<MemberHistory, Lo
 
     void deleteAllByUuid(final String userId);
 
-    //List<MemberHistory> findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(String workspaceId, LocalDateTime start, LocalDateTime end);
+	//List<MemberHistory> findByWorkspaceIdAndRoomHistoryIsNotNullAndRoomHistory_ActiveDateBetween(String workspaceId, LocalDateTime start, LocalDateTime end);
 
     //List<MemberHistory> findByWorkspaceId(final String workspaceId);
 

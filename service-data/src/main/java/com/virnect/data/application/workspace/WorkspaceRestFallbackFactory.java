@@ -27,6 +27,16 @@ public class WorkspaceRestFallbackFactory implements FallbackFactory<WorkspaceRe
             }
 
             @Override
+            public ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(
+                String workspaceId, String filter, String search, int size
+            ) {
+                log.error("[USER WORKSPACE INFO LIST API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
+                WorkspaceMemberInfoListResponse empty = new WorkspaceMemberInfoListResponse();
+                empty.setMemberInfoList(new ArrayList<>());
+                return new ApiResponse<>(empty);
+            }
+
+            @Override
             public ApiResponse<WorkspaceMemberInfoResponse> getWorkspaceMemberInfo(String workspaceId, String userId) {
                 log.error("[USER WORKSPACE INFO API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
                 WorkspaceMemberInfoResponse empty = new WorkspaceMemberInfoResponse();
@@ -35,6 +45,14 @@ public class WorkspaceRestFallbackFactory implements FallbackFactory<WorkspaceRe
 
             @Override
             public ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMembers(String workspaceId) {
+                log.error("[USER WORKSPACE MEMBERS INFO API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
+                WorkspaceMemberInfoListResponse empty = new WorkspaceMemberInfoListResponse();
+                return new ApiResponse<>(empty);
+            }
+
+            @Override
+            public ApiResponse<WorkspaceMemberInfoListResponse> getWorkspaceMemberInfoList(String workspaceId, String[] userIds
+            ) {
                 log.error("[USER WORKSPACE MEMBERS INFO API FALLBACK] => WORKSAPCE_ID: {}, {}", workspaceId, cause.getMessage());
                 WorkspaceMemberInfoListResponse empty = new WorkspaceMemberInfoListResponse();
                 return new ApiResponse<>(empty);
