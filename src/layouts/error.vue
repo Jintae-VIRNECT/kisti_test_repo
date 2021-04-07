@@ -14,7 +14,7 @@ export default {
 </script>
 
 <style lang="scss">
-.error-page {
+.virnect-error-page {
   padding-top: 35px;
 }
 </style>

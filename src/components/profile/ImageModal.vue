@@ -132,7 +132,7 @@ export default {
     height: inherit;
     border: none;
   }
-  .thumbnail {
+  .virnect-thumbnail {
     margin: 16px auto;
   }
   .el-upload__tip {

@@ -105,7 +105,7 @@ export default {
       color: $font-color-desc;
     }
   }
-  .thumbnail {
+  .virnect-thumbnail {
     margin: 28px auto 20px;
   }
   .el-form {

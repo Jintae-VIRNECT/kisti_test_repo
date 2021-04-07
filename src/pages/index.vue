@@ -104,7 +104,7 @@ export default {
   color: #fff;
   text-align: center;
 
-  .thumbnail {
+  .virnect-thumbnail {
     margin: 0 auto;
   }
   & > h2 {
