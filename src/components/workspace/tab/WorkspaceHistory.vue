@@ -104,6 +104,7 @@ export default {
         totalPage: 0,
         last: false,
       },
+      searchingText: '',
     }
   },
   computed: {
@@ -255,7 +256,9 @@ export default {
           }
           return
         }
-        this.searchHistoryList = await this.searchHistory(0, text)
+        const list = await this.searchHistory(0, text)
+        if (!list) return
+        this.searchHistoryList = list
         this.searchText = text
         if (!text || text.trim().length === 0) {
           this.searchText = ''
@@ -336,6 +339,7 @@ export default {
     },
     async searchHistory(page = 0, text) {
       try {
+        this.searchingText = text
         const datas = await searchHistoryList({
           paging: true,
           page,
@@ -345,6 +349,7 @@ export default {
           userId: this.account.uuid,
           workspaceId: this.workspace.uuid,
         })
+        if (this.searchingText !== text) return false
         if ('pageMeta' in datas) {
           if (
             page === 0 &&
