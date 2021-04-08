@@ -1,10 +1,12 @@
 <template>
   <div class="no-sidebar">
     <VirnectHeader
+      :env="$env"
       :subTitle="$t('menu.account')"
       :showStatus="showSection"
       :userInfo="auth.myInfo"
       :urls="$url"
+      :logo="{ default: logo }"
       @logout="$store.commit('auth/LOGOUT')"
     />
     <main>
