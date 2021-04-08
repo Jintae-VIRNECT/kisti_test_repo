@@ -11,11 +11,11 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <searchbar-mine ref="mine" :mineLabel="myResult" />
+          <SearchbarMine ref="mine" :mineLabel="myResult" />
           <span v-if="activeTab === 'task'">
             {{ $t('searchbar.filter.title') }}:
           </span>
-          <searchbar-filter
+          <SearchbarFilter
             v-show="activeTab === 'task'"
             ref="filter"
             :value.sync="taskFilter.value"
@@ -23,7 +23,7 @@
           />
         </el-col>
         <el-col class="right">
-          <searchbar-keyword ref="keyword" :value.sync="resultsSearch" />
+          <SearchbarKeyword ref="keyword" :value.sync="resultsSearch" />
         </el-col>
       </el-row>
       <!-- 테이블 -->
@@ -41,7 +41,7 @@
           <nuxt-child :data="list" @sort-change="sortChange" />
         </el-card>
       </el-row>
-      <searchbar-page ref="page" :value.sync="page" :total="total" />
+      <SearchbarPage ref="page" :value.sync="page" :total="total" />
     </div>
   </div>
 </template>

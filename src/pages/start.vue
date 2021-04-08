@@ -37,9 +37,10 @@
           drag
         >
           <div class="avatar">
-            <div
-              class="image"
-              :style="`background-image: url('${file || defaultFile}')`"
+            <VirnectThumbnail
+              :size="80"
+              :image="file"
+              :defaultImage="$defaultWorkspaceProfile"
             />
             <i>
               <img src="~assets/images/icon/ic-camera-alt.svg" />
@@ -64,6 +65,7 @@ import workspaceSerivce from '@/services/workspace'
 export default {
   layout: 'noSidebar',
   middleware({ store, redirect }) {
+    // 마스터 워크스페이스가 존재할 경우 튕겨냄
     if (store.getters['auth/myWorkspaces'].some(w => w.role === 'MASTER')) {
       redirect('/')
     }
@@ -71,7 +73,6 @@ export default {
   data() {
     return {
       file: null,
-      defaultFile: require('assets/images/workspace-profile.png'),
       form: {
         name: '',
         description: '',

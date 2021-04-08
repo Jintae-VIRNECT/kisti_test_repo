@@ -13,14 +13,7 @@
           <dd>{{ activeWorkspace.name }}</dd>
           <dt>{{ $t('workspace.master') }}</dt>
           <dd class="column-user">
-            <div class="avatar">
-              <div
-                class="image"
-                :style="
-                  `background-image: url(${activeWorkspace.masterProfile})`
-                "
-              />
-            </div>
+            <VirnectThumbnail :image="activeWorkspace.masterProfile" />
             <span>{{ activeWorkspace.masterName }}</span>
           </dd>
         </dl>

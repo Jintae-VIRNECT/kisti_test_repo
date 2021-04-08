@@ -31,7 +31,7 @@
               <span>{{ $t('task.subTaskDetail.title') }}</span>
             </h3>
           </div>
-          <sub-tasks-list :data="[subTaskInfo]" @updated="subTaskUpdated" />
+          <TaskSubTasksList :data="[subTaskInfo]" @updated="subTaskUpdated" />
         </el-card>
       </el-row>
 
@@ -45,14 +45,14 @@
             :label="$t(tab.label)"
           />
         </el-tabs>
-        <searchbar-keyword ref="keyword" :value.sync="stepsSearch" />
+        <SearchbarKeyword ref="keyword" :value.sync="stepsSearch" />
       </el-row>
 
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
           <span>{{ $t('searchbar.filter.title') }}:</span>
-          <searchbar-filter
+          <SearchbarFilter
             ref="filter"
             :value.sync="taskFilter.value"
             :options="taskFilter.options"
@@ -100,7 +100,7 @@
           </div>
 
           <!-- 차트 -->
-          <tasks-list-graph v-if="isGraph" :data="stepsList" type="step" />
+          <TaskListGraph v-if="isGraph" :data="stepsList" type="step" />
           <!-- 테이블 -->
           <el-table
             v-if="!isGraph"
@@ -108,33 +108,33 @@
             :data="stepsList"
             v-loading="loading"
           >
-            <column-default
+            <ColumnDefault
               :label="$t('task.subTaskDetail.stepsColumn.no')"
               prop="priority"
               :width="80"
             />
-            <column-default
+            <ColumnDefault
               :label="$t('task.subTaskDetail.stepsColumn.id')"
               prop="id"
               :width="140"
             />
-            <column-default
+            <ColumnDefault
               :label="$t('task.subTaskDetail.stepsColumn.name')"
               prop="name"
               sortable="custom"
             />
-            <column-progress
+            <ColumnProgress
               :label="$t('task.subTaskDetail.stepsColumn.progressRate')"
               prop="progressRate"
               :width="150"
             />
-            <column-status
+            <ColumnStatus
               :label="$t('task.subTaskDetail.stepsColumn.status')"
               prop="conditions"
               :statusList="taskConditions"
               :width="120"
             />
-            <column-date
+            <ColumnDate
               :label="$t('task.subTaskDetail.stepsColumn.reportedDate')"
               type="time"
               prop="reportedDate"
@@ -177,7 +177,7 @@
           </el-table>
         </el-card>
       </el-row>
-      <searchbar-page ref="page" :value.sync="stepsPage" :total="stepsTotal" />
+      <SearchbarPage ref="page" :value.sync="stepsPage" :total="stepsTotal" />
     </div>
     <nuxt-child />
   </div>
@@ -194,15 +194,9 @@ import columnMixin from '@/mixins/columns'
 
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
-import SubTasksList from '@/components/task/SubTasksList'
-import TasksListGraph from '@/components/task/TasksListGraph'
 
 export default {
   mixins: [searchMixin, columnMixin],
-  components: {
-    SubTasksList,
-    TasksListGraph,
-  },
   async asyncData({ params }) {
     const promise = {
       subTaskDetail: taskService.getSubTaskDetail(params.subTaskId),

@@ -12,19 +12,19 @@
         <el-col class="container__left">
           <el-row>
             <el-card class="el-card--table">
-              <workspace-info />
+              <WorkspaceInfo />
             </el-card>
           </el-row>
           <el-row v-if="!$isOnpremise">
-            <plans-used
+            <HomePlansUsed
               i18nGroup="home.plansInfo.arStorage"
               :info="plansInfo.storage"
             />
-            <plans-used
+            <HomePlansUsed
               i18nGroup="home.plansInfo.arContent"
               :info="plansInfo.viewCount"
             />
-            <!-- <plans-used
+            <!-- <HomePlansUsed
               i18nGroup="home.plansInfo.call"
               :info="plansInfo.callTime"
             /> -->
@@ -42,15 +42,15 @@
               {{ $t('home.banner.desc') }}
             </p>
           </el-card>
-          <current-member-list v-if="!$isOnpremise" />
-          <current-contents-list />
-          <current-result-list />
+          <HomeMemberList v-if="!$isOnpremise" />
+          <HomeContentsList />
+          <HomeResultList />
         </el-col>
         <!-- 오른쪽 -->
         <el-col class="container__right">
-          <user-profile-card />
-          <download-center v-if="!$isOnpremise" />
-          <guide-list v-if="!$isOnpremise" />
+          <HomeUserProfileCard />
+          <HomeDownloadCenter v-if="!$isOnpremise" />
+          <HomeGuideList v-if="!$isOnpremise" />
           <a
             v-if="!$isOnpremise"
             :href="`${$url.www}/support/faq`"
@@ -68,40 +68,16 @@
       </el-row>
     </div>
 
-    <alert-storage-overflow :visible.sync="showAlertStorageOverflow" />
-    <alert-license-overflow :visible.sync="showAlertLicenseOverflow" />
+    <HomeAlertStorageOverflow :visible.sync="showAlertStorageOverflow" />
+    <HomeAlertLicenseOverflow :visible.sync="showAlertLicenseOverflow" />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-
-import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import PlansUsed from '@/components/home/PlansUsed'
-import CurrentMemberList from '@/components/home/CurrentMemberList'
-import CurrentContentsList from '@/components/home/CurrentContentsList'
-import CurrentResultList from '@/components/home/CurrentResultList'
-import UserProfileCard from '@/components/home/UserProfileCard'
-import DownloadCenter from '@/components/home/DownloadCenter'
-import GuideList from '@/components/home/GuideList'
-import AlertStorageOverflow from '@/components/home/AlertStorageOverflow'
-import AlertLicenseOverflow from '@/components/home/AlertLicenseOverflow'
-
 import workspaceService from '@/services/workspace'
 
 export default {
-  components: {
-    WorkspaceInfo,
-    PlansUsed,
-    CurrentMemberList,
-    CurrentContentsList,
-    CurrentResultList,
-    UserProfileCard,
-    DownloadCenter,
-    GuideList,
-    AlertStorageOverflow,
-    AlertLicenseOverflow,
-  },
   data() {
     return {
       showAlertStorageOverflow: false,
@@ -146,12 +122,12 @@ export default {
     & h6 {
       font-weight: 300;
       font-size: 20px;
-      font-family: $poppins, $noto;
+      font-family: $font-poppins, $font-noto;
     }
     & h5 {
       font-weight: bold;
       font-size: 28px;
-      font-family: $poppins, $noto;
+      font-family: $font-poppins, $font-noto;
     }
     & p {
       margin-top: 20px;

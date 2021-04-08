@@ -18,12 +18,7 @@
     <dl>
       <dt>{{ $t('troubles.list.column.user') }}</dt>
       <dd class="column-user">
-        <div class="avatar">
-          <div
-            class="image"
-            :style="`background-image: url(${cdn(trouble.workerProfile)})`"
-          />
-        </div>
+        <VirnectThumbnail :image="cdn(trouble.workerProfile)" />
         <span>{{ trouble.workerName }}</span>
       </dd>
       <dt>{{ $t('troubles.list.column.reportedDate') }}</dt>

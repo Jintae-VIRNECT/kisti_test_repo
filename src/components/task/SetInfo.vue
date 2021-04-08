@@ -19,14 +19,7 @@
           <dd>{{ content.contentName }}</dd>
           <dt>{{ $t('contents.info.uploader') }}</dt>
           <dd class="column-user">
-            <div class="avatar">
-              <div
-                class="image"
-                :style="`background-image: url(${cdn(
-                  content.uploaderProfile,
-                )})`"
-              />
-            </div>
+            <VirnectThumbnail :image="cdn(content.uploaderProfile)" />
             <span>{{ content.uploaderName }}</span>
           </dd>
         </dl>

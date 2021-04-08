@@ -14,16 +14,10 @@
         :class="{ deleted: !scope.row[nameProp] }"
       >
         <el-tooltip :content="scope.row[nameProp] || $t('members.deletedUser')">
-          <div class="avatar">
-            <div
-              class="image"
-              :style="
-                `background-image: url(${cdn(
-                  scope.row[imageProp],
-                )}), url(${$defaultUserProfile})`
-              "
-            />
-          </div>
+          <VirnectThumbnail
+            :image="cdn(scope.row[imageProp])"
+            :defaultImage="$defaultUserProfile"
+          />
         </el-tooltip>
       </div>
       <!-- 일반 -->
@@ -34,16 +28,10 @@
       >
         <el-tooltip :content="scope.row[nameProp] || $t('members.deletedUser')">
           <div>
-            <div class="avatar">
-              <div
-                class="image"
-                :style="
-                  `background-image: url('${cdn(
-                    scope.row[imageProp],
-                  )}'), url('${$defaultUserProfile}')`
-                "
-              />
-            </div>
+            <VirnectThumbnail
+              :image="cdn(scope.row[imageProp])"
+              :defaultImage="$defaultUserProfile"
+            />
             <span>{{ scope.row[nameProp] || $t('members.deletedUser') }}</span>
           </div>
         </el-tooltip>

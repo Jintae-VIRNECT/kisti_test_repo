@@ -13,7 +13,7 @@
       <!-- 검색 영역 -->
       <el-row class="searchbar">
         <el-col class="left">
-          <searchbar-mine
+          <SearchbarMine
             ref="mine"
             :mineLabel="$t('contents.allContents.myContents')"
           />
@@ -23,7 +23,7 @@
           </el-button>
         </el-col>
         <el-col class="right">
-          <searchbar-keyword ref="keyword" :value.sync="contentsSearch" />
+          <SearchbarKeyword ref="keyword" :value.sync="contentsSearch" />
         </el-col>
       </el-row>
       <!-- 리스트 -->
@@ -45,38 +45,38 @@
             @selection-change="selectionChanged"
           >
             <el-table-column type="selection" width="55" />
-            <column-default
+            <ColumnDefault
               :label="$t('contents.allContents.column.id')"
               prop="contentUUID"
               customFilter="slice8"
               :width="120"
             />
-            <column-default
+            <ColumnDefault
               :label="$t('contents.allContents.column.name')"
               prop="contentName"
               sortable="custom"
             />
-            <column-default
+            <ColumnDefault
               :label="$t('contents.allContents.column.targetType')"
               prop="targetType"
               customFilter="targetType2label"
               sortable="custom"
               :width="120"
             />
-            <column-user
+            <ColumnUser
               :label="$t('contents.allContents.column.uploader')"
               prop="uploaderUUID"
               nameProp="uploaderName"
               imageProp="uploaderProfile"
               :width="160"
             />
-            <column-date
+            <ColumnDate
               :label="$t('contents.allContents.column.createdDate')"
               prop="createdDate"
               sortable="custom"
               :width="140"
             />
-            <column-boolean
+            <ColumnBoolean
               :label="$t('contents.allContents.column.sharedStatus')"
               prop="shared"
               :trueText="$t('contents.sharedStatus.shared')"
@@ -91,7 +91,7 @@
           </el-table>
         </el-card>
       </el-row>
-      <searchbar-page
+      <SearchbarPage
         ref="page"
         :value.sync="contentsPage"
         :total="contentsTotal"

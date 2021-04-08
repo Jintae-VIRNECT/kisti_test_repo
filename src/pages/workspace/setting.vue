@@ -16,7 +16,7 @@
         <!-- 왼쪽 -->
         <el-col class="container__left">
           <el-card class="el-card--table">
-            <workspace-info />
+            <WorkspaceInfo />
           </el-card>
         </el-col>
         <!-- 가운데 -->
@@ -33,16 +33,9 @@
                     <dd>{{ activeWorkspace.createdDate | dateFormat }}</dd>
                     <dt>{{ $t('workspace.master') }}</dt>
                     <dd class="column-user">
-                      <div class="avatar">
-                        <div
-                          class="image"
-                          :style="
-                            `background-image: url(${cdn(
-                              activeWorkspace.masterProfile,
-                            )})`
-                          "
-                        />
-                      </div>
+                      <VirnectThumbnail
+                        :image="cdn(activeWorkspace.masterProfile)"
+                      />
                       <span>{{ activeWorkspace.masterName }}</span>
                     </dd>
                   </dl>
@@ -68,12 +61,10 @@
                         drag
                       >
                         <div class="avatar">
-                          <div
-                            class="image"
-                            :style="
-                              `background-image: url('${file ||
-                                $defaultWorkspaceProfile}')`
-                            "
+                          <VirnectThumbnail
+                            :size="100"
+                            :image="file"
+                            :defaultImage="$defaultWorkspaceProfile"
                           />
                           <i>
                             <img src="~assets/images/icon/ic-camera-alt.svg" />
@@ -134,13 +125,13 @@
             </div>
           </el-card>
         </el-col>
-        <workspace-onpremise-setting
+        <WorkspaceOnpremiseSetting
           v-if="$isOnpremise"
           class="container__right"
         />
       </el-row>
     </div>
-    <workspace-leave-modal
+    <WorkspaceLeaveModal
       :visible.sync="showLeaveModal"
       :activeWorkspace="activeWorkspace"
       :myProfile="myProfile"
@@ -150,19 +141,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import WorkspaceInfo from '@/components/workspace/WorkspaceInfo'
-import WorkspaceLeaveModal from '@/components/workspace/WorkspaceLeaveModal'
-import WorkspaceOnpremiseSetting from '@/components/workspace/onpremise/WorkspaceOnpremiseSetting'
 import filters from '@/mixins/filters'
 import workspaceService from '@/services/workspace'
 
 export default {
   mixins: [filters],
-  components: {
-    WorkspaceInfo,
-    WorkspaceLeaveModal,
-    WorkspaceOnpremiseSetting,
-  },
   computed: {
     ...mapGetters({
       myProfile: 'auth/myProfile',

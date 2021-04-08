@@ -1,19 +1,24 @@
 <template>
-  <div>
-    <header>
-      <the-header :logoImg="logoImg" :showSection="showSection" :auth="auth">
-        <template slot="subTitle">
-          <workspace-select
-            :activeWorkspace="activeWorkspace"
-            :workspaceList="myWorkspaces"
-            @onChange="changeActiveWorkspace"
-            @click.native.prevent
-          />
-        </template>
-      </the-header>
-    </header>
+  <div :class="{ onpremise: $isOnpremise }">
+    <VirnectHeader
+      :env="$env"
+      :showStatus="showSection"
+      :userInfo="auth.myInfo"
+      :urls="$url"
+      :logo="{ default: logo }"
+      @logout="$store.commit('auth/LOGOUT')"
+    >
+      <template slot="subTitle">
+        <VirnectWorkspaceSelect
+          :activeWorkspace="activeWorkspace"
+          :workspaceList="myWorkspaces"
+          @onChange="changeActiveWorkspace"
+          @click.native.prevent
+        />
+      </template>
+    </VirnectHeader>
     <div>
-      <the-sidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
+      <LayoutTheSidebar :menus="sideMenus" :bottomMenus="sideBottomMenus" />
       <main>
         <nuxt />
       </main>
@@ -22,20 +27,11 @@
 </template>
 
 <script>
-import TheSidebar from '@/components/layout/TheSidebar'
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
-import WorkspaceSelect from '@/components/workspace/WorkspaceSelect'
-
 import { sideMenus, sideBottomMenus } from '@/models/layout'
 import { mapGetters } from 'vuex'
 
 export default {
   middleware: 'default',
-  components: {
-    TheSidebar,
-    TheHeader,
-    WorkspaceSelect,
-  },
   head() {
     return {
       title: `${this.title} | ${this.$t('common.workstation')}`,
@@ -74,13 +70,6 @@ export default {
       logo: 'layout/logo',
       favicon: 'layout/favicon',
     }),
-    logoImg() {
-      return {
-        default: this.logo,
-        x2: this.logo,
-        x3: this.logo,
-      }
-    },
   },
   methods: {
     changeActiveWorkspace(workspace) {
@@ -124,24 +113,18 @@ export default {
   left: $the-sidebar-width !important;
   width: calc(100% - #{$the-sidebar-width}) !important;
 }
-#__nuxt .sub-title {
-  font-size: 14px;
-  line-height: 32px;
-  .el-divider {
-    height: 24px;
-    margin-right: 16px;
-  }
-  .avatar {
-    display: inline-block;
-    width: 22px;
-    height: 22px;
-    margin-right: 4px;
-    vertical-align: middle;
-  }
-  span {
-    display: inline-block;
-    margin-bottom: 2px;
-    vertical-align: middle;
+#headerSection .virnect-workspace-select {
+  margin-left: 20px;
+}
+// onpremise 환경에서 워크스테이션 선택기능 비활성화
+#__nuxt .onpremise .virnect-workspace-select {
+  pointer-events: none;
+  &__value {
+    background: none;
+    border: none;
+    &:after {
+      display: none;
+    }
   }
 }
 </style>

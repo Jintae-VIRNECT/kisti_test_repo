@@ -71,7 +71,7 @@ export async function api(name, option = {}) {
   }
 }
 
-export default function({ $config, $axios }, inject) {
+export default function ({ $config, $axios }, inject) {
   // Create a custom axios instance
   axios = $axios.create({
     baseURL: $config.API_GATEWAY_URL,

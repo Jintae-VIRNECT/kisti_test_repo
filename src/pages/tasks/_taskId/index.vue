@@ -31,7 +31,7 @@
               </span>
             </div>
           </div>
-          <tasks-list
+          <TaskList
             :data="[taskInfo]"
             @updated="taskUpdated"
             @deleted="$router.push('/tasks')"
@@ -49,18 +49,15 @@
             :label="$t(tab.label)"
           />
         </el-tabs>
-        <searchbar-keyword ref="keyword" :value.sync="subTaskSearch" />
+        <SearchbarKeyword ref="keyword" :value.sync="subTaskSearch" />
       </el-row>
 
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
-          <searchbar-mine
-            ref="mine"
-            :mineLabel="$t('task.detail.mySubTasks')"
-          />
+          <SearchbarMine ref="mine" :mineLabel="$t('task.detail.mySubTasks')" />
           <span>{{ $t('searchbar.filter.title') }}:</span>
-          <searchbar-filter
+          <SearchbarFilter
             ref="filter"
             :value.sync="taskFilter.value"
             :options="taskFilter.options"
@@ -108,7 +105,7 @@
           </div>
 
           <!-- 테이블 -->
-          <sub-tasks-list
+          <TaskSubTasksList
             v-if="!isGraph"
             ref="table"
             :data="subTaskList"
@@ -117,10 +114,10 @@
             @updated="searchSubTasks"
           />
           <!-- 차트 -->
-          <tasks-list-graph v-else :data="subTaskList" type="subTask" />
+          <TaskListGraph v-else :data="subTaskList" type="subTask" />
         </el-card>
       </el-row>
-      <searchbar-page
+      <SearchbarPage
         ref="page"
         :value.sync="subTaskPage"
         :total="subTaskTotal"
@@ -140,17 +137,9 @@ import columnMixin from '@/mixins/columns'
 
 import workspaceService from '@/services/workspace'
 import taskService from '@/services/task'
-import TasksList from '@/components/task/TasksList'
-import SubTasksList from '@/components/task/SubTasksList'
-import TasksListGraph from '@/components/task/TasksListGraph'
 
 export default {
   mixins: [searchMixin, columnMixin],
-  components: {
-    TasksList,
-    SubTasksList,
-    TasksListGraph,
-  },
   async asyncData({ params }) {
     const promise = {
       taskDetail: taskService.getTaskDetail(params.taskId),

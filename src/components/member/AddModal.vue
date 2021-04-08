@@ -46,7 +46,7 @@
                   <img src="~assets/images/icon/ic-error.svg" />
                 </el-tooltip>
               </template>
-              <member-role-select
+              <MemberRoleSelect
                 v-model="form.role"
                 :disabled="!canChangeRole"
               />
@@ -65,7 +65,7 @@
         <el-row>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.remote.label">
-              <member-plan-select
+              <MemberPlanSelect
                 v-model="form.planRemote"
                 :label="plans.remote.label"
                 :amount="availablePlans.remote"
@@ -75,7 +75,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.make.label">
-              <member-plan-select
+              <MemberPlanSelect
                 v-model="form.planMake"
                 :label="plans.make.label"
                 :amount="availablePlans.make"
@@ -85,7 +85,7 @@
           </el-col>
           <el-col :span="8">
             <el-form-item class="horizon" :label="plans.view.label">
-              <member-plan-select
+              <MemberPlanSelect
                 v-model="form.planView"
                 :label="plans.view.label"
                 :amount="availablePlans.view"
@@ -117,21 +117,14 @@
 </template>
 
 <script>
-import MemberRoleSelect from '@/components/member/MemberRoleSelect'
-import MemberPlanSelect from '@/components/member/MemberPlanSelect'
 import modalMixin from '@/mixins/modal'
 import { role } from '@/models/workspace/Member'
 import InviteMember from '@/models/workspace/InviteMember'
 import workspaceService from '@/services/workspace'
 import plans from '@/models/workspace/plans'
-import urls from 'WC-Modules/javascript/api/virnectPlatform/urls'
 import { mapGetters } from 'vuex'
 
 export default {
-  components: {
-    MemberRoleSelect,
-    MemberPlanSelect,
-  },
   mixins: [modalMixin],
   props: {
     membersTotal: Number,
@@ -227,7 +220,7 @@ export default {
             confirmButtonText: this.$t('common.paymentCenter'),
             customClass: 'no-title',
           }).then(() => {
-            window.open(`${urls.pay[this.$config.VIRNECT_ENV]}`)
+            window.open(`${this.$url.pay}`)
           })
         }
         // 일반에러

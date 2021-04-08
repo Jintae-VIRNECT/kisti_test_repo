@@ -132,7 +132,7 @@
           </dl>
         </el-row>
         <!-- 차트 -->
-        <task-dashboard-graph v-if="isGraph" :data="stat" />
+        <TaskDashboardGraph v-if="isGraph" :data="stat" />
       </el-col>
     </el-row>
   </el-card>
@@ -140,12 +140,8 @@
 
 <script>
 import { conditions } from '@/models/task/Task'
-import TaskDashboardGraph from '@/components/task/TaskDashboardGraph'
 
 export default {
-  components: {
-    TaskDashboardGraph,
-  },
   props: {
     stat: Object,
   },

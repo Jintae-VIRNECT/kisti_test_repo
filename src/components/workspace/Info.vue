@@ -1,16 +1,11 @@
 <template>
   <div class="workspace-info" v-loading="loading">
     <div class="info">
-      <div class="avatar">
-        <div
-          class="image"
-          :style="
-            `background-image: url(${cdn(
-              workspaceInfo.info.profile,
-            )}), url(${$defaultWorkspaceProfile})`
-          "
-        />
-      </div>
+      <VirnectThumbnail
+        :size="72"
+        :image="cdn(workspaceInfo.info.profile)"
+        :defaultImage="$defaultWorkspaceProfile"
+      />
       <h5>{{ workspaceInfo.info.name }}</h5>
       <span>{{
         workspaceInfo.info.description || $t('workspace.info.descriptionEmpty')
@@ -24,14 +19,10 @@
       <span class="count">1</span>
       <div class="users">
         <el-tooltip :content="workspaceInfo.master.nickname">
-          <div class="avatar">
-            <div
-              class="image"
-              :style="
-                `background-image: url(${cdn(workspaceInfo.master.profile)})`
-              "
-            />
-          </div>
+          <VirnectThumbnail
+            :size="28"
+            :image="cdn(workspaceInfo.master.profile)"
+          />
         </el-tooltip>
       </div>
       <!-- 매니저 -->
@@ -43,12 +34,7 @@
           :key="user.uuid"
           :content="user.nickname"
         >
-          <div class="avatar">
-            <div
-              class="image"
-              :style="`background-image: url(${cdn(user.profile)})`"
-            />
-          </div>
+          <VirnectThumbnail :size="28" :image="cdn(user.profile)" />
         </el-tooltip>
       </div>
       <!-- 멤버 -->
@@ -153,9 +139,7 @@ export default {
     margin: 0 6px 40px;
     text-align: center;
 
-    & > .avatar {
-      width: 72px;
-      height: 72px;
+    & > .virnect-thumbnail {
       margin: 40px auto 12px;
     }
     & > h5 {
@@ -185,10 +169,8 @@ export default {
     }
     .users {
       margin: 12px 0;
-      .avatar {
+      .virnect-thumbnail {
         display: inline-block;
-        width: 28px;
-        height: 28px;
         margin-right: 4px;
       }
     }

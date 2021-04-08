@@ -42,23 +42,14 @@
       </div>
     </el-card>
 
-    <workspace-company-name-modal :visible.sync="showCompanyNameModal" />
-    <workspace-logo-modal :visible.sync="showLogoModal" />
-    <workspace-favicon-modal :visible.sync="showFaviconModal" />
+    <WorkspaceOnpremiseCompanyNameModal :visible.sync="showCompanyNameModal" />
+    <WorkspaceOnpremiseLogoModal :visible.sync="showLogoModal" />
+    <WorkspaceOnpremiseFaviconModal :visible.sync="showFaviconModal" />
   </el-col>
 </template>
 
 <script>
-import WorkspaceCompanyNameModal from '@/components/workspace/onpremise/WorkspaceCompanyNameModal'
-import WorkspaceLogoModal from '@/components/workspace/onpremise/WorkspaceLogoModal'
-import WorkspaceFaviconModal from '@/components/workspace/onpremise/WorkspaceFaviconModal'
-
 export default {
-  components: {
-    WorkspaceCompanyNameModal,
-    WorkspaceLogoModal,
-    WorkspaceFaviconModal,
-  },
   data() {
     return {
       showCompanyNameModal: false,

@@ -21,22 +21,22 @@
       class="clickable"
       @row-click="moveToSubTask"
     >
-      <column-default
+      <ColumnDefault
         :label="$t('results.column.taskName')"
         prop="taskName"
         :width="180"
       />
-      <column-default
+      <ColumnDefault
         :label="$t('results.column.subTaskName')"
         prop="subTaskName"
       />
-      <column-status
+      <ColumnStatus
         :label="$t('results.column.status')"
         prop="conditions"
         :statusList="taskConditions"
         :width="120"
       />
-      <column-user
+      <ColumnUser
         :label="$t('results.column.reporter')"
         prop="workerUUID"
         nameProp="workerName"
@@ -44,7 +44,7 @@
         type="tooltip"
         :width="80"
       />
-      <column-date
+      <ColumnDate
         :label="$t('results.column.reportedDate')"
         type="time"
         prop="reportedDate"
@@ -62,18 +62,18 @@
       class="clickable"
       @row-click="moveToPaper"
     >
-      <column-default
+      <ColumnDefault
         :label="$t('results.column.taskName')"
         prop="taskName"
         :width="180"
       />
-      <column-default
+      <ColumnDefault
         :label="$t('results.column.subTaskName')"
         prop="subTaskName"
         :width="180"
       />
-      <column-default :label="$t('results.column.stepName')" prop="stepName" />
-      <column-user
+      <ColumnDefault :label="$t('results.column.stepName')" prop="stepName" />
+      <ColumnUser
         :label="$t('results.column.reporter')"
         prop="workerUUID"
         nameProp="workerName"
@@ -81,7 +81,7 @@
         type="tooltip"
         :width="80"
       />
-      <column-date
+      <ColumnDate
         :label="$t('results.column.reportedDate')"
         type="time"
         prop="reportedDate"
@@ -99,23 +99,23 @@
       class="clickable"
       @row-click="moveToIssue"
     >
-      <column-default
+      <ColumnDefault
         :label="$t('results.column.taskName')"
         prop="taskName"
         :width="180"
       />
-      <column-default
+      <ColumnDefault
         :label="$t('results.column.subTaskName')"
         prop="subTaskName"
         :width="180"
       />
-      <column-default
+      <ColumnDefault
         :label="$t('results.column.stepName')"
         prop="stepName"
         :width="180"
       />
-      <column-default :label="$t('results.column.issueTitle')" prop="caption" />
-      <column-user
+      <ColumnDefault :label="$t('results.column.issueTitle')" prop="caption" />
+      <ColumnUser
         :label="$t('results.column.reporter')"
         prop="workerUUID"
         nameProp="workerName"
@@ -123,7 +123,7 @@
         type="tooltip"
         :width="80"
       />
-      <column-date
+      <ColumnDate
         :label="$t('results.column.reportedDate')"
         type="time"
         prop="reportedDate"

@@ -6,17 +6,17 @@
       @row-click="moveToTaskDetail"
       @sort-change="sortChange"
     >
-      <column-default
+      <ColumnDefault
         :label="$t('task.list.column.id')"
         prop="id"
         :width="140"
       />
-      <column-default
+      <ColumnDefault
         :label="$t('task.list.column.name')"
         prop="name"
         :sortable="sortable"
       />
-      <column-done
+      <ColumnDone
         :label="$t('task.list.column.endedSubTasks')"
         :tooltip="$t('task.list.column.endedSubTasksTooltip')"
         prop="doneCount"
@@ -24,7 +24,7 @@
         :width="120"
         :sortable="sortable"
       />
-      <column-date
+      <ColumnDate
         :label="$t('task.list.column.schedule')"
         type="time"
         prop="startDate"
@@ -32,27 +32,27 @@
         :width="250"
         :sortable="sortable"
       />
-      <column-progress
+      <ColumnProgress
         :label="$t('task.list.column.progressRate')"
         prop="progressRate"
         :width="150"
         :sortable="sortable"
       />
-      <column-status
+      <ColumnStatus
         :label="$t('task.list.column.status')"
         prop="conditions"
         :statusList="taskConditions"
         :width="120"
         :sortable="sortable"
       />
-      <column-date
+      <ColumnDate
         :label="$t('task.list.column.reportedDate')"
         type="time"
         prop="reportedDate"
         :width="130"
         :sortable="sortable"
       />
-      <column-boolean
+      <ColumnBoolean
         :label="$t('task.list.column.issue')"
         prop="issuesTotal"
         :trueText="$t('task.list.hasIssue.yes')"
@@ -60,13 +60,13 @@
         :width="90"
         :sortable="sortable"
       />
-      <column-closed
+      <ColumnClosed
         :label="$t('task.list.column.endStatus')"
         prop="state"
         :width="110"
         :sortable="sortable"
       />
-      <column-dropdown :width="60" v-slot:default="{ row }">
+      <ColumnDropdown :width="60" v-slot:default="{ row }">
         <span class="title">{{ $t('task.list.dropdown.taskSetting') }}</span>
         <el-dropdown-item @click.native="showTarget(row)">
           {{ $t('task.list.dropdown.targetInfo') }}
@@ -90,17 +90,17 @@
         >
           {{ $t('task.list.dropdown.taskDelete') }}
         </el-dropdown-item>
-      </column-dropdown>
+      </ColumnDropdown>
       <template slot="empty">
         <img src="~assets/images/empty/img-work-empty.jpg" />
         <p>{{ $t('task.list.empty') }}</p>
       </template>
     </el-table>
-    <task-target-info
+    <TaskTargetInfo
       :task="activeTask"
       :visible.sync="showTaskTargetInfoModal"
     />
-    <set-task-manage
+    <TaskManage
       :type="taskManageModalType"
       :taskId="activeTask.id"
       :contentInfo="{ contentUUID: activeTask.contentUUID }"
@@ -108,7 +108,7 @@
       @updated="updated"
       @next="taskManageEnded"
     />
-    <set-task-target
+    <TaskSetTarget
       type="add"
       :form="registerTaskForm"
       :visible.sync="showAddTaskTargetModal"
@@ -121,18 +121,10 @@
 import columnMixin from '@/mixins/columns'
 import { conditions as taskConditions } from '@/models/task/Task'
 import taskService from '@/services/task'
-import TaskTargetInfo from '@/components/task/TaskTargetInfo'
-import SetTaskManage from '@/components/task/SetTaskManage'
-import SetTaskTarget from '@/components/task/SetTaskTarget'
 import { mapGetters } from 'vuex'
 
 export default {
   mixins: [columnMixin],
-  components: {
-    TaskTargetInfo,
-    SetTaskManage,
-    SetTaskTarget,
-  },
   props: {
     data: Array,
     clickable: Boolean,

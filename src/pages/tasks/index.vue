@@ -13,7 +13,7 @@
       </div>
 
       <!-- 대시보드 -->
-      <task-dashboard :stat="taskStatistics" />
+      <TaskDashboard :stat="taskStatistics" />
 
       <!-- 탭 -->
       <el-row class="tab-wrapper searchbar">
@@ -25,15 +25,15 @@
             :label="$t(tab.label)"
           />
         </el-tabs>
-        <searchbar-keyword ref="keyword" :value.sync="taskSearch" />
+        <SearchbarKeyword ref="keyword" :value.sync="taskSearch" />
       </el-row>
 
       <!-- 버튼 영역 -->
       <el-row class="btn-wrapper searchbar">
         <el-col class="left">
-          <searchbar-mine ref="mine" :mineLabel="$t('task.list.myTasks')" />
+          <SearchbarMine ref="mine" :mineLabel="$t('task.list.myTasks')" />
           <span>{{ $t('searchbar.filter.title') }}:</span>
-          <searchbar-filter
+          <SearchbarFilter
             ref="filter"
             :value.sync="taskFilter.value"
             :options="taskFilter.options"
@@ -76,7 +76,7 @@
           </div>
 
           <!-- 테이블 -->
-          <tasks-list
+          <TaskList
             v-if="!isGraph"
             ref="table"
             :data="taskList"
@@ -85,10 +85,10 @@
             @deleted="searchTasks"
           />
           <!-- 차트 -->
-          <task-daily-graph v-else />
+          <TaskDailyGraph v-else />
         </el-card>
       </el-row>
-      <searchbar-page
+      <SearchbarPage
         v-if="!isGraph"
         ref="page"
         :value.sync="taskPage"
@@ -108,17 +108,9 @@ import searchMixin from '@/mixins/search'
 import columnMixin from '@/mixins/columns'
 import taskService from '@/services/task'
 import workspaceService from '@/services/workspace'
-import TaskDashboard from '@/components/task/TaskDashboard'
-import TasksList from '@/components/task/TasksList'
-import TaskDailyGraph from '@/components/task/TaskDailyGraph'
 
 export default {
   mixins: [searchMixin, columnMixin],
-  components: {
-    TaskDashboard,
-    TaskDailyGraph,
-    TasksList,
-  },
   async asyncData({ query }) {
     const taskSearch = query.search || null
     const promise = {
