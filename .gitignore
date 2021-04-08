@@ -2,3 +2,7 @@ node_modules
 .nuxt
 .vscode
 releasenote.txt
+logs
+cypress/videos
+cypress/screenshots
+cypress/downloads
