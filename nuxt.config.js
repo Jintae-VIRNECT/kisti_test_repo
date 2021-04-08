@@ -29,7 +29,7 @@ module.exports = async () => {
         {
           hid: 'description',
           name: 'description',
-          content: 'Virnect Platform',
+          content: 'Download Center',
         },
       ],
       link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
