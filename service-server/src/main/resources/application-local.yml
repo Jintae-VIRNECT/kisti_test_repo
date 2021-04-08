@@ -118,7 +118,7 @@ storage:
     bucket-profile-name: profile
     bucket-record-name: record
     policy-enabled: true
-    policy-lifecycle: 
+    policy-lifecycle:
     policy-location: ""
 
 hystrix:

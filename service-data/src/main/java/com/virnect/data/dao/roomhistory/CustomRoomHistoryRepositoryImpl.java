@@ -94,7 +94,7 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 
 	@Override
 	public boolean existsByWorkspaceIdAndSessionId(String workspaceId, String sessionId) {
-		return Optional.ofNullable(query
+/*		return Optional.ofNullable(query
 			.selectFrom(roomHistory)
 			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
 			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
@@ -102,7 +102,19 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 				roomHistory.sessionId.eq(sessionId)
 			)
 			.distinct()
-			.fetchOne()).isPresent();
+			.fetchOne()).isPresent();*/
+
+		Integer fetchOne = query
+			.selectOne()
+			.from(roomHistory)
+			.innerJoin(roomHistory.memberHistories, memberHistory).fetchJoin()
+			.innerJoin(roomHistory.sessionPropertyHistory, sessionPropertyHistory).fetchJoin()
+			.where(
+				roomHistory.sessionId.eq(sessionId)
+			)
+			.distinct()
+			.fetchFirst();
+		return fetchOne != null;
 	}
 
 	/**
@@ -277,59 +289,12 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 	 */
 	private SubQueryExpression<Long> includeSearch(String workspaceId, String userId, List<String> userIds, String search) {
 
-		SubQueryExpression<Long> responseSubQuery;
-
-		SubQueryExpression<Long> myHistory = JPAExpressions
-			.select(memberHistory.roomHistory.id)
-			.from(memberHistory)
-			.where(
-				memberHistory.uuid.eq(userId)
-			);
-
-		SubQueryExpression<Long> theirHistory = JPAExpressions
+		SubQueryExpression<Long> includeUserIds = JPAExpressions
 			.select(memberHistory.roomHistory.id)
 			.from(memberHistory)
 			.where(
 				memberHistory.uuid.in(userIds)
-			);
-
-		SubQueryExpression<Long> titleHistory = JPAExpressions
-			.select(memberHistory.roomHistory.id)
-			.from(memberHistory)
-			.where(
-				memberHistory.uuid.eq(userId),
-				roomHistory.title.contains(search)
-			);
-
-		if (userIds.size() > 0) {
-			responseSubQuery = JPAExpressions.select(memberHistory.roomHistory.id)
-				.from(memberHistory)
-				.where(
-					memberHistory.workspaceId.eq(workspaceId),
-					memberHistory.historyDeleted.isFalse(),
-					(memberHistory.roomHistory.id.in(myHistory).and(memberHistory.roomHistory.id.in(theirHistory)))
-							.and(memberHistory.roomHistory.id.in(titleHistory))
-				).distinct();
-		} else {
-			responseSubQuery = JPAExpressions.select(memberHistory.roomHistory.id)
-				.from(memberHistory)
-				.where(
-					memberHistory.workspaceId.eq(workspaceId),
-					memberHistory.uuid.eq(userId),
-					memberHistory.historyDeleted.isFalse(),
-					memberHistory.roomHistory.id.in(myHistory)
-						.and(memberHistory.roomHistory.id.in(titleHistory))
-				).distinct();
-		}
-
-		return responseSubQuery;
-
-		/*SubQueryExpression<Long> includeUserIds = JPAExpressions
-			.select(memberHistory.roomHistory.id)
-			.from(memberHistory)
-			.where(
-				memberHistory.uuid.in(userIds)
-					.or(memberHistory.roomHistory.title.contains(search))
+					.or((memberHistory.uuid.eq(userId).and(memberHistory.roomHistory.title.contains(search))))
 			);
 
 		SubQueryExpression<Long> includeTitle = JPAExpressions
@@ -338,9 +303,9 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 			.where(
 				memberHistory.uuid.eq(userId)
 					.and(memberHistory.roomHistory.title.contains(search))
-			);*/
+			);
 
-		/*SubQueryExpression<Long> subQueryExpression;
+		SubQueryExpression<Long> subQueryExpression;
 		if (userIds.size() > 0) {
 			subQueryExpression = JPAExpressions.select(memberHistory.roomHistory.id)
 				.from(memberHistory)
@@ -359,8 +324,8 @@ public class CustomRoomHistoryRepositoryImpl extends QuerydslRepositorySupport i
 					memberHistory.historyDeleted.isFalse(),
 					memberHistory.roomHistory.id.in(includeTitle)
 				);
-		}*/
-		//return subQueryExpression;
+		}
+		return subQueryExpression;
 	}
 
 }
