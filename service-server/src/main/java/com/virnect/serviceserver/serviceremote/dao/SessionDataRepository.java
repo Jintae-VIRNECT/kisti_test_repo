@@ -1292,6 +1292,12 @@ public class SessionDataRepository {
         Room room = sessionService.getRoomForWrite(workspaceId, sessionId);
         if (room == null) {
             return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
+        } else {
+            if (!room.getMembers().isEmpty()) {
+                if (room.getMembers().size() > 6) {
+                    return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_FULL);
+                }
+            }
         }
 
         Member member = null;
