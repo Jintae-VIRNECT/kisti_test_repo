@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -36,21 +37,23 @@ public class DownloadController {
 
     @ApiOperation(value = "컨텐츠 식별자로 컨텐츠 다운로드", notes = "컨텐츠 식별자를 통해 컨텐츠를 다운로드.")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true),
-            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true),
-            @ApiImplicitParam(name = "workspaceUUID", value = "다운받는 워크스페이스 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8")
+            @ApiImplicitParam(name = "contentUUID", value = "컨텐츠 식별자", dataType = "string", paramType = "path", required = true, defaultValue = "40d40ae4-0168-4027-b315-10d8de707ff1"),
+            @ApiImplicitParam(name = "memberUUID", value = "다운받는 사용자 고유번호", dataType = "string", paramType = "query", required = true, defaultValue = "4ea61b4ad1dab12fb2ce8a14b02b7460"),
+            @ApiImplicitParam(name = "workspaceUUID", value = "다운받는 워크스페이스 식별자", dataType = "string", paramType = "query", required = true, defaultValue = "4d6eab0860969a50acbfa4599fbb5ae8"),
+            @ApiImplicitParam(name = HttpHeaders.RANGE, value = "다운로드받는 파일의 바이트 수", dataType = "string", paramType = "header", required = false, defaultValue = "bytes=0-1024")
     })
     @GetMapping("/download/contentUUID/{contentUUID}")
     public ResponseEntity<byte[]> contentDownloadForUUIDRequestHandler(
             @PathVariable("contentUUID") String contentUUID,
             @RequestParam(value = "memberUUID") String memberUUID,
-            @RequestParam(value = "workspaceUUID") String workspaceUUID
+            @RequestParam(value = "workspaceUUID") String workspaceUUID,
+            @RequestHeader(value = HttpHeaders.RANGE, required = false) String range
     ) throws IOException {
         log.info("[DOWNLOAD] USER: [{}], WORKSPACE [{}] => contentUUID: [{}]", memberUUID, workspaceUUID, contentUUID);
         if (!StringUtils.hasText(contentUUID) || !StringUtils.hasText(memberUUID) || !StringUtils.hasText(workspaceUUID)) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        return this.downloadService.contentDownloadForUUIDHandler(contentUUID, memberUUID, workspaceUUID);
+        return this.downloadService.contentDownloadForUUIDHandler(contentUUID, memberUUID, workspaceUUID, range);
         //        return ResponseEntity.ok()
         //                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
         //                .contentLength(resource.getFile().getAbsoluteFile().length())
@@ -84,7 +87,7 @@ public class DownloadController {
 
     @ApiOperation(value = "콘텐츠 다운로드 이벤트", tags = "process server only")
     @PostMapping("/download/log")
-    public ResponseEntity<ApiResponse<DownloadLogAddResponse>> contentDownloadLogForUUIDHandler(@RequestBody @Valid DownloadLogAddRequest downloadLogAddRequest, BindingResult bindingResult ){
+    public ResponseEntity<ApiResponse<DownloadLogAddResponse>> contentDownloadLogForUUIDHandler(@RequestBody @Valid DownloadLogAddRequest downloadLogAddRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }

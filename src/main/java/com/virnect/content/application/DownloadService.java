@@ -40,7 +40,7 @@ public class DownloadService {
     private final LicenseRestService licenseRestService;
     private final WorkspaceRestService workspaceRestService;
 
-    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(String contentUUID, String memberUUID, String workspaceUUID) {
+    public ResponseEntity<byte[]> contentDownloadForUUIDHandler(String contentUUID, String memberUUID, String workspaceUUID, String range) {
         // 0. 컨텐츠 데이터 조회
         Content content = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_NOT_FOUND));
@@ -53,7 +53,7 @@ public class DownloadService {
         //3. 공유상태체크
         contentShardCheck(memberUUID, content);
 
-        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
+        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath(), range);
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
         return responseEntity;
     }
@@ -71,7 +71,7 @@ public class DownloadService {
         //3. 공유상태체크
         contentShardCheck(memberUUID, content);
 
-        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath());
+        ResponseEntity<byte[]> responseEntity = this.fileDownloadService.fileDownload(content.getPath(), null);
         eventPublisher.publishEvent(new ContentDownloadHitEvent(content, memberUUID));
         return responseEntity;
     }

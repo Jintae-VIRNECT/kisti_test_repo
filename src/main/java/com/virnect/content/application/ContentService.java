@@ -588,6 +588,7 @@ public class ContentService {
                     .path(content.getPath())
                     .converted(content.getConverted())
                     .createdDate(content.getCreatedDate())
+                    .updatedDate(content.getUpdatedDate())
                     .targets(targets)
                     .build();
 
@@ -714,6 +715,7 @@ public class ContentService {
                 .converted(content.getConverted())
                 .targets(targetResponseList)
                 .createdDate(content.getCreatedDate())
+                .updatedDate(content.getUpdatedDate())
                 .targetSize(targetSize)
                 .build();
         return new ApiResponse<>(contentInfoResponse);

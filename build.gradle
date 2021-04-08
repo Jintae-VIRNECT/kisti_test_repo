@@ -92,7 +92,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-config-client'
 
     // Minio
-    implementation 'io.minio:minio:7.1.0'
+    implementation 'io.minio:minio:8.1.0'
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
