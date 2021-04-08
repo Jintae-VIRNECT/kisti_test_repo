@@ -2,8 +2,8 @@ const express = require('express')
 const route = require('./route')
 const app = express()
 const server = require('./server/module')
+const { initHelmet } = require('./server/helmet')
 const path = require('path')
-const helmet = require('helmet')
 const config = require('./server/config')
 const util = require('./server/util')
 const meta = require('./server/meta')
@@ -11,12 +11,6 @@ const meta = require('./server/meta')
 const isbot = require('isbot')
 
 var bodyParser = require('body-parser')
-
-app.use(
-  helmet.frameguard({
-    action: 'deny',
-  }),
-)
 
 app.use(bodyParser.json())
 
@@ -46,13 +40,14 @@ app.use((req, res, next) => {
   }
 })
 
-app.use(express.static(path.join(__dirname, 'dist')))
+initHelmet(app).then(() => {
+  app.use(express.static(path.join(__dirname, 'dist')))
+  app.use(route)
 
-app.use(route)
-
-server
-  .start(app)
-  .then(function () {})
-  .catch(function (e) {
-    console.log(e)
-  })
+  server
+    .start(app)
+    .then(function () {})
+    .catch(function (e) {
+      console.log(e)
+    })
+})

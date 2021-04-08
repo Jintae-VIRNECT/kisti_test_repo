@@ -3,7 +3,6 @@ const http = require('http')
 const path = require('path')
 const os = require('os')
 const fs = require('fs')
-// const logger = require('./logger')
 const logger = require('@virnect/logger')
 const config = require('./config')
 

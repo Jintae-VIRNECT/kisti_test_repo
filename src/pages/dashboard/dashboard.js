@@ -29,7 +29,7 @@ Vue.config.productionTip = false
 
 const EventBus = new Vue()
 Vue.prototype.$eventBus = EventBus
-Vue.prototype.$version = version
+Vue.prototype.$version = version.replace(/-\w/, '')
 Vue.prototype.logger = logger
 Vue.prototype.debug = debug
 
@@ -45,7 +45,7 @@ window.vue = app
 setTimeout(
   console.log.bind(
     console,
-    `%cVIRNECT Remote DashBoard v${version}`,
+    `%cVIRNECT Remote DashBoard v${version.replace(/-/, '.')}`,
     'font-size:25px;color:#0f75f5;font-weight:700;font-family:roboto',
   ),
 )
