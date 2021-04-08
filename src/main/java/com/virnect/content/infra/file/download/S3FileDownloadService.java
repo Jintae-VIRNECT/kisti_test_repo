@@ -2,6 +2,7 @@ package com.virnect.content.infra.file.download;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -31,7 +32,7 @@ import java.util.Map;
  * @since 2020.05.10
  */
 @Slf4j
-@Profile({"staging", "production", "test"})
+@Profile({"staging", "production", "test", "local"})
 @Component
 @RequiredArgsConstructor
 public class S3FileDownloadService implements FileDownloadService {
@@ -53,12 +54,13 @@ public class S3FileDownloadService implements FileDownloadService {
         }
         GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
         if (StringUtils.hasText(range)) {
+            range = range.trim();
             if (!range.matches("^bytes=\\d*-\\d*$")) {
                 log.error("Invalid Http Range : {}", range);
                 throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
             String[] requestRange = range.replace("bytes=", "").split("-");
-            if (StringUtils.hasText(requestRange[1])) {
+            if (requestRange.length > 1) {
                 getObjectRequest.setRange(Long.parseLong(requestRange[0]), Long.parseLong(requestRange[1]));
             } else {
                 getObjectRequest.setRange(Long.parseLong(requestRange[0]));
@@ -77,7 +79,7 @@ public class S3FileDownloadService implements FileDownloadService {
             httpHeaders.setContentLength(bytes.length);
             httpHeaders.setContentDisposition(ContentDisposition.builder("attachment").filename(resources[1]).build());
             return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
-        } catch (IOException e) {
+        } catch (AmazonS3Exception | IOException e) {
             log.error("Error Message:     {}", e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
         }
