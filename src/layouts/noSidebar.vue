@@ -1,10 +1,14 @@
 <template>
-  <div>
-    <header>
-      <the-header :logoImg="logoImg" :showSection="showSection" :auth="auth">
-        <template slot="subTitle">{{ $t('menu.account') }}</template>
-      </the-header>
-    </header>
+  <div class="no-sidebar">
+    <VirnectHeader
+      :env="$env"
+      :subTitle="$t('menu.account')"
+      :showStatus="showSection"
+      :userInfo="auth.myInfo"
+      :urls="$url"
+      :logo="{ default: logo }"
+      @logout="$store.commit('auth/LOGOUT')"
+    />
     <main>
       <nuxt />
     </main>
@@ -12,14 +16,10 @@
 </template>
 
 <script>
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
 import { mapGetters } from 'vuex'
 
 export default {
   middleware: 'default',
-  components: {
-    TheHeader,
-  },
   head() {
     return {
       title: `${this.title} | ${this.$t('menu.account')}`,
@@ -72,3 +72,14 @@ export default {
   },
 }
 </script>
+
+<style lang="scss">
+.no-sidebar {
+  main {
+    min-width: 0;
+  }
+  .container {
+    width: auto;
+  }
+}
+</style>

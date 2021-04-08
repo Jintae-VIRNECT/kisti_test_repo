@@ -44,7 +44,7 @@ module.exports = {
   },
   vueI18n: {
     fallbackLocale: /(production|onpremise)/.test(process.env.VIRNECT_ENV)
-      ? 'ko'
+      ? 'en'
       : null,
     messages: {
       ko: { ...elementKo, ...loader('/ko') },

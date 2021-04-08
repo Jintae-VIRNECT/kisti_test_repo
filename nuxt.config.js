@@ -48,20 +48,26 @@ module.exports = async () => {
      */
     styleResources: {
       scss: [
-        '@virnect/WC-Modules/src/assets/css/mixin.scss',
+        '@virnect/ui-assets/stylesheets/abstracts/_vars.scss',
         '@/assets/css/_vars.scss',
       ],
     },
-    css: [
-      '@virnect/WC-Modules/src/assets/css/reset.scss',
-      '@/assets/css/global.scss',
-    ],
+    css: ['@virnect/ui-assets/css/base.css', '@/assets/css/global.scss'],
     loading: { color: '#1468e2' },
     /**
      * dir
      */
     srcDir: resolve(__dirname, 'src'),
-    modulesDir: ['@virnect/WC-Modules/src'],
+    components: [
+      { path: '~/components' },
+      { prefix: 'virnect', path: '@virnect/components' },
+    ],
+    alias: {
+      '~@virnect': resolve(__dirname, './node_modules/@virnect'),
+    },
+    build: {
+      transpile: ['@virnect/platform-auth'],
+    },
     /**
      * env
      */
@@ -76,14 +82,6 @@ module.exports = async () => {
       API_GATEWAY_URL: env.URLS.api,
       API_TIMEOUT: env.API_TIMEOUT,
       URLS: env.URLS,
-    },
-    /**
-     * build
-     */
-    build: {
-      extend(config, { isDev, isClient }) {
-        config.resolve.alias['WC-Modules'] = '@virnect/WC-Modules/src'
-      },
     },
     server: {
       port: env.NUXT_PORT,

@@ -24,14 +24,7 @@
               </span>
             </div>
             <div class="avatar" @click="visible.imageChangeModal = true">
-              <div
-                class="image"
-                :style="
-                  `background-image: url('${cdn(
-                    profileImg,
-                  )}'), url(${$defaultUserProfile})`
-                "
-              />
+              <VirnectThumbnail :size="120" :image="cdn(profileImg)" />
               <i>
                 <img src="~assets/images/icon/ic-camera-alt.svg" />
               </i>
@@ -94,22 +87,22 @@
       </el-card>
     </div>
     <!-- 모달 -->
-    <image-change-modal
+    <ProfileImageModal
       :me="me"
       :visible.sync="visible.imageChangeModal"
       @changedImage="changedImage"
     />
-    <nickname-change-modal
+    <ProfileNicknameModal
       :me="me"
       :visible.sync="visible.nicknameChangeModal"
       @changedNickname="changedNickname"
     />
-    <password-change-modal
+    <ProfilePasswordModal
       :me="me"
       :visible.sync="visible.passwordChangeModal"
       @changedPassword="changedPassword"
     />
-    <password-question-modal
+    <ProfilePasswordQuestionModal
       :me="me"
       :visible.sync="visible.passwordQuestionModal"
       @changedPasswordQuestion="changedPasswordQuestion"
@@ -120,23 +113,11 @@
 <script>
 import { filters } from '@/plugins/dayjs'
 import profileService from '@/services/profile'
-
-import ImageChangeModal from '@/components/profile/ImageChangeModal'
-import NicknameChangeModal from '@/components/profile/NicknameChangeModal'
-import PasswordChangeModal from '@/components/profile/PasswordChangeModal'
-import PasswordQuestionModal from '@/components/profile/PasswordQuestionModal'
-
 import filterMixin from '@/mixins/filters'
 
 export default {
   mixins: [filterMixin],
   middleware: ['default', 'profile'],
-  components: {
-    ImageChangeModal,
-    NicknameChangeModal,
-    PasswordChangeModal,
-    PasswordQuestionModal,
-  },
   filters: {
     ...filters,
   },
@@ -216,6 +197,7 @@ export default {
     }
   }
   .avatar {
+    position: relative;
     top: -56px;
     width: 120px;
     height: 120px;

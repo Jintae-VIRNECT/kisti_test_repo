@@ -1,24 +1,24 @@
 <template>
   <div class="logged-in-device-list">
     <el-table ref="table" :data="accessLogs">
-      <column-default
+      <ColumnDefault
         :label="$t('security.column.deviceName')"
         prop="device"
         :dangerouslyUseHTMLString="true"
       />
-      <column-default
+      <ColumnDefault
         :label="$t('security.column.loginLocation')"
         prop="location"
         :width="200"
       />
-      <column-date
+      <ColumnDate
         :label="$t('security.column.loginDate')"
         prop="loginDate"
         type="time"
         :width="160"
       />
     </el-table>
-    <searchbar-page
+    <SearchbarPage
       v-if="!isHome"
       ref="page"
       :value.sync="accessLogsPage"

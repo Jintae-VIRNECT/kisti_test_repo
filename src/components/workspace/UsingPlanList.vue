@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-table ref="table" :data="plans">
-      <column-plan
+      <ColumnPlan
         :label="$t('workspace.usingPlanList.column.name')"
         prop="planName"
         productProp="product"
@@ -9,22 +9,23 @@
         :width="210"
         sortable
       />
-      <column-user
+      <ColumnUser
         type="no-tooltip"
         :label="$t('workspace.usingPlanList.column.workspaceName')"
         prop="workspaceUUID"
         nameProp="workspaceName"
         imageProp="workspaceProfile"
+        :defaultImage="$defaultWorkspaceProfile"
         sortable
       />
-      <column-date
+      <ColumnDate
         :label="$t('workspace.usingPlanList.column.renewalDate')"
         prop="renewalDate"
         :width="130"
         sortable
       />
     </el-table>
-    <searchbar-page
+    <SearchbarPage
       v-if="!isHome"
       ref="page"
       :value.sync="plansPage"

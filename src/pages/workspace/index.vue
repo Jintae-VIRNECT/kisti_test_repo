@@ -14,29 +14,21 @@
         <div slot="header">
           <h3>{{ $t('workspace.list.title') }}</h3>
         </div>
-        <workspace-list />
+        <WorkspaceList />
       </el-card>
       <!-- 플랜 리스트 -->
       <el-card class="el-card--table">
         <div slot="header">
           <h3>{{ $t('workspace.usingPlanList.title') }}</h3>
         </div>
-        <using-plan-list />
+        <WorkspaceUsingPlanList />
       </el-card>
     </div>
   </div>
 </template>
 
 <script>
-import WorkspaceList from '@/components/workspace/WorkspaceList'
-import UsingPlanList from '@/components/workspace/UsingPlanList'
-
-export default {
-  components: {
-    WorkspaceList,
-    UsingPlanList,
-  },
-}
+export default {}
 </script>
 
 <style lang="scss">

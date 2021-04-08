@@ -8,18 +8,18 @@
   >
     <p>{{ $t('payment.autoPaymentCancelModal.desc') }}</p>
     <el-table :data="autoPaymentItems">
-      <column-plan
+      <ColumnPlan
         :label="$t('payment.autoPaymentCancelModal.column.product')"
         prop="name"
         productProp="product"
       />
-      <column-count
+      <ColumnCount
         :label="$t('payment.autoPaymentCancelModal.column.count')"
         :unit="$t('payment.autoPaymentCancelModal.column.numbersUnit')"
         prop="count"
         :width="70"
       />
-      <column-price :label="$t('common.price')" prop="price" :width="90" />
+      <ColumnPrice :label="$t('common.price')" prop="price" :width="90" />
     </el-table>
     <div class="caution">
       <h6>{{ $t('payment.autoPaymentCancelModal.cautionTitle') }}</h6>

@@ -96,18 +96,18 @@
       <el-col :span="16">
         <h6>{{ $t('payment.logDetail.detail') }}</h6>
         <el-table :data="paymentLogDetail.tickets">
-          <column-plan
+          <ColumnPlan
             :label="$t('payment.autoPaymentCancelModal.column.product')"
             prop="name"
             productProp="product"
           />
-          <column-count
+          <ColumnCount
             :label="$t('payment.autoPaymentCancelModal.column.count')"
             :unit="$t('payment.autoPaymentCancelModal.column.numbersUnit')"
             prop="count"
             :width="70"
           />
-          <column-price
+          <ColumnPrice
             :label="$t('payment.logDetail.priceWithVat')"
             prop="price"
             :width="90"

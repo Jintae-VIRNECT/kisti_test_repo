@@ -12,7 +12,7 @@
       <el-row>
         <el-col class="container__left">
           <!-- 결제 예정 정보 -->
-          <auto-payment-info />
+          <PaymentInfo />
         </el-col>
         <!-- 결제 이력 -->
         <el-col class="container__right">
@@ -26,24 +26,24 @@
               class="clickable"
               @row-click="showLogDetail"
             >
-              <column-default :label="$t('payment.log.column.no')" prop="no" />
-              <column-default
+              <ColumnDefault :label="$t('payment.log.column.no')" prop="no" />
+              <ColumnDefault
                 :label="$t('payment.log.column.way')"
                 prop="way"
                 :width="200"
               />
-              <column-price
+              <ColumnPrice
                 :label="$t('payment.log.column.price')"
                 prop="price"
                 :width="140"
               />
-              <column-date
+              <ColumnDate
                 :label="$t('payment.log.column.paidDate')"
                 prop="paidDate"
                 :width="100"
               />
             </el-table>
-            <searchbar-page
+            <SearchbarPage
               ref="page"
               :value.sync="paymentLogsPage"
               :total="paymentLogsTotal"
@@ -59,13 +59,9 @@
 import columnMixin from '@/mixins/columns'
 import searchMixin from '@/mixins/search'
 import paymentService from '@/services/payment'
-import AutoPaymentInfo from '@/components/payment/AutoPaymentInfo'
 
 export default {
   mixins: [columnMixin, searchMixin],
-  components: {
-    AutoPaymentInfo,
-  },
   async asyncData() {
     const logs = await paymentService.searchPaymentLogs()
     return {

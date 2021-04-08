@@ -5,28 +5,28 @@
     @row-click="select"
     @sort-change="sortChange"
   >
-    <column-default :label="$t('coupon.column.couponName')" prop="name" />
-    <column-default
+    <ColumnDefault :label="$t('coupon.column.couponName')" prop="name" />
+    <ColumnDefault
       :label="$t('coupon.column.couponNo')"
       prop="no"
       :width="180"
     />
-    <column-date
+    <ColumnDate
       :label="$t('coupon.column.registerDate')"
       prop="registerDate"
       :width="88"
     />
-    <column-date
+    <ColumnDate
       :label="$t('coupon.column.expireDate')"
       prop="expiredDate"
       :width="88"
     />
-    <column-date
+    <ColumnDate
       :label="$t('coupon.column.usedDate')"
       prop="usedDate"
       :width="88"
     />
-    <column-status
+    <ColumnStatus
       :label="$t('coupon.column.status')"
       prop="status"
       :statusList="couponStatus"

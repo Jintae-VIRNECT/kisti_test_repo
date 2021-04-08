@@ -17,23 +17,16 @@
             {{ $t('security.notMyDevice') }}
           </button>
         </div>
-        <logged-in-device-list />
+        <SecurityLoggedInDeviceList />
       </el-card>
 
-      <security-enhance-modal :visible.sync="SecurityEnhanceVisible" />
+      <SecurityEnhanceModal :visible.sync="SecurityEnhanceVisible" />
     </div>
   </div>
 </template>
 
 <script>
-import LoggedInDeviceList from '@/components/security/LoggedInDeviceList'
-import SecurityEnhanceModal from '@/components/security/SecurityEnhanceModal'
-
 export default {
-  components: {
-    LoggedInDeviceList,
-    SecurityEnhanceModal,
-  },
   data() {
     return {
       SecurityEnhanceVisible: false,

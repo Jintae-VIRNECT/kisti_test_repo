@@ -10,46 +10,28 @@
       <!-- 툴팁 -->
       <div v-if="type === 'tooltip'" class="column-user">
         <el-tooltip :content="scope.row[nameProp]">
-          <div class="avatar">
-            <div
-              class="image"
-              :style="
-                `background-image: url(${cdn(
-                  scope.row[imageProp],
-                )}), url(${$defaultUserProfile})`
-              "
-            />
-          </div>
+          <VirnectThumbnail
+            :image="cdn(scope.row[imageProp])"
+            :defaultImage="defaultImage"
+          />
         </el-tooltip>
       </div>
       <!-- 툴팁없음 -->
       <div v-else-if="type === 'no-tooltip'" class="column-user">
-        <div class="avatar">
-          <div
-            class="image"
-            :style="
-              `background-image: url(${cdn(
-                scope.row[imageProp],
-              )}), url(${$defaultUserProfile})`
-            "
-          />
-        </div>
+        <VirnectThumbnail
+          :image="cdn(scope.row[imageProp])"
+          :defaultImage="defaultImage"
+        />
         <span>{{ scope.row[nameProp] }}</span>
       </div>
       <!-- 일반 -->
       <div v-else class="column-user">
         <el-tooltip :content="scope.row[nameProp]">
           <div>
-            <div class="avatar">
-              <div
-                class="image"
-                :style="
-                  `background-image: url('${cdn(
-                    scope.row[imageProp],
-                  )}'), url('${$defaultUserProfile}')`
-                "
-              />
-            </div>
+            <VirnectThumbnail
+              :image="cdn(scope.row[imageProp])"
+              :defaultImage="defaultImage"
+            />
             <span>{{ scope.row[nameProp] }}</span>
           </div>
         </el-tooltip>
@@ -68,6 +50,7 @@ export default {
     type: String,
     nameProp: String,
     imageProp: String,
+    defaultImage: String,
     label: String,
     width: Number,
     align: String,
