@@ -1,14 +1,20 @@
 package com.virnect.serviceserver.event;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
+
 @Slf4j
 @Service
 public class ApplicationReadyEventHandler {
+
+	@Autowired
+	SessionDataRepository sessionDataRepository;
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void applicationReady() {
@@ -21,6 +27,7 @@ public class ApplicationReadyEventHandler {
 			+ "----------------------------------------------------\n";
 
 		log.info(msg);
+		//sessionDataRepository.removeAllRoom();
 	}
 
 }
