@@ -1,6 +1,7 @@
 <template>
   <div>
     <VirnectHeader
+      :env="$env"
       :subTitle="$t('home.title')"
       :showStatus="showSection"
       :userInfo="auth.myInfo"
