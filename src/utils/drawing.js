@@ -18,8 +18,6 @@ export const getCanvasSize = function getCanvasSize(
   imageWidth,
   imageHeight,
 ) {
-  // containerWidth -= 156; //파일 목록 넓이
-
   const imageRatio = imageWidth / imageHeight
   const containerRatio = containerWidth / containerHeight
   let result = {}
@@ -27,24 +25,14 @@ export const getCanvasSize = function getCanvasSize(
   if (imageRatio > containerRatio) {
     //width 기준
     const constraint = 1 / imageRatio
-    // if(imageWidth > containerWidth) {
-    //     result.width = containerWidth;
-    //     result.height = containerWidth * constraint;
-    // } else {
     result.width = containerWidth
     result.height = containerWidth * constraint
-    // }
     result.scale = result.width / imageWidth
   } else {
     //height 기준
     const constraint = imageRatio
-    // if(imageHeight > containerHeight) {
-    //     result.width = containerHeight * constraint;
-    //     result.height = containerHeight;
-    // } else {
     result.width = containerHeight * constraint
     result.height = containerHeight
-    // }
 
     result.scale = result.height / imageHeight
   }
@@ -224,8 +212,8 @@ export const getSignalParams = function getSignalParams(
         size: status.size / status.widthScale,
         posX,
         posY,
-        width: object.width,
-        height: object.height,
+        width: object.width / status.widthScale,
+        height: object.height / status.widthScale,
       }
       break
     case DRAWING.TEXT_UPDATE:
@@ -243,8 +231,8 @@ export const getSignalParams = function getSignalParams(
         size: status.size / status.widthScale,
         posX,
         posY,
-        width: object.width,
-        height: object.height,
+        width: object.width / status.widthScale,
+        height: object.height / status.widthScale,
       }
       break
   }
