@@ -86,11 +86,9 @@ pipeline {
                       sshTransfer(
                         execCommand: "docker run -p 8886:8886 --restart=always -e 'CONFIG_SERVER=https://stgconfig.virnect.com' -e 'VIRNECT_ENV=staging' -d --name=rm-web $aws_ecr_address/rm-web:\\${GIT_TAG}"
                       ),
-                      catchError {
                       sshTransfer(
                         execCommand: "if [ `docker images | grep rm-web | grep -v spp | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-web\" | grep -v spp | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                       )
-                      }
                     ]
                   )
                 ]
@@ -117,11 +115,9 @@ pipeline {
                       sshTransfer(
                         execCommand: "docker run -p 8886:8886 --restart=always -e 'CONFIG_SERVER=http://3.35.50.181:6383' -e 'VIRNECT_ENV=onpremise' -d --name=rm-web $aws_ecr_address/rm-web:\\${GIT_TAG}"
                       ),
-                      catchError {
                       sshTransfer(
                         execCommand: "if [ `docker images | grep rm-web | grep -v spp | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-web\" | grep -v spp | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                       )
-                      }
                     ]
                   )
                 ]
@@ -167,11 +163,9 @@ pipeline {
                       sshTransfer(
                         execCommand: "docker run -p 8886:8886 --restart=always -e 'CONFIG_SERVER=https://config.virnect.com' -e 'VIRNECT_ENV=production' -d --name=rm-web $aws_ecr_address/rm-web:\\${GIT_TAG}"
                       ),
-                      catchError {
                       sshTransfer(
                         execCommand: "if [ `docker images | grep rm-web | grep -v server | wc -l` -ne 1 ]; then docker rmi  -f \$(docker images | grep \"rm-web\" | grep -v server | grep -v \\${GIT_TAG} | awk \'{print \$3}\'); else echo \"Just One Images...\"; fi;"
                       )
-                      }
                     ]
                   )
                 ]
