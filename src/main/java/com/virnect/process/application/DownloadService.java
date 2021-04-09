@@ -26,6 +26,7 @@ import com.virnect.process.domain.Conditions;
 import com.virnect.process.domain.Process;
 import com.virnect.process.domain.State;
 import com.virnect.process.domain.SubProcess;
+import com.virnect.process.domain.Target;
 import com.virnect.process.dto.rest.request.content.DownloadLogAddRequest;
 import com.virnect.process.dto.rest.response.content.ContentInfoResponse;
 import com.virnect.process.dto.rest.response.license.LicenseInfoResponse;
@@ -185,9 +186,19 @@ public class DownloadService {
 	}
 
 	private Process getProcessByUpperCaseTargetData(String encodedData) {
-		return processRepository.findByTargetDataAndState(
+		for (Process process : processRepository.findByState(State.CREATED)) {
+			for (Target target : process.getTargetList()) {
+				if (toUpperCaseUrlEncodedString(target.getData()).equals(toUpperCaseUrlEncodedString(encodedData))) {
+					return process;
+				}
+			}
+		}
+		/*return processRepository.findByTargetDataAndState(
 			toUpperCaseUrlEncodedString(encodedData), State.CREATED)
-			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_NOT_FOUND_INFO));
+			.orElseThrow(() -> new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_NOT_FOUND_INFO));*/
+
+		throw new ProcessServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD_NOT_FOUND_INFO);
+
 	}
 
 	private String toUpperCaseUrlEncodedString(String urlString) {
