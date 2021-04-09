@@ -5,16 +5,17 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.serviceserver.serviceremote.dao.SessionDataRepository;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class ApplicationReadyEventHandler {
 
-	@Autowired
-	SessionDataRepository sessionDataRepository;
+	private final SessionDataRepository sessionDataRepository;
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void applicationReady() {

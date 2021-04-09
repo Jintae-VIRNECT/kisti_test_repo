@@ -1295,7 +1295,7 @@ public class SessionDataRepository {
             return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
         } else {
             if (!room.getMembers().isEmpty()) {
-                if (room.getMembers().size() == ROOM_MEMBER_LIMIT) {
+                if (room.getMembers().size() >= ROOM_MEMBER_LIMIT) {
                     return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_FULL);
                 }
             }
