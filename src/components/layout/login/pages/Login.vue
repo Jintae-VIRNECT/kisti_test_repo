@@ -2,7 +2,7 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle" class="row-bg">
       <el-col>
-        <h2>{{ $t('login.title') }}</h2>
+        <h2 class="title">{{ $t('login.title') }}</h2>
         <p class="input-title">
           {{ $env !== 'onpremise' ? $t('login.email') : 'ID' }}
         </p>

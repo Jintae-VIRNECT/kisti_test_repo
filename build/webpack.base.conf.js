@@ -44,10 +44,14 @@ const styleLoaderOptions = {
   },
 }
 const cssOptions = [
+  { loader: 'css-loader', options: { sourceMap: true } },
   {
-    loader: 'css-loader',
+    loader: 'postcss-loader',
     options: {
-      sourceMap: !isProduction,
+      sourceMap: true,
+      config: {
+        path: 'postcss.config.js',
+      },
     },
   },
 ]
@@ -55,27 +59,15 @@ const cssOptions = [
 const sassOptions = [
   ...cssOptions,
   {
-    loader: 'postcss-loader',
-    options: {
-      sourceMap: !isProduction,
-      config: {
-        path: 'postcss.config.js',
-      },
-    },
-  },
-  {
     loader: 'sass-loader',
     options: {
-      sourceMap: !isProduction,
+      sourceMap: true,
     },
   },
   {
     loader: 'sass-resources-loader',
     options: {
-      resources: resolve(
-        __dirname,
-        '../node_modules/@virnect/WC-Modules/src/assets/css/mixin.scss',
-      ),
+      resources: resolve(__dirname, '../src/assets/css/mixin.scss'),
     },
   },
 ]
@@ -92,11 +84,8 @@ const config = {
     extensions: ['.js', '.vue'],
     modules: ['node_modules'],
     alias: {
-      'WC-Modules': resolve(
-        __dirname,
-        '../node_modules/@virnect/WC-Modules/src',
-      ),
       '@': resolve(__dirname, '../src'),
+      virnect: resolve(__dirname, '../node_modules/@virnect'),
       root: resolve(__dirname, '../'),
       api: join(__dirname, '../src/api'),
       apps: join(__dirname, '../src/apps'),

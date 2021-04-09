@@ -1,34 +1,49 @@
 <template>
   <section>
-    <TheHeader :showSection="showSection" :auth="auth" :logoImg="customInfo">
-      <template slot="subTitle">{{ $t('qrLogin.title') }}</template>
-    </TheHeader>
+    <Header
+      :showStatus="showStatus"
+      :userInfo="userInfo"
+      :env="$env"
+      :urls="$urls"
+      :subTitle="$t('qrLogin.title')"
+      @logout="logout"
+    />
     <transition name="app-fade" mode="out-in">
-      <router-view :auth="auth" :customInfo="customInfo" />
+      <router-view
+        :userInfo="userInfo"
+        :customInfo="customInfo"
+        :env="$env"
+        :subTitle="$t('qrLogin.title')"
+      />
     </transition>
-    <TheFooter v-if="$env !== 'onpremise'" />
+    <Footer :urls="$urls" v-if="$env !== 'onpremise'" />
   </section>
 </template>
 
 <script>
-import TheHeader from 'WC-Modules/vue/components/header/TheHeader'
-import TheFooter from 'WC-Modules/vue/components/footer/TheFooter'
+import auth from '@virnect/platform-auth'
+import { Header } from '@virnect/components'
+import { Footer } from '@virnect/components'
 export default {
   components: {
-    TheHeader,
-    TheFooter,
+    Header,
+    Footer,
   },
   props: {
+    showStatus: Object,
     auth: Object,
   },
   data() {
     return {
-      showSection: {
-        login: true,
-        profile: false,
-      },
       qrImg: null,
+      userInfo: null,
     }
+  },
+  methods: {
+    logout() {
+      auth.logout()
+      location.reload()
+    },
   },
   computed: {
     customInfo() {
@@ -37,19 +52,16 @@ export default {
   },
   async mounted() {
     try {
-      if (this.auth.isLogin) {
-        this.showSection.login = false
-        this.showSection.link = true
-        this.showSection.profile = true
+      if (auth.isLogin) {
+        this.userInfo = auth.myInfo
+        this.showStatus.login = !auth.isLogin
+        this.showStatus.profile = true
+        this.showStatus.language = false
       } else throw 'error'
     } catch (e) {
-      this.showSection.login = true
-      this.showSection.profile = false
-      this.showSection.link = false
+      this.showStatus.profile = false
       location.replace(`${this.$urls['console']}/?continue=${location.href}`)
     }
   },
 }
 </script>
-
-<style lang="scss" scoped></style>

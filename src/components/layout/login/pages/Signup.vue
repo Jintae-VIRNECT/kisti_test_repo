@@ -2,8 +2,8 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle" class="row-bg">
       <el-col>
-        <h2>{{ $t('signup.signupTitle') }}</h2>
-        <p>{{ $t('signup.signupDesk') }}</p>
+        <h2 class="title">{{ $t('signup.signupTitle') }}</h2>
+        <p class="disc">{{ $t('signup.signupDesk') }}</p>
         <p class="input-title must-check">{{ $t('signup.account') }}</p>
         <el-input
           :placeholder="$t('signup.mailPlaceholder')"
@@ -326,6 +326,7 @@ export default {
       this.birth.date = newTime
     },
     'birth.year'(newTime) {
+      if (!newTime) return false
       const newYear = dayjs(newTime).year()
       this.timeSet = dayjs().year(newYear)
 
@@ -333,6 +334,7 @@ export default {
       this.birth.date = this.timeSet
     },
     'birth.month'(newTime) {
+      if (!newTime) return false
       const newYear = dayjs(this.timeSet).year()
       const newMonth = dayjs(newTime).month()
 
@@ -349,8 +351,20 @@ export default {
     },
   },
   methods: {
+    validBirth() {
+      return (
+        this.birth.year &&
+        this.birth.month &&
+        this.birth.date &&
+        new Date(this.signup.birth) != 'Invalid Date'
+      )
+    },
     async checkAge() {
       this.userBirth()
+      if (!this.validBirth()) {
+        this.alertMessage('Error', 'Invalid Date', 'error')
+        return false
+      }
       let today = dayjs()
       let userAge = dayjs(this.signup.birth)
       try {

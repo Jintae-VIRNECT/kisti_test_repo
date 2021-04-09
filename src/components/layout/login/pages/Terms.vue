@@ -2,8 +2,8 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle" class="row-bg">
       <el-col>
-        <h2>{{ $t('terms.page.title') }}</h2>
-        <p>{{ $t('terms.page.pageInfo') }}</p>
+        <h2 class="title">{{ $t('terms.page.title') }}</h2>
+        <p class="disc">{{ $t('terms.page.pageInfo') }}</p>
 
         <div class="terms-body">
           <el-checkbox v-model="allTerms" class="all-terms">{{

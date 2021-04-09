@@ -1,4 +1,3 @@
-import ElementUI from 'element-ui'
 import 'es6-promise/auto'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
@@ -9,12 +8,15 @@ import VeeValidate from 'vee-validate'
 import App from '@/App.vue'
 import messages from 'languages'
 import { version } from 'root/package.json'
+import '@virnect/ui-assets/css/base.css'
+import ElementUI from 'element-ui'
 
 import locale from 'element-ui/src/locale/lang/ko'
 import elementLocale from 'element-ui/src/locale'
 elementLocale.use(locale)
 
 import VueQrcodeReader from 'vue-qrcode-reader'
+
 import 'element/row.css'
 import 'element/input.css'
 import 'element/checkbox.css'

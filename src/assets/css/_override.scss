@@ -3,11 +3,17 @@
 // messageBox.scss
 @import "modules/messageBox.scss";
 
-// input.scss
-@import "modules/input.scss";
-
 // date-picker.scss
 @import "modules/date-picker.scss";
+@media (min-width: 1000px) {
+  .login-status-section .login-wrap {
+    display: none;
+  }
+}
+
+// .el-input__inner {
+//   border-bottom: 2px solid #e6e9ee;
+// }
 
 .el-button {
   height: 50px;
@@ -71,3 +77,6 @@
     }
   }
 }
+
+// input.scss
+@import "modules/input.scss";

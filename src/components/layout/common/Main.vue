@@ -1,6 +1,6 @@
 <template>
   <transition name="app-fade" mode="out-in">
-    <router-view :showSection="showSection" :auth="auth" />
+    <router-view :showStatus="showStatus" :auth="auth" />
   </transition>
 </template>
 
@@ -29,8 +29,9 @@ export default {
   data() {
     return {
       auth,
-      showSection: {
-        login: false,
+      showStatus: {
+        login: true,
+        profile: false,
         language: true,
       },
     }
