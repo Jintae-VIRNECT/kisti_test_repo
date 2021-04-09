@@ -80,6 +80,7 @@ import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 public class SessionDataRepository {
 
     private static final String TAG = SessionDataRepository.class.getSimpleName();
+    private final int ROOM_MEMBER_LIMIT = 6;
 
     private final ObjectMapper objectMapper;
 
@@ -1294,7 +1295,7 @@ public class SessionDataRepository {
             return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
         } else {
             if (!room.getMembers().isEmpty()) {
-                if (room.getMembers().size() == 6) {
+                if (room.getMembers().size() == ROOM_MEMBER_LIMIT) {
                     return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_FULL);
                 }
             }
