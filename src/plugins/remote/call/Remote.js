@@ -1,4 +1,5 @@
 import { OpenVidu } from '@virnect/remote-webrtc'
+// import { OpenVidu } from './openvidu'
 import { addSessionEventListener } from './RemoteUtils'
 import Store from 'stores/remote/store'
 import {
@@ -36,6 +37,8 @@ const _ = {
 
   configs: null,
   options: null,
+
+  stream: null,
 
   /**
    * join session
@@ -168,6 +171,14 @@ const _ = {
           logger('room', 'publish success')
           debug('publisher stream :: ', _.publisher.stream)
           const mediaStream = _.publisher.stream.mediaStream
+          _.stream = _.publisher.stream
+
+          const settingInfo = Store.getters['settingInfo']
+          if (settingInfo.quality === '360') {
+            _.setScaleResolution(4)
+          } else {
+            _.setScaleResolution(8)
+          }
 
           const participantInfo = {
             connectionId: _.publisher.stream.connection.connectionId,
@@ -227,6 +238,15 @@ const _ = {
       console.error(err)
       throw err
     }
+  },
+
+  setBitrate: bitrate => {
+    _.stream.setBitrate(bitrate)
+  },
+
+  setScaleResolution: async scaleResolution => {
+    console.log('debug::', _.stream)
+    return await _.stream.setScaleResolution(scaleResolution)
   },
   /**
    * @BROADCATE
@@ -295,7 +315,7 @@ const _ = {
    * @param {Boolean} force true / false
    */
   sendVideo: (uuid, force = false, target = null) => {
-    if (_.account.roleType !== ROLE.LEADER) return
+    // if (_.account.roleType !== ROLE.LEADER) return
     if (!uuid) uuid = _.account.uuid
     const params = {
       id: uuid,
@@ -807,6 +827,14 @@ const _ = {
           logger('room', 'republish success')
           debug('republisher stream :: ', tempPublisher.stream)
           const mediaStream = tempPublisher.stream.mediaStream
+          _.stream = tempPublisher.stream
+
+          const settingInfo = Store.getters['settingInfo']
+          if (settingInfo.quality === '360') {
+            _.setScaleResolution(4)
+          } else {
+            _.setScaleResolution(8)
+          }
 
           const participantInfo = {
             connectionId: tempPublisher.stream.connection.connectionId,

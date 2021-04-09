@@ -101,6 +101,13 @@ export default {
         this.setView(VIEW.STREAM)
       }
     },
+    participants: {
+      handler() {
+        this.controlScale()
+      },
+      deep: true,
+    },
+
     mainView: {
       deep: true,
       handler(val, oldVal) {
@@ -323,6 +330,28 @@ export default {
         }
       }
     },
+
+    controlScale() {
+      if (this.participants.length === 1) return
+
+      const ptIndex = this.participants.findIndex(pt => {
+        const isWatchingMe = pt.currentWatching === this.account.uuid
+        const notMe = !pt.me
+
+        return isWatchingMe && notMe
+      })
+
+      if (ptIndex > 0) {
+        this.$call.setScaleResolution(1)
+      } else {
+        //해당 유저가 보는 사람이 없는경우
+        if (this.settingInfo.quality === '360') {
+          this.$call.setScaleResolution(4)
+        } else {
+          this.$call.setScaleResolution(8)
+        }
+      }
+    },
   },
 
   /* Lifecycles */
@@ -330,6 +359,7 @@ export default {
     this.$eventBus.$on(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$eventBus.$on(SIGNAL.AR_FEATURE, this.checkArFeature)
   },
+
   beforeDestroy() {
     this.$eventBus.$off(SIGNAL.CAPTURE_PERMISSION, this.getPermissionCheck)
     this.$eventBus.$off(SIGNAL.AR_FEATURE, this.checkArFeature)

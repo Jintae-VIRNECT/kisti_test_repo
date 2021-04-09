@@ -197,6 +197,18 @@ export const addSessionEventListener = session => {
         })
       }
       Store.dispatch('setMainView', { id: data.id, force: true })
+      Store.commit('updateParticipant', {
+        connectionId: event.from.connectionId,
+        currentWatching: data.id,
+      })
+    } else if (data.type === VIDEO.NORMAL) {
+      Store.commit('updateParticipant', {
+        connectionId: event.from.connectionId,
+        currentWatching: data.id,
+      })
+
+      console.log('debug::', 'VIDEO:NORMAL')
+      console.log('debug::data.id', data.id)
     } else if (data.type === VIDEO.SCREEN_SHARE) {
       const isLeader = _.account.roleType === ROLE.LEADER
       const participants = Store.getters['participants']
@@ -537,6 +549,7 @@ const setUserObject = event => {
     flash: 'default', // flash 제어
     rotationPos: null, //pano view의 회전 좌표
     screenShare: false,
+    currentWatching: uuid, //현재 자신이 보고있는 참가자 uuid
   }
   const account = Store.getters['account']
   if (account.uuid === uuid) {
