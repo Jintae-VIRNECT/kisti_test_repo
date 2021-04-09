@@ -55,16 +55,26 @@ export default {
   computed: {
     ...mapGetters(['chatList', 'view', 'translate', 'usingStt']),
   },
+  props: {
+    show: Boolean,
+  },
   watch: {
     chatList: {
       handler() {
         this.$nextTick(() => {
-          if (this.$refs['chatListScrollbar']) {
+          if (this.show && this.$refs['chatListScrollbar']) {
             this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
           }
         })
       },
       deep: true,
+    },
+    show(val, bVal) {
+      this.$nextTick(() => {
+        if (val === true && val !== bVal) {
+          this.$refs['chatListScrollbar'].scrollToY(Number.MAX_SAFE_INTEGER)
+        }
+      })
     },
     view() {
       setTimeout(() => {

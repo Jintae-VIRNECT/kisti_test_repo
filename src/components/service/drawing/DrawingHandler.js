@@ -285,6 +285,7 @@ export default {
       if (!this.canvas || this.canvas.onDrag === true) return
       // For window event
       if (this.canvas) {
+        if (this.canvas.getZoom() === 1) return
         const keycode = parseInt(event.keyCode)
         if (keycode === 32) {
           // this.canvas.defaultCursor = 'grab'

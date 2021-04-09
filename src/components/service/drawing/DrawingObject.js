@@ -28,7 +28,7 @@ export default {
         fontFamily: this.fontFamily,
         fontStyle: this.fontStyle,
         fontWeight: this.fontWeight,
-        fontSize: this.scaleFont,
+        fontSize: this.scaleFont * 0.9,
         lineHeight: this.lineHeight,
         hasControls: false,
       })
@@ -58,7 +58,7 @@ export default {
             fontFamily: this.fontFamily,
             fontStyle: this.fontStyle,
             fontWeight: this.fontWeight,
-            fontSize: this.scaleFont,
+            fontSize: this.scaleFont * 0.9,
             lineHeight: this.lineHeight,
             hasControls: false,
             text: this.textObj.text,
