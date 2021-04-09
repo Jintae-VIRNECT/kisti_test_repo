@@ -75,77 +75,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
 
     private static final Logger log = LoggerFactory.getLogger(ServiceServerApplication.class);
 
-    //public static final String WS_PATH = "/remote/websocket";
-
-    /*public static String wsUrl;
-    public static String wssUrl;
-    public static String httpUrl;
-    public static String storageUrl;
-    public static List<String> mediaConferenceUris;
-    public static List<String> mediaStreamingUris;
-    public static List<String> coturnConferenceUris;
-    public static List<String> coturnStreamingUris;*/
-
-    /*@Autowired
-    RemoteServiceConfig config;
-*/
-    /*@Autowired
-    MediaServerProperties mediaServerProperties;*/
-
-    /*@Autowired
-    ServiceSessionManager serviceSessionManager;*/
-
-   /* @Bean
-    public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return modelMapper;
-    }*/
-
-    /*@Autowired
-    SessionDataRepository sessionDataRepository;*/
-
-    /*@Bean
-    @DependsOn("remoteServiceConfig")
-    public MediaServerConfig mediaServerConfig(RemoteServiceConfig remoteServiceConfig) {
-        log.info("RemoteService Server using mediaServerConfig");
-        return new MediaServerConfig();
-    }*/
-
-    /*@Bean
-    public ModelMapper modelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-        modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-        return modelMapper;
-    }*/
-
-    /*@Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceProperties")
-    public RemoteServiceConfig remoteServiceConfig(RemoteServiceProperties remoteServiceProperties) {
-        return new RemoteServiceConfig();
-    }*/
-
-    /*@Bean
-    @ConditionalOnMissingBean
-    @DependsOn("remoteServiceConfig")
-    public RemoteServiceProperties remoteServiceProperties() {
-        return new RemoteServiceProperties();
-    }*/
-
-
-    /*@Bean
-    @ConditionalOnMissingBean
-    public FileService fileService() {
-        return new FileService();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public SessionService sessionService() {
-        return new SessionService();
-    }*/
-
     @Bean
     @ConditionalOnMissingBean
     @DependsOn("remoteServiceConfig")
@@ -186,23 +115,6 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         }
         return new CallDetailRecord(loggers);
     }
-
-    /*public CallDetailRecord cdr(RemoteServiceConfig remoteServiceConfig) {
-        List<CDRLogger> loggers = new ArrayList<>();
-        if (remoteServiceConfig.isCdrEnabled()) {
-            log.info("RemoteService CDR service is enabled");
-            loggers.add(new CDRLoggerFile());
-        } else {
-            log.info("RemoteService CDR service is disabled (may be enable with 'remote_cdr=true')");
-        }
-        if (remoteServiceConfig.isWebhookEnabled()) {
-            log.info("RemoteService Webhook service is enabled");
-            loggers.add(new CDRLoggerWebhook(remoteServiceConfig));
-        } else {
-            log.info("RemoteService Webhook service is disabled (may be enabled with 'remote_webhook=true')");
-        }
-        return new CallDetailRecord(loggers);
-    }*/
 
     @Bean
     @ConditionalOnMissingBean
@@ -394,70 +306,4 @@ public class ServiceServerApplication extends SpringBootServletInitializer imple
         }
         return null;
     }
-
-    /*private static void disableSslVerification() {
-        try {
-            // Create a trust manager that does not validate certificate chains
-            TrustManager[] trustAllCerts = new TrustManager[]{new X509TrustManager() {
-                @Override
-                public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-                }
-
-                @Override
-                public void checkServerTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
-
-                }
-
-                @Override
-                public X509Certificate[] getAcceptedIssuers() {
-                    return new X509Certificate[0];
-                }
-            }
-            };
-
-            // Install the all-trusting trust manager
-            SSLContext sc = SSLContext.getInstance("SSL");
-            sc.init(null, trustAllCerts, new java.security.SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-
-            // Create all-trusting host name verifier
-            HostnameVerifier allHostsValid = new HostnameVerifier() {
-                public boolean verify(String hostname, SSLSession session) {
-                    return true;
-                }
-            };
-
-            // Install the all-trusting host verifier
-            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (KeyManagementException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    /*@EventListener(ApplicationReadyEvent.class)
-    public void whenReady() {
-        String websocket = wsUrl + WS_PATH + "/";
-
-        // @formatter:off
-        String msg = "\n\n----------------------------------------------------\n" + "\n"
-                + "   RemoteService is ready!\n"
-                + "   ---------------------------\n" + "\n"
-                + "   * RemoteService Server: " + httpUrl + "\n" + "\n"
-                + "   * RemoteService Media Server Conference list: " + mediaConferenceUris.toString() + "\n" + "\n"
-                + "   * RemoteService Media Server Streaming list: " + mediaStreamingUris.toString() + "\n" + "\n"
-                + "   * RemoteService Coturn Server Conference list: " + coturnConferenceUris.toString() + "\n" + "\n"
-                + "   * RemoteService Coturn Server Streaming list: " + coturnStreamingUris.toString() + "\n" + "\n"
-                + "   * RemoteService Websocket: " + websocket + "\n" + "\n"
-                + "   * RemoteService Storage Server: " + storageUrl + "\n" + "\n"
-                + "   * RemoteService Temp Directory: " + System.getProperty("java.io.tmpdir") + "\n" + "\n"
-                + "----------------------------------------------------\n";
-        // @formatter:on
-        log.info(msg);
-
-        //
-        //sessionDataRepository.removeAllRoom();
-    }*/
 }
