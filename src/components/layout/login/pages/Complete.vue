@@ -2,8 +2,8 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle" class="row-bg">
       <el-col>
-        <h2>{{ $t('complete.title') }}</h2>
-        <p>{{ $t('complete.welcome') }}</p>
+        <h2 class="title">{{ $t('complete.title') }}</h2>
+        <p class="disc">{{ $t('complete.welcome') }}</p>
 
         <el-button class="next-btn block-btn" @click="payment" type="info">{{
           $t('complete.payment')

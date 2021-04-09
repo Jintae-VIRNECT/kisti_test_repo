@@ -2,8 +2,8 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle" class="row-bg">
       <el-col>
-        <h2>{{ $t('user.title') }}</h2>
-        <p v-html="$t('user.pageInfo')"></p>
+        <h2 class="title">{{ $t('user.title') }}</h2>
+        <p class="disc" v-html="$t('user.pageInfo')"></p>
 
         <p class="input-title">{{ $t('user.profileImage.title') }}</p>
         <article class="profile-image">

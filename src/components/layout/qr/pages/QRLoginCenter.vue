@@ -2,7 +2,7 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle">
       <el-col>
-        <h2>{{ $t('qrLoginCenter.title') }}</h2>
+        <h2 class="title">{{ $t('qrLoginCenter.title') }}</h2>
         <p v-html="$t('qrLoginCenter.pageInfo')"></p>
 
         <div class="qr-login-body">
@@ -61,8 +61,10 @@ import utc from 'dayjs/plugin/utc'
 import duration from 'dayjs/plugin/duration'
 export default {
   props: {
-    auth: Object,
+    userInfo: Object,
     customInfo: Object,
+    env: String,
+    subTitle: String,
   },
   data() {
     return {
@@ -86,9 +88,14 @@ export default {
       return `${minute}:${second}`
     },
   },
+  watch: {
+    userInfo() {
+      this.reset()
+    },
+  },
   methods: {
     nameSet(txt) {
-      if (this.auth.env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
+      if (this.env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
       else {
         let val = txt.replace(/VIRNECT/, this.customInfo.title)
         return val
@@ -96,8 +103,8 @@ export default {
     },
     async reset() {
       const params = {
-        email: this.auth.myInfo.email,
-        userId: this.auth.myInfo.uuid,
+        email: this.userInfo.email,
+        userId: this.userInfo.uuid,
       }
       try {
         let otp = await AuthService.qrOtp({ params: params })
@@ -127,9 +134,6 @@ export default {
         }
       }, 1000)
     },
-  },
-  mounted() {
-    this.reset()
   },
 }
 </script>

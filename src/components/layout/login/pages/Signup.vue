@@ -2,8 +2,8 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle" class="row-bg">
       <el-col>
-        <h2>{{ $t('signup.signupTitle') }}</h2>
-        <p>{{ $t('signup.signupDesk') }}</p>
+        <h2 class="title">{{ $t('signup.signupTitle') }}</h2>
+        <p class="disc">{{ $t('signup.signupDesk') }}</p>
         <p class="input-title must-check">{{ $t('signup.account') }}</p>
         <el-input
           :placeholder="$t('signup.mailPlaceholder')"

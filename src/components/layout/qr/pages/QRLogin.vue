@@ -2,7 +2,7 @@
   <div class="container">
     <el-row type="flex" justify="center" align="middle">
       <el-col>
-        <h2>{{ $t('qrLogin.title') }}</h2>
+        <h2 class="title">{{ $t('qrLogin.title') }}</h2>
         <p v-html="$t('qrLogin.pageInfo')"></p>
 
         <div class="qr-login-body">
@@ -40,8 +40,10 @@ import { QrcodeStream } from 'vue-qrcode-reader'
 
 export default {
   props: {
-    auth: Object,
+    userInfo: Object,
+    env: String,
     customInfo: Object,
+    subTitle: String,
   },
   components: {
     QrcodeStream,
@@ -54,7 +56,7 @@ export default {
   },
   methods: {
     nameSet(txt) {
-      if (this.auth.env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
+      if (this.env !== 'onpremise' || !/VIRNECT/.test(txt)) return txt
       else {
         let val = txt.replace(/VIRNECT/, this.customInfo.title)
         return val
