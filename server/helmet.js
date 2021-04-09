@@ -3,7 +3,7 @@ const config = require('./config')
 
 const initHelmet = async app => {
   await config.init()
-  if (config.getEnv === 'onpremise') {
+  if (config.getEnv() === 'onpremise') {
     return
   }
 
