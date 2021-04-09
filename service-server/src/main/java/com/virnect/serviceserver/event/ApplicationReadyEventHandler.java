@@ -1,6 +1,5 @@
 package com.virnect.serviceserver.event;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -26,7 +25,6 @@ public class ApplicationReadyEventHandler {
 			+ "   * VIRNECT_ENV: [" + System.getenv("VIRNECT_ENV") + "]\n" + " \n"
 			+ "   * Config Server Url: [" + System.getenv("CONFIG_SERVER") + "]\n" + "\n"
 			+ "----------------------------------------------------\n";
-
 		log.info(msg);
 		sessionDataRepository.removeAllRoom();
 	}
