@@ -27,7 +27,7 @@ public class ApplicationReadyEventHandler {
 			+ "----------------------------------------------------\n";
 
 		log.info(msg);
-		//sessionDataRepository.removeAllRoom();
+		sessionDataRepository.removeAllRoom();
 	}
 
 }
