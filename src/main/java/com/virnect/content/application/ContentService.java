@@ -23,7 +23,6 @@ import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
 import com.virnect.content.dto.rest.*;
-import com.virnect.content.event.ContentUpdateFileRollbackEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
@@ -310,7 +309,8 @@ public class ContentService {
 
         checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize, updateRequest.getUserUUID());
 
-        // 2. 저장된 파일 가져오기
+       /*
+       // 2. 저장된 파일 가져오기
         File oldContent = this.fileUploadService.getFile(targetContent.getPath());
 
         // 2. 기존 컨텐츠 파일 삭제
@@ -329,6 +329,20 @@ public class ContentService {
             eventPublisher.publishEvent(new ContentUpdateFileRollbackEvent(oldContent));
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
+        */
+        //2. 수정 컨텐츠 업로드
+        try {
+            String fileUploadPath = this.fileUploadService.uploadByFileInputStream(
+                    updateRequest.getContent(), targetContent.getUuid() + "");
+            // 3 수정 컨텐츠 경로 반영
+            targetContent.setPath(fileUploadPath);
+        } catch (IOException e) {
+            log.info("CONTENT UPDATE ERROR: {}", e.getMessage());
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+        }
+
+        // 4. 기존 컨텐츠 파일 삭제
+        fileUploadService.delete(targetContent.getPath());
 
         // 5. 컨텐츠 소유자 변경
         targetContent.setUserUUID(updateRequest.getUserUUID());
@@ -508,7 +522,9 @@ public class ContentService {
                 log.info("content.getPath() = {}", content.getPath());
 
                 // NULL 체크
-                if (this.fileUploadService.getFile(content.getPath()) != null) {
+                fileUploadService.delete(content.getPath());
+                /*if (this.fileUploadService.getFile(content.getPath()) != null) {
+
                     if (this.fileUploadService.getFile(content.getPath()).exists()) {
                         // 파일이 없다면 파일삭제는 무시함.
                         boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
@@ -517,7 +533,7 @@ public class ContentService {
                             throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
                         }
                     }
-                }
+                }*/
             }
             // 5 삭제 성공 반환
             contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_SUCCEED.getMessage());
@@ -1090,26 +1106,16 @@ public class ContentService {
     }
 
     private String getImgPath(String targetData) {
-
-        String qrString = "";
-
-        try {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 256, 256);
-
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-
             ImageIO.write(qrImage, "png", os);
-            os.toByteArray();
 
-            qrString = Base64.getEncoder().encodeToString(os.toByteArray());
-
+            String qrString = Base64.getEncoder().encodeToString(os.toByteArray());
+            return fileUploadService.base64ImageUpload(qrString);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
-
-        String imgPath = this.fileUploadService.base64ImageUpload(qrString);
-
-        return imgPath;
     }
 
     /**

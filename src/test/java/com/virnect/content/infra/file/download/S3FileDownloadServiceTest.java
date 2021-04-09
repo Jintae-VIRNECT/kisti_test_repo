@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * DESCRIPTION:
  */
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 class S3FileDownloadServiceTest {
     @Autowired
     S3FileDownloadService s3FileDownloadService;

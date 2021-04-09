@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * DESCRIPTION:
  */
 @SpringBootTest
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 class MinioDownloadServiceTest {
     @Autowired
     MinioDownloadService minioDownloadService;

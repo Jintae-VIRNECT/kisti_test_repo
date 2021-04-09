@@ -19,6 +19,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -36,14 +37,18 @@ import java.util.Optional;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"staging", "production", "test"})
+@Profile({"staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class S3UploadService implements FileUploadService {
-    private static String CONTENT_DIRECTORY = "contents";
-    private static String REPORT_DIRECTORY = "report";
-    private static String REPORT_FILE_EXTENSION = ".png";
     private final AmazonS3 amazonS3Client;
+
+    private static final String CONTENT_DIRECTORY = "contents";
+    private static final String REPORT_DIRECTORY = "report";
+    private static final String REPORT_FILE_EXTENSION = ".png";
+    private static final String VTARGET_FILE_NAME = "virnect_target.png";
+
+
     @Value("${cloud.aws.s3.bucket.name}")
     private String bucketName;
     @Value("${cloud.aws.s3.bucket.resource}")
@@ -95,7 +100,7 @@ public class S3UploadService implements FileUploadService {
 
     @Override
     public boolean delete(String url) {
-        if (url.equals("default")) {
+        if (url.equals("default") || FilenameUtils.getName(url).equals(VTARGET_FILE_NAME)) {
             log.info("기본 이미지는 삭제하지 않습니다.");
         } else {
             //String resourceEndPoint = String.format("%s%s", bucketResource, CONTENT_DIRECTORY);
@@ -111,33 +116,40 @@ public class S3UploadService implements FileUploadService {
     }
 
     @Override
-    public File getFile(String url) {
-        return null;
-    }
-
-    @Override
     public String base64ImageUpload(String base64Image) {
-        try {
-            byte[] image = Base64.getDecoder().decode(base64Image);
-            String randomFileName = String.format(
-                    "%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
-                    REPORT_FILE_EXTENSION
-            );
-            File convertImage = new File(randomFileName);
-            FileOutputStream fos = new FileOutputStream(convertImage);
-            fos.write(image);
-            fos.close();
+        byte[] image = Base64.getDecoder().decode(base64Image);
+        String randomFileName = String.format(
+                "%s_%s%s", LocalDate.now().toString(), RandomStringUtils.randomAlphanumeric(10).toLowerCase(),
+                REPORT_FILE_EXTENSION
+        );
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);
+        objectMetadata.setContentLength(image.length);
+        objectMetadata.setHeader("filename", randomFileName);
+        objectMetadata.setContentDisposition(String.format("attachment; filename=\"%s\"", randomFileName));
 
+        String s3FileKey = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, s3FileKey, new ByteArrayInputStream(image), objectMetadata);
+        putObjectRequest.withCannedAcl(CannedAccessControlList.PublicRead);
+        amazonS3Client.putObject(putObjectRequest);
+        log.info("[AWS S3 FILE INPUT STREAM UPLOADER] - UPLOAD END");
+        String url = amazonS3Client.getUrl(bucketName, s3FileKey)
+                .toExternalForm();
+        log.info("[AWS S3 RESOURCE URL: {}]", url);
+        log.info("[AWS CDN URL: {}]", s3FileKey);
+        return url;
+
+        /*File convertImage = new File(randomFileName);
+        try (FileOutputStream fos = new FileOutputStream(convertImage)) {
+            fos.write(image);
             String saveFileName = String.format("%s%s/%s", bucketResource, REPORT_DIRECTORY, randomFileName);
             String uploadFileUrl = putS3(convertImage, saveFileName);
-
             removeNewFile(convertImage);
-
             return uploadFileUrl;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-        }
+        }*/
     }
 
     /**

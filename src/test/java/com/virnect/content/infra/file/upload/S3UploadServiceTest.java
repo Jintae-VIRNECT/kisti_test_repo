@@ -4,16 +4,15 @@ import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.error.ErrorCode;
 import com.virnect.content.global.util.AES256EncryptUtils;
 import com.virnect.content.global.util.QRcodeGenerator;
-import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Profile;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.net.URLDecoder;
 import java.util.Base64;
 
@@ -27,13 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * DESCRIPTION:
  */
 @SpringBootTest
-@Profile("test")
-class MinioUploadServiceTest {
-
+@ActiveProfiles("test")
+class S3UploadServiceTest {
     @Autowired
-    MinioUploadService minioUploadService;
-
-    @SneakyThrows
+    S3UploadService s3UploadService;
     @Test
     void base64ImageUpload() throws Exception {
         String originTargetData = "280%2fsMQ%2bE7d1CeudGF7wzx4uSi7DVfHGDfFNJzocQ5SBdcSYzXPJfuUtIPcGmTT%2b"; //타겟데이터의 껍데기값. db에 저장되는 값.
@@ -45,7 +41,7 @@ class MinioUploadServiceTest {
             ImageIO.write(qrImage, "png", os);
 
             String qrString = Base64.getEncoder().encodeToString(os.toByteArray());
-            minioUploadService.base64ImageUpload(qrString);
+            s3UploadService.base64ImageUpload(qrString);
         } catch (Exception e) {
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
