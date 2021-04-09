@@ -188,7 +188,7 @@ Fabric.Image.prototype.setControlVisible('mtr', true)
 
 Fabric.IText.prototype.editable = true
 Fabric.IText.prototype.selectable = false
-Fabric.IText.prototype.charSpacing = -10
+Fabric.IText.prototype.charSpacing = -30
 Fabric.disableStyleCopyPaste = true
 
 export const fabric = Fabric
