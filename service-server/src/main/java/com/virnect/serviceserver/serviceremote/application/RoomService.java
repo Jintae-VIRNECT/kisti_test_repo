@@ -631,7 +631,6 @@ public class RoomService {
 
 			//save room history
 			sessionService.setRoomHistory(roomHistory);
-
 			sessionService.deleteRoom(room);
 		}
 	}
