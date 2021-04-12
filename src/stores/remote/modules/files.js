@@ -13,7 +13,6 @@ import {
   ADD_PDF_PAGE,
   REMOVE_PDF_PAGE,
   SET_CAPTURE,
-  CLEAR_CAPTURE,
   CALL_ACTION_SET,
 } from '../mutation-types'
 
@@ -90,9 +89,6 @@ const mutations = {
   },
   [SET_CAPTURE](state, imgInfo) {
     state.captureFile = Object.assign({}, imgInfo)
-  },
-  [CLEAR_CAPTURE](state) {
-    state.captureFile = {}
   },
 }
 
@@ -182,7 +178,7 @@ const actions = {
    * remove capture image
    */
   clearCapture({ commit }) {
-    commit(CLEAR_CAPTURE)
+    commit(SET_CAPTURE, {})
   },
 }
 

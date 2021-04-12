@@ -37,9 +37,6 @@ const state = {
   },
   useScreenStrict: false,
 
-  videoDevice: null,
-  language: null,
-
   translate: {
     flag: false,
     code: 'ko-KR',
@@ -103,13 +100,6 @@ const mutations = {
     state.useScreenStrict = flag
   },
 
-  // [SETTINGS.SET_VIDEO_DEVICE](state, videoDevice) {
-  //   state.videoDevice = videoDevice
-  // },
-  [SETTINGS.SET_LANGUAGE](state, language) {
-    state.language = language
-  },
-
   [SETTINGS.SET_LOCAL_RECORD_TARGET](state, localRecordTarget) {
     state.localRecordTarget = localRecordTarget
   },
@@ -138,7 +128,6 @@ const getters = {
   serverRecord: state => state.serverRecordInfo,
   allowLocalRecord: state => state.allow.localRecord,
   allowPointing: state => state.allow.pointing,
-  language: state => state.language,
 
   translate: state => state.translate,
   useScreenStrict: state => state.useScreenStrict,
