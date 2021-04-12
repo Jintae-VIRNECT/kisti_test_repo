@@ -101,6 +101,9 @@ export default {
         this.setView(VIEW.STREAM)
       }
     },
+    viewForce() {
+      this.controlScale()
+    },
     participants: {
       handler() {
         this.controlScale()
@@ -331,20 +334,29 @@ export default {
       }
     },
 
+    /**
+     * 자신의 영상 스트림 스케일 제어
+     */
     controlScale() {
       if (this.participants.length === 1) return
 
       const ptIndex = this.participants.findIndex(pt => {
         const isWatchingMe = pt.currentWatching === this.account.uuid
-        const notMe = !pt.me
 
-        return isWatchingMe && notMe
+        //다른사람이 날 보고 있음.
+        const watchingMeByElse = isWatchingMe && !pt.me
+
+        //전체 공유로 인해 내가 내화면을 보고 있음.
+        const watchingMeByForce =
+          isWatchingMe && pt.me && this.viewForce === true
+        console.log('debug::watchingMeByElse', watchingMeByElse)
+        console.log('debug::watchingMeByForce', watchingMeByForce)
+        return watchingMeByElse || watchingMeByForce
       })
 
-      if (ptIndex > 0) {
+      if (ptIndex > -1) {
         this.$call.setScaleResolution(1)
       } else {
-        //해당 유저가 보는 사람이 없는경우
         if (this.settingInfo.quality === '360') {
           this.$call.setScaleResolution(4)
         } else {
