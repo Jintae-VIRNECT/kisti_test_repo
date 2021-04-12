@@ -8,6 +8,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 import com.virnect.data.domain.BaseTimeEntity;
+import com.virnect.data.domain.room.RoomStatus;
 
 //@DynamicUpdate
 @Entity
@@ -60,6 +61,9 @@ public class File extends BaseTimeEntity {
     @Column(name = "download_hits")
     private Long downloadHits;
 
+    @Column(name = "file_type", nullable = false)
+    private FileType fileType;
+
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
     private Type type;*/
@@ -73,7 +77,8 @@ public class File extends BaseTimeEntity {
             String name,
             String objectName,
             String contentType,
-            Long size
+            Long size,
+            FileType fileType
             ) {
         this.workspaceId = workspaceId;
         this.sessionId = sessionId;
@@ -82,7 +87,7 @@ public class File extends BaseTimeEntity {
         this.objectName = objectName;
         this.contentType = contentType;
         this.size = size;
-
+        this.fileType = fileType;
         // default setting
         this.downloadHits = 0L;
         this.deleted = false;

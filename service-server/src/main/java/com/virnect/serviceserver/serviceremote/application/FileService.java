@@ -22,10 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.data.dao.file.FileRepository;
 import com.virnect.data.dao.file.RecordFileRepository;
+import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.dao.room.RoomRepository;
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.FileType;
 import com.virnect.data.domain.file.RecordFile;
+import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.serviceserver.serviceremote.dto.request.file.FileUploadRequest;
@@ -63,6 +65,8 @@ public class FileService {
 
 	private final SessionTransactionalService sessionTransactionalService;
 
+	private final MemberRepository memberRepository;
+
 	private String generateDirPath(String... args) {
 		StringBuilder stringBuilder;
 		stringBuilder = new StringBuilder();
@@ -73,7 +77,7 @@ public class FileService {
 	}
 
 	@Transactional
-	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest) {
+	public ApiResponse<FileUploadResponse> uploadFile(FileUploadRequest fileUploadRequest, FileType fileType) {
 
 		ApiResponse<FileUploadResponse> responseData;
 
@@ -110,6 +114,7 @@ public class FileService {
 			.objectName(objectName)
 			.contentType(fileUploadRequest.getFile().getContentType())
 			.size(fileUploadRequest.getFile().getSize())
+			.fileType(fileType)
 			.build();
 
 		File uploadResult = fileRepository.save(file);
@@ -272,10 +277,12 @@ public class FileService {
 		String workspaceId,
 		String sessionId,
 		String userId,
-		String objectName
+		String objectName,
+		FileType fileType
 	) {
 		ApiResponse<FilePreSignedResponse> responseData;
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+		//File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectNameAndFileType(workspaceId, sessionId, objectName, fileType).orElse(null);
 		if (file != null) {
 			log.info("file download: {}", file.getObjectName());
 			try {
@@ -362,15 +369,16 @@ public class FileService {
 		String sessionId,
 		String userId,
 		boolean isDeleted,
-		PageRequest pageable
+		PageRequest pageable,
+		FileType fileType
 	) {
 
 		ApiResponse<FileInfoListResponse> responseData;
 
 		Page<File> filePage;
 		if (isDeleted) {
-			filePage = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(
-				workspaceId, sessionId, pageable);
+			filePage = fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrueAndFileType(
+				workspaceId, sessionId, pageable, fileType);
 		} else {
 			filePage = fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
 		}
@@ -453,12 +461,14 @@ public class FileService {
 		String workspaceId,
 		String sessionId,
 		String userId,
-		String objectName
+		String objectName,
+		FileType fileType
 	) {
 
 		ApiResponse<FileDeleteResponse> responseData;
 
-		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+		//File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
+		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectNameAndFileType(workspaceId, sessionId, objectName, fileType).orElse(null);
 
 		if (!ObjectUtils.isEmpty(file)) {
 			Objects.requireNonNull(file).setDeleted(true);
@@ -602,12 +612,12 @@ public class FileService {
 		return this.recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
 	}
 
-	public Page<File> getFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {
+	/*public Page<File> getFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {
 		if(isDeleted)
-			return this.fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId, pageable);
+			return this.fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrueAndFileType(workspaceId, sessionId, pageable);
 		else
 			return this.fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
-	}
+	}*/
 
 	public List<File> getFileList(String workspaceId, String sessionId) {
 		return this.fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId);
@@ -634,4 +644,61 @@ public class FileService {
 	public void deleteFiles(String workspaceId, String sessionId) {
 		fileRepository.deleteAllByWorkspaceIdAndSessionId(workspaceId, sessionId);
 	}
+
+	@Transactional
+	public ApiResponse<FileDeleteResponse> removeFiles(
+		String workspaceId,
+		String sessionId,
+		String leaderUserId,
+		FileType fileType
+	) {
+
+		// Leader id check
+		Member leaderInfo = memberRepository.findRoomLeaderBySessionId(workspaceId, sessionId);
+
+		if (!leaderUserId.equals(leaderInfo.getUuid())) {
+			new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
+		}
+
+		ApiResponse<FileDeleteResponse> responseData;
+
+		List<File> files = fileRepository.findByWorkspaceIdAndSessionIdAndFileType(workspaceId, sessionId, fileType);
+
+		boolean result = true;
+
+		for (File file : files) {
+			if (!ObjectUtils.isEmpty(file)) {
+				Objects.requireNonNull(file).setDeleted(true);
+				fileRepository.save(file);
+				
+				try {
+					StringBuilder stringBuilder;
+					stringBuilder = new StringBuilder();
+					stringBuilder.append(workspaceId).append("/")
+						.append(sessionId).append("/")
+						.append(file.getObjectName());
+					result = result && fileManagementService.removeObject(stringBuilder.toString());
+				} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+					exception.printStackTrace();
+					log.info("{}", exception.getMessage());
+					new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_EXCEPTION);
+				}
+			} else {
+				new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_NOT_FOUND);
+			}
+		}
+
+		if (result) {
+			FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
+			fileDeleteResponse.setWorkspaceId(workspaceId);
+			fileDeleteResponse.setSessionId(sessionId);
+			//fileDeleteResponse.setFileName(file.getName());
+			responseData = new ApiResponse<>(fileDeleteResponse);
+		} else {
+			responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_FAILED);
+		}
+
+		return responseData;
+	}
+
 }
