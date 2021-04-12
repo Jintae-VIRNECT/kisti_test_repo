@@ -174,10 +174,11 @@ const _ = {
           _.stream = _.publisher.stream
 
           const settingInfo = Store.getters['settingInfo']
-          if (settingInfo.quality === '360') {
-            _.setScaleResolution(4)
-          } else {
+          const quality = Number.parseInt(settingInfo.quality, 10)
+          if (Number.isNaN(quality) || quality > 360) {
             _.setScaleResolution(8)
+          } else {
+            _.setScaleResolution(4)
           }
 
           const participantInfo = {

@@ -349,18 +349,17 @@ export default {
         //전체 공유로 인해 내가 내화면을 보고 있음.
         const watchingMeByForce =
           isWatchingMe && pt.me && this.viewForce === true
-        console.log('debug::watchingMeByElse', watchingMeByElse)
-        console.log('debug::watchingMeByForce', watchingMeByForce)
         return watchingMeByElse || watchingMeByForce
       })
 
       if (ptIndex > -1) {
         this.$call.setScaleResolution(1)
       } else {
-        if (this.settingInfo.quality === '360') {
-          this.$call.setScaleResolution(4)
-        } else {
+        const quality = Number.parseInt(this.settingInfo.quality, 10)
+        if (Number.isNaN(quality) || quality > 360) {
           this.$call.setScaleResolution(8)
+        } else {
+          this.$call.setScaleResolution(4)
         }
       }
     },
