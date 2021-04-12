@@ -240,13 +240,10 @@ const _ = {
     }
   },
 
-  setBitrate: bitrate => {
-    _.stream.setBitrate(bitrate)
-  },
-
   setScaleResolution: async scaleResolution => {
-    console.log('debug::', _.stream)
-    return await _.stream.setScaleResolution(scaleResolution)
+    if (_.stream) {
+      return await _.stream.setScaleResolution(scaleResolution)
+    }
   },
   /**
    * @BROADCATE
