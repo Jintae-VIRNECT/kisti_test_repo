@@ -147,7 +147,8 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 			.where(
 				room.workspaceId.eq(workspaceId),
 				room.sessionId.eq(sessionId),
-				member.memberStatus.ne(MemberStatus.EVICTED)
+				member.memberStatus.ne(MemberStatus.EVICTED),
+				member.memberStatus.ne(MemberStatus.UNLOAD)
 			)
 			.distinct()
 			.fetchOne());
