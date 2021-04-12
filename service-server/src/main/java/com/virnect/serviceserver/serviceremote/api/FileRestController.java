@@ -497,13 +497,9 @@ public class FileRestController {
         ApiResponse<FileInfoListResponse> responseData;
 
         if (remoteStorageProperties.isEnabled()) {
-            responseData = fileService.getFileInfoList(
+            responseData = fileService.getShareFileInfoList(
                 workspaceId,
-                sessionId,
-                userId,
-                deleted,
-                pageRequest.ofSortBy(),
-                FileType.SHARE
+                sessionId
             );
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
@@ -550,7 +546,7 @@ public class FileRestController {
     public ResponseEntity<ApiResponse<FileDeleteResponse>> deleteShareFileRequestHandler(
         @PathVariable("workspaceId") String workspaceId,
         @PathVariable("sessionId") String sessionId,
-        @RequestParam("userId") String userId,
+        @RequestParam("leaderUserId") String leaderUserId,
         @RequestParam("objectName") String objectName
     ) {
         LogMessage.formedInfo(
@@ -559,18 +555,18 @@ public class FileRestController {
                 + REST_PATH + "::"
                 + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
                 + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
-                + "userId:" + (userId != null ? sessionId : "{}") + "/"
+                + "userId:" + (leaderUserId != null ? sessionId : "{}") + "/"
                 + "objectName:" + (objectName != null ? objectName : "{}"),
             "deleteFileRequestHandler"
         );
         ApiResponse<FileDeleteResponse> responseData;
 
         if (remoteStorageProperties.isEnabled()) {
-            if (userId == null || objectName == null) {
+            if (leaderUserId == null || objectName == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
 
-            responseData = fileService.removeFile(workspaceId, sessionId, userId, objectName, FileType.SHARE);
+            responseData = fileService.removeShareFile(workspaceId, sessionId, leaderUserId, objectName, FileType.SHARE);
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
@@ -599,7 +595,7 @@ public class FileRestController {
             if (leaderUserId == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
-            responseData = fileService.removeFiles(workspaceId, sessionId, leaderUserId, FileType.SHARE);
+            responseData = fileService.removeShareFiles(workspaceId, sessionId, leaderUserId, FileType.SHARE);
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
