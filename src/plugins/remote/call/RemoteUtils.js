@@ -46,11 +46,12 @@ export const addSessionEventListener = session => {
         _.sendControl(CONTROL.LOCAL_RECORD, Store.getters['allowLocalRecord'], [
           event.connection.connectionId,
         ])
-        if (Store.getters['viewForce'] === true) {
-          _.sendVideo(Store.getters['mainView'].id, true, [
-            event.connection.connectionId,
-          ])
-        }
+
+        const viewForce = Store.getters['viewForce'] === true ? true : false
+        _.sendVideo(Store.getters['mainView'].id, viewForce, [
+          event.connection.connectionId,
+        ])
+
         if (Store.getters['view'] === 'drawing') {
           window.vue.$eventBus.$emit(
             'participantChange',
@@ -196,19 +197,16 @@ export const addSessionEventListener = session => {
           },
         })
       }
-      Store.dispatch('setMainView', { id: data.id, force: true })
-      Store.commit('updateParticipant', {
-        connectionId: event.from.connectionId,
-        currentWatching: data.id,
-      })
-    } else if (data.type === VIDEO.NORMAL) {
-      Store.commit('updateParticipant', {
-        connectionId: event.from.connectionId,
-        currentWatching: data.id,
-      })
 
-      console.log('debug::', 'VIDEO:NORMAL')
-      console.log('debug::data.id', data.id)
+      Store.dispatch('setMainView', { id: data.id, force: true })
+
+      const participants = Store.getters['participants']
+      participants.forEach(pt => {
+        Store.commit('updateParticipant', {
+          connectionId: pt.connectionId,
+          currentWatching: data.id,
+        })
+      })
     } else if (data.type === VIDEO.SCREEN_SHARE) {
       const isLeader = _.account.roleType === ROLE.LEADER
       const participants = Store.getters['participants']
@@ -265,6 +263,13 @@ export const addSessionEventListener = session => {
         })
       } else {
         Store.dispatch('setMainView', { force: false })
+
+        if (data.type === VIDEO.NORMAL) {
+          Store.commit('updateParticipant', {
+            connectionId: event.from.connectionId,
+            currentWatching: data.id,
+          })
+        }
       }
     }
   })
