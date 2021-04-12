@@ -21,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
+import com.virnect.data.domain.file.FileType;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.data.global.common.ApiResponse;
@@ -93,7 +94,7 @@ public class FileRestController {
                 result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
-            responseData = fileService.uploadFile(fileUploadRequest);
+            responseData = fileService.uploadFile(fileUploadRequest, FileType.FILE);
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
@@ -241,7 +242,7 @@ public class FileRestController {
             if (userId == null && objectName == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
-            responseData = fileService.downloadFileUrl(workspaceId, sessionId, userId, objectName);
+            responseData = fileService.downloadFileUrl(workspaceId, sessionId, userId, objectName, FileType.FILE);
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
@@ -312,7 +313,14 @@ public class FileRestController {
         ApiResponse<FileInfoListResponse> responseData;
 
         if (remoteStorageProperties.isEnabled()) {
-            responseData = fileService.getFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.ofSortBy());
+            responseData = fileService.getFileInfoList(
+                workspaceId,
+                sessionId,
+                userId,
+                deleted,
+                pageRequest.ofSortBy(),
+                FileType.FILE
+            );
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
@@ -380,7 +388,7 @@ public class FileRestController {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
 
-            responseData = fileService.removeFile(workspaceId, sessionId, userId, objectName);
+            responseData = fileService.removeFile(workspaceId, sessionId, userId, objectName, FileType.FILE);
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
@@ -408,11 +416,190 @@ public class FileRestController {
             if (objectName == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
-
             responseData = fileService.downloadGuideFileUrl(objectName);
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
         return ResponseEntity.ok(responseData);
     }
+
+    @ApiOperation(value = "[Share] Upload file", notes = "[공유 파일] 파일 식별자를 서버에서 발급하며, 식별자는 업로드 완료 후 반환됨.\n파일 첨부시 사용")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "48acaade22f3e2bba74bb6f1c44389a9"),
+        @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "form", required = true, defaultValue = "ses_JRG7p1fFox"),
+        @ApiImplicitParam(name = "userId", value = "업로드 사용자 고유 식별자", dataType = "string", paramType = "form", required = true, defaultValue = "4218059539d944fca0a27fc5a57ce05b"),
+        @ApiImplicitParam(name = "file", value = "업로드 파일", dataType = "__file", paramType = "form", required = true),
+    })
+    @PostMapping(value = "file/upload/share", headers = {
+        "content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<FileUploadResponse>> shareFileUploadRequestHandler(
+        @ModelAttribute @Valid FileUploadRequest fileUploadRequest,
+        BindingResult result
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: POST "
+                + REST_PATH + "::"
+                + (fileUploadRequest.toString() != null ? fileUploadRequest.toString() : "{}"),
+            "fileUploadRequestHandler"
+        );
+        if (result.hasErrors()) {
+            result.getAllErrors().forEach(message ->
+                LogMessage.formedError(
+                    TAG,
+                    "REST API: POST " + REST_PATH,
+                    "fileUploadRequestHandler",
+                    LogMessage.PARAMETER_ERROR,
+                    message.toString()
+                )
+            );
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<FileUploadResponse> responseData;
+        if (remoteStorageProperties.isEnabled()) {
+            if (result.hasErrors()) {
+                result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            responseData = fileService.uploadFile(fileUploadRequest, FileType.SHARE);
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "[Share] Load Room File List", notes = "[공유 파일] 원격협업에서 등록된 파일 목록을 조회")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
+        @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
+        @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(createdDate, ASC or DESC)", paramType = "query", defaultValue = "createdDate, DESC"),
+        @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
+    })
+    @GetMapping("file/share")
+    public ResponseEntity<ApiResponse<FileInfoListResponse>> getShareFileList(
+        @RequestParam(value = "workspaceId") String workspaceId,
+        @RequestParam(value = "sessionId") String sessionId,
+        @RequestParam(name = "userId") String userId,
+        @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
+        @ApiIgnore PageRequest pageRequest
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "::"
+                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
+                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "userId:" + (userId != null ? sessionId : "{}") + "/"
+                + "deleted:" + deleted,
+            "getFileList"
+        );
+        ApiResponse<FileInfoListResponse> responseData;
+
+        if (remoteStorageProperties.isEnabled()) {
+            responseData = fileService.getShareFileInfoList(
+                workspaceId,
+                sessionId
+            );
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "[Share] Get URL to download file", notes = "[공유 파일] 파일 다운로드 URL을 받습니다.")
+    @ApiImplicitParams({
+        @ApiImplicitParam(name = "workspaceId", value = "워크스페이스 식별자", dataType = "string", paramType = "path", required = true),
+        @ApiImplicitParam(name = "sessionId", value = "원격협업 세션", dataType = "string", paramType = "path", required = true),
+        @ApiImplicitParam(name = "userId", value = "다운로드 사용자 고유 식별자", dataType = "string", paramType = "query", required = true),
+        @ApiImplicitParam(name = "objectName", value = "다운로드 파일 고유 이름", dataType = "string", paramType = "query", required = true),
+    })
+    @GetMapping(value = "file/download/url/share/{workspaceId}/{sessionId}")
+    public ResponseEntity<ApiResponse<FilePreSignedResponse>> shareFileDownloadUrlRequestHandler(
+        @PathVariable(name = "workspaceId") String workspaceId,
+        @PathVariable(name = "sessionId") String sessionId,
+        @RequestParam(name = "userId") String userId,
+        @RequestParam(name = "objectName") String objectName
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: GET "
+                + REST_PATH + "/"
+                + (workspaceId != null ? workspaceId : "{}") + "/"
+                + (sessionId != null ? sessionId : "{}"),
+            "fileDownloadUrlRequestHandler"
+        );
+        ApiResponse<FilePreSignedResponse> responseData;
+        if (remoteStorageProperties.isEnabled()) {
+            if (userId == null && objectName == null) {
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            responseData = fileService.downloadFileUrl(workspaceId, sessionId, userId, objectName, FileType.SHARE);
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "[Share] Delete the specific file", notes = "[공유 파일] 파일을 삭제")
+    @DeleteMapping(value = "file/share/{workspaceId}/{sessionId}")
+    public ResponseEntity<ApiResponse<FileDeleteResponse>> deleteShareFileRequestHandler(
+        @PathVariable("workspaceId") String workspaceId,
+        @PathVariable("sessionId") String sessionId,
+        @RequestParam("leaderUserId") String leaderUserId,
+        @RequestParam("objectName") String objectName
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: DELETE "
+                + REST_PATH + "::"
+                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
+                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "userId:" + (leaderUserId != null ? sessionId : "{}") + "/"
+                + "objectName:" + (objectName != null ? objectName : "{}"),
+            "deleteFileRequestHandler"
+        );
+        ApiResponse<FileDeleteResponse> responseData;
+
+        if (remoteStorageProperties.isEnabled()) {
+            if (leaderUserId == null || objectName == null) {
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+
+            responseData = fileService.removeShareFile(workspaceId, sessionId, leaderUserId, objectName, FileType.SHARE);
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
+        return ResponseEntity.ok(responseData);
+    }
+
+    @ApiOperation(value = "[Share] Delete the specific files", notes = "[공유 파일] 파일을 전체 삭제")
+    @DeleteMapping(value = "files/share/{workspaceId}/{sessionId}")
+    public ResponseEntity<ApiResponse<FileDeleteResponse>> deleteShareFilesRequestHandler(
+        @PathVariable("workspaceId") String workspaceId,
+        @PathVariable("sessionId") String sessionId,
+        @RequestParam("userId") String leaderUserId
+    ) {
+        LogMessage.formedInfo(
+            TAG,
+            "REST API: DELETE "
+                + REST_PATH + "::"
+                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
+                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "leaderUserId:" + (leaderUserId != null ? leaderUserId : "{}"),
+            "deleteShareFilesRequestHandler"
+        );
+        ApiResponse<FileDeleteResponse> responseData;
+
+        if (remoteStorageProperties.isEnabled()) {
+            if (leaderUserId == null) {
+                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            responseData = fileService.removeShareFiles(workspaceId, sessionId, leaderUserId, FileType.SHARE);
+        } else {
+            throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
+        }
+        return ResponseEntity.ok(responseData);
+    }
+
 }
