@@ -37,6 +37,7 @@ pipeline {
         echo 'Test Stage'
         sh 'npm cache verify'
         sh 'npm install'
+        sh 'npm run i18n:diff'
         sh 'npm run test:unit'
       }
     }
