@@ -19,7 +19,8 @@
     "test:cover": "vue-cli-service test:unit --coverage",
     "i18n:diff": "i18n diff --sheetId RM-DashBoard --src src/languages/remote",
     "i18n:upload": "i18n diff --sheetId RM-DashBoard --src src/languages/remote --force",
-    "i18n:download":"i18n download --sheetId RM-DashBoard --src src/languages/remote" 
+    "i18n:download": "i18n download --sheetId RM-DashBoard --src src/languages/remote",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@virnect/logger": "^1.0.2",
@@ -67,7 +68,8 @@
     "vue2-scrollbar": "0.0.3",
     "vuejs-datepicker": "^1.6.2",
     "vuex": "^3.5.1",
-    "xlsx": "^0.16.9"
+    "xlsx": "^0.16.9",
+    "husky": "^6.0.0"
   },
   "browserslist": [
     "> 1%",
