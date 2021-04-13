@@ -75,5 +75,9 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "hooks": {
+    "pre-commit": "npm run i18n:diff"
+  }
+  
 }
