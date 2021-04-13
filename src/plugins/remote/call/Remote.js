@@ -20,6 +20,7 @@ import {
   CAMERA as CAMERA_STATUS,
 } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
+import { getResolutionScale } from 'utils/settingOptions'
 import { wsUri } from 'api/gateway/api'
 
 let OV
@@ -167,19 +168,17 @@ const _ = {
           }
           logger('ice state change', state)
         })
+
         _.publisher.on('streamCreated', () => {
           logger('room', 'publish success')
           debug('publisher stream :: ', _.publisher.stream)
           const mediaStream = _.publisher.stream.mediaStream
           _.stream = _.publisher.stream
 
-          const settingInfo = Store.getters['settingInfo']
-          const quality = Number.parseInt(settingInfo.quality, 10)
-          if (Number.isNaN(quality) || quality > 360) {
-            _.setScaleResolution(8)
-          } else {
-            _.setScaleResolution(4)
-          }
+          const video = Store.getters['video']
+          const quality = Number.parseInt(video.quality, 10)
+          const scale = getResolutionScale(quality)
+          _.setScaleResolution(scale)
 
           const participantInfo = {
             connectionId: _.publisher.stream.connection.connectionId,
@@ -812,12 +811,10 @@ const _ = {
           const mediaStream = tempPublisher.stream.mediaStream
           _.stream = tempPublisher.stream
 
-          const settingInfo = Store.getters['settingInfo']
-          if (settingInfo.quality === '360') {
-            _.setScaleResolution(4)
-          } else {
-            _.setScaleResolution(8)
-          }
+          const video = Store.getters['video']
+          const quality = Number.parseInt(video.quality, 10)
+          const scale = getResolutionScale(quality)
+          _.setScaleResolution(scale)
 
           const participantInfo = {
             connectionId: tempPublisher.stream.connection.connectionId,

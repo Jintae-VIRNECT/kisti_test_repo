@@ -27,6 +27,8 @@ import { VIEW } from 'configs/view.config'
 import LnbButton from '../tools/LnbButton'
 import toastMixin from 'mixins/toast'
 import configmMixin from 'mixins/confirm'
+import { getResolutionScale } from 'utils/settingOptions'
+
 // import web_test from 'utils/testing'
 export default {
   name: 'HeaderServiceLnb',
@@ -69,6 +71,7 @@ export default {
       'viewForce',
       'settingInfo',
       'myInfo',
+      'video',
     ]),
     hasLeader() {
       const idx = this.participants.findIndex(
@@ -355,12 +358,9 @@ export default {
       if (ptIndex > -1) {
         this.$call.setScaleResolution(1)
       } else {
-        const quality = Number.parseInt(this.settingInfo.quality, 10)
-        if (Number.isNaN(quality) || quality > 360) {
-          this.$call.setScaleResolution(8)
-        } else {
-          this.$call.setScaleResolution(4)
-        }
+        const quality = Number.parseInt(this.video.quality, 10)
+        const scale = getResolutionScale(quality)
+        this.$call.setScaleResolution(scale)
       }
     },
   },
