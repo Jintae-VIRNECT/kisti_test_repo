@@ -62,6 +62,7 @@ public class File extends BaseTimeEntity {
     private Long downloadHits;
 
     @Column(name = "file_type", nullable = false)
+    @Enumerated(EnumType.STRING)
     private FileType fileType;
 
     /*@ManyToOne(fetch = FetchType.LAZY)

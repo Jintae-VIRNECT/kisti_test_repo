@@ -565,7 +565,6 @@ public class FileRestController {
             if (leaderUserId == null || objectName == null) {
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
-
             responseData = fileService.removeShareFile(workspaceId, sessionId, leaderUserId, objectName, FileType.SHARE);
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
