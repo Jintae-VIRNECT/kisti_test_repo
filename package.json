@@ -10,9 +10,8 @@
     "build:develop": "cross-env NODE_ENV=develop VIRNECT_ENV=local nuxt build --modern=server",
     "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
-    "generate": "nuxt generate",
-    "e2e": "cypress run",
-    "e2e:open": "cypress open"
+    "e2e": "cypress",
+    "i18n": "i18n --sheetId PF-WebWorkstation"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
@@ -34,9 +33,11 @@
   },
   "devDependencies": {
     "@virnect/eslint-config": "^1.0.0",
+    "@virnect/i18n": "^1.0.1",
     "@virnect/stylelint-config": "^1.0.1",
     "@vue/component-compiler-utils": "^3.1.0",
     "cypress": "^7.0.0",
+    "eslint-plugin-cypress": "^2.11.2",
     "sass": "^1.23.7",
     "sass-loader": "^10.1.1",
     "style-loader": "^1.0.2",

@@ -26,8 +26,14 @@
         "label": "Remote User Manual",
         "url": "https://file.virnect.com/Guide/remote_user_guide_EN.pdf"
       },
-      { "label": null, "url": null },
-      { "label": null, "url": null },
+      {
+        "label": "",
+        "url": ""
+      },
+      {
+        "label": "",
+        "url": ""
+      },
       {
         "label": "Workstation User Manual",
         "url": "https://file.virnect.com/Guide/workstation_user_guide_EN.pdf"

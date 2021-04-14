@@ -11,24 +11,9 @@ describe('before login', () => {
 })
 
 describe('after login', () => {
-  // 테스트 계정
-  const user = {
-    email: 'test5@test.com',
-    password: 123456,
-  }
   // 로그인
   before(() => {
-    cy.request({
-      method: 'POST',
-      url: 'https://192.168.6.3:8073/auth/signin',
-      body: {
-        email: user.email,
-        password: user.password,
-      },
-    }).then(({ body }) => {
-      cy.setCookie('accessToken', body.data.accessToken)
-      cy.setCookie('refreshToken', body.data.refreshToken)
-    })
+    cy.login()
     cy.visit('/')
   })
 
@@ -38,7 +23,9 @@ describe('after login', () => {
 
   it('로그인 정보 표시', () => {
     cy.get('header .thumbnail-btn').click()
-    cy.get('header .email-text').should('have.text', user.email)
+    cy.fixture('user.json').then(user =>
+      cy.get('header .email-text').should('have.text', user.email),
+    )
   })
 
   it('페이지 순회', () => {
