@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class DownloadService {
     private final AppRepository appRepository;
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
+    private final MessageSource messageSource;
 
 
     //TODO: 응답 데이터 수정필요,,
@@ -48,7 +50,6 @@ public class DownloadService {
         return true;
     }
 
-    //TODO: 다국어별 변환 필요할수도...
     public AppInfoListResponse getAppList(String productName, Locale locale) {
         List<App> apps = appRepository.getActiveAppList(productName.toUpperCase());
         Map<List<Object>, List<App>> result = apps.stream()
@@ -59,7 +60,11 @@ public class DownloadService {
             AppInfoResponse appInfoResponse = modelMapper.map(app, AppInfoResponse.class);
             if (Objects.nonNull(app)) {
                 appInfoResponse.setDeviceType(app.getDevice().getTypeDescription());
-                appInfoResponse.setDeviceName(app.getDevice().getModelDescription());
+                if(locale.getLanguage().equalsIgnoreCase("en")){
+                    appInfoResponse.setDeviceName(app.getDevice().getModelDescriptionEng());
+                } else{
+                    appInfoResponse.setDeviceName(app.getDevice().getModelDescription());
+                }
                 appInfoResponse.setReleaseTime(app.getCreatedDate());
                 appInfoResponse.setVersion("v" + app.getVersionName());
             }
