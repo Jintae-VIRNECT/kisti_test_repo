@@ -20,6 +20,7 @@
     "i18n:diff": "i18n diff --sheetId RM-DashBoard --src src/languages/remote",
     "i18n:upload": "i18n diff --sheetId RM-DashBoard --src src/languages/remote --force",
     "i18n:download": "i18n download --sheetId RM-DashBoard --src src/languages/remote",
+    "i18n": "i18n --sheetId RM-DashBoard --src src/languages/remote",
     "prepare": "husky install"
   },
   "dependencies": {
