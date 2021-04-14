@@ -731,7 +731,8 @@ public class FileService {
 
 			FileItem fileItem = new DiskFileItem(
 				"mainFile",
-				Files.probeContentType(outputFile.toPath()),
+				//Files.probeContentType(outputFile.toPath()),
+				"image/png",
 				false,
 				outputFile.getName(),
 				(int) outputFile.length(),
@@ -817,7 +818,6 @@ public class FileService {
 		try {
 
 			objectName = objectName + "_thumbnail";
-
 			uploadResult = fileManagementService.upload(
 				targetFile,
 				bucketPath,
