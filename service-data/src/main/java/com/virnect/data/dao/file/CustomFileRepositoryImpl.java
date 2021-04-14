@@ -51,6 +51,7 @@ public class CustomFileRepositoryImpl implements CustomFileRepository {
 				file.workspaceId.eq(workspaceId),
 				file.sessionId.eq(sessionId),
 				file.fileType.eq(FileType.SHARE),
+				file.objectName.contains("thumbnail").not(),
 				file.deleted.eq(false)
 			)
 			.orderBy(file.createdDate.desc())

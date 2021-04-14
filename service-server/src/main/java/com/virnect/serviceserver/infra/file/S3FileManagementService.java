@@ -320,6 +320,90 @@ public class S3FileManagementService implements IFileManagementService {
     }
 
     @Override
+    public UploadResult upload(
+        MultipartFile file, String dirPath, FileType fileType, String objectName
+        ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        // 1. check is file dummy
+        if (file.getSize() == 0) {
+            LogMessage.formedError(
+                TAG,
+                "file upload",
+                "upload",
+                "this file maybe dummy",
+                String.valueOf(file.getSize())
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_ASSUME_DUMMY);
+        }
+
+        // 2. check file extension
+        String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())).toLowerCase();
+        if (!fileAllowExtensionList.contains(fileExtension)) {
+            LogMessage.formedError(
+                TAG,
+                "file upload",
+                "upload",
+                "this file is not unsupported",
+                file.getOriginalFilename()
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
+        }
+
+        // file upload create a InputStream for object upload.
+        StringBuilder objectPath = new StringBuilder();
+        switch (fileType) {
+            case FILE: {
+                // check file size
+                if (file.getSize() > MAX_FILE_SIZE) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "this file size over the max size",
+                        String.valueOf(file.getSize())
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_SIZE_LIMIT);
+                }
+
+                objectPath.append(dirPath).append(bucketFileName).append("/").append(objectName);
+                // Create headers
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentType(file.getContentType());
+                objectMetadata.setContentLength(file.getSize());
+
+                putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
+                    CannedAccessControlList.PublicRead);
+                break;
+            }
+            case RECORD: {
+                objectPath.append(dirPath).append(bucketRecordName).append("/").append(objectName);
+                // Create headers
+                ObjectMetadata objectMetadata = new ObjectMetadata();
+                objectMetadata.setContentType(file.getContentType());
+                objectMetadata.setContentLength(file.getSize());
+
+                putObjectToAWSS3(bucketName, file, objectPath.toString(), objectMetadata,
+                    CannedAccessControlList.PublicRead);
+                break;
+            }
+        }
+        LogMessage.formedInfo(
+            TAG,
+            "file upload",
+            "upload",
+            "complete to upload file",
+            "originName: " + file.getOriginalFilename() + ", "
+                + "name: " + file.getName() + ", "
+                + "size: " + file.getSize() + ", "
+                + "contentType: " + file.getContentType() + ", "
+                + "fileExtension: " + fileExtension + ", "
+                + "dirPath: " + dirPath + ", " + ", "
+                + "objectPath: " + objectPath + ", " + ", "
+                + "objectName: " + objectName
+        );
+        return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
+    }
+
+    @Override
     public UploadResult uploadProfile(MultipartFile file, String dirPath) {
         // check file is dummy
         if (file.getSize() == 0) {

@@ -65,6 +65,12 @@ public class File extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private FileType fileType;
 
+    @Column(name = "width")
+    private Integer width;
+
+    @Column(name = "height")
+    private Integer height;
+
     /*@ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id")
     private Type type;*/
@@ -72,15 +78,17 @@ public class File extends BaseTimeEntity {
 
     @Builder
     public File(
-            String workspaceId,
-            String sessionId,
-            String uuid,
-            String name,
-            String objectName,
-            String contentType,
-            Long size,
-            FileType fileType
-            ) {
+        String workspaceId,
+        String sessionId,
+        String uuid,
+        String name,
+        String objectName,
+        String contentType,
+        Long size,
+        FileType fileType,
+        Integer width,
+        Integer height
+    ) {
         this.workspaceId = workspaceId;
         this.sessionId = sessionId;
         this.uuid = uuid;
@@ -89,6 +97,8 @@ public class File extends BaseTimeEntity {
         this.contentType = contentType;
         this.size = size;
         this.fileType = fileType;
+        this.width = width;
+        this.height = height;
         // default setting
         this.downloadHits = 0L;
         this.deleted = false;

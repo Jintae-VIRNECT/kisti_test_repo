@@ -39,6 +39,8 @@ import com.virnect.serviceserver.serviceremote.dto.response.file.FilePreSignedRe
 import com.virnect.serviceserver.serviceremote.dto.response.file.FileUploadResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.file.RoomProfileUpdateResponse;
 import com.virnect.serviceserver.global.config.property.RemoteStorageProperties;
+import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileInfoListResponse;
+import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileUploadResponse;
 
 @Slf4j
 @RestController
@@ -432,7 +434,7 @@ public class FileRestController {
     })
     @PostMapping(value = "file/upload/share", headers = {
         "content-type=multipart/*"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<FileUploadResponse>> shareFileUploadRequestHandler(
+    public ResponseEntity<ApiResponse<ShareFileUploadResponse>> shareFileUploadRequestHandler(
         @ModelAttribute @Valid FileUploadRequest fileUploadRequest,
         BindingResult result
     ) {
@@ -456,13 +458,14 @@ public class FileRestController {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<FileUploadResponse> responseData;
+        ApiResponse<ShareFileUploadResponse> responseData;
         if (remoteStorageProperties.isEnabled()) {
             if (result.hasErrors()) {
                 result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
                 throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
             }
-            responseData = fileService.uploadFile(fileUploadRequest, FileType.SHARE);
+            responseData = fileService.uploadShareFile(fileUploadRequest, FileType.SHARE);
+
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
@@ -477,7 +480,7 @@ public class FileRestController {
         @ApiImplicitParam(name = "deleted", value = "삭제 파일 필터 옵션 (YES, NO)", dataType = "boolean", defaultValue = "false"),
     })
     @GetMapping("file/share")
-    public ResponseEntity<ApiResponse<FileInfoListResponse>> getShareFileList(
+    public ResponseEntity<ApiResponse<ShareFileInfoListResponse>> getShareFileList(
         @RequestParam(value = "workspaceId") String workspaceId,
         @RequestParam(value = "sessionId") String sessionId,
         @RequestParam(name = "userId") String userId,
@@ -494,7 +497,7 @@ public class FileRestController {
                 + "deleted:" + deleted,
             "getFileList"
         );
-        ApiResponse<FileInfoListResponse> responseData;
+        ApiResponse<ShareFileInfoListResponse> responseData;
 
         if (remoteStorageProperties.isEnabled()) {
             responseData = fileService.getShareFileInfoList(

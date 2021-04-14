@@ -503,6 +503,105 @@ public class LocalFileManagementService implements IFileManagementService {
     }
 
     @Override
+    public UploadResult upload(
+        MultipartFile file, String dirPath, FileType fileType, String objectName
+    ) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
+        // check is file dummy
+        if (file.getSize() == 0) {
+            LogMessage.formedError(
+                TAG,
+                "file upload",
+                "upload",
+                "this file maybe dummy",
+                String.valueOf(file.getSize())
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_ASSUME_DUMMY);
+        }
+
+        // check file extension
+        String fileExtension = Files.getFileExtension(Objects.requireNonNull(file.getOriginalFilename())).toLowerCase();
+        if (!fileAllowExtensionList.contains(fileExtension)) {
+            LogMessage.formedError(
+                TAG,
+                "file upload",
+                "upload",
+                "this file is not unsupported",
+                file.getOriginalFilename()
+            );
+            return new UploadResult(null, ErrorCode.ERR_FILE_UNSUPPORTED_EXTENSION);
+        }
+
+        // file upload to create a InputStream for object upload.
+        StringBuilder objectPath = new StringBuilder();
+        switch (fileType) {
+            case FILE: {
+                // check file size
+                if (file.getSize() > MAX_FILE_SIZE) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "this file size over the max size",
+                        String.valueOf(file.getSize())
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_SIZE_LIMIT);
+                }
+
+                try {
+                    objectPath.append(dirPath).append(fileBucketName).append("/").append(objectName);
+                    minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
+                        .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                        .contentType(file.getContentType()).build());
+                } catch (MinioException e) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "Upload error occurred",
+                        e.getMessage()
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+                }
+                break;
+            }
+            case RECORD: {
+                try {
+                    objectPath.append(dirPath).append(recordBucketName).append("/").append(objectName);
+                    minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(objectPath.toString())
+                        .stream(file.getInputStream(), file.getInputStream().available(), -1)
+                        .contentType(file.getContentType()).build());
+                } catch (MinioException e) {
+                    LogMessage.formedError(
+                        TAG,
+                        "file upload",
+                        "upload",
+                        "Upload error occurred",
+                        e.getMessage()
+                    );
+                    return new UploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+                }
+                break;
+            }
+        }
+
+        LogMessage.formedInfo(
+            TAG,
+            "file upload",
+            "upload",
+            "complete to upload file",
+            "originName: " + file.getOriginalFilename() + ", "
+                + "name: " + file.getName() + ", "
+                + "size: " + file.getSize() + ", "
+                + "contentType: " + file.getContentType() + ", "
+                + "fileExtension: " + fileExtension + ", "
+                + "dirPath: " + dirPath + ", " + ", "
+                + "objectPath: " + objectPath + ", " + ", "
+                + "objectName: " + objectName
+        );
+        return new UploadResult(objectName, ErrorCode.ERR_SUCCESS);
+    }
+
+    @Override
     public UploadResult uploadProfile(MultipartFile file, String dirPath) throws IOException, NoSuchAlgorithmException, InvalidKeyException {
         // check file is null
         if (file.getSize() == 0) {

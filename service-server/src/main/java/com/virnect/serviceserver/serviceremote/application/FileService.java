@@ -1,6 +1,12 @@
 package com.virnect.serviceserver.serviceremote.application;
 
+import java.awt.image.BufferedImage;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -9,7 +15,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.apache.commons.compress.utils.Lists;
+import javax.imageio.ImageIO;
+
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.imgscalr.Scalr;
+import org.jetbrains.annotations.NotNull;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,6 +32,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +48,7 @@ import com.virnect.data.domain.file.FileType;
 import com.virnect.data.domain.file.RecordFile;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.room.Room;
+import com.virnect.data.dto.FileUploadResult;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.data.dto.UploadResult;
 import com.virnect.data.dto.rest.UserInfoResponse;
@@ -50,11 +68,17 @@ import com.virnect.serviceserver.serviceremote.dto.response.file.FilePreSignedRe
 import com.virnect.serviceserver.serviceremote.dto.response.file.FileUploadResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.file.FileUserInfoResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.file.RoomProfileUpdateResponse;
+import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileInfoListResponse;
+import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileInfoResponse;
+import com.virnect.serviceserver.serviceremote.dto.response.file.ShareFileUploadResponse;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class FileService {
+
+	private final int THUMBNAIL_WIDTH = 120;
+	private final int THUMBNAIL_HEIGHT = 70;
 
 	private final IFileManagementService fileManagementService;
 	private final UserRestService userRestService;
@@ -319,6 +343,56 @@ public class FileService {
 	}
 
 	@Transactional(readOnly = true)
+	public ApiResponse<String> downloadFileUrl(File targetFile) {
+		ApiResponse<String> responseData;
+			log.info("file download: {}", targetFile.getObjectName());
+			try {
+				StringBuilder stringBuilder;
+				stringBuilder = new StringBuilder();
+				stringBuilder.append(targetFile.getWorkspaceId()).append("/")
+					.append(targetFile.getSessionId()).append("/")
+					.append(targetFile.getObjectName());
+
+				// upload to file storage
+				String bucketPath = generateDirPath(targetFile.getWorkspaceId(), targetFile.getSessionId());
+
+				int expiry = 60 * 60 * 24; //one day
+				String url = fileManagementService.filePreSignedUrl(
+					bucketPath, targetFile.getObjectName(), expiry, targetFile.getName(), FileType.FILE);
+				responseData = new ApiResponse<>(url);
+			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+				log.info("{}", exception.getMessage());
+				responseData = new ApiResponse<>(null, ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+			}
+		return responseData;
+	}
+
+	@Transactional(readOnly = true)
+	public ApiResponse<String> downloadFileUrl(String workspace, String sessionId, String objectName, String name) {
+		ApiResponse<String> responseData;
+		log.info("file download: {}", objectName);
+		try {
+			StringBuilder stringBuilder;
+			stringBuilder = new StringBuilder();
+			stringBuilder.append(workspace).append("/")
+				.append(sessionId).append("/")
+				.append(objectName);
+
+			// upload to file storage
+			String bucketPath = generateDirPath(workspace, sessionId);
+
+			int expiry = 60 * 60 * 24; //one day
+			String url = fileManagementService.filePreSignedUrl(
+				bucketPath, objectName, expiry, name, FileType.FILE);
+			responseData = new ApiResponse<>(url);
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+			log.info("{}", exception.getMessage());
+			responseData = new ApiResponse<>(null, ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+		}
+		return responseData;
+	}
+
+	@Transactional(readOnly = true)
 	public ApiResponse<FilePreSignedResponse> downloadRecordFileUrl(
 		String workspaceId,
 		String sessionId,
@@ -493,7 +567,7 @@ public class FileService {
 				FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
 				fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
 				fileDeleteResponse.setSessionId(file.getSessionId());
-				fileDeleteResponse.setFileName(file.getName());
+				fileDeleteResponse.setObjectName(file.getName());
 				responseData = new ApiResponse<>(fileDeleteResponse);
 			} else {
 				responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_FAILED);
@@ -646,6 +720,163 @@ public class FileService {
 		fileRepository.deleteAllByWorkspaceIdAndSessionId(workspaceId, sessionId);
 	}
 
+	private MultipartFile convertBufferImgToMultipartFile(
+		FileUploadRequest fileUploadRequest,
+		BufferedImage targetImg
+	) {
+		MultipartFile convertedImg = null;
+		try {
+			java.io.File outputFile = new java.io.File(fileUploadRequest.getFile().getOriginalFilename());
+			ImageIO.write(targetImg, "png", outputFile);
+
+			FileItem fileItem = new DiskFileItem(
+				"mainFile",
+				Files.probeContentType(outputFile.toPath()),
+				false,
+				outputFile.getName(),
+				(int) outputFile.length(),
+				outputFile.getParentFile()
+			);
+
+			InputStream input = new FileInputStream(outputFile);
+			OutputStream os = fileItem.getOutputStream();
+			IOUtils.copy(input, os);
+
+			convertedImg = new CommonsMultipartFile(fileItem);
+		} catch (Exception e) {
+
+		}
+		return convertedImg;
+	}
+
+	@Transactional
+	FileUploadResult saveFile(
+		FileUploadRequest fileUploadRequest,
+		FileType fileType
+	) {
+		String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
+
+		FileUploadResult response;
+
+		File file = null;
+		UploadResult uploadResult = null;
+		try {
+			uploadResult = fileManagementService.upload(
+				fileUploadRequest.getFile(),
+				bucketPath,
+				FileType.FILE
+			);
+
+			Integer width;
+			Integer height;
+
+			if (fileUploadRequest.getFile().getContentType().equals("application/pdf")) {
+				width = 0;
+				height = 0;
+			} else {
+				BufferedImage image = ImageIO.read(fileUploadRequest.getFile().getInputStream());
+				width = image.getWidth();
+				height = image.getHeight();
+			}
+
+			file = File.builder()
+				.workspaceId(fileUploadRequest.getWorkspaceId())
+				.sessionId(fileUploadRequest.getSessionId())
+				.uuid(fileUploadRequest.getUserId())
+				.name(fileUploadRequest.getFile().getOriginalFilename())
+				.objectName(uploadResult.getResult())
+				.contentType(fileUploadRequest.getFile().getContentType())
+				.size(fileUploadRequest.getFile().getSize())
+				.fileType(fileType)
+				.width(width)
+				.height(height)
+				.build();
+			fileRepository.save(file);
+
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+			log.info("{}", exception.getMessage());
+			new FileUploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+		}
+		return new FileUploadResult(uploadResult.getResult(), file, uploadResult.getErrorCode());
+	}
+
+	@Transactional
+	FileUploadResult saveThumbnailFile(
+		FileUploadRequest fileUploadRequest,
+		MultipartFile targetFile,
+		FileType fileType,
+		String objectName
+	) {
+		String bucketPath = generateDirPath(fileUploadRequest.getWorkspaceId(), fileUploadRequest.getSessionId());
+
+		FileUploadResult response;
+
+		File file = null;
+		UploadResult uploadResult = null;
+
+		try {
+
+			objectName = objectName + "_thumbnail";
+
+			uploadResult = fileManagementService.upload(
+				targetFile,
+				bucketPath,
+				FileType.FILE,
+				objectName
+			);
+
+			file = File.builder()
+				.workspaceId(fileUploadRequest.getWorkspaceId())
+				.sessionId(fileUploadRequest.getSessionId())
+				.uuid(fileUploadRequest.getUserId())
+				.name(fileUploadRequest.getFile().getOriginalFilename())
+				.objectName(objectName)
+				.contentType("image/png")
+				.size(targetFile.getSize())
+				.fileType(fileType)
+				.width(THUMBNAIL_WIDTH)
+				.height(THUMBNAIL_HEIGHT)
+				.build();
+			fileRepository.save(file);
+
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+			log.info("{}", exception.getMessage());
+			new FileUploadResult(null, ErrorCode.ERR_FILE_UPLOAD_EXCEPTION);
+		}
+
+		return new FileUploadResult(file, uploadResult.getErrorCode());
+	}
+
+
+	@Transactional
+	public ApiResponse<ShareFileUploadResponse> uploadShareFile(
+		FileUploadRequest fileUploadRequest,
+		FileType fileType
+	) {
+		// Make Thumbnail Image
+		BufferedImage bufferedImage = makeThumbnail(fileUploadRequest.getFile());
+		MultipartFile thumbnailFile = convertBufferImgToMultipartFile(fileUploadRequest, bufferedImage);
+
+		// Save Thumbnail and upload file
+		FileUploadResult fileUploadResult = saveFile(fileUploadRequest, FileType.SHARE);
+		FileUploadResult thumbnailUploadResult = saveThumbnailFile(fileUploadRequest, thumbnailFile, FileType.SHARE, fileUploadResult.getObjectName());
+
+		if (
+			thumbnailUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS || fileUploadResult.getErrorCode() != ErrorCode.ERR_SUCCESS
+		) {
+			new ApiResponse<>(new ShareFileUploadResponse(), fileUploadResult.getErrorCode());
+		}
+
+		ShareFileUploadResponse fileUploadResponse = modelMapper.map(fileUploadResult.getFile(), ShareFileUploadResponse.class);
+
+		// Get File thumbnail download url
+		ApiResponse<String> downloadUrl = downloadFileUrl(thumbnailUploadResult.getFile());
+		fileUploadResponse.setThumbnailDownloadUrl(downloadUrl.getData());
+		fileUploadResponse.setDeleted(fileUploadResult.getFile().isDeleted());
+
+		return new ApiResponse<>(fileUploadResponse);
+	}
+
 	@Transactional
 	public ApiResponse<FileDeleteResponse> removeShareFile(
 		String workspaceId,
@@ -687,7 +918,7 @@ public class FileService {
 				FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
 				fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
 				fileDeleteResponse.setSessionId(file.getSessionId());
-				fileDeleteResponse.setFileName(file.getName());
+				fileDeleteResponse.setObjectName(file.getName());
 				responseData = new ApiResponse<>(fileDeleteResponse);
 			} else {
 				responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_FAILED);
@@ -752,13 +983,13 @@ public class FileService {
 	}
 
 	@Transactional(readOnly = true)
-	public ApiResponse<FileInfoListResponse> getShareFileInfoList(
+	public ApiResponse<ShareFileInfoListResponse> getShareFileInfoList(
 		String workspaceId,
 		String sessionId
 	) {
 
-		ApiResponse<FileInfoListResponse> responseData;
-		List<FileInfoResponse> shareFileInfoResponses = new ArrayList<>();
+		ApiResponse<ShareFileInfoListResponse> responseData;
+		List<ShareFileInfoResponse> shareFileInfoResponses = new ArrayList<>();
 
 		List<File> shareFiles = fileRepository.findShareFileByWorkspaceAndSessionId(workspaceId, sessionId);
 
@@ -768,8 +999,18 @@ public class FileService {
 			}
 			shareFileInfoResponses = shareFiles
 				.stream()
-				.map(file -> modelMapper.map(file, FileInfoResponse.class))
+				.map(file -> modelMapper.map(file, ShareFileInfoResponse.class))
 				.collect(Collectors.toList());
+		}
+
+		for (ShareFileInfoResponse shareFileInfoResponse : shareFileInfoResponses) {
+			ApiResponse<String> downloadUrl = downloadFileUrl(
+				workspaceId,
+				sessionId,
+				shareFileInfoResponse.getObjectName()+"_thumbnail",
+				shareFileInfoResponse.getName()
+			);
+			shareFileInfoResponse.setThumbnailDownloadUrl(downloadUrl.getData());
 		}
 
 		// Page Metadata
@@ -782,7 +1023,47 @@ public class FileService {
 			.last(true)
 			.build();
 
-		return new ApiResponse<>(new FileInfoListResponse(shareFileInfoResponses, pageMeta));
+		return new ApiResponse<>(new ShareFileInfoListResponse(shareFileInfoResponses, pageMeta));
 	}
 
+	private BufferedImage makePdfThumbnail(MultipartFile targetFile) {
+		BufferedImage pdfThumbnail = null;
+		try {
+			java.io.File file = convertFile(targetFile);
+			PDDocument document = PDDocument.load(file);
+			PDFRenderer pdfRenderer = new PDFRenderer(document);
+
+			pdfThumbnail = pdfRenderer.renderImageWithDPI( 0, 100, ImageType.RGB );
+			document.close();
+		} catch (Exception e) {
+			System.out.println("Error : " + e.toString());
+		}
+		return pdfThumbnail;
+	}
+
+	private BufferedImage makeThumbnail(@NotNull MultipartFile targetFile) {
+		BufferedImage responseImg;
+		try {
+			if (targetFile.getContentType().equals("application/pdf")) {
+				responseImg = makePdfThumbnail(targetFile);
+			} else {
+				InputStream in = targetFile.getInputStream();
+				BufferedImage originalImage = ImageIO.read(in);
+				responseImg = Scalr.resize(originalImage, THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT);
+				in.close();
+			}
+		} catch (Exception e) {
+			responseImg = null;
+		}
+		return responseImg;
+	}
+
+	private java.io.File convertFile(@NotNull MultipartFile multipartFile) throws IOException {
+		java.io.File file = new java.io.File(multipartFile.getOriginalFilename());
+		file.createNewFile();
+		FileOutputStream fos = new FileOutputStream(file);
+		fos.write(multipartFile.getBytes());
+		fos.close();
+		return file;
+	}
 }
