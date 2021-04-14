@@ -10,9 +10,7 @@
     "view": "VIRNECT View",
     "remote": "VIRNECT Remote",
     "track": "VIRNECT Track",
-    "installFileDownload": "Download",
-    "fileDownload": "Download",
-    "downloadLink": "Shortcut to downloads",
-    "guideDownload": "User's Manual"
+    "download": "Download",
+    "guide": "User Manual"
   }
 }

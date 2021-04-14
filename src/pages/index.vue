@@ -30,7 +30,7 @@
             @click="link('guide', app)"
             :disabled="!app.guideUrl"
           >
-            {{ $t('home.guideDownload') }}
+            {{ $t('home.guide') }}
           </el-button>
         </el-card>
       </el-tab-pane>
@@ -64,14 +64,19 @@ export default {
       })
       this.products[tab] = data.appInfoList
     },
+    async '$i18n.locale'() {
+      const data = await this.$api('APP_LIST', {
+        route: { productName: this.activeTab },
+      })
+      this.products[this.activeTab] = data.appInfoList
+    },
   },
   filters,
   methods: {
     downloadText(app) {
-      let str = this.$t('home.installFileDownload')
-      if (this.activeTab === 'track') str = this.$t('home.fileDownload')
-      if (/(play\.google|apps\.apple)\.com/.test(app.appUrl))
-        str = this.$t('home.downloadLink')
+      let str = this.$t('home.download')
+      if (/play\.google\.com/.test(app.appUrl)) str = 'Google Play'
+      if (/apps\.apple\.com/.test(app.appUrl)) str = 'App Store'
       return str
     },
     async download(type, app) {
