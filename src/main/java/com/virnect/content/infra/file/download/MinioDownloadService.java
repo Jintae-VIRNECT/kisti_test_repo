@@ -131,7 +131,7 @@ public class MinioDownloadService implements FileDownloadService {
         String objectName = bucketResource + fileName;
         try {
             GetObjectArgs getObjectArgs = GetObjectArgs.builder()
-                    .bucket(bucketResource)
+                    .bucket(bucketName)
                     .object(objectName)
                     .build();
             minioClient.getObject(getObjectArgs);
