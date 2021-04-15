@@ -15,10 +15,20 @@
     </el-dialog>
     <template v-else>
       <Header
+        v-if="$env !== 'onpremise'"
         :showStatus="showStatus"
         :env="$env"
         :urls="$urls"
         :subTitle="$t('login.subTitle')"
+        @isMobile="isMobile"
+      />
+      <Header
+        v-else
+        :showStatus="showStatus"
+        :env="$env"
+        :urls="$urls"
+        :subTitle="$t('login.subTitle')"
+        :logo="logo"
         @isMobile="isMobile"
       />
       <transition name="app-fade" mode="out-in">
@@ -41,7 +51,16 @@ export default {
   data() {
     return {
       show: false,
+      logo: {},
     }
+  },
+  watch: {
+    customInfo() {
+      this.logo = {
+        default: this.customInfo.default,
+        white: this.customInfo.white,
+      }
+    },
   },
   computed: {
     customInfo() {

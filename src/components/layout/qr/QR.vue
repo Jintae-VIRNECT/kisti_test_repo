@@ -1,12 +1,23 @@
 <template>
   <section>
     <Header
+      v-if="$env !== 'onpremise'"
       :showStatus="showStatus"
       :userInfo="userInfo"
       :env="$env"
       :urls="$urls"
       :subTitle="$t('qrLogin.title')"
       @logout="logout"
+    />
+    <Header
+      v-else
+      :showStatus="showStatus"
+      :userInfo="userInfo"
+      :env="$env"
+      :urls="$urls"
+      :subTitle="$t('qrLogin.title')"
+      :logo="logo"
+      @isMobile="isMobile"
     />
     <transition name="app-fade" mode="out-in">
       <router-view
@@ -37,12 +48,21 @@ export default {
     return {
       qrImg: null,
       userInfo: null,
+      logo: {},
     }
   },
   methods: {
     logout() {
       auth.logout()
       location.reload()
+    },
+  },
+  watch: {
+    customInfo() {
+      this.logo = {
+        default: this.customInfo.default,
+        white: this.customInfo.white,
+      }
     },
   },
   computed: {
