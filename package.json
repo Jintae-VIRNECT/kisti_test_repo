@@ -11,7 +11,8 @@
     "build:production": "cross-env NODE_ENV=production VIRNECT_ENV=local nuxt build --modern=server",
     "deploy": "cross-env NODE_ENV=$VIRNECT_ENV VIRNECT_ENV=$VIRNECT_ENV CONFIG_SERVER=$CONFIG_SERVER nuxt start --modern=server",
     "e2e": "cypress",
-    "i18n": "i18n --sheetId PF-WebWorkstation"
+    "i18n": "i18n --sheetId PF-WebWorkstation",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.10.3",
@@ -42,6 +43,7 @@
     "sass-loader": "^10.1.1",
     "style-loader": "^1.0.2",
     "vue-loader": "^15.8.3",
-    "vue-style-loader": "^4.1.2"
+    "vue-style-loader": "^4.1.2",
+    "husky": "^6.0.0"
   }
 }
