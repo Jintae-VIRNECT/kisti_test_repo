@@ -1,13 +1,13 @@
 RELEASE
 
 New Features
-없음
+다운로드 센터 디바이스 이름 영문 변환 적용
 
 Bug Fixes
 없음
 
 Limitation
-- 버전 표기 변경(v.1.2 -> v1.2)
+없음
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
