@@ -1,14 +1,13 @@
 RELEASE
 
 New Features
-- max heap 사이즈 변경 400mb -> 800mb
+다운로드 센터 디바이스 이름 영문 변환 적용
 
 Bug Fixes
-- 없음
+없음
 
 Limitation
-- 앱 리스트 조회 시 상태값 조건(AppStatus.ACTIVE) 추가
-- 제품별로 디바이스 분리하여 제품별로 설치파일 설명을 분리함.(device.product_id 컬럼 추가)
+없음
 
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
