@@ -9,7 +9,6 @@ spring:
         url: jdbc:mysql://localhost:3306/woong?serverTimezone=UTC&characterEncoding=UTF-8
         username: root
         password: dndqmffldb
-
     jpa:
         database: mysql
         database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
@@ -21,6 +20,9 @@ spring:
                 format_sql: true
                 use_sql_comments: false
         show-sql: true
+    mvc:
+        async:
+            request-timeout: 10000
 
 eureka:
     client:
