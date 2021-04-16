@@ -14,6 +14,6 @@ public interface CustomFileRepository {
 
 	List<File> findByWorkspaceIdAndDeleted(String workspaceId, boolean delete);
 
-	List<File> findShareFileByWorkspaceAndSessionId(final String workspaceId, final String sessionId);
+	Page<File> findShareFileByWorkspaceAndSessionId(final String workspaceId, final String sessionId, boolean paging, Pageable pageable);
 
 }

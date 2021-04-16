@@ -3,18 +3,31 @@ package com.virnect.data.dao.file;
 import static com.virnect.data.domain.file.QFile.*;
 
 import java.util.List;
+import java.util.Objects;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
+
+import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
-import lombok.RequiredArgsConstructor;
 
 import com.virnect.data.domain.file.File;
 import com.virnect.data.domain.file.FileType;
+import com.virnect.data.domain.member.MemberHistory;
 
-@RequiredArgsConstructor
-public class CustomFileRepositoryImpl implements CustomFileRepository {
+@Repository
+public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implements CustomFileRepository {
 
 	private final JPAQueryFactory query;
+	private final long EXPIRATION_DATE = 30;
+
+	public CustomFileRepositoryImpl(JPAQueryFactory query) {
+		super(File.class);
+		this.query = query;
+	}
 
 	@Override
 	public List<File> findByWorkspaceIdAndSessionIdAndDeleted(
@@ -43,10 +56,14 @@ public class CustomFileRepositoryImpl implements CustomFileRepository {
 	}
 
 	@Override
-	public List<File> findShareFileByWorkspaceAndSessionId(
-		String workspaceId, String sessionId
+	public Page<File> findShareFileByWorkspaceAndSessionId(
+		String workspaceId,
+		String sessionId,
+		boolean paging,
+		Pageable pageable
 	) {
-		return query.selectFrom(file)
+		JPQLQuery<File> queryResult = query
+			.selectFrom(file)
 			.where(
 				file.workspaceId.eq(workspaceId),
 				file.sessionId.eq(sessionId),
@@ -55,7 +72,14 @@ public class CustomFileRepositoryImpl implements CustomFileRepository {
 				file.deleted.eq(false)
 			)
 			.orderBy(file.createdDate.desc())
-			.distinct()
-			.fetch();
+			.distinct();
+		long totalCount = queryResult.fetchCount();
+		List<File> results;
+		if (paging) {
+			results = Objects.requireNonNull(getQuerydsl()).applyPagination(pageable, queryResult).fetch();
+		} else {
+			results = Objects.requireNonNull(queryResult.fetch());
+		}
+		return new PageImpl<>(results, pageable, totalCount);
 	}
 }

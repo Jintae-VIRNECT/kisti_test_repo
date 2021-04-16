@@ -474,6 +474,7 @@ public class FileRestController {
 
     @ApiOperation(value = "[Share] Load Room File List", notes = "[공유 파일] 원격협업에서 등록된 파일 목록을 조회")
     @ApiImplicitParams({
+        @ApiImplicitParam(name = "paging", value = "검색 결과 페이지네이션 여부", dataType = "boolean", allowEmptyValue = true, defaultValue = "false"),
         @ApiImplicitParam(name = "size", value = "페이징 사이즈", dataType = "number", paramType = "query", defaultValue = "10"),
         @ApiImplicitParam(name = "page", value = "size 대로 나눠진 페이지를 조회할 번호(Index 0 부터 시작)", paramType = "query", defaultValue = "0"),
         @ApiImplicitParam(name = "sort", value = "정렬 옵션 데이터(createdDate, ASC or DESC)", paramType = "query", defaultValue = "createdDate, DESC"),
@@ -483,7 +484,7 @@ public class FileRestController {
     public ResponseEntity<ApiResponse<ShareFileInfoListResponse>> getShareFileList(
         @RequestParam(value = "workspaceId") String workspaceId,
         @RequestParam(value = "sessionId") String sessionId,
-        @RequestParam(name = "userId") String userId,
+        @RequestParam(name = "paging") boolean paging,
         @RequestParam(value = "deleted", required = false, defaultValue = "false") boolean deleted,
         @ApiIgnore PageRequest pageRequest
     ) {
@@ -493,7 +494,6 @@ public class FileRestController {
                 + REST_PATH + "::"
                 + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
                 + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
-                + "userId:" + (userId != null ? sessionId : "{}") + "/"
                 + "deleted:" + deleted,
             "getFileList"
         );
@@ -502,7 +502,9 @@ public class FileRestController {
         if (remoteStorageProperties.isEnabled()) {
             responseData = fileService.getShareFileInfoList(
                 workspaceId,
-                sessionId
+                sessionId,
+                paging,
+                pageRequest.ofSortBy()
             );
         } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);

@@ -885,48 +885,43 @@ public class FileService {
 		String objectName,
 		FileType fileType
 	) {
-
-		ApiResponse<FileDeleteResponse> responseData;
+		FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
 
 		Member leaderInfo = memberRepository.findRoomLeaderBySessionId(workspaceId, sessionId);
-
 		if (!leaderUserId.equals(leaderInfo.getUuid())) {
 			new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
 		}
 
 		File file = fileRepository.findByWorkspaceIdAndSessionIdAndObjectNameAndFileType(workspaceId, sessionId, objectName, fileType).orElse(null);
-
-		if (file != null) {
-			file.setDeleted(true);
-			fileRepository.save(file);
-
-			//remove object
-			boolean result = false;
-			try {
-				StringBuilder stringBuilder;
-				stringBuilder = new StringBuilder();
-				stringBuilder.append(workspaceId).append("/")
-					.append(sessionId).append("/")
-					.append(file.getObjectName());
-				result = fileManagementService.removeObject(stringBuilder.toString());
-			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-				exception.printStackTrace();
-				log.info("{}", exception.getMessage());
-				new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_EXCEPTION);
-			}
-			if (result) {
-				FileDeleteResponse fileDeleteResponse = new FileDeleteResponse();
-				fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
-				fileDeleteResponse.setSessionId(file.getSessionId());
-				fileDeleteResponse.setObjectName(file.getName());
-				responseData = new ApiResponse<>(fileDeleteResponse);
-			} else {
-				responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_FAILED);
-			}
-		} else {
-			responseData = new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_NOT_FOUND);
+		if (Objects.isNull(file)) {
+			new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_NOT_FOUND);
 		}
-		return responseData;
+
+		file.setDeleted(true);
+		fileRepository.save(file);
+
+		//remove object
+		boolean result;
+		try {
+			StringBuilder stringBuilder;
+			stringBuilder = new StringBuilder();
+			stringBuilder.append(workspaceId).append("/")
+				.append(sessionId).append("/")
+				.append(file.getObjectName());
+			result = fileManagementService.removeObject(stringBuilder.toString());
+			if (!result) {
+				new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_FAILED);
+			}
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+			exception.printStackTrace();
+			log.info("{}", exception.getMessage());
+			new ApiResponse<>(new FileDeleteResponse(), ErrorCode.ERR_FILE_DELETE_EXCEPTION);
+		}
+
+		fileDeleteResponse.setWorkspaceId(file.getWorkspaceId());
+		fileDeleteResponse.setSessionId(file.getSessionId());
+		fileDeleteResponse.setObjectName(file.getName());
+		return new ApiResponse<>(fileDeleteResponse);
 	}
 
 	@Transactional
@@ -985,19 +980,21 @@ public class FileService {
 	@Transactional(readOnly = true)
 	public ApiResponse<ShareFileInfoListResponse> getShareFileInfoList(
 		String workspaceId,
-		String sessionId
+		String sessionId,
+		boolean paging,
+		Pageable pageable
 	) {
 
-		ApiResponse<ShareFileInfoListResponse> responseData;
 		List<ShareFileInfoResponse> shareFileInfoResponses = new ArrayList<>();
+		PageMetadataResponse pageMeta;
 
-		List<File> shareFiles = fileRepository.findShareFileByWorkspaceAndSessionId(workspaceId, sessionId);
+		Page<File> shareFilePage = fileRepository.findShareFileByWorkspaceAndSessionId(workspaceId, sessionId, paging, pageable);
 
-		if (!shareFiles.isEmpty()) {
-			for (File shareFile : shareFiles) {
+		if (!shareFilePage.isEmpty()) {
+			for (File shareFile : shareFilePage) {
 				log.info("getFileInfoList : {}", shareFile.getObjectName());
 			}
-			shareFileInfoResponses = shareFiles
+			shareFileInfoResponses = shareFilePage
 				.stream()
 				.map(file -> modelMapper.map(file, ShareFileInfoResponse.class))
 				.collect(Collectors.toList());
@@ -1013,16 +1010,25 @@ public class FileService {
 			shareFileInfoResponse.setThumbnailDownloadUrl(downloadUrl.getData());
 		}
 
-		// Page Metadata
-		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-			.currentPage(1)
-			.currentSize(1)
-			.numberOfElements(shareFileInfoResponses.size())
-			.totalPage(1)
-			.totalElements(shareFileInfoResponses.size())
-			.last(true)
-			.build();
-
+		if (paging) {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(pageable.getPageNumber())
+				.currentSize(pageable.getPageSize())
+				.numberOfElements(shareFilePage.getNumberOfElements())
+				.totalPage(shareFilePage.getTotalPages())
+				.totalElements(shareFilePage.getTotalElements())
+				.last(shareFilePage.isLast())
+				.build();
+		} else {
+			pageMeta = PageMetadataResponse.builder()
+				.currentPage(1)
+				.currentSize(1)
+				.numberOfElements(shareFileInfoResponses.size())
+				.totalPage(1)
+				.totalElements(shareFileInfoResponses.size())
+				.last(true)
+				.build();
+		}
 		return new ApiResponse<>(new ShareFileInfoListResponse(shareFileInfoResponses, pageMeta));
 	}
 
