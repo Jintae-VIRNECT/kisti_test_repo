@@ -383,7 +383,7 @@ public class ContentService {
         }
 
         // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
-        if (!originTargetData.equals(targetData)) {
+        if (!originTargetData.equals(targetData) || target.getType()!=updateRequest.getTargetType()) {
             // 기존 타겟 데이터 삭제
             this.targetRepository.deleteByContentId(targetContent.getId());
 
