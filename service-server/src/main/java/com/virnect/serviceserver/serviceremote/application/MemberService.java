@@ -19,6 +19,8 @@ import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseConstants;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
@@ -92,7 +94,7 @@ public class MemberService {
 			.currentPage(currentPage)
 			.currentSize(currentSize)
 			.totalPage(totalPage)
-			.totalElements(totalElements)
+			.totalElements(workspaceMemberInfoList.size())
 			.numberOfElements(workspaceMemberInfoList.size())
 			.build();
 
@@ -120,60 +122,59 @@ public class MemberService {
 		//Room room = sessionService.getRoom(workspaceId, sessionId);
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (ObjectUtils.isEmpty(room)) {
-			// insert return custom error
-		} else {
-			// Get Member List from Room
-			// Mapping Member List Data to Member Information List
-			List<Member> memberList = room.getMembers();
-			//remove members who does not have room id
-			memberList.removeIf(member -> member.getRoom() == null);
-
-			//fetch workspace member information from workspace
-			WorkspaceMemberInfoListResponse feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
-				workspaceId, filter, search, page, size).getData();
-
-			List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse
-				.getMemberInfoList();
-			PageMetadataResponse workspaceMemberPageMeta = feignResponse.getPageMeta();
-			int currentPage = workspaceMemberPageMeta.getCurrentPage();
-			int currentSize = workspaceMemberPageMeta.getCurrentSize();
-			int totalPage = workspaceMemberPageMeta.getTotalPage();
-			long totalElements = workspaceMemberPageMeta.getTotalElements();
-
-			//remove members who does not have any license plan or remote license
-			workspaceMemberInfoList.removeIf(memberInfoResponses ->
-				Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
-					!Arrays.toString(memberInfoResponses.getLicenseProducts())
-						.contains(LicenseConstants.PRODUCT_NAME));
-
-			//remove member who has the same user id(::uuid)
-			//do not remove member who has status evicted;
-			//workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
-			memberList.forEach(member -> workspaceMemberInfoList.removeIf(memberInfoResponses ->
-				member.getMemberStatus() != MemberStatus.EVICTED &&
-					memberInfoResponses.getUuid().equals(member.getUuid())
-			));
-
-			// Page Metadata
-			PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-				.currentPage(currentPage)
-				.currentSize(currentSize)
-				.totalPage(totalPage)
-				.totalElements(totalElements)
-				.numberOfElements(workspaceMemberInfoList.size())
-				.build();
-
-			// set page meta data last field to true or false
-			pageMeta.setLast(currentPage >= totalPage);
-			//pageMeta.setLast(workspaceMemberInfoList.size() == 0);
-
-			List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-				.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
-				.collect(Collectors.toList());
-
-			responseData = new MemberInfoListResponse(memberInfoList, pageMeta);
+			throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
-		return responseData;
+
+		// Get Member List from Room
+		// Mapping Member List Data to Member Information List
+		List<Member> memberList = room.getMembers();
+		//remove members who does not have room id
+		memberList.removeIf(member -> member.getRoom() == null);
+
+		//fetch workspace member information from workspace
+		WorkspaceMemberInfoListResponse feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
+			workspaceId, filter, search, page, size).getData();
+
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse
+			.getMemberInfoList();
+		PageMetadataResponse workspaceMemberPageMeta = feignResponse.getPageMeta();
+		int currentPage = workspaceMemberPageMeta.getCurrentPage();
+		int currentSize = workspaceMemberPageMeta.getCurrentSize();
+		int totalPage = workspaceMemberPageMeta.getTotalPage();
+		long totalElements = workspaceMemberPageMeta.getTotalElements();
+
+		//remove members who does not have any license plan or remote license
+		workspaceMemberInfoList.removeIf(memberInfoResponses ->
+			Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
+				!Arrays.toString(memberInfoResponses.getLicenseProducts())
+					.contains(LicenseConstants.PRODUCT_NAME));
+
+		//remove member who has the same user id(::uuid)
+		//do not remove member who has status evicted;
+		//workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
+		memberList.forEach(member -> workspaceMemberInfoList.removeIf(memberInfoResponses ->
+			member.getMemberStatus() != MemberStatus.EVICTED &&
+				memberInfoResponses.getUuid().equals(member.getUuid())
+		));
+
+		// Page Metadata
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(currentPage)
+			.currentSize(currentSize)
+			.totalPage(totalPage)
+			.totalElements(totalElements)
+			.numberOfElements(workspaceMemberInfoList.size())
+			.build();
+
+		// set page meta data last field to true or false
+		pageMeta.setLast(currentPage >= totalPage);
+		//pageMeta.setLast(workspaceMemberInfoList.size() == 0);
+
+		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.collect(Collectors.toList());
+
+		return new MemberInfoListResponse(memberInfoList, pageMeta);
 	}
 
 	public MemberSecessionResponse deleteMembersBySession(String userId) {
