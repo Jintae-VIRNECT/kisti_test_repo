@@ -1,7 +1,6 @@
 package com.virnect.serviceserver.serviceremote.api;
 
-import java.util.Objects;
-
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,34 +39,17 @@ public class ValidationController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "::"
-                + (userId != null ? userId : "{}"),
+                + workspaceId + "/"
+                + userId,
             "getLicenseInfo"
         );
 
-        assert workspaceId != null;
-        if (workspaceId.isEmpty() || Objects.requireNonNull(userId).isEmpty()) {
+        if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
         ApiResponse<LicenseItemResponse> responseData = validationService.getLicenseInfo(workspaceId, userId);
         return ResponseEntity.ok(responseData);
     }
-
-    /*@ApiOperation(value = "Service License Validity ", notes = "서비스 라이선스 유효성을 확인합니다.")
-    @GetMapping(value = "licenses/{workspaceId}/{userId}")
-    public ResponseEntity<ApiResponse<LicenseInfoListResponse>> getLicenseInfo(
-            @PathVariable String workspaceId,
-            @PathVariable String userId) {
-
-        log.info("REST API: GET {}/licenses/{}/{}", REST_PATH,
-                workspaceId != null ? workspaceId.toString() : "{}",
-                userId != null ? userId : "{}");
-        if(workspaceId.isEmpty() || userId.isEmpty()) {
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-        ApiResponse<LicenseInfoListResponse> response = this.remoteGatewayService.getLicenseValidity(workspaceId, userId);
-        return ResponseEntity.ok(response);
-    }*/
 
 }
