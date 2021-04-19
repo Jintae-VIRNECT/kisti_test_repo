@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -215,58 +214,57 @@ public class FileService {
 		String sessionId,
 		RoomProfileUpdateRequest roomProfileUpdateRequest
 	) {
-		ApiResponse<RoomProfileUpdateResponse> responseData;
+
 		RoomProfileUpdateResponse roomProfileUpdateResponse = new RoomProfileUpdateResponse();
 		String profileUrl = IFileManagementService.DEFAULT_ROOM_PROFILE;
+
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
-		if (room != null) {
-			if (room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
-				if (roomProfileUpdateRequest.getProfile() != null) {
-					try {
-						UploadResult uploadResult = fileManagementService.uploadProfile(
-							roomProfileUpdateRequest.getProfile(),
-							null
-						);
-						ErrorCode errorCode = uploadResult.getErrorCode();
-						switch (errorCode) {
-							case ERR_FILE_ASSUME_DUMMY:
-							case ERR_FILE_UNSUPPORTED_EXTENSION:
-							case ERR_FILE_SIZE_LIMIT:
-								return new ApiResponse<>(new RoomProfileUpdateResponse(), errorCode);
-							case ERR_SUCCESS:
-								profileUrl = uploadResult.getResult();
-								break;
-						}
-
-						fileManagementService.deleteProfile(room.getProfile());
-					} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-						log.info("{}", exception.getMessage());
-						return new ApiResponse<>(
-							new RoomProfileUpdateResponse(),
-							ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
-							exception.getMessage()
-						);
-					}
-				}
-				roomProfileUpdateResponse.setSessionId(sessionId);
-				roomProfileUpdateResponse.setProfile(profileUrl);
-				room.setProfile(profileUrl);
-
-				Room uploadResult = roomRepository.save(room);
-
-				if (!ObjectUtils.isEmpty(uploadResult)) {
-					responseData = new ApiResponse<>(roomProfileUpdateResponse);
-				} else {
-					responseData = new ApiResponse<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_PROFILE_UPLOAD_FAILED);
-				}
-			} else {
-				responseData = new ApiResponse<>(
-					new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-			}
-		} else {
-			responseData = new ApiResponse<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		if (room == null) {
+			new ApiResponse<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
-		return responseData;
+
+		if (!room.getLeaderId().equals(roomProfileUpdateRequest.getUuid())) {
+			new ApiResponse<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+		}
+
+		if (roomProfileUpdateRequest.getProfile() != null) {
+			try {
+				UploadResult uploadResult = fileManagementService.uploadProfile(
+					roomProfileUpdateRequest.getProfile(),
+					null
+				);
+				ErrorCode errorCode = uploadResult.getErrorCode();
+				switch (errorCode) {
+					case ERR_FILE_ASSUME_DUMMY:
+					case ERR_FILE_UNSUPPORTED_EXTENSION:
+					case ERR_FILE_SIZE_LIMIT:
+						return new ApiResponse<>(new RoomProfileUpdateResponse(), errorCode);
+					case ERR_SUCCESS:
+						profileUrl = uploadResult.getResult();
+						break;
+				}
+				fileManagementService.deleteProfile(room.getProfile());
+			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+				log.info("{}", exception.getMessage());
+				return new ApiResponse<>(
+					new RoomProfileUpdateResponse(),
+					ErrorCode.ERR_FILE_UPLOAD_EXCEPTION.getCode(),
+					exception.getMessage()
+				);
+			}
+		}
+
+		roomProfileUpdateResponse.setSessionId(sessionId);
+		roomProfileUpdateResponse.setProfile(profileUrl);
+		room.setProfile(profileUrl);
+
+		Room uploadResult = roomRepository.save(room);
+
+		if (ObjectUtils.isEmpty(uploadResult)) {
+			new ApiResponse<>(new RoomProfileUpdateResponse(), ErrorCode.ERR_PROFILE_UPLOAD_FAILED);
+		}
+
+		return new ApiResponse<>(roomProfileUpdateResponse);
 	}
 
 	@Transactional
@@ -578,133 +576,6 @@ public class FileService {
 		return responseData;
 	}
 
-	public ApiResponse<String> downloadGuideFileUrl(String objectName) {
-
-		ApiResponse<String> responseData;
-
-		String url;
-		try {
-			int expiry = 60 * 60 * 24; //one day
-			url = fileManagementService.filePreSignedUrl("guide", objectName, expiry);
-			if (url == null) {
-				responseData = new ApiResponse<>("", ErrorCode.ERR_FILE_NOT_FOUND);
-			} else {
-				responseData = new ApiResponse<>(url);
-			}
-		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
-			log.info("{}", exception.getMessage());
-			responseData = new ApiResponse<>("", ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
-		}
-		return responseData;
-	}
-
-	@Transactional
-	public void removeFiles(String sessionId) {
-
-		String workspaceId = sessionTransactionalService.getRoom(sessionId).getWorkspaceId();
-		if (workspaceId != null) {
-			try {
-
-				List<String> listName = new LinkedList<>();
-				List<File> files = getFileList(workspaceId, sessionId);
-				for (File file : files) {
-					listName.add(file.getObjectName());
-				}
-
-				if (!listName.isEmpty()) {
-					String dirPath = generateDirPath(workspaceId, sessionId);
-					fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
-				}
-			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
-				e.printStackTrace();
-			}
-			deleteFiles(workspaceId, sessionId);
-		}
-	}
-
-	@Transactional
-	public void removeFiles(String workspaceId, String sessionId) {
-
-		log.info("ROOM removeFiles {}, {}", workspaceId, sessionId);
-		try {
-
-			List<String> listName = new ArrayList<>();
-			List<File> files = getFileList(workspaceId, sessionId);
-			for (File file : files) {
-				listName.add(file.getObjectName());
-			}
-
-			if (!listName.isEmpty()) {
-				String dirPath = generateDirPath(workspaceId, sessionId);
-				fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
-			}
-		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
-			e.printStackTrace();
-		}
-		deleteFiles(workspaceId, sessionId);
-	}
-
-	@Transactional
-	public File registerFile(FileUploadRequest fileUploadRequest, String objectName) {
-		File file = File.builder()
-			.workspaceId(fileUploadRequest.getWorkspaceId())
-			.sessionId(fileUploadRequest.getSessionId())
-			.uuid(fileUploadRequest.getUserId())
-			.name(fileUploadRequest.getFile().getOriginalFilename())
-			.objectName(objectName)
-			.contentType(fileUploadRequest.getFile().getContentType())
-			.size(fileUploadRequest.getFile().getSize())
-			.build();
-
-		return fileRepository.save(file);
-	}
-
-	@Transactional
-	public RecordFile registerRecordFile(RecordFileUploadRequest recordFileUploadRequest, String objectName) {
-		RecordFile recordFile = RecordFile.builder()
-			.workspaceId(recordFileUploadRequest.getWorkspaceId())
-			.sessionId(recordFileUploadRequest.getSessionId())
-			.uuid(recordFileUploadRequest.getUserId())
-			.name(recordFileUploadRequest.getFile().getOriginalFilename())
-			.objectName(objectName)
-			.contentType(recordFileUploadRequest.getFile().getContentType())
-			.size(recordFileUploadRequest.getFile().getSize())
-			.durationSec(recordFileUploadRequest.getDurationSec())
-			.build();
-
-		return recordFileRepository.save(recordFile);
-	}
-
-	public File getFileByName(String workspaceId, String sessionId, String name) {
-		return this.fileRepository.findByWorkspaceIdAndSessionIdAndName(workspaceId, sessionId, name).orElse(null);
-	}
-
-	public File getFileByObjectName(String workspaceId, String sessionId, String objectName) {
-		return this.fileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
-	}
-
-	public RecordFile getRecordFileByObjectName(String workspaceId, String sessionId, String objectName) {
-		return this.recordFileRepository.findByWorkspaceIdAndSessionIdAndObjectName(workspaceId, sessionId, objectName).orElse(null);
-	}
-
-	/*public Page<File> getFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {
-		if(isDeleted)
-			return this.fileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrueAndFileType(workspaceId, sessionId, pageable);
-		else
-			return this.fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
-	}*/
-
-	public List<File> getFileList(String workspaceId, String sessionId) {
-		return this.fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId);
-	}
-
-	public Page<RecordFile> getRecordFileList(String workspaceId, String sessionId, Pageable pageable, boolean isDeleted) {
-		if(isDeleted)
-			return this.recordFileRepository.findByWorkspaceIdAndSessionIdAndDeletedIsTrue(workspaceId, sessionId, pageable);
-		else
-			return this.recordFileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId, pageable);
-	}
-
 	@Transactional
 	public void deleteFile(File file, boolean drop) {
 		if(drop) {
@@ -991,9 +862,6 @@ public class FileService {
 		Page<File> shareFilePage = fileRepository.findShareFileByWorkspaceAndSessionId(workspaceId, sessionId, paging, pageable);
 
 		if (!shareFilePage.isEmpty()) {
-			for (File shareFile : shareFilePage) {
-				log.info("getFileInfoList : {}", shareFile.getObjectName());
-			}
 			shareFileInfoResponses = shareFilePage
 				.stream()
 				.map(file -> modelMapper.map(file, ShareFileInfoResponse.class))
@@ -1072,4 +940,102 @@ public class FileService {
 		fos.close();
 		return file;
 	}
+
+	public ApiResponse<String> downloadGuideFileUrl(String objectName) {
+
+		ApiResponse<String> responseData;
+
+		String url;
+		try {
+			int expiry = 60 * 60 * 24; //one day
+			url = fileManagementService.filePreSignedUrl("guide", objectName, expiry);
+			if (url == null) {
+				responseData = new ApiResponse<>("", ErrorCode.ERR_FILE_NOT_FOUND);
+			} else {
+				responseData = new ApiResponse<>(url);
+			}
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException exception) {
+			log.info("{}", exception.getMessage());
+			responseData = new ApiResponse<>("", ErrorCode.ERR_FILE_GET_SIGNED_EXCEPTION);
+		}
+		return responseData;
+	}
+
+	@Transactional
+	public void removeFiles(String sessionId) {
+
+		String workspaceId = sessionTransactionalService.getRoom(sessionId).getWorkspaceId();
+		if (workspaceId != null) {
+			try {
+
+				List<String> listName = new LinkedList<>();
+				List<File> files = fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId);
+				for (File file : files) {
+					listName.add(file.getObjectName());
+				}
+
+				if (!listName.isEmpty()) {
+					String dirPath = generateDirPath(workspaceId, sessionId);
+					fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
+				}
+			} catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+				e.printStackTrace();
+			}
+			deleteFiles(workspaceId, sessionId);
+		}
+	}
+
+	@Transactional
+	public void removeFiles(String workspaceId, String sessionId) {
+
+		log.info("ROOM removeFiles {}, {}", workspaceId, sessionId);
+		try {
+
+			List<String> listName = new ArrayList<>();
+			List<File> files = fileRepository.findByWorkspaceIdAndSessionId(workspaceId, sessionId);
+			for (File file : files) {
+				listName.add(file.getObjectName());
+			}
+
+			if (!listName.isEmpty()) {
+				String dirPath = generateDirPath(workspaceId, sessionId);
+				fileManagementService.removeBucket(null, dirPath, listName, FileType.FILE);
+			}
+		} catch (IOException | NoSuchAlgorithmException | InvalidKeyException e) {
+			e.printStackTrace();
+		}
+		deleteFiles(workspaceId, sessionId);
+	}
+
+	@Transactional
+	public File registerFile(FileUploadRequest fileUploadRequest, String objectName) {
+		File file = File.builder()
+			.workspaceId(fileUploadRequest.getWorkspaceId())
+			.sessionId(fileUploadRequest.getSessionId())
+			.uuid(fileUploadRequest.getUserId())
+			.name(fileUploadRequest.getFile().getOriginalFilename())
+			.objectName(objectName)
+			.contentType(fileUploadRequest.getFile().getContentType())
+			.size(fileUploadRequest.getFile().getSize())
+			.build();
+
+		return fileRepository.save(file);
+	}
+
+	@Transactional
+	public RecordFile registerRecordFile(RecordFileUploadRequest recordFileUploadRequest, String objectName) {
+		RecordFile recordFile = RecordFile.builder()
+			.workspaceId(recordFileUploadRequest.getWorkspaceId())
+			.sessionId(recordFileUploadRequest.getSessionId())
+			.uuid(recordFileUploadRequest.getUserId())
+			.name(recordFileUploadRequest.getFile().getOriginalFilename())
+			.objectName(objectName)
+			.contentType(recordFileUploadRequest.getFile().getContentType())
+			.size(recordFileUploadRequest.getFile().getSize())
+			.durationSec(recordFileUploadRequest.getDurationSec())
+			.build();
+
+		return recordFileRepository.save(recordFile);
+	}
+
 }
