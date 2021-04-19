@@ -44,6 +44,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -367,30 +368,45 @@ public class ContentService {
         targetContent.getSceneGroupList().clear();
         addSceneGroupToContent(targetContent, metadata);
 
-        String targetData = updateRequest.getTargetData();
-
         // 해당 컨텐츠와 물려있는 타겟 정보를 찾음
         Target target = this.targetRepository.findByContentId(targetContent.getId())
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
 
-        String originTargetData = null;
-
         // 기존 타겟 데이터가 없을 경우
-        if (Objects.isNull(target.getData())) {
+        if (!StringUtils.hasText(target.getData())) {
             throw new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
-        } else {
-            originTargetData = target.getData();
         }
 
-        // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
-        if (!originTargetData.equals(targetData) || target.getType()!=updateRequest.getTargetType()) {
-            // 기존 타겟 데이터 삭제
-            this.targetRepository.deleteByContentId(targetContent.getId());
+        /*// 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
+        // 기존 타겟 데이터 삭제
+        this.targetRepository.deleteByContentId(targetContent.getId());
 
-            // 새로운 타겟 데이터 입력
-            targetData = addTargetToContent(
-                    targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+        // 새로운 타겟 데이터 입력
+        targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());*/
+
+        String targetData = target.getData();
+        if (!target.getData().equals(updateRequest.getTargetData())) {
+            targetData = updateRequest.getTargetData();
+            target.setData(updateRequest.getTargetData());
         }
+        if (!target.getData().equals(updateRequest.getTargetData()) || updateRequest.getTargetType() != target.getType()) {
+            if (updateRequest.getTargetType().equals(TargetType.QR)) {
+                target.setImgPath(decodeData(targetData));
+            }
+            if (updateRequest.getTargetType().equals(TargetType.VTarget)) {
+                target.setImgPath(fileDownloadService.getFilePath(fileUploadPath, defaultVTarget));
+            }
+            target.setType(updateRequest.getTargetType());
+        }
+        if (!targetContent.getMetadata().equals(updateRequest.getMetadata())) {
+            JsonParser jsonParse = new JsonParser();
+            JsonObject propertyObj = (JsonObject) jsonParse.parse(updateRequest.getMetadata());
+            JsonObject contents = propertyObj.getAsJsonObject("contents");
+            float targetSize = contents.get("targetSize").getAsFloat();
+            target.setSize(targetSize);
+        }
+
+        targetRepository.save(target);
 
         // 8. 수정 반영
         this.contentRepository.save(targetContent);
@@ -398,8 +414,8 @@ public class ContentService {
         // 반환할 타겟정보
         List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
         ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
-                .type(updateRequest.getTargetType())
-                .data(targetData)
+                .type(target.getType())
+                .data(target.getData())
                 .build();
         contentTargetResponseList.add(contentTargetResponse);
 

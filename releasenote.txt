@@ -1,12 +1,12 @@
 RELEASE
 
 New Features
-- 파일 다운로드
+- 파일 부분 다운로드 기능 추가
 
 Bug Fixes
-- 파일 다운로드 stream close 누락 부분 개선
+- 컨텐츠 업데이트 시 타겟 데이터 변경 유무와 산관 없이 타겟 유형 변경 가능하도록 수정
 
 Limitation
-- 컨텐츠 다운로드 에러 응답코드 추가
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
