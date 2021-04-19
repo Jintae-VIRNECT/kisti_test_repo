@@ -26,6 +26,7 @@ import com.virnect.data.dto.rest.WorkspaceMemberInfoListResponse;
 import com.virnect.data.dto.rest.WorkspaceMemberInfoResponse;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
+import com.virnect.data.global.util.ListUtils;
 import com.virnect.data.infra.utils.LogMessage;
 import com.virnect.serviceserver.serviceremote.dto.request.room.RoomHistoryDeleteRequest;
 import com.virnect.serviceserver.serviceremote.dto.response.ResultResponse;
@@ -141,8 +142,8 @@ public class HistoryService {
 		PageMetadataResponse pageMeta;
 
 		Page<RoomHistory> roomHistoryPage;
+
 		if (!(StringUtils.isBlank(search))) {
-			List<String> userIds = new ArrayList<>();
 			List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
 				workspaceId,
 				"remote",
@@ -150,12 +151,12 @@ public class HistoryService {
 				99
 			).getData().getMemberInfoList();
 
-			for (WorkspaceMemberInfoResponse memberInfo : members) {
-				if (memberInfo.getUuid() == null || memberInfo.getUuid().isEmpty()) {
-					//if memberInfo is empty
-					log.info("loadFromDatabase::searchRoomHistoryPageList:: some member dose not have uuid");
-				} else {
-					userIds.add(memberInfo.getUuid());
+			List<String> userIds = new ArrayList<>();
+			if (!userIds.isEmpty()) {
+				for (WorkspaceMemberInfoResponse memberInfo : members) {
+					if (!StringUtils.isBlank(memberInfo.getUuid())){
+						userIds.add(memberInfo.getUuid());
+					}
 				}
 			}
 			roomHistoryPage = roomHistoryRepository.findMyRoomHistorySpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
