@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -34,15 +33,16 @@ import java.util.Objects;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"local", "develop", "onpremise"})
+@Profile({"local", "develop", "onpremise","test"})
 @Component
 @RequiredArgsConstructor
 public class MinioUploadService implements FileUploadService {
     private final MinioClient minioClient;
 
-    private static String CONTENT_DIRECTORY = "contents";
-    private static String REPORT_DIRECTORY = "report";
-    private static String REPORT_FILE_EXTENSION = ".png";
+    private static final String CONTENT_DIRECTORY = "contents";
+    private static final String REPORT_DIRECTORY = "report";
+    private static final String REPORT_FILE_EXTENSION = ".png";
+    private static final String VTARGET_FILE_NAME = "virnect_target.png";
 
     @Value("${minio.bucket}")
     private String bucketName;
@@ -53,9 +53,13 @@ public class MinioUploadService implements FileUploadService {
     @Value("#{'${upload.allowed-extension}'.split(',')}")
     private List<String> allowedExtension;
 
+    @Value("${minio.server}")
+    private String minioServer;
+
+
     @Override
     public boolean delete(String url) {
-        if (url.equals("default")) {
+        if (url.equals("default") || FilenameUtils.getName(url).equals(VTARGET_FILE_NAME)) {
             log.info("기본 이미지는 삭제하지 않습니다.");
         } else {
             String objectName = bucketResource + CONTENT_DIRECTORY + "/" + FilenameUtils.getName(url);
@@ -66,18 +70,13 @@ public class MinioUploadService implements FileUploadService {
             try {
                 minioClient.removeObject(removeObjectArgs);
                 log.info(FilenameUtils.getName(url) + " 파일이 삭제되었습니다.");
-            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | IOException |
+            } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | IOException |
                     NoSuchAlgorithmException | ServerException | XmlParserException exception) {
                 log.error(exception.getMessage());
-                throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
+                //throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
             }
         }
         return true;
-    }
-
-    @Override
-    public File getFile(String url) {
-        return null;
     }
 
     @Override
@@ -99,7 +98,10 @@ public class MinioUploadService implements FileUploadService {
                     .stream(inputStream, image.length, -1)
                     .build();
             minioClient.putObject(putObjectArgs);
-            return minioClient.getObjectUrl(bucketName, objectName);
+            log.info("[MINIO FILE INPUT STREAM UPLOADER] - UPLOAD END");
+            String url = minioServer + "/" + bucketName + "/" + objectName;
+            log.info("[RESOURCE URL: {}]", url);
+            return url;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
@@ -133,8 +135,8 @@ public class MinioUploadService implements FileUploadService {
                 .build();
         try {
             minioClient.putObject(putObjectArgs);
-            return minioClient.getObjectUrl(bucketName, objectName);
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
+            return minioServer + "/" + bucketName + "/" + objectName;
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException |
                 ServerException | XmlParserException exception) {
             log.error(exception.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
@@ -157,8 +159,8 @@ public class MinioUploadService implements FileUploadService {
                 .build();
         try {
             minioClient.copyObject(copyObjectArgs);
-            return minioClient.getObjectUrl(bucketName, destinationObjectName);
-        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidBucketNameException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException | IOException exception) {
+            return minioServer + "/" + bucketName + "/" + destinationObjectName;
+        } catch (ErrorResponseException | InsufficientDataException | InternalException | InvalidKeyException | InvalidResponseException | NoSuchAlgorithmException | ServerException | XmlParserException | IOException exception) {
             log.error(exception.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }

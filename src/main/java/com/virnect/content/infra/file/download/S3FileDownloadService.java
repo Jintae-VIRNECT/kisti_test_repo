@@ -1,6 +1,8 @@
 package com.virnect.content.infra.file.download;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.Headers;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
@@ -11,17 +13,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -31,7 +32,7 @@ import java.io.InputStream;
  * @since 2020.05.10
  */
 @Slf4j
-@Profile({"staging", "production", "test"})
+@Profile({"staging", "production", "local"})
 @Component
 @RequiredArgsConstructor
 public class S3FileDownloadService implements FileDownloadService {
@@ -44,7 +45,7 @@ public class S3FileDownloadService implements FileDownloadService {
     private String bucketResource;
 
     @Override
-    public ResponseEntity<byte[]> fileDownload(String fileName) {
+    public ResponseEntity<byte[]> fileDownload(String fileName, String range) {
         String resourcePath = fileName.split(bucketResource)[1];
         log.info("PARSER - RESOURCE PATH: [{}]", resourcePath);
         String[] resources = resourcePath.split("/");
@@ -52,15 +53,33 @@ public class S3FileDownloadService implements FileDownloadService {
             log.info("PARSER - RESOURCE URL: [{}]", url);
         }
         GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, bucketResource + resourcePath);
+        if (StringUtils.hasText(range)) {
+            range = range.trim();
+            if (!range.matches("^bytes=\\d*-\\d*$")) {
+                log.error("Invalid Http Range : {}", range);
+                throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            }
+            String[] requestRange = range.replace("bytes=", "").split("-");
+            if (requestRange.length > 1) {
+                getObjectRequest.setRange(Long.parseLong(requestRange[0]), Long.parseLong(requestRange[1]));
+            } else {
+                getObjectRequest.setRange(Long.parseLong(requestRange[0]));
+            }
+        }
         try (S3Object s3Object = amazonS3Client.getObject(getObjectRequest);
              S3ObjectInputStream objectInputStream = s3Object.getObjectContent()) {
-            byte[] bytes = IOUtils.toByteArray(objectInputStream, s3Object.getObjectMetadata().getContentLength());
             HttpHeaders httpHeaders = new HttpHeaders();
+            Map<String, Object> metadata = s3Object.getObjectMetadata().getRawMetadata();
+            String contentRange = (String) metadata.get(Headers.CONTENT_RANGE);
+            if (contentRange != null) {
+                httpHeaders.set("Content-Range", contentRange);
+            }
+            byte[] bytes = IOUtils.toByteArray(objectInputStream, s3Object.getObjectMetadata().getContentLength());
             httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             httpHeaders.setContentLength(bytes.length);
-            httpHeaders.setContentDispositionFormData("attachment", resources[1]);
+            httpHeaders.setContentDisposition(ContentDisposition.builder("attachment").filename(resources[1]).build());
             return new ResponseEntity<>(bytes, httpHeaders, HttpStatus.OK);
-        } catch (IOException e) {
+        } catch (AmazonS3Exception | IOException e) {
             log.error("Error Message:     {}", e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_DOWNLOAD);
         }
@@ -155,6 +174,5 @@ public class S3FileDownloadService implements FileDownloadService {
         String filePath = amazonS3Client.getUrl(bucketName, objectName).toExternalForm();
         log.info("[GET FILE PATH] Response file Path >> [{}]", filePath);
         return filePath;
-
     }
 }

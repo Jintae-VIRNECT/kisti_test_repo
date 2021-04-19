@@ -23,7 +23,6 @@ import com.virnect.content.dto.request.ContentUpdateRequest;
 import com.virnect.content.dto.request.ContentUploadRequest;
 import com.virnect.content.dto.response.*;
 import com.virnect.content.dto.rest.*;
-import com.virnect.content.event.ContentUpdateFileRollbackEvent;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.common.PageMetadataResponse;
@@ -45,6 +44,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -283,6 +283,7 @@ public class ContentService {
     public ApiResponse<ContentUploadResponse> contentUpdate(
             final String contentUUID, final ContentUpdateRequest updateRequest
     ) {
+        log.info("CONTENT UPDATE - contentUUID : {}, request : {}", contentUUID, updateRequest.toString());
         // 1. 수정 대상 컨텐츠 데이터 조회
         Content targetContent = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
@@ -310,7 +311,8 @@ public class ContentService {
 
         checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize, updateRequest.getUserUUID());
 
-        // 2. 저장된 파일 가져오기
+       /*
+       // 2. 저장된 파일 가져오기
         File oldContent = this.fileUploadService.getFile(targetContent.getPath());
 
         // 2. 기존 컨텐츠 파일 삭제
@@ -329,6 +331,20 @@ public class ContentService {
             eventPublisher.publishEvent(new ContentUpdateFileRollbackEvent(oldContent));
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
+        */
+        //2. 수정 컨텐츠 업로드
+        try {
+            String fileUploadPath = this.fileUploadService.uploadByFileInputStream(
+                    updateRequest.getContent(), targetContent.getUuid() + "");
+            // 3 수정 컨텐츠 경로 반영
+            targetContent.setPath(fileUploadPath);
+        } catch (IOException e) {
+            log.info("CONTENT UPDATE ERROR: {}", e.getMessage());
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
+        }
+
+        // 4. 기존 컨텐츠 파일 삭제
+        fileUploadService.delete(targetContent.getPath());
 
         // 5. 컨텐츠 소유자 변경
         targetContent.setUserUUID(updateRequest.getUserUUID());
@@ -352,30 +368,45 @@ public class ContentService {
         targetContent.getSceneGroupList().clear();
         addSceneGroupToContent(targetContent, metadata);
 
-        String targetData = updateRequest.getTargetData();
-
         // 해당 컨텐츠와 물려있는 타겟 정보를 찾음
         Target target = this.targetRepository.findByContentId(targetContent.getId())
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
 
-        String originTargetData = null;
-
         // 기존 타겟 데이터가 없을 경우
-        if (Objects.isNull(target.getData())) {
+        if (!StringUtils.hasText(target.getData())) {
             throw new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
-        } else {
-            originTargetData = target.getData();
         }
 
-        // 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
-        if (!originTargetData.equals(targetData)) {
-            // 기존 타겟 데이터 삭제
-            this.targetRepository.deleteByContentId(targetContent.getId());
+        /*// 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
+        // 기존 타겟 데이터 삭제
+        this.targetRepository.deleteByContentId(targetContent.getId());
 
-            // 새로운 타겟 데이터 입력
-            targetData = addTargetToContent(
-                    targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+        // 새로운 타겟 데이터 입력
+        targetData = addTargetToContent(targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());*/
+
+        String targetData = target.getData();
+        if (!target.getData().equals(updateRequest.getTargetData())) {
+            targetData = updateRequest.getTargetData();
+            target.setData(updateRequest.getTargetData());
         }
+        if (!target.getData().equals(updateRequest.getTargetData()) || updateRequest.getTargetType() != target.getType()) {
+            if (updateRequest.getTargetType().equals(TargetType.QR)) {
+                target.setImgPath(decodeData(targetData));
+            }
+            if (updateRequest.getTargetType().equals(TargetType.VTarget)) {
+                target.setImgPath(fileDownloadService.getFilePath(fileUploadPath, defaultVTarget));
+            }
+            target.setType(updateRequest.getTargetType());
+        }
+        if (!targetContent.getMetadata().equals(updateRequest.getMetadata())) {
+            JsonParser jsonParse = new JsonParser();
+            JsonObject propertyObj = (JsonObject) jsonParse.parse(updateRequest.getMetadata());
+            JsonObject contents = propertyObj.getAsJsonObject("contents");
+            float targetSize = contents.get("targetSize").getAsFloat();
+            target.setSize(targetSize);
+        }
+
+        targetRepository.save(target);
 
         // 8. 수정 반영
         this.contentRepository.save(targetContent);
@@ -383,8 +414,8 @@ public class ContentService {
         // 반환할 타겟정보
         List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
         ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
-                .type(updateRequest.getTargetType())
-                .data(targetData)
+                .type(target.getType())
+                .data(target.getData())
                 .build();
         contentTargetResponseList.add(contentTargetResponse);
 
@@ -508,7 +539,9 @@ public class ContentService {
                 log.info("content.getPath() = {}", content.getPath());
 
                 // NULL 체크
-                if (this.fileUploadService.getFile(content.getPath()) != null) {
+                fileUploadService.delete(content.getPath());
+                /*if (this.fileUploadService.getFile(content.getPath()) != null) {
+
                     if (this.fileUploadService.getFile(content.getPath()).exists()) {
                         // 파일이 없다면 파일삭제는 무시함.
                         boolean fileDeleteResult = this.fileUploadService.delete(content.getPath());
@@ -517,7 +550,7 @@ public class ContentService {
                             throw new ContentServiceException(ErrorCode.ERR_DELETE_CONTENT);
                         }
                     }
-                }
+                }*/
             }
             // 5 삭제 성공 반환
             contentDeleteResponse.setMsg(ErrorCode.ERR_CONTENT_DELETE_SUCCEED.getMessage());
@@ -588,6 +621,7 @@ public class ContentService {
                     .path(content.getPath())
                     .converted(content.getConverted())
                     .createdDate(content.getCreatedDate())
+                    .updatedDate(content.getUpdatedDate())
                     .targets(targets)
                     .build();
 
@@ -714,6 +748,7 @@ public class ContentService {
                 .converted(content.getConverted())
                 .targets(targetResponseList)
                 .createdDate(content.getCreatedDate())
+                .updatedDate(content.getUpdatedDate())
                 .targetSize(targetSize)
                 .build();
         return new ApiResponse<>(contentInfoResponse);
@@ -1088,26 +1123,16 @@ public class ContentService {
     }
 
     private String getImgPath(String targetData) {
-
-        String qrString = "";
-
-        try {
+        try (ByteArrayOutputStream os = new ByteArrayOutputStream()) {
             BufferedImage qrImage = QRcodeGenerator.generateQRCodeImage(targetData, 256, 256);
-
-            ByteArrayOutputStream os = new ByteArrayOutputStream();
-
             ImageIO.write(qrImage, "png", os);
-            os.toByteArray();
 
-            qrString = Base64.getEncoder().encodeToString(os.toByteArray());
-
+            String qrString = Base64.getEncoder().encodeToString(os.toByteArray());
+            return fileUploadService.base64ImageUpload(qrString);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
-
-        String imgPath = this.fileUploadService.base64ImageUpload(qrString);
-
-        return imgPath;
     }
 
     /**
