@@ -74,32 +74,20 @@ public class FileRestController {
             TAG,
             "REST API: POST "
                 + REST_PATH + "::"
-                + (fileUploadRequest.toString() != null ? fileUploadRequest.toString() : "{}"),
+                + fileUploadRequest.toString(),
             "fileUploadRequestHandler"
         );
+
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(message ->
-                LogMessage.formedError(
-                    TAG,
-                    "REST API: POST " + REST_PATH,
-                    "fileUploadRequestHandler",
-                    LogMessage.PARAMETER_ERROR,
-                    message.toString()
-                )
-            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<FileUploadResponse> responseData;
-        if (remoteStorageProperties.isEnabled()) {
-            if (result.hasErrors()) {
-                result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.uploadFile(fileUploadRequest, FileType.FILE);
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<FileUploadResponse> responseData = fileService.uploadFile(fileUploadRequest, FileType.FILE);
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -120,33 +108,20 @@ public class FileRestController {
             TAG,
             "REST API: POST "
                 + REST_PATH + "::"
-                + (recordFileUploadRequest.toString() != null ? recordFileUploadRequest.toString() : "{}"),
+                + recordFileUploadRequest.toString(),
             "recordFileUploadRequestHandler"
         );
 
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(message ->
-                LogMessage.formedError(
-                    TAG,
-                    "REST API: POST " + REST_PATH,
-                    "recordFileUploadRequestHandler",
-                    LogMessage.PARAMETER_ERROR,
-                    message.toString()
-                )
-            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<FileUploadResponse> responseData;
-        if (remoteStorageProperties.isEnabled()) {
-            if (result.hasErrors()) {
-                result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.uploadRecordFile(recordFileUploadRequest);
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<FileUploadResponse> responseData = fileService.uploadRecordFile(recordFileUploadRequest);
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -166,35 +141,26 @@ public class FileRestController {
             TAG,
             "REST API: POST "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (sessionId != null ? sessionId : "{}") + "::"
-                + (roomProfileUpdateRequest.toString() != null ? roomProfileUpdateRequest.toString() : "{}"),
+                + workspaceId + "/"
+                + sessionId + "::"
+                + roomProfileUpdateRequest.toString(),
             "profileUploadRequestHandler"
         );
+
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(message ->
-                LogMessage.formedError(
-                    TAG,
-                    "REST API: POST " + REST_PATH,
-                    "profileUploadRequestHandler",
-                    LogMessage.PARAMETER_ERROR,
-                    message.toString()
-                )
-            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<RoomProfileUpdateResponse> responseData;
-        if (remoteStorageProperties.isEnabled()) {
-            if (result.hasErrors()) {
-                result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-
-            responseData = fileService.profileUpload(workspaceId, sessionId, roomProfileUpdateRequest);
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<RoomProfileUpdateResponse> responseData = fileService.profileUpload(
+            workspaceId,
+            sessionId,
+            roomProfileUpdateRequest
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -235,19 +201,27 @@ public class FileRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (sessionId != null ? sessionId : "{}"),
+                + workspaceId + "/"
+                + sessionId,
             "fileDownloadUrlRequestHandler"
         );
-        ApiResponse<FilePreSignedResponse> responseData;
-        if (remoteStorageProperties.isEnabled()) {
-            if (userId == null && objectName == null) {
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.downloadFileUrl(workspaceId, sessionId, userId, objectName, FileType.FILE);
-        } else {
+
+        if (userId == null && objectName == null) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<FilePreSignedResponse> responseData = fileService.downloadFileUrl(
+            workspaceId,
+            sessionId,
+            userId,
+            objectName,
+            FileType.FILE
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -269,21 +243,26 @@ public class FileRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (sessionId != null ? sessionId : "{}"),
+                + workspaceId + "/"
+                + sessionId,
             "recordFileDownloadUrlRequestHandler"
         );
 
-        ApiResponse<FilePreSignedResponse> responseData;
+        if (userId == null && objectName == null) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
 
-        if (remoteStorageProperties.isEnabled()) {
-            if (userId == null && objectName == null) {
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.downloadRecordFileUrl(workspaceId, sessionId, userId, objectName);
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<FilePreSignedResponse> responseData = fileService.downloadRecordFileUrl(
+            workspaceId,
+            sessionId,
+            userId,
+            objectName
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -306,26 +285,26 @@ public class FileRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "::"
-                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
-                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
-                + "userId:" + (userId != null ? sessionId : "{}") + "/"
+                + "workspaceId:" + workspaceId + "/"
+                + "sessionId:" + sessionId + "/"
+                + "userId:" + userId + "/"
                 + "deleted:" + deleted,
             "getFileList"
         );
-        ApiResponse<FileInfoListResponse> responseData;
 
-        if (remoteStorageProperties.isEnabled()) {
-            responseData = fileService.getFileInfoList(
-                workspaceId,
-                sessionId,
-                userId,
-                deleted,
-                pageRequest.ofSortBy(),
-                FileType.FILE
-            );
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<FileInfoListResponse> responseData = fileService.getFileInfoList(
+            workspaceId,
+            sessionId,
+            userId,
+            deleted,
+            pageRequest.ofSortBy(),
+            FileType.FILE
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -348,20 +327,25 @@ public class FileRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "::"
-                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
-                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
-                + "userId:" + (userId != null ? sessionId : "{}") + "/"
+                + "workspaceId:" + workspaceId + "/"
+                + "sessionId:" + sessionId + "/"
+                + "userId:" + userId + "/"
                 + "deleted:" + deleted,
             "getDetailFileList"
         );
 
-        ApiResponse<FileDetailInfoListResponse> responseData;
-
         if (remoteStorageProperties.isEnabled()) {
-            responseData = fileService.getRecordFileInfoList(workspaceId, sessionId, userId, deleted, pageRequest.ofSortBy());
-        } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<FileDetailInfoListResponse> responseData = fileService.getRecordFileInfoList(
+            workspaceId,
+            sessionId,
+            userId,
+            deleted,
+            pageRequest.ofSortBy()
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -377,23 +361,29 @@ public class FileRestController {
             TAG,
             "REST API: DELETE "
                 + REST_PATH + "::"
-                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
-                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
-                + "userId:" + (userId != null ? sessionId : "{}") + "/"
-                + "objectName:" + (objectName != null ? objectName : "{}"),
+                + "workspaceId:" + workspaceId + "/"
+                + "sessionId:" + sessionId + "/"
+                + "userId:" + userId + "/"
+                + "objectName:" + objectName,
             "deleteFileRequestHandler"
         );
-        ApiResponse<FileDeleteResponse> responseData;
+
+        if (userId == null || objectName == null) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
 
         if (remoteStorageProperties.isEnabled()) {
-            if (userId == null || objectName == null) {
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-
-            responseData = fileService.removeFile(workspaceId, sessionId, userId, objectName, FileType.FILE);
-        } else {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<FileDeleteResponse> responseData = fileService.removeFile(
+            workspaceId,
+            sessionId,
+            userId,
+            objectName,
+            FileType.FILE
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -409,19 +399,20 @@ public class FileRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "::"
-                + "objectName:" + (objectName != null ? objectName : "{}"),
+                + "objectName:" + objectName,
             "fileDownloadUrlRequestHandler"
         );
-        ApiResponse<String> responseData;
 
-        if (remoteStorageProperties.isEnabled()) {
-            if (objectName == null) {
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.downloadGuideFileUrl(objectName);
-        } else {
+        if (objectName == null) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<String> responseData = fileService.downloadGuideFileUrl(objectName);
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -442,33 +433,20 @@ public class FileRestController {
             TAG,
             "REST API: POST "
                 + REST_PATH + "::"
-                + (fileUploadRequest.toString() != null ? fileUploadRequest.toString() : "{}"),
+                + fileUploadRequest.toString(),
             "fileUploadRequestHandler"
         );
+
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(message ->
-                LogMessage.formedError(
-                    TAG,
-                    "REST API: POST " + REST_PATH,
-                    "fileUploadRequestHandler",
-                    LogMessage.PARAMETER_ERROR,
-                    message.toString()
-                )
-            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
-        ApiResponse<ShareFileUploadResponse> responseData;
-        if (remoteStorageProperties.isEnabled()) {
-            if (result.hasErrors()) {
-                result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.uploadShareFile(fileUploadRequest, FileType.SHARE);
-
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<ShareFileUploadResponse> responseData = fileService.uploadShareFile(fileUploadRequest, FileType.SHARE);
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -492,23 +470,23 @@ public class FileRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "::"
-                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
-                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
+                + "workspaceId:" + workspaceId + "/"
+                + "sessionId:" + sessionId + "/"
                 + "deleted:" + deleted,
             "getFileList"
         );
-        ApiResponse<ShareFileInfoListResponse> responseData;
 
-        if (remoteStorageProperties.isEnabled()) {
-            responseData = fileService.getShareFileInfoList(
-                workspaceId,
-                sessionId,
-                paging,
-                pageRequest.ofSortBy()
-            );
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<ShareFileInfoListResponse> responseData = fileService.getShareFileInfoList(
+            workspaceId,
+            sessionId,
+            paging,
+            pageRequest.ofSortBy()
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -530,19 +508,27 @@ public class FileRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "/"
-                + (sessionId != null ? sessionId : "{}"),
+                + workspaceId + "/"
+                + sessionId,
             "fileDownloadUrlRequestHandler"
         );
-        ApiResponse<FilePreSignedResponse> responseData;
-        if (remoteStorageProperties.isEnabled()) {
-            if (userId == null && objectName == null) {
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.downloadFileUrl(workspaceId, sessionId, userId, objectName, FileType.SHARE);
-        } else {
+
+        if (userId == null && objectName == null) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        ApiResponse<FilePreSignedResponse> responseData = fileService.downloadFileUrl(
+            workspaceId,
+            sessionId,
+            userId,
+            objectName,
+            FileType.SHARE
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -558,22 +544,29 @@ public class FileRestController {
             TAG,
             "REST API: DELETE "
                 + REST_PATH + "::"
-                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
-                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
-                + "userId:" + (leaderUserId != null ? sessionId : "{}") + "/"
-                + "objectName:" + (objectName != null ? objectName : "{}"),
+                + "workspaceId:" + workspaceId + "/"
+                + "sessionId:" + sessionId + "/"
+                + "userId:" + leaderUserId + "/"
+                + "objectName:" + objectName,
             "deleteFileRequestHandler"
         );
-        ApiResponse<FileDeleteResponse> responseData;
 
-        if (remoteStorageProperties.isEnabled()) {
-            if (leaderUserId == null || objectName == null) {
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.removeShareFile(workspaceId, sessionId, leaderUserId, objectName, FileType.SHARE);
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        if (leaderUserId == null || objectName == null) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<FileDeleteResponse> responseData = fileService.removeShareFile(
+            workspaceId,
+            sessionId,
+            leaderUserId,
+            objectName,
+            FileType.SHARE
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
@@ -588,21 +581,27 @@ public class FileRestController {
             TAG,
             "REST API: DELETE "
                 + REST_PATH + "::"
-                + "workspaceId:" + (workspaceId != null ? workspaceId : "{}") + "/"
-                + "sessionId:" + (sessionId != null ? sessionId : "{}") + "/"
-                + "leaderUserId:" + (leaderUserId != null ? leaderUserId : "{}"),
+                + "workspaceId:" + workspaceId + "/"
+                + "sessionId:" + sessionId + "/"
+                + "leaderUserId:" + leaderUserId,
             "deleteShareFilesRequestHandler"
         );
-        ApiResponse<FileDeleteResponse> responseData;
 
-        if (remoteStorageProperties.isEnabled()) {
-            if (leaderUserId == null) {
-                throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-            }
-            responseData = fileService.removeShareFiles(workspaceId, sessionId, leaderUserId, FileType.SHARE);
-        } else {
+        if (!remoteStorageProperties.isEnabled()) {
             throw new RestServiceException(ErrorCode.ERR_STORAGE_NOT_SUPPORTED);
         }
+
+        if (leaderUserId == null) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
+
+        ApiResponse<FileDeleteResponse> responseData = fileService.removeShareFiles(
+            workspaceId,
+            sessionId,
+            leaderUserId,
+            FileType.SHARE
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
