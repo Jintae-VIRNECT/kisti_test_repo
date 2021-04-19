@@ -70,9 +70,7 @@ public class CustomFileRepositoryImpl extends QuerydslRepositorySupport implemen
 				file.fileType.eq(FileType.SHARE),
 				file.objectName.contains("thumbnail").not(),
 				file.deleted.eq(false)
-			)
-			.orderBy(file.createdDate.desc())
-			.distinct();
+			).distinct();
 		long totalCount = queryResult.fetchCount();
 		List<File> results;
 		if (paging) {
