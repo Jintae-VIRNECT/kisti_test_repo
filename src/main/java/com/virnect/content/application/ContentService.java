@@ -282,6 +282,7 @@ public class ContentService {
     public ApiResponse<ContentUploadResponse> contentUpdate(
             final String contentUUID, final ContentUpdateRequest updateRequest
     ) {
+        log.info("CONTENT UPDATE - contentUUID : {}, request : {}", contentUUID, updateRequest.toString());
         // 1. 수정 대상 컨텐츠 데이터 조회
         Content targetContent = this.contentRepository.findByUuid(contentUUID)
                 .orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_CONTENT_UPDATE));
