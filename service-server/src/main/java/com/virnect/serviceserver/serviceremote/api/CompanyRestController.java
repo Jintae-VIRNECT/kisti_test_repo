@@ -2,6 +2,7 @@ package com.virnect.serviceserver.serviceremote.api;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,19 +50,11 @@ public class CompanyRestController {
             TAG,
             "REST API: POST "
                 + REST_PATH + "::"
-                + (companyRequest.toString() != null ? companyRequest.toString() : "{}"),
+                + companyRequest.toString(),
             "createCompanyRequestHandler"
         );
+
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(message ->
-                LogMessage.formedError(
-                    TAG,
-                    "REST API: POST " + REST_PATH,
-                    "createCompanyRequestHandler",
-                    LogMessage.PARAMETER_ERROR,
-                    message.toString()
-                )
-            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
@@ -78,19 +71,13 @@ public class CompanyRestController {
     ) {
         LogMessage.formedInfo(
             TAG,
-            "REST API: POST " + REST_PATH,
+            "REST API: POST "
+                + REST_PATH + "::"
+                + companyRequest.toString(),
             "updateCompanyRequestHandler"
         );
+
         if (result.hasErrors()) {
-            result.getAllErrors().forEach(message ->
-                LogMessage.formedError(
-                    TAG,
-                    "REST API: POST " + REST_PATH,
-                    "updateCompanyRequestHandler",
-                    LogMessage.PARAMETER_ERROR,
-                    message.toString()
-                )
-            );
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
 
@@ -108,25 +95,22 @@ public class CompanyRestController {
             TAG,
             "REST API: GET "
                 + REST_PATH + "/"
-                + (workspaceId != null ? workspaceId : "{}") + "::"
-                + (userId != null ? userId : "{}"),
+                + workspaceId + "::"
+                + userId,
             "getCompanyInfo"
         );
 
-        if (userId == null || userId.isEmpty()) {
+        if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
-        if (workspaceId == null || workspaceId.isEmpty()) {
-            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
-        }
-
-        //todo: delete check user is valid
-        //DataProcess<UserInfoResponse> userInfo = this.dataRepository.checkUserValidation(userId);
-        //log.info("COMPANY INFO :: USER INFO :: {}", userInfo.getData().getDescription());
 
         String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
-        ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfo(workspaceId, userId, policyLocation);
+        ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfo(
+            workspaceId,
+            userId,
+            policyLocation
+        );
+
         return ResponseEntity.ok(responseData);
     }
 
