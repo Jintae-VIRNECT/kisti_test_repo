@@ -36,6 +36,10 @@ $share_savebtn_height: 2.929rem;
     color: $color_text;
     background-color: transparent;
   }
+  &.disable {
+    cursor: default;
+    pointer-events: none;
+  }
 }
 
 .share-body {
@@ -169,8 +173,9 @@ $share_savebtn_height: 2.929rem;
     content: "";
   }
   > img {
-    max-width: 100%;
-    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
   }
   &.active {
     // pointer-events: none;
@@ -189,6 +194,10 @@ $share_savebtn_height: 2.929rem;
     & + .sharing-image__remove {
       display: none;
     }
+  }
+  &.disable {
+    cursor: default;
+    pointer-events: none;
   }
   &.selected {
     &:before {

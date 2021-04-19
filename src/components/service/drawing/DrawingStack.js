@@ -45,6 +45,7 @@ export default {
 
       this.receiveRedoList[owner] = []
       this.receiveUndoList[owner].push(stack)
+      this.toolAble()
     },
 
     /**
@@ -68,14 +69,13 @@ export default {
       this.redoList.unshift(objHist)
       this.canvas.setActiveObject(tempActiveObj)
 
+      this.backCanvas && this.backCanvas.renderAll()
       this.canvas.renderAll()
-      this.backCanvas.renderAll()
       this._sendAction(DRAWING.UNDO)
 
       return this.undoList.length
     },
-    receiveStackUndo(data) {
-      const owner = 'export'
+    receiveStackUndo(owner) {
       if (
         !(owner in this.receiveUndoList) ||
         this.receiveUndoList[owner].length === 0
@@ -95,8 +95,8 @@ export default {
 
       this.receiveRedoList[owner].unshift(objHist)
       this.canvas.setActiveObject(tempActiveObj)
+      this.backCanvas && this.backCanvas.renderAll()
       this.canvas.renderAll()
-      this.backCanvas.renderAll()
 
       return this.receiveUndoList[owner].length
     },
@@ -117,14 +117,13 @@ export default {
 
       this.undoList.push(objHist)
       this.canvas.setActiveObject(tempActiveObj)
+      this.backCanvas && this.backCanvas.renderAll()
       this.canvas.renderAll()
-      this.backCanvas.renderAll()
       this._sendAction(DRAWING.REDO)
 
       return this.redoList.length
     },
-    receiveStackRedo(data) {
-      const owner = 'export'
+    receiveStackRedo(owner) {
       if (
         !(owner in this.receiveRedoList) ||
         this.receiveRedoList[owner].length === 0
@@ -142,8 +141,8 @@ export default {
 
       this.receiveUndoList[owner].push(objHist)
       this.canvas.setActiveObject(tempActiveObj)
+      this.backCanvas && this.backCanvas.renderAll()
       this.canvas.renderAll()
-      this.backCanvas.renderAll()
 
       return this.receiveRedoList[owner].length
     },
@@ -165,15 +164,39 @@ export default {
             this.canvas.remove(object)
           }
         })
-        this.backCanvas.getObjects().forEach(object => {
-          if (!('owner' in object)) {
-            this.backCanvas.remove(object)
-          }
-        })
+        this.backCanvas &&
+          this.backCanvas.getObjects().forEach(object => {
+            if (!('owner' in object)) {
+              this.backCanvas.remove(object)
+            }
+          })
+        this.backCanvas && this.backCanvas.renderAll()
         this.canvas.renderAll()
-        this.backCanvas.renderAll()
         // this.stackAdd('remove', [...ids]); //삭제 히스토리 쌓기
         this.stackClear() // 전체 삭제
+
+        if (this.$call) {
+          this.$call.sendDrawing(DRAWING.CLEAR, { imgId: this.file.id })
+        }
+      }
+    },
+    drawingClearAll() {
+      const ids = this.canvas
+        .getObjects()
+        .filter(_ => _.opacity === 1)
+        .map(_ => _.id)
+
+      this.canvas.discardActiveObject()
+
+      if (ids.length > 0) {
+        this.canvas.remove(...this.canvas.getObjects())
+        this.backCanvas &&
+          this.backCanvas.remove(...this.backCanvas.getObjects())
+        this.backCanvas && this.backCanvas.renderAll()
+        this.canvas.renderAll()
+        // this.stackAdd('remove', [...ids]); //삭제 히스토리 쌓기
+        this.stackClear() // 전체 삭제
+        this.receivedStackClear()
 
         if (this.$call) {
           this.$call.sendDrawing(DRAWING.CLEAR_ALL, { imgId: this.file.id })
@@ -187,6 +210,11 @@ export default {
     stackClear() {
       this.$set(this, 'undoList', [])
       this.$set(this, 'redoList', [])
+    },
+    receivedStackClear() {
+      this.$set(this, 'receiveUndoList', {})
+      this.$set(this, 'receiveRedoList', {})
+      this.toolAble()
     },
 
     updateObjTarget(_do, objHist, owner) {
@@ -253,10 +281,15 @@ export default {
     this.$eventBus.$on(`control:${VIEW.DRAWING}:undo`, this.stackUndo)
     this.$eventBus.$on(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
     this.$eventBus.$on(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
+    this.$eventBus.$on(`control:${VIEW.DRAWING}:clearall`, this.drawingClearAll)
   },
   beforeDestroy() {
     this.$eventBus.$off(`control:${VIEW.DRAWING}:undo`, this.stackUndo)
     this.$eventBus.$off(`control:${VIEW.DRAWING}:redo`, this.stackRedo)
     this.$eventBus.$off(`control:${VIEW.DRAWING}:clear`, this.drawingClear)
+    this.$eventBus.$off(
+      `control:${VIEW.DRAWING}:clearall`,
+      this.drawingClearAll,
+    )
   },
 }

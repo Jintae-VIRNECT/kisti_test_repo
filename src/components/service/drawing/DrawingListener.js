@@ -1,7 +1,7 @@
 import { fabric } from 'plugins/remote/fabric.custom'
 import { ahexToRGBA } from 'utils/color'
 import { getReceiveParams, calcPosition } from 'utils/drawing'
-import { SIGNAL, DRAWING, ROLE } from 'configs/remote.config'
+import { SIGNAL, DRAWING } from 'configs/remote.config'
 
 export default {
   data() {
@@ -12,35 +12,39 @@ export default {
   methods: {
     drawingListener(receive) {
       const data = JSON.parse(receive.data)
-      if (this.account.roleType === ROLE.LEADER) return
+      if (receive.from.connectionId === this.myInfo.connectionId) return
+      // if (this.account.roleType === ROLE.LEADER) return
       if (this.drawingView) {
-        this.addReceiveObject(data)
+        this.addReceiveObject({ data, owner: receive.from.connectionId })
       } else {
-        this.receivedList.push(data)
+        this.receivedList.push({ data, owner: receive.from.connectionId })
       }
     },
-    addReceiveObject(data) {
+    addReceiveObject({ data, owner }) {
       switch (data.type) {
         case DRAWING.LINE_DOWN:
         case DRAWING.LINE_MOVE:
         case DRAWING.LINE_UP:
-          this.drawingLine(data)
+          this.drawingLine(data, owner)
           break
         case DRAWING.TEXT_ADD:
-          this.drawingText(data)
+          this.drawingText(data, owner)
           break
         case DRAWING.UNDO:
-          this.receiveStackUndo(data)
+          this.receiveStackUndo(owner)
           break
         case DRAWING.REDO:
-          this.receiveStackRedo(data)
+          this.receiveStackRedo(owner)
+          break
+        case DRAWING.CLEAR:
+          this.clear(owner)
           break
         case DRAWING.CLEAR_ALL:
-          this.clearAll(data)
+          this.clearAll()
           break
       }
     },
-    drawingLine(data) {
+    drawingLine(data, owner) {
       let params = {
         posX: data.posX,
         posY: data.posY,
@@ -70,7 +74,7 @@ export default {
           strokeMiterLimit: width,
           strokeLineCap: 'round',
           strokeLineJoin: 'round',
-          owner: 'export',
+          owner: owner,
           hasControls: false,
           selectable: false,
           hoverCursor: 'auto',
@@ -78,12 +82,14 @@ export default {
         // path.set()
         this.canvas.add(path)
         this.canvas.renderAll()
+        this.backCanvas.add(fabric.util.object.clone(path))
+        this.backCanvas.renderAll()
         this.$nextTick(() => {
           this.receivePath = []
         })
       }
     },
-    drawingText(data) {
+    drawingText(data, owner) {
       const params = getReceiveParams(
         DRAWING.TEXT_ADD,
         {
@@ -107,20 +113,38 @@ export default {
         hasControls: false,
         selectable: false,
         hoverCursor: 'auto',
-        owner: 'export',
+        owner: owner,
       })
       this.canvas.add(object)
       this.canvas.renderAll()
+      this.backCanvas.add(fabric.util.object.clone(object))
+      this.backCanvas.renderAll()
     },
-    clearAll(data) {
+    clear(owner) {
       this.canvas.getObjects().forEach(object => {
-        if (object.owner === 'export') {
+        if (object.owner === owner) {
+          object.canvas.remove(object)
+        }
+      })
+      this.backCanvas.getObjects().forEach(object => {
+        if (object.owner === owner) {
           object.canvas.remove(object)
         }
       })
       this.canvas.renderAll()
-      delete this.receiveUndoList['export']
-      delete this.receiveRedoList['export']
+      this.backCanvas.renderAll()
+      delete this.receiveUndoList[owner]
+      delete this.receiveRedoList[owner]
+
+      this.toolAble()
+    },
+    clearAll() {
+      this.canvas.remove(...this.canvas.getObjects())
+      this.backCanvas.remove(...this.backCanvas.getObjects())
+      this.canvas.renderAll()
+      this.backCanvas.renderAll()
+      this.stackClear()
+      this.receivedStackClear()
     },
   },
 

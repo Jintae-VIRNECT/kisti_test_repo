@@ -7,12 +7,12 @@
       </transition>
 
       <transition name="share">
-        <share v-show="isLeader && currentView === 'drawing'"></share>
+        <share v-show="currentView === 'drawing'"></share>
       </transition>
 
       <main
         class="main-wrapper"
-        :class="{ shareview: isLeader && currentView === 'drawing' }"
+        :class="{ shareview: currentView === 'drawing' }"
       >
         <transition name="main">
           <stream-view

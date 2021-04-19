@@ -1,5 +1,4 @@
-import { DRAWING } from 'configs/remote.config'
-import { getSignalParams, getChunk } from 'utils/drawing'
+import { getSignalParams } from 'utils/drawing'
 
 export default {
   methods: {
@@ -9,31 +8,32 @@ export default {
      * @param {String} imgName
      * @param {String} image 이미지 dataURL
      */
-    sendImage(params, target = null) {
-      const chunk = getChunk(params['image'])
-      delete params['image']
+    // sendImage(params, target = null) {
+    //   return
+    //   const chunk = getChunk(params['image'])
+    //   delete params['image']
 
-      params.width = this.img.width
-      params.height = this.img.height
+    //   params.width = this.img.width
+    //   params.height = this.img.height
 
-      let type
+    //   let type
 
-      for (let i = 0; i < chunk.length; i++) {
-        if (i === 0) {
-          type = DRAWING.FIRST_FRAME
-          if (chunk.length === 1) {
-            type = DRAWING.LAST_FRAME
-          }
-        } else if (i === chunk.length - 1) {
-          type = DRAWING.LAST_FRAME
-        } else {
-          type = DRAWING.FRAME
-        }
-        params.chunk = chunk[i]
+    //   for (let i = 0; i < chunk.length; i++) {
+    //     if (i === 0) {
+    //       type = DRAWING.FIRST_FRAME
+    //       if (chunk.length === 1) {
+    //         type = DRAWING.LAST_FRAME
+    //       }
+    //     } else if (i === chunk.length - 1) {
+    //       type = DRAWING.LAST_FRAME
+    //     } else {
+    //       type = DRAWING.FRAME
+    //     }
+    //     params.chunk = chunk[i]
 
-        this.$call.sendDrawing(type, params, target)
-      }
-    },
+    //     this.$call.sendDrawing(type, params, target)
+    //   }
+    // },
 
     /**
      * 드로잉 액션 상대기기 전송 내부 메소드

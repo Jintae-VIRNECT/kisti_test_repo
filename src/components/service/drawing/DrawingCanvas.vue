@@ -62,7 +62,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['tools', 'view', 'viewAction']),
+    ...mapGetters(['tools', 'view', 'viewAction', 'myInfo']),
     uuid() {
       return this.account.uuid
     },
@@ -76,21 +76,22 @@ export default {
      */
     setBG() {
       return new Promise((resolve, reject) => {
-        const bgImage = new Image()
-        bgImage.onload = () => {
-          this.img.width = bgImage.width
-          this.img.height = bgImage.height
-          const fabricImage = new fabric.Image(bgImage)
+        this.img.width = this.file.width
+        this.img.height = this.file.height
+        fabric.Image.fromURL(this.file.img, fabricImage => {
           const canvas = this.canvas
           const parent = this.$el.parentNode
 
           const canvasSize = getCanvasSize(
             parent.offsetWidth,
             parent.offsetHeight,
-            bgImage.width,
-            bgImage.height,
+            // bgImage.width,
+            // bgImage.height,
+            this.img.width,
+            this.img.height,
           )
           fabricImage.set({
+            crossOrigin: 'anonymous',
             originX: 'left',
             originY: 'top',
             scaleX:
@@ -122,17 +123,14 @@ export default {
                   scaleY: canvasSize.scale,
                 })
                 this.backCanvas.renderAll()
+
+                this.updateHistory()
               })
             })
 
             resolve(canvas)
           })
-        }
-        bgImage.onerror = error => {
-          console.error(error)
-          reject()
-        }
-        bgImage.src = this.file.img
+        })
       })
     },
 
@@ -183,19 +181,11 @@ export default {
 
       const canvas = new fabric.Canvas('drawingCanvas', {
         backgroundColor: '#000000',
-        isDrawingMode:
-          this.viewAction === ACTION.DRAWING_LINE &&
-          this.account.roleType === ROLE.LEADER,
+        isDrawingMode: this.viewAction === ACTION.DRAWING_LINE,
         freeDrawingCursor:
-          this.account.roleType === ROLE.LEADER &&
-          this.viewAction === ACTION.DRAWING_TEXT
-            ? 'text'
-            : 'default',
+          this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default',
         defaultCursor:
-          this.account.roleType === ROLE.LEADER &&
-          this.viewAction === ACTION.DRAWING_TEXT
-            ? 'text'
-            : 'default',
+          this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default',
       })
 
       const backCanvas = new fabric.StaticCanvas('backCanvas', {
@@ -214,18 +204,6 @@ export default {
       await this.setBG()
       // 히스토리 초기화
       this.stackClear()
-
-      if (this.account.roleType === ROLE.LEADER) {
-        const params = {
-          imgId: this.file.id,
-          // imgName: this.file.oriName
-          //   ? this.file.oriName
-          //   : this.file.fileName,
-          imgName: this.file.fileName,
-          image: this.file.img,
-        }
-        this.sendImage(params)
-      }
 
       this.isInit = true
       this.$emit('loadingSuccess')

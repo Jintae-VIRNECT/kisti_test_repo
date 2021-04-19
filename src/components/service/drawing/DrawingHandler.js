@@ -50,7 +50,8 @@ export default {
             // this._sendAction('drawText', object);
             return
           }
-          this.backCanvas.add(fabric.util.object.clone(object))
+          this.backCanvas &&
+            this.backCanvas.add(fabric.util.object.clone(object))
           this.stackAdd('add', object.id)
         }
       })
@@ -63,7 +64,9 @@ export default {
       /* CANVAS */
       canvas.on('after:render', () => {
         if (this.isInit === true && this.account.roleType === ROLE.LEADER) {
-          this.updateHistory()
+          setTimeout(() => {
+            this.updateHistory()
+          }, 100)
         }
       })
 
@@ -306,15 +309,10 @@ export default {
 
         if (keycode === 32) {
           this.canvas.defaultCursor =
-            (this.viewAction === this.account.roleType) === ROLE.LEADER &&
-            ACTION.DRAWING_TEXT
-              ? 'text'
-              : 'default'
+            this.viewAction === ACTION.DRAWING_TEXT ? 'text' : 'default'
           this.cursor.canvas.renderAll()
           this.zoom = false
-          this.canvas.isDrawingMode =
-            this.account.roleType === ROLE.LEADER &&
-            this.viewAction === ACTION.DRAWING_LINE
+          this.canvas.isDrawingMode = this.viewAction === ACTION.DRAWING_LINE
         }
       }
     },

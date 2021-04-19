@@ -47,6 +47,7 @@ import { mapGetters, mapActions } from 'vuex'
 import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import confirmMixin from 'mixins/confirm'
+import { drawingDownload } from 'api/http/drawing'
 
 export default {
   name: 'Drawing',
@@ -61,7 +62,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['fileList', 'shareFile', 'view', 'historyList']),
+    ...mapGetters(['fileList', 'shareFile', 'view', 'historyList', 'roomInfo']),
     show() {
       if (this.shareFile && this.shareFile.id) {
         return 'file'
@@ -105,6 +106,18 @@ export default {
           : this.shareFile.fileName,
         image: this.shareFile.img,
       }
+      this.$call.sendDrawing(
+        DRAWING.FILE_SHARE,
+        {
+          name: this.shareFile.name,
+          objectName: this.shareFile.objectName,
+          contentType: this.shareFile.contextType,
+          width: this.shareFile.width,
+          height: this.shareFile.height,
+          index: this.shareFile.index,
+        },
+        [connectionId],
+      )
       this.$refs['drawingLayout'].sendImage(params, [connectionId])
     },
     refreshCanvas() {
@@ -136,7 +149,7 @@ export default {
       const file = event.dataTransfer.files[0]
       this.$eventBus.$emit('addFile', file)
     },
-    getImage(receive) {
+    async getImage(receive) {
       const data = JSON.parse(receive.data)
 
       if (data.type === DRAWING.END_DRAWING) {
@@ -145,22 +158,48 @@ export default {
         return
       }
 
-      if (
-        ![DRAWING.FIRST_FRAME, DRAWING.FRAME, DRAWING.LAST_FRAME].includes(
-          data.type,
-        )
-      )
-        return
-
-      if (data.type === DRAWING.FIRST_FRAME) {
-        this.loadingFrame = true
-        this.chunk = []
+      if (data.type === DRAWING.FILE_SHARE) {
+        if (data.contentType === 'application/pdf') {
+          this.$eventBus.$emit(`loadPdf_${data.objectName}`, data.index)
+        } else {
+          const res = await drawingDownload({
+            sessionId: this.roomInfo.sessionId,
+            workspaceId: this.workspace.uuid,
+            objectName: data.objectName,
+            userId: this.account.uuid,
+          })
+          this.addHistory({
+            objectName: res.objectName,
+            id: Date.now(),
+            img: res.url,
+            width: data.width,
+            height: data.height,
+            fileName: res.name,
+          })
+        }
       }
-      this.chunk.push(data.chunk)
-
-      if (data.type === DRAWING.LAST_FRAME) {
-        // this.loadingFrame = false
-        this.encodeImage(data)
+    },
+    getHistoryObject() {
+      // 모바일 수신부 타입: Int32
+      const imgId = parseInt(
+        Date.now()
+          .toString()
+          .substr(-9),
+      )
+      let fileName = this.fileData.name
+      if (this.pdfName) {
+        const idx = this.pdfName.lastIndexOf('.')
+        fileName = `${this.pdfName.slice(0, idx)} [${this.pdfPage}].png`
+      }
+      return {
+        id: imgId,
+        fileName: fileName,
+        oriName:
+          this.pdfName && this.pdfName.length > 0
+            ? this.pdfName
+            : this.fileData.name,
+        img: this.imageData,
+        // fileData: this.fileData,
       }
     },
     encodeImage(data) {
@@ -184,9 +223,7 @@ export default {
 
   /* Lifecycles */
   created() {
-    if (this.account.roleType !== ROLE.LEADER) {
-      this.$eventBus.$on(SIGNAL.DRAWING, this.getImage)
-    }
+    this.$eventBus.$on(SIGNAL.DRAWING, this.getImage)
     this.$eventBus.$on('participantChange', this.participantChange)
   },
   beforeDestroy() {

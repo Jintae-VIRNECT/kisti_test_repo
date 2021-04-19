@@ -173,13 +173,13 @@ export default {
         }
 
         if (type === 'drawing') {
-          if (this.shareFile && this.shareFile.id) {
-            // this.drawingNotice = false
-            this.menus[this.drawingNotice].notice = false
-            this.setView(VIEW.DRAWING)
-          } else {
-            this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
-          }
+          // if (this.shareFile && this.shareFile.id) {
+          // this.drawingNotice = false
+          // this.menus[this.drawingNotice].notice = false
+          // this.setView(VIEW.DRAWING)
+          // } else {
+          //   this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
+          // }
           this.goDrawing()
         }
         if (type === VIEW.AR) {
@@ -210,11 +210,11 @@ export default {
         this.setView(VIEW.DRAWING)
         return
       }
-      if (this.shareFile && this.shareFile.id) {
-        this.setView(VIEW.DRAWING)
-      } else {
-        this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
-      }
+      // if (this.shareFile && this.shareFile.id) {
+      this.setView(VIEW.DRAWING)
+      // } else {
+      //   this.toastDefault(this.$t('service.toast_cannot_invite_drawing'))
+      // }
     },
     permissionSetting(permission) {
       if (permission === true) {

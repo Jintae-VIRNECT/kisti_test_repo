@@ -2,15 +2,22 @@
   <li class="sharing-image">
     <button
       class="sharing-image__item"
+      :class="{
+        active: shareFile.objectName === fileInfo.objectName,
+        disable: !isLeader || shareFile.objectName === fileInfo.objectName,
+      }"
       @dblclick="shareImage"
       @touchstart="touch"
       @touchend="touchEnd"
     >
-      <img :src="imageData" />
+      <img :src="fileInfo.thumbnailDownloadUrl" />
+      <div class="sharing-image__item-active">
+        <p>{{ $t('service.share_current') }}</p>
+      </div>
     </button>
-    <p class="sharing-image__name">{{ fileData.name }}</p>
+    <p class="sharing-image__name">{{ fileInfo.name }}</p>
     <button
-      v-if="pdfPage < 0"
+      v-if="shareFile.objectName !== fileInfo.objectName && isLeader"
       class="sharing-image__remove"
       @click="deleteImage"
     >
@@ -20,10 +27,12 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
 import touchMixin from 'mixins/touch'
+import { ROLE, DRAWING } from 'configs/remote.config'
+import { drawingRemove } from 'api/http/drawing'
 export default {
   name: 'SharingImage',
   mixins: [confirmMixin, toastMixin, touchMixin],
@@ -37,20 +46,9 @@ export default {
     fileInfo: {
       type: Object,
     },
-    isHistory: {
-      type: Boolean,
-      default: false,
-    },
-    pdfName: {
-      type: String,
-      default: null,
-    },
-    pdfPage: {
-      type: Number,
-      default: -1,
-    },
   },
   computed: {
+    ...mapGetters(['shareFile', 'roomInfo']),
     fileData() {
       if (this.fileInfo && this.fileInfo.filedata) {
         return this.fileInfo.filedata
@@ -58,89 +56,24 @@ export default {
         return {}
       }
     },
+    isLeader() {
+      return this.account.roleType === ROLE.LEADER
+    },
   },
   methods: {
     ...mapActions(['addHistory', 'removeFile']),
-    init() {
-      const fileReader = new FileReader()
-      fileReader.onload = async e => {
-        let imgUrl = e.target.result
-        if (this.fileData.size > 1024 * 1024 * 5) {
-          imgUrl = await this.resizing(imgUrl)
-        }
-        this.imageData = imgUrl
-      }
-      fileReader.readAsDataURL(this.fileData)
-    },
-    resizing(imageUrl) {
-      return new Promise(resolve => {
-        const image = new Image()
-        image.onload = () => {
-          const canvas = document.createElement('canvas')
-          const max_size = 1024 * 4
-          // 최대 기준을 1280으로 잡음.
-          let width = image.width
-          let height = image.height
-
-          if (width > height) {
-            // 가로가 길 경우
-            if (width > max_size) {
-              height *= max_size / width
-              width = max_size
-            }
-          } else {
-            // 세로가 길 경우
-            if (height > max_size) {
-              width *= max_size / height
-              height = max_size
-            }
-          }
-          canvas.width = width
-          canvas.height = height
-          canvas.getContext('2d').drawImage(image, 0, 0, width, height)
-          const dataUrl = canvas.toDataURL('image/jpeg')
-          resolve(dataUrl)
-        }
-        image.src = imageUrl
-      })
-    },
-    getHistoryObject() {
-      // 모바일 수신부 타입: Int32
-      const imgId = parseInt(
-        Date.now()
-          .toString()
-          .substr(-9),
-      )
-      let fileName = this.fileData.name
-      if (this.pdfName) {
-        const idx = this.pdfName.lastIndexOf('.')
-        fileName = `${this.pdfName.slice(0, idx)} [${this.pdfPage}].png`
-      }
-      return {
-        id: imgId,
-        fileName: fileName,
-        oriName:
-          this.pdfName && this.pdfName.length > 0
-            ? this.pdfName
-            : this.fileData.name,
-        img: this.imageData,
-        // fileData: this.fileData,
-      }
-    },
     doEvent() {
       this.shareImage()
     },
     shareImage() {
-      if (this.pdfPage > -1) {
-        this.$eventBus.$emit(`loadPdf_${this.fileInfo.id}`, this.pdfPage)
-      } else if (this.imageData && this.imageData.length > 0) {
-        const history = this.getHistoryObject()
-
-        this.addHistory(history)
-      } else {
-        // TODO: MESSAGE
-        this.toastNotify(this.$t('service.share_notready'))
-      }
+      this.$call.sendDrawing(DRAWING.FILE_SHARE, {
+        name: this.fileInfo.name,
+        objectName: this.fileInfo.objectName,
+        contentType: this.fileInfo.contextType,
+        width: this.fileInfo.width,
+        height: this.fileInfo.height,
+        index: 0,
+      })
     },
     deleteImage() {
       this.confirmCancel(
@@ -154,14 +87,23 @@ export default {
         },
       )
     },
-    remove() {
-      this.removeFile(this.fileInfo.id)
-    },
-  },
+    async remove() {
+      try {
+        await drawingRemove({
+          workspaceId: this.workspace.uuid,
+          sessionId: this.roomInfo.sessionId,
+          leaderUserId: this.account.uuid,
+          objectName: this.fileInfo.objectName,
+        })
 
-  /* Lifecycles */
-  mounted() {
-    this.init()
+        this.$call.sendDrawing(DRAWING.DELETED, {
+          objectNames: [this.fileInfo.objectName],
+        })
+        // this.removeFile(this.fileInfo.id)
+      } catch (err) {
+        console.log(err)
+      }
+    },
   },
 }
 </script>
