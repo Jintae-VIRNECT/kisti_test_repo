@@ -134,6 +134,7 @@ public class Room extends BaseTimeEntity {
             ", leaderId='" + leaderId + '\'' +
             ", workspaceId='" + workspaceId + '\'' +
             ", profile='" + profile + '\'' +
+            ", members='" + members.toString() + '\'' +
             '}';
     }
 }

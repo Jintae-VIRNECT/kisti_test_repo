@@ -96,6 +96,7 @@ public class RoomHistory extends BaseTimeEntity {
                         ", workspaceId='" + workspaceId + '\'' +
                         ", profile='" + profile + '\'' +
                         ", durationTime='" + durationSec + '\'' +
+                        ", memberHistories='" + memberHistories.toString() + '\'' +
                         '}';
         }
 }
