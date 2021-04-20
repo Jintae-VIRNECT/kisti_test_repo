@@ -176,6 +176,11 @@ public class SessionDataRepository {
             Duration duration = Duration.between(room.getActiveDate(), endTime);
             roomHistory.setDurationSec(duration.getSeconds());
 
+            System.out.println("room history");
+            System.out.println(roomHistory.toString());
+            System.out.println("room");
+            System.out.println(room.toString());
+
             //save room history
             sessionService.setRoomHistory(roomHistory);
             sessionService.deleteRoom(room);
