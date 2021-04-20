@@ -2,6 +2,7 @@ package com.virnect.data.dao.room;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +18,7 @@ import com.virnect.data.domain.room.RoomStatus;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long>, CustomRoomRepository {
 
-    //Optional<Room> findBySessionId(final String sessionId);
+    Optional<Room> findBySessionId(final String sessionId);
 
     /*@Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from Room r where r.workspaceId = ?1 and r.sessionId = ?2")

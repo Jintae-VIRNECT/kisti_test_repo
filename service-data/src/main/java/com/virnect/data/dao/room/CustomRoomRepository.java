@@ -20,7 +20,7 @@ public interface CustomRoomRepository {
 
 	//Optional<Room> findRoomByWorkspaceIdAndSessionId(final String workspaceId, final String sessionId);
 
-	Optional<Room> findBySessionId(final String sessionId);
+	//Optional<Room> findBySessionId(final String sessionId);
 
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(final String workspaceId, final String sessionId);

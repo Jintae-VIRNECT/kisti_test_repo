@@ -121,7 +121,7 @@ public class CustomRoomRepositoryImpl extends QuerydslRepositorySupport implemen
 	public Optional<Room> findBySessionId(String sessionId) {
 		return Optional.ofNullable(
 			query.selectFrom(room)
-				.innerJoin(room.members, member).fetchJoin()
+				.leftJoin(room.members, member).fetchJoin()
 				.innerJoin(room.sessionProperty, sessionProperty).fetchJoin()
 				.where(
 					room.sessionId.eq(sessionId)
