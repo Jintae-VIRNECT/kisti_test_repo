@@ -1473,7 +1473,7 @@ public class SessionDataRepository {
 
         Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
         if (room == null) {
-            return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+            new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
         }
 
         Member member = null;
@@ -1484,26 +1484,27 @@ public class SessionDataRepository {
         }
 
         if (member == null) {
-            return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-        } else {
-            if (!room.getLeaderId().equals(kickRoomRequest.getLeaderId())) {
-                return new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-            } else {
-                String connectionId = member.getConnectionId();
-
-                KickRoomResponse kickRoomResponse = new KickRoomResponse();
-                kickRoomResponse.setWorkspaceId(room.getWorkspaceId());
-                kickRoomResponse.setSessionId(room.getSessionId());
-                kickRoomResponse.setLeaderId(room.getLeaderId());
-                kickRoomResponse.setParticipantId(kickRoomRequest.getParticipantId());
-                kickRoomResponse.setConnectionId(connectionId);
-                //if connection id cannot find, push message and just remove user
-                if (Strings.isBlank(connectionId)) {
-                    sessionService.updateMember(member, MemberStatus.EVICTED);
-                }
-                return new ApiResponse<>(kickRoomResponse);
-            }
+            new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
         }
+
+        if (!room.getLeaderId().equals(kickRoomRequest.getLeaderId())) {
+            new ApiResponse<>(new KickRoomResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+        }
+
+        String connectionId = member.getConnectionId();
+        KickRoomResponse kickRoomResponse = new KickRoomResponse();
+        kickRoomResponse.setWorkspaceId(room.getWorkspaceId());
+        kickRoomResponse.setSessionId(room.getSessionId());
+        kickRoomResponse.setLeaderId(room.getLeaderId());
+        kickRoomResponse.setParticipantId(kickRoomRequest.getParticipantId());
+        kickRoomResponse.setConnectionId(connectionId);
+
+        //if connection id cannot find, push message and just remove user
+        if (Strings.isBlank(connectionId)) {
+            sessionService.updateMember(member, MemberStatus.EVICTED);
+        }
+
+        return new ApiResponse<>(kickRoomResponse);
     }
 
     public ApiResponse<InviteRoomResponse> inviteMember(
