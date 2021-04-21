@@ -44,21 +44,30 @@ const _ = {
    */
   connect: async (configs, role, options) => {
     try {
+      //유저 정보 셋팅
       _.account = Store.getters['account']
 
+      //기존 통신 정보 초기화
       Store.commit('callClear')
+
+      //오픈비두 객체 생성
       OV = new OpenVidu()
-      if (
-        process.env.NODE_ENV === 'production' &&
-        !(window.env && window.env === 'develop')
-      ) {
+
+      const isProduction = process.env.NODE_ENV === 'production'
+      const isNotDevelop = !(window.env && window.env === 'develop')
+
+      if (isProduction && isNotDevelop) {
+        //프로덕션 활성화
         OV.enableProdMode()
       }
+
       if (!_.session) {
+        //세션 정보 생성
         _.session = OV.initSession()
         addSessionEventListener(_.session, Store)
       }
 
+      //메타 데이터 init
       const metaData = {
         clientData: _.account.uuid,
         roleType: role,
@@ -66,8 +75,13 @@ const _ = {
       }
 
       // const iceServers = URLS.coturn
+      //웹 소켓 정보 설정
+      //기본값 -> 서비스서버 우선
       let ws = configs.wss || `${URLS['ws']}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
+
+      //coturnUrl 변경
+      //URLS값을 우선하게 변경함.
       if (URLS['coturnUrl']) {
         for (let config of configs.coturn) {
           config.url = URLS['coturnUrl']
@@ -75,11 +89,13 @@ const _ = {
         ws = `${URLS['ws']}${wsUri['REMOTE']}` || configs.wss
       }
 
+      //ice 정보 설정
       const iceServers = configs.coturn
       for (let ice of iceServers) {
         ice['urls'] = ice['url']
       }
 
+      //서버 녹화 정보 설정
       setRecordInfo({
         token: configs['token'],
         coturn: iceServers,
@@ -91,6 +107,7 @@ const _ = {
       }
       debug('coturn::', iceServers)
 
+      //제한 모드관련 설정
       if (configs.audioRestrictedMode || configs.videoRestrictedMode) {
         Store.commit('setRestrictedMode', true)
         Store.dispatch('setDevices', {
@@ -103,6 +120,7 @@ const _ = {
         })
       }
 
+      //세션 connect 정보 설정
       const connectOption = {
         iceServers,
         wsUri: ws,
@@ -119,6 +137,7 @@ const _ = {
         roleType: role,
       })
 
+      //객체 초기화..
       _.account.roleType = role
       _.configs = configs
       _.options = options
@@ -126,6 +145,7 @@ const _ = {
       if (options !== false) {
         const settingInfo = Store.getters['settingInfo']
 
+        //퍼블리시 옵션 셋팅
         const publishOptions = {
           // audioSource: options.audioSource,
           // videoSource: options.videoSource,
@@ -145,6 +165,8 @@ const _ = {
         debug('call::publish::', publishOptions)
 
         _.publisher = OV.initPublisher('', publishOptions)
+
+        //ice 상태 변경 관련 콜백
         _.publisher.onIceStateChanged(state => {
           if (['failed', 'disconnected', 'closed'].includes(state)) {
             Store.commit('updateParticipant', {
@@ -164,6 +186,8 @@ const _ = {
           }
           logger('ice state change', state)
         })
+
+        //publish 성공 관련 콜백
         _.publisher.on('streamCreated', () => {
           logger('room', 'publish success')
           debug('publisher stream :: ', _.publisher.stream)
