@@ -100,15 +100,6 @@ public class SessionDataRepository {
     public Boolean destroySession(String sessionId, EndReason reason) {
 
         Room room = sessionService.getRoom(sessionId);
-        LogMessage.formedError(
-            TAG,
-            "LOAD ROOM(Before)",
-            "destroySession",
-            room.toString()
-        );
-
-        System.out.println("before : room");
-        System.out.println(room.toString());
 
         if (room == null) {
             LogMessage.formedError(
@@ -188,13 +179,6 @@ public class SessionDataRepository {
         //time diff seconds
         Duration duration = Duration.between(room.getActiveDate(), endTime);
         roomHistory.setDurationSec(duration.getSeconds());
-
-        LogMessage.formedError(
-            TAG,
-            "LOAD ROOM(After)",
-            "destroySession",
-            room.toString()
-        );
 
         //save room history
         sessionService.setRoomHistory(roomHistory);
@@ -1517,9 +1501,7 @@ public class SessionDataRepository {
 
         //if connection id cannot find, push message and just remove user
         if (Strings.isBlank(connectionId)) {
-            //sessionService.updateMember(member, MemberStatus.EVICTED);
-            member.setMemberStatus(MemberStatus.EVICTED);
-            memberRepository.save(member);
+            sessionService.updateMember(member, MemberStatus.EVICTED);
         }
 
         return new ApiResponse<>(kickRoomResponse);
