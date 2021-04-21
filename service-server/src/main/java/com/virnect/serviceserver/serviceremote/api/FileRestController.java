@@ -452,7 +452,7 @@ public class FileRestController {
             "REST API: POST "
                 + REST_PATH + "::"
                 + fileUploadRequest.toString(),
-            "fileUploadRequestHandler"
+            "shareFileUploadRequestHandler"
         );
 
         if (result.hasErrors()) {
@@ -491,7 +491,7 @@ public class FileRestController {
                 + "workspaceId:" + workspaceId + "/"
                 + "sessionId:" + sessionId + "/"
                 + "deleted:" + deleted,
-            "getFileList"
+            "getShareFileList"
         );
 
         if (Strings.isBlank(workspaceId)|| Strings.isBlank(sessionId)) {
@@ -532,7 +532,7 @@ public class FileRestController {
                 + REST_PATH + "/"
                 + workspaceId + "/"
                 + sessionId,
-            "fileDownloadUrlRequestHandler"
+            "shareFileDownloadUrlRequestHandler"
         );
 
         if (Strings.isBlank(userId)|| Strings.isBlank(objectName)) {
@@ -570,7 +570,7 @@ public class FileRestController {
                 + "sessionId:" + sessionId + "/"
                 + "userId:" + leaderUserId + "/"
                 + "objectName:" + objectName,
-            "deleteFileRequestHandler"
+            "deleteShareFileRequestHandler"
         );
 
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId) || StringUtils.isBlank(leaderUserId)) {
