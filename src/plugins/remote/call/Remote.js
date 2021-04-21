@@ -106,7 +106,7 @@ const _ = {
       const connectOption = {
         iceServers,
         wsUri: ws,
-        role: options === false ? 'SUBSCRIBER' : 'PUSLISHER',
+        role: options === false ? 'SUBSCRIBER' : 'PUBLISHER',
       }
 
       await _.session.connect(
