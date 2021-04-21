@@ -27,6 +27,7 @@ import com.virnect.client.RemoteServiceException;
 import com.virnect.data.application.record.RecordRestService;
 import com.virnect.data.application.user.UserRestService;
 import com.virnect.data.application.workspace.WorkspaceRestService;
+import com.virnect.data.dao.member.MemberRepository;
 import com.virnect.data.domain.DeviceType;
 import com.virnect.data.domain.member.Member;
 import com.virnect.data.domain.member.MemberHistory;
@@ -93,6 +94,8 @@ public class SessionDataRepository {
     private final UserRestService userRestService;
     private final RecordRestService recordRestService;
     private final ModelMapper modelMapper;
+
+    private final MemberRepository memberRepository;
 
     public Boolean destroySession(String sessionId, EndReason reason) {
 
@@ -1514,7 +1517,9 @@ public class SessionDataRepository {
 
         //if connection id cannot find, push message and just remove user
         if (Strings.isBlank(connectionId)) {
-            sessionService.updateMember(member, MemberStatus.EVICTED);
+            //sessionService.updateMember(member, MemberStatus.EVICTED);
+            member.setMemberStatus(MemberStatus.EVICTED);
+            memberRepository.save(member);
         }
 
         return new ApiResponse<>(kickRoomResponse);
