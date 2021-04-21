@@ -111,9 +111,9 @@ export default {
         name: this.fileInfo.name,
         objectName: this.fileInfo.objectName,
         contentType: this.fileInfo.contentType,
-        width: 0,
-        height: 0,
-        index: this.pdfPage,
+        width: this.pageInfo.width,
+        height: this.pageInfo.height,
+        index: this.pdfPage - 1,
       })
     },
   },

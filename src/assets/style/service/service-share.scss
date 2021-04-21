@@ -122,7 +122,7 @@ $share_savebtn_height: 2.929rem;
   padding: 1.429rem;
   padding-left: 1.714rem;
   &.inner {
-    padding-top: 0;
+    padding-top: 10px;
   }
   > li {
     position: relative;
@@ -305,6 +305,9 @@ $share_savebtn_height: 2.929rem;
   width: calc(100% - 2.857rem);
   min-height: 2.143rem;
   margin: 1.429rem;
+  .tooltip .tooltiptext > p {
+    white-space: pre-wrap;
+  }
 }
 .share-body__backbutton-text {
   width: 100%;

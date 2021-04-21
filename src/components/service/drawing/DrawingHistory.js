@@ -2,13 +2,13 @@
 export default {
   data() {
     return {
-      receivedList: [
+      receivedList: {
         // {
         //   id: 0,
         //   data: {},
         //   path: [] / {},
         // }
-      ],
+      },
     }
   },
   methods: {

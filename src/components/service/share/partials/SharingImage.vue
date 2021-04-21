@@ -69,7 +69,7 @@ export default {
       this.$call.sendDrawing(DRAWING.FILE_SHARE, {
         name: this.fileInfo.name,
         objectName: this.fileInfo.objectName,
-        contentType: this.fileInfo.contextType,
+        contentType: this.fileInfo.contentType,
         width: this.fileInfo.width,
         height: this.fileInfo.height,
         index: 0,

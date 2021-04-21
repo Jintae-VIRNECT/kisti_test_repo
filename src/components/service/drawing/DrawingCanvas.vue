@@ -175,7 +175,7 @@ export default {
       if (this.canvas) {
         this.canvas.dispose()
         this.canvas = null
-        this.receivedList = []
+        this.receivedList = {}
       }
       this.editingMode = false
 
@@ -212,7 +212,7 @@ export default {
     },
 
     optimizeCanvasSize() {
-      if (!this.file || !this.file.id || !this.canvas) return
+      if (!this.file || !this.file.objectName || !this.canvas) return
       const canvas = this.canvas
       const cursor = this.cursor.canvas
       const image = canvas.backgroundImage
@@ -254,12 +254,14 @@ export default {
       })
     },
     receiveRender() {
-      if (this.receivedList.length === 0) return
+      if (Object.keys(this.receivedList).length === 0) return
 
-      for (let received of this.receivedList) {
-        this.addReceiveObject(received)
+      for (let key in this.receivedList) {
+        for (let received of this.receivedList[key]) {
+          this.addReceiveObject({ data: received, owner: key })
+        }
+        delete this.receivedList[key]
       }
-      this.receivedList = []
     },
     windowResize() {
       setTimeout(() => {

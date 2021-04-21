@@ -1,14 +1,14 @@
 .participants {
   flex: 0;
-  // width: calc(100% - #{$subview_width});
-  width: calc(100% - #{$subview_width + $share_width});
+  width: calc(100% - #{$subview_width});
   height: $video_height;
   margin-bottom: 2.143rem;
-  margin-left: $share_width;
   padding: 0 8%;
   transition: all 0.3s;
-  // &.shareview {
-  // }
+  &.shareview {
+    width: calc(100% - #{$subview_width + $share_width});
+    margin-left: $share_width;
+  }
   &.fullscreen {
     height: 0;
     margin-bottom: 0;

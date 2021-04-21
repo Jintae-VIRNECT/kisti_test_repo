@@ -134,7 +134,7 @@ export default {
     },
     userListClass() {
       return {
-        shareview: this.isLeader && this.currentView === 'drawing',
+        shareview: this.currentView === 'drawing',
         fullscreen:
           this.isVideoLoaded &&
           this.isFullScreen &&

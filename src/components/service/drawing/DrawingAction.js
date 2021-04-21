@@ -56,7 +56,7 @@ export default {
         widthScale: this.origin.width / this.img.width,
       }
       const param = getSignalParams(type, aId, object, state)
-      param.imgId = this.file.id
+      param.objectName = this.file.objectName
 
       if (object) {
         param.oId = object.id

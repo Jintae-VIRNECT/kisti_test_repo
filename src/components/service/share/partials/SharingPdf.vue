@@ -1,7 +1,15 @@
 <template>
   <li class="sharing-image" @click="pdfPageView">
-    <button class="sharing-image__item pdf">
+    <button
+      class="sharing-image__item pdf"
+      :class="{
+        active: shareFile.objectName === fileInfo.objectName,
+      }"
+    >
       <img :src="fileInfo.thumbnailDownloadUrl" />
+      <div class="sharing-image__item-active">
+        <p>{{ $t('service.share_current') }}</p>
+      </div>
     </button>
 
     <p class="sharing-image__name">{{ fileInfo.name }}</p>
@@ -24,10 +32,6 @@
         </p>
       </div>
     </div>
-    <canvas
-      style=" z-index: -999;display: none; width: 100%; height: 100%;"
-      ref="backCanvas"
-    ></canvas>
     <button class="sharing-image__remove" @click.stop="deleteImage">
       {{ $t('service.file_remove') }}
     </button>
@@ -64,7 +68,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(['pdfPages', 'roomInfo']),
+    ...mapGetters(['pdfPages', 'roomInfo', 'shareFile']),
     docPages() {
       if (this.fileInfo.objectName in this.pdfPages) {
         return this.pdfPages[this.fileInfo.objectName]
@@ -138,21 +142,24 @@ export default {
       return res.url
     },
     async getPage(index, numPages) {
-      const { blob } = await this.loadPage(index)
+      const { blob, origin } = await this.loadPage(index)
       blob.name = index
       const docPage = {
         id: this.fileInfo.objectName,
         total: numPages,
         pageNum: index,
         filedata: blob,
+        width: origin.width,
+        height: origin.height,
       }
       this.addPdfPage(docPage)
     },
     async loadPage(index, scale = null) {
       const fileReader = await this.document.getPage(index)
       const canvas = document.createElement('canvas')
+      let vp = null
       if (scale === null) {
-        const vp = fileReader.getViewport({ scale: 1 })
+        vp = fileReader.getViewport({ scale: 1 })
         let scaleWidth = this.size.width / vp.width
         let scaleHeight = this.size.height / vp.height
         scale = scaleWidth > scaleHeight ? scaleHeight : scaleWidth
@@ -172,6 +179,10 @@ export default {
         size: {
           width: canvas.width,
           height: canvas.height,
+        },
+        origin: {
+          width: vp ? vp.width : 0,
+          height: vp ? vp.height : 0,
         },
       }
     },

@@ -6,7 +6,7 @@ import { SIGNAL, DRAWING } from 'configs/remote.config'
 export default {
   data() {
     return {
-      receivePath: [],
+      receivePath: {},
     }
   },
   methods: {
@@ -17,7 +17,10 @@ export default {
       if (this.drawingView) {
         this.addReceiveObject({ data, owner: receive.from.connectionId })
       } else {
-        this.receivedList.push({ data, owner: receive.from.connectionId })
+        this.receivedList[receive.from.connectionId].push({
+          data,
+          owner: receive.from.connectionId,
+        })
       }
     },
     addReceiveObject({ data, owner }) {
@@ -54,18 +57,18 @@ export default {
       }
 
       if (data.type === DRAWING.LINE_DOWN) {
-        this.receivePath = []
+        this.receivePath[owner] = []
       }
       let receiveParams = getReceiveParams(data.type, params, this.origin.scale)
 
-      this.receivePath.push(receiveParams)
+      this.receivePath[owner].push(receiveParams)
 
       if (data.type === DRAWING.LINE_UP) {
         const width =
           parseFloat(data.width) * (this.origin.width / this.img.width)
         // const width = parseInt(data.width)
-        const pos = calcPosition(this.receivePath, width)
-        const path = new fabric.Path(this.receivePath, {
+        const pos = calcPosition(this.receivePath[owner], width)
+        const path = new fabric.Path(this.receivePath[owner], {
           left: pos.left,
           top: pos.top,
           fill: null,
@@ -85,7 +88,7 @@ export default {
         this.backCanvas.add(fabric.util.object.clone(path))
         this.backCanvas.renderAll()
         this.$nextTick(() => {
-          this.receivePath = []
+          delete this.receivePath[owner]
         })
       }
     },

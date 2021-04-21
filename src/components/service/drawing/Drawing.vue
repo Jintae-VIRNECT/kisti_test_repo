@@ -90,35 +90,29 @@ export default {
       if (this.account.roleType !== ROLE.LEADER) return
       if (this.shareFile && this.shareFile.id) {
         if (!this.shareFile.json || this.shareFile.json.length === 0) {
-          this.sendImage(connectionId)
+          this.sendImage([connectionId])
           return
         }
         this.confirmDefault(this.$t('service.drawing_sync'), {
-          action: this.refreshCanvas,
+          action: () => {
+            this.sendImage()
+          },
         })
       }
     },
-    sendImage(connectionId) {
-      const params = {
-        imgId: this.shareFile.id,
-        imgName: this.shareFile.oriName
-          ? this.shareFile.oriName
-          : this.shareFile.fileName,
-        image: this.shareFile.img,
-      }
+    sendImage(target = null) {
       this.$call.sendDrawing(
         DRAWING.FILE_SHARE,
         {
           name: this.shareFile.name,
           objectName: this.shareFile.objectName,
-          contentType: this.shareFile.contextType,
+          contentType: this.shareFile.contentType,
           width: this.shareFile.width,
           height: this.shareFile.height,
           index: this.shareFile.index,
         },
-        [connectionId],
+        target,
       )
-      this.$refs['drawingLayout'].sendImage(params, [connectionId])
     },
     refreshCanvas() {
       const imgId = parseInt(
@@ -160,7 +154,7 @@ export default {
 
       if (data.type === DRAWING.FILE_SHARE) {
         if (data.contentType === 'application/pdf') {
-          this.$eventBus.$emit(`loadPdf_${data.objectName}`, data.index)
+          this.$eventBus.$emit(`loadPdf_${data.objectName}`, data.index + 1)
         } else {
           const res = await drawingDownload({
             sessionId: this.roomInfo.sessionId,
