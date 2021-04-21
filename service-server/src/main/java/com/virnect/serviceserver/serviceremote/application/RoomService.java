@@ -105,55 +105,32 @@ public class RoomService {
 		String sessionId,
 		int companyCode
 	) {
-		ApiResponse<RoomResponse> responseData;
 
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
+
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
-		} else {
-			if (roomRequest.getSessionType() == SessionType.PRIVATE
-				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
-				// check room request member count is over
-				if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-					new ApiResponse<>(
-						new RoomResponse(),
-						ErrorCode.ERR_ROOM_MEMBER_IS_OVER
-					);
-				}
-				// generate session id and token
-				JsonObject sessionJson = serviceSessionManager.generateSession();
-				JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+			new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+		}
 
-				responseData = this.sessionDataRepository.generateRoom(
-					sessionId,
-					roomRequest,
-					licenseItem,
-					roomRequest.getLeaderId(),
-					sessionJson.toString(),
-					tokenResult.toString()
-				);
-
-			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
-				//open session is not need to check member count.
-				// generate session id and token
-				JsonObject sessionJson = serviceSessionManager.generateSession();
-				JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-				// create room
-				responseData = this.sessionDataRepository.generateRoom(
-					sessionId,
-					roomRequest,
-					licenseItem,
-					roomRequest.getLeaderId(),
-					sessionJson.toString(),
-					tokenResult.toString()
-				);
-			} else {
-				responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_CREATE_FAIL
-				);
+		if (roomRequest.getSessionType() != SessionType.OPEN) {
+			// check room request member count is over
+			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
+				new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 			}
 		}
-		return responseData;
+
+		// generate session id and token
+		JsonObject sessionJson = serviceSessionManager.generateSession();
+		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+
+		return this.sessionDataRepository.generateRoom(
+			sessionId,
+			roomRequest,
+			licenseItem,
+			roomRequest.getLeaderId(),
+			sessionJson.toString(),
+			tokenResult.toString()
+		);
 	}
 
 	public ApiResponse<RoomResponse> redialRoomRequestByUserId(
@@ -163,51 +140,31 @@ public class RoomService {
 		String sessionId,
 		int companyCode
 	) {
-		ApiResponse<RoomResponse> responseData;
-
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
+
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
-		} else {
-			if (roomRequest.getSessionType() == SessionType.PRIVATE
-				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
-				// check room request member count is over
-				if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-					new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
-				}
-				// generate session id and token
-				JsonObject sessionJson = serviceSessionManager.generateSession();
-				JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+			new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+		}
 
-				// create room
-				responseData = this.sessionDataRepository.generateRoom(
-					sessionId,
-					roomRequest,
-					licenseItem,
-					userId,
-					sessionJson.toString(),
-					tokenResult.toString()
-				);
-			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
-				//open session is not need to check member count.
-				// generate session id and token
-				JsonObject sessionJson = serviceSessionManager.generateSession();
-				JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-				// create room
-				responseData = this.sessionDataRepository.generateRoom(
-					sessionId,
-					roomRequest,
-					licenseItem,
-					userId,
-					sessionJson.toString(),
-					tokenResult.toString()
-				);
-			} else {
-				responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_CREATE_FAIL);
+		if (roomRequest.getSessionType() != SessionType.OPEN) {
+			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
+				new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 			}
 		}
-		return responseData;
+
+		// generate session id and token
+		JsonObject sessionJson = serviceSessionManager.generateSession();
+		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+
+		// create room
+		return this.sessionDataRepository.generateRoom(
+			sessionId,
+			roomRequest,
+			licenseItem,
+			userId,
+			sessionJson.toString(),
+			tokenResult.toString()
+		);
 	}
 
 	public ApiResponse<RoomResponse> initRoomByClient(
@@ -217,54 +174,31 @@ public class RoomService {
 		int companyCode
 	) {
 
-		//companyCode = checkCompanyCode(companyCode);
-
 		ApiResponse<RoomResponse> responseData;
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+			new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		}
-		else {
-			if (roomRequest.getSessionType() == SessionType.PRIVATE
-				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
-				// check room request member count is over
-				if (IsValidUserCapacity(roomRequest, licenseItem)) {
-					// generate session id and token
-					JsonObject sessionJson = serviceSessionManager.generateSession();
-					JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
-					// create room
-					responseData = this.sessionDataRepository.generateRoom(
-						roomRequest,
-						licenseItem,
-						userId,
-						sessionJson.toString(),
-						tokenResult.toString()
-					);
-					responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
-				} else {
-					responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
-				}
-			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
-				//open session is not need to check member count.
-				// generate session id and token
-				JsonObject sessionJson = serviceSessionManager.generateSession();
-				JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-				// create room
-				responseData = this.sessionDataRepository.generateRoom(
-					roomRequest,
-					licenseItem,
-					userId,
-					sessionJson.toString(),
-					tokenResult.toString()
-				);
-				responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
-			} else {
-				responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_CREATE_FAIL);
+		if (roomRequest.getSessionType() != SessionType.OPEN) {
+			if (!IsValidUserCapacity(roomRequest, licenseItem)) {
+				new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 			}
 		}
+
+		JsonObject sessionJson = serviceSessionManager.generateSession();
+		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+		// create room
+		responseData = this.sessionDataRepository.generateRoom(
+			roomRequest,
+			licenseItem,
+			userId,
+			sessionJson.toString(),
+			tokenResult.toString()
+		);
+		responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
+
 		return responseData;
 	}
 
@@ -276,47 +210,26 @@ public class RoomService {
 		// check license item using company code if not virnect
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
-		} else {
-			if (roomRequest.getSessionType() == SessionType.PRIVATE
-				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
-				// check room request member count is over
-				if (IsValidUserCapacity(roomRequest, licenseItem)) {
-					// generate session id and token
-					JsonObject sessionJson = serviceSessionManager.generateSession();
-					JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+			new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+		}
 
-					responseData = this.sessionDataRepository.generateRoom(
-						roomRequest,
-						licenseItem,
-						roomRequest.getLeaderId(),
-						sessionJson.toString(),
-						tokenResult.toString()
-					);
-					responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
-				} else {
-					responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
-				}
-			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
-				// open session is not need to check member count.
-				// generate session id and token
-				JsonObject sessionJson = serviceSessionManager.generateSession();
-				JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-				// create room
-				responseData = this.sessionDataRepository.generateRoom(
-					roomRequest,
-					licenseItem,
-					roomRequest.getLeaderId(),
-					sessionJson.toString(),
-					tokenResult.toString()
-				);
-				responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
-			} else {
-				responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_CREATE_FAIL);
+		if (!(roomRequest.getSessionType() == SessionType.OPEN)) {
+			if (!IsValidUserCapacity(roomRequest, licenseItem)) {
+				new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
 			}
 		}
 
+		JsonObject sessionJson = serviceSessionManager.generateSession();
+		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+
+		responseData = this.sessionDataRepository.generateRoom(
+			roomRequest,
+			licenseItem,
+			roomRequest.getLeaderId(),
+			sessionJson.toString(),
+			tokenResult.toString()
+		);
+		responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
 		return responseData;
 	}
 
@@ -338,16 +251,7 @@ public class RoomService {
 		ApiResponse<Boolean> dataProcess = this.sessionDataRepository.prepareJoinRoom(
 			workspaceId, sessionId, joinRoomRequest.getUuid());
 
-		if (dataProcess.getData()) {
-			// generate session id and token
-			JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
-			JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-			responseData = this.sessionDataRepository.joinRoom(
-				workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
-
-			responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
-		} else {
+		if (!dataProcess.getData()) {
 			LogMessage.formedInfo(
 				TAG,
 				"REST API: POST " + REST_PATH + "/",
@@ -355,14 +259,21 @@ public class RoomService {
 				"process data get false",
 				dataProcess.getMessage()
 			);
-			responseData = new ApiResponse<>(new RoomResponse(), dataProcess.getCode(), dataProcess.getMessage());
-			/*responseData.setCode(dataProcess.getCode());
-			responseData.setMessage(dataProcess.getMessage());*/
+			new ApiResponse<>(new RoomResponse(), dataProcess.getCode(), dataProcess.getMessage());
 		}
+
+		// generate session id and token
+		JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
+		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+
+		responseData = this.sessionDataRepository.joinRoom(
+			workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
+
+		responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
 
 		/*
 		 * 1. UNLOAD 상태 체크
-		 * 2. 발행한 토큰 파기, LEAVE ROOM  (자동 처리 확인)
+		 * 2. 발행한 토큰 파기, LEAVE ROOM (자동 처리 확인)
 		 * 3. DB DATA UPDATE
 		 * 4. RESPONSE ERROR MESSAGE
 		 */
@@ -375,48 +286,42 @@ public class RoomService {
 		String sessionId,
 		String userId
 	) {
-
-		ApiResponse<ResultResponse> responseData;
-
-		Member member = null;
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 
 		if (room == null) {
-			responseData = new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
-		} else {
-			for (Member participant : room.getMembers()) {
-				if (participant.getUuid().equals(userId)) {
-					member = participant;
-				}
-			}
-			if (member == null) {
-				responseData = new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-			} else {
-				ErrorCode errorCode;
+			new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
 
-				if (member.getMemberType() == MemberType.LEADER) {
-					errorCode = ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
-				} else if (member.getMemberStatus() == MemberStatus.LOAD) {
-					errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
-				} else {
-					errorCode = ErrorCode.ERR_SUCCESS;
-				}
-
-				if (errorCode == ErrorCode.ERR_SUCCESS) {
-
-					room.getMembers().remove(member);
-					roomRepository.save(room);
-
-					ResultResponse resultResponse = new ResultResponse();
-					resultResponse.setUserId(userId);
-					resultResponse.setResult(true);
-					responseData = new ApiResponse<>(resultResponse);
-				} else {
-					responseData = new ApiResponse<>(new ResultResponse(), errorCode);
-				}
+		Member member = null;
+		for (Member participant : room.getMembers()) {
+			if (participant.getUuid().equals(userId)) {
+				member = participant;
 			}
 		}
-		return responseData;
+
+		if (member == null) {
+			new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+		}
+
+		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;
+		if (member.getMemberType() == MemberType.LEADER) {
+			errorCode = ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
+		} else if (member.getMemberStatus() == MemberStatus.LOAD) {
+			errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+		}
+
+		if (errorCode != ErrorCode.ERR_SUCCESS) {
+			new ApiResponse<>(new ResultResponse(), errorCode);
+		}
+
+		room.getMembers().remove(member);
+		roomRepository.save(room);
+
+		ResultResponse resultResponse = new ResultResponse();
+		resultResponse.setUserId(userId);
+		resultResponse.setResult(true);
+
+		return new ApiResponse<>(resultResponse);
 	}
 
 	public ApiResponse<ResultResponse> inviteMember(
@@ -424,20 +329,29 @@ public class RoomService {
 		String sessionId,
 		InviteRoomRequest inviteRoomRequest
 	) {
-		ApiResponse<InviteRoomResponse> response = this.sessionDataRepository.inviteMember(
-			workspaceId, sessionId, inviteRoomRequest);
-		ApiResponse<ResultResponse> resultResponse;
-		if (response.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
-			//send push message
-			this.sessionDataRepository.sendInviteMessage(response.getData());
 
-			resultResponse = new ApiResponse<>(
-				new ResultResponse(inviteRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>())
+		ApiResponse<InviteRoomResponse> response = this.sessionDataRepository.inviteMember(
+			workspaceId,
+			sessionId,
+			inviteRoomRequest
+		);
+
+		if (!(response.getCode() == ErrorCode.ERR_SUCCESS.getCode())) {
+			new ApiResponse<>(
+				new ResultResponse(),
+				response.getCode(),
+				response.getMessage()
 			);
-		} else {
-			resultResponse = new ApiResponse<>(new ResultResponse(), response.getCode(), response.getMessage());
 		}
-		return resultResponse;
+
+		this.sessionDataRepository.sendInviteMessage(response.getData());
+
+		return new ApiResponse<>(new ResultResponse(
+			inviteRoomRequest.getLeaderId(),
+		true,
+			LocalDateTime.now(),
+			new HashMap<>())
+		);
 	}
 
 	public ApiResponse<ResultResponse> kickOutMember(
@@ -445,50 +359,59 @@ public class RoomService {
 		String sessionId,
 		KickRoomRequest kickRoomRequest
 	) {
-		ApiResponse<ResultResponse> resultResponse;
-
 		ApiResponse<KickRoomResponse> apiResponse = this.sessionDataRepository.kickFromRoom(
-			workspaceId, sessionId, kickRoomRequest);
+			workspaceId,
+			sessionId,
+			kickRoomRequest
+		);
 
-		if (apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
-			String connectionId = apiResponse.getData().getConnectionId();
-			if (connectionId == null || connectionId.isEmpty()) {
-				//send push message
-				this.sessionDataRepository.sendEvictMessage(apiResponse.getData());
-				resultResponse = new ApiResponse<>(new ResultResponse(
-					kickRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>()
-				));
-			} else {
-				//send rpc message to connection id user of the session id
-				JsonObject jsonObject = serviceSessionManager.generateMessage(
-					sessionId,
-					Collections.singletonList(connectionId),
-					PushConstants.PUSH_SIGNAL_SYSTEM,
-					PushConstants.SEND_PUSH_ROOM_EVICT
-				);
-				if (jsonObject.has("error")) {
-					log.info("sendSignal :{}", jsonObject.get("error").getAsString());
-					log.info("sendSignal :{}", jsonObject.get("status").getAsString());
-					log.info("sendSignal :{}", jsonObject.get("message").getAsString());
-					resultResponse = new ApiResponse<>(new ResultResponse());
-					resultResponse.setCode(Integer.parseInt(jsonObject.get("status").getAsString()));
-					resultResponse.setMessage(jsonObject.get("message").getAsString());
-				} else {
-					//send force disconnected
-					//todo:forceResult when get false do process something.
-					boolean forceResult = serviceSessionManager.evictParticipant(sessionId, connectionId);
-					log.info("evictParticipant :{}", forceResult);
-					resultResponse = new ApiResponse<>(new ResultResponse(
-						kickRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>()
-					));
-				}
-			}
-		} else {
-			resultResponse = new ApiResponse<>(new ResultResponse());
-			resultResponse.setCode(apiResponse.getCode());
-			resultResponse.setMessage(apiResponse.getMessage());
+		String connectionId = apiResponse.getData().getConnectionId();
+
+		if (!(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode())) {
+			new ApiResponse<>(
+				new ResultResponse(),
+				apiResponse.getCode(),
+				apiResponse.getMessage()
+			);
 		}
-		return resultResponse;
+
+		//send push message
+		if (StringUtils.isBlank(connectionId)) {
+			this.sessionDataRepository.sendEvictMessage(apiResponse.getData());
+			new ApiResponse<>(
+				new ResultResponse(kickRoomRequest.getLeaderId(),
+				true,
+				LocalDateTime.now(),
+				new HashMap<>())
+			);
+		}
+
+		//send rpc message to connection id user of the session id
+		JsonObject jsonObject = serviceSessionManager.generateMessage(
+			sessionId,
+			Collections.singletonList(connectionId),
+			PushConstants.PUSH_SIGNAL_SYSTEM,
+			PushConstants.SEND_PUSH_ROOM_EVICT
+		);
+
+		if (jsonObject.has("error")) {
+			log.info("sendSignal :{}", jsonObject.get("error").getAsString());
+			log.info("sendSignal :{}", jsonObject.get("status").getAsString());
+			log.info("sendSignal :{}", jsonObject.get("message").getAsString());
+			new ApiResponse<>(
+				new ResultResponse(),
+				Integer.parseInt(jsonObject.get("status").getAsString()),
+				jsonObject.get("message").getAsString());
+		}
+
+		log.info("Evict participant result : {}", serviceSessionManager.evictParticipant(sessionId, connectionId));
+
+		return new ApiResponse<>(
+			new ResultResponse(kickRoomRequest.getLeaderId(),
+				true,
+				LocalDateTime.now(),
+				new HashMap<>())
+		);
 	}
 
 	public ApiResponse<ResultResponse> sendSignal(String workspaceId, SendSignalRequest sendSignalRequest) {
@@ -652,48 +575,46 @@ public class RoomService {
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 
 		if(room == null) {
-			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
-		} else {
-			if (room.getRoomStatus() != RoomStatus.ACTIVE) {
-				responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
-			} else {
+			new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
 
-				// Make uuid array
-				List<String> userList = new ArrayList<>();
-				for (Member member : room.getMembers()) {
-					if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
-						userList.add(member.getUuid());
-					}
-				}
-				String[] userIds = userList.stream().distinct().toArray(String[]::new);
+		if (room.getRoomStatus() != RoomStatus.ACTIVE) {
+			new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
+		}
 
-				// Receive User list from Workspace
-				ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
-
-				// mapping data
-				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
-				roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
-
-				List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-					.collect(Collectors.toList());
-
-				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-					for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
-						if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
-							memberInfoResponse.setRole(workspaceMemberInfo.getRole());
-							memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
-							memberInfoResponse.setName(workspaceMemberInfo.getName());
-							memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
-							memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
-						}
-					}
-				}
-				roomDetailInfoResponse.setMemberList(setLeader(memberInfoList));
-				responseData = new ApiResponse<>(roomDetailInfoResponse);
+		// Make uuid array
+		List<String> userList = new ArrayList<>();
+		for (Member member : room.getMembers()) {
+			if (!(member.getUuid() == null || member.getUuid().isEmpty())) {
+				userList.add(member.getUuid());
 			}
 		}
-		return responseData;
+		String[] userIds = userList.stream().distinct().toArray(String[]::new);
+
+		// Receive User list from Workspace
+		ApiResponse<WorkspaceMemberInfoListResponse> memberInfo = workspaceRestService.getWorkspaceMemberInfoList(workspaceId, userIds);
+
+		// mapping data
+		RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(room, RoomDetailInfoResponse.class);
+		roomDetailInfoResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+		List<MemberInfoResponse> memberInfoList = room.getMembers().stream()
+			.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			.collect(Collectors.toList());
+
+		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+			for (WorkspaceMemberInfoResponse workspaceMemberInfo : memberInfo.getData().getMemberInfoList()) {
+				if (memberInfoResponse.getUuid().equals(workspaceMemberInfo.getUuid())) {
+					memberInfoResponse.setRole(workspaceMemberInfo.getRole());
+					memberInfoResponse.setEmail(workspaceMemberInfo.getEmail());
+					memberInfoResponse.setName(workspaceMemberInfo.getName());
+					memberInfoResponse.setNickName(workspaceMemberInfo.getNickName());
+					memberInfoResponse.setProfile(workspaceMemberInfo.getProfile());
+				}
+			}
+		}
+		roomDetailInfoResponse.setMemberList(setLeader(memberInfoList));
+		return new ApiResponse<>(roomDetailInfoResponse);
 	}
 
 	public RoomInfoListResponse getRoomList(
@@ -787,6 +708,7 @@ public class RoomService {
 		PageMetadataResponse pageMeta;
 
 		Page<Room> roomPage;
+
 		if (!(StringUtils.isBlank(search))) {
 			List<String> userIds = new ArrayList<>();
 			List<WorkspaceMemberInfoResponse> members = workspaceRestService.getWorkspaceMemberInfoList(
@@ -877,172 +799,157 @@ public class RoomService {
 			sessionId
 		);
 
-		ApiResponse<RoomDetailInfoResponse> responseData;
-
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
-
-		List<MemberInfoResponse> memberInfoList;
-		if (!ObjectUtils.isEmpty(room)) {
-			if (room.getLeaderId().equals(modifyRoomInfoRequest.getUuid())) {
-
-				room.setTitle(modifyRoomInfoRequest.getTitle());
-				room.setDescription(modifyRoomInfoRequest.getDescription());
-
-				Room updatedRoom = roomRepository.save(room);
-
-				// mapping data
-				RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(updatedRoom, RoomDetailInfoResponse.class);
-				roomDetailInfoResponse.setSessionType(updatedRoom.getSessionProperty().getSessionType());
-				// Get Member List by Room Session ID
-				// Mapping Member List Data to Member Information List
-				memberInfoList = memberRepository.findAllBySessionId(sessionId)
-					.stream()
-					.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
-					.map(member -> modelMapper.map(member, MemberInfoResponse.class))
-					.collect(Collectors.toList());
-
-				// find and get extra information from use-server using uuid
-				for (MemberInfoResponse memberInfoResponse : memberInfoList) {
-					ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
-						workspaceId, memberInfoResponse.getUuid());
-					log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
-					//todo://user infomation does not have role and role id change to workspace member info
-					WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
-					memberInfoResponse.setRole(workspaceMemberData.getRole());
-					//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
-					memberInfoResponse.setEmail(workspaceMemberData.getEmail());
-					memberInfoResponse.setName(workspaceMemberData.getName());
-					memberInfoResponse.setNickName(workspaceMemberData.getNickName());
-					memberInfoResponse.setProfile(workspaceMemberData.getProfile());
-				}
-
-				// Set Member List to Room Detail Information Response
-				roomDetailInfoResponse.setMemberList(memberInfoList);
-
-				responseData = new ApiResponse<>(roomDetailInfoResponse);
-			} else {
-				responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-			}
-		} else {
-			responseData = new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		if (room == null) {
+			new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
-		return responseData;
+		if (!room.getLeaderId().equals(modifyRoomInfoRequest.getUuid())) {
+			new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+		}
+
+		room.setTitle(modifyRoomInfoRequest.getTitle());
+		room.setDescription(modifyRoomInfoRequest.getDescription());
+
+		Room updatedRoom = roomRepository.save(room);
+
+		// mapping data
+		RoomDetailInfoResponse roomDetailInfoResponse = modelMapper.map(updatedRoom, RoomDetailInfoResponse.class);
+		roomDetailInfoResponse.setSessionType(updatedRoom.getSessionProperty().getSessionType());
+		// Get Member List by Room Session ID
+		// Mapping Member List Data to Member Information List
+		List<MemberInfoResponse> memberInfoList = memberRepository.findAllBySessionId(sessionId)
+			.stream()
+			.filter(member -> !(member.getMemberStatus() == MemberStatus.EVICTED))
+			.map(member -> modelMapper.map(member, MemberInfoResponse.class))
+			.collect(Collectors.toList());
+
+		// find and get extra information from use-server using uuid
+		for (MemberInfoResponse memberInfoResponse : memberInfoList) {
+			ApiResponse<WorkspaceMemberInfoResponse> workspaceMemberInfo = workspaceRestService.getWorkspaceMemberInfo(
+				workspaceId, memberInfoResponse.getUuid());
+			log.debug("workspaceMemberInfo: " + workspaceMemberInfo.getData().toString());
+			//todo://user infomation does not have role and role id change to workspace member info
+			WorkspaceMemberInfoResponse workspaceMemberData = workspaceMemberInfo.getData();
+			memberInfoResponse.setRole(workspaceMemberData.getRole());
+			//memberInfoResponse.setRoleId(workspaceMemberData.getRoleId());
+			memberInfoResponse.setEmail(workspaceMemberData.getEmail());
+			memberInfoResponse.setName(workspaceMemberData.getName());
+			memberInfoResponse.setNickName(workspaceMemberData.getNickName());
+			memberInfoResponse.setProfile(workspaceMemberData.getProfile());
+		}
+
+		// Set Member List to Room Detail Information Response
+		roomDetailInfoResponse.setMemberList(memberInfoList);
+		return new ApiResponse<>(roomDetailInfoResponse);
 	}
 
 	public ApiResponse<RoomDeleteResponse> deleteRoomById(String workspaceId, String sessionId, String userId) {
 
-		ApiResponse<RoomDeleteResponse> responseData;
-
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
-
-		if (!ObjectUtils.isEmpty(room)) {
-			//check request user has valid permission
-			if (!room.getLeaderId().equals(userId)) {
-				return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
-			}
-
-			for (Member member : room.getMembers()) {
-				if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus() == MemberStatus.LOAD) {
-					return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
-				}
-			}
-
-			log.info("ROOM INFO DELETE BY SESSION ID => [{}]", room.getMembers().size());
-
-			// Set Logging
-			RoomHistory roomHistory = RoomHistory.builder()
-				.sessionId(room.getSessionId())
-				.title(room.getTitle())
-				.description(room.getDescription())
-				.profile(room.getProfile())
-				.leaderId(room.getLeaderId())
-				.workspaceId(room.getWorkspaceId())
-				.maxUserCount(room.getMaxUserCount())
-				.licenseName(room.getLicenseName())
-				.build();
-
-			// Remote Session Property Entity Create
-			SessionProperty sessionProperty = room.getSessionProperty();
-			SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
-				.mediaMode(sessionProperty.getMediaMode())
-				.recordingMode(sessionProperty.getRecordingMode())
-				.defaultOutputMode(sessionProperty.getDefaultOutputMode())
-				.defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
-				.recording(sessionProperty.isRecording())
-				.keepalive(sessionProperty.isKeepalive())
-				.sessionType(sessionProperty.getSessionType())
-				.roomHistory(roomHistory)
-				.build();
-
-			roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
-
-			// Set room member history
-			// Mapping Member List Data to Member History List
-			for (Member roomMember : room.getMembers()) {
-				MemberHistory memberHistory = MemberHistory.builder()
-					.roomHistory(roomHistory)
-					.workspaceId(roomMember.getWorkspaceId())
-					.uuid(roomMember.getUuid())
-					.memberType(roomMember.getMemberType())
-					.deviceType(roomMember.getDeviceType())
-					.sessionId(roomMember.getSessionId())
-					.startDate(roomMember.getStartDate())
-					.endDate(roomMember.getEndDate())
-					.durationSec(roomMember.getDurationSec())
-					.build();
-
-				//sessionService.setMemberHistory(memberHistory);
-				roomHistory.getMemberHistories().add(memberHistory);
-
-				//delete member
-				memberRepository.delete(roomMember);
-			}
-
-			//set active time
-			roomHistory.setActiveDate(room.getActiveDate());
-
-			//set un active  time
-			LocalDateTime endTime = LocalDateTime.now();
-			roomHistory.setUnactiveDate(endTime);
-
-			//time diff seconds
-			Duration duration = Duration.between(room.getActiveDate(), endTime);
-			roomHistory.setDurationSec(duration.getSeconds());
-
-			//save room history
-			boolean result = roomHistoryRepository.existsByWorkspaceIdAndSessionId(
-				roomHistory.getWorkspaceId(), roomHistory.getSessionId());
-			if (result) {
-				log.error("Duplicate entry {}", roomHistory.getSessionId());
-			} else {
-				this.roomHistoryRepository.save(roomHistory);
-			}
-
-			// end Set Logging
-			roomRepository.delete(room);
-
-			if (this.serviceSessionManager.closeActiveSession(sessionId)) {
-				LogMessage.formedInfo(
-					TAG,
-					"serviceSessionManager",
-					"closeActiveSession"
-				);
-				fileService.removeFiles(workspaceId, sessionId);
-			}
-
-			if (this.serviceSessionManager.closeNotActiveSession(sessionId)) {
-				LogMessage.formedInfo(
-					TAG,
-					"serviceSessionManager",
-					"closeNotActiveSession"
-				);
-				fileService.removeFiles(workspaceId, sessionId);
-			}
-			responseData = new ApiResponse<>(new RoomDeleteResponse(sessionId, true, LocalDateTime.now()));
-		} else {
-			responseData = new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+		if (room == null) {
+			new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
-		return responseData;
-	}
+		//check request user has valid permission
+		if (!room.getLeaderId().equals(userId)) {
+			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+		}
+		for (Member member : room.getMembers()) {
+			if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus() == MemberStatus.LOAD) {
+				return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
+			}
+		}
 
+		log.info("ROOM INFO DELETE BY SESSION ID => [{}]", room.getMembers().size());
+
+		// Set Logging
+		RoomHistory roomHistory = RoomHistory.builder()
+			.sessionId(room.getSessionId())
+			.title(room.getTitle())
+			.description(room.getDescription())
+			.profile(room.getProfile())
+			.leaderId(room.getLeaderId())
+			.workspaceId(room.getWorkspaceId())
+			.maxUserCount(room.getMaxUserCount())
+			.licenseName(room.getLicenseName())
+			.build();
+
+		// Remote Session Property Entity Create
+		SessionProperty sessionProperty = room.getSessionProperty();
+		SessionPropertyHistory sessionPropertyHistory = SessionPropertyHistory.builder()
+			.mediaMode(sessionProperty.getMediaMode())
+			.recordingMode(sessionProperty.getRecordingMode())
+			.defaultOutputMode(sessionProperty.getDefaultOutputMode())
+			.defaultRecordingLayout(sessionProperty.getDefaultRecordingLayout())
+			.recording(sessionProperty.isRecording())
+			.keepalive(sessionProperty.isKeepalive())
+			.sessionType(sessionProperty.getSessionType())
+			.roomHistory(roomHistory)
+			.build();
+
+		roomHistory.setSessionPropertyHistory(sessionPropertyHistory);
+
+		// Set room member history
+		// Mapping Member List Data to Member History List
+		for (Member roomMember : room.getMembers()) {
+			MemberHistory memberHistory = MemberHistory.builder()
+				.roomHistory(roomHistory)
+				.workspaceId(roomMember.getWorkspaceId())
+				.uuid(roomMember.getUuid())
+				.memberType(roomMember.getMemberType())
+				.deviceType(roomMember.getDeviceType())
+				.sessionId(roomMember.getSessionId())
+				.startDate(roomMember.getStartDate())
+				.endDate(roomMember.getEndDate())
+				.durationSec(roomMember.getDurationSec())
+				.build();
+
+			//sessionService.setMemberHistory(memberHistory);
+			roomHistory.getMemberHistories().add(memberHistory);
+
+			//delete member
+			memberRepository.delete(roomMember);
+		}
+
+		//set active time
+		roomHistory.setActiveDate(room.getActiveDate());
+
+		//set un active  time
+		LocalDateTime endTime = LocalDateTime.now();
+		roomHistory.setUnactiveDate(endTime);
+
+		//time diff seconds
+		Duration duration = Duration.between(room.getActiveDate(), endTime);
+		roomHistory.setDurationSec(duration.getSeconds());
+
+		//save room history
+		boolean result = roomHistoryRepository.existsByWorkspaceIdAndSessionId(
+			roomHistory.getWorkspaceId(), roomHistory.getSessionId());
+		if (result) {
+			log.error("Duplicate entry {}", roomHistory.getSessionId());
+		} else {
+			this.roomHistoryRepository.save(roomHistory);
+		}
+
+		// end Set Logging
+		roomRepository.delete(room);
+
+		if (this.serviceSessionManager.closeActiveSession(sessionId)) {
+			LogMessage.formedInfo(
+				TAG,
+				"serviceSessionManager",
+				"closeActiveSession"
+			);
+			fileService.removeFiles(workspaceId, sessionId);
+		}
+
+		if (this.serviceSessionManager.closeNotActiveSession(sessionId)) {
+			LogMessage.formedInfo(
+				TAG,
+				"serviceSessionManager",
+				"closeNotActiveSession"
+			);
+			fileService.removeFiles(workspaceId, sessionId);
+		}
+		return new ApiResponse<>(new RoomDeleteResponse(sessionId, true, LocalDateTime.now()));
+	}
 }
