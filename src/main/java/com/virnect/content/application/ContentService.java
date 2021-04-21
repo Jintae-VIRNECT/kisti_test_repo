@@ -16,8 +16,7 @@ import com.virnect.content.dao.contentdonwloadlog.ContentDownloadLogRepository;
 import com.virnect.content.dao.scenegroup.SceneGroupRepository;
 import com.virnect.content.dao.target.TargetRepository;
 import com.virnect.content.domain.*;
-import com.virnect.content.dto.MetadataInfo;
-import com.virnect.content.dto.PropertiesRequest;
+import com.virnect.content.dto.PropertiesInfo;
 import com.virnect.content.dto.request.ContentDeleteRequest;
 import com.virnect.content.dto.request.ContentInfoRequest;
 import com.virnect.content.dto.request.ContentUpdateRequest;
@@ -141,9 +140,8 @@ public class ContentService {
                     uploadRequest.getContent(), contentUUID + "");
 
             // 2-1. 프로퍼티로 메타데이터 생성
-            MetadataInfo metadataInfo = metadataService.convertMetadata(
-                    uploadRequest.getProperties(), uploadRequest.getUserUUID(), uploadRequest.getName());
-            String metadata = gson.toJson(metadataInfo);
+            //MetadataInfo metadataInfo = metadataService.convertMetadata(uploadRequest.getProperties(), uploadRequest.getUserUUID(), uploadRequest.getName());
+            //String metadata = gson.toJson(metadataInfo);
 
             // 2-2. 업로드 컨텐츠 정보 수집
             Content content = Content.builder()
@@ -151,7 +149,7 @@ public class ContentService {
                     .workspaceUUID(uploadRequest.getWorkspaceUUID())
                     .uuid(contentUUID)
                     .name(uploadRequest.getName())
-                    .metadata(metadata)
+                    //.metadata(metadata)
                     .properties(uploadRequest.getProperties())
                     .userUUID(uploadRequest.getUserUUID())
                     .shared(INIT_IS_SHARED)
@@ -162,7 +160,8 @@ public class ContentService {
                     .build();
 
             // 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
-            addSceneGroupToContent(content, content.getMetadata());
+            //addSceneGroupToContent(content, content.getMetadata());
+            addSceneGroupToContent(content, content.getProperties());
 
             // 타겟 저장 후 타겟데이터 반환
             String targetData = null;
@@ -208,25 +207,17 @@ public class ContentService {
      * @param content
      * @param metadata
      */
-    private void addSceneGroupToContent(Content content, String metadata) {
-        try {
-            // 3-1. 메타데이터 파싱
-            MetadataInfo metadataInfo = objectMapper.readValue(metadata, MetadataInfo.class);
-            metadataInfo.getContents().getSceneGroups().forEach(sceneGroupDto -> {
-                // 3-2. 씬그룹 데이터 파싱
-                SceneGroup sceneGroup = SceneGroup.builder()
-                        .name(sceneGroupDto.getName())
-                        .jobTotal(sceneGroupDto.getJobTotal())
-                        .priority(sceneGroupDto.getPriority())
-                        .uuid(sceneGroupDto.getId())
-                        .build();
-                // 3-3. 씬그룹 데이터 컨텐츠에 추가
-                content.addSceneGroup(sceneGroup);
-            });
-        } catch (JsonProcessingException e) {
-            log.info("SCENEGROUP UPLOAD ERROR: {}", e.getMessage());
-            throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
-        }
+    private void addSceneGroupToContent(Content content, String properties) {
+        PropertiesInfo propertiesInfo = new PropertiesParsingHandler().getPropertiesRequest(properties);
+        propertiesInfo.getSceneGroups().forEach(sceneGroupInfo -> {
+            SceneGroup sceneGroup = SceneGroup.builder()
+                    .name(sceneGroupInfo.getName())
+                    .jobTotal(sceneGroupInfo.getJobTotal())
+                    .priority(sceneGroupInfo.getPriority())
+                    .uuid(sceneGroupInfo.getId())
+                    .build();
+            content.addSceneGroup(sceneGroup);
+        });
     }
 
     private String addTargetToContent(Content content, TargetType targetType, String targetData) {
@@ -243,11 +234,7 @@ public class ContentService {
         }
 
         //content metadata 안의 targetsize 추출(VECHOSYS-1282)
-        JsonParser jsonParse = new JsonParser();
-        JsonObject propertyObj = (JsonObject) jsonParse.parse(content.getMetadata());
-        JsonObject contents = propertyObj.getAsJsonObject("contents");
-        float targetSize = contents.get("targetSize").getAsFloat();
-
+        float targetSize = new PropertiesParsingHandler().getPropertiesRequest(content.getProperties()).getTargetSize();
         Target target = Target.builder()
                 .type(targetType)
                 .content(content)
@@ -336,11 +323,11 @@ public class ContentService {
         targetContent.setName(updateRequest.getName());
 
         // 씬 그룹 업데이트
-        PropertiesRequest propertiesRequest = new PropertiesParsingHandler().getPropertiesRequest(updateRequest.getProperties());
+        PropertiesInfo propertiesInfo = new PropertiesParsingHandler().getPropertiesRequest(updateRequest.getProperties());
         if (!targetContent.getProperties().equals(updateRequest.getProperties())) {
             targetContent.setProperties(updateRequest.getProperties());
             targetContent.getSceneGroupList().clear();
-            propertiesRequest.getSceneGroups().forEach(sceneGroupInfo -> {
+            propertiesInfo.getSceneGroups().forEach(sceneGroupInfo -> {
                 SceneGroup sceneGroup = SceneGroup.builder()
                         .name(sceneGroupInfo.getName())
                         .jobTotal(sceneGroupInfo.getJobTotal())
@@ -374,7 +361,7 @@ public class ContentService {
         }
         target.setData(updateRequest.getTargetData());
         target.setType(updateRequest.getTargetType());
-        target.setSize(propertiesRequest.getTargetSize());
+        target.setSize(propertiesInfo.getTargetSize());
 
         // 8. 수정 반영
         targetRepository.save(target);
@@ -693,13 +680,7 @@ public class ContentService {
             targetResponseList.add(map);
         }
 
-        JsonParser jsonParse = new JsonParser();
-        JsonObject metaData = (JsonObject) jsonParse.parse(content.getMetadata());
-        JsonObject contents = metaData.getAsJsonObject("contents");
-        float targetSize = 10f;
-        if (contents.get("targetSize") != null) {
-            targetSize = contents.get("targetSize").getAsFloat();
-        }
+        float targetSize  = new PropertiesParsingHandler().getPropertiesRequest(content.getProperties()).getTargetSize();
 
         ContentInfoResponse contentInfoResponse = ContentInfoResponse.builder()
                 .workspaceUUID(content.getWorkspaceUUID())
@@ -760,7 +741,7 @@ public class ContentService {
                 // TODO : 공정 수정 후 반영 예정
                 //                .contentType(content.getType().getType())
                 .name(response.getData().getName())
-                .metadata(content.getMetadata())
+                //.metadata(content.getMetadata())
                 .userUUID(content.getUserUUID())
                 // 컨텐츠:타겟은 1:1이므로
                 .targetType(content.getTargetList().get(0).getType())
@@ -876,7 +857,7 @@ public class ContentService {
                 .workspaceUUID(workspaceUUID)
                 .uuid(newContentUUID)
                 .name(oldContents.getName())
-                .metadata(oldContents.getMetadata())
+                //.metadata(oldContents.getMetadata())
                 .properties(oldContents.getProperties())
                 .userUUID(userUUID)
                 .shared(INIT_IS_SHARED)
@@ -887,7 +868,7 @@ public class ContentService {
                 .build();
 
         // 3. 컨텐츠 씬그룹 관련 정보 파싱 및 컨텐츠 정보에 추가
-        addSceneGroupToContent(newContent, newContent.getMetadata());
+        addSceneGroupToContent(newContent, newContent.getProperties());
         this.contentRepository.save(newContent);
 
         ContentUploadResponse contentUploadResponse = this.modelMapper.map(newContent, ContentUploadResponse.class);

@@ -1,5 +1,6 @@
 package com.virnect.content.dto;
 
+import com.virnect.content.domain.ItemType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,9 +19,10 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class PropertiesRequest {
+public class PropertiesInfo {
     private String id; //TargetId
     private float targetSize; //TargetSize
+    private int subProcessTotal;
     private List<SceneGroup> sceneGroups; //PropertyInfo
 
     @Getter
@@ -61,6 +63,6 @@ public class PropertiesRequest {
         private String id;
         private String title;
         private int priority;
-        //private String item;
+        private ItemType type;
     }
 }
