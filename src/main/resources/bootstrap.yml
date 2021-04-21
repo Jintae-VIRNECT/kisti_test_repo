@@ -1,0 +1,14 @@
+## Server Configuration
+server:
+  port: 8321
+
+spring:
+  profiles:
+    active: ${VIRNECT_ENV}
+  application:
+    name: auth-server
+  cloud:
+    config:
+      uri: ${CONFIG_SERVER}
+      profile: ${VIRNECT_ENV}
+      name: ${spring.application.name}
