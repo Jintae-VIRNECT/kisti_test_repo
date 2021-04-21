@@ -299,20 +299,18 @@ public class ContentService {
         Long calSize = targetContent.getSize() - updateRequest.getContent().getSize();
         checkLicenseStorage(targetContent.getWorkspaceUUID(), calSize, updateRequest.getUserUUID());
 
-        //2. 수정 컨텐츠 업로드
-        String originalPath = targetContent.getPath();
+        // 2. 기존 컨텐츠 파일 삭제
+        fileUploadService.delete(targetContent.getPath());
+
+        //3. 수정 컨텐츠 업로드
         try {
-            String fileUploadPath = fileUploadService.uploadByFileInputStream(
-                    updateRequest.getContent(), targetContent.getUuid() + "");
+            String fileUploadPath = fileUploadService.uploadByFileInputStream(updateRequest.getContent(), targetContent.getUuid());
             // 3 수정 컨텐츠 경로 반영
             targetContent.setPath(fileUploadPath);
         } catch (IOException e) {
             log.info("CONTENT UPDATE ERROR: {}", e.getMessage());
             throw new ContentServiceException(ErrorCode.ERR_CONTENT_UPLOAD);
         }
-
-        // 4. 기존 컨텐츠 파일 삭제
-        fileUploadService.delete(originalPath);
 
         // 5. 컨텐츠 소유자 변경
         targetContent.setUserUUID(updateRequest.getUserUUID());
@@ -372,6 +370,7 @@ public class ContentService {
         ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
                 .type(target.getType())
                 .data(target.getData())
+                .imgPath(target.getImgPath())
                 .build();
         contentTargetResponseList.add(contentTargetResponse);
         ContentUploadResponse updateResult = this.modelMapper.map(targetContent, ContentUploadResponse.class);
