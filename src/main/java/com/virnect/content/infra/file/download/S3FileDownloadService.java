@@ -32,7 +32,7 @@ import java.util.Map;
  * @since 2020.05.10
  */
 @Slf4j
-@Profile({"staging", "production", "local"})
+@Profile({"staging", "production"})
 @Component
 @RequiredArgsConstructor
 public class S3FileDownloadService implements FileDownloadService {
