@@ -385,7 +385,6 @@ public class RoomService {
 				new HashMap<>())
 			);
 		}
-
 		//send rpc message to connection id user of the session id
 		JsonObject jsonObject = serviceSessionManager.generateMessage(
 			sessionId,
