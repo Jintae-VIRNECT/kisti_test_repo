@@ -35,7 +35,7 @@ import java.util.Map;
  * DESCRIPTION:
  */
 @Slf4j
-@Profile({"develop", "onpremise","test"})
+@Profile({"develop", "onpremise","test","local"})
 @Component
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MinioDownloadService implements FileDownloadService {
