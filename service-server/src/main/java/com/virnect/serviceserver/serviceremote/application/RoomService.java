@@ -276,47 +276,26 @@ public class RoomService {
 		// check license item using company code if not virnect
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
-		} else {
-			if (roomRequest.getSessionType() == SessionType.PRIVATE
-				|| roomRequest.getSessionType() == SessionType.PUBLIC) {
-				// check room request member count is over
-				if (IsValidUserCapacity(roomRequest, licenseItem)) {
-					// generate session id and token
-					JsonObject sessionJson = serviceSessionManager.generateSession();
-					JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+			new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+		}
 
-					responseData = this.sessionDataRepository.generateRoom(
-						roomRequest,
-						licenseItem,
-						roomRequest.getLeaderId(),
-						sessionJson.toString(),
-						tokenResult.toString()
-					);
-					responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
-				} else {
-					responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
-				}
-			} else if (roomRequest.getSessionType() == SessionType.OPEN) {
-				// open session is not need to check member count.
-				// generate session id and token
-				JsonObject sessionJson = serviceSessionManager.generateSession();
-				JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
-
-				// create room
-				responseData = this.sessionDataRepository.generateRoom(
-					roomRequest,
-					licenseItem,
-					roomRequest.getLeaderId(),
-					sessionJson.toString(),
-					tokenResult.toString()
-				);
-				responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
-			} else {
-				responseData = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_CREATE_FAIL);
+		if (!(roomRequest.getSessionType() == SessionType.OPEN)) {
+			if (!IsValidUserCapacity(roomRequest, licenseItem)) {
+				new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
 			}
 		}
 
+		JsonObject sessionJson = serviceSessionManager.generateSession();
+		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
+
+		responseData = this.sessionDataRepository.generateRoom(
+			roomRequest,
+			licenseItem,
+			roomRequest.getLeaderId(),
+			sessionJson.toString(),
+			tokenResult.toString()
+		);
+		responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
 		return responseData;
 	}
 
@@ -449,46 +428,43 @@ public class RoomService {
 
 		ApiResponse<KickRoomResponse> apiResponse = this.sessionDataRepository.kickFromRoom(
 			workspaceId, sessionId, kickRoomRequest);
+		String connectionId = apiResponse.getData().getConnectionId();
 
-		if (apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode()) {
-			String connectionId = apiResponse.getData().getConnectionId();
-			if (connectionId == null || connectionId.isEmpty()) {
-				//send push message
-				this.sessionDataRepository.sendEvictMessage(apiResponse.getData());
-				resultResponse = new ApiResponse<>(new ResultResponse(
-					kickRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>()
-				));
-			} else {
-				//send rpc message to connection id user of the session id
-				JsonObject jsonObject = serviceSessionManager.generateMessage(
-					sessionId,
-					Collections.singletonList(connectionId),
-					PushConstants.PUSH_SIGNAL_SYSTEM,
-					PushConstants.SEND_PUSH_ROOM_EVICT
-				);
-				if (jsonObject.has("error")) {
-					log.info("sendSignal :{}", jsonObject.get("error").getAsString());
-					log.info("sendSignal :{}", jsonObject.get("status").getAsString());
-					log.info("sendSignal :{}", jsonObject.get("message").getAsString());
-					resultResponse = new ApiResponse<>(new ResultResponse());
-					resultResponse.setCode(Integer.parseInt(jsonObject.get("status").getAsString()));
-					resultResponse.setMessage(jsonObject.get("message").getAsString());
-				} else {
-					//send force disconnected
-					//todo:forceResult when get false do process something.
-					boolean forceResult = serviceSessionManager.evictParticipant(sessionId, connectionId);
-					log.info("evictParticipant :{}", forceResult);
-					resultResponse = new ApiResponse<>(new ResultResponse(
-						kickRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>()
-					));
-				}
-			}
-		} else {
-			resultResponse = new ApiResponse<>(new ResultResponse());
-			resultResponse.setCode(apiResponse.getCode());
-			resultResponse.setMessage(apiResponse.getMessage());
+		if (!(apiResponse.getCode() == ErrorCode.ERR_SUCCESS.getCode())) {
+			new ApiResponse<>(new ResultResponse(),apiResponse.getCode(),apiResponse.getMessage());
 		}
-		return resultResponse;
+
+		if (StringUtils.isBlank(connectionId)) {
+			//send push message
+			this.sessionDataRepository.sendEvictMessage(apiResponse.getData());
+			new ApiResponse<>(new ResultResponse(kickRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>()
+			));
+		}
+
+		//send rpc message to connection id user of the session id
+		JsonObject jsonObject = serviceSessionManager.generateMessage(
+			sessionId,
+			Collections.singletonList(connectionId),
+			PushConstants.PUSH_SIGNAL_SYSTEM,
+			PushConstants.SEND_PUSH_ROOM_EVICT
+		);
+
+		if (!jsonObject.has("error")) {
+			boolean forceResult = serviceSessionManager.evictParticipant(sessionId, connectionId);
+			log.info("evictParticipant :{}", forceResult);
+			new ApiResponse<>(new ResultResponse(kickRoomRequest.getLeaderId(), true, LocalDateTime.now(), new HashMap<>()
+			));
+		}
+
+		log.info("sendSignal :{}", jsonObject.get("error").getAsString());
+		log.info("sendSignal :{}", jsonObject.get("status").getAsString());
+		log.info("sendSignal :{}", jsonObject.get("message").getAsString());
+
+		return new ApiResponse<>(
+			new ResultResponse(),
+			Integer.parseInt(jsonObject.get("status").getAsString()),
+			jsonObject.get("message").getAsString()
+		);
 	}
 
 	public ApiResponse<ResultResponse> sendSignal(String workspaceId, SendSignalRequest sendSignalRequest) {
