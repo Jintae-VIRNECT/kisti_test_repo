@@ -18,7 +18,7 @@ import com.virnect.data.domain.room.RoomStatus;
 @Repository
 public interface RoomRepository extends JpaRepository<Room, Long>, CustomRoomRepository {
 
-    Optional<Room> findBySessionId(final String sessionId);
+    //Optional<Room> findBySessionId(final String sessionId);
 
     /*@Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select r from Room r where r.workspaceId = ?1 and r.sessionId = ?2")
