@@ -37,6 +37,11 @@ export default {
 
       panoViewer: null,
       videoElement: null,
+
+      lastPos: {
+        yaw: 0,
+        pitch: 0,
+      },
     }
   },
   computed: {
@@ -104,6 +109,16 @@ export default {
 
         this.panoViewer.on('viewChange', e => {
           if (this.type === 'control') {
+            const sameYaw = this.lastPos.yaw === e.yaw
+            const samePitch = this.lastPos.pitch === e.pitch
+            if (sameYaw && samePitch) {
+              return
+            }
+
+            this.lastPos = {
+              yaw: e.yaw,
+              pitch: e.pitch,
+            }
             this.$call.sendPanoRotation({
               yaw: e.yaw,
               pitch: e.pitch,
