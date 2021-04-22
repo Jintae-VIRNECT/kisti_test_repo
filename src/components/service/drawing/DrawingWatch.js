@@ -21,6 +21,7 @@ export default {
       if (val !== oldVal && val === VIEW.DRAWING) {
         this.optimizeCanvasSize()
         this.$nextTick(() => {
+          if (!this.isInit) return
           this.receiveRender()
         })
       }

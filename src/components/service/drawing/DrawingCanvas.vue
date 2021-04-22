@@ -207,6 +207,7 @@ export default {
 
       this.isInit = true
       this.$emit('loadingSuccess')
+      this.receiveRender()
 
       return this.canvas
     },
