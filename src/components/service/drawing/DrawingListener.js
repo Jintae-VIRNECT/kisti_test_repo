@@ -14,6 +14,19 @@ export default {
       const data = JSON.parse(receive.data)
       if (receive.from.connectionId === this.myInfo.connectionId) return
       // if (this.account.roleType === ROLE.LEADER) return
+      if (
+        ![
+          DRAWING.LINE_DOWN,
+          DRAWING.LINE_MOVE,
+          DRAWING.LINE_UP,
+          DRAWING.TEXT_ADD,
+          DRAWING.UNDO,
+          DRAWING.REDO,
+          DRAWING.CLEAR,
+          DRAWING.CLEAR_ALL,
+        ].includes(data.type)
+      )
+        return
       if (this.drawingView) {
         this.addReceiveObject({ data, owner: receive.from.connectionId })
       } else {
