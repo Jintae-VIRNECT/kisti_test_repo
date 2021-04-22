@@ -26,9 +26,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.dao.user.LoginAttemptRepository;
 import com.virnect.uaa.domain.auth.domain.user.LoginAttempt;
+import com.virnect.uaa.domain.auth.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.event.account.AccountLockEvent;
-import com.virnect.uaa.domain.auth.error.ErrorCode;
-import com.virnect.uaa.domain.auth.error.ErrorResponseMessage;
+import com.virnect.uaa.domain.user.dao.user.UserRepository;
+import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.global.common.ErrorResponseMessage;
 
 @Slf4j
 @Service
@@ -55,20 +57,20 @@ public class LoginFailureHandler extends SimpleUrlAuthenticationFailureHandler {
 
 		if (exception instanceof SessionAuthenticationException) {
 			log.error("LOGIN Fail - 해당 계정으로 활동 중인 세션 정보 확인.");
-			errorResponseMessage = new ErrorResponseMessage(ErrorCode.ERR_LOGIN_SESSION_DUPLICATE);
+			errorResponseMessage = ErrorResponseMessage.parseError(AuthenticationErrorCode.ERR_LOGIN_SESSION_DUPLICATE);
 		} else if (exception instanceof BadCredentialsException && StringUtils.hasText(userEmail)) {
 			log.error("LOGIN Fail - 계정이 존재하나 비밀번호가 틀림.");
-			errorResponseMessage = new ErrorResponseMessage(ErrorCode.ERR_LOGIN);
+			errorResponseMessage = ErrorResponseMessage.parseError(AuthenticationErrorCode.ERR_LOGIN);
 			int loginFailCount = loginAttemptCheck(userEmail);
 			if (loginFailCount > 0) {
 				errorResponseMessage.getData().put(LOGIN_FAIL_COUNT_NAME, loginFailCount);
 			}
 		} else if (exception instanceof UsernameNotFoundException) {
 			log.error("LOGIN Fail - 계정이 존재하지 않음");
-			errorResponseMessage = new ErrorResponseMessage(ErrorCode.ERR_LOGIN);
+			errorResponseMessage = ErrorResponseMessage.parseError(AuthenticationErrorCode.ERR_LOGIN);
 		} else if (exception instanceof LockedException) {
 			log.error("LOGIN Fail - 잠긴 계정: {}", userEmail);
-			errorResponseMessage = new ErrorResponseMessage(ErrorCode.ERR_ACCOUNT_LOCK);
+			errorResponseMessage = ErrorResponseMessage.parseError(AuthenticationErrorCode.ERR_ACCOUNT_LOCK);
 		}
 
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);

@@ -8,4 +8,6 @@ import com.virnect.uaa.domain.user.domain.SecessionUser;
 
 public interface SecessionUserRepository extends JpaRepository<SecessionUser, Long> {
 	Optional<SecessionUser> findByUserUUID(String userUUID);
+
+	boolean existsByEmail(String email);
 }

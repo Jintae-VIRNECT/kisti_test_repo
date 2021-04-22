@@ -5,9 +5,9 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.user.dto.rest.billing.BillingCouponRegisterResponse;
-import com.virnect.user.dto.rest.billing.BillingRestResponse;
-import com.virnect.user.dto.rest.billing.BillingRestResult;
+import com.virnect.uaa.infra.rest.billing.dto.BillingCouponRegisterResponse;
+import com.virnect.uaa.infra.rest.billing.dto.BillingRestResponse;
+import com.virnect.uaa.infra.rest.billing.dto.BillingRestResult;
 
 @Slf4j
 @Component

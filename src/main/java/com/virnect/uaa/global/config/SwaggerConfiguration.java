@@ -23,7 +23,6 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import com.virnect.uaa.domain.auth.error.ErrorCode;
 import com.virnect.uaa.domain.auth.error.ErrorResponseMessage;
 
 /**
@@ -43,12 +42,12 @@ public class SwaggerConfiguration {
 	@Bean
 	public Docket authApiDocument() throws JsonProcessingException {
 		List<ResponseMessage> responseMessages = new ArrayList<>();
-		for (ErrorCode errorCode : ErrorCode.values()) {
-			responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode())
-				.message(objectMapper.writeValueAsString(new ErrorResponseMessage(errorCode)))
-				.build());
-		}
-		responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
+		// for (ErrorCode errorCode : ErrorCode.values()) {
+		// 	responseMessages.add(new ResponseMessageBuilder().code(errorCode.getCode())
+		// 		.message(objectMapper.writeValueAsString(new ErrorResponseMessage(errorCode)))
+		// 		.build());
+		// }
+		// responseMessages.add(new ResponseMessageBuilder().code(200).message("success").build());
 
 		ApiInfo apiInfo = new ApiInfoBuilder()
 			.contact(new Contact("장정현", "https://virnect.com", "sky456139@vinrect.com"))

@@ -11,9 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.user.dto.rest.billing.BillingCouponRegisterRequest;
-import com.virnect.user.dto.rest.billing.BillingCouponRegisterResponse;
-import com.virnect.user.dto.rest.billing.BillingRestResponse;
+import com.virnect.uaa.infra.rest.billing.dto.BillingCouponRegisterRequest;
+import com.virnect.uaa.infra.rest.billing.dto.BillingCouponRegisterResponse;
+import com.virnect.uaa.infra.rest.billing.dto.BillingRestResponse;
 
 @Slf4j
 @Service

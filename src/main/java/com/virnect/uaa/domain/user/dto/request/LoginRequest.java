@@ -6,8 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 
-import com.virnect.user.validator.UserLoginIdValidation;
-
 /**
  * Project: user
  * DATE: 2020-01-08

@@ -18,6 +18,7 @@ import com.vdurmont.semver4j.Semver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.infra.rest.app.AppRestService;
 import com.virnect.uaa.domain.auth.dao.device.DeviceAccessLogRepository;
 import com.virnect.uaa.domain.auth.dao.device.DeviceAuthRepository;

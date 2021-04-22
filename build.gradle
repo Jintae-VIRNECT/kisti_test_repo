@@ -99,6 +99,9 @@ dependencies {
     implementation 'com.google.zxing:core:3.3.0'
     implementation 'com.google.zxing:javase:3.3.0'
 
+    // minio
+    implementation 'io.minio:minio:7.1.2'
+
     // version string handling
     implementation 'com.vdurmont:semver4j:3.1.0'
 
@@ -111,6 +114,9 @@ dependencies {
 
     // JSON PARSING
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    // aws s3
+    implementation 'com.amazonaws:aws-java-sdk-s3:1.11.415' // AWS Storage Service
 }
 
 

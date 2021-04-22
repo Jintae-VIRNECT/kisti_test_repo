@@ -53,8 +53,6 @@ import io.jsonwebtoken.impl.TextCodec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.application.rest.user.UserRestService;
-import com.virnect.uaa.domain.auth.application.rest.workspace.WorkspaceRestService;
 import com.virnect.uaa.domain.auth.dao.user.BlockTokenRepository;
 import com.virnect.uaa.domain.auth.dao.user.EmailAuthorizationRepository;
 import com.virnect.uaa.domain.auth.dao.user.LoginAttemptRepository;
@@ -63,7 +61,6 @@ import com.virnect.uaa.domain.auth.domain.user.BlockReason;
 import com.virnect.uaa.domain.auth.domain.user.BlockToken;
 import com.virnect.uaa.domain.auth.domain.user.EmailAuth;
 import com.virnect.uaa.domain.auth.domain.user.LoginAttempt;
-import com.virnect.uaa.domain.auth.dto.rest.UserInfoResponse;
 import com.virnect.uaa.domain.auth.dto.user.ClientGeoIPInfo;
 import com.virnect.uaa.domain.auth.dto.user.request.EmailAuthRequest;
 import com.virnect.uaa.domain.auth.dto.user.request.LoginRequest;
@@ -81,6 +78,11 @@ import com.virnect.uaa.domain.auth.dto.user.response.RefreshTokenResponse;
 import com.virnect.uaa.domain.auth.event.account.AccountLockEvent;
 import com.virnect.uaa.domain.auth.error.exception.LoginFailException;
 import com.virnect.uaa.domain.auth.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.user.dao.SecessionUserRepository;
+import com.virnect.uaa.domain.user.dao.user.UserRepository;
+import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
+import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.domain.user.domain.UserAccessLog;
 import com.virnect.uaa.global.common.ApiResponse;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
 import com.virnect.uaa.domain.auth.error.AuthenticationErrorCode;
@@ -89,6 +91,9 @@ import com.virnect.uaa.global.security.token.JwtPayload;
 import com.virnect.uaa.global.security.token.JwtTokenProvider;
 import com.virnect.uaa.infra.email.EmailMessage;
 import com.virnect.uaa.infra.email.EmailService;
+import com.virnect.uaa.infra.rest.user.UserRestService;
+import com.virnect.uaa.infra.rest.user.dto.UserInfoResponse;
+import com.virnect.uaa.infra.rest.workspace.WorkspaceRestService;
 
 @Slf4j
 @Profile(value = "onpremise")

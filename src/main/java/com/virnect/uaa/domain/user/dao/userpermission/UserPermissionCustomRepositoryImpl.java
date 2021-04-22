@@ -2,6 +2,7 @@ package com.virnect.uaa.domain.user.dao.userpermission;
 
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
+import com.virnect.uaa.domain.user.domain.QUserPermission;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserPermission;
 

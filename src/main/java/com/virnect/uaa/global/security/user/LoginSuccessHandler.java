@@ -19,12 +19,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.application.rest.user.UserRestService;
-import com.virnect.uaa.domain.auth.dto.rest.UserDetailsInfoResponse;
+import com.virnect.security.UserDetailsImpl;
 import com.virnect.uaa.domain.auth.dto.user.ClientGeoIPInfo;
+import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
+import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.domain.user.domain.UserAccessLog;
 import com.virnect.uaa.global.common.ApiResponse;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
-import com.virnect.security.UserDetailsImpl;
+import com.virnect.uaa.infra.rest.user.UserRestService;
+import com.virnect.uaa.infra.rest.user.dto.UserDetailsInfoResponse;
 
 @Slf4j
 @Service
@@ -53,7 +56,8 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 		saveUserInfoInSession(userDetails, clientGeoIPInfo, loginUserSession);
 		saveUserAccessLog(userDetails, clientGeoIPInfo);
 
-		ApiResponse<UserDetailsInfoResponse> userDetailsInfoResponseApiResponse = userRestService.getUserDetailsInfo("auth-server",userDetails.getUuid());
+		ApiResponse<UserDetailsInfoResponse> userDetailsInfoResponseApiResponse = userRestService.getUserDetailsInfo(
+			"auth-server", userDetails.getUuid());
 
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 		response.setCharacterEncoding(StandardCharsets.UTF_8.displayName());

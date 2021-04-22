@@ -16,8 +16,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.uaa.domain.auth.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.error.exception.DeviceAuthenticationServiceException;
-import com.virnect.uaa.domain.auth.error.ErrorCode;
 
 /**
  * @project: PF-Auth
@@ -46,7 +46,7 @@ public class AES256Utils {
 			| InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
 			log.error("AES Util Encrypt Error: {}", e.getMessage());
 			e.printStackTrace();
-			throw new DeviceAuthenticationServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+			throw new DeviceAuthenticationServiceException(AuthenticationErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
 	}
 

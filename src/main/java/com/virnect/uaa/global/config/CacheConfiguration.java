@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.user.dto.response.UserInfoResponse;
+import com.virnect.uaa.domain.user.dto.response.UserInfoResponse;
 
 @Configuration
 @EnableCaching

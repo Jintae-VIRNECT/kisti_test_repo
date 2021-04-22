@@ -53,8 +53,6 @@ import io.jsonwebtoken.impl.TextCodec;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.application.rest.user.UserRestService;
-import com.virnect.uaa.domain.auth.application.rest.workspace.WorkspaceRestService;
 import com.virnect.uaa.domain.auth.dao.user.BlockTokenRepository;
 import com.virnect.uaa.domain.auth.dao.user.EmailAuthorizationRepository;
 import com.virnect.uaa.domain.auth.dao.user.LoginAttemptRepository;
@@ -63,7 +61,6 @@ import com.virnect.uaa.domain.auth.domain.user.BlockReason;
 import com.virnect.uaa.domain.auth.domain.user.BlockToken;
 import com.virnect.uaa.domain.auth.domain.user.EmailAuth;
 import com.virnect.uaa.domain.auth.domain.user.LoginAttempt;
-import com.virnect.uaa.domain.auth.dto.rest.UserInfoResponse;
 import com.virnect.uaa.domain.auth.dto.user.ClientGeoIPInfo;
 import com.virnect.uaa.domain.auth.dto.user.request.EmailAuthRequest;
 import com.virnect.uaa.domain.auth.dto.user.request.LoginRequest;
@@ -79,9 +76,14 @@ import com.virnect.uaa.domain.auth.dto.user.response.OAuthTokenResponse;
 import com.virnect.uaa.domain.auth.dto.user.response.OTPQRGenerateResponse;
 import com.virnect.uaa.domain.auth.dto.user.response.RefreshTokenResponse;
 import com.virnect.uaa.domain.auth.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.event.account.AccountLockEvent;
 import com.virnect.uaa.domain.auth.error.exception.LoginFailException;
 import com.virnect.uaa.domain.auth.error.exception.UserAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.event.account.AccountLockEvent;
+import com.virnect.uaa.domain.user.dao.SecessionUserRepository;
+import com.virnect.uaa.domain.user.dao.user.UserRepository;
+import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
+import com.virnect.uaa.domain.user.domain.User;
+import com.virnect.uaa.domain.user.domain.UserAccessLog;
 import com.virnect.uaa.global.common.ApiResponse;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
 import com.virnect.uaa.global.config.token.TokenProperty;
@@ -89,8 +91,9 @@ import com.virnect.uaa.global.security.token.JwtPayload;
 import com.virnect.uaa.global.security.token.JwtTokenProvider;
 import com.virnect.uaa.infra.email.EmailMessage;
 import com.virnect.uaa.infra.email.EmailService;
-
-
+import com.virnect.uaa.infra.rest.user.UserRestService;
+import com.virnect.uaa.infra.rest.user.dto.UserInfoResponse;
+import com.virnect.uaa.infra.rest.workspace.WorkspaceRestService;
 
 /**
  * @project: PF-Auth
@@ -147,7 +150,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			Cookie rememberMeCookie = Stream.of(request.getCookies())
 				.filter(cookie -> cookie.getName().equals(REMEMBER_ME_COOKIE))
 				.findFirst()
-				.orElseThrow(() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_INVALID_REQUEST_PARAMETER));
+				.orElseThrow(() -> new UserAuthenticationServiceException(
+					AuthenticationErrorCode.ERR_INVALID_REQUEST_PARAMETER));
 			String userRememberMeToken = rememberMeCookie.getValue();
 			if (!jwtTokenProvider.isValidToken(userRememberMeToken)) {
 				throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION);
@@ -238,7 +242,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	) {
 		// 1. 인증 데이터 가져오기
 		EmailAuth emailAuth = emailAuthorizationRepository.findById(registerRequest.getEmail())
-			.orElseThrow(() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_SESSION_EXPIRE));
+			.orElseThrow(
+				() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_SESSION_EXPIRE));
 
 		// 2. 인증 세션 코드 확인
 		if (!emailAuth.getSessionCode().equals(registerRequest.getSessionCode())) {
@@ -253,13 +258,15 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			// file limit check
 			long MAX_USER_PROFILE_IMAGE_SIZE = 5242880;
 			if (registerRequest.getProfile().getSize() >= MAX_USER_PROFILE_IMAGE_SIZE) {
-				throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_PROFILE_IMAGE_MAX_SIZE_EXCEEDED);
+				throw new UserAuthenticationServiceException(
+					AuthenticationErrorCode.ERR_REGISTER_PROFILE_IMAGE_MAX_SIZE_EXCEEDED);
 			}
 			// file type check
 			String fileExtension = Files.getFileExtension(
 				requireNonNull(registerRequest.getProfile().getOriginalFilename()));
 			if (!PROFILE_IMAGE_ALLOW_EXTENSION.contains(fileExtension)) {
-				throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_PROFILE_IMAGE_NOT_SUPPORT);
+				throw new UserAuthenticationServiceException(
+					AuthenticationErrorCode.ERR_REGISTER_PROFILE_IMAGE_NOT_SUPPORT);
 			}
 		}
 
@@ -373,7 +380,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 		HttpServletRequest request, HttpServletResponse response, LogoutRequest logoutRequest
 	) {
 		User user = userRepository.findByUuid(logoutRequest.getUuid())
-			.orElseThrow(() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_LOGOUT_USER_NOT_FOUND));
+			.orElseThrow(
+				() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_LOGOUT_USER_NOT_FOUND));
 
 		BlockToken blockToken = getBlockedToken(logoutRequest.getAccessToken(), user,
 			BlockReason.LOGOUT
@@ -585,7 +593,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	 */
 	public EmailVerificationResult emailVerificationCodeCheck(String code, String email) {
 		EmailAuth emailAuth = emailAuthorizationRepository.findById(email)
-			.orElseThrow(() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_AUTHENTICATION));
+			.orElseThrow(
+				() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_AUTHENTICATION));
 		if (!emailAuth.getCode().equals(code)) {
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_AUTHENTICATION);
 		}
@@ -718,7 +727,8 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 			}
 
 			User user = userRepository.findByUuid(refreshToken.getUuid())
-				.orElseThrow(() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION));
+				.orElseThrow(
+					() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_API_AUTHENTICATION));
 
 			ClientGeoIPInfo clientGeoIPInfo = clientUserAgentInformationParser.getClientGeoIPInformation(request);
 

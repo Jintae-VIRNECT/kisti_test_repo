@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.user.dto.rest.ContentSecessionResponse;
-import com.virnect.user.global.common.ApiResponse;
+import com.virnect.uaa.global.common.ApiResponse;
+import com.virnect.uaa.infra.rest.content.dto.ContentSecessionResponse;
 
 @Slf4j
 @Component

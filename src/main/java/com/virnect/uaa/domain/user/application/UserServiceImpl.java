@@ -35,9 +35,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.security.UserDetailsImpl;
+import com.virnect.uaa.domain.auth.dao.user.UserOTPRepository;
 import com.virnect.uaa.domain.user.dao.EmailAuthRepository;
 import com.virnect.uaa.domain.user.dao.SecessionUserRepository;
-import com.virnect.uaa.domain.user.dao.UserOTPRepository;
 import com.virnect.uaa.domain.user.dao.UserPasswordAuthCodeRepository;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
@@ -209,8 +209,7 @@ public class UserServiceImpl implements UserService {
 	 */
 	@Override
 	public UserInfoResponse getUserInfoByUserId(long id) {
-		UserInfoResponse userInfoResponse = getUserInfoByID(id);
-		return userInfoResponse;
+		return getUserInfoByID(id);
 	}
 
 	/**
@@ -1086,7 +1085,7 @@ public class UserServiceImpl implements UserService {
 			userUUID, 50
 		);
 		if (workspaceApiResponse.getCode() != 200 ||
-			workspaceApiResponse.getData().getWorkspaceList().size() == 0
+			workspaceApiResponse.getData().getWorkspaceList().isEmpty()
 		) {
 			log.error("[WORKSPACE_INFO_NOT_FOUND] - {}", workspaceApiResponse.getMessage());
 			return null;

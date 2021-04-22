@@ -8,8 +8,8 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import com.virnect.user.domain.QUser;
-import com.virnect.user.domain.User;
+import com.virnect.uaa.domain.user.domain.QUser;
+import com.virnect.uaa.domain.user.domain.User;
 
 /**
  * @author jeonghyeon.chang (johnmark)

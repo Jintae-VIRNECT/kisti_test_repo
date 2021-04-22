@@ -8,6 +8,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.dao.user.LoginAttemptRepository;
+import com.virnect.uaa.domain.user.dao.user.UserRepository;
+import com.virnect.uaa.domain.user.domain.User;
 
 @Slf4j
 @Component

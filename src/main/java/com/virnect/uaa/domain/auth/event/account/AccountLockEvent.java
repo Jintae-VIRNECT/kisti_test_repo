@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import com.virnect.uaa.domain.auth.domain.user.LoginAttempt;
+import com.virnect.uaa.domain.user.domain.User;
 
 @Getter
 @RequiredArgsConstructor
