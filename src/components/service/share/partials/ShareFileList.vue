@@ -17,6 +17,7 @@
         <template v-for="file of sharingList">
           <sharing-pdf
             v-if="file.contentType === 'application/pdf'"
+            :ref="'sharing_' + file.objectName"
             :key="'sharing_' + file.objectName"
             :fileInfo="file"
             @pdfView="pdfView(file)"
@@ -37,8 +38,8 @@ import { mapActions, mapGetters } from 'vuex'
 import SharingImage from './SharingImage'
 import SharingPdf from './SharingPdf'
 import toastMixin from 'mixins/toast'
-import { drawingUpload, drawingList } from 'api/http/drawing'
-import { DRAWING } from 'configs/remote.config'
+import { drawingUpload, drawingList, drawingDownload } from 'api/http/drawing'
+import { SIGNAL, DRAWING } from 'configs/remote.config'
 const maxFileSize = 1024 * 1024 * 20
 export default {
   name: 'ShareFileList',
@@ -50,6 +51,7 @@ export default {
   data() {
     return {
       sharingList: [],
+      cbGetFileList: () => {},
     }
   },
   computed: {
@@ -58,7 +60,7 @@ export default {
     }),
   },
   methods: {
-    ...mapActions(['addFile']),
+    ...mapActions(['addFile', 'addHistory']),
     pdfView(file) {
       this.$emit('pdfView', {
         id: file.objectName,
@@ -84,6 +86,9 @@ export default {
         workspaceId: this.workspace.uuid,
       })
       this.sharingList = res.fileInfoList
+      this.$nextTick(() => {
+        this.cbGetFileList()
+      })
     },
     async loadFile(file) {
       if (file) {
@@ -132,15 +137,55 @@ export default {
     clearUploadFile() {
       this.$refs['uploadFile'].value = ''
     },
+    loadPdf(data) {
+      if (this.sharingList.length === 0) {
+        this.cbGetFileList = () => {
+          this.cbGetFileList = () => {}
+          this.$refs['sharing_' + data.objectName][0].addPdfHistory(
+            data.index + 1,
+          )
+        }
+        return
+      }
+      this.$refs['sharing_' + data.objectName][0].addPdfHistory(data.index + 1)
+    },
+
+    async fileShare(receive) {
+      const data = JSON.parse(receive.data)
+
+      if (data.type === DRAWING.FILE_SHARE) {
+        if (data.contentType === 'application/pdf') {
+          this.loadPdf(data)
+          // this.$eventBus.$emit(`loadPdf_${data.objectName}`, data.index + 1)
+        } else {
+          const res = await drawingDownload({
+            sessionId: this.roomInfo.sessionId,
+            workspaceId: this.workspace.uuid,
+            objectName: data.objectName,
+            userId: this.account.uuid,
+          })
+          this.addHistory({
+            objectName: res.objectName,
+            id: Date.now(),
+            img: res.url,
+            width: data.width,
+            height: data.height,
+            fileName: res.name,
+          })
+        }
+      }
+    },
   },
 
   /* Lifecycles */
   created() {
     this.$eventBus.$on('addFile', this.addFileClick)
+    this.$eventBus.$on(SIGNAL.DRAWING, this.fileShare)
     this.getFileList()
   },
   beforeDestroy() {
     this.$eventBus.$off('addFile', this.addFileClick)
+    this.$eventBus.$off(SIGNAL.DRAWING, this.fileShare)
   },
 }
 </script>

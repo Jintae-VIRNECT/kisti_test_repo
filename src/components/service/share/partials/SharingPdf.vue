@@ -13,10 +13,7 @@
     </button>
 
     <p class="sharing-image__name">{{ fileInfo.name }}</p>
-    <div
-      class="sharing-image__loading"
-      v-if="docPages.length === 0 || docPages.length !== totalPages"
-    >
+    <div class="sharing-image__loading" v-if="!loaded">
       <div class="loading-box">
         <p class="loading-box__title">
           {{ $t('service.share_loading') }}
@@ -60,6 +57,7 @@ export default {
         width: 300,
         height: 150,
       },
+      cbLoad: () => {},
     }
   },
   props: {
@@ -87,6 +85,11 @@ export default {
         return 0
       }
     },
+    loaded() {
+      return (
+        this.docPages.length !== 0 && this.docPages.length === this.totalPages
+      )
+    },
   },
   methods: {
     ...mapActions(['addPdfPage', 'removePdfPage', 'removeFile', 'addHistory']),
@@ -111,6 +114,7 @@ export default {
           }
           let duration = Date.now() - startTime
           this.logger('pdf loading time', duration)
+          this.cbLoad()
         })
         .catch(err => {
           if (
@@ -235,6 +239,13 @@ export default {
       }
     },
     async addPdfHistory(page) {
+      if (!this.loaded) {
+        this.cbLoad = () => {
+          this.cbLoad = () => {}
+          this.addPdfHistory(page)
+        }
+        return
+      }
       const { blob, size } = await this.loadPage(page, 1.5)
 
       const imgId = parseInt(
@@ -262,6 +273,7 @@ export default {
           img: imgUrl,
           pageNum: page,
           objectName: this.fileInfo.objectName,
+          contentType: this.fileInfo.contentType,
         }
         this.addHistory(history)
       }
@@ -272,15 +284,6 @@ export default {
   /* Lifecycles */
   mounted() {
     this.init()
-  },
-  created() {
-    this.$eventBus.$on(
-      `loadPdf_${this.fileInfo.objectName}`,
-      this.addPdfHistory,
-    )
-  },
-  beforeDestroy() {
-    this.$eventBus.$off(`loadPdf_${this.fileInfo.objectName}`)
   },
 }
 </script>

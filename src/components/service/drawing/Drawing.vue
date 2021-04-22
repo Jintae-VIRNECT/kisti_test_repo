@@ -47,7 +47,6 @@ import { mapGetters, mapActions } from 'vuex'
 import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import confirmMixin from 'mixins/confirm'
-import { drawingDownload } from 'api/http/drawing'
 
 export default {
   name: 'Drawing',
@@ -109,7 +108,7 @@ export default {
           contentType: this.shareFile.contentType,
           width: this.shareFile.width,
           height: this.shareFile.height,
-          index: this.shareFile.index,
+          index: this.shareFile.pageNum - 1,
         },
         target,
       )
@@ -150,27 +149,6 @@ export default {
         this.showImage({})
         this.setView(VIEW.STREAM)
         return
-      }
-
-      if (data.type === DRAWING.FILE_SHARE) {
-        if (data.contentType === 'application/pdf') {
-          this.$eventBus.$emit(`loadPdf_${data.objectName}`, data.index + 1)
-        } else {
-          const res = await drawingDownload({
-            sessionId: this.roomInfo.sessionId,
-            workspaceId: this.workspace.uuid,
-            objectName: data.objectName,
-            userId: this.account.uuid,
-          })
-          this.addHistory({
-            objectName: res.objectName,
-            id: Date.now(),
-            img: res.url,
-            width: data.width,
-            height: data.height,
-            fileName: res.name,
-          })
-        }
       }
     },
     getHistoryObject() {

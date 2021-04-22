@@ -258,7 +258,7 @@ export default {
 
       for (let key in this.receivedList) {
         for (let received of this.receivedList[key]) {
-          this.addReceiveObject({ data: received, owner: key })
+          this.addReceiveObject({ data: received.data, owner: received.owner })
         }
         delete this.receivedList[key]
       }

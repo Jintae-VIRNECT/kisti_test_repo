@@ -30,6 +30,9 @@ export default {
       if (this.drawingView) {
         this.addReceiveObject({ data, owner: receive.from.connectionId })
       } else {
+        if (!this.receivedList[receive.from.connectionId]) {
+          this.receivedList[receive.from.connectionId] = []
+        }
         this.receivedList[receive.from.connectionId].push({
           data,
           owner: receive.from.connectionId,

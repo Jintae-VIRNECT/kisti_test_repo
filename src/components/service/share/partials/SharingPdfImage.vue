@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import confirmMixin from 'mixins/confirm'
 import toastMixin from 'mixins/toast'
 import touchMixin from 'mixins/touch'
@@ -69,7 +69,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addHistory']),
     init() {
       const fileReader = new FileReader()
       fileReader.onload = async e => {
