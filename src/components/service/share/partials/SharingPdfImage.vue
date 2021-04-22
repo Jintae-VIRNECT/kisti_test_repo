@@ -7,8 +7,9 @@
           shareFile.objectName === fileInfo.objectName &&
           pageInfo.pageNum === shareFile.pageNum,
         disable:
-          shareFile.objectName === fileInfo.objectName &&
-          pageInfo.pageNum === shareFile.pageNum,
+          !isLeader ||
+          (shareFile.objectName === fileInfo.objectName &&
+            pageInfo.pageNum === shareFile.pageNum),
       }"
       @dblclick="shareImage"
       @touchstart="touch"

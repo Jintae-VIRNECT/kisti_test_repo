@@ -127,9 +127,9 @@ export default {
           } else {
             this.toastError(this.$t('service.file_type'))
           }
-          setTimeout(() => {
-            this.remove()
-          }, 3000)
+          // setTimeout(() => {
+          //   this.remove()
+          // }, 3000)
         })
     },
     async downloadPdfFile() {
@@ -272,10 +272,6 @@ export default {
   /* Lifecycles */
   mounted() {
     this.init()
-    this.size = {
-      width: this.$el.querySelector('.sharing-image__item').offsetWidth,
-      height: this.$el.querySelector('.sharing-image__item').offsetHeight,
-    }
   },
   created() {
     this.$eventBus.$on(
