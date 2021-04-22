@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import ua_parser.Client;
 import ua_parser.Parser;
 
-import com.virnect.uaa.domain.auth.dto.user.ClientGeoIPInfo;
-import com.virnect.uaa.domain.auth.dto.user.GeoIPInfo;
+import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
+import com.virnect.uaa.domain.auth.account.dto.GeoIPInfo;
 
 @Slf4j
 @RequiredArgsConstructor

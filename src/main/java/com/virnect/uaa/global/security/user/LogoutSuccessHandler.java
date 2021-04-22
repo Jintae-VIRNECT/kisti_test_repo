@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.dto.user.response.SessionLogoutResponse;
+import com.virnect.uaa.domain.auth.account.dto.response.SessionLogoutResponse;
 import com.virnect.uaa.global.common.ApiResponse;
 
 @Slf4j

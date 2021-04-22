@@ -10,7 +10,7 @@ import org.springframework.security.web.authentication.rememberme.PersistentToke
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.dao.user.RememberMeTokenRepository;
+import com.virnect.uaa.domain.auth.account.dao.RememberMeTokenRepository;
 import com.virnect.uaa.global.security.user.UserDetailsServiceImpl;
 
 /**

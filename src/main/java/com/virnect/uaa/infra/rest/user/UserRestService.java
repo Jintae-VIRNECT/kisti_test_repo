@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 
-import com.virnect.uaa.domain.auth.dto.user.request.RegisterRequest;
+import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
 import com.virnect.uaa.global.common.ApiResponse;
 import com.virnect.uaa.infra.rest.user.dto.UserDetailsInfoResponse;
 import com.virnect.uaa.infra.rest.user.dto.UserInfoResponse;

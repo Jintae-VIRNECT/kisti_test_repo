@@ -1,7 +1,7 @@
 package com.virnect.uaa.infra.rest.message;
 
-import com.virnect.uaa.domain.auth.dto.message.EventSendRequest;
-import com.virnect.uaa.domain.auth.dto.message.EventSendResponse;
+import com.virnect.uaa.infra.rest.message.message.EventSendRequest;
+import com.virnect.uaa.infra.rest.message.message.EventSendResponse;
 import com.virnect.uaa.global.common.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;

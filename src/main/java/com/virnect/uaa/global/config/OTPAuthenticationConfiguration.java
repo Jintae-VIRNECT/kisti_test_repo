@@ -7,7 +7,7 @@ import com.warrenstrange.googleauth.GoogleAuthenticator;
 
 import lombok.RequiredArgsConstructor;
 
-import com.virnect.uaa.domain.auth.dao.user.CredentialRepository;
+import com.virnect.uaa.domain.auth.account.dao.CredentialRepository;
 
 /**
  * @author jeonghyeon.chang (johnmark)

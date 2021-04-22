@@ -24,10 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.dao.user.LoginAttemptRepository;
-import com.virnect.uaa.domain.auth.domain.user.LoginAttempt;
-import com.virnect.uaa.domain.auth.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.event.account.AccountLockEvent;
+import com.virnect.uaa.domain.auth.account.dao.LoginAttemptRepository;
+import com.virnect.uaa.domain.auth.account.domain.LoginAttempt;
+import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.account.event.account.AccountLockEvent;
 import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.global.common.ErrorResponseMessage;

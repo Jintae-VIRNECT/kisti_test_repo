@@ -16,8 +16,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.error.AuthenticationErrorCode;
-import com.virnect.uaa.domain.auth.error.exception.DeviceAuthenticationServiceException;
+import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
+import com.virnect.uaa.domain.auth.account.error.exception.DeviceAuthenticationServiceException;
 
 /**
  * @project: PF-Auth

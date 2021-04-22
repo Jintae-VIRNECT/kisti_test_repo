@@ -9,8 +9,8 @@ import org.springframework.security.web.authentication.rememberme.RememberMeAuth
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.dao.user.RememberMeTokenRepository;
-import com.virnect.uaa.domain.auth.domain.user.RememberMeToken;
+import com.virnect.uaa.domain.auth.account.dao.RememberMeTokenRepository;
+import com.virnect.uaa.domain.auth.account.domain.RememberMeToken;
 
 /**
  * Project: PF-Auth

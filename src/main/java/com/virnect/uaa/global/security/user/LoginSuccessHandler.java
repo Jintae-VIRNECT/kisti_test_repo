@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.security.UserDetailsImpl;
-import com.virnect.uaa.domain.auth.dto.user.ClientGeoIPInfo;
+import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserAccessLog;

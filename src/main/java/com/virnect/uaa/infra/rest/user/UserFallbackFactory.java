@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import feign.hystrix.FallbackFactory;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.dto.user.request.RegisterRequest;
+import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
 import com.virnect.uaa.global.common.ApiResponse;
 import com.virnect.uaa.infra.rest.user.dto.UserDetailsInfoResponse;
 import com.virnect.uaa.infra.rest.user.dto.UserInfoResponse;
