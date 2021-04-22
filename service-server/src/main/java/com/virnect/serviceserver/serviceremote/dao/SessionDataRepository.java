@@ -620,10 +620,16 @@ public class SessionDataRepository {
         // Prepare data process
         try {
             sessionResponse = objectMapper.readValue(session, SessionResponse.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        try {
             sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        assert sessionResponse != null;
+        assert sessionTokenResponse != null;
 
         // Set data
         // Remote Room Entity Create
@@ -635,6 +641,7 @@ public class SessionDataRepository {
             .workspaceId(roomRequest.getWorkspaceId())
             .maxUserCount(licenseItem.getUserCapacity())
             .licenseName(licenseItem.name())
+            //.restrictedMode(roomRequest.isRestrictedMode())
             .videoRestrictedMode(roomRequest.isVideoRestrictedMode())
             .audioRestrictedMode(roomRequest.isAudioRestrictedMode())
             .build();
@@ -687,23 +694,25 @@ public class SessionDataRepository {
             log.info("participants Id List is null");
         }
 
-        if (sessionService.createRoom(room) == null) {
-            new ApiResponse<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
-        }
-
         // Process
-        RoomResponse roomResponse = RoomResponse.builder()
-            .sessionId(sessionResponse.getId())
-            .token(sessionTokenResponse.getToken())
-            .wss(UrlConstants.wssUrl)
-            .videoRestrictedMode(room.isVideoRestrictedMode())
-            .audioRestrictedMode(room.isAudioRestrictedMode())
-            .sessionType(room.getSessionProperty().getSessionType())
-            .build();
+        if (sessionService.createRoom(room) != null) {
+            RoomResponse roomResponse = new RoomResponse();
+            //not set session create at property
+            roomResponse.setSessionId(sessionResponse.getId());
+            roomResponse.setToken(sessionTokenResponse.getToken());
+            roomResponse.setWss(UrlConstants.wssUrl);
+            //roomResponse.setRestrictedMode(room.isRestrictedMode());
+            roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+            roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+            /*CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+            roomResponse.getCoturn().add(coturnResponse);*/
 
-        System.out.println("room response : " + roomResponse.toString());
+            roomResponse.setSessionType(room.getSessionProperty().getSessionType());
 
-        return new ApiResponse<>(roomResponse);
+            return new ApiResponse<>(roomResponse);
+        } else {
+            return new ApiResponse<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
+        }
     }
 
     public ApiResponse<RoomResponse> generateRoom(
@@ -721,96 +730,108 @@ public class SessionDataRepository {
         // Prepair data process
         try {
             sessionResponse = objectMapper.readValue(session, SessionResponse.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        try {
             sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+        assert sessionResponse != null;
+        assert sessionTokenResponse != null;
 
         RoomHistory roomHistory = historyService.getRoomHistory(roomRequest.getWorkspaceId(), preSessionId);
         if (roomHistory == null) {
             return new ApiResponse<>(ErrorCode.ERR_HISTORY_ROOM_NOT_FOUND);
-        }
+        } else {
+            log.info(
+                "REDIAL ROOM::#generateRoom::re-generate room by history::session_id => [{}]", preSessionId);
+            profile = roomHistory.getProfile();
 
-        log.info("REDIAL ROOM::#generateRoom::re-generate room by history::session_id => [{}]", preSessionId);
-
-        profile = roomHistory.getProfile();
-        Room room = Room.builder()
-            .sessionId(sessionResponse.getId())
-            .title(roomRequest.getTitle())
-            .description(roomRequest.getDescription())
-            .leaderId(roomRequest.getLeaderId())
-            .workspaceId(roomRequest.getWorkspaceId())
-            .maxUserCount(licenseItem.getUserCapacity())
-            .licenseName(licenseItem.name())
-            .videoRestrictedMode(roomRequest.isVideoRestrictedMode())
-            .audioRestrictedMode(roomRequest.isAudioRestrictedMode())
-            .build();
-
-        room.setProfile(profile);
-
-        // Remote Session Property Entity Create
-        SessionProperty sessionProperty = SessionProperty.builder()
-            .mediaMode("ROUTED")
-            .recordingMode("MANUAL")
-            .defaultOutputMode("COMPOSED")
-            .defaultRecordingLayout("BEST_FIT")
-            .recording(true)
-            .keepalive(roomRequest.isKeepAlive())
-            .sessionType(roomRequest.getSessionType())
-            .publisherId(publisherId)
-            .room(room)
-            .build();
-
-        room.setSessionProperty(sessionProperty);
-
-        // set room members
-        if (!roomRequest.getLeaderId().isEmpty()) {
-            log.info("leader Id is {}", roomRequest.getLeaderId());
-            Member member = Member.builder()
-                .room(room)
-                .memberType(MemberType.LEADER)
+            Room room = Room.builder()
+                .sessionId(sessionResponse.getId())
+                .title(roomRequest.getTitle())
+                .description(roomRequest.getDescription())
+                .leaderId(roomRequest.getLeaderId())
                 .workspaceId(roomRequest.getWorkspaceId())
-                .uuid(roomRequest.getLeaderId())
-                .sessionId(room.getSessionId())
+                .maxUserCount(licenseItem.getUserCapacity())
+                .licenseName(licenseItem.name())
+                //.restrictedMode(roomRequest.isRestrictedMode())
+                .videoRestrictedMode(roomRequest.isVideoRestrictedMode())
+                .audioRestrictedMode(roomRequest.isAudioRestrictedMode())
                 .build();
 
-            room.getMembers().add(member);
-        } else {
-            log.info("leader Id is null");
-        }
+            room.setProfile(profile);
 
-        if (!roomRequest.getParticipantIds().isEmpty()) {
-            for (String participant : roomRequest.getParticipantIds()) {
-                log.info("getParticipants Id is {}", participant);
+            // Remote Session Property Entity Create
+            SessionProperty sessionProperty = SessionProperty.builder()
+                .mediaMode("ROUTED")
+                .recordingMode("MANUAL")
+                .defaultOutputMode("COMPOSED")
+                .defaultRecordingLayout("BEST_FIT")
+                .recording(true)
+                .keepalive(roomRequest.isKeepAlive())
+                .sessionType(roomRequest.getSessionType())
+                .publisherId(publisherId)
+                .room(room)
+                .build();
+
+            room.setSessionProperty(sessionProperty);
+
+            // set room members
+            if (!roomRequest.getLeaderId().isEmpty()) {
+                log.info("leader Id is {}", roomRequest.getLeaderId());
                 Member member = Member.builder()
                     .room(room)
-                    .memberType(MemberType.UNKNOWN)
+                    .memberType(MemberType.LEADER)
                     .workspaceId(roomRequest.getWorkspaceId())
-                    .uuid(participant)
+                    .uuid(roomRequest.getLeaderId())
                     .sessionId(room.getSessionId())
                     .build();
 
                 room.getMembers().add(member);
+            } else {
+                log.info("leader Id is null");
             }
-        } else {
-            log.info("participants Id List is null");
+
+            if (!roomRequest.getParticipantIds().isEmpty()) {
+                for (String participant : roomRequest.getParticipantIds()) {
+                    log.info("getParticipants Id is {}", participant);
+                    Member member = Member.builder()
+                        .room(room)
+                        .memberType(MemberType.UNKNOWN)
+                        .workspaceId(roomRequest.getWorkspaceId())
+                        .uuid(participant)
+                        .sessionId(room.getSessionId())
+                        .build();
+
+                    room.getMembers().add(member);
+                }
+            } else {
+                log.info("participants Id List is null");
+            }
+
+            if (sessionService.createRoom(room) != null) {
+                RoomResponse roomResponse = new RoomResponse();
+                //not set session create at property
+                roomResponse.setSessionId(sessionResponse.getId());
+                roomResponse.setToken(sessionTokenResponse.getToken());
+                roomResponse.setWss(UrlConstants.wssUrl);
+                //roomResponse.setRestrictedMode(room.isRestrictedMode());
+                roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+                roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+
+                //CoturnResponse coturnResponse = setCoturnResponse(room.getSessionProperty().getSessionType());
+                //roomResponse.getCoturn().add(coturnResponse);
+
+                roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+                return new ApiResponse<>(roomResponse);
+            } else {
+                return new ApiResponse<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
+            }
         }
-
-        if (sessionService.createRoom(room) == null) {
-            return new ApiResponse<>(ErrorCode.ERR_ROOM_CREATE_FAIL);
-        }
-
-        // Process
-        RoomResponse roomResponse = RoomResponse.builder()
-            .sessionId(sessionResponse.getId())
-            .token(sessionTokenResponse.getToken())
-            .wss(UrlConstants.wssUrl)
-            .videoRestrictedMode(room.isVideoRestrictedMode())
-            .audioRestrictedMode(room.isAudioRestrictedMode())
-            .sessionType(room.getSessionProperty().getSessionType())
-            .build();
-
-        return new ApiResponse<>(roomResponse);
     }
 
     public ApiResponse<RoomInfoListResponse> loadRoomPageList(
@@ -1300,51 +1321,56 @@ public class SessionDataRepository {
     public ApiResponse<RoomResponse> joinRoom(
         String workspaceId, String sessionId, String sessionToken, JoinRoomRequest joinRoomRequest
     ) {
+        ApiResponse<RoomResponse> joinRoomResponse;
 
         SessionTokenResponse sessionTokenResponse = null;
 
         Room room = sessionService.getRoom(workspaceId, sessionId).orElse(null);
+
         if (room == null) {
-            new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
-        }
+            joinRoomResponse = new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+        } else {
+            // Pre data process
+            try {
+                sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
 
-        try {
-            sessionTokenResponse = objectMapper.readValue(sessionToken, SessionTokenResponse.class);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-
-        ErrorCode errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
-        for (Member member : room.getMembers()) {
-            if (member.getUuid().equals(joinRoomRequest.getUuid())) {
-                MemberStatus memberStatus = member.getMemberStatus();
-                switch (memberStatus) {
-                    case LOADING:
-                        errorCode = ErrorCode.ERR_SUCCESS;
-                        break;
-                    case LOAD:
-                        errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-                        break;
-                    case EVICTED:
-                        errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
-                        break;
+            ErrorCode errorCode = ErrorCode.ERR_ROOM_MEMBER_NOT_ASSIGNED;
+            for (Member member : room.getMembers()) {
+                if (member.getUuid().equals(joinRoomRequest.getUuid())) {
+                    MemberStatus memberStatus = member.getMemberStatus();
+                    switch (memberStatus) {
+                        case LOADING:
+                            errorCode = ErrorCode.ERR_SUCCESS;
+                            break;
+                        case LOAD:
+                            errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
+                            break;
+                        case EVICTED:
+                            errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+                            break;
+                    }
                 }
             }
+
+            if (errorCode.equals(ErrorCode.ERR_SUCCESS)) {
+                RoomResponse roomResponse = new RoomResponse();
+                //not set session create at property
+                roomResponse.setSessionId(sessionId);
+                roomResponse.setToken(sessionTokenResponse.getToken());
+                roomResponse.setWss(UrlConstants.wssUrl);
+                roomResponse.setVideoRestrictedMode(room.isVideoRestrictedMode());
+                roomResponse.setAudioRestrictedMode(room.isAudioRestrictedMode());
+                roomResponse.setSessionType(room.getSessionProperty().getSessionType());
+
+                joinRoomResponse = new ApiResponse<>(roomResponse);
+            } else {
+                joinRoomResponse = new ApiResponse<>(new RoomResponse(), errorCode);
+            }
         }
-
-        if (errorCode != ErrorCode.ERR_SUCCESS) {
-            new ApiResponse<>(new RoomResponse(), errorCode);
-        }
-
-        RoomResponse roomResponse = RoomResponse.builder()
-            .sessionId(sessionId)
-            .token(sessionTokenResponse.getToken())
-            .wss(UrlConstants.wssUrl)
-            .videoRestrictedMode(room.isVideoRestrictedMode())
-            .audioRestrictedMode(room.isAudioRestrictedMode())
-            .sessionType(room.getSessionProperty().getSessionType()).build();
-
-        return new ApiResponse<>(roomResponse);
+        return joinRoomResponse;
     }
 
     public ApiResponse<ResultResponse> exitRoom(String workspaceId, String sessionId, String userId) {
