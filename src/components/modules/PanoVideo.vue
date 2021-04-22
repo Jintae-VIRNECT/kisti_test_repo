@@ -109,24 +109,26 @@ export default {
 
         this.panoViewer.on('viewChange', e => {
           if (this.type === 'control') {
-            const sameYaw = this.lastPos.yaw === e.yaw
-            const samePitch = this.lastPos.pitch === e.pitch
+            const { yaw, pitch } = e
+            const sameYaw = this.lastPos.yaw === yaw
+            const samePitch = this.lastPos.pitch === pitch
+
             if (sameYaw && samePitch) {
               return
             }
 
             this.lastPos = {
-              yaw: e.yaw,
-              pitch: e.pitch,
+              yaw: yaw,
+              pitch: pitch,
             }
             this.$call.sendPanoRotation({
-              yaw: e.yaw,
-              pitch: e.pitch,
+              yaw: yaw,
+              pitch: pitch,
               origin: this.mainView.connectionId,
             })
             this.updateParticipant({
               connectionId: this.mainView.connectionId,
-              rotationPos: { yaw: e.yaw, pitch: e.pitch },
+              rotationPos: { yaw: yaw, pitch: pitch },
             })
           }
         })
@@ -138,12 +140,23 @@ export default {
           if (this.mainView.rotationPos) {
             const yaw = Number.parseFloat(this.mainView.rotationPos.yaw)
             const pitch = Number.parseFloat(this.mainView.rotationPos.pitch)
+
             this.panoViewer.lookAt({
               yaw: yaw,
               pitch: pitch,
               fov: this.defaultFov,
             })
+          } else if (
+            this.mainView.rotationPos === null &&
+            this.type === 'control'
+          ) {
+            this.$call.sendPanoRotation({
+              yaw: 0,
+              pitch: 0,
+              origin: this.mainView.connectionId,
+            })
           }
+
           this.toggle(this.activePano)
         })
       }
