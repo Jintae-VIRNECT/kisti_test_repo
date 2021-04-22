@@ -87,10 +87,10 @@ public class Room extends BaseTimeEntity {
     //private Set<Member> members = new HashSet<>();
     //private Collection<Member> Member;
     //add active or un-active type later
-    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "room", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Member> members = new ArrayList<>();
 
-    @OneToOne(mappedBy = "room", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToOne(mappedBy = "room", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER, orphanRemoval = true)
     private SessionProperty sessionProperty;
 
     @Builder
