@@ -167,25 +167,8 @@ const _ = {
         _.publisher = OV.initPublisher('', publishOptions)
 
         //ice 상태 변경 관련 콜백
-        _.publisher.onIceStateChanged(state => {
-          if (['failed', 'disconnected', 'closed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'disconnected',
-            })
-          } else if (['connected', 'completed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'good',
-            })
-          } else {
-            Store.commit('updateParticipant', {
-              connectionId: _.publisher.stream.connection.connectionId,
-              status: 'normal',
-            })
-          }
-          logger('ice state change', state)
-        })
+        const iceStateChangedCallBack = getIceStateChangedCallBack(_.publisher)
+        _.publisher.onIceStateChanged(iceStateChangedCallBack)
 
         //publish 성공 관련 콜백
         _.publisher.on('streamCreated', () => {
@@ -793,25 +776,10 @@ const _ = {
         debug('call::republish::', publishOptions)
 
         const tempPublisher = OV.initPublisher('', publishOptions)
-        tempPublisher.onIceStateChanged(state => {
-          if (['failed', 'disconnected', 'closed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: tempPublisher.stream.connection.connectionId,
-              status: 'disconnected',
-            })
-          } else if (['connected', 'completed'].includes(state)) {
-            Store.commit('updateParticipant', {
-              connectionId: tempPublisher.stream.connection.connectionId,
-              status: 'good',
-            })
-          } else {
-            Store.commit('updateParticipant', {
-              connectionId: tempPublisher.stream.connection.connectionId,
-              status: 'normal',
-            })
-          }
-          logger('ice state change', state)
-        })
+        const iceStateChangedCallBack = getIceStateChangedCallBack(
+          tempPublisher,
+        )
+        tempPublisher.onIceStateChanged(iceStateChangedCallBack)
         tempPublisher.on('streamCreated', () => {
           logger('room', 'republish success')
           debug('republisher stream :: ', tempPublisher.stream)
@@ -909,6 +877,33 @@ const updateParticipantEmpty = connectionId => {
     video: false,
     audio: false,
   })
+}
+
+/**
+ * iceStateChanged 이벤트 리스너 콜백 함수 반환
+ * @param {Object} publisher publisher 객체
+ * @returns iceStateChanged 콜백 함수
+ */
+const getIceStateChangedCallBack = publisher => {
+  return state => {
+    if (['failed', 'disconnected', 'closed'].includes(state)) {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'disconnected',
+      })
+    } else if (['connected', 'completed'].includes(state)) {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'good',
+      })
+    } else {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'normal',
+      })
+    }
+    logger('ice state change', state)
+  }
 }
 
 export const addSubscriber = subscriber => {
