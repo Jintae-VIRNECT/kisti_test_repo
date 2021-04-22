@@ -63,7 +63,7 @@ public class Member extends BaseTimeEntity {
     @Column(name = "duration_sec", nullable = false)
     private Long durationSec;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "room_id")
     private Room room;
 

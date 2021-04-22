@@ -28,6 +28,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import springfox.documentation.annotations.ApiIgnore;
 
+import com.virnect.data.domain.member.MemberStatus;
+import com.virnect.data.domain.room.Room;
 import com.virnect.data.dto.PushSendRequest;
 import com.virnect.data.dto.rest.PushResponse;
 import com.virnect.data.error.ErrorCode;
@@ -38,6 +40,7 @@ import com.virnect.serviceserver.serviceremote.application.FileService;
 import com.virnect.serviceserver.serviceremote.application.PushMessageClient;
 import com.virnect.serviceserver.serviceremote.application.RoomService;
 import com.virnect.serviceserver.serviceremote.application.ServiceSessionManager;
+import com.virnect.serviceserver.serviceremote.application.SessionTransactionalService;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
 import com.virnect.serviceserver.serviceremote.dto.push.SendSignalRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.room.InviteRoomRequest;
@@ -66,6 +69,7 @@ public class SessionRestController {
     private final RoomService roomService;
     private final ServiceSessionManager serviceSessionManager;
     private final FileService fileService;
+    private final SessionTransactionalService sessionService;
 
     private RestTemplate restTemplate;
 
@@ -518,12 +522,6 @@ public class SessionRestController {
         );
 
         return ResponseEntity.ok(responseData);
-    }
-
-    @Deprecated
-    @GetMapping("")
-    public void shortMessageSend() {
-        String obj = restTemplate.getForObject("", String.class);
     }
 
 }

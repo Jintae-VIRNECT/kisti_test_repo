@@ -266,8 +266,7 @@ public class RoomService {
 		JsonObject sessionJson = serviceSessionManager.generateSession(sessionId);
 		JsonObject tokenResult = serviceSessionManager.generateSessionToken(sessionJson);
 
-		responseData = this.sessionDataRepository.joinRoom(
-			workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
+		responseData = this.sessionDataRepository.joinRoom(workspaceId, sessionId, tokenResult.toString(), joinRoomRequest);
 
 		responseData.getData().getCoturn().add(setCoturnResponse(responseData.getData().getSessionType()));
 
