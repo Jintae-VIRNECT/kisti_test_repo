@@ -701,6 +701,8 @@ public class SessionDataRepository {
             .sessionType(room.getSessionProperty().getSessionType())
             .build();
 
+        System.out.println("room response : " + roomResponse.toString());
+
         return new ApiResponse<>(roomResponse);
     }
 
@@ -740,7 +742,6 @@ public class SessionDataRepository {
             .workspaceId(roomRequest.getWorkspaceId())
             .maxUserCount(licenseItem.getUserCapacity())
             .licenseName(licenseItem.name())
-            //.restrictedMode(roomRequest.isRestrictedMode())
             .videoRestrictedMode(roomRequest.isVideoRestrictedMode())
             .audioRestrictedMode(roomRequest.isAudioRestrictedMode())
             .build();
