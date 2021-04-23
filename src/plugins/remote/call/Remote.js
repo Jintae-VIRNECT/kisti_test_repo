@@ -145,38 +145,6 @@ const _ = {
 
       if (options !== false) {
         await doPublish({ options, configs })
-        // const settingInfo = Store.getters['settingInfo']
-        // const mediaStream = await OV.getUserMedia({
-        //   audioSource: options ? options.audioSource : false,
-        //   videoSource: options ? options.videoSource : false,
-        //   resolution: settingInfo.quality,
-        //   frameRate: 30,
-        // })
-        // const audioTracks = mediaStream.getAudioTracks()
-        // const videoTracks = mediaStream.getVideoTracks()
-        // const audioTrack = audioTracks.length > 0 ? audioTracks[0] : false
-        // const videoTrack = videoTracks.length > 0 ? videoTracks[0] : false
-        // //퍼블리시 옵션 셋팅
-        // const publishOptions = getPublishOptions({
-        //   audioSource: audioTrack,
-        //   videoSource: videoTrack,
-        //   configs: configs,
-        //   settingInfo: settingInfo,
-        //   isRepublish: false,
-        // })
-        // debug('call::publish::', publishOptions)
-        // _.publisher = OV.initPublisher('', publishOptions)
-        // //ice 상태 변경 관련 콜백
-        // const iceStateChangedCallBack = getIceStateChangedCallBack(_.publisher)
-        // _.publisher.onIceStateChanged(iceStateChangedCallBack)
-        // //publish 성공 관련 콜백
-        // const streamCreatedCallBack = getStreamCreatedCallBack({
-        //   publisher: _.publisher,
-        //   configs: configs,
-        //   isRepublish: false,
-        // })
-        // _.publisher.on('streamCreated', streamCreatedCallBack)
-        // _.session.publish(_.publisher)
       } else {
         updateParticipantEmpty(_.connectionId)
       }
@@ -665,19 +633,17 @@ const _ = {
    * 현재 자신의 비디오 트랙을 교체할 비디오 트랙으로 변경
    *
    * @param {MediaStreamTrack} track 교체할 비디오 트랙
-   * @param {MediaStream} originStream 보존할 원래 스트림
    */
   async replaceTrack(track) {
-    // if (originStream) {
-    //   Store.commit('setMyTempStream', originStream.clone())
-    // }
     await _.publisher.replaceTrack(track)
     await new Promise(resolve => setTimeout(resolve, 200))
     const settings = track.getSettings()
     const capability = track.getCapabilities()
+
     logger('call', `resolution::${settings.width}X${settings.height}`)
     debug('call::setting::', settings)
     debug('call::capability::', capability)
+
     if ('zoom' in capability) {
       track.applyConstraints({
         advanced: [{ zoom: capability['zoom'].min }],
@@ -685,13 +651,7 @@ const _ = {
       _.maxZoomLevel = parseInt(capability.zoom.max / capability.zoom.min)
       _.minZoomLevel = parseInt(capability.zoom.min)
     }
-    // _.sendCamera(
-    //   options.videoSource !== false
-    //     ? settingInfo.videoOn
-    //       ? CAMERA_STATUS.CAMERA_ON
-    //       : CAMERA_STATUS.CAMERA_OFF
-    //     : CAMERA_STATUS.CAMERA_NONE,
-    // )
+
     _.sendResolution({
       width: settings.width,
       height: settings.height,
@@ -765,6 +725,13 @@ const _ = {
   },
 }
 
+/**
+ * publish 수행
+ * OV.initPublisher를 실행하고 콜백 함수를 설정
+ * @param {Object} Object
+ * @param {Object} Object.options
+ * @param {Object} Object.configs
+ */
 const doPublish = async ({ options, configs }) => {
   const settingInfo = Store.getters['settingInfo']
 
@@ -796,16 +763,16 @@ const doPublish = async ({ options, configs }) => {
 
   //ice 상태 변경 관련 콜백
   const iceStateChangedCallBack = getIceStateChangedCallBack(_.publisher)
-
   _.publisher.onIceStateChanged(iceStateChangedCallBack)
 
   //streamCreated 관련 콜백
-  const streamCreatedCallBack = getStreamCreatedCallBack({
+  const streamCreatedParams = {
     publisher: _.publisher,
     configs: configs,
     isRepublish: false,
-  })
+  }
 
+  const streamCreatedCallBack = getStreamCreatedCallBack(streamCreatedParams)
   _.publisher.on('streamCreated', streamCreatedCallBack)
 
   _.session.publish(_.publisher)
@@ -851,6 +818,33 @@ const getPublishOptions = ({
 }
 
 /**
+ * iceStateChanged 이벤트 리스너 콜백 함수 반환
+ * @param {Object} publisher publisher 객체
+ * @returns iceStateChanged 콜백 함수
+ */
+const getIceStateChangedCallBack = publisher => {
+  return state => {
+    if (['failed', 'disconnected', 'closed'].includes(state)) {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'disconnected',
+      })
+    } else if (['connected', 'completed'].includes(state)) {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'good',
+      })
+    } else {
+      Store.commit('updateParticipant', {
+        connectionId: publisher.stream.connection.connectionId,
+        status: 'normal',
+      })
+    }
+    logger('ice state change', state)
+  }
+}
+
+/**
  * streamCreated 이벤트에 실행될 콜백 함수 생성
  * @param {Object} Object 설정을 위한 객체
  * @param {Object} Object.publisher publisher 객체
@@ -862,7 +856,7 @@ const getStreamCreatedCallBack = ({ publisher, isRepublish, configs }) => {
   return () => {
     const logText = isRepublish ? 're' : ''
     logger('room', logText + 'publish success')
-    debug(isRepublish + 'publisher stream :: ', publisher.stream)
+    debug(logText + 'publisher stream :: ', publisher.stream)
     const mediaStream = publisher.stream.mediaStream
 
     const participantInfo = {
@@ -941,33 +935,6 @@ const updateParticipantEmpty = connectionId => {
     video: false,
     audio: false,
   })
-}
-
-/**
- * iceStateChanged 이벤트 리스너 콜백 함수 반환
- * @param {Object} publisher publisher 객체
- * @returns iceStateChanged 콜백 함수
- */
-const getIceStateChangedCallBack = publisher => {
-  return state => {
-    if (['failed', 'disconnected', 'closed'].includes(state)) {
-      Store.commit('updateParticipant', {
-        connectionId: publisher.stream.connection.connectionId,
-        status: 'disconnected',
-      })
-    } else if (['connected', 'completed'].includes(state)) {
-      Store.commit('updateParticipant', {
-        connectionId: publisher.stream.connection.connectionId,
-        status: 'good',
-      })
-    } else {
-      Store.commit('updateParticipant', {
-        connectionId: publisher.stream.connection.connectionId,
-        status: 'normal',
-      })
-    }
-    logger('ice state change', state)
-  }
 }
 
 export const addSubscriber = subscriber => {
