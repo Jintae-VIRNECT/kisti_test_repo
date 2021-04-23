@@ -136,9 +136,8 @@ const _ = {
       Store.dispatch('updateAccount', {
         roleType: role,
       })
-      //////////////////////////////////////////////////
 
-      //객체 초기화..
+      //객체 초기화.
       _.account.roleType = role
       _.configs = configs
       _.options = options
