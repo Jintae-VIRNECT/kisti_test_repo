@@ -1,23 +1,10 @@
 import { OpenVidu } from '@virnect/remote-webrtc'
 import { addSessionEventListener } from './RemoteUtils'
+import sender from './RemoteSender'
 import Store from 'stores/remote/store'
-import {
-  SIGNAL,
-  ROLE,
-  CAMERA,
-  FLASH,
-  VIDEO,
-  AR_FEATURE,
-  FILE,
-  CONTROL,
-  LINKFLOW,
-} from 'configs/remote.config'
+import { SIGNAL, CAMERA, VIDEO } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
-import {
-  DEVICE,
-  FLASH as FLASH_STATUS,
-  CAMERA as CAMERA_STATUS,
-} from 'configs/device.config'
+import { DEVICE, CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
 import { wsUri } from 'api/gateway/api'
 
@@ -158,218 +145,98 @@ const _ = {
    * chatting
    * @param {String} text
    */
-  sendChat: (text, code = 'ko-KR') => {
-    if (!_.session) return
-    if (text.trim().length === 0) return
-    const params = {
-      text: text.trim(),
-      languageCode: code,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.CHAT,
-    })
-  },
+  sendChat: sender.chat,
 
   /**
    * @BROADCATE
    * chatting-file
    */
-  sendFile: params => {
-    if (!_.session) return
-    params.type = FILE.UPLOADED
-
-    //파일 관련 정보 전송하기
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.FILE,
-    })
-  },
+  sendFile: sender.file,
 
   /**
    * @TARGET
    * resolution
    * @param {Object} resolution = {width, height, orientation}
    */
-  sendResolution: (resolution, target = null) => {
-    if (!_.session) return
-    if (resolution) {
-      _.resolution = resolution
+  sendResolution: sender.resolution,
 
-      Store.commit('updateResolution', {
-        connectionId: _.session.connection.connectionId,
-        width: resolution.width,
-        height: resolution.height,
-      })
-    } else {
-      resolution = _.resolution
-    }
-    if (!resolution || !resolution.width) return
-    _.session.signal({
-      data: JSON.stringify(resolution),
-      to: target,
-      type: SIGNAL.RESOLUTION,
-    })
-  },
   /**
    * @BROADCATE
    * main view change (only leader)
    * @param {String} uuid
    * @param {Boolean} force true / false
    */
-  sendVideo: (uuid, force = false, target = null) => {
-    if (_.account.roleType !== ROLE.LEADER) return
-    if (!uuid) uuid = _.account.uuid
-    const params = {
-      id: uuid,
-      type: force ? VIDEO.SHARE : VIDEO.NORMAL,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.VIDEO,
-    })
-  },
+  sendVideo: sender.video,
+
   /**
    * @BROADCATE
    * pointing
    * @param {Object} params
    *  = {color, opacity, width, posX, posY}
    */
-  sendPointing: params => {
-    if (!_.session) return
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.POINTING,
-    })
-  },
+  sendPointing: sender.pointing,
+
   /**
    * @BROADCATE
    * sharing drawing
    * @param {String} type = remote.config.DRAWING
    * @param {Object} params
    */
-  sendDrawing: (type, params = {}, target = null) => {
-    params.type = type
-    _.session.signal({
-      type: SIGNAL.DRAWING,
-      to: target,
-      data: JSON.stringify(params),
-    })
-  },
+  sendDrawing: sender.drawing,
+
   /**
    * @BROADCATE
    * @TARGET
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
-  sendControl: (type, enable, target = null) => {
-    const params = {
-      type,
-      enable,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.CONTROL,
-    })
-  },
+  sendControl: sender.control,
+
   /**
    * @BROADCATE
    * @TARGET
    * other user's pointing, recording control
    * @param {String} type = remote.config.CONTROL
    */
-  sendControlRestrict: (device, enable, target = null) => {
-    const params = {
-      type: CONTROL.RESTRICTED_MODE,
-      target: device,
-      enable,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.CONTROL,
-    })
-  },
+  sendControlRestrict: sender.controlRestrict,
+
   /**
    * @BROADCATE
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  sendArFeatureStart: targetId => {
-    const params = {
-      type: AR_FEATURE.START_AR_FEATURE,
-      targetUserId: targetId,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.AR_FEATURE,
-    })
-  },
+  sendArFeatureStart: sender.arFeatureStart,
+
   /**
    * @BROADCATE
    * AR feature status
    * @param {String} type = remote.config.AR_FEATURE
    */
-  sendArFeatureStop: () => {
-    const params = {
-      type: AR_FEATURE.STOP_AR_FEATURE,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.AR_FEATURE,
-    })
-  },
+  sendArFeatureStop: sender.arFeatureStop,
+
   /**
    * @TARGET
    * AR pointing
    * @param {String} type = remote.config.AR_POINTING
    * @param {Object} params (문서참조)
    */
-  sendArPointing: (type, params = {}, target = null) => {
-    params.type = type
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.AR_POINTING,
-    })
-  },
+  sendArPointing: sender.arPointing,
+
   /**
    * @TARGET
    * request screen capture permission
    * @param {Object} params
    */
-  sendCapturePermission: (target = null) => {
-    const params = {
-      type: 'request',
-    }
-    _.session.signal({
-      type: SIGNAL.CAPTURE_PERMISSION,
-      to: target,
-      data: JSON.stringify(params),
-    })
-  },
+  sendCapturePermission: sender.capturePermission,
+
   /**
    * @TARGET
    * AR drawing
    * @param {String} type = remote.config.AR_DRAWING
    * @param {Object} params (문서참조)
    */
-  sendArDrawing: (type, params = {}, target = null) => {
-    if (!_.session) return
-    params.type = type
-    _.session.signal({
-      type: SIGNAL.AR_DRAWING,
-      to: target,
-      data: JSON.stringify(params),
-    })
-  },
+  sendArDrawing: sender.arDrawing,
+
   /**
    * @BROADCATE
    * @TARGET
@@ -377,104 +244,32 @@ const _ = {
    * @param {Boolean, String} status CAMERA_STATUS
    * @param {Boolean} publish video publish 여부. 기본값 true
    */
-  sendCamera: (
-    status = CAMERA_STATUS.CAMERA_NONE,
-    target = null,
-    publish = true,
-  ) => {
-    if (!_.publisher) return
-    // if (!_.publisher.stream.hasVideo) return
-    if (
-      status === CAMERA_STATUS.CAMERA_ON ||
-      status === CAMERA_STATUS.CAMERA_OFF
-    ) {
-      if (publish) {
-        _.publisher.publishVideo(status === CAMERA_STATUS.CAMERA_ON)
-      }
-    }
+  sendCamera: sender.camera,
 
-    const params = {
-      type: CAMERA.STATUS,
-      status: status,
-      currentZoomLevel: _.currentZoomLevel,
-      maxZoomLevel: _.maxZoomLevel,
-    }
-    try {
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: target,
-        type: SIGNAL.CAMERA,
-      })
-    } catch (err) {
-      return false
-    }
-  },
   /**
    * @BROADCATE
    * @TARGET
    * my mic control
    * @param {Boolean} active
    */
-  sendMic: (active, target = null) => {
-    if (_.publisher) {
-      _.publisher.publishAudio(active)
-    }
+  sendMic: sender.mic,
 
-    const params = {
-      isOn: active,
-    }
-    try {
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: target,
-        type: SIGNAL.MIC,
-      })
-    } catch (err) {
-      return false
-    }
-  },
   /**
    * @BROADCATE
    * @TARGET
    * my speaker control
    * @param {Boolean} active
    */
-  sendSpeaker: (active, target = null) => {
-    for (let subscriber of _.subscribers) {
-      if (subscriber.stream && subscriber.stream.mediaStream) {
-        subscriber.subscribeToAudio(active)
-      }
-    }
-    const params = {
-      isOn: active,
-    }
-    try {
-      _.session.signal({
-        data: JSON.stringify(params),
-        to: target,
-        type: SIGNAL.SPEAKER,
-      })
-    } catch (err) {
-      return false
-    }
-  },
+  sendSpeaker: sender.speaker,
+
   /**
    * @BROADCATE
    * @TARGET
    * other user's flash control
    * @param {Boolean} active
    */
-  sendFlashStatus: (status = FLASH_STATUS.FLASH_NONE, target = null) => {
-    const params = {
-      status: status,
-      type: FLASH.STATUS,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.FLASH,
-    })
-  },
+  sendFlashStatus: sender.flashStatus,
+
   /**
    * @BROADCATE
    * @TARGET
@@ -482,17 +277,8 @@ const _ = {
    * @param {Boolean} active
    * @param {String} id : target id
    */
-  sendFlash: (active, target) => {
-    const params = {
-      enable: active,
-      type: FLASH.FLASH,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.FLASH,
-    })
-  },
+  sendFlash: sender.flash,
+
   /**
    * @BROADCATE
    * @TARGET
@@ -510,29 +296,14 @@ const _ = {
       type: SIGNAL.CAMERA,
     })
   },
+
   /**
    * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
    * @BROADCATE
    * @TARGET
    * @param {Object} info 제어정보(yaw, pitch)
    */
-  sendPanoRotation: info => {
-    const params = {
-      type: LINKFLOW.ROTATION,
-      yaw: info.yaw,
-      pitch: info.pitch,
-      //fov:fov.pitch - 차후 fov 필요하면 전달
-    }
-    if (info.origin) {
-      params.origin = info.origin
-    }
-
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: null,
-      type: SIGNAL.LINKFLOW,
-    })
-  },
+  sendPanoRotation: sender.panoRotation,
 
   /**
    * @BROADCATE
@@ -571,7 +342,7 @@ const _ = {
   },
   /**
    * 화면 공유 여부
-   * @param {Boolean} enable 화면 공유 기능 중단 여부 true, false
+   * @param {Boolean} enable 화면 공유 기능 사용 여부 true, false
    * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
    */
   sendScreenSharing: (enable, target = null) => {
@@ -680,25 +451,23 @@ const _ = {
 
         debug('call::republish', publishOptions)
 
-        const tempPublisher = OV.initPublisher('', publishOptions)
-        const iceStateChangedCallBack = getIceStateChangedCallBack(
-          tempPublisher,
-        )
-        tempPublisher.onIceStateChanged(iceStateChangedCallBack)
+        const rePublisher = OV.initPublisher('', publishOptions)
+        const iceStateChangedCallBack = getIceStateChangedCallBack(rePublisher)
+        rePublisher.onIceStateChanged(iceStateChangedCallBack)
 
         const streamCreatedCallBack = getStreamCreatedCallBack({
-          publisher: tempPublisher,
+          publisher: rePublisher,
           configs: _.configs,
           isRepublish: true,
         })
-        tempPublisher.on('streamCreated', streamCreatedCallBack)
+        rePublisher.on('streamCreated', streamCreatedCallBack)
 
         if (_.publisher) {
           await _.session.unpublish(_.publisher)
           _.publisher = null
         }
 
-        _.publisher = tempPublisher
+        _.publisher = rePublisher
         _.session.publish(_.publisher)
       } else {
         //republish 과정에서 비디오, 마이크가 없는경우
@@ -858,6 +627,21 @@ const getStreamCreatedCallBack = ({ publisher, isRepublish, configs }) => {
     debug(logText + 'publisher stream :: ', publisher.stream)
     const mediaStream = publisher.stream.mediaStream
 
+    //자신의 스트림에 video가 있다면
+    // -> 비디오 제한 모드인지 체크
+    //    -> 비디오 제한 모드이면 CAMERA_OFF
+    // -> 제한 모드가 아니면 video 활성화(active) 체크
+    //     -> 활성화일때 CAMERA_ON
+    //     -> 비활성화일때 CAMERA_OFF
+    //자신의 스트림에 video가 없다면 CAMERA_NONE
+    const cameraStatus = publisher.stream.hasVideo
+      ? configs.videoRestrictedMode
+        ? CAMERA_STATUS.CAMERA_OFF
+        : publisher.stream.videoActive
+        ? CAMERA_STATUS.CAMERA_ON
+        : CAMERA_STATUS.CAMERA_OFF
+      : CAMERA_STATUS.CAMERA_NONE
+
     const participantInfo = {
       connectionId: publisher.stream.connection.connectionId,
       stream: mediaStream,
@@ -866,13 +650,7 @@ const getStreamCreatedCallBack = ({ publisher, isRepublish, configs }) => {
       hasAudio: publisher.stream.hasAudio,
       video: publisher.stream.videoActive, // settingInfo.videoOn,
       audio: publisher.stream.audioActive,
-      cameraStatus: publisher.stream.hasVideo
-        ? configs.videoRestrictedMode
-          ? CAMERA_STATUS.CAMERA_OFF
-          : publisher.stream.videoActive
-          ? CAMERA_STATUS.CAMERA_ON
-          : CAMERA_STATUS.CAMERA_OFF
-        : CAMERA_STATUS.CAMERA_NONE,
+      cameraStatus: cameraStatus,
     }
 
     if (isRepublish) {
