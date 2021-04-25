@@ -191,12 +191,24 @@ public class SessionRestController {
         if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        RoomInfoListResponse responseData = roomService.getRoomListStandardSearch(
-            workspaceId,
-            userId,
-            search,
-            pageRequest.ofSortBy()
-        );
+
+        RoomInfoListResponse responseData;
+        if (StringUtils.isBlank(search)) {
+            responseData = roomService.getRoomList(
+                workspaceId,
+                userId,
+                true,
+                pageRequest.ofSortBy()
+            );
+        } else {
+            responseData = roomService.getRoomListStandardSearch(
+                    workspaceId,
+                    userId,
+                    search,
+                    pageRequest.ofSortBy()
+            );
+        }
+
         return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 

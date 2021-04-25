@@ -1,23 +1,7 @@
 package com.virnect.serviceserver.serviceremote.application;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import com.virnect.data.dao.company.CompanyRepository;
 import com.virnect.data.domain.Company;
 import com.virnect.data.domain.Language;
@@ -26,8 +10,6 @@ import com.virnect.data.error.ErrorCode;
 import com.virnect.data.global.common.ApiResponse;
 import com.virnect.data.infra.utils.JsonUtil;
 import com.virnect.data.infra.utils.LogMessage;
-import com.virnect.serviceserver.global.config.RemoteServiceConfig;
-import com.virnect.serviceserver.global.config.property.RemoteServiceProperties;
 import com.virnect.serviceserver.serviceremote.dto.constraint.CompanyConstants;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LanguageCode;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseItem;
@@ -35,6 +17,19 @@ import com.virnect.serviceserver.serviceremote.dto.constraint.TranslationItem;
 import com.virnect.serviceserver.serviceremote.dto.request.company.CompanyRequest;
 import com.virnect.serviceserver.serviceremote.dto.request.company.CompanyResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.company.CompanyInfoResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -46,69 +41,61 @@ public class CompanyService {
 	private final ModelMapper modelMapper;
 	private final SessionTransactionalService sessionService;
 	private final CompanyRepository companyRepository;
-	private final RemoteServiceConfig remoteServiceConfig;
 
 	public ApiResponse<CompanyResponse> createCompany(CompanyRequest companyRequest) {
-
-		ApiResponse<CompanyResponse> responseData;
-
-		Company company = Company.builder()
-			.companyCode(companyRequest.getCompanyCode())
-			.workspaceId(companyRequest.getWorkspaceId())
-			.licenseName(companyRequest.getLicenseName())
-			.sessionType(companyRequest.getSessionType())
-			.recording(companyRequest.isRecording())
-			.storage(companyRequest.isStorage())
-			.translation(companyRequest.isTranslation())
-			.sttStreaming(companyRequest.isSttStreaming())
-			.sttSync(companyRequest.isSttSync())
-			.tts(companyRequest.isTts())
-			.videoRestrictedMode(companyRequest.isVideoRestrictedMode())
-			.audioRestrictedMode(companyRequest.isAudioRestrictedMode())
-			.localRecording(companyRequest.isLocalRecording())
-			.build();
-
-		company.setLanguage(
-			Language.builder()
-			.transKoKr(companyRequest.getLanguage().isTransKoKr())
-			.transEnUs(companyRequest.getLanguage().isTransEnUs())
-			.transJaJp(companyRequest.getLanguage().isTransJaJp())
-			.transZh(companyRequest.getLanguage().isTransZh())
-			.transEsEs(companyRequest.getLanguage().isTransEsEs())
-			.transFrFr(companyRequest.getLanguage().isTransFrFr())
-			.transPlPl(companyRequest.getLanguage().isTransPlPl())
-			.transRuRu(companyRequest.getLanguage().isTransRuRu())
-			.transUkUa(companyRequest.getLanguage().isTransUkUa())
-			.company(company)
-			.build()
-		);
-
 		try{
-			if (sessionService.createCompany(company) != null) {
-				CompanyResponse companyResponse = new CompanyResponse();
-				companyResponse.setWorkspaceId(company.getWorkspaceId());
-				companyResponse.setLicenseName(company.getLicenseName());
-				companyResponse.setSessionType(company.getSessionType());
-				responseData = new ApiResponse<>(companyResponse);
-			} else {
-				responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
+			Company company = Company.builder()
+				.companyCode(companyRequest.getCompanyCode())
+				.workspaceId(companyRequest.getWorkspaceId())
+				.licenseName(companyRequest.getLicenseName())
+				.sessionType(companyRequest.getSessionType())
+				.recording(companyRequest.isRecording())
+				.storage(companyRequest.isStorage())
+				.translation(companyRequest.isTranslation())
+				.sttStreaming(companyRequest.isSttStreaming())
+				.sttSync(companyRequest.isSttSync())
+				.tts(companyRequest.isTts())
+				.videoRestrictedMode(companyRequest.isVideoRestrictedMode())
+				.audioRestrictedMode(companyRequest.isAudioRestrictedMode())
+				.localRecording(companyRequest.isLocalRecording())
+				.build();
+
+			company.setLanguage(
+				Language.builder()
+				.transKoKr(companyRequest.getLanguage().isTransKoKr())
+				.transEnUs(companyRequest.getLanguage().isTransEnUs())
+				.transJaJp(companyRequest.getLanguage().isTransJaJp())
+				.transZh(companyRequest.getLanguage().isTransZh())
+				.transEsEs(companyRequest.getLanguage().isTransEsEs())
+				.transFrFr(companyRequest.getLanguage().isTransFrFr())
+				.transPlPl(companyRequest.getLanguage().isTransPlPl())
+				.transRuRu(companyRequest.getLanguage().isTransRuRu())
+				.transUkUa(companyRequest.getLanguage().isTransUkUa())
+				.company(company)
+				.build()
+			);
+
+			if (sessionService.createCompany(company) == null) {
+				return new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 			}
+			CompanyResponse companyResponse = new CompanyResponse();
+			companyResponse.setWorkspaceId(company.getWorkspaceId());
+			companyResponse.setLicenseName(company.getLicenseName());
+			companyResponse.setSessionType(company.getSessionType());
+			return new ApiResponse<>(companyResponse);
 		} catch (Exception e) {
-			responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
+			return new ApiResponse<>(ErrorCode.ERR_COMPANY_CREATE_FAIL);
 		}
-		return responseData;
 	}
 
 	public ApiResponse<CompanyResponse> updateCompany(CompanyRequest companyRequest) {
 
-		ApiResponse<CompanyResponse> responseData;
-
 		Company company = sessionService.getCompany(companyRequest.getWorkspaceId());
-
 		if (company == null) {
-			responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_NOT_EXIST);
-		} else {
+			return new ApiResponse<>(ErrorCode.ERR_COMPANY_NOT_EXIST);
+		}
 
+		try {
 			company.setCompanyCode(companyRequest.getCompanyCode());
 			company.setLicenseName(companyRequest.getLicenseName());
 			company.setSessionType(companyRequest.getSessionType());
@@ -137,21 +124,19 @@ public class CompanyService {
 				.build()
 			);
 
-			try{
-				if (sessionService.updateCompany(company) != null) {
-					CompanyResponse companyResponse = new CompanyResponse();
-					companyResponse.setWorkspaceId(company.getWorkspaceId());
-					companyResponse.setLicenseName(company.getLicenseName());
-					companyResponse.setSessionType(company.getSessionType());
-					responseData = new ApiResponse<>(companyResponse);
-				} else {
-					responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
-				}
-			} catch (Exception e) {
-				responseData = new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
+			if (sessionService.updateCompany(company) == null) {
+				return new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
 			}
+
+			CompanyResponse companyResponse = new CompanyResponse();
+			companyResponse.setWorkspaceId(company.getWorkspaceId());
+			companyResponse.setLicenseName(company.getLicenseName());
+			companyResponse.setSessionType(company.getSessionType());
+			return new ApiResponse<>(companyResponse);
+
+		} catch (Exception e) {
+			return new ApiResponse<>(ErrorCode.ERR_COMPANY_UPDATE_FAIL);
 		}
-		return responseData;
 	}
 
 	public ApiResponse<CompanyInfoResponse> getCompanyInfo(
@@ -159,8 +144,6 @@ public class CompanyService {
 		String userId,
 		String policyLocation
 	) {
-		ApiResponse<CompanyInfoResponse> responseData;
-
 		Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
 		CompanyInfoResponse companyInfoResponse = null;
 		try {
@@ -168,10 +151,7 @@ public class CompanyService {
 		} catch (IOException e) {
 			new ApiResponse<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
 		}
-
-		responseData = new ApiResponse<>(companyInfoResponse);
-
-		return responseData;
+		return new ApiResponse<>(companyInfoResponse);
 	}
 
 	public ApiResponse<CompanyInfoResponse> getCompanyInfoByCompanyCode(
@@ -180,44 +160,30 @@ public class CompanyService {
 		int companyCode,
 		String policyLocation
 	) {
-
-		ApiResponse<CompanyInfoResponse> responseData;
-
-		CompanyInfoResponse companyInfoResponse = null;
-
-		/*if (remoteServiceConfig.getProfile().equals("local")
-			|| remoteServiceConfig.getProfile().equals("develop")
-		) {
-			companyCode = 0;
-		}*/
-
-		if (companyCode != CompanyConstants.COMPANY_VIRNECT) {
-			//Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
-			Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
-			if (company != null) {
-				companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
-				Language language = company.getLanguage();
-				List<LanguageCode> languageCodes = combineLanguageCode(language);
-				companyInfoResponse.setLanguageCodes(languageCodes);
-				responseData = new ApiResponse<>(companyInfoResponse);
-			} else {
-				CompanyInfoResponse empty = new CompanyInfoResponse();
-				responseData = new ApiResponse<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);
+		try {
+			if (companyCode == CompanyConstants.COMPANY_VIRNECT) {
+				CompanyInfoResponse companyInfoResponse = loadServicePolicy(workspaceId, policyLocation);
+				return new ApiResponse<>(companyInfoResponse);
 			}
-		} else {
-			try {
-				companyInfoResponse = loadServicePolicy(workspaceId, policyLocation);
-			} catch (IOException e) {
-				new ApiResponse<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
-			}
-			responseData = new ApiResponse<>(companyInfoResponse);
+		} catch (IOException e) {
+			return new ApiResponse<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
 		}
-		return responseData;
+
+		Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
+		if (company == null) {
+			CompanyInfoResponse empty = new CompanyInfoResponse();
+			return new ApiResponse<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);
+		}
+
+		CompanyInfoResponse companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);
+		Language language = company.getLanguage();
+		List<LanguageCode> languageCodes = combineLanguageCode(language);
+		companyInfoResponse.setLanguageCodes(languageCodes);
+		return new ApiResponse<>(companyInfoResponse);
 	}
 
 	private CompanyInfoResponse loadServicePolicy(String workspaceId, String policyLocation) throws IOException {
-		//String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
-		if (policyLocation == null || policyLocation.isEmpty()) {
+		if (StringUtils.isBlank(policyLocation)) {
 			LogMessage.formedError(
 				TAG,
 				"initialise service policy",
@@ -225,44 +191,43 @@ public class CompanyService {
 				"service policy file path is null or empty. trying to set default service policy."
 			);
 			return defaultCompanyInfo(workspaceId);
-
-		} else {
-			JsonUtil jsonUtil = new JsonUtil();
-			JsonObject jsonObject;
-			if (policyLocation.startsWith("/")) {
-				Path path = Paths.get(policyLocation);
-				jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
-			} else {
-				InputStream inputStream = getClass().getClassLoader().getResourceAsStream(policyLocation);
-				if (inputStream == null) {
-					LogMessage.formedError(
-						TAG,
-						"initialise service policy",
-						"loadServicePolicy",
-						"service policy file path is null or empty. trying to set default service policy."
-					);
-					return defaultCompanyInfo(workspaceId);
-				} else {
-					LogMessage.formedError(
-						TAG,
-						"initialise service policy",
-						"loadServicePolicy",
-						"service policy file path is null or empty. set service policy using service policy file."
-					);
-					jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
-					inputStream.close();
-
-					return parseServicePolicyJsonObject(jsonObject, workspaceId);
-				}
-			}
-			LogMessage.formedInfo(
-				TAG,
-				"initialise service policy",
-				"loadServicePolicy",
-				"load service policy is success."
-			);
-			return parseServicePolicyJsonObject(jsonObject, workspaceId);
 		}
+
+		JsonUtil jsonUtil = new JsonUtil();
+		JsonObject jsonObject;
+		if (policyLocation.startsWith("/")) {
+			Path path = Paths.get(policyLocation);
+			jsonObject = jsonUtil.fromFileToJsonObject(path.toAbsolutePath().toString());
+		} else {
+			InputStream inputStream = getClass().getClassLoader().getResourceAsStream(policyLocation);
+			if (inputStream == null) {
+				LogMessage.formedError(
+					TAG,
+					"initialise service policy",
+					"loadServicePolicy",
+					"service policy file path is null or empty. trying to set default service policy."
+				);
+				return defaultCompanyInfo(workspaceId);
+			} else {
+				LogMessage.formedError(
+					TAG,
+					"initialise service policy",
+					"loadServicePolicy",
+					"service policy file path is null or empty. set service policy using service policy file."
+				);
+				jsonObject = jsonUtil.fromInputStreamToJsonObject(inputStream);
+				inputStream.close();
+
+				return parseServicePolicyJsonObject(jsonObject, workspaceId);
+			}
+		}
+		LogMessage.formedInfo(
+			TAG,
+			"initialise service policy",
+			"loadServicePolicy",
+			"load service policy is success."
+		);
+		return parseServicePolicyJsonObject(jsonObject, workspaceId);
 	}
 
 	private CompanyInfoResponse defaultCompanyInfo(String workspaceId) {

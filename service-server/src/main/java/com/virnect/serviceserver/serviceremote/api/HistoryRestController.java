@@ -3,6 +3,7 @@ package com.virnect.serviceserver.serviceremote.api;
 import javax.validation.Valid;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -107,8 +108,13 @@ public class HistoryRestController {
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        RoomHistoryInfoListResponse responseData = historyService.getHistoryListStandardSearch(
-            workspaceId, userId, search, pageable.ofSortBy());
+
+        RoomHistoryInfoListResponse responseData;
+        if (Strings.isBlank(search)) {
+            responseData = historyService.getRoomHistoryCurrent(workspaceId, userId, true, pageable.ofSortBy());
+        } else {
+            responseData = historyService.getHistoryListStandardSearch(workspaceId, userId, search, pageable.ofSortBy());
+        }
         return ResponseEntity.ok(new ApiResponse<>(responseData));
 
     }

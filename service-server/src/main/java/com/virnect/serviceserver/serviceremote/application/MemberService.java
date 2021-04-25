@@ -78,7 +78,6 @@ public class MemberService {
 		int currentPage = workspaceMemberPageMeta.getCurrentPage();
 		int currentSize = workspaceMemberPageMeta.getCurrentSize();
 		int totalPage = workspaceMemberPageMeta.getTotalPage();
-		long totalElements = workspaceMemberPageMeta.getTotalElements();
 
 		//remove members who does not have any license plan or remote license
 		workspaceMemberInfoList.removeIf(memberInfoResponses ->
@@ -117,9 +116,7 @@ public class MemberService {
 		int page,
 		int size
 	) {
-		MemberInfoListResponse responseData = null;
 
-		//Room room = sessionService.getRoom(workspaceId, sessionId);
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (ObjectUtils.isEmpty(room)) {
 			throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
@@ -179,13 +176,12 @@ public class MemberService {
 
 	public MemberSecessionResponse deleteMembersBySession(String userId) {
 
-		//List<MemberHistory> historyList = sessionService.getMemberHistoryList(userId);
 		List<MemberHistory> historyList = memberHistoryRepository.findAllByUuid(userId);
 		for (MemberHistory memberHistory : historyList) {
 			memberHistory.setMemberType(MemberType.SECESSION);
-			//sessionService.updateMemberHistory(memberHistory);
 			memberHistoryRepository.save(memberHistory);
 		}
+
 		return new MemberSecessionResponse(userId, true, LocalDateTime.now());
 	}
 

@@ -101,52 +101,20 @@ public class SessionTransactionalService {
 		return  this.roomRepository.findBySessionId(sessionId).orElse(null);
 	}
 
-	public RoomHistory getRoomHistory(String workspaceId, String sessionId) {
-		return this.roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
-	}
-
-	public RoomHistory getRoomHistory(String sessionId) {
-		return this.roomHistoryRepository.findBySessionId(sessionId).orElse(null);
-	}
-
-	/**
-	 *
-	 * @param workspaceId
-	 * @param userId
-	 * @return
-	 */
-	public List<Room> getRoomList(String workspaceId, String userId) {
-		List<Room> roomList = new ArrayList<>();
-		List<Member> memberList;
-		memberList = this.memberRepository.findByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId);
-		for(Member member : memberList ) {
-			//member status condition added
-			if (member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
-				&& !member.getRoom().getSessionProperty().getSessionType().equals(SessionType.OPEN)
-				&& !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-				roomList.add(member.getRoom());
-			}
-		}
-		return roomList;
-	}
-
 	@Deprecated
 	public Page<Room> getRoomPageList(String workspaceId, Pageable pageable) {
 		return this.roomRepository.findRoomByWorkspaceId(workspaceId, pageable);
 	}
 
 	public Page<Room> getRoomPageList(String workspaceId, String userId, Pageable pageable) {
-		//return this.roomRepository.findAll(joinMember(workspaceId, userId), pageable);
 		return this.roomRepository.findMyRoomSpecificUserId(workspaceId, userId, true, pageable);
 	}
 
 	public Page<Room> getRoomPageList(String workspaceId, String userId, String search, Pageable pageable) {
-		//return this.roomRepository.findAll(joinMember(workspaceId, userId, search), pageable);
 		return this.roomRepository.findMyRoomSpecificUserIdBySearch(workspaceId, userId, search, pageable);
 	}
 
 	public Page<Room> getRoomPageList(String workspaceId, String userId, List<String> userIds, String search, Pageable pageable) {
-		//return this.roomRepository.findAll(joinMember(workspaceId, userId, userIds, search), pageable);
 		return this.roomRepository.findMyRoomSpecificUserIdBySearch(workspaceId, userId, userIds, search, pageable);
 	}
 
@@ -163,19 +131,6 @@ public class SessionTransactionalService {
 			}
 		}
 
-		return roomList;
-	}
-
-	public List<Room> getRoomList(Page<Member> memberPage) {
-		List<Room> roomList = new ArrayList<>();
-		for(Member member : memberPage.getContent() ) {
-			//member status condition added
-			if(member.getRoom().getRoomStatus().equals(RoomStatus.ACTIVE)
-				&& !member.getRoom().getSessionProperty().getSessionType().equals(SessionType.OPEN)
-				&& !member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-				roomList.add(member.getRoom());
-			}
-		}
 		return roomList;
 	}
 
@@ -199,43 +154,12 @@ public class SessionTransactionalService {
 		this.memberRepository.save(member);
 	}
 
-	/*@Transactional
-    public void setMember(String workspaceId, String sessionId, String uuid, MemberStatus memberStatus) {
-        Member member = this.memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, uuid).orElse(null);
-        if(member != null) {
-            member.setMemberStatus(memberStatus);
-            this.memberRepository.save(member);
-        }
-    }*/
-
-	@Transactional
-	public void setMemberHistory(MemberHistory memberHistory) {
-		this.memberHistoryRepository.save(memberHistory);
-	}
-
-	@Transactional
-	public Member getMemberForWrite(String workspaceId, String sessionId, String userId) {
-		return memberRepository.findByWorkspaceIdAndSessionIdAndUuidForWrite(workspaceId, sessionId, userId).orElse(null);
-	}
-
 	public Member getMember(String workspaceId, String sessionId, String userId) {
 		return memberRepository.findByWorkspaceIdAndSessionIdAndUuid(workspaceId, sessionId, userId).orElse(null);
 	}
 
 	public List<Member> getMemberList(String sessionId) {
 		return this.memberRepository.findAllBySessionId(sessionId);
-	}
-
-	public List<Member> getMemberList(String workspaceId, String sessionId) {
-		return this.memberRepository.findByWorkspaceIdAndSessionIdAndRoomNotNull(workspaceId, sessionId);
-	}
-
-	public Page<Member> getMemberList(String workspaceId, String userId, Pageable pageable) {
-		return this.memberRepository.findMemberByWorkspaceIdAndUuidAndRoomNotNull(workspaceId, userId, pageable);
-	}
-
-	public List<MemberHistory> getMemberHistoryList(String userId) {
-		return this.memberHistoryRepository.findAllByUuid(userId);
 	}
 
 	@Deprecated
@@ -505,75 +429,8 @@ public class SessionTransactionalService {
 				room.getMembers().add(newMember);
 				roomRepository.save(room);
 			}
-
-			//memberRepository.save(member);
-
-            /*for (Member member: room.getMembers()) {
-                if (member.getUuid().equals(joinRoomRequest.getUuid())) {
-                    log.debug("Room has member Id is {}", member.getUuid());
-                    member.setMemberType(joinRoomRequest.getMemberType());
-                    member.setDeviceType(joinRoomRequest.getDeviceType());
-                    member.setMemberStatus(MemberStatus.LOAD);
-                    //save member
-                    memberRepository.save(member);
-                }
-            }*/
-            /*for (ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext(); ) {
-                //Member member = it.next();
-                it.next()
-                log.info("NEW getParticipants Id is {}", joinRoomRequest.getUuid());
-                Member member = Member.builder()
-                        .room(room)
-                        .memberType(joinRoomRequest.getMemberType())
-                        .uuid(joinRoomRequest.getUuid())
-                        .workspaceId(room.getWorkspaceId())
-                        .sessionId(room.getSessionId())
-                        .build();
-
-                //member.setMemberType(joinRoomRequest.getMemberType());
-                //member.setDeviceType(joinRoomRequest.getDeviceType());
-                //member.setMemberStatus(MemberStatus.UNLOAD);
-                //memberRepository.save(member);
-                it.add(member);
-            }*/
 		}
-		//roomRepository.save(room);
-		//else {
-		//Private
-            /*for (Member member: room.getMembers()) {
-                if(member.getUuid().equals(joinRoomRequest.getUuid())) {
-                    log.debug("Room has member Id is {}", member.getUuid());
-                    member.setMemberType(joinRoomRequest.getMemberType());
-                    member.setDeviceType(joinRoomRequest.getDeviceType());
-                    member.setMemberStatus(MemberStatus.LOAD);
-                    //save member
-                    memberRepository.save(member);
-                }
-            }*/
-		//}
 	}
-
-    /*@Transactional
-    public ErrorCode joinRoom(Room room, JoinRoomRequest joinRoomRequest) {
-        for (Member member: room.getMembers()) {
-            if(member.getUuid().equals(joinRoomRequest.getUuid())) {
-                log.debug("Room has member Id is {}", member.getUuid());
-
-                if(member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                    return ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
-                }
-
-                member.setMemberType(joinRoomRequest.getMemberType());
-                member.setDeviceType(joinRoomRequest.getDeviceType());
-                member.setMemberStatus(MemberStatus.LOAD);
-                //save member
-                memberRepository.save(member);
-                //room.getMembers().add(member);
-                //roomRepository.save(room);
-            }
-        }
-        return ErrorCode.ERR_SUCCESS;
-    }*/
 
 	/**
 	 * final step.
@@ -594,113 +451,7 @@ public class SessionTransactionalService {
 			}
 		}
 		roomRepository.save(room);
-
-		//if(room.getSessionProperty().getSessionType().equals(SessionType.OPEN)) {
-            /*for(ListIterator<Member> it = room.getMembers().listIterator(); it.hasNext();) {
-                Member member = it.next();
-
-                if(member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                } else {
-                    Member newMember = Member.builder()
-                            .room(room)
-                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
-                            .workspaceId(room.getWorkspaceId())
-                            .uuid(clientMetaData.getClientData())
-                            .sessionId(room.getSessionId())
-                            .build();
-
-                    newMember.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    newMember.setConnectionId(connectionId);
-                    newMember.setMemberStatus(MemberStatus.LOAD);
-                    it.add(newMember);
-                }
-            }*/
-
-
-            /*room.getMembers().stream().map(member -> {
-                if(member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                } else {
-                    member = Member.builder()
-                            .room(room)
-                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
-                            .workspaceId(room.getWorkspaceId())
-                            .uuid(clientMetaData.getClientData())
-                            .sessionId(room.getSessionId())
-                            .build();
-
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                }
-                return null;
-            }).collect(Collectors.toList());*/
-            /*for (Member member : memberList) {
-                if (member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                } else {
-                    newMember = Member.builder()
-                            .room(room)
-                            .memberType(MemberType.valueOf(clientMetaData.getRoleType()))
-                            .workspaceId(room.getWorkspaceId())
-                            .uuid(clientMetaData.getClientData())
-                            .sessionId(room.getSessionId())
-                            .build();
-
-                    newMember.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    newMember.setConnectionId(connectionId);
-                    newMember.setMemberStatus(MemberStatus.LOAD);
-                }
-            }
-            if (newMember != null)
-                room.getMembers().add(newMember);*/
-		//} else {
-            /*for (Member member : room.getMembers()) {
-                if (member.getUuid().equals(clientMetaData.getClientData())) {
-                    member.setDeviceType(DeviceType.valueOf(clientMetaData.getDeviceType()));
-                    member.setMemberType(MemberType.valueOf(clientMetaData.getRoleType()));
-                    member.setConnectionId(connectionId);
-                    member.setMemberStatus(MemberStatus.LOAD);
-                }
-            }*/
-		//}
-		//roomRepository.save(room);
 	}
-
-	/**
-	 * This method is not for leader user
-	 * @param room
-	 * @param member
-	 * @return
-	 */
-    /*@Transactional
-    @Deprecated
-    public ErrorCode exitRoom(Room room, Member member) {
-        for (Member roomMember : room.getMembers()) {
-            if (member.getUuid().equals(roomMember.getUuid())) {
-                if (member.getMemberType().equals(MemberType.LEADER)) {
-                    return ErrorCode.ERR_ROOM_LEADER_INVALID_EXIT;
-                } else if (member.getMemberStatus().equals(MemberStatus.LOAD)) {
-                    return ErrorCode.ERR_ROOM_MEMBER_STATUS_LOADED;
-                } else {
-                    room.getMembers().remove(roomMember);
-                    roomRepository.save(room);
-                    return ErrorCode.ERR_SUCCESS;
-                }
-            }
-        }
-        return ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND;
-    }*/
 
 	@Transactional
 	public void removeMember(Room room, Member member) {
@@ -711,7 +462,6 @@ public class SessionTransactionalService {
 	@Transactional
 	@Deprecated
 	public void leaveSession(String sessionId, ClientMetaData clientMetaData) {
-		//Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
 		Room room = roomRepository.findBySessionId(sessionId).orElse(null);
 		if (room == null) {
 			log.info("session leave and sessionEventHandler is faild. room data is null");
@@ -788,36 +538,6 @@ public class SessionTransactionalService {
 	}
 
 	@Transactional
-	public Room updateRoom(Room room, InviteRoomRequest inviteRoomRequest) {
-		log.info("updateRoom by InviteRoomRequest");
-		for (String participant : inviteRoomRequest.getParticipantIds()) {
-			log.debug("getParticipants Id is {}", participant);
-			Member member = Member.builder()
-				.room(room)
-				.memberType(MemberType.UNKNOWN)
-				.workspaceId(room.getWorkspaceId())
-				.uuid(participant)
-				.sessionId(room.getSessionId())
-				.build();
-			room.getMembers().add(member);
-		}
-		return roomRepository.save(room);
-	}
-
-	@Transactional
-	public Room updateRoom(Room room, ModifyRoomInfoRequest modifyRoomInfoRequest) {
-		return this.roomRepository.save(room);
-	}
-
-	@Transactional
-	public void updateRoom(Room room, String profile) {
-		log.info("generate room profile string is {}", profile);
-		room.setProfile(profile);
-		roomRepository.save(room);
-	}
-
-
-	@Transactional
 	public Room updateRoom(Room room) {
 		return this.roomRepository.save(room);
 	}
@@ -841,34 +561,6 @@ public class SessionTransactionalService {
 			}
 		}
 	}
-
-	/*@Transactional
-    public void updateMember(Member member, MemberStatus memberStatus) {
-        member.setMemberStatus(memberStatus);
-        memberRepository.save(member);
-    }*/
-
-    /*@Transactional
-    public void createOrUpdateMember(Room room, String userId) {
-        log.debug("updateRoom member Id is {}", userId);
-        for(Member member : room.getMembers()) {
-            if(member.getUuid().equals(userId) && member.getMemberStatus().equals(MemberStatus.EVICTED)) {
-                member.setMemberStatus(MemberStatus.UNLOAD);
-                memberRepository.save(member);
-            } else {
-                room.getMembers().add(
-                        Member.builder()
-                                .room(room)
-                                .memberType(MemberType.UNKNOWN)
-                                .workspaceId(room.getWorkspaceId())
-                                .uuid(userId)
-                                .sessionId(room.getSessionId())
-                                .build()
-                );
-            }
-        }
-        roomRepository.save(room);
-    }*/
 
 	@Transactional
 	public void updateMember(Member member, MemberStatus memberStatus) {
@@ -896,118 +588,4 @@ public class SessionTransactionalService {
 		}
 		return ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND;
 	}
-
-	@Transactional
-	public void updateMemberHistory(MemberHistory memberHistory) {
-		memberHistoryRepository.save(memberHistory);
-	}
-
-
-
-    /*@Transactional
-    public ApiResponse<Boolean> inviteRoom(String workspaceId ,String sessionId, InviteRoomRequest inviteRoomRequest) {
-        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        if(!inviteRoomRequest.getParticipants().isEmpty()) {
-            for (InviteRoomRequest.Participant participant : inviteRoomRequest.getParticipants()) {
-                log.debug("getParticipants Id is {}", participant.toString());
-                Member member = Member.builder()
-                        .room(room)
-                        .workspaceId(workspaceId)
-                        .memberType(MemberType.WORKER)
-                        .uuid(participant.getId())
-                        .email(participant.getEmail())
-                        .sessionId(room.getSessionId())
-                        .build();
-                room.getMembers().add(member);
-            }
-        } else {
-            log.debug("participants Id List is null");
-        }
-
-        roomRepository.save(room);
-
-        return new ApiResponse<>(true);
-    }*/
-
-    /*@Transactional
-    public ApiResponse<InviteRoomResponse> inviteRoom(
-            String workspaceId ,
-            String sessionId,
-            InviteRoomRequest inviteRoomRequest) {
-
-        PushSendRequest pushSendRequest = new PushSendRequest();
-        pushSendRequest.setWorkspaceId(workspaceId);
-        pushSendRequest.setUserId(inviteRoomRequest.getLeaderId());
-        pushSendRequest.setEvent(PushConstrants.SEND_PUSH_ROOM_INVITE);
-        for (InviteRoomRequest.Participant participant: inviteRoomRequest.getParticipants()) {
-            pushSendRequest.getTargetUserIds().add(participant.getId());
-        }
-
-        //pushSendRequest.setContents();
-
-
-        ApiResponse<PushResponse> pushResponse = messageRestService.sendPush(pushSendRequest);
-        log.info("getPush message {}", pushResponse.toString());
-
-        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        if(!inviteRoomRequest.getParticipants().isEmpty()) {
-            for (InviteRoomRequest.Participant participant : inviteRoomRequest.getParticipants()) {
-                log.debug("getParticipants Id is {}", participant.toString());
-                Member member = Member.builder()
-                        .room(room)
-                        .workspaceId(workspaceId)
-                        .memberType(MemberType.UNKNOWN)
-                        .uuid(participant.getId())
-                        .email(participant.getEmail())
-                        .sessionId(room.getSessionId())
-                        .build();
-                room.getMembers().add(member);
-            }
-        } else {
-            log.debug("participants Id List is null");
-        }
-        roomRepository.save(room);
-
-        InviteRoomResponse inviteRoomResponse = new InviteRoomResponse();
-        inviteRoomResponse.setEvent(pushResponse.getData().getEvent());
-        inviteRoomResponse.setWorkspaceId(pushResponse.getData().getWorkspaceId());
-        inviteRoomResponse.setSessionId(sessionId);
-        inviteRoomResponse.setPublished(pushResponse.getData().isPublished());
-        inviteRoomResponse.setPublishDate(pushResponse.getData().getPublishDate());
-
-        return new ApiResponse<>(inviteRoomResponse);
-    }*/
-
-    /*public ApiResponse<Boolean> inviteRoomAccept(String workspaceId, String sessionId, String userId, Boolean accept, Locale locale) {
-        if(accept) {
-
-        } else {
-
-        }
-        Room room = roomRepository.findBySessionId(sessionId).orElseThrow(() -> new RemoteServiceException(ErrorCode.ERR_ROOM_NOT_FOUND));
-
-        if(!inviteRoomRequest.getParticipants().isEmpty()) {
-            for (InviteRoomRequest.Participant participant : inviteRoomRequest.getParticipants()) {
-                log.debug("getParticipants Id is {}", participant.toString());
-                Member member = Member.builder()
-                        .room(room)
-                        .workspaceId(workspaceId)
-                        .memberType(MemberType.WORKER)
-                        .uuid(participant.getId())
-                        .email(participant.getEmail())
-                        .sessionId(room.getSessionId())
-                        .build();
-                room.getMembers().add(member);
-            }
-        } else {
-            log.debug("participants Id List is null");
-        }
-
-        roomRepository.save(room);
-
-        return new ApiResponse<>(true);
-    }*/
-
 }
