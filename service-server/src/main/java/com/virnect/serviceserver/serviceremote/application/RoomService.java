@@ -206,16 +206,25 @@ public class RoomService {
 		RoomRequest roomRequest,
 		int companyCode
 	) {
+		/**
+		 * 1. check room request handler
+		 * 2. check user license type using user uuid
+		 * 3. generate session id and token
+		 * 4. create room
+		 * 5. register user as a leader who creates the room
+		 * 6. register other users as a worker(participant), if the request contains other user information.
+		 * 7. return session id and token
+		 */
 		ApiResponse<RoomResponse> responseData;
-		// check license item using company code if not virnect
+
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (licenseItem == null) {
-			new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		}
 
 		if (!(roomRequest.getSessionType() == SessionType.OPEN)) {
 			if (!IsValidUserCapacity(roomRequest, licenseItem)) {
-				new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
+				return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
 			}
 		}
 

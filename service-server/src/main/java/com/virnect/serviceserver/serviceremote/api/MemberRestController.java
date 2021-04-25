@@ -57,11 +57,9 @@ public class MemberRestController {
                 + "search:" + search,
             "getMembersByWorkspaceId"
         );
-
         if (Strings.isBlank(workspaceId)) {
-            new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         //increase page number + 1, cause page index starts 0
         WorkspaceMemberInfoListResponse responseData = memberService.getMembers(
             workspaceId,
@@ -70,7 +68,6 @@ public class MemberRestController {
             page + 1,
             size
         );
-
         return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
@@ -99,11 +96,9 @@ public class MemberRestController {
                 + "search:" + search,
             "getMembersByWorkspaceIdAndUserId"
         );
-
         if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
-            new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         //increase page number + 1, cause page index starts 0
         MemberInfoListResponse responseData = memberService.getMembersExceptForMe(
             workspaceId,
@@ -113,7 +108,6 @@ public class MemberRestController {
             page + 1,
             size
         );
-
         return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
@@ -144,11 +138,9 @@ public class MemberRestController {
                 + "search:" + search,
             "getMembersByWorkspaceIdAndSessionIdAndUserId"
         );
-
         if (Strings.isBlank(workspaceId) || Strings.isBlank(sessionId) || Strings.isBlank(userId)) {
-            new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         //increase page number + 1, cause page index starts 0
         MemberInfoListResponse responseData = memberService.getMembersInvitePossible(workspaceId,
             sessionId,
@@ -173,13 +165,10 @@ public class MemberRestController {
                 + userId,
             "deleteMembersByUserId"
         );
-
         if (Strings.isBlank(userId)) {
-            new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         MemberSecessionResponse responseData = memberService.deleteMembersBySession(userId);
-
         return ResponseEntity.ok(new ApiResponse<>(responseData));
 
     }

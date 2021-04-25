@@ -53,13 +53,10 @@ public class CompanyRestController {
                 + companyRequest.toString(),
             "createCompanyRequestHandler"
         );
-
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<CompanyResponse> responseData = companyService.createCompany(companyRequest);
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -76,11 +73,9 @@ public class CompanyRestController {
                 + companyRequest.toString(),
             "updateCompanyRequestHandler"
         );
-
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<CompanyResponse> responseData = companyService.updateCompany(companyRequest);
         return ResponseEntity.ok(responseData);
     }
@@ -99,18 +94,15 @@ public class CompanyRestController {
                 + userId,
             "getCompanyInfo"
         );
-
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
         ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfo(
             workspaceId,
             userId,
             policyLocation
         );
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -130,9 +122,13 @@ public class CompanyRestController {
                 + "companyCode:" + companyCode,
             "getCompanyInfoRequestHandler"
         );
-
         String policyLocation = config.remoteServiceProperties.getServicePolicyLocation();
-        ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfoByCompanyCode(workspaceId, userId, companyCode, policyLocation);
+        ApiResponse<CompanyInfoResponse> responseData = companyService.getCompanyInfoByCompanyCode(
+                workspaceId,
+                userId,
+                companyCode,
+                policyLocation
+        );
         return ResponseEntity.ok(responseData);
     }
 }

@@ -45,8 +45,6 @@ public class HistoryRestController {
     private static final String TAG = HistoryRestController.class.getSimpleName();
     private static final String REST_PATH = "/remote/history";
 
-    private final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
-
     private final RoomService roomService;
     private final HistoryService historyService;
 
@@ -74,10 +72,11 @@ public class HistoryRestController {
                 + "userId:" + userId,
             "getHistoryListCurrent"
         );
-
+        if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         RoomHistoryInfoListResponse responseData = historyService.getRoomHistoryCurrent(
             workspaceId, userId, paging, pageable.ofSortBy());
-
         return ResponseEntity.ok(new ApiResponse<>(responseData));
     }
 
@@ -105,10 +104,11 @@ public class HistoryRestController {
                 + "search:" + search,
             "getHistoryListStandardSearch"
         );
-
+        if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
+            throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
+        }
         RoomHistoryInfoListResponse responseData = historyService.getHistoryListStandardSearch(
             workspaceId, userId, search, pageable.ofSortBy());
-
         return ResponseEntity.ok(new ApiResponse<>(responseData));
 
     }
@@ -130,18 +130,14 @@ public class HistoryRestController {
                 + "companyCode:" + companyCode,
             "redialRoomRequest"
         );
-
-        // check room request handler
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<RoomResponse> responseData = roomService.redialRoomRequest(
             roomRequest,
             sessionId,
             companyCode
         );
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -166,11 +162,9 @@ public class HistoryRestController {
                 + "companyCode:" + companyCode,
             "redialRoomRequestByUserId"
         );
-
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<RoomResponse> responseData = roomService.redialRoomRequestByUserId(
             client,
             userId,
@@ -178,7 +172,6 @@ public class HistoryRestController {
             sessionId,
             companyCode
         );
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -196,13 +189,10 @@ public class HistoryRestController {
                 + sessionId,
             "getHistoryByWorkspaceIdAndSessionId"
         );
-
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(sessionId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<RoomHistoryDetailInfoResponse> responseData = historyService.getHistoryBySessionId(workspaceId, sessionId);
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -223,9 +213,7 @@ public class HistoryRestController {
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<ResultResponse> responseData = historyService.deleteHistory(workspaceId, userId);
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -247,12 +235,10 @@ public class HistoryRestController {
         if (result.hasErrors()) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<ResultResponse> responseData = historyService.deleteHistoryById(
             workspaceId,
             roomHistoryDeleteRequest
         );
-
         return ResponseEntity.ok(responseData);
     }
 }

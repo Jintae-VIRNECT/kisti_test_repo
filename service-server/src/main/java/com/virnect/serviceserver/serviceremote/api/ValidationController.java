@@ -43,11 +43,9 @@ public class ValidationController {
                 + userId,
             "getLicenseInfo"
         );
-
         if (StringUtils.isBlank(workspaceId) || StringUtils.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-
         ApiResponse<LicenseItemResponse> responseData = validationService.getLicenseInfo(workspaceId, userId);
         return ResponseEntity.ok(responseData);
     }
