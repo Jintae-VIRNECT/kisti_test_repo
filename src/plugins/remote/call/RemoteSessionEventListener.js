@@ -109,6 +109,8 @@ const signalVideo = event => {
   window.vue.$eventBus.$emit(SIGNAL.VIDEO, event)
   // if (session.connection.connectionId === event.from.connectionId) return
   const data = JSON.parse(event.data)
+
+  //전체 공유
   if (data.type === VIDEO.SHARE) {
     if (data.id === _.account.uuid && Store.getters['restrictedRoom']) {
       _.sendCamera(CAMERA_STATUS.CAMERA_ON)
@@ -119,7 +121,9 @@ const signalVideo = event => {
       })
     }
     Store.dispatch('setMainView', { id: data.id, force: true })
-  } else if (data.type === VIDEO.SCREEN_SHARE) {
+  }
+  //PC 화면 공유
+  else if (data.type === VIDEO.SCREEN_SHARE) {
     const isLeader = _.account.roleType === ROLE.LEADER
     const participants = Store.getters['participants']
     const idx = participants.findIndex(
@@ -163,9 +167,9 @@ const signalVideo = event => {
     if (noStream) {
       Store.commit('clearMainView', event.from.connectionId)
     }
-
-    //end of screen share
-  } else {
+  }
+  // 그외
+  else {
     if (Store.getters['restrictedRoom']) {
       Store.dispatch('setMainView', {
         force: false,
