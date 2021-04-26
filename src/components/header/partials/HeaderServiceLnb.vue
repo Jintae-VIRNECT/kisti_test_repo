@@ -18,7 +18,6 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import {
   SIGNAL,
-  DRAWING,
   AR_FEATURE,
   CAPTURE_PERMISSION,
   ROLE,
@@ -98,7 +97,7 @@ export default {
       if (!val && val !== bVal && this.participants.length > 0) {
         this.toastDefault(this.$t('service.toast_leave_leader'))
         this.showImage({})
-        this.setView(VIEW.STREAM)
+        // this.setView(VIEW.STREAM)
       }
     },
     mainView: {
@@ -146,19 +145,19 @@ export default {
           // })
           return
         }
-        if (this.view === VIEW.DRAWING) {
-          if (this.shareFile && this.shareFile.id) {
-            // TODO: MESSAGE
-            this.confirmCancel(this.$t('service.toast_exit_drawing'), {
-              text: this.$t('button.exit'),
-              action: () => {
-                this.$call.sendDrawing(DRAWING.END_DRAWING)
-                this.goTabConfirm(type)
-              },
-            })
-            return
-          }
-        }
+        // if (this.view === VIEW.DRAWING) {
+        //   if (this.shareFile && this.shareFile.id) {
+        //     // TODO: MESSAGE
+        //     this.confirmCancel(this.$t('service.toast_exit_drawing'), {
+        //       text: this.$t('button.exit'),
+        //       action: () => {
+        //         this.$call.sendDrawing(DRAWING.END_DRAWING)
+        //         this.goTabConfirm(type)
+        //       },
+        //     })
+        //     return
+        //   }
+        // }
 
         this.goTabConfirm(type)
       } // other user
