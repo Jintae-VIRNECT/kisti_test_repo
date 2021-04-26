@@ -93,6 +93,8 @@ export default {
         this.checkPlan(val)
         this.checkCompany(val.uuid)
         this.checkLicense(val.uuid)
+      } else {
+        this.init()
       }
     },
   },
