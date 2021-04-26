@@ -99,7 +99,8 @@ public class MemberRestController {
         if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        MemberInfoListResponse responseData = memberService.getMembersExceptForMe(
+
+        ApiResponse<MemberInfoListResponse> responseData = memberService.getMembersExceptForMe(
             workspaceId,
             userId,
             filter,
@@ -107,7 +108,7 @@ public class MemberRestController {
             page,
             size
         );
-        return ResponseEntity.ok(new ApiResponse<>(responseData));
+        return ResponseEntity.ok(responseData);
     }
 
     @ApiOperation(value = "Lookup Invitable Remote Member Information List", notes = "초대 가능한 워크스페이스 리모트 멤버 리스트를 조회하는 API 입니다.(원격협업 참가자 제외)")

@@ -6,8 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import org.apache.commons.compress.utils.Lists;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
 import com.virnect.data.error.ErrorCode;
 import com.virnect.data.error.exception.RestServiceException;
+import com.virnect.data.global.common.ApiResponse;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseConstants;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
@@ -63,7 +66,7 @@ public class MemberService {
 		return responseData;
 	}
 
-	public MemberInfoListResponse getMembersExceptForMe(
+	public ApiResponse<MemberInfoListResponse> getMembersExceptForMe(
 		String workspaceId,
 		String userId,
 		String filter,
@@ -74,6 +77,10 @@ public class MemberService {
 
 		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
 		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
+
+		if (CollectionUtils.isEmpty(workspaceMemberInfoList)) {
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_INFO_EMPTY);
+		}
 
 		workspaceMemberInfoList.removeIf(memberInfoResponses ->
 			Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
@@ -88,13 +95,8 @@ public class MemberService {
 		int totalPage = totalElements % size == 0 ? (int)(totalElements / (size)) : (int)(totalElements / (size)) + 1;
 		boolean last = (currentPage) == totalPage;
 
-		int startIndex = 0;
-		int endIndex = 0;
-
-		if (!workspaceMemberInfoList.isEmpty()) {
-			startIndex = (currentPage - 1) * pagingSize;
-			endIndex = last ? workspaceMemberInfoList.size() : ((currentPage - 1) * pagingSize) + (pagingSize);
-		}
+		int startIndex = (currentPage - 1) * pagingSize;
+		int endIndex = last ? workspaceMemberInfoList.size() : ((currentPage - 1) * pagingSize) + (pagingSize);
 
 		// 데이터 range
 		workspaceMemberInfoList = IntStream
@@ -154,7 +156,7 @@ public class MemberService {
 			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
 			.collect(Collectors.toList());*/
 
-		return new MemberInfoListResponse(memberInfoList, pageMeta);
+		return new ApiResponse<>(new MemberInfoListResponse(memberInfoList,pageMeta));
 	}
 
 	public MemberInfoListResponse getMembersInvitePossible(
