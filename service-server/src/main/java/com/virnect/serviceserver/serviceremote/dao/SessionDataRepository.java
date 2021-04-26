@@ -705,7 +705,6 @@ public class SessionDataRepository {
             .workspaceId(roomRequest.getWorkspaceId())
             .maxUserCount(licenseItem.getUserCapacity())
             .licenseName(licenseItem.name())
-            //.restrictedMode(roomRequest.isRestrictedMode())
             .videoRestrictedMode(roomRequest.isVideoRestrictedMode())
             .audioRestrictedMode(roomRequest.isAudioRestrictedMode())
             .build();

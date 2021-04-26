@@ -67,15 +67,6 @@ public class SessionRestController {
 		return ResponseEntity.ok(response);
     }
 
-    /**
-     * 1. check room request handler
-     * 2. check user license type using user uuid
-     * 3. generate session id and token
-     * 4. create room
-     * 5. register user as a leader who creates the room
-     * 6. register other users as a worker(participant), if the request contains other user information.
-     * 7. return session id and token
-     */
     @ApiOperation(value = "Initialize a Remote Room with Company Code", notes = "Generate Remote Session")
     @PostMapping(value = "room/{userId}")
     public ResponseEntity<ApiResponse<RoomResponse>> createRoomRequestHandlerByUserId(
@@ -288,7 +279,6 @@ public class SessionRestController {
             sessionId,
             modifyRoomInfoRequest
         );
-
         return ResponseEntity.ok(responseData);
     }
 
@@ -376,7 +366,6 @@ public class SessionRestController {
             sessionId,
             inviteRoomRequest
         );
-
         return ResponseEntity.ok(responseData);
     }
 

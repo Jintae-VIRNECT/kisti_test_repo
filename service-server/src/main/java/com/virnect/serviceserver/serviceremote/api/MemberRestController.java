@@ -170,6 +170,5 @@ public class MemberRestController {
         }
         MemberSecessionResponse responseData = memberService.deleteMembersBySession(userId);
         return ResponseEntity.ok(new ApiResponse<>(responseData));
-
     }
 }
