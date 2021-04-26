@@ -46,7 +46,7 @@ const _ = {
 
       if (!_.session) {
         _.session = OV.initSession()
-        addSessionEventListener(_.session, Store)
+        addSessionEventListener(_.session)
       }
 
       const metaData = {
