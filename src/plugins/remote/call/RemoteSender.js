@@ -420,6 +420,22 @@ const panoRotation = info => {
   })
 }
 
+/**
+ * 화면 공유 여부
+ * @param {Boolean} enable 화면 공유 기능 사용 여부 true, false
+ * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
+ */
+const screenSharing = (enable, target = null) => {
+  const params = {
+    type: VIDEO.SCREEN_SHARE,
+    enable: enable,
+  }
+  _.session.signal({
+    type: SIGNAL.VIDEO,
+    to: target,
+    data: JSON.stringify(params),
+  })
+}
 export default {
   chat,
   file,
@@ -441,4 +457,5 @@ export default {
   flash,
   cameraZoom,
   panoRotation,
+  screenSharing,
 }
