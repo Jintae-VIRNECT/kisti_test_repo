@@ -60,10 +60,7 @@ import com.virnect.uaa.domain.auth.account.dao.UserOTPRepository;
 import com.virnect.uaa.domain.auth.account.domain.BlockReason;
 import com.virnect.uaa.domain.auth.account.domain.BlockToken;
 import com.virnect.uaa.domain.auth.account.domain.LoginAttempt;
-import com.virnect.uaa.domain.auth.account.domain.BlockReason;
-import com.virnect.uaa.domain.auth.account.domain.BlockToken;
 import com.virnect.uaa.domain.auth.account.domain.EmailAuth;
-import com.virnect.uaa.domain.auth.account.domain.LoginAttempt;
 import com.virnect.uaa.domain.auth.account.dto.request.EmailAuthRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.LoginRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.LogoutRequest;
@@ -72,7 +69,7 @@ import com.virnect.uaa.domain.auth.account.dto.request.OTPQRGenerateRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.RegisterRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.TokenRefreshRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.EmailAuthenticationResponse;
-import com.virnect.uaa.domain.auth.account.dto.response.EmailVerificationResult;
+import com.virnect.uaa.domain.auth.account.dto.response.EmailVerificationResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.LogoutResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OTPQRGenerateResponse;
@@ -595,14 +592,14 @@ public class UserAuthenticationServiceImpl implements UserAuthenticationService 
 	 * @param email - 인증 이메일
 	 * @return
 	 */
-	public EmailVerificationResult emailVerificationCodeCheck(String code, String email) {
+	public EmailVerificationResponse emailVerificationCodeCheck(String code, String email) {
 		EmailAuth emailAuth = emailAuthorizationRepository.findById(email)
 			.orElseThrow(
 				() -> new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_AUTHENTICATION));
 		if (!emailAuth.getCode().equals(code)) {
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_REGISTER_AUTHENTICATION);
 		}
-		return new EmailVerificationResult(true, emailAuth.getSessionCode());
+		return new EmailVerificationResponse(true, emailAuth.getSessionCode());
 	}
 
 	/**

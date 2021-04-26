@@ -17,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
+
 /**
  * @author jeonghyeon.chang (johnmark)
  * @project PF-User
@@ -74,5 +76,18 @@ public class UserAccessLog extends BaseTimeEntity {
 		this.lastLoggedIn = lastLoggedIn;
 		this.country = country;
 		this.countryCode = countryCode;
+	}
+
+	public static UserAccessLog ofUserAndClientGeoIPInfo(User user, ClientGeoIPInfo clientGeoIPInfo) {
+		UserAccessLog userAccessLog = new UserAccessLog();
+		userAccessLog.user = user;
+		userAccessLog.ip = clientGeoIPInfo.getIp();
+		userAccessLog.location = clientGeoIPInfo.getLocation();
+		userAccessLog.deviceDetails = clientGeoIPInfo.getDeviceDetails();
+		userAccessLog.userAgent = clientGeoIPInfo.getUserAgent();
+		userAccessLog.lastLoggedIn = LocalDateTime.now();
+		userAccessLog.country = clientGeoIPInfo.getCountry();
+		userAccessLog.countryCode = clientGeoIPInfo.getCountryCode();
+		return userAccessLog;
 	}
 }

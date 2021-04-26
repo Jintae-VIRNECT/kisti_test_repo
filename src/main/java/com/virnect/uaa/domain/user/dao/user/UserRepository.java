@@ -38,7 +38,5 @@ public interface UserRepository extends JpaRepository<User, Long>, UserCustomRep
 
 	Optional<User> findByUuidAndUserType(String uuid, UserType userType);
 
-	Optional<User> findLoginUserInformationByUserEmail(String email);
-
 	boolean existsByUuid(String userId);
 }

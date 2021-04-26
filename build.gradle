@@ -12,7 +12,8 @@ plugins {
 }
 
 ext {
-    set('springCloudVersion', "Hoxton.SR10")
+    springCloudVersion = 'Hoxton.SR10'
+    mapstructVersion = '1.4.2.Final'
 }
 
 
@@ -117,6 +118,19 @@ dependencies {
 
     // aws s3
     implementation 'com.amazonaws:aws-java-sdk-s3:1.11.415' // AWS Storage Service
+
+
+    // map struct
+    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+
+    annotationProcessor(
+            "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    )
+
+    testAnnotationProcessor(
+            "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    )
+
 }
 
 
