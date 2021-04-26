@@ -3,11 +3,12 @@ export default {
   data() {
     return {
       receivedList: {
-        // {
+        // connectionId: [{
         //   id: 0,
+        //   owner: owner,
         //   data: {},
         //   path: [] / {},
-        // }
+        // }]
       },
     }
   },

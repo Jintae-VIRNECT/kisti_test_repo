@@ -44,7 +44,7 @@
 <script>
 import DrawingCanvas from './DrawingCanvas'
 import { mapGetters, mapActions } from 'vuex'
-import { SIGNAL, ROLE, DRAWING } from 'configs/remote.config'
+import { ROLE, DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 import confirmMixin from 'mixins/confirm'
 
@@ -142,15 +142,6 @@ export default {
       const file = event.dataTransfer.files[0]
       this.$eventBus.$emit('addFile', file)
     },
-    async getImage(receive) {
-      const data = JSON.parse(receive.data)
-
-      if (data.type === DRAWING.END_DRAWING) {
-        this.showImage({})
-        this.setView(VIEW.STREAM)
-        return
-      }
-    },
     getHistoryObject() {
       // 모바일 수신부 타입: Int32
       const imgId = parseInt(
@@ -195,11 +186,9 @@ export default {
 
   /* Lifecycles */
   created() {
-    this.$eventBus.$on(SIGNAL.DRAWING, this.getImage)
     this.$eventBus.$on('participantChange', this.participantChange)
   },
   beforeDestroy() {
-    this.$eventBus.$off(SIGNAL.DRAWING, this.getImage)
     this.$eventBus.$off('participantChange', this.participantChange)
   },
 }

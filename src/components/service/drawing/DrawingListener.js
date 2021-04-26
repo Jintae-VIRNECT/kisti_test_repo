@@ -12,6 +12,14 @@ export default {
   methods: {
     drawingListener(receive) {
       const data = JSON.parse(receive.data)
+      if (data.type === DRAWING.FILE_SHARE) {
+        this.receivedList[receive.from.connectionId] = []
+        for (let key in this.receivePath) {
+          delete this.receivePath[key]
+        }
+        this.isInit = false
+        return
+      }
       if (receive.from.connectionId === this.myInfo.connectionId) return
       // if (this.account.roleType === ROLE.LEADER) return
       if (
@@ -27,7 +35,7 @@ export default {
         ].includes(data.type)
       )
         return
-      if (this.drawingView) {
+      if (this.drawingView && this.isInit) {
         this.addReceiveObject({ data, owner: receive.from.connectionId })
       } else {
         if (!this.receivedList[receive.from.connectionId]) {
@@ -72,7 +80,10 @@ export default {
         imgHeight: this.canvas.getHeight(),
       }
 
-      if (data.type === DRAWING.LINE_DOWN) {
+      // if (data.type === DRAWING.LINE_DOWN) {
+      //   this.receivePath[owner] = []
+      // }
+      if (!(owner in this.receivePath)) {
         this.receivePath[owner] = []
       }
       let receiveParams = getReceiveParams(data.type, params, this.origin.scale)
