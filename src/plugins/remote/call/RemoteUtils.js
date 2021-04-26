@@ -145,6 +145,11 @@ export const addSessionEventListener = session => {
   session.on(SIGNAL.AR_DRAWING, eventListener.signalArDrawing)
 }
 
+/**
+ * 협업에 사용되는 유저 객체 생성
+ * @param {Object} event 이벤트 객체
+ * @returns {String} 자기 자신 or 다른 참가자 여부
+ */
 const setUserObject = event => {
   let userObj
   let connection = event.connection
@@ -184,6 +189,8 @@ const setUserObject = event => {
     screenShare: false,
   }
   const account = Store.getters['account']
+
+  //자기 자신인 경우
   if (account.uuid === uuid) {
     _.connectionId = connection.connectionId
     userObj.nickname = account.nickname
@@ -192,6 +199,7 @@ const setUserObject = event => {
     Store.commit('addStream', userObj)
     return 'me'
   } else {
+    //자신을 제외한 나머지 유저
     logger('room', "participant's connected")
     Store.commit('addStream', userObj)
     getUserInfo({
