@@ -2,7 +2,6 @@ import { OpenVidu } from '@virnect/remote-webrtc'
 import { addSessionEventListener } from './RemoteUtils'
 import sender from './RemoteSender'
 import Store from 'stores/remote/store'
-import { SIGNAL, CAMERA, VIDEO } from 'configs/remote.config'
 import { URLS, setRecordInfo } from 'configs/env.config'
 import { DEVICE, CAMERA as CAMERA_STATUS } from 'configs/device.config'
 import { logger, debug } from 'utils/logger'
@@ -60,6 +59,7 @@ const _ = {
       let ws = configs.wss || `${URLS['ws']}${wsUri['REMOTE']}`
       // const ws = 'wss://192.168.6.3:8000/remote/websocket'
 
+      //config 서버에 정의된 coturnUrl 우선 설정
       if (URLS['coturnUrl']) {
         for (let config of configs.coturn) {
           config.url = URLS['coturnUrl']
@@ -272,17 +272,7 @@ const _ = {
    * other user's camera control
    * @param {Boolean} active
    */
-  sendCameraZoom: (level, target) => {
-    const params = {
-      type: CAMERA.ZOOM,
-      level: level,
-    }
-    _.session.signal({
-      data: JSON.stringify(params),
-      to: target,
-      type: SIGNAL.CAMERA,
-    })
-  },
+  sendCameraZoom: sender.cameraZoom,
 
   /**
    * 현재 전체 공유중인 360 스트림의 제어 정보를 전송
@@ -327,22 +317,14 @@ const _ = {
     }
     _.session.forceDisconnect(_.subscribers[idx].stream.connection)
   },
+
   /**
    * 화면 공유 여부
    * @param {Boolean} enable 화면 공유 기능 사용 여부 true, false
    * @param {Array[String]} target 신호를 보낼 대상 커넥션 id String 배열
    */
-  sendScreenSharing: (enable, target = null) => {
-    const params = {
-      type: VIDEO.SCREEN_SHARE,
-      enable: enable,
-    }
-    _.session.signal({
-      type: SIGNAL.VIDEO,
-      to: target,
-      data: JSON.stringify(params),
-    })
-  },
+  sendScreenSharing: sender.screenSharing,
+
   getState: () => {
     if (_.publisher) {
       return {
@@ -516,11 +498,11 @@ const doPublish = async ({ options, configs }) => {
 
   _.publisher = OV.initPublisher('', publishOptions)
 
-  //ice 상태 변경 관련 콜백
+  //ice 상태 변경 관련 콜백 설정
   const iceStateChangedCallBack = getIceStateChangedCallBack(_.publisher)
   _.publisher.onIceStateChanged(iceStateChangedCallBack)
 
-  //streamCreated 관련 콜백
+  //streamCreated 관련 콜백 파라미터
   const streamCreatedParams = {
     publisher: _.publisher,
     configs: configs,
