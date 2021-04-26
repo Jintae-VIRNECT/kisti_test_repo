@@ -1288,6 +1288,9 @@ public class MemberService {
         UserInfoListRestResponse userInfoListRestResponse = getSearchedUserInfoList("", workspaceId);
         List<WorkspaceUserInfoResponse> workspaceUserInfoResponseList = userInfoListRestResponse.getUserInfoList().stream().map(userInfoRestResponse -> {
             WorkspaceUserInfoResponse workspaceUserInfoResponse = modelMapper.map(userInfoRestResponse, WorkspaceUserInfoResponse.class);
+            WorkspaceRole role = workspaceUserPermissionRepository.findWorkspaceUser(workspaceId, userInfoRestResponse.getUuid()).get().getWorkspaceRole();
+            workspaceUserInfoResponse.setRole(role.getRole());
+            workspaceUserInfoResponse.setRoleId(role.getId());
             workspaceUserInfoResponse.setLicenseProducts(getUserLicenseProductList(workspaceId, userInfoRestResponse.getUuid()));
             return workspaceUserInfoResponse;
         }).collect(Collectors.toList());
