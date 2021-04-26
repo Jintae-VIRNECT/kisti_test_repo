@@ -73,18 +73,6 @@ public class ConfigService {
 			mediaServerProperties.serverProperty.getSessionsGarbageThreshold()
 		);
 
-		//json.addProperty("remote_service_recording", remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled());
-        /*if (remoteServiceConfig.remoteServiceProperties.isRecordingModuleEnabled()) {
-            json.addProperty("remote_service_recording_version", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingVersion());
-            json.addProperty("remote_service_recording_path", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPath());
-            json.addProperty("remote_service_recording_public_access", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingPublicAccess());
-            json.addProperty("remote_service_recording_notification", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingNotification().name());
-            json.addProperty("remote_service_recording_custom_layout", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingCustomLayout());
-            json.addProperty("remote_service_recording_autostop_timeout", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingAutostopTimeout());
-            if (remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl() != null	&& !remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl().isEmpty()) {
-                json.addProperty("remote_service_recording_composed_url", remoteServiceConfig.remoteServiceProperties.getRemoteServiceRecordingComposedUrl());
-            }
-        }*/
 		json.addProperty("remote_service_webhook", remoteServiceConfig.isWebhookEnabled());
 		if (remoteServiceConfig.isWebhookEnabled()) {
 			json.addProperty(

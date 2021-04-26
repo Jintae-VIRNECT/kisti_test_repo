@@ -149,7 +149,7 @@ public class CompanyService {
 		try {
 			companyInfoResponse = loadServicePolicy(workspaceId, policyLocation);
 		} catch (IOException e) {
-			new ApiResponse<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
+			new ApiResponse<>(ErrorCode.ERR_IO_EXCEPTION);
 		}
 		return new ApiResponse<>(companyInfoResponse);
 	}
@@ -166,13 +166,13 @@ public class CompanyService {
 				return new ApiResponse<>(companyInfoResponse);
 			}
 		} catch (IOException e) {
-			return new ApiResponse<>(new CompanyInfoResponse(), ErrorCode.ERR_IO_EXCEPTION);
+			return new ApiResponse<>(ErrorCode.ERR_IO_EXCEPTION);
 		}
 
 		Company company = companyRepository.findByWorkspaceId(workspaceId).orElse(null);
 		if (company == null) {
 			CompanyInfoResponse empty = new CompanyInfoResponse();
-			return new ApiResponse<>(empty, ErrorCode.ERR_COMPANY_INVALID_CODE);
+			return new ApiResponse<>(ErrorCode.ERR_COMPANY_INVALID_CODE);
 		}
 
 		CompanyInfoResponse companyInfoResponse = modelMapper.map(company, CompanyInfoResponse.class);

@@ -106,13 +106,13 @@ public class RoomService {
 		// 유효 라이센스 확인
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (ObjectUtils.isEmpty(licenseItem)) {
-			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		}
 
 		// 오픈방이 아닐 경우 인원수 체크
 		if (roomRequest.getSessionType() != SessionType.OPEN) {
 			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 			}
 		}
 
@@ -141,13 +141,13 @@ public class RoomService {
 		// 유효 라이센스 확인
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (ObjectUtils.isEmpty(licenseItem)) {
-			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		}
 
 		// 오픈방이 아닐 경우 인원수 체크
 		if (roomRequest.getSessionType() != SessionType.OPEN) {
 			if (roomRequest.getParticipantIds().size() + 1 > licenseItem.getUserCapacity()) {
-				return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 			}
 		}
 
@@ -186,12 +186,12 @@ public class RoomService {
 		// 유효 라이센스 확인
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (ObjectUtils.isEmpty(licenseItem)) {
-			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		}
 		// 오픈방이 아닐 경우 인원수 체크
 		if (roomRequest.getSessionType() != SessionType.OPEN) {
 			if (!IsValidUserCapacity(roomRequest, licenseItem)) {
-				return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER);
 			}
 		}
 
@@ -229,13 +229,13 @@ public class RoomService {
 		// 유효 라이센스 확인
 		LicenseItem licenseItem = LicenseItem.getLicenseItem(companyCode);
 		if (ObjectUtils.isEmpty(licenseItem)) {
-			return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_LICENSE_COMPANY_CODE);
 		}
 
 		// 오픈방이 아닐 경우 정원 인원수 확인
 		if (!(roomRequest.getSessionType() == SessionType.OPEN)) {
 			if (!IsValidUserCapacity(roomRequest, licenseItem)) {
-				return new ApiResponse<>(new RoomResponse(), ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_IS_OVER );
 			}
 		}
 
@@ -282,7 +282,7 @@ public class RoomService {
 				"process data get false",
 				dataProcess.getMessage()
 			);
-			return new ApiResponse<>(new RoomResponse(), dataProcess.getCode(), dataProcess.getMessage());
+			return new ApiResponse<>(dataProcess.getCode(), dataProcess.getMessage());
 		}
 
 		// 세션 및 토큰 생성
@@ -308,12 +308,12 @@ public class RoomService {
 	) {
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (room == null) {
-			return new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 
 		Member member = null;
 		if (member == null) {
-			return new ApiResponse<>(new ResultResponse(), ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
 		}
 		for (Member participant : room.getMembers()) {
 			if (participant.getUuid().equals(userId)) {
@@ -329,7 +329,7 @@ public class RoomService {
 		}
 
 		if (errorCode != ErrorCode.ERR_SUCCESS) {
-			return new ApiResponse<>(new ResultResponse(), errorCode);
+			return new ApiResponse<>(errorCode);
 		}
 
 		room.getMembers().remove(member);
@@ -386,11 +386,7 @@ public class RoomService {
 		String connectionId = apiResponse.getData().getConnectionId();
 
 		if (apiResponse.getCode() != ErrorCode.ERR_SUCCESS.getCode()) {
-			return new ApiResponse<>(
-				new ResultResponse(),
-				apiResponse.getCode(),
-				apiResponse.getMessage()
-			);
+			return new ApiResponse<>(apiResponse.getCode(), apiResponse.getMessage());
 		}
 
 		//send push message
@@ -466,11 +462,11 @@ public class RoomService {
 		// Get Room info from DB
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if(room == null) {
-			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 
 		if (room.getRoomStatus() != RoomStatus.ACTIVE) {
-			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_STATUS_NOT_ACTIVE);
 		}
 
 		// Make uuid array
@@ -597,10 +593,10 @@ public class RoomService {
 
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (room == null) {
-			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 		if (!room.getLeaderId().equals(modifyRoomInfoRequest.getUuid())) {
-			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
 		}
 
 		room.setTitle(modifyRoomInfoRequest.getTitle());
@@ -643,15 +639,15 @@ public class RoomService {
 
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (room == null) {
-			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 		//check request user has valid permission
 		if (!room.getLeaderId().equals(userId)) {
-			return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_INVALID_PERMISSION);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_INVALID_PERMISSION);
 		}
 		for (Member member : room.getMembers()) {
 			if (member.getUuid().equals(room.getLeaderId()) && member.getMemberStatus() == MemberStatus.LOAD) {
-				return new ApiResponse<>(new RoomDeleteResponse(), ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
+				return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID);
 			}
 		}
 

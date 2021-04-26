@@ -140,8 +140,7 @@ public class HistoryService {
 
 		RoomHistory roomHistory = roomHistoryRepository.findRoomHistoryByWorkspaceIdAndSessionId(workspaceId, sessionId).orElse(null);
 		if (roomHistory == null) {
-			RoomHistoryDetailInfoResponse empty = new RoomHistoryDetailInfoResponse();
-			return new ApiResponse<>(empty, ErrorCode.ERR_ROOM_NOT_FOUND);
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 
 		// Make uuid array
@@ -232,8 +231,6 @@ public class HistoryService {
 			).orElse(null);
 			if (memberHistory != null) {
 				if (memberHistory.getRoomHistory() != null) {
-					//memberHistory.setRoomHistory(null);
-
 					memberHistory.setHistoryDeleted(true);
 					this.memberHistoryRepository.save(memberHistory);
 				}
