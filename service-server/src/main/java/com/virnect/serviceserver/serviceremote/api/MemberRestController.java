@@ -99,13 +99,12 @@ public class MemberRestController {
         if (Strings.isBlank(workspaceId) || Strings.isBlank(userId)) {
             throw new RestServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
         }
-        //increase page number + 1, cause page index starts 0
         MemberInfoListResponse responseData = memberService.getMembersExceptForMe(
             workspaceId,
             userId,
             filter,
             search,
-            page + 1,
+            page,
             size
         );
         return ResponseEntity.ok(new ApiResponse<>(responseData));

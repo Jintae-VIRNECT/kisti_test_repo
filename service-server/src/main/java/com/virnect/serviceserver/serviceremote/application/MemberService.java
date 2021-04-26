@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -70,8 +71,57 @@ public class MemberService {
 		int page,
 		int size
 	) {
-		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMemberInfoList(
-			workspaceId, filter, search, page, size).getData();
+
+		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
+
+		workspaceMemberInfoList.removeIf(memberInfoResponses ->
+			Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
+				!Arrays.toString(memberInfoResponses.getLicenseProducts())
+					.contains(LicenseConstants.PRODUCT_NAME));
+
+		workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
+
+		int currentPage = page + 1; // current page number (start : 0)
+		int pagingSize = size; // page data count
+		long totalElements = workspaceMemberInfoList.size();
+		int totalPage = totalElements % size == 0 ? (int)(totalElements / (size)) : (int)(totalElements / (size)) + 1;
+		boolean last = (currentPage) == totalPage;
+
+		int startIndex = 0;
+		int endIndex = 0;
+
+		if (!workspaceMemberInfoList.isEmpty()) {
+			startIndex = (currentPage - 1) * pagingSize;
+			endIndex = last ? workspaceMemberInfoList.size() : ((currentPage - 1) * pagingSize) + (pagingSize);
+		}
+
+		// 데이터 range
+		workspaceMemberInfoList = IntStream
+			.range(startIndex, endIndex)
+			.mapToObj(workspaceMemberInfoList::get)
+			.collect(Collectors.toList());
+
+		// 페이징 데이터 설정
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(currentPage)
+			.currentSize(pagingSize)
+			.numberOfElements(workspaceMemberInfoList.size())
+			.totalPage(totalPage)
+			.totalElements(totalElements)
+			.last(last)
+			.build();
+
+		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.collect(Collectors.toList());
+
+		/*WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMemberInfoList(
+			workspaceId,
+			filter,
+			search,
+			page,
+			size).getData();
 
 		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
 		PageMetadataResponse workspaceMemberPageMeta = responseData.getPageMeta();
@@ -93,7 +143,7 @@ public class MemberService {
 			.currentPage(currentPage)
 			.currentSize(currentSize)
 			.totalPage(totalPage)
-			.totalElements(workspaceMemberInfoList.size())
+			.totalElements(responseData.getPageMeta().getTotalElements())
 			.numberOfElements(workspaceMemberInfoList.size())
 			.build();
 
@@ -102,7 +152,7 @@ public class MemberService {
 
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
 			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
-			.collect(Collectors.toList());
+			.collect(Collectors.toList());*/
 
 		return new MemberInfoListResponse(memberInfoList, pageMeta);
 	}
