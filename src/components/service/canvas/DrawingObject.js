@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-import { DRAWING } from 'configs/remote.config'
 import { fabric } from 'plugins/remote/fabric.custom'
 import { hexToRGBA } from 'utils/color'
 export default {
@@ -26,7 +25,7 @@ export default {
         fontFamily: this.fontFamily,
         fontStyle: this.fontStyle,
         fontWeight: this.fontWeight,
-        fontSize: this.tools.fontSize / this.origin.scale,
+        fontSize: this.scaleFont,
         lineHeight: this.lineHeight,
         hasControls: false,
       })
@@ -39,17 +38,9 @@ export default {
 
       this.textObj.on('editing:exited', () => {
         if (this.textObj.text.trim() === '') {
-          this.canvas.remove(this.textObj)
+          this.textObj.canvas.remove(this.textObj)
         } else {
-          if (this.textObj.initialized) {
-            this._sendAction(DRAWING.TEXT_UPDATE, this.textObj)
-            this.stackAdd('text', this.textObj.id)
-          } else {
-            this._sendAction(DRAWING.TEXT_ADD, this.textObj)
-            this.stackAdd('add', this.textObj.id)
-          }
           this.textObj.initialized = true
-          this.backCanvas.add(fabric.util.object.clone(this.textObj))
         }
 
         setTimeout(() => {
@@ -57,6 +48,29 @@ export default {
           this.textObj = null
         }, 100)
       })
+    },
+
+    /**
+     * 드로잉 초기화 객체 메소드
+     */
+    drawingClear() {
+      const ids = this.canvas
+        .getObjects()
+        .filter(_ => _.opacity === 1)
+        .map(_ => _.id)
+
+      this.canvas.discardActiveObject()
+
+      if (ids.length > 0) {
+        this.canvas.getObjects().forEach(object => {
+          if (!('owner' in object)) {
+            this.canvas.remove(object)
+          }
+        })
+        this.canvas.renderAll()
+        // this.stackAdd('remove', [...ids]); //삭제 히스토리 쌓기
+        this.stackClear() // 전체 삭제
+      }
     },
   },
 }

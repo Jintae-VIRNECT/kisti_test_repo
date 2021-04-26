@@ -10,13 +10,12 @@
 </template>
 
 <script>
-import PanoVideo from 'PanoVideo'
 import { mapGetters } from 'vuex'
 
 export default {
   name: 'MovingViewer',
   components: {
-    PanoVideo,
+    PanoVideo: () => import('PanoVideo'),
   },
 
   computed: {

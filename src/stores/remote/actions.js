@@ -83,14 +83,6 @@ export default {
     commit(types.SET_DEVICE, payload)
   },
 
-  /**
-   * filter
-   * @param {String} payload
-   */
-  setFilter({ commit }, payload) {
-    commit(types.SEARCH_FILTER, payload)
-  },
-
   /** workspace-settings **/
   /**
    * set devices

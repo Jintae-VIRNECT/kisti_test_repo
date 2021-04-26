@@ -75,27 +75,17 @@ export default {
         )
       }
     },
-    scaleWidth(size) {
+    'tools.lineWidth'(width) {
       if (this.canvas) {
-        this.canvas.freeDrawingBrush.width = size
+        this.canvas.freeDrawingBrush.width = width / this.origin.scale
       }
       if (this.cursor) {
-        this.cursor.setRadius(size / 2)
+        this.cursor.setRadius(width / this.origin.scale / 2)
       }
     },
-    'tools.lineWidth'(size) {
-      this.scaleWidth = size / this.origin.scale
-      // if (this.canvas) {
-      //   this.canvas.freeDrawingBrush.width = this.scaleWidth
-      // }
-      // if (this.cursor) {
-      //   this.cursor.setRadius(this.scaleWidth / 2)
-      // }
-    },
     'tools.fontSize'(size) {
-      this.scaleFont = size / this.origin.scale
       if (this.textObj) {
-        this.textObj.set('fontSize', this.scaleFont)
+        this.textObj.set('fontSize', size / this.origin.scale)
       }
     },
     undoList() {
