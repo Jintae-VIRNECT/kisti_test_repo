@@ -2,19 +2,28 @@
 import { DRAWING } from 'configs/remote.config'
 import { VIEW } from 'configs/view.config'
 /**
- * undoList
- * {
+ * undoList, redoList
+ * [{
  *  type: 'add',
  *  ids: [id],
  *  objects: [objects]
+ * }]
+ *
+ * receiveUndoList, receiveRedoList
+ * {
+ *  connectionId: [{
+ *   type: 'add',
+ *   ids: [id],
+ *   objects: [objects]
+ *  }],
  * }
  */
 export default {
   data() {
     return {
       undoList: [],
-      receiveUndoList: {},
       redoList: [],
+      receiveUndoList: {},
       receiveRedoList: {},
     }
   },
@@ -148,7 +157,7 @@ export default {
     },
 
     /**
-     * 드로잉 초기화 객체 메소드
+     * 드로잉 개별 초기화 객체 메소드
      */
     drawingClear() {
       const ids = this.canvas
@@ -182,6 +191,10 @@ export default {
         }
       }
     },
+
+    /**
+     * 드로잉 전체 초기화 객체 메소드
+     */
     drawingClearAll() {
       const ids = this.canvas
         .getObjects()

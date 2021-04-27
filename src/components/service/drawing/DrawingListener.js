@@ -6,7 +6,21 @@ import { SIGNAL, DRAWING } from 'configs/remote.config'
 export default {
   data() {
     return {
-      receivePath: {},
+      // 현재 그려지는 드로잉 경로
+      receivePath: {
+        // connectionId: [
+        //   ['M', posX, posY] // 경로
+        // ]
+      },
+      // 캔버스 초기화 전 받은 드로잉 정보
+      receivedList: {
+        // connectionId: [{
+        //   id: 0,
+        //   owner: owner,
+        //   data: {},
+        //   path: [] / {},
+        // }]
+      },
     }
   },
   methods: {
