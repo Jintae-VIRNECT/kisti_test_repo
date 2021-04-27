@@ -23,7 +23,6 @@ import com.virnect.content.domain.Types;
 
 @Getter
 @Setter
-@ToString
 public class ContentUploadRequest {
 
 	private String targetData;
@@ -64,5 +63,18 @@ public class ContentUploadRequest {
 		this.metadata = metadata;
 		this.properties = properties;
 		this.userUUID = userUUID;
+	}
+
+	@Override
+	public String toString() {
+		return "ContentUploadRequest{" +
+			"targetData='" + targetData + '\'' +
+			", targetType=" + targetType +
+			", workspaceUUID='" + workspaceUUID + '\'' +
+			", content=" + content +
+			", contentType=" + contentType +
+			", name='" + name + '\'' +
+			", userUUID='" + userUUID + '\'' +
+			'}';
 	}
 }
