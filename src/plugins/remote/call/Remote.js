@@ -48,6 +48,8 @@ const _ = {
         addSessionEventListener(_.session)
       }
 
+      const mediaStream = await getStream({ options })
+
       const metaData = {
         clientData: _.account.uuid,
         roleType: role,
@@ -117,7 +119,7 @@ const _ = {
       _.options = options
 
       if (options !== false) {
-        await doPublish({ options, configs })
+        await doPublish({ mediaStream, options, configs })
       } else {
         updateParticipantEmpty(_.connectionId)
       }
@@ -469,15 +471,8 @@ const _ = {
  * @param {Object} Object.options
  * @param {Object} Object.configs
  */
-const doPublish = async ({ options, configs }) => {
+const doPublish = async ({ mediaStream, configs }) => {
   const settingInfo = Store.getters['settingInfo']
-
-  const mediaStream = await OV.getUserMedia({
-    audioSource: options ? options.audioSource : false,
-    videoSource: options ? options.videoSource : false,
-    resolution: settingInfo.quality,
-    frameRate: 30,
-  })
 
   const audioTracks = mediaStream.getAudioTracks()
   const videoTracks = mediaStream.getVideoTracks()
@@ -681,6 +676,65 @@ const updateParticipantEmpty = connectionId => {
     video: false,
     audio: false,
   })
+}
+
+/**
+ * 오디오 디바이스, 비디오 디바이스에 접근하여 오디오 트랙, 비디오 트랙을
+ * 하나의 미디어 스트림으로 합쳐서 반환
+ *
+ * 협업시 오디오 디바이스는 필수임으로 오디오 디바이스가 없으면 에러 반환
+ *
+ * @param {Object} options 옵션 객체
+ * @returns {MediaStream} 미디어 스트림 반환
+ * @throws nodevice
+ */
+const getStream = async ({ options }) => {
+  const mediaStream = new MediaStream()
+  const settingInfo = Store.getters['settingInfo']
+
+  //get audio stream
+  const audioStream = await getMediaStream({
+    audioSource: options ? options.audioSource : false,
+    videoSource: false,
+  })
+
+  if (!audioStream) {
+    throw 'nodevice'
+  }
+
+  //get video stream
+  const videoStream = await getMediaStream({
+    audioSource: false,
+    videoSource: options ? options.videoSource : false,
+    resolution: settingInfo.quality,
+    frameRate: 30,
+  })
+
+  if (videoStream) {
+    mediaStream.addTrack(audioStream.getAudioTracks()[0])
+    mediaStream.addTrack(videoStream.getVideoTracks()[0])
+  } else {
+    mediaStream.addTrack(audioStream.getAudioTracks()[0])
+  }
+
+  return mediaStream
+}
+
+/**
+ * 오디오 or 비디오 장치에 접근하여 스트림 반환
+ * @param {Object} options PublisherProperties
+ * @returns {MediaStream|null} 오디오 or 비디오 스트림 or null
+ *
+ */
+const getMediaStream = async options => {
+  let mediaStream = null
+  try {
+    mediaStream = await OV.getUserMedia(options)
+  } catch (e) {
+    console.error(e)
+  }
+
+  return mediaStream
 }
 
 export const addSubscriber = subscriber => {
