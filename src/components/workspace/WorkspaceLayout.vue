@@ -88,11 +88,24 @@ export default {
     }
   },
   watch: {
-    workspace(val, oldVal) {
+    async workspace(val, oldVal) {
       if (val.uuid && val.uuid !== oldVal.uuid) {
         this.checkPlan(val)
         this.checkCompany(val.uuid)
         this.checkLicense(val.uuid)
+      } else if (!val.uuid) {
+        const res = await getLicense({ userId: this.account.uuid })
+        const myPlans = res.myPlanInfoList.filter(
+          plan => plan.planProduct === 'REMOTE',
+        )
+        if (myPlans.length === 0) {
+          this.license = false
+        } else {
+          this.license = true
+        }
+        this.updateAccount({
+          licenseEmpty: this.license,
+        })
       }
     },
   },

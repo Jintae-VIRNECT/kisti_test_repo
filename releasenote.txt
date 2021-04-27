@@ -1,4 +1,4 @@
-RELEASE v2.3.1.2
+RELEASE v2.3.3.0
 
 ### New Features
 ### Bug Fixes
@@ -8,9 +8,9 @@ RELEASE v2.3.1.2
 ### Chore
 
 Bug Fixes
-* [DPLA-2461] gif 파일 허용 추가
-* [DPLA-2457] 채팅 비노출 상태에서 채팅 추가 시 스크롤 리셋 이슈 해결
-* [DPLA-2447] 최근기록 검색 후 목록 삭제 시 삭제한 목록이 제거 안되는 이슈 해결
-* [DPLA-2445] 검색 빠르게 입력 시 검색 결과 오류 수정
+* [DPLA-2547] 플랜 해제 시 표출 UI 버그 수정
+* [DPLA-2530] 협업보드 PDF 파일 공유 시 파일명 툴 팁 잘리는 버그 수정
+* [DPLA-2562] 웹 클라이언트에서 링크플로우 컨트롤 신호 중복 송신
+* [DPLA-2553] 협업 중 네트워크 재연결 실패 이벤트 추가
 
 Copyright (C) 2021, VIRNECT CO., LTD. - All Rights Reserved
