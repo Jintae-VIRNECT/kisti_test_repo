@@ -121,7 +121,6 @@ public class MemberService {
 		int size
 	) {
 
-		//Room room = sessionService.getRoom(workspaceId, sessionId);
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (ObjectUtils.isEmpty(room)) {
 			throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
@@ -135,24 +134,13 @@ public class MemberService {
 				|| !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME)
 		);
 
-		workspaceMemberInfoList.removeIf(
-			new Predicate<WorkspaceMemberInfoResponse>() {
-				@Override
-				public boolean test(WorkspaceMemberInfoResponse workspaceMemberInfoResponse) {
-					boolean response = false;
-					for (Member member : room.getMembers()) {
-						if (member.getUuid().equals(workspaceMemberInfoResponse.getUuid())) {
-							response = true;
-						} else {
-							response = false;
-						}
-					}
-					return response;
-				}
-			}
-		);
-
-		//workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
+		List<WorkspaceMemberInfoResponse> finalWorkspaceMemberInfoList = workspaceMemberInfoList;
+		room.getMembers().forEach(member -> {
+			finalWorkspaceMemberInfoList.removeIf(memberInfoResponses ->
+				member.getMemberStatus() != MemberStatus.EVICTED && memberInfoResponses.getUuid().equals(member.getUuid())
+			);
+		});
+		workspaceMemberInfoList = finalWorkspaceMemberInfoList;
 
 		int currentPage = page + 1; // current page number (start : 0)
 		int pagingSize = size; // page data count
@@ -192,61 +180,7 @@ public class MemberService {
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
 			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
 			.collect(Collectors.toList());
-
-		/*if (ObjectUtils.isEmpty(room)) {
-			// insert return custom error
-		} else {
-			// Get Member List from Room
-			// Mapping Member List Data to Member Information List
-			List<Member> memberList = room.getMembers();
-			//remove members who does not have room id
-			memberList.removeIf(member -> member.getRoom() == null);
-
-			//fetch workspace member information from workspace
-			WorkspaceMemberInfoListResponse feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
-				workspaceId, filter, search, page, size).getData();
-
-			List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse
-				.getMemberInfoList();
-			PageMetadataResponse workspaceMemberPageMeta = feignResponse.getPageMeta();
-			int currentPage = workspaceMemberPageMeta.getCurrentPage();
-			int currentSize = workspaceMemberPageMeta.getCurrentSize();
-			int totalPage = workspaceMemberPageMeta.getTotalPage();
-			long totalElements = workspaceMemberPageMeta.getTotalElements();
-
-			//remove members who does not have any license plan or remote license
-			workspaceMemberInfoList.removeIf(memberInfoResponses ->
-				Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
-					!Arrays.toString(memberInfoResponses.getLicenseProducts())
-						.contains(LicenseConstants.PRODUCT_NAME));
-
-			//remove member who has the same user id(::uuid)
-			//do not remove member who has status evicted;
-			//workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
-			memberList.forEach(member -> workspaceMemberInfoList.removeIf(memberInfoResponses ->
-				member.getMemberStatus() != MemberStatus.EVICTED &&
-					memberInfoResponses.getUuid().equals(member.getUuid())
-			));
-
-			// Page Metadata
-			PageMetadataResponse pageMeta = PageMetadataResponse.builder()
-				.currentPage(currentPage)
-				.currentSize(currentSize)
-				.totalPage(totalPage)
-				.totalElements(totalElements)
-				.numberOfElements(workspaceMemberInfoList.size())
-				.build();
-
-			// set page meta data last field to true or false
-			pageMeta.setLast(currentPage >= totalPage);
-			//pageMeta.setLast(workspaceMemberInfoList.size() == 0);
-
-			List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
-				.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
-				.collect(Collectors.toList());
-
-			responseData = new MemberInfoListResponse(memberInfoList, pageMeta);
-		}*/
+		
 		return new MemberInfoListResponse(memberInfoList, pageMeta);
 	}
 
