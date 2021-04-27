@@ -20,14 +20,18 @@ import lombok.extern.slf4j.Slf4j;
 
 import com.virnect.uaa.domain.auth.account.dao.BlockTokenRepository;
 import com.virnect.uaa.domain.auth.account.dao.LoginAttemptRepository;
+import com.virnect.uaa.domain.auth.account.dao.UserOTPRepository;
 import com.virnect.uaa.domain.auth.account.domain.BlockReason;
 import com.virnect.uaa.domain.auth.account.domain.BlockToken;
 import com.virnect.uaa.domain.auth.account.domain.LoginAttempt;
 import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
 import com.virnect.uaa.domain.auth.account.dto.request.LoginRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.LogoutRequest;
+import com.virnect.uaa.domain.auth.account.dto.request.OTPLoginRequest;
+import com.virnect.uaa.domain.auth.account.dto.request.OTPQRGenerateRequest;
 import com.virnect.uaa.domain.auth.account.dto.response.LogoutResponse;
 import com.virnect.uaa.domain.auth.account.dto.response.OAuthTokenResponse;
+import com.virnect.uaa.domain.auth.account.dto.response.OTPQRGenerateResponse;
 import com.virnect.uaa.domain.auth.account.error.AuthenticationErrorCode;
 import com.virnect.uaa.domain.auth.account.error.exception.LoginFailException;
 import com.virnect.uaa.domain.auth.account.error.exception.UserAuthenticationServiceException;
@@ -37,6 +41,7 @@ import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserAccessLog;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
+import com.virnect.uaa.global.common.TotpQRCodeGenerator;
 import com.virnect.uaa.global.security.token.JwtPayload;
 import com.virnect.uaa.global.security.token.JwtTokenProvider;
 
@@ -52,6 +57,8 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final UserAccessLogRepository userAccessLogRepository;
 	private final BlockTokenRepository blockTokenRepository;
+	private final UserOTPRepository userOTPRepository;
+	private final TotpQRCodeGenerator totpQRCodeGenerator;
 	private final ClientUserAgentInformationParser clientUserAgentInformationParser;
 
 	@Transactional
@@ -69,9 +76,6 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		} else {
 			user = userIdAndPasswordLoginAuthentication(loginRequest);
 		}
-
-		// account status check
-		accountStatusValidate(user);
 
 		// remove login attempt history
 		removeLoginAttemptHistory(user.getEmail());
@@ -96,6 +100,54 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		// remove remember me cookie
 		removeRememberMeCookie(request, response);
 		return new LogoutResponse(true, user.getEmail());
+	}
+
+	@Transactional
+	@Override
+	public OAuthTokenResponse qrCodeLogin(
+		OTPLoginRequest otpLoginRequest,
+		HttpServletRequest request
+	) {
+		User loginUser = otpQRCodeLoginAuthentication(otpLoginRequest);
+
+		// remove login attempt history
+		removeLoginAttemptHistory(loginUser.getEmail());
+
+		// save account access log
+		ClientGeoIPInfo clientGeoIPInfo = saveUserAccessLogInformation(loginUser, request);
+
+		return getOauthLoginResponse(loginUser, clientGeoIPInfo);
+	}
+
+	@Transactional
+	@Override
+	public OTPQRGenerateResponse loginQrCodeGenerate(
+		OTPQRGenerateRequest otpQrCodeGenerateRequest
+	) {
+		// Login QR code generate request validation
+		loginQrCodeGenerateRequestValidation(otpQrCodeGenerateRequest);
+
+		// Generate totp auth url from user email
+		String otpAuthUrl = totpQRCodeGenerator.generateOtpAuthUrl(otpQrCodeGenerateRequest.getEmail());
+
+		// Generate QRCode From totp auth url
+		String qrCode = totpQRCodeGenerator.generateQRCodeFromOtpAuthUrl(otpAuthUrl);
+
+		return new OTPQRGenerateResponse(otpAuthUrl, qrCode);
+	}
+
+	public void loginQrCodeGenerateRequestValidation(OTPQRGenerateRequest otpQrCodeGenerateRequest) {
+		boolean isRegisteredUser = userRepository.existsByUuid(otpQrCodeGenerateRequest.getUserId());
+
+		if (!isRegisteredUser) {
+			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_OTP_QR_CODE_CREATE);
+		}
+
+		boolean hasOtpRegistered = userOTPRepository.existsByEmail(otpQrCodeGenerateRequest.getEmail());
+
+		if (hasOtpRegistered) {
+			userOTPRepository.deleteAllByEmail(otpQrCodeGenerateRequest.getEmail());
+		}
 	}
 
 	public OAuthTokenResponse getOauthLoginResponse(
@@ -165,6 +217,24 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 			);
 	}
 
+	public User otpQRCodeLoginAuthentication(OTPLoginRequest otpLoginRequest) {
+		log.info("otpQRCodeLoginAuthentication - otpLoginRequest: [{}]", otpLoginRequest);
+
+		boolean isVerified = totpQRCodeGenerator.totpLoginAuthentication(
+			otpLoginRequest.getEmail(), otpLoginRequest.getCode()
+		);
+
+		if (!isVerified) {
+			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_LOGIN);
+		}
+
+		User user = findUserByUserEmail(otpLoginRequest.getEmail(), AuthenticationErrorCode.ERR_LOGIN);
+
+		// account status check
+		accountStatusValidate(user);
+		return user;
+	}
+
 	public User rememberMeLoginAuthentication(HttpServletRequest request) {
 		Cookie rememberMeCookie = getRememberMeCookie(request);
 		if (!jwtTokenProvider.isValidToken(rememberMeCookie.getValue())) {
@@ -172,12 +242,18 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		}
 		JwtPayload userInfo = jwtTokenProvider.getJwtPayload(rememberMeCookie.getValue());
 		log.info("RememberMeLoginAuthentication - JwtPayload: [{}]", userInfo);
-		return findUserByUserUUID(userInfo.getUuid(), AuthenticationErrorCode.ERR_LOGIN);
+		User user = findUserByUserUUID(userInfo.getUuid(), AuthenticationErrorCode.ERR_LOGIN);
+		// account status check
+		accountStatusValidate(user);
+		return user;
 	}
 
 	public User userIdAndPasswordLoginAuthentication(LoginRequest loginRequest) {
 		log.info("UserIDAndPasswordLoginAuthentication - LoginRequest: [{}]", loginRequest);
 		User loginUser = findUserByUserEmail(loginRequest.getEmail(), AuthenticationErrorCode.ERR_LOGIN);
+
+		// account status check
+		accountStatusValidate(loginUser);
 
 		if (!passwordEncoder.matches(loginRequest.getPassword(), loginUser.getPassword())) {
 			log.info("userIdAndPasswordLoginAuthentication - Password not matched.");

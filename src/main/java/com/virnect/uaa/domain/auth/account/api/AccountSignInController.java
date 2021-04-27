@@ -17,7 +17,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import com.virnect.uaa.domain.auth.account.application.signin.AccountOtpSignInService;
 import com.virnect.uaa.domain.auth.account.application.signin.AccountSignInService;
 import com.virnect.uaa.domain.auth.account.dto.request.LoginRequest;
 import com.virnect.uaa.domain.auth.account.dto.request.LogoutRequest;
@@ -45,7 +44,6 @@ import com.virnect.uaa.global.common.ApiResponse;
 public class AccountSignInController {
 	private static final String PARAMETER_LOG_MESSAGE = "[PARAMETER ERROR]:: {}";
 	private final AccountSignInService accountSignInService;
-	private final AccountOtpSignInService accountOtpSignInService;
 
 	@ApiOperation(value = "로그인 API")
 	@PostMapping("/signin")
@@ -87,7 +85,7 @@ public class AccountSignInController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		OTPQRGenerateResponse responseMessage = accountOtpSignInService.loginQrCodeGenerate(otpQRGenerateRequest);
+		OTPQRGenerateResponse responseMessage = accountSignInService.loginQrCodeGenerate(otpQRGenerateRequest);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 
@@ -100,7 +98,7 @@ public class AccountSignInController {
 			result.getAllErrors().forEach(message -> log.error(PARAMETER_LOG_MESSAGE, message));
 			throw new UserAuthenticationServiceException(AuthenticationErrorCode.ERR_INVALID_REQUEST_PARAMETER);
 		}
-		OAuthTokenResponse responseMessage = accountOtpSignInService.qrCodeLogin(otpLoginRequest, request);
+		OAuthTokenResponse responseMessage = accountSignInService.qrCodeLogin(otpLoginRequest, request);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
 

@@ -8,6 +8,7 @@ import com.warrenstrange.googleauth.GoogleAuthenticator;
 import lombok.RequiredArgsConstructor;
 
 import com.virnect.uaa.domain.auth.account.dao.CredentialRepository;
+import com.virnect.uaa.global.common.TotpQRCodeGenerator;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -26,5 +27,10 @@ public class OTPAuthenticationConfiguration {
 		GoogleAuthenticator googleAuthenticator = new GoogleAuthenticator();
 		googleAuthenticator.setCredentialRepository(credentialRepository);
 		return googleAuthenticator;
+	}
+
+	@Bean
+	public TotpQRCodeGenerator totpQRCodeGenerator(GoogleAuthenticator googleAuthenticator) {
+		return new TotpQRCodeGenerator(googleAuthenticator);
 	}
 }

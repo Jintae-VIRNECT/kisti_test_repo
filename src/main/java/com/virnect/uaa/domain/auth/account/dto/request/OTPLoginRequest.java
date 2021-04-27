@@ -26,6 +26,13 @@ public class OTPLoginRequest {
 	private int code;
 	@NotBlank(message = "이메일 정보는 반드시 입력되어야 합니다.")
 	@ApiModelProperty(value = "OTP 로그인 시도 사용자의 이메일", example = "sky456139@virnect.com")
-	@UserLoginIdValidation
 	private String email;
+
+	@Override
+	public String toString() {
+		return "OTPLoginRequest{" +
+			"code=" + code +
+			", email='" + email + '\'' +
+			'}';
+	}
 }
