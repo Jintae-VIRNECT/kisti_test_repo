@@ -1,5 +1,6 @@
 package com.virnect.uaa.domain.auth.account.application.signin;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,10 +14,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import com.virnect.uaa.domain.auth.account.dao.BlockTokenRepository;
 import com.virnect.uaa.domain.auth.account.dao.LoginAttemptRepository;
+import com.virnect.uaa.domain.auth.account.domain.BlockReason;
+import com.virnect.uaa.domain.auth.account.domain.BlockToken;
 import com.virnect.uaa.domain.auth.account.domain.LoginAttempt;
 import com.virnect.uaa.domain.auth.account.dto.ClientGeoIPInfo;
 import com.virnect.uaa.domain.auth.account.dto.request.LoginRequest;
@@ -31,8 +36,6 @@ import com.virnect.uaa.domain.user.dao.user.UserRepository;
 import com.virnect.uaa.domain.user.dao.useraccesslog.UserAccessLogRepository;
 import com.virnect.uaa.domain.user.domain.User;
 import com.virnect.uaa.domain.user.domain.UserAccessLog;
-import com.virnect.uaa.domain.user.error.UserAccountErrorCode;
-import com.virnect.uaa.domain.user.exception.UserServiceException;
 import com.virnect.uaa.global.common.ClientUserAgentInformationParser;
 import com.virnect.uaa.global.security.token.JwtPayload;
 import com.virnect.uaa.global.security.token.JwtTokenProvider;
@@ -48,6 +51,7 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 	private final PasswordEncoder passwordEncoder;
 	private final ApplicationEventPublisher applicationEventPublisher;
 	private final UserAccessLogRepository userAccessLogRepository;
+	private final BlockTokenRepository blockTokenRepository;
 	private final ClientUserAgentInformationParser clientUserAgentInformationParser;
 
 	@Transactional
@@ -78,6 +82,22 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		return getOauthLoginResponse(user, clientGeoIPInfo);
 	}
 
+	@Transactional
+	@Override
+	public LogoutResponse logout(
+		LogoutRequest logoutRequest,
+		HttpServletRequest request,
+		HttpServletResponse response
+	) {
+		log.info("Logout - [{}] - ", logoutRequest);
+		User user = findUserByUserUUID(logoutRequest.getUuid(), AuthenticationErrorCode.ERR_LOGOUT);
+		// Generate And Save BlockToken From Access Token
+		generateAndSaveBlockTokenFromAccessToken(logoutRequest.getAccessToken(), user, BlockReason.LOGOUT);
+		// remove remember me cookie
+		removeRememberMeCookie(request, response);
+		return new LogoutResponse(true, user.getEmail());
+	}
+
 	public OAuthTokenResponse getOauthLoginResponse(
 		User user, ClientGeoIPInfo clientGeoIPInfo
 	) {
@@ -94,13 +114,46 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		return oAuthTokenResponse;
 	}
 
-	@Override
-	public LogoutResponse logout(
-		LogoutRequest logoutRequest,
-		HttpServletRequest request,
-		HttpServletResponse response
+	public void removeRememberMeCookie(HttpServletRequest request, HttpServletResponse response) {
+		if (request.getCookies() != null) {
+			// disable remember-me cookie
+			for (Cookie cookie : request.getCookies()) {
+				if (cookie.getName().equals(REMEMBER_ME_COOKIE)) {
+					log.info(
+						"[LOG_OUT][BEFORE][REMEMBER_ME_COOKIE]: {} =>[{}] , {}, {}, {}", cookie.getName(),
+						cookie.getValue(),
+						cookie.getDomain(), cookie.getMaxAge(), cookie.getPath()
+					);
+					cookie.setMaxAge(0);
+					log.info(
+						"[LOG_OUT][AFTER][REMEMBER_ME_COOKIE]: {} =>[{}] , {}, {}, {}", cookie.getName(),
+						cookie.getValue(),
+						cookie.getDomain(), cookie.getMaxAge(), cookie.getPath()
+					);
+					response.addCookie(cookie);
+				}
+			}
+		}
+	}
+
+	public void generateAndSaveBlockTokenFromAccessToken(
+		String authorizationToken, User user, BlockReason reason
 	) {
-		return null;
+		BlockToken blockToken = getBlockTokenByAccessToken(authorizationToken, user, reason);
+		blockTokenRepository.save(blockToken);
+	}
+
+	public BlockToken getBlockTokenByAccessToken(String authorizationToken, User user, BlockReason reason) {
+		JwtPayload jwtPayload = jwtTokenProvider.getJwtPayload(authorizationToken);
+		Claims claims = jwtTokenProvider.getClaims(authorizationToken);
+		BlockToken blockToken = new BlockToken();
+		blockToken.setTokenId(jwtPayload.getJwtId());
+		blockToken.setBlockReason(reason);
+		blockToken.setBlockedBy(user.getName());
+		blockToken.setBlockExpire(claims.getExpiration().getTime());
+		blockToken.setTokenPayload(jwtPayload);
+		blockToken.setBlockStartDate(LocalDateTime.now());
+		return blockToken;
 	}
 
 	public Cookie getRememberMeCookie(HttpServletRequest request) {
@@ -119,12 +172,12 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		}
 		JwtPayload userInfo = jwtTokenProvider.getJwtPayload(rememberMeCookie.getValue());
 		log.info("RememberMeLoginAuthentication - JwtPayload: [{}]", userInfo);
-		return findUserByUserUUID(userInfo.getUuid());
+		return findUserByUserUUID(userInfo.getUuid(), AuthenticationErrorCode.ERR_LOGIN);
 	}
 
 	public User userIdAndPasswordLoginAuthentication(LoginRequest loginRequest) {
 		log.info("UserIDAndPasswordLoginAuthentication - LoginRequest: [{}]", loginRequest);
-		User loginUser = findUserByUserEmail(loginRequest.getEmail());
+		User loginUser = findUserByUserEmail(loginRequest.getEmail(), AuthenticationErrorCode.ERR_LOGIN);
 
 		if (!passwordEncoder.matches(loginRequest.getPassword(), loginUser.getPassword())) {
 			log.info("userIdAndPasswordLoginAuthentication - Password not matched.");
@@ -175,14 +228,14 @@ public class AccountSignInServiceImpl implements AccountSignInService {
 		return clientGeoIPInfo;
 	}
 
-	public User findUserByUserUUID(String uuid) {
+	public User findUserByUserUUID(String uuid, AuthenticationErrorCode errorCode) {
 		return userRepository.findByUuid(uuid)
-			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_LOGIN));
+			.orElseThrow(() -> new UserAuthenticationServiceException(errorCode));
 	}
 
-	public User findUserByUserEmail(String email) {
+	public User findUserByUserEmail(String email, AuthenticationErrorCode errorCode) {
 		return userRepository.findByEmail(email)
-			.orElseThrow(() -> new UserServiceException(UserAccountErrorCode.ERR_LOGIN));
+			.orElseThrow(() -> new UserAuthenticationServiceException(errorCode));
 	}
 
 	public void accountStatusValidate(User user) {

@@ -1,4 +1,4 @@
-package com.virnect.uaa.domain.user.event;
+package com.virnect.uaa.global.event;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -8,12 +8,12 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class ApplicationEventHandler {
+public class ApplicationReadyEventHandler {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void applicationReady() {
 		String msg = "\n\n----------------------------------------------------\n" + "\n"
-			+ "   Platform User Server is ready!\n"
+			+ "   Platform Authentication Server is ready!\n"
 			+ "   ---------------------------\n" + "\n"
 			+ "   * Server Host: [" + System.getenv("eureka.instance.ip-address") + "]\n" + "\n"
 			+ "   * VIRNECT_ENV: [" + System.getenv("VIRNECT_ENV") + "]\n" + "\n"

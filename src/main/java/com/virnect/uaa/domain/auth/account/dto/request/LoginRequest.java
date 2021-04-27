@@ -21,7 +21,7 @@ public class LoginRequest {
 	private String email;
 	@ApiModelProperty(value = "로그인 비밀번호", position = 1, name = "password", example = "smic1234")
 	private String password;
-	@ApiModelProperty(value = "자동 로그인 여부", position = 2, name = "remeberMe", example = "false")
+	@ApiModelProperty(value = "자동 로그인 여부", position = 2, name = "rememberMe", example = "false")
 	private boolean rememberMe;
 
 	@Override
