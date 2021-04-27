@@ -1,7 +1,7 @@
 <template>
   <div class="share-body__file pdf">
     <button class="share-body__backbutton" @click="back">
-      <tooltip :content="file.name" placement="bottom-start" width="auto">
+      <tooltip :content="file.name" placement="bottom-start" width="100%">
         <p class="share-body__backbutton-text" slot="body">
           {{ file.name }}
         </p>
