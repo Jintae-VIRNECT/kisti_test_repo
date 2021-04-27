@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
 
 import lombok.RequiredArgsConstructor;
@@ -72,32 +73,35 @@ public class MetadataService {
 	 * @return
 	 */
 	public MetadataInfo convertMetadata(String properties, String userId, String contentsName) {
-		MetadataInfo metadataInfo = new MetadataInfo();
+		try {
+			MetadataInfo metadataInfo = new MetadataInfo();
+			// 1-DEPTH
+			JsonParser jsonParser = new JsonParser();
+			JsonObject propertyObj = (JsonObject)jsonParser.parse(properties);
+			JsonObject propertyInfoObj = propertyObj.getAsJsonObject("PropertyInfo");
+			String targetId = propertyObj.get("TargetID").getAsString();
+			Optional<JsonElement> jsonElement = Optional.ofNullable(propertyObj.get("TargetSize"));
+			float targetSize = 10f;
+			if (jsonElement.isPresent()) {
+				targetSize = jsonElement.get().getAsFloat();
+			}
 
-		// 1-DEPTH
-		JsonParser jsonParser = new JsonParser();
-		JsonObject propertyObj = (JsonObject)jsonParser.parse(properties);
-		JsonObject propertyInfoObj = propertyObj.getAsJsonObject("PropertyInfo");
-		String targetId = propertyObj.get("TargetID").getAsString();
-		Optional<JsonElement> jsonElement = Optional.ofNullable(propertyObj.get("TargetSize"));
-		Float targetSize = 10f;
-		if (jsonElement.isPresent()) {
-			targetSize = jsonElement.get().getAsFloat();
+			MetadataInfo.Contents contents = new MetadataInfo.Contents();
+			contents.setId(targetId);
+			contents.setName(contentsName);
+			contents.setManagerUUID(userId);
+			contents.setTargetSize(targetSize);
+			contents.setSubProcessTotal(propertyInfoObj.keySet().size());
+			List<MetadataInfo.Scenegroup> scenegroupList = getSceneGroups(propertyInfoObj);
+			contents.setSceneGroups(scenegroupList);
+
+			metadataInfo.setContents(contents);
+			//log.debug("Contents Property convert Metadata Result : {}", gson.toJson(metadataInfo));
+			return metadataInfo;
+		}  catch (NullPointerException | UnsupportedOperationException | JsonParseException e) {
+			log.error("Properties parsing error. properties >> {}", properties);
+			throw new ContentServiceException(ErrorCode.ERR_CONTENT_METADATA_READ);
 		}
-
-		MetadataInfo.Contents contents = new MetadataInfo.Contents();
-		contents.setId(targetId);
-		contents.setName(contentsName);
-		contents.setManagerUUID(userId);
-		contents.setTargetSize(targetSize);
-		contents.setSubProcessTotal(propertyInfoObj.keySet().size());
-		List<MetadataInfo.Scenegroup> scenegroupList = getSceneGroups(propertyInfoObj);
-		contents.setSceneGroups(scenegroupList);
-
-		metadataInfo.setContents(contents);
-
-		log.debug("Contents Property convert Metadata Result : {}", gson.toJson(metadataInfo));
-		return metadataInfo;
 	}
 
 	/**

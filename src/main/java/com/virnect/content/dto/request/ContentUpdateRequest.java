@@ -21,7 +21,6 @@ import com.virnect.content.domain.TargetType;
 
 @Getter
 @Setter
-@ToString
 public class ContentUpdateRequest {
 
 	private String targetData;
@@ -41,4 +40,15 @@ public class ContentUpdateRequest {
 
 	@NotBlank
 	private String userUUID;
+
+	@Override
+	public String toString() {
+		return "ContentUpdateRequest{" +
+			"targetData='" + targetData + '\'' +
+			", targetType=" + targetType +
+			", content=" + content +
+			", name='" + name + '\'' +
+			", userUUID='" + userUUID + '\'' +
+			'}';
+	}
 }
