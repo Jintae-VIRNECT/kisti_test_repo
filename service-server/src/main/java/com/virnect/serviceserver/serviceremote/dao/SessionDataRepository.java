@@ -1295,9 +1295,11 @@ public class SessionDataRepository {
             return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
         } else {
             if (!room.getMembers().isEmpty()) {
-                long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
-                if (memberCount >= ROOM_MEMBER_LIMIT) {
-                    return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_FULL);
+                if (room.getSessionProperty().getSessionType() != SessionType.OPEN) {
+                    long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
+                    if (memberCount >= ROOM_MEMBER_LIMIT) {
+                        return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_FULL);
+                    }
                 }
             }
         }
