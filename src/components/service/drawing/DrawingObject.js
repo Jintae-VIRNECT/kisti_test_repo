@@ -49,7 +49,18 @@ export default {
             this.stackAdd('add', this.textObj.id)
           }
           this.textObj.initialized = true
-          this.backCanvas.add(fabric.util.object.clone(this.textObj))
+          const obj = new fabric.IText(this.textObj.text, {
+            left: this.textObj.left,
+            top: this.textObj.top,
+            fill: this.textObj.fill,
+            fontFamily: this.fontFamily,
+            fontStyle: this.fontStyle,
+            fontWeight: this.fontWeight,
+            fontSize: this.textObj.fontSize,
+            lineHeight: this.lineHeight,
+            hasControls: false,
+          })
+          this.backCanvas.add(obj)
         }
 
         setTimeout(() => {
