@@ -312,13 +312,14 @@ public class RoomService {
 		}
 
 		Member member = null;
-		if (member == null) {
-			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
-		}
 		for (Member participant : room.getMembers()) {
 			if (participant.getUuid().equals(userId)) {
 				member = participant;
 			}
+		}
+
+		if (member == null) {
+			return new ApiResponse<>(ErrorCode.ERR_ROOM_MEMBER_NOT_FOUND);
 		}
 
 		ErrorCode errorCode = ErrorCode.ERR_SUCCESS;

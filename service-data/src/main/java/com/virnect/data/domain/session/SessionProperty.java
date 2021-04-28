@@ -30,9 +30,6 @@ public class SessionProperty extends BaseTimeEntity {
     @Column(name = "default_recording_layout", nullable = false)
     private String defaultRecordingLayout;
 
-    /*@Column(name = "custom_session_id", unique = true)
-    private String customSessionId;*/
-
     @Column(name = "recording", nullable = false)
     private boolean recording;
 
@@ -49,30 +46,6 @@ public class SessionProperty extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "room_id")
     private Room room;
-
-    @Builder
-    public SessionProperty(String mediaMode,
-                           String recordingMode,
-                           String defaultOutputMode,
-                           String defaultRecordingLayout,
-                           boolean recording,
-                           boolean keepalive,
-                           SessionType sessionType,
-                           String publisherId,
-                           Room room
-
-
-    ) {
-        this.mediaMode = mediaMode;
-        this.recordingMode = recordingMode;
-        this.defaultOutputMode = defaultOutputMode;
-        this.defaultRecordingLayout = defaultRecordingLayout;
-        this.recording = recording;
-        this.keepalive = keepalive;
-        this.sessionType = sessionType;
-        this.publisherId = publisherId;
-        this.room = room;
-    }
 
     @Override
     public String toString() {
