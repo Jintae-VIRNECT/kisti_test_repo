@@ -169,61 +169,131 @@ public class MemberService {
 		int size
 	) {
 
+
+		//Room room = sessionService.getRoom(workspaceId, sessionId);
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (ObjectUtils.isEmpty(room)) {
 			throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
 
-		// Get Member List from Room
-		// Mapping Member List Data to Member Information List
-		List<Member> memberList = room.getMembers();
-		//remove members who does not have room id
-		memberList.removeIf(member -> member.getRoom() == null);
+		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
 
-		//fetch workspace member information from workspace
-		WorkspaceMemberInfoListResponse feignResponse = workspaceRestService.getWorkspaceMemberInfoList(
-			workspaceId, filter, search, page, size).getData();
-
-		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = feignResponse
-			.getMemberInfoList();
-		PageMetadataResponse workspaceMemberPageMeta = feignResponse.getPageMeta();
-		int currentPage = workspaceMemberPageMeta.getCurrentPage();
-		int currentSize = workspaceMemberPageMeta.getCurrentSize();
-		int totalPage = workspaceMemberPageMeta.getTotalPage();
-		long totalElements = workspaceMemberPageMeta.getTotalElements();
-
-		//remove members who does not have any license plan or remote license
 		workspaceMemberInfoList.removeIf(memberInfoResponses ->
-			Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty() ||
-				!Arrays.toString(memberInfoResponses.getLicenseProducts())
-					.contains(LicenseConstants.PRODUCT_NAME));
+			Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty()
+				|| !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME)
+		);
 
-		//remove member who has the same user id(::uuid)
-		//do not remove member who has status evicted;
-		//workspaceMemberInfoList.removeIf(memberInfoResponses -> memberInfoResponses.getUuid().equals(userId));
-		memberList.forEach(member -> workspaceMemberInfoList.removeIf(memberInfoResponses ->
-			member.getMemberStatus() != MemberStatus.EVICTED &&
-				memberInfoResponses.getUuid().equals(member.getUuid())
-		));
+		List<WorkspaceMemberInfoResponse> finalWorkspaceMemberInfoList = workspaceMemberInfoList;
+		room.getMembers().forEach(member -> {
+			finalWorkspaceMemberInfoList.removeIf(memberInfoResponses ->
+				member.getMemberStatus() != MemberStatus.EVICTED && memberInfoResponses.getUuid().equals(member.getUuid())
+			);
+		});
+		workspaceMemberInfoList = finalWorkspaceMemberInfoList;
 
-		// Page Metadata
+
+		int currentPage = page + 1; // current page number (start : 0)
+		int pagingSize = size; // page data count
+		long totalElements = workspaceMemberInfoList.size();
+		int totalPage = totalElements % size == 0 ? (int)(totalElements / (size)) : (int)(totalElements / (size)) + 1;
+		boolean last = (currentPage) == totalPage;
+
+		int startIndex = 0;
+		int endIndex = 0;
+
+		if (!workspaceMemberInfoList.isEmpty()) {
+			if (pagingSize > totalElements) {
+				startIndex = 0;
+				endIndex = (int)totalElements;
+			} else {
+				startIndex = (currentPage - 1) * pagingSize;
+				endIndex = last ? workspaceMemberInfoList.size() : ((currentPage - 1) * pagingSize) + (pagingSize);
+			}
+		}
+
+		// 데이터 range
+		workspaceMemberInfoList = IntStream
+			.range(startIndex, endIndex)
+			.mapToObj(workspaceMemberInfoList::get)
+			.collect(Collectors.toList());
+
+		// 페이징 데이터 설정
 		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
 			.currentPage(currentPage)
-			.currentSize(currentSize)
+			.currentSize(pagingSize)
+			.numberOfElements(workspaceMemberInfoList.size())
 			.totalPage(totalPage)
 			.totalElements(totalElements)
-			.numberOfElements(workspaceMemberInfoList.size())
+			.last(last)
 			.build();
-
-		// set page meta data last field to true or false
-		pageMeta.setLast(currentPage >= totalPage);
-		//pageMeta.setLast(workspaceMemberInfoList.size() == 0);
 
 		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
 			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
 			.collect(Collectors.toList());
 
 		return new MemberInfoListResponse(memberInfoList, pageMeta);
+		/*//Room room = sessionService.getRoom(workspaceId, sessionId);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+		if (ObjectUtils.isEmpty(room)) {
+			throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
+
+		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
+
+		workspaceMemberInfoList.removeIf(memberInfoResponses ->
+			Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty()
+				|| !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME)
+		);
+
+		List<WorkspaceMemberInfoResponse> finalWorkspaceMemberInfoList = workspaceMemberInfoList;
+		room.getMembers().forEach(member -> {
+			finalWorkspaceMemberInfoList.removeIf(memberInfoResponses ->
+				member.getMemberStatus() != MemberStatus.EVICTED && memberInfoResponses.getUuid().equals(member.getUuid())
+			);
+		});
+		workspaceMemberInfoList = finalWorkspaceMemberInfoList;
+
+
+		int currentPage = page + 1; // current page number (start : 0)
+		int pagingSize = size; // page data count
+		long totalElements = workspaceMemberInfoList.size();
+		int totalPage = totalElements % size == 0 ? (int)(totalElements / (size)) : (int)(totalElements / (size)) + 1;
+		boolean last = (currentPage) == totalPage;
+
+		int startIndex = 0;
+		int endIndex = 0;
+
+		if (!workspaceMemberInfoList.isEmpty()) {
+			if (pagingSize > totalElements) {
+				startIndex = 0;
+				endIndex = (int)totalElements;
+			} else {
+				startIndex = (currentPage - 1) * pagingSize;
+				endIndex = last ? workspaceMemberInfoList.size() : ((currentPage - 1) * pagingSize) + (pagingSize);
+			}
+		}
+
+		// 데이터 range
+		workspaceMemberInfoList = IntStream
+			.range(startIndex, endIndex)
+			.mapToObj(workspaceMemberInfoList::get)
+			.collect(Collectors.toList());
+
+		// 페이징 데이터 설정
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(currentPage)
+			.currentSize(pagingSize)
+			.numberOfElements(workspaceMemberInfoList.size())
+			.totalPage(totalPage)
+			.totalElements(totalElements)
+			.last(last)
+			.build();
+
+		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.collect(Collectors.toList());*/
 	}
 
 	public MemberSecessionResponse deleteMembersBySession(String userId) {
