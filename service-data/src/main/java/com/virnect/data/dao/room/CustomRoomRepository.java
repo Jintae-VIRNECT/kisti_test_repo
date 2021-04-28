@@ -25,7 +25,6 @@ public interface CustomRoomRepository {
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	Optional<Room> findRoomByWorkspaceIdAndSessionIdForWrite(final String workspaceId, final String sessionId);
 
-	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	Optional<Room> findRoomByWorkspaceIdAndSessionIdNotInEvictedMember(final String workspaceId, final String sessionId);
 
 	//@Query("select r from Room r where r.workspaceId = ?1 and r.roomStatus = 0")
