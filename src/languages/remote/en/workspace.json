@@ -48,6 +48,7 @@
     "remote_invite_impossible": "Unable to participate in this Collabo.",
     "remote_already_invite": "The same account is being used for Collabo. Cannot enter this Collabo.",
     "remote_access_removed": "Leader has not allowed you to enter.",
+    "remote_access_overflow": "Exceeded the max. number of participants {num}.",
 
     "user_title": "Available members to invite for Collabo",
     "user_description": "Check who you can Collabo with.",

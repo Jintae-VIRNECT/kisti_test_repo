@@ -48,6 +48,7 @@
     "remote_invite_impossible": "협업에 참가가 불가능합니다.",
     "remote_already_invite": "동일 계정으로 협업을 진행 중입니다. 협업을 참가할 수 없습니다.",
     "remote_access_removed": "리더에 의해 참가 권한이 삭제되었습니다.",
+    "remote_access_overflow": "최대 참여 인원 {num}을 초과 하였습니다.",
     
     "user_title": "협업 가능 멤버",
     "user_description": "협업 가능한 멤버를 확인해 보세요.",

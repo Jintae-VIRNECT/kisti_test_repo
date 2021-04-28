@@ -82,6 +82,13 @@ export default {
           } else if (err.code === 4016) {
             this.toastError(this.$t('workspace.remote_already_invite'))
             return false
+          } else if (err.code === 4026) {
+            this.toastError(
+              this.$t('workspace.remote_access_overflow', {
+                num: room.maxUserCount,
+              }),
+            )
+            return false
           }
         }
         this.toastError(this.$t('workspace.remote_invite_impossible'))
