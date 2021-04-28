@@ -134,7 +134,7 @@ public class MemberRestController {
             userId,
             filter,
             search,
-            page + 1,
+            page,
             size
         );
         return ResponseEntity.ok(new ApiResponse<>(responseData));

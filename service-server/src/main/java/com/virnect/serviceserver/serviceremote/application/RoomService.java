@@ -14,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import com.google.gson.JsonObject;
@@ -78,7 +79,6 @@ public class RoomService {
 	private final RoomHistoryRepository roomHistoryRepository;
 
 	private final SessionTransactionalService sessionService;
-	private final HistoryService historyService;
 	private final WorkspaceRestService workspaceRestService;
 	private final MemberRepository memberRepository;
 	private final ServiceSessionManager serviceSessionManager;
@@ -403,10 +403,7 @@ public class RoomService {
 				}
 
 				if (errorCode == ErrorCode.ERR_SUCCESS) {
-
-					room.getMembers().remove(member);
-					roomRepository.save(room);
-
+					sessionService.removeMember(room, member);
 					ResultResponse resultResponse = new ResultResponse();
 					resultResponse.setUserId(userId);
 					resultResponse.setResult(true);
@@ -649,7 +646,7 @@ public class RoomService {
 		ApiResponse<RoomDetailInfoResponse> responseData;
 
 		// Get Room info from DB
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdNotInEvictedMember(workspaceId, sessionId).orElse(null);
 
 		if(room == null) {
 			return new ApiResponse<>(new RoomDetailInfoResponse(), ErrorCode.ERR_ROOM_NOT_FOUND);

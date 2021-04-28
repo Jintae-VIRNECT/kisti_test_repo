@@ -3,9 +3,12 @@ package com.virnect.serviceserver.serviceremote.application;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -19,6 +22,8 @@ import com.virnect.data.domain.member.MemberHistory;
 import com.virnect.data.domain.member.MemberStatus;
 import com.virnect.data.domain.member.MemberType;
 import com.virnect.data.domain.room.Room;
+import com.virnect.data.error.ErrorCode;
+import com.virnect.data.error.exception.RestServiceException;
 import com.virnect.serviceserver.serviceremote.dto.constraint.LicenseConstants;
 import com.virnect.data.dto.PageMetadataResponse;
 import com.virnect.serviceserver.serviceremote.dto.response.member.MemberInfoListResponse;
@@ -115,11 +120,70 @@ public class MemberService {
 		int page,
 		int size
 	) {
-		MemberInfoListResponse responseData = null;
 
 		//Room room = sessionService.getRoom(workspaceId, sessionId);
 		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if (ObjectUtils.isEmpty(room)) {
+			throw new RestServiceException(ErrorCode.ERR_ROOM_NOT_FOUND);
+		}
+
+		WorkspaceMemberInfoListResponse responseData = workspaceRestService.getWorkspaceMembers(workspaceId).getData();
+		List<WorkspaceMemberInfoResponse> workspaceMemberInfoList = responseData.getMemberInfoList();
+
+		workspaceMemberInfoList.removeIf(memberInfoResponses ->
+			Arrays.toString(memberInfoResponses.getLicenseProducts()).isEmpty()
+				|| !Arrays.toString(memberInfoResponses.getLicenseProducts()).contains(LicenseConstants.PRODUCT_NAME)
+		);
+
+		List<WorkspaceMemberInfoResponse> finalWorkspaceMemberInfoList = workspaceMemberInfoList;
+		room.getMembers().forEach(member -> {
+			finalWorkspaceMemberInfoList.removeIf(memberInfoResponses ->
+				member.getMemberStatus() != MemberStatus.EVICTED && memberInfoResponses.getUuid().equals(member.getUuid())
+			);
+		});
+		workspaceMemberInfoList = finalWorkspaceMemberInfoList;
+
+
+		int currentPage = page + 1; // current page number (start : 0)
+		int pagingSize = size; // page data count
+		long totalElements = workspaceMemberInfoList.size();
+		int totalPage = totalElements % size == 0 ? (int)(totalElements / (size)) : (int)(totalElements / (size)) + 1;
+		boolean last = (currentPage) == totalPage;
+
+		int startIndex = 0;
+		int endIndex = 0;
+
+		if (!workspaceMemberInfoList.isEmpty()) {
+			if (pagingSize > totalElements) {
+				startIndex = 0;
+				endIndex = (int)totalElements;
+			} else {
+				startIndex = (currentPage - 1) * pagingSize;
+				endIndex = last ? workspaceMemberInfoList.size() : ((currentPage - 1) * pagingSize) + (pagingSize);
+			}
+		}
+
+		// 데이터 range
+		workspaceMemberInfoList = IntStream
+			.range(startIndex, endIndex)
+			.mapToObj(workspaceMemberInfoList::get)
+			.collect(Collectors.toList());
+
+		// 페이징 데이터 설정
+		PageMetadataResponse pageMeta = PageMetadataResponse.builder()
+			.currentPage(currentPage)
+			.currentSize(pagingSize)
+			.numberOfElements(workspaceMemberInfoList.size())
+			.totalPage(totalPage)
+			.totalElements(totalElements)
+			.last(last)
+			.build();
+
+		List<MemberInfoResponse> memberInfoList = workspaceMemberInfoList.stream()
+			.map(memberInfo -> modelMapper.map(memberInfo, MemberInfoResponse.class))
+			.collect(Collectors.toList());
+
+		/*if (ObjectUtils.isEmpty(room)) {
 			// insert return custom error
 		} else {
 			// Get Member List from Room
@@ -172,8 +236,8 @@ public class MemberService {
 				.collect(Collectors.toList());
 
 			responseData = new MemberInfoListResponse(memberInfoList, pageMeta);
-		}
-		return responseData;
+		}*/
+		return new MemberInfoListResponse(memberInfoList, pageMeta);
 	}
 
 	public MemberSecessionResponse deleteMembersBySession(String userId) {

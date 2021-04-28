@@ -1295,9 +1295,11 @@ public class SessionDataRepository {
             return new ApiResponse<>(false, ErrorCode.ERR_ROOM_NOT_FOUND);
         } else {
             if (!room.getMembers().isEmpty()) {
-                long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
-                if (memberCount >= ROOM_MEMBER_LIMIT) {
-                    return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_FULL);
+                if (room.getSessionProperty().getSessionType() != SessionType.OPEN) {
+                    long memberCount = room.getMembers().stream().filter(member -> !(member.getMemberStatus() == MemberStatus.UNLOAD)).count();
+                    if (memberCount >= ROOM_MEMBER_LIMIT) {
+                        return new ApiResponse<>(false, ErrorCode.ERR_ROOM_MEMBER_MAX_COUNT);
+                    }
                 }
             }
         }
@@ -1335,15 +1337,25 @@ public class SessionDataRepository {
             break;
             case OPEN: {
                 if (member != null) {
-                    MemberStatus memberStatus = member.getMemberStatus();
+                    /*MemberStatus memberStatus = member.getMemberStatus();
                     if (memberStatus == MemberStatus.UNLOAD) {
                         member.setMemberStatus(MemberStatus.LOADING);
                         sessionService.setMember(member);
                         result = true;
-                    } else if (memberStatus == MemberStatus.EVICTED) {
+                    }
+                    else if (memberStatus == MemberStatus.EVICTED) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_EVICTED_STATUS;
                     } else if (memberStatus == MemberStatus.LOAD) {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_ALREADY_JOINED;
+                    } else {
+                        errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
+                    }*/
+                    MemberStatus memberStatus = member.getMemberStatus();
+                    if (memberStatus.equals(MemberStatus.UNLOAD) || memberStatus.equals(MemberStatus.EVICTED))
+                    {
+                        member.setMemberStatus(MemberStatus.LOADING);
+                        sessionService.setMember(member);
+                        result = true;
                     } else {
                         errorCode = ErrorCode.ERR_ROOM_MEMBER_STATUS_INVALID;
                     }
