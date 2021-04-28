@@ -460,7 +460,8 @@ public class RoomService {
 			sessionId
 		);
 		// Get Room info from DB
-		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
+		Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdNotInEvictedMember(workspaceId, sessionId).orElse(null);
+		//Room room = roomRepository.findRoomByWorkspaceIdAndSessionIdForWrite(workspaceId, sessionId).orElse(null);
 		if(room == null) {
 			return new ApiResponse<>(ErrorCode.ERR_ROOM_NOT_FOUND);
 		}
