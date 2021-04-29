@@ -1,13 +1,11 @@
 package com.virnect.content.application.license;
 
-import com.virnect.content.dto.rest.LicenseInfoResponse;
-import com.virnect.content.dto.rest.MyLicenseInfoListResponse;
-import com.virnect.content.global.common.ApiResponse;
-import feign.hystrix.FallbackFactory;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import feign.hystrix.FallbackFactory;
+import lombok.extern.slf4j.Slf4j;
+
+import com.virnect.content.global.common.ResponseMessage;
 
 /**
  * Project: PF-ContentManagement
@@ -18,21 +16,10 @@ import java.util.ArrayList;
  */
 @Slf4j
 @Service
-public class LicenseFallbackService implements FallbackFactory<LicenseRestService> {
+public class LicenseFallbackService implements FallbackFactory<ResponseMessage> {
     @Override
-    public LicenseRestService create(Throwable cause) {
-        return new LicenseRestService() {
-            @Override
-            public ApiResponse<LicenseInfoResponse> getWorkspaceLicenseInfo(String workspaceId) {
-                return new ApiResponse<>(new LicenseInfoResponse());
-            }
-
-            @Override
-            public ApiResponse<MyLicenseInfoListResponse> getMyLicenseInfoRequestHandler(String userId, String workspaceId) {
-                MyLicenseInfoListResponse myLicenseInfoListResponse = new MyLicenseInfoListResponse();
-                myLicenseInfoListResponse.setLicenseInfoList(new ArrayList<>());
-                return new ApiResponse<>(myLicenseInfoListResponse);
-            }
-        };
+    public ResponseMessage create(Throwable cause) {
+        log.error("USER SERVER FEIGN ERROR: {}", cause.getMessage());
+        return new ResponseMessage();
     }
 }
