@@ -3,10 +3,10 @@ import com.github.jk1.license.filter.LicenseBundleNormalizer
 import com.github.jk1.license.render.InventoryMarkdownReportRenderer
 
 plugins {
-    id 'org.springframework.boot' version '2.3.8.RELEASE'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id "edu.sc.seis.launch4j" version "2.4.6"
-    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+   // id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
     id "io.franzbecker.gradle-lombok" version "3.3.0"
     id "com.github.jk1.dependency-license-report" version "1.13"
     id 'java'
@@ -17,7 +17,7 @@ version = '1.0.0'
 sourceCompatibility = '1.8'
 
 ext {
-    springCloudVersion = 'Hoxton.SR10'
+    springCloudVersion = 'Hoxton.SR1'
 }
 
 configurations {
@@ -58,8 +58,11 @@ dependencies {
     implementation group: 'org.modelmapper.extensions', name: 'modelmapper-jackson', version: '2.3.0'
 
     // Query DSL
-    implementation("com.querydsl:querydsl-jpa") // querydsl
-    implementation("com.querydsl:querydsl-apt") // querydsl
+    compile 'com.querydsl:querydsl-core'
+    compile 'com.querydsl:querydsl-jpa'
+    annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa")
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
 
     // Common
     implementation 'commons-io:commons-io:2.4'
@@ -92,7 +95,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-config-client'
 
     // Minio
-    implementation 'io.minio:minio:8.1.0'
+    implementation 'io.minio:minio:7.1.0'
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
@@ -100,34 +103,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    systemProperty("spring.active.profiles","test")
-    systemProperty("VIRNECT_ENV","test")
-}
-
-
-// querydsl 적용
-def querydslSrcDir = 'src/main/generated'
-
-querydsl {
-    library = "com.querydsl:querydsl-apt"
-    jpa = true
-    querydslSourcesDir = querydslSrcDir
-}
-
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
-}
-
-configurations {
-    querydsl.extendsFrom compileClasspath
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', querydslSrcDir]
-        }
-    }
+    systemProperty("spring.active.profiles", "local")
 }
 
 //License Reporting Configuration
@@ -135,7 +111,6 @@ licenseReport {
     renderers = [new InventoryMarkdownReportRenderer()]
     filters = [new LicenseBundleNormalizer(), new ExcludeTransitiveDependenciesFilter()]
 }
-
 
 // separate jar into app and library layers
 task moveLib {

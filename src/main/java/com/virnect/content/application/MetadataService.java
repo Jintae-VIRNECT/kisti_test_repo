@@ -1,25 +1,32 @@
 package com.virnect.content.application;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonParser;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import com.virnect.content.dao.content.ContentRepository;
 import com.virnect.content.domain.Content;
 import com.virnect.content.dto.MetadataInfo;
-import com.virnect.content.dto.PropertiesInfo;
 import com.virnect.content.dto.response.MetadataInfoResponse;
 import com.virnect.content.exception.ContentServiceException;
 import com.virnect.content.global.common.ApiResponse;
 import com.virnect.content.global.error.ErrorCode;
-import com.virnect.content.global.util.PropertiesParsingHandler;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
 
 /**
  * Project: PF-ContentManagement
