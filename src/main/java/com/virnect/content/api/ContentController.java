@@ -387,6 +387,7 @@ public class ContentController {
 		@PathVariable("workspaceUUID") String workspaceUUID,
 		@RequestHeader("serviceID") String requestServiceID
 	) {
+
 		if (!StringUtils.hasText(workspaceUUID) || !StringUtils.hasText(requestServiceID) || !requestServiceID.equals(
 			"user-server")) {
 			throw new ContentServiceException(ErrorCode.ERR_INVALID_REQUEST_PARAMETER);
