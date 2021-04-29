@@ -1,10 +1,12 @@
 RELEASE
 
 New Features
+- 없음
 
 Bug Fixes
+- 컨텐츠 수정 시 타겟정보 변경 안되는 버그 개선
 
 Limitation
-- contents properties, metadata  로깅 주석처리
+- 없음
 
 Copyright (C) 2020, VIRNECT CO., LTD. - All Rights Reserved
