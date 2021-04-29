@@ -1,20 +1,25 @@
 package com.virnect.content.dao.content;
 
-import com.querydsl.core.Tuple;
-import com.querydsl.jpa.JPQLQuery;
-import com.virnect.content.domain.*;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.springframework.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+
+import com.querydsl.core.Tuple;
+import com.querydsl.jpa.JPQLQuery;
+
+import com.virnect.content.domain.Content;
+
+import com.virnect.content.domain.QContent;
+import com.virnect.content.domain.QTarget;
+import com.virnect.content.domain.YesOrNo;
 
 /**
  * @author jeonghyeon.chang (johnmark)
@@ -32,18 +37,17 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
 
     @Override
     public Page<Content> getContent(
-            String workspaceUUID, String userUUID, String search, String shareds, String converteds,
-            List<String> userUUIDList, Pageable pageable, String targetType
+        String workspaceUUID, String userUUID, String search, String shareds, String converteds,
+        List<String> userUUIDList, Pageable pageable
     ) {
         QContent qContent = QContent.content;
-        QTarget qTarget = QTarget.target;
         JPQLQuery<Content> query = from(qContent);
 
         // apply search keyword
         if (search != null) {
             query = query.where(qContent.name.contains(search)
-                    .or(qContent.userUUID.in(userUUIDList))
-                    .or(qContent.userUUID.eq(search)));
+                .or(qContent.userUUID.in(userUUIDList))
+                .or(qContent.userUUID.eq(search)));
         }
 
         if (userUUID != null) {
@@ -75,19 +79,14 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
                 String[] arrConverted = converteds.split(FILTER_DELIMITER);
                 if (arrConverted.length > 1) {
                     List<YesOrNo> convertConverted = Stream.of(arrConverted)
-                            .map(YesOrNo::valueOf)
-                            .collect(Collectors.toList());
+                        .map(YesOrNo::valueOf)
+                        .collect(Collectors.toList());
                     query = query.where(qContent.converted.in(convertConverted));
                 } else {
                     YesOrNo converted = YesOrNo.valueOf(converteds);
                     query = query.where(qContent.converted.eq(converted));
                 }
             }
-        }
-
-        if (StringUtils.hasText(targetType) && !targetType.equalsIgnoreCase("ALL")) {
-            query = query.join(qContent.targetList, qTarget)
-                    .where(qTarget.type.eq(TargetType.valueOf(targetType)));
         }
 
         // apply pagination
@@ -97,11 +96,11 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
         return new PageImpl<>(contentList, pageable, query.fetchCount());
     }
 
-    public Optional<Content> getContentOfTarget(String targetData) {
+    public Content getContentOfTarget(String targetData) {
         QContent qContent = QContent.content;
         QTarget qTarget = QTarget.target;
-        Content content = from(qContent).join(qContent.targetList, qTarget).where(qTarget.data.eq(targetData)).fetchOne();
-        return Optional.ofNullable(content);
+        JPQLQuery<Content> query = from(qContent).join(qContent.targetList, qTarget).where(qTarget.data.eq(targetData));
+        return query.fetchOne();
     }
 
     @Override
@@ -109,9 +108,9 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
         QContent qContent = QContent.content;
 
         Long sumSize = from(qContent)
-                .select(qContent.size.sum())
-                .where(qContent.workspaceUUID.eq(workspaceUUID))
-                .fetchOne();
+            .select(qContent.size.sum())
+            .where(qContent.workspaceUUID.eq(workspaceUUID))
+            .fetchOne();
 
         return sumSize;
     }
@@ -121,9 +120,9 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
         QContent qContent = QContent.content;
 
         Long sumDownload = from(qContent)
-                .select(qContent.downloadHits.sum())
-                .where(qContent.workspaceUUID.eq(workspaceUUID))
-                .fetchOne();
+            .select(qContent.downloadHits.sum())
+            .where(qContent.workspaceUUID.eq(workspaceUUID))
+            .fetchOne();
 
         return sumDownload;
     }
@@ -135,12 +134,12 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
         List<Map<String, Object>> mapList = new ArrayList<>();
 
         List<Tuple> tupleList = from(qContent)
-                .select(qContent.userUUID.as("userUUID")
-                        , qContent.id.count().as("contentCount"))
-                .where(qContent.workspaceUUID.eq(workspaceUUID))
-                .where(qContent.userUUID.in(userUUIDList))
-                .groupBy(qContent.userUUID)
-                .fetch();
+            .select(qContent.userUUID.as("userUUID")
+                , qContent.id.count().as("contentCount"))
+            .where(qContent.workspaceUUID.eq(workspaceUUID))
+            .where(qContent.userUUID.in(userUUIDList))
+            .groupBy(qContent.userUUID)
+            .fetch();
 
         return tupleList;
     }
@@ -149,7 +148,7 @@ public class ContentCustomRepositoryImpl extends QuerydslRepositorySupport imple
     public Long calculateTotalStorageAmountByWorkspaceId(String workspaceId) {
         QContent qContent = QContent.content;
         Optional<Long> calculateTotalUsedStorageAmount = Optional.ofNullable(
-                from(qContent).select(qContent.size.sum()).where(qContent.workspaceUUID.eq(workspaceId)).fetchOne()
+            from(qContent).select(qContent.size.sum()).where(qContent.workspaceUUID.eq(workspaceId)).fetchOne()
         );
         if (calculateTotalUsedStorageAmount.isPresent()) {
             long totalStorageUsage = calculateTotalUsedStorageAmount.get();

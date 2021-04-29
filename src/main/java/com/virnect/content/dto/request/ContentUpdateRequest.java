@@ -33,7 +33,7 @@ public class ContentUpdateRequest {
 	@NotBlank
 	private String name;
 
-	//private String metadata;
+	private String metadata;
 
 	@NotBlank
 	private String properties;
@@ -41,16 +41,14 @@ public class ContentUpdateRequest {
 	@NotBlank
 	private String userUUID;
 
-    @Override
-    public String toString() {
-        return "ContentUpdateRequest{" +
-                "targetData='" + targetData + '\'' +
-                ", targetType=" + targetType +
-                ", content=" + content +
-                ", name='" + name + '\'' +
-      //          ", metadata='" + metadata + '\'' +
-                ", properties='" + properties + '\'' +
-                ", userUUID='" + userUUID + '\'' +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "ContentUpdateRequest{" +
+			"targetData='" + targetData + '\'' +
+			", targetType=" + targetType +
+			", content=" + content +
+			", name='" + name + '\'' +
+			", userUUID='" + userUUID + '\'' +
+			'}';
+	}
 }

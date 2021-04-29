@@ -3,7 +3,7 @@ import com.github.jk1.license.filter.LicenseBundleNormalizer
 import com.github.jk1.license.render.InventoryMarkdownReportRenderer
 
 plugins {
-    id 'org.springframework.boot' version '2.3.8.RELEASE'
+    id 'org.springframework.boot' version '2.2.2.RELEASE'
     id 'io.spring.dependency-management' version '1.0.8.RELEASE'
     id "edu.sc.seis.launch4j" version "2.4.6"
     id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
@@ -17,7 +17,7 @@ version = '1.0.0'
 sourceCompatibility = '1.8'
 
 ext {
-    springCloudVersion = 'Hoxton.SR10'
+    springCloudVersion = 'Hoxton.SR1'
 }
 
 configurations {
@@ -92,7 +92,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-config-client'
 
     // Minio
-    implementation 'io.minio:minio:8.1.0'
+    implementation 'io.minio:minio:7.1.0'
 
     // feign oktthp
     implementation 'io.github.openfeign:feign-okhttp'
@@ -100,8 +100,7 @@ dependencies {
 
 test {
     useJUnitPlatform()
-    systemProperty("spring.active.profiles","test")
-    systemProperty("VIRNECT_ENV","test")
+    systemProperty("spring.active.profiles", "test")
 }
 
 
