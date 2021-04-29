@@ -405,14 +405,15 @@ public class ContentService {
 			throw new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
 		}
 
-		if (!target.getData().equals(updateRequest.getTargetData()) || updateRequest.getTargetType() != target.getType()) {
+		if (!target.getData().equals(updateRequest.getTargetData())
+			|| updateRequest.getTargetType() != target.getType()) {
 			if (updateRequest.getTargetType().equals(TargetType.QR)) {
 				String uploadImgPath = decodeData(updateRequest.getTargetData());
 				fileUploadService.delete(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
 			if (updateRequest.getTargetType().equals(TargetType.VTarget)) {
-				String uploadImgPath =fileDownloadService.getFilePath(fileUploadPath, defaultVTarget);
+				String uploadImgPath = fileDownloadService.getFilePath(fileUploadPath, defaultVTarget);
 				fileUploadService.delete(target.getImgPath());
 				target.setImgPath(uploadImgPath);
 			}
@@ -422,9 +423,9 @@ public class ContentService {
 		float targetSize = 10f;
 		if (!targetContent.getMetadata().equals(updateRequest.getMetadata())) {
 			JsonParser jsonParse = new JsonParser();
-			JsonObject propertyObj = (JsonObject) jsonParse.parse(updateRequest.getMetadata());
+			JsonObject propertyObj = (JsonObject)jsonParse.parse(updateRequest.getMetadata());
 			JsonObject contents = propertyObj.getAsJsonObject("contents");
-			 targetSize= contents.get("targetSize").getAsFloat();
+			targetSize = contents.get("targetSize").getAsFloat();
 		}
 		target.setSize(targetSize);
 		// 8. 수정 반영
@@ -1203,3 +1204,4 @@ public class ContentService {
 
 		return getContentInfoResponseApiResponse(content);
 	}
+}
