@@ -395,4 +395,3 @@ public class ContentController {
 		ContentSecessionResponse responseMessage = contentService.deleteAllContentInfo(workspaceUUID);
 		return ResponseEntity.ok(new ApiResponse<>(responseMessage));
 	}
-}

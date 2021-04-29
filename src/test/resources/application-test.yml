@@ -1,15 +1,14 @@
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:contents
-    username: sa
-    password:
+    url: jdbc:mysql://192.168.6.3:4336/contents
+    username: virnect-content
+    password: virnect1234
   h2:
     console:
-      enabled: true
+      enabled: false
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none
 #    database-platform: org.hibernate.dialect.H2Dialect
 #    show-sql: true
 #    properties:
@@ -18,20 +17,31 @@ spring:
 
 # File Upload Configuration
 upload:
-  dir: "upload/"
-  serverUrl: "http://localhost:${server.port}/contents/"
+  #  dir: "upload/"
+  #  serverUrl: "http://localhost:${server.port}/contents/"
   allowed-extension: '.ares,.mars,.Ares,.Mars'
 
+file:
+  upload-path: "workspace/report/"
+  url: "https://virnect-platform-qa.s3.ap-northeast-2.amazonaws.com/"
 
 ## AWS Configuration
 cloud:
   aws:
     credentials:
       access-key: AKIAIYFYOR4X6LM3YKSQ
-      secret-key: 7QHYE3G 0EK8G55qVUqeP+5kXMBPLc/ykYAe9R4S/
+      secret-key: 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
     region:
       auto: true
     s3:
       bucket:
         name: "virnect-platform-qa"
         resource: "workspace/"
+
+## Minio
+minio:
+  access-key: "virnect"
+  secret-key: "Qjsprxm13@$"
+  server: "https://192.168.6.3:2838"
+  bucket: "virnect-platform"
+  bucket-resource: "workspace/"

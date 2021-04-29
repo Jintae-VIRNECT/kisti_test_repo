@@ -36,46 +36,46 @@ import lombok.extern.slf4j.Slf4j;
 @Table(name = "target")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Target extends BaseTimeEntity {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "target_id")
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "target_id")
+    private Long id;
 
-	@Column(name = "type")
-	@Enumerated(EnumType.STRING)
-	private TargetType type;
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
+    private TargetType type;
 
-	@Column(name = "data", unique = true)
-	private String data;
+    @Column(name = "data", unique = true)
+    private String data;
 
-	@Column(name = "img_path")
-	private String imgPath;
+    @Column(name = "img_path")
+    private String imgPath;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "content_id")
-	private Content content;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "content_id")
+    private Content content;
 
-	@Column(name = "size")
-	private Float size;
+    @Column(name = "size")
+    private Float size;
 
-	@Builder
-	public Target(TargetType type, String data, String imgPath, Content content, Float size) {
-		this.type = type;
-		this.data = data;
-		this.imgPath = imgPath;
-		this.content = content;
-		this.size = size;
-	}
+    @Builder
+    public Target(TargetType type, String data, String imgPath, Content content, Float size) {
+        this.type = type;
+        this.data = data;
+        this.imgPath = imgPath;
+        this.content = content;
+        this.size = size;
+    }
 
-	@Override
-	public String toString() {
-		return "Target{" +
-			"id=" + id +
-			", type=" + type +
-			", data='" + data + '\'' +
-			", imgPath=" + imgPath + '\'' +
-			", size=" + size + '\'' +
-			//                ", content=" + content +
-			'}';
-	}
+    @Override
+    public String toString() {
+        return "Target{" +
+                "id=" + id +
+                ", type=" + type +
+                ", data='" + data + '\'' +
+                ", imgPath=" + imgPath + '\'' +
+                ", size=" + size + '\'' +
+                //                ", content=" + content +
+                '}';
+    }
 }
