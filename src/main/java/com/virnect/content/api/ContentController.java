@@ -203,6 +203,7 @@ public class ContentController {
 		@ModelAttribute @Valid ContentUpdateRequest updateRequestDto,
 		@PathVariable("contentUUID") String contentUUID, BindingResult result
 	) {
+		log.info("CONTENT UPDATE - contentUUID : {}, request : {}", contentUUID, updateRequestDto.toString());
 		if (result.hasErrors() || contentUUID.isEmpty()) {
 			log.info("[ContentUpdateRequest] => [{}]", updateRequestDto.toString());
 			log.error(

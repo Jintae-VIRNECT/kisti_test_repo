@@ -34,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
@@ -399,28 +400,36 @@ public class ContentService {
 		Target target = this.targetRepository.findByContentId(targetContent.getId())
 			.orElseThrow(() -> new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET));
 
-		String originTargetData = null;
-
 		// 기존 타겟 데이터가 없을 경우
-		if (Objects.isNull(target.getData())) {
+		if (!StringUtils.hasText(target.getData())) {
 			throw new ContentServiceException(ErrorCode.ERR_NOT_FOUND_TARGET);
-		} else {
-			originTargetData = target.getData();
 		}
 
-		// 기존 타겟 데이터와 새로 입력한 타겟 데이터가 다를경우
-		if (!originTargetData.equals(targetData)) {
-			// 기존 타겟 데이터 삭제
-			this.targetRepository.deleteByContentId(targetContent.getId());
-
-			// 새로운 타겟 데이터 입력
-			targetData = addTargetToContent(
-				targetContent, updateRequest.getTargetType(), updateRequest.getTargetData());
+		if (!target.getData().equals(updateRequest.getTargetData()) || updateRequest.getTargetType() != target.getType()) {
+			if (updateRequest.getTargetType().equals(TargetType.QR)) {
+				String uploadImgPath = decodeData(updateRequest.getTargetData());
+				fileUploadService.delete(target.getImgPath());
+				target.setImgPath(uploadImgPath);
+			}
+			if (updateRequest.getTargetType().equals(TargetType.VTarget)) {
+				String uploadImgPath =fileDownloadService.getFilePath(fileUploadPath, defaultVTarget);
+				fileUploadService.delete(target.getImgPath());
+				target.setImgPath(uploadImgPath);
+			}
 		}
-
+		target.setData(updateRequest.getTargetData());
+		target.setType(updateRequest.getTargetType());
+		float targetSize = 10f;
+		if (!targetContent.getMetadata().equals(updateRequest.getMetadata())) {
+			JsonParser jsonParse = new JsonParser();
+			JsonObject propertyObj = (JsonObject) jsonParse.parse(updateRequest.getMetadata());
+			JsonObject contents = propertyObj.getAsJsonObject("contents");
+			 targetSize= contents.get("targetSize").getAsFloat();
+		}
+		target.setSize(targetSize);
 		// 8. 수정 반영
-		this.contentRepository.save(targetContent);
-
+		targetRepository.save(target);
+		contentRepository.save(targetContent);
 		// 반환할 타겟정보
 		List<ContentTargetResponse> contentTargetResponseList = new ArrayList<>();
 		ContentTargetResponse contentTargetResponse = ContentTargetResponse.builder()
