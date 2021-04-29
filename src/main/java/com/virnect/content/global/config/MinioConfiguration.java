@@ -1,4 +1,4 @@
-package com.virnect.content.global.config;
+package com.virnect.content.infra.file;
 
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
@@ -17,7 +17,7 @@ import io.minio.MinioClient;
  * EMAIL: ljk@virnect.com
  * DESCRIPTION:
  */
-@Profile({"local", "develop", "onpremise","test"})
+@Profile({"local", "develop", "onpremise"})
 @Configuration
 public class MinioConfiguration {
 
